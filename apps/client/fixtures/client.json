@@ -1,0 +1,287 @@
+[
+{
+    "model": "client.client",
+    "pk": 3,
+    "fields": {
+        "created_at": "2024-11-12T18:13:15.139Z",
+        "created_by": 1,
+        "updated_at": "2024-11-12T18:33:31.188Z",
+        "updated_by": 1,
+        "corporate_number": "1180301018771",
+        "name": "トヨタ自動車株式会社",
+        "name_furigana": "とよたじどうしゃ",
+        "postal_code": "4710826",
+        "address_kana": null,
+        "address": "愛知県豊田市トヨタ町１番地",
+        "url": "http://www.toyota.co.jp/",
+        "memo": "自動車事業および金融その他の事業",
+        "regist_form_client": 20
+    }
+},
+{
+    "model": "client.client",
+    "pk": 4,
+    "fields": {
+        "created_at": "2024-11-12T18:14:45.864Z",
+        "created_by": 1,
+        "updated_at": "2024-11-12T18:33:36.789Z",
+        "updated_by": 1,
+        "corporate_number": "5010001034966",
+        "name": "アステラス製薬株式会社",
+        "name_furigana": "あすてらすせいやく",
+        "postal_code": "1030023",
+        "address_kana": null,
+        "address": "東京都中央区日本橋本町２丁目５番１号",
+        "url": "http://www.astellas.com/jp/",
+        "memo": "医薬品の製造・販売および輸出入",
+        "regist_form_client": 20
+    }
+},
+{
+    "model": "client.client",
+    "pk": 5,
+    "fields": {
+        "created_at": "2024-11-12T18:15:24.544Z",
+        "created_by": 1,
+        "updated_at": "2024-11-12T18:15:33.260Z",
+        "updated_by": 1,
+        "corporate_number": "2000012020001",
+        "name": "総務省",
+        "name_furigana": "そうむしょう",
+        "postal_code": "1000013",
+        "address_kana": null,
+        "address": "東京都千代田区霞が関２丁目１－２中央合同庁舎第２号館",
+        "url": "",
+        "memo": "",
+        "regist_form_client": 20
+    }
+},
+{
+    "model": "client.client",
+    "pk": 6,
+    "fields": {
+        "created_at": "2024-11-12T18:16:40.179Z",
+        "created_by": 1,
+        "updated_at": "2024-11-12T18:33:48.005Z",
+        "updated_by": 1,
+        "corporate_number": "1130001011420",
+        "name": "任天堂株式会社",
+        "name_furigana": "にんてんどう",
+        "postal_code": "6018116",
+        "address_kana": null,
+        "address": "京都府京都市南区上鳥羽鉾立町１１番地１",
+        "url": "http://www.nintendo.co.jp/",
+        "memo": "家庭用レジャー機器の製造・販売",
+        "regist_form_client": 20
+    }
+},
+{
+    "model": "client.client",
+    "pk": 8,
+    "fields": {
+        "created_at": "2024-11-12T18:21:57.129Z",
+        "created_by": 1,
+        "updated_at": "2024-11-12T18:21:57.129Z",
+        "updated_by": 1,
+        "corporate_number": "3040001028447",
+        "name": "アマゾンジャパン合同会社",
+        "name_furigana": "あまぞんじゃぱん",
+        "postal_code": "1530064",
+        "address_kana": null,
+        "address": "東京都目黒区下目黒１丁目８番１号",
+        "url": "https://www.aboutamazon.jp/workplace/diversity-inclusion",
+        "memo": "",
+        "regist_form_client": 2
+    }
+},
+{
+    "model": "client.client",
+    "pk": 9,
+    "fields": {
+        "created_at": "2024-11-12T18:22:41.816Z",
+        "created_by": 1,
+        "updated_at": "2024-11-12T18:22:41.816Z",
+        "updated_by": 1,
+        "corporate_number": "6011001106696",
+        "name": "アマゾンウェブサービスジャパン合同会社",
+        "name_furigana": "あまぞんうぇぶさーびすじゃぱん",
+        "postal_code": "1410021",
+        "address_kana": null,
+        "address": "東京都品川区上大崎３丁目１番１号",
+        "url": "",
+        "memo": "",
+        "regist_form_client": 1
+    }
+},
+{
+    "model": "client.client",
+    "pk": 10,
+    "fields": {
+        "created_at": "2024-11-12T18:24:06.198Z",
+        "created_by": 1,
+        "updated_at": "2024-11-12T18:24:06.198Z",
+        "updated_by": 1,
+        "corporate_number": "3000020131202",
+        "name": "練馬区",
+        "name_furigana": "ねりまく",
+        "postal_code": "1760012",
+        "address_kana": null,
+        "address": "東京都練馬区豊玉北６丁目１２－１",
+        "url": "",
+        "memo": "",
+        "regist_form_client": 1
+    }
+},
+{
+    "model": "client.client",
+    "pk": 11,
+    "fields": {
+        "created_at": "2024-11-12T18:24:23.040Z",
+        "created_by": 1,
+        "updated_at": "2024-11-12T18:24:23.040Z",
+        "updated_by": 1,
+        "corporate_number": "1000020131229",
+        "name": "葛飾区",
+        "name_furigana": "かつしかく",
+        "postal_code": "1240012",
+        "address_kana": null,
+        "address": "東京都葛飾区立石５丁目１３－１",
+        "url": "",
+        "memo": "",
+        "regist_form_client": 1
+    }
+},
+{
+    "model": "client.client",
+    "pk": 12,
+    "fields": {
+        "created_at": "2024-11-12T18:24:48.247Z",
+        "created_by": 1,
+        "updated_at": "2024-11-12T18:24:48.247Z",
+        "updated_by": 1,
+        "corporate_number": "8000020130001",
+        "name": "東京都",
+        "name_furigana": "とうきようと",
+        "postal_code": "1600023",
+        "address_kana": null,
+        "address": "東京都新宿区西新宿２丁目８－１",
+        "url": "",
+        "memo": "",
+        "regist_form_client": 1
+    }
+},
+{
+    "model": "client.client",
+    "pk": 13,
+    "fields": {
+        "created_at": "2024-11-12T18:25:09.610Z",
+        "created_by": 1,
+        "updated_at": "2024-11-12T18:34:04.725Z",
+        "updated_by": 1,
+        "corporate_number": "9020001031109",
+        "name": "日産自動車株式会社",
+        "name_furigana": "にっさんじどうしゃ",
+        "postal_code": "2210023",
+        "address_kana": null,
+        "address": "神奈川県横浜市神奈川区宝町２番地",
+        "url": "http://www.nissan-global.com/JP/COMPANY/DIVERSITY/",
+        "memo": "輸送用機器製造",
+        "regist_form_client": 1
+    }
+},
+{
+    "model": "client.client",
+    "pk": 14,
+    "fields": {
+        "created_at": "2024-11-12T18:25:48.250Z",
+        "created_by": 1,
+        "updated_at": "2024-11-12T18:34:11.313Z",
+        "updated_by": 1,
+        "corporate_number": "1010001088181",
+        "name": "株式会社セブン－イレブン・ジャパン",
+        "name_furigana": "せぶんいれぶんじゃぱん",
+        "postal_code": "1020084",
+        "address_kana": null,
+        "address": "東京都千代田区二番町８番地８",
+        "url": "http://www.sej.co.jp/",
+        "memo": "コンビニエンスストアのフランチャイズチェーン本部",
+        "regist_form_client": 1
+    }
+},
+{
+    "model": "client.client",
+    "pk": 15,
+    "fields": {
+        "created_at": "2024-11-12T18:26:06.725Z",
+        "created_by": 1,
+        "updated_at": "2024-11-12T18:34:19.018Z",
+        "updated_by": 1,
+        "corporate_number": "2010701019195",
+        "name": "株式会社ローソン",
+        "name_furigana": "ろーそん",
+        "postal_code": "1410032",
+        "address_kana": null,
+        "address": "東京都品川区大崎１丁目１１番２号",
+        "url": "http://www.lawson.co.jp",
+        "memo": "コンビニエンスストア「ローソン」のフランチャイズチェーン展開",
+        "regist_form_client": 1
+    }
+},
+{
+    "model": "client.client",
+    "pk": 16,
+    "fields": {
+        "created_at": "2024-11-12T18:27:22.233Z",
+        "created_by": 1,
+        "updated_at": "2024-11-12T18:27:22.233Z",
+        "updated_by": 1,
+        "corporate_number": "6000012070001",
+        "name": "厚生労働省",
+        "name_furigana": "こうせいろうどうしょう",
+        "postal_code": "1000013",
+        "address_kana": null,
+        "address": "東京都千代田区霞が関１丁目２－２",
+        "url": "",
+        "memo": "",
+        "regist_form_client": 1
+    }
+},
+{
+    "model": "client.client",
+    "pk": 17,
+    "fields": {
+        "created_at": "2024-11-12T18:27:46.968Z",
+        "created_by": 1,
+        "updated_at": "2024-11-12T18:27:46.968Z",
+        "updated_by": 1,
+        "corporate_number": "1000020140007",
+        "name": "神奈川県",
+        "name_furigana": "かながわけん",
+        "postal_code": "2310021",
+        "address_kana": null,
+        "address": "神奈川県横浜市中区日本大通１",
+        "url": "",
+        "memo": "",
+        "regist_form_client": 1
+    }
+},
+{
+    "model": "client.client",
+    "pk": 18,
+    "fields": {
+        "created_at": "2024-11-12T18:29:44.251Z",
+        "created_by": 1,
+        "updated_at": "2024-11-12T18:34:26.777Z",
+        "updated_by": 1,
+        "corporate_number": "3120001236504",
+        "name": "パナソニック株式会社",
+        "name_furigana": "ぱなそにっく",
+        "postal_code": "5710050",
+        "address_kana": null,
+        "address": "大阪府門真市大字門真１００６番地",
+        "url": "",
+        "memo": "",
+        "regist_form_client": 1
+    }
+}
+]

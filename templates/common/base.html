@@ -1,0 +1,404 @@
+<!-- templates/common/base.html -->
+{% load static %}
+{% load parameters %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% parameter 'SYSTEM_NAME' %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="{% static 'css/' %}{% parameter 'GLOBAL_CSS_THEME' %}/bootstrap.min.css" rel="stylesheet">
+    <!-- BootswatchのCSS -->
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        /* 全体スタイル */
+        body {
+            background-color: #f0f0f0;
+            font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+        }
+        /* ヘッダスタイル */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 70px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #e0e0e0;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 0px 8px rgba(0, 0, 0, 0.1); /* 小さい影を追加 */
+            }
+/* ボタン全体のスタイル */
+.header .btn {
+    background-color: #ffffff; /* 初期状態の背景色 */
+    border: none; /* ボーダーを削除 */
+    border-radius: 10px;
+    color: #000;
+    padding: 8px; /* ボタン内の余白を最小限に */
+    width: 40px; /* 明示的にボタンの幅を指定 */
+    height: 40px; /* 明示的にボタンの高さを指定 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s; /* 背景色の変化を滑らかに */
+}
+
+/* マウスオーバー時の背景色変更 */
+.header .btn:hover {
+    background-color: #e0e0e0;
+}
+
+/* アイコンのスタイル */
+.header .btn i {
+    font-size: 20px; /* アイコンの大きさを調整 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+        .header .left-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .header .menu-toggle {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .header .logo {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .header .system-title, .header .current-menu {
+            font-size: 16px;
+            margin-left: 60px;
+            font-weight: bold;
+        }
+        .header .current-menu {
+            display: flex;
+            align-items: center;
+        }
+        .header .current-menu i {
+            margin-right: 8px;
+            font-size: 20px;
+            color: #28a745;
+        }
+        .header .icons {
+            display: flex;
+            gap: 10px;
+        }
+        .header .icons i {
+            cursor: pointer;
+            background-color: #fff;
+            padding: 8px;
+            border-radius: 10px;
+            color: #000;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        /* マウスオーバー時の背景色変更 */
+.header .icons i:hover {
+    background-color: #e0e0e0;
+    transition: background-color 0.3s; /* 背景色の変化を滑らかに */
+}
+    .sidebar {
+      height: 100vh;
+      position: fixed;
+      top: 70px; /* Adjust top value to account for the fixed header */
+      background-color: #f8f9fa;
+      padding-top: 0px;
+    }
+        .sidebar .nav-link {
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #000;
+            border-bottom: 1px solid #eee;
+        }
+        .sidebar .nav-link i {
+            font-size: 20px;
+        }
+        .sidebar .nav-link .menu-name {
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+        .sidebar .nav-link .badge {
+            margin-left: auto;
+        }
+        .sidebar .nav-link.active, .sidebar .nav-link:hover {
+            background-color: #f0f0f0;
+        }
+        .sidebar .nav-link.active i {
+            color: #28a745; /* 選択されたメニューアイコンの色 */
+        }
+    .offcanvas-body {
+      padding-top: 0px; /* Adjust padding to account for fixed header */
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+        .offcanvas-body .nav-link {
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #000;
+            border-bottom: 1px solid #eee;
+        }
+        .offcanvas-body .nav-link i {
+            font-size: 20px;
+        }
+        .offcanvas-body .nav-link .menu-name {
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+        .offcanvas-body .nav-link .badge {
+            margin-left: auto;
+        }
+        .offcanvas-body .nav-link.active, .offcanvas-body .nav-link:hover {
+            background-color: #f0f0f0;
+        }
+        .offcanvas-body .nav-link.active i {
+            color: #28a745; /* 選択されたメニューアイコンの色 */
+        }
+    .system-name, .system-icon {
+      margin-left: 10px;
+    }
+    /* Responsive behavior for system icon and name */
+    .system-name { display: inline-block; }
+    .system-icon { display: inline-block; }
+    @media (max-width: 992px) { /* Hide system icon and name on smaller screens */
+      .system-icon { display: none; }
+    }
+    @media (max-width: 768px) { /* Hide system name on even smaller screens */
+      .system-name { display: none; }
+      .header .system-title {
+          display: none;
+      }
+    }
+        @media (max-width: 576px) {
+            .header .current-menu {
+                display: none;
+            }
+        }    
+    /* Sidebar and content transition for smooth movement */
+
+/* Transition for smooth resizing of main content */
+#sidebar, #mainContent {
+  transition: width 0.3s, margin-left 0.3s;
+}
+
+/* Full-width class for main content when sidebar is closed */
+.content-expanded {
+  margin-left: 0 !important;
+  width: 100% !important;
+}
+
+#sidebar {
+  transition: margin-left 0.3s;
+}
+
+/* Sidebar hidden state */
+.sidebar-closed {
+  margin-left: -350px; /* Adjust based on sidebar width */
+}
+
+/* Smooth transition for both sidebar and main content */
+.content-box {
+    background-color: white; /* 白塗り */
+    border-radius: 15px; /* 丸み */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* 影を追加 */
+}
+
+</style>
+</head>
+<body>
+
+    <!-- ヘッダー -->
+    <div class="header">
+        <div class="left-section">
+			<button class="btn d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
+			  <i class="bi bi-list"></i>
+			</button>
+			<button class="btn d-none d-md-block" id="toggleSidebar" type="button">
+			  <i class="bi bi-list"></i> 
+			</button>
+            <div class="logo">{% parameter 'SYSTEM_NAME' %}</div>
+            {% for menu in menus %}
+            {% if menu.url in request.path  %}
+            <div class="current-menu">
+                <i class="bi {{ menu.icon }}" style="{{ menu.icon_style }}"></i>
+                {{ menu.name }}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <div class="icons">
+            <i class="bi bi-search"></i> <!-- 検索アイコン -->
+            <i class="bi bi-bell"></i> <!-- 通知アイコン -->
+            <i class="bi bi-gear"></i> <!-- 設定アイコン -->
+            <i class="bi bi-box-arrow-right"></i> <!-- ログアウトアイコン -->
+        </div>
+    </div>
+
+<!-- Sidebar for large screens -->
+<div id="sidebar" class="col-md-3 col-lg-2 d-none d-md-block bg-light sidebar">
+  <div class="position-sticky">
+    <ul class="nav flex-column">
+      {% for menu in menus %}
+          <li class="nav-item">
+            <a href="{{ menu.url }}" class="nav-link {% if menu.url in request.path  %}active{% endif %}">
+                <i class="bi {{ menu.icon }}" style="font-size: 20px;{{ menu.icon_style }}"></i><span class="menu-name">{{ menu.name }}</span>
+            </a>
+          </li>
+      {% endfor %}
+      <!--
+      <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="bi bi-house-door" style="color:#007bff;"></i><span class="menu-name">ホーム※</span><span class="badge bg-primary">3</span>
+            </a>
+      </li>
+      <li class="nav-item">
+            <a href="#" class="nav-link active">
+                <i class="bi bi-people" style="color:#28a745;"></i><span class="menu-name">スタッフ※</span><span class="badge bg-primary">10</span>
+            </a>
+      </li>
+      <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="bi bi-person-bounding-box" style="color:#ff5722;"></i><span class="menu-name">クライアント※</span><span class="badge bg-primary">5</span>
+            </a>
+      </li>
+      <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="bi bi-file-earmark-text" style="color:#ffc107;"></i><span class="menu-name">契約※</span><span class="badge bg-primary">8</span>
+            </a>
+      </li>
+      <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="bi bi-bar-chart-line" style="color:#17a2b8;"></i><span class="menu-name">レポート※</span><span class="badge bg-primary">2</span>
+            </a>
+      </li>
+      -->
+    </ul>
+  </div>
+</div>
+
+<!-- Offcanvas Menu for small screens -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+  <div class="offcanvas-header">
+		<button class="btn d-md-none" type="button"  data-bs-dismiss="offcanvas" aria-label="Close">
+		  <i class="bi bi-list"></i>
+		</button>
+    <h5 class="offcanvas-title" id="offcanvasMenuLabel">メニュー</h5>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="nav flex-column">
+      {% for menu in menus %}
+          <li class="nav-item">
+            <a href="{{ menu.url }}" class="nav-link {% if menu.url in request.path %}active{% endif %}">
+                <i class="bi {{ menu.icon }}" style="font-size: 20px;{{ menu.icon_style }}"></i><span class="menu-name">{{ menu.name }}</span>
+            </a>
+          </li>
+      {% endfor %}
+      <!--
+      <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="bi bi-house-door" style="color:#007bff;"></i><span class="menu-name">ホーム※</span><span class="badge bg-primary">3</span>
+            </a>
+      </li>
+      <li class="nav-item">
+            <a href="#" class="nav-link active">
+                <i class="bi bi-people" style="color:#28a745;"></i><span class="menu-name">スタッフ※</span><span class="badge bg-primary">10</span>
+            </a>
+      </li>
+      <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="bi bi-person-bounding-box" style="color:#ff5722;"></i><span class="menu-name">クライアント※</span><span class="badge bg-primary">5</span>
+            </a>
+      </li>
+      <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="bi bi-file-earmark-text" style="color:#ffc107;"></i><span class="menu-name">契約※</span><span class="badge bg-primary">8</span>
+            </a>
+      </li>
+      <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="bi bi-bar-chart-line" style="color:#17a2b8;"></i><span class="menu-name">レポート※</span><span class="badge bg-primary">2</span>
+            </a>
+      </li>
+      -->
+    </ul>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="container-fluid mt-1 mb-3" style="padding-top: 80px;">
+  <div class="row">
+    <!-- Add id to main content area -->
+    <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            {% block content %}
+            <!-- 各ページごとのコンテンツがここに挿入される -->
+            {% endblock %}
+    </main>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
+<script>
+document.getElementById('toggleSidebar').addEventListener('click', function() {
+  var sidebar = document.getElementById('sidebar');
+  var mainContent = document.getElementById('mainContent');
+
+  // Toggle sidebar closed class and main content class simultaneously
+  sidebar.classList.toggle('sidebar-closed');
+  
+  // Adjust main content column size
+  if (sidebar.classList.contains('sidebar-closed')) {
+    // Expand main content to full width immediately
+    mainContent.classList.remove('col-md-9', 'col-lg-10');
+    mainContent.classList.add('col-md-12', 'content-expanded');
+  } else {
+    // Revert main content to original size immediately
+    mainContent.classList.remove('col-md-12', 'content-expanded');
+    mainContent.classList.add('col-md-9', 'col-lg-10');
+  }
+});
+</script>
+<script>
+  //ツールチップを上に出す
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+  })
+</script>
+</body>
+</html>
+
+<!--
+Bootstrap5のみ機能で独自のJavaScriptつかわずに以下を実現したい。
+・ヘッダは常に表示する。背景色は白とする。メニューアイコン、ロゴ、色付きのシステムごとのアイコン＋システム名、機能名が左から表示される。右には、検索アイコン、通知アイコン、設定アイコン、ログアウトアイコンがあり、アイコンは丸みがかった四角にかこまれている。枠線の色はなく、灰色の背景色とする。ヘッダの上はブラウザと区別がつくように灰色の線を入れる。下にも入れる。
+・幅がせまくなったときに、ヘッダの文字が改行されないように、システムアイコン＋システム名を非表示にする。さらにせまくなったときには、システム名も非表示にする。幅を広げたときにはシステム名を表示する。さらに幅を広げたときには、システムアイコン＋システム名を表示にする。
+・左にメニューを表示する。背景色は白とする。色のついたシステムごとのアイコン、機能名が表示されて、右には件数を表示する。メニューの間はわかるように線を入れる。現在設定されているメニューは灰色背景とする。マウスオーバーすると、灰色背景とする。
+・幅が広いとき、最初はメニューが表示されている。
+・幅が広いときで、メニューが表示されているときにメニューアイコンを押すとメニューがスムーズに非表示になって、メインコンテンツも左にずれる。
+・幅が広いときで、メニューが非表示のときにメニューアイコンを押すと、メニューがスムーズに表示されて、メインコンテンツも右にずれる。
+・幅が広いときでメニューが表示されているときに、幅をせまくすると、メニューが非表示となる。もともとメニューが非表示であれば変わらない。
+・幅がせまいときに、メニューアイコンを押してメニューを表示・非表示ができる。
+・幅がせまいときから、広くしたとき、メニューが表示される。せまいときにメニューを表示・非表示にしても、広くしたら表示する。
+・アイコンはBootstrapのアイコンを利用する。べた塗りのアイコンは使わない。
+・bootstrap.min.css、bootstrap.bundle.min.jsは同じフォルダにあるので、パスは不要。
+・BootswatchのCSSをパスに追加してほしい。「_variables.scss」「_bootswatch.scss」
+-->
+

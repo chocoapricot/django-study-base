@@ -1,0 +1,312 @@
+{% extends 'common/base.html' %}
+{% load my_dropdown_tags %}
+{% block content %}
+<div class="row" style="max-width: 100%;">
+
+    <!-- 左上 -->
+    <div class="col-8">
+        <div class="content-box card bg-light mt-2 mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                スタッフ基本情報
+                <ul class="nav nav-pills">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">印刷</a>
+                        <div class="dropdown-menu">
+                            <a href="{% url 'staff_rirekisho' staff.pk %}" class="dropdown-item"><i class="bi bi-file-excel"></i>　履歴書　(Excel)</a>
+                            <a href="{% url 'staff_kyushoku' staff.pk %}" class="dropdown-item"><i class="bi bi-file-excel"></i>　求職申込書　(Excel)</a>
+                            <a href="{% url 'staff_fuyokojo' staff.pk %}" class="dropdown-item"><i class="bi bi-filetype-pdf"></i>　扶養控除申告書　(PDF)</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                    {% csrf_token %}
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-sm-4 d-flex justify-content-center">
+                            <img src="{% url 'staff_face' staff.pk %}" class="rounded-circle img-fluid" width="100" height="100" style="border-radius: 15%;">
+        <!--                   <img src="{% url 'staff_face' staff.pk %}" class="img-fluid" width="100" height="100" style="border-radius: 15%;">-->
+                        </div>
+                        
+                        <div class="col-sm">
+                            <h4>
+                                <ruby>
+                                    {{ staff.name_last }}<rt>{{ staff.name_kana_last }}</rt>
+                                </ruby>
+                                <ruby>
+                                    {{ staff.name_first }}<rt>{{ staff.name_kana_first }}</rt>
+                                </ruby>
+                                {% if staff.sex == 1 %}
+                                    <span class="badge bg-info" style="font-size:12px">{% my_name 'sex' staff.sex%}</span>
+                                {% else %}
+                                    <span class="badge bg-primary" style="font-size:12px">{% my_name 'sex' staff.sex%}</span>
+                                {% endif %}
+                            </h4>
+                            <div class="col-sm">
+                                {% if staff.regist_form_code < 10 %}
+                                    <span class="badge bg-primary" style="font-size:15px">{% my_name 'regist_form' staff.regist_form_code %}</span>
+                                {% elif staff.regist_form_code < 20 %}
+                                    <span class="badge bg-success" style="font-size:15px">{% my_name 'regist_form' staff.regist_form_code %}</span>
+                                {% elif staff.regist_form_code < 30 %}
+                                    <span class="badge bg-info" style="font-size:15px">{% my_name 'regist_form' staff.regist_form_code %}</span>
+                                {% elif staff.regist_form_code < 40 %}
+                                    <span class="badge bg-warning" style="font-size:15px">{% my_name 'regist_form' staff.regist_form_code %}</span>
+                                {% elif staff.regist_form_code >= 90 %}
+                                    <span class="badge bg-dark" style="font-size:15px">{% my_name 'regist_form' staff.regist_form_code %}</span>
+                                {% else %}
+                                    <span class="badge bg-light" style="font-size:15px">{% my_name 'regist_form' staff.regist_form_code %}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-sm-4" style="text-align:right">
+                            <strong>生年月日</strong>
+                        </div>
+                        <div class="col-sm">
+                            {{ staff.birth_date }}（{{ staff.age }}歳）
+                        </div>
+                    </div>
+
+                    <div class="row mb-3 align-items-top">
+                        <div class="col-sm-4" style="text-align:right">
+                            <strong>住所</strong>
+                        </div>
+                        <div class="col-sm">
+                            〒 {{ staff.postal_code }}<br/>
+                            {{ staff.address1 }}<br/>
+                            {{ staff.address2 }}<br/>
+                            {{ staff.address3 }}
+                        </div>
+                    </div>
+            
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-sm-4" style="text-align:right">
+                            <strong>電話</strong>
+                        </div>
+                        <div class="col-sm">
+                            {{ staff.phone }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-sm-4" style="text-align:right">
+                            <strong>Email</strong>
+                        </div>
+                        <div class="col-sm">
+                            <span class="copy-target">{{ staff.email }}</span>
+                            <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
+                            <span class="copy-message">コピーしました!</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-start">
+                        <a href="{% url 'staff_update' staff.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
+                        <a href="{% url 'staff_delete' staff.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+                        <a href="{% url 'staff_list' %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+                    </div>
+            </div>
+        </div>
+    </div>
+    <!-- 左上 -->
+
+    <!--右上-->
+    <div class="col">
+        <div class="content-box card bg-light mt-2 mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                評価（※未実装のサンプルです）
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col col-sm-5">
+                        <div>総合評価</div>
+                        <h1><strong>4.4</strong></h1>
+                        <div>相対スコア</div>
+                        <h1><strong>67</strong></h1>
+                    </div>
+                    <div class="col col-sm">
+                        <div class="d-flex align-items-center">
+                            <span>5　</span>
+                            <div class="progress mb-1" style="width:150px">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span>4　</span>
+                            <div class="progress mb-1" style="width:150px">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="80"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span>3　</span>
+                            <div class="progress mb-1" style="width:150px">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="60"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span>2　</span>
+                            <div class="progress mb-1" style="width:150px">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="60"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span>1　</span>
+                            <div class="progress mb-1" style="width:150px">
+                                <div class="progress-bar bg-warning" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="60"></div>
+                            </div>
+                        </div>
+                        <div>全12件の評価</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--右上-->
+
+        
+</div><!-- row -->
+
+
+
+<style>
+    .copy-message {
+        display: none;
+        color: green;
+        font-size: 0.8em;
+        margin-left: 5px;
+    }
+    .copy-icon {
+        color: green;
+        font-size: 0.8em;
+        cursor: pointer;
+        margin-left: 5px;
+    }
+</style>
+<script>
+    function copyToClipboard(button) {
+        // ボタンの前の .copy-target を探してテキストを取得
+        const targetText = button.previousElementSibling.innerText;
+        navigator.clipboard.writeText(targetText).then(() => {
+            // コピーが成功したらメッセージを表示
+            const copyMessage = button.nextElementSibling;
+            copyMessage.style.display = "inline";
+    
+            // 2秒後にメッセージを非表示にする
+            setTimeout(() => {
+                copyMessage.style.display = "none";
+            }, 1000);
+        }).catch(err => {
+            console.error("コピーに失敗しました: ", err);
+        });
+    }
+</script>
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        連絡履歴（※未実装のサンプルです）
+        <a href="#" class="btn btn-sm btn-primary me-2">連絡登録</a>
+    </div>
+    <div class="card-body mb-0">
+        <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>分類</th>
+                    <th>対応内容</th>
+                    <th>担当者</th>
+                    <th>日時</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge bg-success">問い合わせ</span></td>
+                    <td><a href="#">開始時期の連絡</a></td>
+                    <td>鈴木</td>
+                    <td>2020/11/12 13:55:00</td>
+                </tr>
+                <tr>
+                    <td><span class="badge bg-success">問い合わせ</span></td>
+                    <td><a href="#">仕事内容の確認</a></td>
+                    <td>鈴木</td>
+                    <td>2020/11/12 13:50:00</td>
+                </tr>
+                <tr>
+                    <td><span class="badge bg-secondary">自動メール配信</span></td>
+                    <td><a href="#">お仕事メール募集のお知らせ</a></td>
+                    <td>admin</td>
+                    <td>2019/11/12 13:50:00</td>
+                </tr>
+                <tr>
+                    <td><span class="badge bg-secondary">自動メール配信</span></td>
+                    <td><a href="#">お仕事メール募集のお知らせ</a></td>
+                    <td>admin</td>
+                    <td>2019/01/01 13:50:00</td>
+                </tr>
+                <tr>
+                    <td><span class="badge bg-info">打ち合わせ</span></td>
+                    <td><a href="#">定期面談</a></td>
+                    <td>清水</td>
+                    <td>2018/10/21 13:50:00</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer d-flex justify-content-center align-items-center">
+        <a href="#">全て表示</a>
+    </div>
+</div>
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        変更履歴（※未実装のサンプルです）
+    </div>
+    <div class="card-body mb-0">
+        <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>Version</th>
+                    <th>変更内容</th>
+                    <th>変更者</th>
+                    <th>変更日時</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>10</td>
+                    <td>電話番号修正</td>
+                    <td>鈴木</td>
+                    <td>2020/11/12 13:55:00</td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td>住所修正</td>
+                    <td>鈴木</td>
+                    <td>2020/11/12 13:50:00</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>削除復活</td>
+                    <td>admin</td>
+                    <td>2019/11/12 13:50:00</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>削除</td>
+                    <td>admin</td>
+                    <td>2019/01/01 13:50:00</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>修正なし</td>
+                    <td>清水</td>
+                    <td>2018/10/21 13:50:00</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer d-flex justify-content-center align-items-center">
+        <a href="#">全て表示</a>
+    </div>
+</div>
+{% endblock %}
+
+

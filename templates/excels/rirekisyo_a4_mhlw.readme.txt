@@ -1,0 +1,15 @@
+https://doda.jp/guide/rireki/template/
+厚生労働省の履歴書テンプレート Excel A4
+rirekisyo_a4_mhlw.xlsx
+
+
+
+1. Excelテンプレートに名前を設定する
+
+Excelを開き、該当のセルや範囲を選択します。
+Excelのメニューで「数式」タブに移動し、「名前の定義」を選択します。
+ダイアログで適切な名前を入力し（例: username, age など）、OKを押します。
+これにより、選択したセルに名前が付与されます。
+
+名前をつけたもの：rirekisyo_a4_mhlw_DJ.xlsx
+

@@ -1,0 +1,10 @@
+
+ｘbootstrap.min.css
+ -> オリジナル
+
+simplex/bootstrap.min.css
+ -> https://bootswatch.com/simplex/からダウンロードしたもの
+
+※ simplexをコピー。ファイル名をかえたら動かない。。。
+※ cssをVSCodeで開いた後に保存はしないこと。保存すると変に書き換わる
+

@@ -1,0 +1,71 @@
+# 最初（忘れているものもあるかも）
+django-admin startproject django_study_base
+cd django_study_base
+python manage.py startapp myapp
+python.exe -m pip install --upgrade pip
+
+# 今回はいらないけど。2.2.5はNG。2.2.4
+pip install mysqlclient
+# インポート/エクスポート
+pip install django-import-export
+# 最終更新ユーザ
+pip install django-currentuser
+# 顔写真
+pip install pillow
+# API処理用？
+pip install requests
+# Excel埋め込み用
+pip install openpyxl
+# PDFフォーム埋め込み用⇒Acrobatで表示されない
+#    pip install pdfrw
+#    pip uninstall pdfrw
+# PDF読み取り化用⇒遅くて無理
+#    pip install pypdf
+#    pip uninstall pypdf
+pip install pymupdf
+
+
+# アップデート確認とアップデート
+pip list --outdated
+pip install --upgrade XXX
+
+# DB作成
+#   staffのformでdropdownを消さないとエラーになる
+#   消してからマイグレーションして戻す必要あり。。。
+python manage.py makemigrations dropdowns
+python manage.py makemigrations useradmin
+python manage.py makemigrations menu
+python manage.py makemigrations parameters
+python manage.py makemigrations staff
+python manage.py makemigrations client
+python manage.py makemigrations 
+python manage.py migrate
+
+# 最初のユーザ作成
+python manage.py createsuperuser
+
+# インポートエクスポート
+python manage.py dumpdata dropdowns --format=json --indent=4 > dropdowns.json
+python manage.py dumpdata menu --format=json --indent=4 > menus.json
+python manage.py dumpdata parameters --format=json --indent=4 > parameters.json
+# python manage.py dumpdata myapp.person --format=json --indent=4 > persons.json
+# python manage.py dumpdata myapp.staff --format=json --indent=4 > staff.json
+# python manage.py dumpdata myapp.client --format=json --indent=4 > client.json
+#   UTF16からUTF8に変更してから取り込む必要あり
+#   全消しした場合には、先にユーザを追加しないと登録できない
+python manage.py loaddata dropdowns.json
+python manage.py loaddata menus.json
+python manage.py loaddata parameters.json
+python manage.py loaddata staff.json
+python manage.py loaddata client.json
+
+# データベースアクセス
+python manage.py dbshell
+
+# テスト実施
+python manage.py test apps.api.tests
+
+# サーバ起動
+python manage.py runserver
+
+# EOF

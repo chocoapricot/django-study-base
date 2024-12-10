@@ -1,0 +1,155 @@
+{% extends 'common/base.html' %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">クライアント基本情報</div>
+    <div class="card-body">
+        <!-- <h5 class="card-title">クライアント修正</h5> -->
+        <!-- <p class="card-text">これはサンプルです.</p> -->
+        <form method="post">
+            {% csrf_token %}
+            {% if form.errors %}
+            <div class="alert alert-dismissible alert-primary">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                {{ form.errors }}
+            </div>
+            {% endif %}
+            
+             <div class="row mb-3 align-items-center">
+                <label for="{{ form.corporate_number.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.corporate_number.label }}
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;"data-bs-toggle="tooltip" data-bs-placement="top" title="てすと。押したときだけ出したい。なんか黒いし"></i>
+                </label>
+                <div class="col-sm-4">
+                    {{ form.corporate_number }}
+                </div>
+                <div class="col-sm">
+                    <button type="button" id="fetch-info-btn" class="btn btn-sm btn-secondary me-2">gBiz</button>
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;"data-bs-toggle="tooltip" data-bs-placement="top" title="経産省のgBizINFO-APIで取得"></i>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.regist_form_client.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.regist_form_client.label }}</label>
+                <div class="col-sm-8">
+                    {{ form.regist_form_client }}
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.name.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.name }}
+                </div>
+            </div>
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.name_furigana.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.name_furigana.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.name_furigana }}
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.postal_code.label }}</label>
+                <div class="col-sm-3">
+                    {{ form.postal_code }}
+                </div>
+                <div class="col-sm">
+                    <button type="button" id="fetch-zipcode-btn" class="btn btn-sm btn-secondary me-2">住所</button>
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;"data-bs-toggle="tooltip" data-bs-placement="top" title="フリーの郵便番号APIで取得"></i>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.address.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.address.label }}</label>
+                <div class="col-sm-10">
+                    {{ form.address }}
+                </div>
+            </div>
+    
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.url.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.url.label }}</label>
+                <div class="col-sm-8">
+                    {{ form.url }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.memo.label }}</label>
+                <div class="col-sm-8">
+                    {{ form.memo }}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
+                <a href="{% url 'client_list' %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $('#fetch-info-btn').on('click', function() {
+        var corporateNumber = $('#id_corporate_number').val();
+        // 13文字チェック
+        if (corporateNumber.length !== 13) {
+            alert("法人番号は13文字で入力してください。");
+            return; // 処理を終了
+        }
+        $.ajax({
+            url: "{% url 'get_company_info' %}",
+            data: {
+                corporate_number: corporateNumber
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    var data = response.data;
+                    $('#id_name').val(data.name);  // 取得した企業名を設定
+                    $('#id_name_furigana').val(data.kana);
+                    $('#id_postal_code').val(data.postal_code);
+                    $('#id_address').val(data.location);
+                    $('#id_url').val(data.company_url);;
+                    $('#id_memo').val(data.business_summary);
+                    // 他のフィールドも同様にデータをセット
+                } else {
+                    alert(response.error);
+                }
+            },
+            error: function() {
+                alert("企業情報の取得に失敗しました。");
+            }
+        });
+    });
+
+    $('#fetch-zipcode-btn').on('click', function() {
+        var zipcode = $('#id_postal_code').val();
+        // 7文字チェック
+        if (zipcode.length !== 7) {
+            alert("郵便番号は7文字で入力してください。");
+            return; // 処理を終了
+        }
+        $.ajax({
+            url: "{% url 'get_zipcode_info' %}",
+            data: {
+                zipcode: zipcode
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    var data = response.data;
+                    $('#id_address').val(data.address1+data.address2+data.address3);
+                    // 他のフィールドも同様にデータをセット
+                } else {
+                    alert(response.error);
+                }
+            },
+            error: function() {
+                alert("郵便番号の取得に失敗しました。");
+            }
+        });
+    });
+
+</script>
+{% endblock %}
+
