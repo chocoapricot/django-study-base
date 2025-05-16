@@ -1,13 +1,12 @@
 # forms.py
 from django import forms
 from django.forms import TextInput
-from apps.system.dropdowns.models import Dropdowns
 from .models import Staff
 
 class StaffForm(forms.ModelForm):
 
     sex = forms.ChoiceField(
-        choices=[(opt.value, opt.name) for opt in Dropdowns.objects.filter(active=True, category='sex').order_by('disp_seq')],
+        choices=[],
         label='性別',  # 日本語ラベル
         required=True,
         #widget=forms.RadioSelect(attrs={'class':'form-check form-check-inline'}),  # ここでラジオボタンを指定(⇒立て並びにしかできない！)
@@ -15,12 +14,24 @@ class StaffForm(forms.ModelForm):
     )
 
     regist_form_code = forms.ChoiceField(
-        choices=[(opt.value, opt.name) for opt in Dropdowns.objects.filter(active=True, category='regist_form').order_by('disp_seq')],
+        choices=[],
         label='登録区分',  # 日本語ラベル
         widget=forms.Select(attrs={'class':'form-select form-select-sm'}) ,
         required=True,
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # ここでのみDropdownsをimport.そうしないとmigrateでエラーになる
+        from apps.system.dropdowns.models import Dropdowns
+        self.fields['sex'].choices = [
+            (opt.value, opt.name)
+            for opt in Dropdowns.objects.filter(active=True, category='sex').order_by('disp_seq')
+        ]
+        self.fields['regist_form_code'].choices = [
+            (opt.value, opt.name)
+            for opt in Dropdowns.objects.filter(active=True, category='regist_form').order_by('disp_seq')
+        ]
     class Meta:
         model = Staff
         fields = ['name_last','name_first','name_kana_last','name_kana_first'

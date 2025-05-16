@@ -1,19 +1,26 @@
 # forms.py
 from django import forms
 from django.forms import TextInput
-from apps.system.dropdowns.models import Dropdowns
 from .models import Client
 from django.core.exceptions import ValidationError
 
 class ClientForm(forms.ModelForm):
 
     regist_form_client = forms.ChoiceField(
-        choices=[(opt.value, opt.name) for opt in Dropdowns.objects.filter(active=True, category='regist_form_client').order_by('disp_seq')],
+        choices=[],
         label='登録区分',  # 日本語ラベル
         widget=forms.Select(attrs={'class':'form-select form-select-sm'}) ,
         required=True,
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # ここでのみDropdownsをimport.そうしないとmigrateでエラーになる
+        from apps.system.dropdowns.models import Dropdowns
+        self.fields['regist_form_client'].choices = [
+            (opt.value, opt.name)
+            for opt in Dropdowns.objects.filter(active=True, category='regist_form_client').order_by('disp_seq')
+        ]
     class Meta:
         model = Client
         fields = ['corporate_number','name','name_furigana',

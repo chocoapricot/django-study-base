@@ -17,7 +17,7 @@ pip install requests
 # Excel埋め込み用
 pip install openpyxl
 # PDFフォーム埋め込み用⇒Acrobatで表示されない
-#    pip install pdfrw
+pip install pdfrw
 #    pip uninstall pdfrw
 # PDF読み取り化用⇒遅くて無理
 #    pip install pypdf
@@ -45,19 +45,18 @@ python manage.py migrate
 python manage.py createsuperuser
 
 # インポートエクスポート
-python manage.py dumpdata dropdowns --format=json --indent=4 > dropdowns.json
-python manage.py dumpdata menu --format=json --indent=4 > menus.json
-python manage.py dumpdata parameters --format=json --indent=4 > parameters.json
-# python manage.py dumpdata myapp.person --format=json --indent=4 > persons.json
-# python manage.py dumpdata myapp.staff --format=json --indent=4 > staff.json
-# python manage.py dumpdata myapp.client --format=json --indent=4 > client.json
+python manage.py dumpdata dropdowns --format=json --indent=4 > sample_data/dropdowns.json
+python manage.py dumpdata menu --format=json --indent=4 > sample_data/menus.json
+python manage.py dumpdata parameters --format=json --indent=4 > sample_data/parameters.json
+python manage.py dumpdata staff --format=json --indent=4 > sample_data/staff.json
+python manage.py dumpdata client --format=json --indent=4 > sample_data/client.json
 #   UTF16からUTF8に変更してから取り込む必要あり
 #   全消しした場合には、先にユーザを追加しないと登録できない
-python manage.py loaddata dropdowns.json
-python manage.py loaddata menus.json
-python manage.py loaddata parameters.json
-python manage.py loaddata staff.json
-python manage.py loaddata client.json
+python manage.py loaddata sample_data/dropdowns.json
+python manage.py loaddata sample_data/menus.json
+python manage.py loaddata sample_data/parameters.json
+python manage.py loaddata sample_data/staff.json
+python manage.py loaddata sample_data/client.json
 
 # データベースアクセス
 python manage.py dbshell

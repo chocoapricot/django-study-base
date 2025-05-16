@@ -1,0 +1,104 @@
+[
+{
+    "model": "parameters.parameter",
+    "pk": 1,
+    "fields": {
+        "created_at": "2024-10-25T13:21:50.942Z",
+        "created_by": 1,
+        "updated_at": "2024-10-25T14:23:03.046Z",
+        "updated_by": 1,
+        "category": "system",
+        "key": "SYSTEM_NAME",
+        "value": "django study base",
+        "default_value": "SYSTEM_NAME",
+        "note": "このシステムの名称を登録。HTMLのタイトルにも使われる。",
+        "disp_seq": 1,
+        "active": true
+    }
+},
+{
+    "model": "parameters.parameter",
+    "pk": 2,
+    "fields": {
+        "created_at": "2024-11-07T02:04:47.584Z",
+        "created_by": 1,
+        "updated_at": "2024-11-07T02:04:47.585Z",
+        "updated_by": 1,
+        "category": "staff",
+        "key": "STAFF_FACE_PATH",
+        "value": "/data/staff/faceimg",
+        "default_value": "/data/staff/faceimg",
+        "note": "顔写真を保存するOS上のPATH",
+        "disp_seq": 2,
+        "active": true
+    }
+},
+{
+    "model": "parameters.parameter",
+    "pk": 3,
+    "fields": {
+        "created_at": "2024-11-13T06:16:32.844Z",
+        "created_by": 1,
+        "updated_at": "2024-11-14T11:50:19.552Z",
+        "updated_by": 1,
+        "category": "api",
+        "key": "GBIZ_API_PATH",
+        "value": "https://info.gbiz.go.jp/hojin/v1/hojin/",
+        "default_value": "https://info.gbiz.go.jp/hojin/v1/hojin/",
+        "note": "GBIZ企業情報のAPI",
+        "disp_seq": 3,
+        "active": true
+    }
+},
+{
+    "model": "parameters.parameter",
+    "pk": 4,
+    "fields": {
+        "created_at": "2024-11-13T06:17:42.423Z",
+        "created_by": 1,
+        "updated_at": "2024-11-14T11:50:27.537Z",
+        "updated_by": 1,
+        "category": "api",
+        "key": "GBIZ_API_TOKEN",
+        "value": "riGQUpnKTLCx8a9aCeyw7Gp4Hq3SJ2zs",
+        "default_value": "na",
+        "note": "GBIZ企業情報のトークン。申し込み必要",
+        "disp_seq": 4,
+        "active": true
+    }
+},
+{
+    "model": "parameters.parameter",
+    "pk": 5,
+    "fields": {
+        "created_at": "2024-11-14T11:50:06.713Z",
+        "created_by": 1,
+        "updated_at": "2024-11-14T11:50:06.713Z",
+        "updated_by": 1,
+        "category": "api",
+        "key": "ZIPCODE_API_PATH",
+        "value": "https://zipcloud.ibsnet.co.jp/api/search?zipcode=",
+        "default_value": "https://zipcloud.ibsnet.co.jp/api/search?zipcode=",
+        "note": "郵便番号取得",
+        "disp_seq": 0,
+        "active": true
+    }
+},
+{
+    "model": "parameters.parameter",
+    "pk": 6,
+    "fields": {
+        "created_at": "2024-11-18T22:44:34.537Z",
+        "created_by": 1,
+        "updated_at": "2024-11-19T14:42:15.361Z",
+        "updated_by": 1,
+        "category": "system",
+        "key": "GLOBAL_CSS_THEME",
+        "value": "simplex",
+        "default_value": "simplex",
+        "note": "スタイル指定。simplex／pulse／journal／zephyr／cerulean",
+        "disp_seq": 0,
+        "active": true
+    }
+}
+]
