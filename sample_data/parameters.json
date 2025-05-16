@@ -60,7 +60,7 @@
         "updated_by": 1,
         "category": "api",
         "key": "GBIZ_API_TOKEN",
-        "value": "riGQUpnKTLCx8a9aCeyw7Gp4Hq3SJ2zs",
+        "value": "",
         "default_value": "na",
         "note": "GBIZ企業情報のトークン。申し込み必要",
         "disp_seq": 4,
