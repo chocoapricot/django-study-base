@@ -30,8 +30,6 @@ pip list --outdated
 pip install --upgrade XXX
 
 # DB作成
-#   staffのformでdropdownを消さないとエラーになる
-#   消してからマイグレーションして戻す必要あり。。。
 python manage.py makemigrations dropdowns
 python manage.py makemigrations useradmin
 python manage.py makemigrations menu
