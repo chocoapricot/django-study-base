@@ -29,7 +29,13 @@
         <table class="table table-striped table-hover me-2 mt-2" style="border-top: 1px solid #ddd;">
             <thead>
                 <tr>
-                    <th>法人番号</th>
+                    <th>
+                        <a href="?sort={% if request.GET.sort == 'corporate_number' %}-corporate_number{% else %}corporate_number{% endif %}"
+                           class="no-link-style">
+                            法人番号
+                            {% if request.GET.sort == 'corporate_number' %}↓{% elif request.GET.sort == '-corporate_number' %}↑{% endif %}
+                        </a>
+                    </th>
                     <th>会社名</th>
                     <th>住所</th>
                     <th>登録区分</th>

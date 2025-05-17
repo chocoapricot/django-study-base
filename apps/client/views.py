@@ -11,23 +11,28 @@ from .forms import ClientForm
 logger = logging.getLogger('client')
 
 def client_list(request):
-    query = request.GET.get('q')  # 検索キーワードを取得
+    sort = request.GET.get('sort', 'corporate_number')
+    query = request.GET.get('q', '').strip()
+    clients = Client.objects.all()
     if query:
-        query = query.strip()
-        clients = Client.objects.filter(
+        clients = clients.filter(
             Q(name__icontains=query)
-            |Q(name_furigana__icontains=query)
-            |Q(address__icontains=query)
-            |Q(memo__icontains=query)
-            )
-    else:
-        query = ''
-        clients = Client.objects.all()  # 検索キーワードがなければ全件取得
-    paginator = Paginator(clients, 10)  # 1ページあたり10件表示
-    page_number = request.GET.get('page')  # URLからページ番号を取得
-    clients_pages = paginator.get_page(page_number)  # ページオブジェクトを取得
-
-    return render(request, 'client/client_list.html', {'clients': clients_pages, 'query': query}) # 検索条件再表示
+            | Q(name_furigana__icontains=query)
+            | Q(address__icontains=query)
+            | Q(memo__icontains=query)
+        )
+    # ソート可能なフィールドを追加
+    sortable_fields = [
+        'corporate_number', '-corporate_number',
+        'name', '-name',
+        'address', '-address',
+    ]
+    if sort in sortable_fields:
+        clients = clients.order_by(sort)
+    paginator = Paginator(clients, 10)
+    page_number = request.GET.get('page')
+    clients_pages = paginator.get_page(page_number)
+    return render(request, 'client/client_list.html', {'clients': clients_pages, 'query': query})
 
 def client_create(request):
     if request.method == 'POST':
