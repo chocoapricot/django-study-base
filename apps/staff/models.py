@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import date
 
 from ..common.models import MyModel
 
@@ -10,7 +11,7 @@ class Staff(MyModel):
     name = models.TextField('名前',blank=True, null=True)
     birth_date = models.DateField('生年月日',blank=True, null=True)
     sex = models.IntegerField('性別',blank=True, null=True)
-    age = models.IntegerField('年齢')
+    age = models.PositiveIntegerField('年齢', default=0)
     postal_code = models.CharField('郵便番号',blank=True, null=True,max_length=7)
     address_kana = models.TextField('住所カナ',blank=True, null=True)
     address1 = models.TextField('住所１',blank=True, null=True)
@@ -27,6 +28,12 @@ class Staff(MyModel):
     def save(self, *args, **kwargs):
         # 姓と名を結合して full_name に保存
         self.name = f"{self.name_last}{self.name_first}"
+        # 年齢を計算して保存
+        if self.birth_date:
+            today = date.today()
+            self.age = today.year - self.birth_date.year - (
+                (today.month, today.day) < (self.birth_date.month, self.birth_date.day)
+            )
         super().save(*args, **kwargs)  # 親クラスの save を呼び出す
 
     def __str__(self):

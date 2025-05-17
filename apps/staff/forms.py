@@ -34,9 +34,12 @@ class StaffForm(forms.ModelForm):
         ]
     class Meta:
         model = Staff
-        fields = ['name_last','name_first','name_kana_last','name_kana_first'
-                  ,'birth_date','sex','age'
-                  ,'postal_code','address1','address2','address3', 'phone', 'email', 'regist_form_code']
+        fields = [
+            'name_last','name_first','name_kana_last','name_kana_first',
+            'birth_date','sex',
+            # 'age', ← ここは除外
+            'postal_code','address1','address2','address3', 'phone', 'email', 'regist_form_code'
+        ]
         widgets = {
             'name_last': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'name_first': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
@@ -44,7 +47,7 @@ class StaffForm(forms.ModelForm):
             'name_kana_first': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'birth_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             #'sex': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-            'age': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            #'age': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'postal_code': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'address1': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'address2': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),

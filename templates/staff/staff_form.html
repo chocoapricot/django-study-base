@@ -49,9 +49,8 @@
                 <div class="col-sm-4">
                     {{ form.birth_date }}
                 </div>
-                <label for="{{ form.age.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.age.label }}</label>
-                <div class="col-sm-3">
-                    {{ form.age }}
+                <div class="col-sm-6 align-self-center">
+                    今日時点で<span id="age-display"></span>歳
                 </div>
             </div>
 
@@ -147,6 +146,29 @@
             }
         });
     });
+
+    function calcAge(birth) {
+        if (!birth) return '';
+        const today = new Date();
+        const b = new Date(birth);
+        let age = today.getFullYear() - b.getFullYear();
+        if (
+            today.getMonth() < b.getMonth() ||
+            (today.getMonth() === b.getMonth() && today.getDate() < b.getDate())
+        ) {
+            age--;
+        }
+        return age;
+    }
+    const birthInput = document.getElementById("id_birth_date");
+    const ageDisplay = document.getElementById("age-display");
+    function updateAge() {
+        ageDisplay.textContent = calcAge(birthInput.value);
+    }
+    if (birthInput) {
+        updateAge();
+        birthInput.addEventListener("change", updateAge);
+    }
 </script>
 {% endblock %}
 
