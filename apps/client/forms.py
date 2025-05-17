@@ -27,10 +27,11 @@ class ClientForm(forms.ModelForm):
                   'postal_code','address',  'url', 'memo', 'regist_form_client']
         widgets = {
             'corporate_number': forms.TextInput(attrs={'class': 'form-control form-control-sm',
-                'pattern': '[0-9]*', 'inputmode': 'numeric', 'maxlength': '13', 'style': 'ime-mode:disabled;', 'autocomplete': 'off'}),
+                'pattern': '[0-9]{13}', 'inputmode': 'numeric', 'maxlength': '13', 'style': 'ime-mode:disabled;', 'autocomplete': 'off'}),
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'name_furigana': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'postal_code': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'postal_code': forms.TextInput(attrs={'class': 'form-control form-control-sm'
+                ,'pattern': '[0-9]{7}', 'inputmode': 'numeric', 'minlength': '7', 'maxlength': '7', 'style': 'ime-mode:disabled;', 'autocomplete': 'off'}),
             'address': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             # 'phone': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             # 'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),

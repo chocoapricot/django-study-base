@@ -17,7 +17,7 @@
             
              <div class="row mb-3 align-items-center">
                 <label for="{{ form.corporate_number.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.corporate_number.label }}
-                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;"data-bs-toggle="tooltip" data-bs-placement="top" title="半角数字13桁"></i>
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;"data-bs-toggle="tooltip" data-bs-placement="top" title="半角数字13桁ハイフンなし"></i>
                 </label>
                 <div class="col-sm-4">
                     {{ form.corporate_number }}
@@ -49,7 +49,9 @@
             </div>
 
             <div class="row align-items-center">
-                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.postal_code.label }}</label>
+                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.postal_code.label }}
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;"data-bs-toggle="tooltip" data-bs-placement="top" title="半角数字7桁ハイフンなし"></i>
+                </label>
                 <div class="col-sm-3">
                     {{ form.postal_code }}
                 </div>
