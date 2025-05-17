@@ -36,8 +36,21 @@
                             {% if request.GET.sort == 'corporate_number' %}↓{% elif request.GET.sort == '-corporate_number' %}↑{% endif %}
                         </a>
                     </th>
-                    <th>会社名</th>
-                    <th>住所</th>
+                    <th>
+                        <a href="?sort={% if request.GET.sort == 'name' %}-name{% else %}name{% endif %}"
+                           class="no-link-style">
+                            会社名
+                            {% if request.GET.sort == 'name' %}↓{% elif request.GET.sort == '-name' %}↑{% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="?sort={% if request.GET.sort == 'address' %}-address{% else %}address{% endif %}"
+                           class="no-link-style">
+                            住所
+                            {% if request.GET.sort == 'address' %}↓{% elif request.GET.sort == '-address' %}↑{% endif %}
+                        </a>
+                        
+                    </th>
                     <th>登録区分</th>
                     <th>操作</th>
                 </tr>
