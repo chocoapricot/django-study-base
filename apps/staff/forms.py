@@ -48,7 +48,10 @@ class StaffForm(forms.ModelForm):
             'birth_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             #'sex': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             #'age': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
-            'postal_code': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'postal_code': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'pattern': '[0-9]*', 'inputmode': 'numeric', 'minlength': '7', 'maxlength': '7', 'style': 'ime-mode:disabled;', 'autocomplete': 'off'
+            }),
             'address1': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'address2': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'address3': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
