@@ -26,7 +26,8 @@ class ClientForm(forms.ModelForm):
         fields = ['corporate_number','name','name_furigana',
                   'postal_code','address',  'url', 'memo', 'regist_form_client']
         widgets = {
-            'corporate_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'corporate_number': forms.TextInput(attrs={'class': 'form-control form-control-sm',
+                'pattern': '[0-9]*', 'inputmode': 'numeric', 'maxlength': '13', 'style': 'ime-mode:disabled;', 'autocomplete': 'off'}),
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'name_furigana': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'postal_code': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
