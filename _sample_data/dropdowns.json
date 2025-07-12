@@ -178,5 +178,65 @@
         "disp_seq": 20,
         "active": true
     }
+},
+{
+    "model": "dropdowns.dropdowns",
+    "pk": 13,
+    "fields": {
+        "created_at": "2025-07-12T15:54:13.431Z",
+        "created_by": 1,
+        "updated_at": "2025-07-12T15:56:57.202Z",
+        "updated_by": 1,
+        "category": "contact_type",
+        "name": "問い合わせ",
+        "value": "10",
+        "disp_seq": 10,
+        "active": true
+    }
+},
+{
+    "model": "dropdowns.dropdowns",
+    "pk": 14,
+    "fields": {
+        "created_at": "2025-07-12T15:54:34.607Z",
+        "created_by": 1,
+        "updated_at": "2025-07-12T15:54:34.607Z",
+        "updated_by": 1,
+        "category": "contact_type",
+        "name": "打ち合わせ",
+        "value": "20",
+        "disp_seq": 20,
+        "active": true
+    }
+},
+{
+    "model": "dropdowns.dropdowns",
+    "pk": 15,
+    "fields": {
+        "created_at": "2025-07-12T15:57:30.705Z",
+        "created_by": 1,
+        "updated_at": "2025-07-12T16:00:14.419Z",
+        "updated_by": 1,
+        "category": "contact_type",
+        "name": "メール配信",
+        "value": "50",
+        "disp_seq": 50,
+        "active": true
+    }
+},
+{
+    "model": "dropdowns.dropdowns",
+    "pk": 16,
+    "fields": {
+        "created_at": "2025-07-12T16:00:55.130Z",
+        "created_by": 1,
+        "updated_at": "2025-07-12T16:00:55.130Z",
+        "updated_by": 1,
+        "category": "contact_type",
+        "name": "クレーム",
+        "value": "40",
+        "disp_seq": 40,
+        "active": true
+    }
 }
 ]

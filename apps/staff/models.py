@@ -38,3 +38,24 @@ class Staff(MyModel):
 
     def __str__(self):
         return self.name_last + " " + self.name_first
+
+
+from apps.common.models import MyModel
+
+# スタッフ連絡履歴モデル
+
+class StaffContacted(MyModel):
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='contacted_histories', verbose_name='スタッフ')
+    contacted_at = models.DateTimeField('連絡日時', auto_now_add=True)
+    content = models.CharField('対応内容', max_length=255, blank=False, null=False)
+    detail = models.TextField('対応詳細', blank=True, null=True)
+    contact_type = models.IntegerField('連絡種別', blank=True, null=True)
+
+    class Meta:
+        db_table = 'apps_staff_contacted'
+        verbose_name = 'スタッフ連絡履歴'
+        verbose_name_plural = 'スタッフ連絡履歴'
+        ordering = ['-contacted_at']
+
+    def __str__(self):
+        return f"{self.staff} {self.contacted_at:%Y-%m-%d %H:%M} {self.content[:20]}"

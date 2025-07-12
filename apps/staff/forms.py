@@ -1,7 +1,31 @@
 # forms.py
 from django import forms
 from django.forms import TextInput
-from .models import Staff
+from .models import Staff, StaffContacted
+# スタッフ連絡履歴フォーム
+class StaffContactedForm(forms.ModelForm):
+    contact_type = forms.ChoiceField(
+        choices=[],
+        label='連絡種別',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from apps.system.dropdowns.models import Dropdowns
+        self.fields['contact_type'].choices = [
+            (opt.value, opt.name)
+            for opt in Dropdowns.objects.filter(active=True, category='contact_type').order_by('disp_seq')
+        ]
+
+    class Meta:
+        model = StaffContacted
+        fields = ['contact_type', 'content', 'detail']
+        widgets = {
+            'content': forms.TextInput(attrs={'class': 'form-control'}),
+            'detail': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
 
 class StaffForm(forms.ModelForm):
 
