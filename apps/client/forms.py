@@ -40,9 +40,29 @@ class ClientForm(forms.ModelForm):
             # 'regist_form_code': forms.Select(attrs={'class': 'form-control form-control-sm form-select-sm'}),
         }
 
-    # def clean_corporate_number(self):
-    #     corporate_number = self.cleaned_data.get('corporate_number')
-    #     print(forms.ValidationError)
-    #     if Client.objects.filter(corporate_number=corporate_number).exists():  # すでに存在するか確認
-    #         raise ValidationError("この法人番号はすでに登録されています。")
-    #     return corporate_number
+
+# クライアント連絡履歴フォーム
+from .models import ClientContacted
+class ClientContactedForm(forms.ModelForm):
+    contact_type = forms.ChoiceField(
+        choices=[],
+        label='連絡種別',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from apps.system.dropdowns.models import Dropdowns
+        self.fields['contact_type'].choices = [
+            (opt.value, opt.name)
+            for opt in Dropdowns.objects.filter(active=True, category='contact_type').order_by('disp_seq')
+        ]
+
+    class Meta:
+        model = ClientContacted
+        fields = ['contact_type', 'content', 'detail']
+        widgets = {
+            'content': forms.TextInput(attrs={'class': 'form-control'}),
+            'detail': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
