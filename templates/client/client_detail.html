@@ -81,9 +81,9 @@
             </div>
 
             <div class="d-flex justify-content-start">
-                <a href="{% url 'client_update' client.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
-                <a href="{% url 'client_delete' client.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
-                <a href="{% url 'client_list' %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+                <a href="{% url 'client:client_update' client.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
+                <a href="{% url 'client:client_delete' client.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+                <a href="{% url 'client:client_list' %}" class="btn btn-sm btn-secondary me-2">戻る</a>
             </div>
     </div>
 </div>
@@ -121,57 +121,56 @@
 </script>
 
 
+
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        連絡履歴（※未実装のサンプルです）
-        <a href="#" class="btn btn-sm btn-primary me-2">連絡登録</a>
+        クライアント連絡履歴
+        <a href="{% url 'client:client_contacted_create' client.id %}" class="btn btn-sm btn-primary">連絡登録</a>
     </div>
-    <div class="card-body mb-0">
+    <div class="card-body mb-0" style="margin-bottom: 2rem;">
         <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
             <thead>
                 <tr>
-                    <th>分類</th>
+                    <th>連絡種別</th>
                     <th>対応内容</th>
-                    <th>担当者</th>
                     <th>日時</th>
                 </tr>
             </thead>
             <tbody>
+                {% for contacted in client.contacted_histories.all|slice:":5" %}
                 <tr>
-                    <td><span class="badge bg-success">問い合わせ</span></td>
-                    <td><a href="#">開始時期の連絡</a></td>
-                    <td>鈴木</td>
-                    <td>2020/11/12 13:55:00</td>
+                    <td>
+                        {% if contacted.contact_type %}
+                            {% if contacted.contact_type < 10 %}
+                                <span class="badge bg-primary">{% my_name 'contact_type' contacted.contact_type %}</span>
+                            {% elif contacted.contact_type < 20 %}
+                                <span class="badge bg-success">{% my_name 'contact_type' contacted.contact_type %}</span>
+                            {% elif contacted.contact_type < 30 %}
+                                <span class="badge bg-info">{% my_name 'contact_type' contacted.contact_type %}</span>
+                            {% elif contacted.contact_type < 40 %}
+                                <span class="badge bg-warning">{% my_name 'contact_type' contacted.contact_type %}</span>
+                            {% elif contacted.contact_type < 50 %}
+                                <span class="badge bg-danger">{% my_name 'contact_type' contacted.contact_type %}</span>
+                            {% elif contacted.contact_type >= 90 %}
+                                <span class="badge bg-dark">{% my_name 'contact_type' contacted.contact_type %}</span>
+                            {% else %}
+                                <span class="badge bg-light">{% my_name 'contact_type' contacted.contact_type %}</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td><a href="{% url 'client:client_contacted_update' contacted.pk %}">{{ contacted.content }}</a></td>
+                    <td>{{ contacted.contacted_at|date:'Y/m/d H:i:s' }}</td>
                 </tr>
-                <tr>
-                    <td><span class="badge bg-success">問い合わせ</span></td>
-                    <td><a href="#">仕事内容の確認</a></td>
-                    <td>鈴木</td>
-                    <td>2020/11/12 13:50:00</td>
-                </tr>
-                <tr>
-                    <td><span class="badge bg-secondary">自動メール配信</span></td>
-                    <td><a href="#">締め処理のお知らせ</a></td>
-                    <td>admin</td>
-                    <td>2019/11/12 13:50:00</td>
-                </tr>
-                <tr>
-                    <td><span class="badge bg-secondary">自動メール配信</span></td>
-                    <td><a href="#">年末年始のお知らせ</a></td>
-                    <td>admin</td>
-                    <td>2018/12/15 13:50:00</td>
-                </tr>
-                <tr>
-                    <td><span class="badge bg-info">打ち合わせ</span></td>
-                    <td><a href="#">状況確認</a></td>
-                    <td>清水</td>
-                    <td>2018/10/21 13:50:00</td>
-                </tr>
+                {% empty %}
+                <tr><td colspan="3">履歴がありません。</td></tr>
+                {% endfor %}
             </tbody>
         </table>
-    </div>
-    <div class="card-footer d-flex justify-content-center align-items-center">
-        <a href="#">全て表示</a>
+        {% if client.contacted_histories.count > 5 %}
+        <div class="text-center">
+            <a href="{% url 'client:client_contacted_list' client.id %}" class="btn btn-link">全て表示</a>
+        </div>
+        {% endif %}
     </div>
 </div>
 

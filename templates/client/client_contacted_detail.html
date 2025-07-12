@@ -1,0 +1,14 @@
+{% extends 'common/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>クライアント連絡履歴 詳細</h2>
+  <table class="table table-bordered">
+    <tr><th>クライアント</th><td>{{ client.name }}</td></tr>
+    <tr><th>連絡日時</th><td>{{ contacted.contacted_at|date:'Y/m/d H:i:s' }}</td></tr>
+    <tr><th>連絡種別</th><td>{{ contacted.get_contact_type_display|default:contacted.contact_type }}</td></tr>
+    <tr><th>対応内容</th><td>{{ contacted.content }}</td></tr>
+    <tr><th>対応詳細</th><td>{{ contacted.detail|linebreaksbr }}</td></tr>
+  </table>
+  <a href="{% url 'client:client_detail' client.id %}" class="btn btn-secondary">クライアント詳細へ戻る</a>
+</div>
+{% endblock %}

@@ -1,10 +1,15 @@
+def client_contacted_detail(request, pk):
+    contacted = get_object_or_404(ClientContacted, pk=pk)
+    client = contacted.client
+    return render(request, 'client/client_contacted_detail.html', {'contacted': contacted, 'client': client})
 import logging
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.http import JsonResponse
-from .models import Client
-from .forms import ClientForm
+# クライアント連絡履歴用インポート
+from .models import Client, ClientContacted
+from .forms import ClientForm, ClientContactedForm
 # from apps.api.helpers import fetch_company_info  # API呼び出し関数をインポート
 
 # ロガーの作成
@@ -46,14 +51,56 @@ def client_create(request):
 
 def client_detail(request, pk):
     client = get_object_or_404(Client, pk=pk)
-    # if request.method == 'POST':
-    #     form = ClientForm(request.POST, instance=client)
-    #     if form.is_valid():
-    #         form.save()
-    #         return redirect('client_list')
-    # else:
     form = ClientForm(instance=client)
-    return render(request, 'client/client_detail.html', {'client': client})
+    # 連絡履歴（最新5件）
+    contacted_list = client.contacted_histories.all()[:5]
+    return render(request, 'client/client_detail.html', {
+        'client': client,
+        'form': form,
+        'contacted_list': contacted_list,
+    })
+
+# クライアント連絡履歴 登録
+def client_contacted_create(request, client_pk):
+    client = get_object_or_404(Client, pk=client_pk)
+    if request.method == 'POST':
+        form = ClientContactedForm(request.POST)
+        if form.is_valid():
+            contacted = form.save(commit=False)
+            contacted.client = client
+            contacted.save()
+            return redirect('client:client_detail', pk=client.pk)
+    else:
+        form = ClientContactedForm()
+    return render(request, 'client/client_contacted_form.html', {'form': form, 'client': client})
+
+# クライアント連絡履歴 一覧
+def client_contacted_list(request, client_pk):
+    client = get_object_or_404(Client, pk=client_pk)
+    contacted_list = client.contacted_histories.all()
+    return render(request, 'client/client_contacted_list.html', {'client': client, 'contacted_list': contacted_list})
+
+# クライアント連絡履歴 編集
+def client_contacted_update(request, pk):
+    contacted = get_object_or_404(ClientContacted, pk=pk)
+    client = contacted.client
+    if request.method == 'POST':
+        form = ClientContactedForm(request.POST, instance=contacted)
+        if form.is_valid():
+            form.save()
+            return redirect('client:client_detail', pk=client.pk)
+    else:
+        form = ClientContactedForm(instance=contacted)
+    return render(request, 'client/client_contacted_form.html', {'form': form, 'client': client, 'contacted': contacted})
+
+# クライアント連絡履歴 削除
+def client_contacted_delete(request, pk):
+    contacted = get_object_or_404(ClientContacted, pk=pk)
+    client = contacted.client
+    if request.method == 'POST':
+        contacted.delete()
+        return redirect('client:client_detail', pk=client.pk)
+    return render(request, 'client/client_contacted_confirm_delete.html', {'contacted': contacted, 'client': client})
 
 def client_update(request, pk):
     client = get_object_or_404(Client, pk=pk)
