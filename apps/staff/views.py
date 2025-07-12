@@ -1,3 +1,11 @@
+# 連絡履歴 削除
+def staff_contacted_delete(request, pk):
+    contacted = get_object_or_404(StaffContacted, pk=pk)
+    staff = contacted.staff
+    if request.method == 'POST':
+        contacted.delete()
+        return redirect('staff_detail', pk=staff.pk)
+    return render(request, 'staff/staff_contacted_confirm_delete.html', {'contacted': contacted, 'staff': staff})
 import os
 import logging
 from PIL import Image, ImageDraw, ImageFont
@@ -5,8 +13,8 @@ from django.conf import settings
 from django.http import HttpResponse, FileResponse
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Staff
-from .forms import StaffForm
+from .models import Staff, StaffContacted
+from .forms import StaffForm, StaffContactedForm
 from apps.system.parameters.utils import my_parameter
 from django.db.models import Q
 from apps.system.dropdowns.models import Dropdowns
@@ -52,14 +60,46 @@ def staff_create(request):
 
 def staff_detail(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
-    # if request.method == 'POST':
-    #     form = StaffForm(request.POST, instance=staff)
-    #     if form.is_valid():
-    #         form.save()
-    #         return redirect('staff_list')
-    # else:
-    form = StaffForm(instance=staff)
-    return render(request, 'staff/staff_detail.html', {'staff': staff})
+    # 連絡履歴（最新5件）
+    contacted_list = staff.contacted_histories.all()[:5]
+    return render(request, 'staff/staff_detail.html', {
+        'staff': staff,
+        'contacted_list': contacted_list,
+    })
+
+
+# 連絡履歴 登録
+def staff_contacted_create(request, staff_pk):
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    if request.method == 'POST':
+        form = StaffContactedForm(request.POST)
+        if form.is_valid():
+            contacted = form.save(commit=False)
+            contacted.staff = staff
+            contacted.save()
+            return redirect('staff_detail', pk=staff.pk)
+    else:
+        form = StaffContactedForm()
+    return render(request, 'staff/staff_contacted_form.html', {'form': form, 'staff': staff})
+
+# 連絡履歴 一覧
+def staff_contacted_list(request, staff_pk):
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    contacted_list = staff.contacted_histories.all()
+    return render(request, 'staff/staff_contacted_list.html', {'staff': staff, 'contacted_list': contacted_list})
+
+# 連絡履歴 編集
+def staff_contacted_update(request, pk):
+    contacted = get_object_or_404(StaffContacted, pk=pk)
+    staff = contacted.staff
+    if request.method == 'POST':
+        form = StaffContactedForm(request.POST, instance=contacted)
+        if form.is_valid():
+            form.save()
+            return redirect('staff_detail', pk=staff.pk)
+    else:
+        form = StaffContactedForm(instance=contacted)
+    return render(request, 'staff/staff_contacted_form.html', {'form': form, 'staff': staff, 'contacted': contacted})
 
 def staff_update(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
