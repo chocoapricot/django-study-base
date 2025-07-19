@@ -33,9 +33,6 @@
 
             <div class="d-flex justify-content-start">
                 <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
-                {% if contacted %}
-                <a href="{% url 'staff_contacted_delete' contacted.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
-                {% endif %}
                 <a href="{% url 'staff_detail' staff.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
             </div>
         </form>

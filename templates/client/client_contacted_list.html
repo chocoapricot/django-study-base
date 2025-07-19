@@ -12,6 +12,7 @@
                 <tr>
                     <th>連絡種別</th>
                     <th>対応内容</th>
+                    <th>対応者</th>
                     <th>日時</th>
                 </tr>
             </thead>
@@ -37,7 +38,14 @@
                             {% endif %}
                         {% endif %}
                     </td>
-                    <td><a href="{% url 'client:client_contacted_update' c.pk %}">{{ c.content|truncatechars:20 }}</a></td>
+                    <td><a href="{% url 'client:client_contacted_detail' c.pk %}">{{ c.content|truncatechars:20 }}</a></td>
+                    <td>
+                        {% if c.created_by.last_name or c.created_by.first_name %}
+                            {{ c.created_by.last_name }} {{ c.created_by.first_name }}
+                        {% else %}
+                            {{ c.created_by.username }}
+                        {% endif %}
+                    </td>
                     <td>{{ c.contacted_at|date:'Y/m/d H:i:s' }}</td>
                 </tr>
                 {% empty %}

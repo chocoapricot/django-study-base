@@ -81,8 +81,12 @@
             </div>
 
             <div class="d-flex justify-content-start">
+                {% if perms.client.change_client %}
                 <a href="{% url 'client:client_update' client.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
+                {% endif %}
+                {% if perms.client.delete_client %}
                 <a href="{% url 'client:client_delete' client.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+                {% endif %}
                 <a href="{% url 'client:client_list' %}" class="btn btn-sm btn-secondary me-2">戻る</a>
             </div>
     </div>
@@ -125,7 +129,9 @@
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         クライアント連絡履歴
+        {% if perms.client.add_clientcontacted %}
         <a href="{% url 'client:client_contacted_create' client.id %}" class="btn btn-sm btn-primary">連絡登録</a>
+        {% endif %}
     </div>
     <div class="card-body mb-0" style="margin-bottom: 2rem;">
         <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
@@ -133,6 +139,7 @@
                 <tr>
                     <th>連絡種別</th>
                     <th>対応内容</th>
+                    <th>対応者</th>
                     <th>日時</th>
                 </tr>
             </thead>
@@ -158,7 +165,14 @@
                             {% endif %}
                         {% endif %}
                     </td>
-                    <td><a href="{% url 'client:client_contacted_update' contacted.pk %}">{{ contacted.content }}</a></td>
+                    <td><a href="{% url 'client:client_contacted_detail' contacted.pk %}">{{ contacted.content }}</a></td>
+                    <td>
+                        {% if contacted.created_by.last_name or contacted.created_by.first_name %}
+                            {{ contacted.created_by.last_name }} {{ contacted.created_by.first_name }}
+                        {% else %}
+                            {{ contacted.created_by.username }}
+                        {% endif %}
+                    </td>
                     <td>{{ contacted.contacted_at|date:'Y/m/d H:i:s' }}</td>
                 </tr>
                 {% empty %}

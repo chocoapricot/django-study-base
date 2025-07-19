@@ -1,14 +1,72 @@
 {% extends 'common/base.html' %}
+{% load my_dropdown_tags %}
 {% block content %}
-<div class="container mt-4">
-  <h2>クライアント連絡履歴 詳細</h2>
-  <table class="table table-bordered">
-    <tr><th>クライアント</th><td>{{ client.name }}</td></tr>
-    <tr><th>連絡日時</th><td>{{ contacted.contacted_at|date:'Y/m/d H:i:s' }}</td></tr>
-    <tr><th>連絡種別</th><td>{{ contacted.get_contact_type_display|default:contacted.contact_type }}</td></tr>
-    <tr><th>対応内容</th><td>{{ contacted.content }}</td></tr>
-    <tr><th>対応詳細</th><td>{{ contacted.detail|linebreaksbr }}</td></tr>
-  </table>
-  <a href="{% url 'client:client_detail' client.id %}" class="btn btn-secondary">クライアント詳細へ戻る</a>
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        クライアント連絡履歴 詳細
+    </div>
+    <div class="card-body">
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right"><strong>クライアント</strong></div>
+            <div class="col-sm-10">{{ client.name }}</div>
+        </div>
+        <!-- 対応者・日時は最後にまとめて表示 -->
+        </div>
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right"><strong>連絡種別</strong></div>
+            <div class="col-sm-10">
+                {% if contacted.contact_type %}
+                    {% if contacted.contact_type < 10 %}
+                        <span class="badge bg-primary">{% my_name 'contact_type' contacted.contact_type %}</span>
+                    {% elif contacted.contact_type < 20 %}
+                        <span class="badge bg-success">{% my_name 'contact_type' contacted.contact_type %}</span>
+                    {% elif contacted.contact_type < 30 %}
+                        <span class="badge bg-info">{% my_name 'contact_type' contacted.contact_type %}</span>
+                    {% elif contacted.contact_type < 40 %}
+                        <span class="badge bg-warning">{% my_name 'contact_type' contacted.contact_type %}</span>
+                    {% elif contacted.contact_type < 50 %}
+                        <span class="badge bg-danger">{% my_name 'contact_type' contacted.contact_type %}</span>
+                    {% elif contacted.contact_type >= 90 %}
+                        <span class="badge bg-dark">{% my_name 'contact_type' contacted.contact_type %}</span>
+                    {% else %}
+                        <span class="badge bg-light">{% my_name 'contact_type' contacted.contact_type %}</span>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right"><strong>対応内容</strong></div>
+            <div class="col-sm-10">{{ contacted.content }}</div>
+        </div>
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right"><strong>対応詳細</strong></div>
+            <div class="col-sm-10">{{ contacted.detail|linebreaksbr }}</div>
+        </div>
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right"><strong>対応者</strong></div>
+            <div class="col-sm-10">
+                {% if contacted.created_by.last_name or contacted.created_by.first_name %}
+                    {{ contacted.created_by.last_name }} {{ contacted.created_by.first_name }}
+                {% else %}
+                    {{ contacted.created_by.username }}
+                {% endif %}
+            </div>
+        </div>
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right"><strong>連絡日時</strong></div>
+            <div class="col-sm-10">{{ contacted.contacted_at|date:'Y/m/d H:i:s' }}</div>
+        </div>
+        <div class="row mb-3 align-items-center mb-3">
+            <div class="col-12 d-flex justify-content-start align-items-center ms-3 mb-3">
+                {% if perms.client.change_clientcontacted %}
+                <a href="{% url 'client:client_contacted_update' contacted.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
+                {% endif %}
+                {% if perms.client.delete_clientcontacted %}
+                <a href="{% url 'client:client_contacted_delete' contacted.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+                {% endif %}
+                <a href="{% url 'client:client_detail' client.id %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
