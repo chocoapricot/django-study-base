@@ -1,0 +1,47 @@
+{% extends 'common/base.html' %}
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header">ユーザープロファイル</div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {% if form.errors %}
+            <div class="alert alert-danger">{{ form.errors }}</div>
+            {% endif %}
+            <div class="row mb-3 align-items-center">
+                <label for="id_username" class="col-sm-2 col-form-label" style="text-align:right">ユーザー名</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control-plaintext" id="id_username" value="{{ form.instance.username }}" readonly>
+                </div>
+            </div>
+            <div class="row mb-3 align-items-center">
+                <label for="id_email" class="col-sm-2 col-form-label" style="text-align:right">メールアドレス</label>
+                <div class="col-sm-4">
+                    {{ form.email }}
+                </div>
+            </div>
+            <div class="row mb-3 align-items-center">
+                <label for="id_first_name" class="col-sm-2 col-form-label" style="text-align:right">姓</label>
+                <div class="col-sm-4">
+                    {{ form.first_name }}
+                </div>
+            </div>
+            <div class="row mb-3 align-items-center">
+                <label for="id_last_name" class="col-sm-2 col-form-label" style="text-align:right">名</label>
+                <div class="col-sm-4">
+                    {{ form.last_name }}
+                </div>
+            </div>
+            <div class="row mb-3 align-items-center">
+                <label for="id_phone_number" class="col-sm-2 col-form-label" style="text-align:right">電話番号</label>
+                <div class="col-sm-4">
+                    {{ form.phone_number }}
+                </div>
+            </div>
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-primary me-2">保存</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

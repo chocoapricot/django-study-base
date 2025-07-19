@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 def client_contacted_detail(request, pk):
     contacted = get_object_or_404(ClientContacted, pk=pk)
     client = contacted.client
@@ -15,6 +16,7 @@ from .forms import ClientForm, ClientContactedForm
 # ロガーの作成
 logger = logging.getLogger('client')
 
+@login_required
 def client_list(request):
     sort = request.GET.get('sort', 'corporate_number')
     query = request.GET.get('q', '').strip()
@@ -39,6 +41,7 @@ def client_list(request):
     clients_pages = paginator.get_page(page_number)
     return render(request, 'client/client_list.html', {'clients': clients_pages, 'query': query})
 
+@login_required
 def client_create(request):
     if request.method == 'POST':
         form = ClientForm(request.POST)
@@ -49,6 +52,7 @@ def client_create(request):
         form = ClientForm()
     return render(request, 'client/client_form.html', {'form': form})
 
+@login_required
 def client_detail(request, pk):
     client = get_object_or_404(Client, pk=pk)
     form = ClientForm(instance=client)
@@ -61,6 +65,7 @@ def client_detail(request, pk):
     })
 
 # クライアント連絡履歴 登録
+@login_required
 def client_contacted_create(request, client_pk):
     client = get_object_or_404(Client, pk=client_pk)
     if request.method == 'POST':
@@ -75,12 +80,14 @@ def client_contacted_create(request, client_pk):
     return render(request, 'client/client_contacted_form.html', {'form': form, 'client': client})
 
 # クライアント連絡履歴 一覧
+@login_required
 def client_contacted_list(request, client_pk):
     client = get_object_or_404(Client, pk=client_pk)
     contacted_list = client.contacted_histories.all()
     return render(request, 'client/client_contacted_list.html', {'client': client, 'contacted_list': contacted_list})
 
 # クライアント連絡履歴 編集
+@login_required
 def client_contacted_update(request, pk):
     contacted = get_object_or_404(ClientContacted, pk=pk)
     client = contacted.client
@@ -94,6 +101,7 @@ def client_contacted_update(request, pk):
     return render(request, 'client/client_contacted_form.html', {'form': form, 'client': client, 'contacted': contacted})
 
 # クライアント連絡履歴 削除
+@login_required
 def client_contacted_delete(request, pk):
     contacted = get_object_or_404(ClientContacted, pk=pk)
     client = contacted.client
@@ -102,6 +110,7 @@ def client_contacted_delete(request, pk):
         return redirect('client:client_detail', pk=client.pk)
     return render(request, 'client/client_contacted_confirm_delete.html', {'contacted': contacted, 'client': client})
 
+@login_required
 def client_update(request, pk):
     client = get_object_or_404(Client, pk=pk)
     if request.method == 'POST':
@@ -113,6 +122,7 @@ def client_update(request, pk):
         form = ClientForm(instance=client)
     return render(request, 'client/client_form.html', {'form': form})
 
+@login_required
 def client_delete(request, pk):
     client = get_object_or_404(Client, pk=pk)
     if request.method == 'POST':
