@@ -243,7 +243,7 @@
       <button class="btn d-none d-md-block" id="toggleSidebar" type="button">
         <i class="bi bi-list"></i> 
       </button>
-            <div class="logo">{% parameter 'SYSTEM_NAME' %}</div>
+            <div class="logo"><a href="{% url 'home:home' %}" class="no-link-style">{% parameter 'SYSTEM_NAME' %}</a></div>
             {% for menu in menus %}
             {% if menu.url in request.path  %}
             <div class="current-menu">

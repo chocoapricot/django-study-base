@@ -12,6 +12,7 @@
                 <label for="id_username" class="col-sm-2 col-form-label" style="text-align:right">ユーザー名</label>
                 <div class="col-sm-4">
                     <input type="text" class="form-control-plaintext" id="id_username" value="{{ form.instance.username }}" readonly>
+                    {{ form.username.as_hidden }}
                 </div>
             </div>
             <div class="row mb-3 align-items-center">
