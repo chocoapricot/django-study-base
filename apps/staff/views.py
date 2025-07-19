@@ -19,10 +19,12 @@ from apps.system.parameters.utils import my_parameter
 from django.db.models import Q
 from apps.system.dropdowns.models import Dropdowns
 from apps.common.utils import fill_excel_from_template, fill_pdf_from_template
+from django.contrib.auth.decorators import login_required
 
 # ロガーの作成
 logger = logging.getLogger('staff')
 
+@login_required
 def staff_list(request):
     query = request.GET.get('q')  # 検索キーワードを取得
     if query:
@@ -48,6 +50,7 @@ def staff_list(request):
 
     return render(request, 'staff/staff_list.html', {'staffs': staffs_pages, 'query':query})
 
+@login_required
 def staff_create(request):
     if request.method == 'POST':
         form = StaffForm(request.POST)
@@ -69,6 +72,7 @@ def staff_detail(request, pk):
 
 
 # 連絡履歴 登録
+@login_required
 def staff_contacted_create(request, staff_pk):
     staff = get_object_or_404(Staff, pk=staff_pk)
     if request.method == 'POST':
@@ -83,12 +87,14 @@ def staff_contacted_create(request, staff_pk):
     return render(request, 'staff/staff_contacted_form.html', {'form': form, 'staff': staff})
 
 # 連絡履歴 一覧
+@login_required
 def staff_contacted_list(request, staff_pk):
     staff = get_object_or_404(Staff, pk=staff_pk)
     contacted_list = staff.contacted_histories.all()
     return render(request, 'staff/staff_contacted_list.html', {'staff': staff, 'contacted_list': contacted_list})
 
 # 連絡履歴 編集
+@login_required
 def staff_contacted_update(request, pk):
     contacted = get_object_or_404(StaffContacted, pk=pk)
     staff = contacted.staff
@@ -101,6 +107,7 @@ def staff_contacted_update(request, pk):
         form = StaffContactedForm(instance=contacted)
     return render(request, 'staff/staff_contacted_form.html', {'form': form, 'staff': staff, 'contacted': contacted})
 
+@login_required
 def staff_update(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
     if request.method == 'POST':
@@ -112,6 +119,7 @@ def staff_update(request, pk):
         form = StaffForm(instance=staff)
     return render(request, 'staff/staff_form.html', {'form': form})
 
+@login_required
 def staff_delete(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
     if request.method == 'POST':
@@ -119,6 +127,7 @@ def staff_delete(request, pk):
         return redirect('staff_list')
     return render(request, 'staff/staff_confirm_delete.html', {'staff': staff})
 
+@login_required
 def staff_face(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
     image_path = os.path.join(my_parameter("STAFF_FACE_PATH"), str(staff.pk)+".jpg") 
@@ -163,6 +172,7 @@ def staff_face(request, pk):
     image.save(response, "JPEG")
     return response
 
+@login_required
 def staff_rirekisho(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
     sex_dropdown = Dropdowns.objects.filter(category='sex', value=staff.sex, active=True).first()
@@ -185,7 +195,7 @@ def staff_rirekisho(request, pk):
     response['Content-Disposition'] = 'attachment; filename="staff_rirekisho_'+str(pk)+'.xlsx"'
     return response
 
-
+@login_required
 def staff_kyushoku(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
     sex_dropdown = Dropdowns.objects.filter(category='sex', value=staff.sex, active=True).first()
@@ -205,6 +215,7 @@ def staff_kyushoku(request, pk):
     response['Content-Disposition'] = 'attachment; filename="staff_kyushoku_'+str(pk)+'.xlsx"'
     return response
 
+@login_required
 def staff_fuyokojo(request, pk):
     staff = Staff.objects.get(pk=pk)
     sex_dropdown = Dropdowns.objects.filter(category='sex', value=staff.sex, active=True).first()

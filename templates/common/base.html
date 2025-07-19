@@ -237,12 +237,12 @@
     <!-- ヘッダー -->
     <div class="header">
         <div class="left-section">
-			<button class="btn d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
-			  <i class="bi bi-list"></i>
-			</button>
-			<button class="btn d-none d-md-block" id="toggleSidebar" type="button">
-			  <i class="bi bi-list"></i> 
-			</button>
+      <button class="btn d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu" aria-controls="offcanvasMenu">
+        <i class="bi bi-list"></i>
+      </button>
+      <button class="btn d-none d-md-block" id="toggleSidebar" type="button">
+        <i class="bi bi-list"></i> 
+      </button>
             <div class="logo">{% parameter 'SYSTEM_NAME' %}</div>
             {% for menu in menus %}
             {% if menu.url in request.path  %}
@@ -256,8 +256,17 @@
         <div class="icons">
             <i class="bi bi-search"></i> <!-- 検索アイコン -->
             <i class="bi bi-bell"></i> <!-- 通知アイコン -->
-            <i class="bi bi-gear"></i> <!-- 設定アイコン -->
-            <i class="bi bi-box-arrow-right"></i> <!-- ログアウトアイコン -->
+            <i class="bi bi-gear"></i>
+            <a href="/useradmin/profile/" title="アカウント編集" style="text-decoration:none;color:inherit;display:flex;align-items:center;font-weight:bold;margin-right:8px;">
+                <i class="bi bi-person-circle" style="font-size: 20px; margin-right: 4px;"></i>
+                {{ request.user.username }}
+            </a>
+            <form action="/accounts/logout/" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn p-0" title="ログアウト" style="background:none;border:none;outline:none;box-shadow:none;">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </form>
         </div>
     </div>
 
@@ -306,9 +315,9 @@
 <!-- Offcanvas Menu for small screens -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
   <div class="offcanvas-header">
-		<button class="btn d-md-none" type="button"  data-bs-dismiss="offcanvas" aria-label="Close">
-		  <i class="bi bi-list"></i>
-		</button>
+    <button class="btn d-md-none" type="button"  data-bs-dismiss="offcanvas" aria-label="Close">
+      <i class="bi bi-list"></i>
+    </button>
     <h5 class="offcanvas-title" id="offcanvasMenuLabel">メニュー</h5>
   </div>
   <div class="offcanvas-body">
