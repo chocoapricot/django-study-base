@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ログイン | Django Study Base</title>
+  <title>ログイン | {% parameter 'SYSTEM_NAME' %}</title>
   <link href="/static/css/{% parameter 'GLOBAL_CSS_THEME' %}/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.0/font/bootstrap-icons.min.css" rel="stylesheet">
   <style>
@@ -79,7 +79,7 @@
   <div class="login-container">
     <div class="login-card card">
       <div class="login-header">
-        <div class="logo"><i class="bi bi-boxes" style="color:#007bff;font-size:2rem;"></i> Django Study Base</div>
+        <div class="logo"><i class="bi bi-boxes" style="color:#007bff;font-size:2rem;"></i> {% parameter 'SYSTEM_NAME' %}</div>
         <div class="subtitle">システムにログインしてください</div>
       </div>
       <div class="card-body">
@@ -119,7 +119,7 @@
         </form>
       </div>
       <div class="login-footer">
-        &copy; 2025 Django Study Base
+        &copy; 2025 {% parameter 'SYSTEM_NAME' %}
       </div>
     </div>
   </div>
