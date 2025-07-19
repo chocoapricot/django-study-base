@@ -1,3 +1,11 @@
+# 連絡履歴 詳細
+from django.contrib.auth.decorators import permission_required
+
+@permission_required('staff.view_staffcontacted', raise_exception=True)
+def staff_contacted_detail(request, pk):
+    contacted = get_object_or_404(StaffContacted, pk=pk)
+    staff = contacted.staff
+    return render(request, 'staff/staff_contacted_detail.html', {'contacted': contacted, 'staff': staff})
 import os
 import logging
 from PIL import Image, ImageDraw, ImageFont

@@ -1,3 +1,12 @@
+# 連絡履歴 詳細
+from django.contrib.auth.decorators import permission_required
+
+@permission_required('client.view_clientcontacted', raise_exception=True)
+def client_contacted_detail(request, pk):
+    from .models import ClientContacted
+    contacted = get_object_or_404(ClientContacted, pk=pk)
+    client = contacted.client
+    return render(request, 'client/client_contacted_detail.html', {'contacted': contacted, 'client': client})
 from django.contrib.auth.decorators import login_required, permission_required
 def client_contacted_detail(request, pk):
     contacted = get_object_or_404(ClientContacted, pk=pk)

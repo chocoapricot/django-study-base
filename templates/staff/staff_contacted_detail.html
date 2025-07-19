@@ -2,9 +2,10 @@
 {% load my_dropdown_tags %}
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header">クライアント連絡履歴 削除確認</div>
+    <div class="card-header">
+        連絡履歴詳細
+    </div>
     <div class="card-body">
-        <p>本当にこの連絡履歴を削除しますか？</p>
         <div class="row mb-3 align-items-center">
             <div class="col-sm-2" style="text-align:right"><strong>連絡種別</strong></div>
             <div class="col-sm-10">
@@ -29,10 +30,6 @@
         </div>
         <div class="row mb-3 align-items-center">
             <div class="col-sm-2" style="text-align:right"><strong>対応内容</strong></div>
-            <div class="col-sm-10">{{ contacted.content }}</div>
-        </div>
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2" style="text-align:right"><strong>対応詳細</strong></div>
             <div class="col-sm-10">{{ contacted.detail|linebreaksbr }}</div>
         </div>
         <div class="row mb-3 align-items-center">
@@ -49,13 +46,16 @@
             <div class="col-sm-2" style="text-align:right"><strong>日時</strong></div>
             <div class="col-sm-10">{{ contacted.contacted_at|date:'Y/m/d H:i:s' }}</div>
         </div>
-        <form method="post">
-            {% csrf_token %}
-            <div class="d-flex justify-content-start">
-                <button type="submit" class="btn btn-sm btn-dark me-2">削除</button>
-                <a href="{% url 'client:client_contacted_detail' contacted.pk %}" class="btn btn-sm btn-secondary me-2">キャンセル</a>
+        <div class="row mb-3 align-items-center">
+            <div class="col-12 d-flex justify-content-start align-items-center">
+                {% if perms.staff.change_staffcontacted %}
+                <a href="{% url 'staff_contacted_update' contacted.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
+                {% endif %}
+                {% if perms.staff.delete_staffcontacted %}
+                <a href="{% url 'staff_contacted_delete' contacted.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+                {% endif %}
+                <a href="{% url 'staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
             </div>
-        </form>
-    </div>
+        </div>
 </div>
 {% endblock %}
