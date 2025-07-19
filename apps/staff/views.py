@@ -1,4 +1,20 @@
+import os
+import logging
+from PIL import Image, ImageDraw, ImageFont
+from django.conf import settings
+from django.http import HttpResponse, FileResponse
+from django.core.paginator import Paginator
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Staff, StaffContacted
+from .forms import StaffForm, StaffContactedForm
+from apps.system.parameters.utils import my_parameter
+from django.db.models import Q
+from apps.system.dropdowns.models import Dropdowns
+from apps.common.utils import fill_excel_from_template, fill_pdf_from_template
+from django.contrib.auth.decorators import login_required, permission_required
+
 # 連絡履歴 削除
+@permission_required('staff.delete_staffcontacted', raise_exception=True)
 def staff_contacted_delete(request, pk):
     contacted = get_object_or_404(StaffContacted, pk=pk)
     staff = contacted.staff
@@ -24,7 +40,7 @@ from django.contrib.auth.decorators import login_required
 # ロガーの作成
 logger = logging.getLogger('staff')
 
-@login_required
+@permission_required('staff.view_staff', raise_exception=True)
 def staff_list(request):
     query = request.GET.get('q')  # 検索キーワードを取得
     if query:
@@ -50,7 +66,9 @@ def staff_list(request):
 
     return render(request, 'staff/staff_list.html', {'staffs': staffs_pages, 'query':query})
 
-@login_required
+from django.contrib.auth.decorators import permission_required
+
+@permission_required('staff.add_staff', raise_exception=True)
 def staff_create(request):
     if request.method == 'POST':
         form = StaffForm(request.POST)
@@ -61,6 +79,7 @@ def staff_create(request):
         form = StaffForm()
     return render(request, 'staff/staff_form.html', {'form': form})
 
+@permission_required('staff.view_staff', raise_exception=True)
 def staff_detail(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
     # 連絡履歴（最新5件）
@@ -72,7 +91,7 @@ def staff_detail(request, pk):
 
 
 # 連絡履歴 登録
-@login_required
+@permission_required('staff.add_staffcontacted', raise_exception=True)
 def staff_contacted_create(request, staff_pk):
     staff = get_object_or_404(Staff, pk=staff_pk)
     if request.method == 'POST':
@@ -94,7 +113,7 @@ def staff_contacted_list(request, staff_pk):
     return render(request, 'staff/staff_contacted_list.html', {'staff': staff, 'contacted_list': contacted_list})
 
 # 連絡履歴 編集
-@login_required
+@permission_required('staff.change_staffcontacted', raise_exception=True)
 def staff_contacted_update(request, pk):
     contacted = get_object_or_404(StaffContacted, pk=pk)
     staff = contacted.staff
@@ -107,7 +126,7 @@ def staff_contacted_update(request, pk):
         form = StaffContactedForm(instance=contacted)
     return render(request, 'staff/staff_contacted_form.html', {'form': form, 'staff': staff, 'contacted': contacted})
 
-@login_required
+@permission_required('staff.change_staff', raise_exception=True)
 def staff_update(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
     if request.method == 'POST':
@@ -119,7 +138,7 @@ def staff_update(request, pk):
         form = StaffForm(instance=staff)
     return render(request, 'staff/staff_form.html', {'form': form})
 
-@login_required
+@permission_required('staff.delete_staff', raise_exception=True)
 def staff_delete(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
     if request.method == 'POST':
