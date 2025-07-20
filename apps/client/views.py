@@ -67,6 +67,9 @@ def client_detail(request, pk):
     form = ClientForm(instance=client)
     # 連絡履歴（最新5件）
     contacted_list = client.contacted_histories.all()[:5]
+    # AppLogに詳細画面アクセスを記録
+    from apps.common.models import log_view_detail
+    log_view_detail(request.user, client)
     return render(request, 'client/client_detail.html', {
         'client': client,
         'form': form,

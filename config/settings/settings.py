@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'apps.staff',
     'apps.client',
     'apps.csstest',
+    'apps.common',
 ]
 
 
