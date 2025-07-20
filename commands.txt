@@ -23,6 +23,7 @@ pip install pdfrw
 #    pip install pypdf
 #    pip uninstall pypdf
 pip install pymupdf
+pip install pytest
 
 
 # アップデート確認とアップデート

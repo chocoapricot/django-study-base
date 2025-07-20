@@ -22,15 +22,15 @@
                 </div>
             </div>
             <div class="row mb-3 align-items-center">
-                <label for="id_first_name" class="col-sm-2 col-form-label" style="text-align:right">姓</label>
+                <label for="id_last_name" class="col-sm-2 col-form-label" style="text-align:right">姓</label>
                 <div class="col-sm-4">
-                    {{ form.first_name }}
+                    {{ form.last_name }}
                 </div>
             </div>
             <div class="row mb-3 align-items-center">
-                <label for="id_last_name" class="col-sm-2 col-form-label" style="text-align:right">名</label>
+                <label for="id_first_name" class="col-sm-2 col-form-label" style="text-align:right">名</label>
                 <div class="col-sm-4">
-                    {{ form.last_name }}
+                    {{ form.first_name }}
                 </div>
             </div>
             <div class="row mb-3 align-items-center">
@@ -39,6 +39,46 @@
                     {{ form.phone_number }}
                 </div>
             </div>
+            <div class="row mb-3 align-items-center">
+                <label for="id_password" class="col-sm-2 col-form-label" style="text-align:right">新しいパスワード</label>
+                <div class="col-sm-4">
+                    <div class="input-group">
+                        {{ form.password }}
+                        <button type="button" class="btn btn-outline-secondary" tabindex="-1" onclick="togglePassword('id_password', this)">
+                            <span class="fa fa-eye"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3 align-items-center">
+                <label for="id_password_confirm" class="col-sm-2 col-form-label" style="text-align:right">新しいパスワード（確認）</label>
+                <div class="col-sm-4">
+                    <div class="input-group">
+                        {{ form.password_confirm }}
+                        <button type="button" class="btn btn-outline-secondary" tabindex="-1" onclick="togglePassword('id_password_confirm', this)">
+                            <span class="fa fa-eye"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+<script>
+function togglePassword(id, btn) {
+    const input = document.getElementById(id);
+    if (!input) return;
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.querySelector('span').classList.remove('fa-eye');
+        btn.querySelector('span').classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        btn.querySelector('span').classList.remove('fa-eye-slash');
+        btn.querySelector('span').classList.add('fa-eye');
+    }
+}
+</script>
+{% endblock %}
             <div class="d-flex justify-content-start">
                 <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
             </div>
