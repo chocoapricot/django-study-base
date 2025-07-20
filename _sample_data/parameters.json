@@ -60,7 +60,7 @@
         "updated_by": 1,
         "category": "api",
         "key": "GBIZ_API_TOKEN",
-        "value": "",
+        "value": "riGQUpnKTLCx8a9aCeyw7Gp4Hq3SJ2zs",
         "default_value": "na",
         "note": "GBIZ企業情報のトークン。申し込み必要",
         "disp_seq": 4,
@@ -98,6 +98,57 @@
         "default_value": "simplex",
         "note": "スタイル指定。simplex／pulse／journal／zephyr／cerulean",
         "disp_seq": 0,
+        "active": true
+    }
+},
+{
+    "model": "parameters.parameter",
+    "pk": 7,
+    "fields": {
+        "created_at": "2025-07-20T00:57:31.161Z",
+        "created_by": 1,
+        "updated_at": "2025-07-20T00:59:15.863Z",
+        "updated_by": 1,
+        "category": "system",
+        "key": "PASSWORD_SYMBOL_REQUIRED",
+        "value": "true",
+        "default_value": "true",
+        "note": "true：記号必要",
+        "disp_seq": 2,
+        "active": true
+    }
+},
+{
+    "model": "parameters.parameter",
+    "pk": 8,
+    "fields": {
+        "created_at": "2025-07-20T00:58:20.696Z",
+        "created_by": 1,
+        "updated_at": "2025-07-20T00:58:20.696Z",
+        "updated_by": 1,
+        "category": "system",
+        "key": "PASSWORD_MIN_LENGTH",
+        "value": "8",
+        "default_value": "8",
+        "note": "パスワード最低文字数",
+        "disp_seq": 3,
+        "active": true
+    }
+},
+{
+    "model": "parameters.parameter",
+    "pk": 9,
+    "fields": {
+        "created_at": "2025-07-20T01:01:14.297Z",
+        "created_by": 1,
+        "updated_at": "2025-07-20T01:06:56.606Z",
+        "updated_by": 1,
+        "category": "system",
+        "key": "PASSWORD_MAX_LENGTH",
+        "value": "30",
+        "default_value": "30",
+        "note": "パスワード最大文字数",
+        "disp_seq": 4,
         "active": true
     }
 }

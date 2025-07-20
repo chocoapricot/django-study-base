@@ -5,14 +5,14 @@
     "fields": {
         "created_at": "2024-10-25T07:19:05.997Z",
         "created_by": 1,
-        "updated_at": "2024-11-15T18:15:27.871Z",
+        "updated_at": "2025-07-19T18:50:45.232Z",
         "updated_by": 1,
         "name": "ホーム",
-        "url": "#",
+        "url": "/",
         "icon": "bi-house-door",
         "icon_style": "color:#007bff;",
         "disp_seq": 1,
-        "active": true
+        "active": false
     }
 },
 {
@@ -61,6 +61,22 @@
         "icon_style": "color:#ffc107;",
         "disp_seq": 4,
         "active": true
+    }
+},
+{
+    "model": "menu.menu",
+    "pk": 5,
+    "fields": {
+        "created_at": "2025-07-19T15:46:59.051Z",
+        "created_by": 1,
+        "updated_at": "2025-07-19T18:50:33.299Z",
+        "updated_by": 1,
+        "name": "アカウント",
+        "url": "/useradmin/profile/",
+        "icon": "bi-people",
+        "icon_style": "color:#28a745;",
+        "disp_seq": 5,
+        "active": false
     }
 }
 ]
