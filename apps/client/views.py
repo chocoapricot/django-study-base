@@ -56,7 +56,7 @@ def client_create(request):
         form = ClientForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('client_list')
+            return redirect('client:client_list')
     else:
         form = ClientForm()
     return render(request, 'client/client_form.html', {'form': form})
@@ -68,13 +68,29 @@ def client_detail(request, pk):
     # 連絡履歴（最新5件）
     contacted_list = client.contacted_histories.all()[:5]
     # AppLogに詳細画面アクセスを記録
-    from apps.common.models import log_view_detail
+    from apps.common.models import log_view_detail, AppLog
     log_view_detail(request.user, client)
+    # 変更履歴（AppLogから取得、最新5件）
+    change_logs = AppLog.objects.filter(model_name='Client', object_id=str(client.pk), action__in=['create', 'update']).order_by('-timestamp')[:5]
+    change_logs_count = AppLog.objects.filter(model_name='Client', object_id=str(client.pk), action__in=['create', 'update']).count()
     return render(request, 'client/client_detail.html', {
         'client': client,
         'form': form,
         'contacted_list': contacted_list,
+        'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
     })
+
+# クライアント変更履歴一覧
+@permission_required('client.view_client', raise_exception=True)
+def client_change_history_list(request, pk):
+    client = get_object_or_404(Client, pk=pk)
+    from apps.common.models import AppLog
+    logs = AppLog.objects.filter(model_name='Client', object_id=str(client.pk), action__in=['create', 'update']).order_by('-timestamp')
+    paginator = Paginator(logs, 20)
+    page = request.GET.get('page')
+    logs_page = paginator.get_page(page)
+    return render(request, 'client/client_change_history_list.html', {'client': client, 'logs': logs_page})
 
 # クライアント連絡履歴 登録
 @login_required
@@ -128,7 +144,7 @@ def client_update(request, pk):
         form = ClientForm(request.POST, instance=client)
         if form.is_valid():
             form.save()
-            return redirect('client_list')
+            return redirect('client:client_list')
     else:
         form = ClientForm(instance=client)
     return render(request, 'client/client_form.html', {'form': form})
@@ -138,7 +154,7 @@ def client_delete(request, pk):
     client = get_object_or_404(Client, pk=pk)
     if request.method == 'POST':
         client.delete()
-        return redirect('client_list')
+        return redirect('client:client_list')
     return render(request, 'client/client_confirm_delete.html', {'client': client})
 # views.py
 

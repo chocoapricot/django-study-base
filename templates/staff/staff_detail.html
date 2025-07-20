@@ -272,55 +272,45 @@
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        変更履歴（※未実装のサンプルです）
+        変更履歴
     </div>
     <div class="card-body mb-0">
         <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
             <thead>
                 <tr>
-                    <th>Version</th>
+                    <th>操作</th>
                     <th>変更内容</th>
                     <th>変更者</th>
-                    <th>変更日時</th>
+                    <th>日時</th>
                 </tr>
             </thead>
             <tbody>
+                {% for log in change_logs %}
                 <tr>
-                    <td>10</td>
-                    <td>電話番号修正</td>
-                    <td>鈴木</td>
-                    <td>2020/11/12 13:55:00</td>
+                    <td>
+                        {% if log.action == 'create' %}作成
+                        {% elif log.action == 'update' %}編集
+                        {% else %}{{ log.action|title }}{% endif %}
+                    </td>
+                    <td>{{ log.object_repr|truncatechars:40 }}</td>
+                    <td>
+                        {% if log.user %}
+                            {{ log.user.last_name }} {{ log.user.first_name }}
+                        {% else %}-{% endif %}
+                    </td>
+                    <td>{{ log.timestamp|date:'Y/m/d H:i:s' }}</td>
                 </tr>
-                <tr>
-                    <td>9</td>
-                    <td>住所修正</td>
-                    <td>鈴木</td>
-                    <td>2020/11/12 13:50:00</td>
-                </tr>
-                <tr>
-                    <td>8</td>
-                    <td>削除復活</td>
-                    <td>admin</td>
-                    <td>2019/11/12 13:50:00</td>
-                </tr>
-                <tr>
-                    <td>7</td>
-                    <td>削除</td>
-                    <td>admin</td>
-                    <td>2019/01/01 13:50:00</td>
-                </tr>
-                <tr>
-                    <td>6</td>
-                    <td>修正なし</td>
-                    <td>清水</td>
-                    <td>2018/10/21 13:50:00</td>
-                </tr>
+                {% empty %}
+                <tr><td colspan="4">履歴なし</td></tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
+    {% if change_logs_count > 5 %}
     <div class="card-footer d-flex justify-content-center align-items-center">
-        <a href="#">全て表示</a>
+        <a href="{% url 'staff_change_history_list' staff.pk %}">全て表示</a>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
 
