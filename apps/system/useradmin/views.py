@@ -2,6 +2,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
 from .forms import UserProfileForm
 
 @login_required
@@ -17,6 +18,7 @@ def profile(request):
             obj.save()
             if pw:
                 update_session_auth_hash(request, obj)
+            messages.info(request, 'ユーザ情報を保存しました。')
             return redirect('useradmin:profile')
     else:
         form = UserProfileForm(instance=user)
