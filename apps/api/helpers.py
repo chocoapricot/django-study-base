@@ -26,9 +26,9 @@ def fetch_zipcode(zipcode):
     # APIのレスポンスを確認
     if response.status_code == 200:
         data = response.json()
-        # 'hojin-infos'が存在するか確認し、データがあれば返す
-        if "results" in data and len(data["results"]) > 0:
-            return data["results"][0]  # 最初の企業情報を返す
+        # 'results'が存在し、かつNoneでなく、データがあれば返す
+        if "results" in data and data["results"] and len(data["results"]) > 0:
+            return data["results"][0]  # 最初の住所情報を返す
         else:
-            return None  # 'hojin-infos' がない場合は None を返す
+            return None  # 'results' がない場合やNoneの場合は None を返す
     return None  # APIリクエストが失敗した場合
