@@ -1,5 +1,16 @@
-# 連絡履歴 詳細
-from django.contrib.auth.decorators import permission_required
+
+from django.contrib.auth.decorators import login_required, permission_required
+from django.core.paginator import Paginator
+from apps.common.models import AppLog
+
+@permission_required('staff.view_staff', raise_exception=True)
+def staff_change_history_list(request, pk):
+    staff = get_object_or_404(Staff, pk=pk)
+    logs = AppLog.objects.filter(model_name='Staff', object_id=str(staff.pk), action__in=['create', 'update']).order_by('-timestamp')
+    paginator = Paginator(logs, 20)
+    page = request.GET.get('page')
+    logs_page = paginator.get_page(page)
+    return render(request, 'staff/staff_change_history_list.html', {'staff': staff, 'logs': logs_page})
 
 @permission_required('staff.view_staffcontacted', raise_exception=True)
 def staff_contacted_detail(request, pk):
@@ -98,9 +109,15 @@ def staff_detail(request, pk):
     # AppLogに詳細画面アクセスを記録
     from apps.common.models import log_view_detail
     log_view_detail(request.user, staff)
+    # 変更履歴（AppLogから取得、最新5件）
+    from apps.common.models import AppLog
+    change_logs = AppLog.objects.filter(model_name='Staff', object_id=str(staff.pk), action__in=['create', 'update']).order_by('-timestamp')[:5]
+    change_logs_count = AppLog.objects.filter(model_name='Staff', object_id=str(staff.pk), action__in=['create', 'update']).count()
     return render(request, 'staff/staff_detail.html', {
         'staff': staff,
         'contacted_list': contacted_list,
+        'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
     })
 
 

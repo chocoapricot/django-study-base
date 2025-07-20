@@ -2,7 +2,8 @@
 from django.urls import path
 from .views import (
     staff_list, staff_create, staff_detail, staff_update, staff_delete, staff_face, staff_rirekisho, staff_fuyokojo, staff_kyushoku,
-    staff_contacted_create, staff_contacted_list, staff_contacted_update, staff_contacted_delete, staff_contacted_detail
+    staff_contacted_create, staff_contacted_list, staff_contacted_update, staff_contacted_delete, staff_contacted_detail,
+    staff_change_history_list
 )
 
 urlpatterns = [
@@ -22,4 +23,7 @@ urlpatterns = [
     path('staff/contacted/<int:pk>/detail/', staff_contacted_detail, name='staff_contacted_detail'),
     path('staff/contacted/<int:pk>/update/', staff_contacted_update, name='staff_contacted_update'),
     path('staff/contacted/<int:pk>/delete/', staff_contacted_delete, name='staff_contacted_delete'),
+
+    # 変更履歴
+    path('staff/<int:pk>/change_history/', staff_change_history_list, name='staff_change_history_list'),
 ]
