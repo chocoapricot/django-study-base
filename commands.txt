@@ -37,6 +37,7 @@ python manage.py makemigrations menu
 python manage.py makemigrations parameters
 python manage.py makemigrations staff
 python manage.py makemigrations client
+python manage.py makemigrations common
 python manage.py makemigrations 
 python manage.py migrate
 

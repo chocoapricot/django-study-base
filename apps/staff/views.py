@@ -5,6 +5,9 @@ from django.contrib.auth.decorators import permission_required
 def staff_contacted_detail(request, pk):
     contacted = get_object_or_404(StaffContacted, pk=pk)
     staff = contacted.staff
+    # AppLogに詳細画面アクセスを記録
+    from apps.common.models import log_view_detail
+    log_view_detail(request.user, contacted)
     return render(request, 'staff/staff_contacted_detail.html', {'contacted': contacted, 'staff': staff})
 import os
 import logging
@@ -92,6 +95,9 @@ def staff_detail(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
     # 連絡履歴（最新5件）
     contacted_list = staff.contacted_histories.all()[:5]
+    # AppLogに詳細画面アクセスを記録
+    from apps.common.models import log_view_detail
+    log_view_detail(request.user, staff)
     return render(request, 'staff/staff_detail.html', {
         'staff': staff,
         'contacted_list': contacted_list,

@@ -27,4 +27,5 @@ urlpatterns = [
     path('client/', include('apps.client.urls')),
     path('csstest/', include('apps.csstest.urls')),
     path('useradmin/', include('apps.system.useradmin.urls')),
+    path('common/', include('apps.common.urls')),
 ]
