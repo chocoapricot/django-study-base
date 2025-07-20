@@ -22,7 +22,7 @@
                         {% elif log.action == 'update' %}編集
                         {% else %}{{ log.action|title }}{% endif %}
                     </td>
-                    <td>{{ log.object_repr|truncatechars:40 }}</td>
+                    <td style="max-width: 480px; word-break: break-all; white-space: pre-line;">{{ log.object_repr }}</td>
                     <td>
                         {% if log.user %}
                             {{ log.user.last_name }} {{ log.user.first_name }}
@@ -73,4 +73,10 @@
         </div>
     </div>
 </div>
+<style>
+    td[style*="max-width"] {
+        /* スマホでも折り返しやすく */
+        max-width: 90vw;
+    }
+</style>
 {% endblock %}
