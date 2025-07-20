@@ -7,6 +7,8 @@
         <!--
         <h5 class="card-title">スタッフ修正</h5>-->
         <!-- <p class="card-text">これはサンプルです.</p> -->
+        <!-- APIメッセージ表示用 -->
+        <div id="api-message"></div>
         <form method="post">
             {% csrf_token %}
             {% if form.errors %}
@@ -134,16 +136,25 @@
             },
             dataType: 'json',
             success: function(response) {
+                // console.log(response); // デバッグ用 削除
                 if (response.success) {
                     var data = response.data;
                     $('#id_address1').val(data.address1+data.address2);
                     $('#id_address2').val(data.address3);
                     // 他のフィールドも同様にデータをセット
+                    // Bootstrap alert-dismissibleでメッセージ表示
+                    $('#api-message').html(
+                        '<div class="alert alert-info alert-dismissible fade show" role="alert">'
+                        + '住所情報を取得しました。'
+                        + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+                        + '</div>'
+                    );
                 } else {
                     alert(response.error);
                 }
             },
-            error: function() {
+            error: function(xhr, status, error) {
+                // console.log(xhr, status, error); // デバッグ用 削除
                 alert("郵便番号の取得に失敗しました。");
             }
         });

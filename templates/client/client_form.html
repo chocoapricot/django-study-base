@@ -6,6 +6,10 @@
     <div class="card-body">
         <!-- <h5 class="card-title">クライアント修正</h5> -->
         <!-- <p class="card-text">これはサンプルです.</p> -->
+        <!-- APIメッセージ表示用 -->
+        <div id="api-message"></div>
+        <!-- APIメッセージ表示用 -->
+        <div id="api-message"></div>
         <form method="post">
             {% csrf_token %}
             {% if form.errors %}
@@ -111,9 +115,16 @@
                     $('#id_name_furigana').val(data.kana);
                     $('#id_postal_code').val(data.postal_code);
                     $('#id_address').val(data.location);
-                    $('#id_url').val(data.company_url);;
+                    $('#id_url').val(data.company_url);
                     $('#id_memo').val(data.business_summary);
                     // 他のフィールドも同様にデータをセット
+                    // Bootstrap alert-dismissibleでメッセージ表示
+                    $('#api-message').html(
+                        '<div class="alert alert-info alert-dismissible fade show" role="alert">'
+                        + '企業情報を取得しました。'
+                        + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+                        + '</div>'
+                    );
                 } else {
                     alert(response.error);
                 }
@@ -142,6 +153,13 @@
                     var data = response.data;
                     $('#id_address').val(data.address1+data.address2+data.address3);
                     // 他のフィールドも同様にデータをセット
+                    // Bootstrap alert-dismissibleでメッセージ表示
+                    $('#api-message').html(
+                        '<div class="alert alert-info alert-dismissible fade show" role="alert">'
+                        + '住所情報を取得しました。'
+                        + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+                        + '</div>'
+                    );
                 } else {
                     alert(response.error);
                 }
