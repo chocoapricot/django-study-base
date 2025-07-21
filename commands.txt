@@ -66,6 +66,7 @@ python manage.py dbshell
 python manage.py test apps.api.tests
 
 # サーバ起動
+.\venv\Scripts\Activate 
 python manage.py runserver
 
 # EOF
