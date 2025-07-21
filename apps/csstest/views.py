@@ -6,5 +6,5 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def list(request):
-    return render(request, 'staff/simplex_list.html')
+    return render(request, 'common/simplex_list.html')
 
