@@ -180,7 +180,7 @@
                 {% endfor %}
             </tbody>
         </table>
-        {% if client.contacted_histories.count > 5 %}
+        {% if client.contacted_histories.count > 0 %}
         <div class="text-center">
             <a href="{% url 'client:client_contacted_list' client.id %}" class="btn btn-link">全て表示</a>
         </div>
