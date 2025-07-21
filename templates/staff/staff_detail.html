@@ -258,7 +258,7 @@
                     <td>{{ c.contacted_at|date:'Y/m/d H:i:s' }}</td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="3">履歴なし</td></tr>
+                <tr><td colspan="4">履歴がありません</td></tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -301,7 +301,7 @@
                     <td>{{ log.timestamp|date:'Y/m/d H:i:s' }}</td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="4">履歴なし</td></tr>
+                <tr><td colspan="4">履歴がありません</td></tr>
                 {% endfor %}
             </tbody>
         </table>

@@ -176,11 +176,11 @@
                     <td>{{ contacted.contacted_at|date:'Y/m/d H:i:s' }}</td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="3">履歴がありません。</td></tr>
+                <tr><td colspan="4">履歴がありません</td></tr>
                 {% endfor %}
             </tbody>
         </table>
-        {% if client.contacted_histories.count > 0 %}
+        {% if client.contacted_histories.count > 5 %}
         <div class="text-center">
             <a href="{% url 'client:client_contacted_list' client.id %}" class="btn btn-link">全て表示</a>
         </div>
@@ -224,7 +224,7 @@
             </tbody>
         </table>
     </div>
-    {% if change_logs_count > 5 %}
+    {% if change_logs_count > 0 %}
     <div class="card-footer d-flex justify-content-center align-items-center">
         <a href="{% url 'client:client_change_history_list' client.pk %}">全て表示</a>
     </div>

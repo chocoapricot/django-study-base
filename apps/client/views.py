@@ -25,6 +25,7 @@ from .forms import ClientForm, ClientContactedForm
 # ロガーの作成
 logger = logging.getLogger('client')
 
+@login_required
 @permission_required('client.view_client', raise_exception=True)
 def client_list(request):
     sort = request.GET.get('sort', 'corporate_number')
@@ -51,6 +52,7 @@ def client_list(request):
     return render(request, 'client/client_list.html', {'clients': clients_pages, 'query': query})
 
 @login_required
+@permission_required('client.add_client', raise_exception=True)
 def client_create(request):
     if request.method == 'POST':
         form = ClientForm(request.POST)
@@ -61,6 +63,7 @@ def client_create(request):
         form = ClientForm()
     return render(request, 'client/client_form.html', {'form': form})
 
+@login_required
 @permission_required('client.view_client', raise_exception=True)
 def client_detail(request, pk):
     client = get_object_or_404(Client, pk=pk)
@@ -82,6 +85,7 @@ def client_detail(request, pk):
     })
 
 # クライアント変更履歴一覧
+@login_required
 @permission_required('client.view_client', raise_exception=True)
 def client_change_history_list(request, pk):
     client = get_object_or_404(Client, pk=pk)
@@ -94,6 +98,7 @@ def client_change_history_list(request, pk):
 
 # クライアント連絡履歴 登録
 @login_required
+@permission_required('client.add_clientcontacted', raise_exception=True)
 def client_contacted_create(request, client_pk):
     client = get_object_or_404(Client, pk=client_pk)
     if request.method == 'POST':
@@ -109,6 +114,7 @@ def client_contacted_create(request, client_pk):
 
 # クライアント連絡履歴 一覧
 @login_required
+@permission_required('client.view_clientcontacted', raise_exception=True)
 def client_contacted_list(request, client_pk):
     client = get_object_or_404(Client, pk=client_pk)
     contacted_list = client.contacted_histories.all()
@@ -116,6 +122,7 @@ def client_contacted_list(request, client_pk):
 
 # クライアント連絡履歴 編集
 @login_required
+@permission_required('client.change_clientcontacted', raise_exception=True)
 def client_contacted_update(request, pk):
     contacted = get_object_or_404(ClientContacted, pk=pk)
     client = contacted.client
@@ -128,6 +135,7 @@ def client_contacted_update(request, pk):
         form = ClientContactedForm(instance=contacted)
     return render(request, 'client/client_contacted_form.html', {'form': form, 'client': client, 'contacted': contacted})
 
+@login_required
 @permission_required('client.delete_clientcontacted', raise_exception=True)
 def client_contacted_delete(request, pk):
     contacted = get_object_or_404(ClientContacted, pk=pk)
@@ -137,6 +145,7 @@ def client_contacted_delete(request, pk):
         return redirect('client:client_detail', pk=client.pk)
     return render(request, 'client/client_contacted_confirm_delete.html', {'contacted': contacted, 'client': client})
 
+@login_required
 @permission_required('client.change_client', raise_exception=True)
 def client_update(request, pk):
     client = get_object_or_404(Client, pk=pk)
@@ -149,6 +158,7 @@ def client_update(request, pk):
         form = ClientForm(instance=client)
     return render(request, 'client/client_form.html', {'form': form})
 
+@login_required
 @permission_required('client.delete_client', raise_exception=True)
 def client_delete(request, pk):
     client = get_object_or_404(Client, pk=pk)

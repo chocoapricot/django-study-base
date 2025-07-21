@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.paginator import Paginator
 from apps.common.models import AppLog
 
+@login_required
 @permission_required('staff.view_staff', raise_exception=True)
 def staff_change_history_list(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
@@ -12,6 +13,7 @@ def staff_change_history_list(request, pk):
     logs_page = paginator.get_page(page)
     return render(request, 'staff/staff_change_history_list.html', {'staff': staff, 'logs': logs_page})
 
+@login_required
 @permission_required('staff.view_staffcontacted', raise_exception=True)
 def staff_contacted_detail(request, pk):
     contacted = get_object_or_404(StaffContacted, pk=pk)
@@ -36,6 +38,7 @@ from apps.common.utils import fill_excel_from_template, fill_pdf_from_template
 from django.contrib.auth.decorators import login_required, permission_required
 
 # 連絡履歴 削除
+@login_required
 @permission_required('staff.delete_staffcontacted', raise_exception=True)
 def staff_contacted_delete(request, pk):
     contacted = get_object_or_404(StaffContacted, pk=pk)
@@ -62,6 +65,7 @@ from django.contrib.auth.decorators import login_required
 # ロガーの作成
 logger = logging.getLogger('staff')
 
+@login_required
 @permission_required('staff.view_staff', raise_exception=True)
 def staff_list(request):
     query = request.GET.get('q')  # 検索キーワードを取得
@@ -90,6 +94,7 @@ def staff_list(request):
 
 from django.contrib.auth.decorators import permission_required
 
+@login_required
 @permission_required('staff.add_staff', raise_exception=True)
 def staff_create(request):
     if request.method == 'POST':
@@ -101,6 +106,7 @@ def staff_create(request):
         form = StaffForm()
     return render(request, 'staff/staff_form.html', {'form': form})
 
+@login_required
 @permission_required('staff.view_staff', raise_exception=True)
 def staff_detail(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
@@ -122,6 +128,7 @@ def staff_detail(request, pk):
 
 
 # 連絡履歴 登録
+@login_required
 @permission_required('staff.add_staffcontacted', raise_exception=True)
 def staff_contacted_create(request, staff_pk):
     staff = get_object_or_404(Staff, pk=staff_pk)
@@ -138,12 +145,14 @@ def staff_contacted_create(request, staff_pk):
 
 # 連絡履歴 一覧
 @login_required
+@permission_required('staff.view_staffcontacted', raise_exception=True)
 def staff_contacted_list(request, staff_pk):
     staff = get_object_or_404(Staff, pk=staff_pk)
     contacted_list = staff.contacted_histories.all()
     return render(request, 'staff/staff_contacted_list.html', {'staff': staff, 'contacted_list': contacted_list})
 
 # 連絡履歴 編集
+@login_required
 @permission_required('staff.change_staffcontacted', raise_exception=True)
 def staff_contacted_update(request, pk):
     contacted = get_object_or_404(StaffContacted, pk=pk)
@@ -157,6 +166,7 @@ def staff_contacted_update(request, pk):
         form = StaffContactedForm(instance=contacted)
     return render(request, 'staff/staff_contacted_form.html', {'form': form, 'staff': staff, 'contacted': contacted})
 
+@login_required
 @permission_required('staff.change_staff', raise_exception=True)
 def staff_update(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
@@ -169,6 +179,7 @@ def staff_update(request, pk):
         form = StaffForm(instance=staff)
     return render(request, 'staff/staff_form.html', {'form': form})
 
+@login_required
 @permission_required('staff.delete_staff', raise_exception=True)
 def staff_delete(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
@@ -178,6 +189,7 @@ def staff_delete(request, pk):
     return render(request, 'staff/staff_confirm_delete.html', {'staff': staff})
 
 @login_required
+@permission_required('staff.view_staff', raise_exception=True)
 def staff_face(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
     image_path = os.path.join(my_parameter("STAFF_FACE_PATH"), str(staff.pk)+".jpg") 
@@ -223,6 +235,7 @@ def staff_face(request, pk):
     return response
 
 @login_required
+@permission_required('staff.view_staff', raise_exception=True)
 def staff_rirekisho(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
     sex_dropdown = Dropdowns.objects.filter(category='sex', value=staff.sex, active=True).first()
@@ -246,6 +259,7 @@ def staff_rirekisho(request, pk):
     return response
 
 @login_required
+@permission_required('staff.view_staff', raise_exception=True)
 def staff_kyushoku(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
     sex_dropdown = Dropdowns.objects.filter(category='sex', value=staff.sex, active=True).first()
@@ -266,6 +280,7 @@ def staff_kyushoku(request, pk):
     return response
 
 @login_required
+@permission_required('staff.view_staff', raise_exception=True)
 def staff_fuyokojo(request, pk):
     staff = Staff.objects.get(pk=pk)
     sex_dropdown = Dropdowns.objects.filter(category='sex', value=staff.sex, active=True).first()
