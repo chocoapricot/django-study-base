@@ -265,7 +265,7 @@
     </div>
     {% if staff.contacted_histories.count > 5 %}
     <div class="card-footer d-flex justify-content-center align-items-center">
-        <a href="{% url 'staff_contacted_list' staff.pk %}">全て表示</a>
+        <a href="{% url 'staff_contacted_list' staff.pk %}">全て表示 (全{{ staff.contacted_histories.count }}件)</a>
     </div>
     {% endif %}
 </div>
@@ -308,7 +308,7 @@
     </div>
     {% if change_logs_count > 0 %}
     <div class="card-footer d-flex justify-content-center align-items-center">
-        <a href="{% url 'staff_change_history_list' staff.pk %}">全て表示</a>
+        <a href="{% url 'staff_change_history_list' staff.pk %}">全て表示 (全{{ change_logs_count }}件)</a>
     </div>
     {% endif %}
 </div>
