@@ -21,7 +21,7 @@
     }
     .login-card {
       width: 100%;
-      max-width: 420px;
+      max-width: 500px;
       border-radius: 16px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.10);
       background: #fff;
@@ -37,7 +37,6 @@
     .login-header .logo {
       font-weight: bold;
       font-size: 1.5rem;
-      color: #007bff;
       letter-spacing: 1px;
       margin-bottom: 0.5rem;
     }
@@ -55,18 +54,6 @@
       border-radius: 8px;
       font-size: 1rem;
     }
-    .btn-primary {
-      background: #007bff;
-      border-radius: 8px;
-      border: none;
-      font-weight: bold;
-      font-size: 1.1rem;
-      letter-spacing: 1px;
-      box-shadow: 0 2px 8px rgba(0,123,255,0.08);
-    }
-    .btn-primary:hover {
-      background: #0056b3;
-    }
     .login-footer {
       text-align: center;
       color: #aaa;
@@ -79,7 +66,7 @@
   <div class="login-container">
     <div class="login-card card">
       <div class="login-header">
-        <div class="logo"><i class="bi bi-boxes" style="color:#007bff;font-size:2rem;"></i> {% parameter 'SYSTEM_NAME' %}</div>
+        <div class="logo">{% parameter 'SYSTEM_NAME' %}</div>
         <div class="subtitle">システムにログインしてください</div>
       </div>
       <div class="card-body">
