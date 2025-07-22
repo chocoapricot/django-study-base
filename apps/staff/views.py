@@ -82,7 +82,8 @@ def staff_list(request):
             |Q(address2__icontains=query)
             |Q(address3__icontains=query)
             |Q(email__icontains=query)
-            )
+            |Q(employee_no__icontains=query)
+        )
     else:
         query = ''
         staffs = Staff.objects.all()  # 検索キーワードがなければ全件取得
