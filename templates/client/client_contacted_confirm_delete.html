@@ -1,6 +1,36 @@
 {% extends 'common/base.html' %}
 {% load my_dropdown_tags %}
 {% block content %}
+<!-- クライアント基本情報カード -->
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">クライアント基本情報</div>
+    <div class="card-body">
+        <div class="row mb-2 align-items-center">
+            <div class="col">
+                <h4 class="mb-1">
+                    <ruby>
+                        {{ client.name }}<rt>{{ client.name_furigana }}</rt>
+                    </ruby>
+                </h4>
+                {% if client.regist_form_client < 10 %}
+                    <span class="badge bg-primary" style="font-size:15px">{% my_name 'regist_form_client' client.regist_form_client %}</span>
+                {% elif client.regist_form_client < 20 %}
+                    <span class="badge bg-success" style="font-size:15px">{% my_name 'regist_form_client' client.regist_form_client %}</span>
+                {% elif client.regist_form_client < 30 %}
+                    <span class="badge bg-info" style="font-size:15px">{% my_name 'regist_form_client' client.regist_form_client %}</span>
+                {% elif client.regist_form_client < 40 %}
+                    <span class="badge bg-warning" style="font-size:15px">{% my_name 'regist_form_client' client.regist_form_client %}</span>
+                {% elif client.regist_form_client >= 90 %}
+                    <span class="badge bg-dark" style="font-size:15px">{% my_name 'regist_form_client' client.regist_form_client %}</span>
+                {% else %}
+                    <span class="badge bg-light" style="font-size:15px">{% my_name 'regist_form_client' client.regist_form_client %}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /クライアント基本情報カード -->
+
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">クライアント連絡履歴 削除確認</div>
     <div class="card-body">
