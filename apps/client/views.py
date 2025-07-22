@@ -117,8 +117,11 @@ def client_contacted_create(request, client_pk):
 @permission_required('client.view_clientcontacted', raise_exception=True)
 def client_contacted_list(request, client_pk):
     client = get_object_or_404(Client, pk=client_pk)
-    contacted_list = client.contacted_histories.all()
-    return render(request, 'client/client_contacted_list.html', {'client': client, 'contacted_list': contacted_list})
+    contacted_qs = client.contacted_histories.all().order_by('-contacted_at')
+    paginator = Paginator(contacted_qs, 20)
+    page = request.GET.get('page')
+    logs = paginator.get_page(page)
+    return render(request, 'client/client_contacted_list.html', {'client': client, 'logs': logs})
 
 # クライアント連絡履歴 編集
 @login_required

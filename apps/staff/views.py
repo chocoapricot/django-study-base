@@ -148,8 +148,11 @@ def staff_contacted_create(request, staff_pk):
 @permission_required('staff.view_staffcontacted', raise_exception=True)
 def staff_contacted_list(request, staff_pk):
     staff = get_object_or_404(Staff, pk=staff_pk)
-    contacted_list = staff.contacted_histories.all()
-    return render(request, 'staff/staff_contacted_list.html', {'staff': staff, 'contacted_list': contacted_list})
+    contacted_qs = staff.contacted_histories.all().order_by('-contacted_at')
+    paginator = Paginator(contacted_qs, 20)
+    page = request.GET.get('page')
+    logs = paginator.get_page(page)
+    return render(request, 'staff/staff_contacted_list.html', {'staff': staff, 'logs': logs})
 
 # 連絡履歴 編集
 @login_required
