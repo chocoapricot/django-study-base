@@ -37,6 +37,7 @@
             <thead>
                 <tr>
                     <th><i class="bi bi-person-fill"></i></th>
+                    <th>社員番号</th>
                     <th>氏名</th>
                     <th class="d-none d-lg-table-cell">住所</th>
                     <th>年齢</th>
@@ -48,7 +49,12 @@
                 {% for staff in staffs %}
                 <tr>
                     <td>
-                        <img src="{% url 'staff_face' staff.pk %}" class="rounded-circle img-fluid" width="40" height="40" style="object-fit: cover;width:40px;height:40px">
+                        <div class="d-flex align-items-center">
+                            <img src="{% url 'staff_face' staff.pk %}" class="rounded-circle img-fluid" width="40" height="40" style="object-fit: cover;width:40px;height:40px">
+                        </div>
+                    </td>
+                    <td>
+                        {{ staff.employee_no|default:"" }}
                     </td>
                     <td>
                         <a href="{% url 'staff_detail' staff.pk %}">

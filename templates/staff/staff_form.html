@@ -18,10 +18,20 @@
             </div>
             {% endif %}
             
-            <div class="row mb-3 align-items-center">
+
+            <div class="row align-items-center">
                 <label for="{{ form.regist_form_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.regist_form_code.label }}</label>
                 <div class="col-sm-8">
                     {{ form.regist_form_code }}
+                </div>
+            </div>
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.employee_no.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">社員番号</label>
+                <div class="col-sm-4">
+                    {{ form.employee_no }}
+                </div>
+                <div class="col-sm-6 align-self-center">
+                    <span class="text-muted" style="font-size:12px">半角英数字10文字まで（空欄可）</span>
                 </div>
             </div>
 

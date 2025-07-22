@@ -32,6 +32,7 @@ class StaffContactedForm(forms.ModelForm):
 # 共通カナバリデーション/正規化
 from apps.common.forms.fields import to_fullwidth_katakana, validate_kana
 
+
 class StaffForm(forms.ModelForm):
     def clean_name_kana_last(self):
         value = self.cleaned_data.get('name_kana_last', '')
@@ -43,6 +44,14 @@ class StaffForm(forms.ModelForm):
         value = self.cleaned_data.get('name_kana_first', '')
         validate_kana(value)
         value = to_fullwidth_katakana(value)
+        return value
+
+    def clean_employee_no(self):
+        value = self.cleaned_data.get('employee_no', '')
+        if value:
+            import re
+            if not re.fullmatch(r'^[A-Za-z0-9]{1,10}$', value):
+                raise forms.ValidationError('社員番号は半角英数字10文字以内で入力してください。')
         return value
 
     sex = forms.ChoiceField(
@@ -75,12 +84,15 @@ class StaffForm(forms.ModelForm):
     class Meta:
         model = Staff
         fields = [
+            'regist_form_code',
+            'employee_no',
             'name_last','name_first','name_kana_last','name_kana_first',
             'birth_date','sex',
             # 'age', ← ここは除外
-            'postal_code','address1','address2','address3', 'phone', 'email', 'regist_form_code'
+            'postal_code','address1','address2','address3', 'phone', 'email'
         ]
         widgets = {
+            'employee_no': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '10'}),
             'name_last': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'name_first': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'name_kana_last': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),

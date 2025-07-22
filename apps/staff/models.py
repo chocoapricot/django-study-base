@@ -20,6 +20,7 @@ class Staff(MyModel):
     phone = models.TextField('電話番号',blank=True, null=True)
     email = models.CharField('E-MAIL',max_length=255, unique=True, blank=True, null=True)
     regist_form_code = models.IntegerField('登録区分',blank=True, null=True)
+    employee_no = models.CharField('社員番号', max_length=10, blank=True, null=True, help_text='半角英数字10文字まで')
 
     class Meta:
         db_table = 'apps_staff'  # 既存のテーブル名を指定
