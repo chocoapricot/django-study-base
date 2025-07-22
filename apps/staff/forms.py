@@ -27,7 +27,35 @@ class StaffContactedForm(forms.ModelForm):
             'detail': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
 
+
+import re
+
+def to_fullwidth_katakana(text):
+    # ひらがな→カタカナ
+    text = re.sub(r'[ぁ-ん]', lambda m: chr(ord(m.group(0)) + 0x60), text)
+    # 半角カタカナ→全角カタカナ
+    # 半角カタカナunicode: FF66-FF9D, FF9E, FF9F, 30FC, 3099, 309A
+    import unicodedata
+    text = unicodedata.normalize('NFKC', text)
+    return text
+
+def validate_kana(value):
+    # カタカナ・ひらがなのみ許可
+    if not re.fullmatch(r'[\u30A0-\u30FF\u3040-\u309Fー\uFF9E\uFF9F\u3099\u309A]+', value):
+        raise forms.ValidationError('カナはカタカナまたはひらがなのみ入力してください。')
+
 class StaffForm(forms.ModelForm):
+    def clean_name_kana_last(self):
+        value = self.cleaned_data.get('name_kana_last', '')
+        validate_kana(value)
+        value = to_fullwidth_katakana(value)
+        return value
+
+    def clean_name_kana_first(self):
+        value = self.cleaned_data.get('name_kana_first', '')
+        validate_kana(value)
+        value = to_fullwidth_katakana(value)
+        return value
 
     sex = forms.ChoiceField(
         choices=[],
