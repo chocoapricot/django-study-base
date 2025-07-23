@@ -1,18 +1,18 @@
-# Product Overview
+# プロダクト概要
 
-This is a Django-based web application called "django-study-base" that appears to be a business management system with the following key features:
+これは「django-study-base」と呼ばれるDjangoベースのWebアプリケーションで、以下の主要機能を持つビジネス管理システムです：
 
-- **Staff Management**: Employee data management and tracking
-- **Client Management**: Customer relationship management functionality  
-- **System Administration**: User management, menus, parameters, and dropdown configurations
-- **API Layer**: RESTful API endpoints for data access
-- **Authentication**: Custom user authentication with role-based access
+- **スタッフ管理**: 従業員データの管理と追跡
+- **クライアント管理**: 顧客関係管理機能
+- **システム管理**: ユーザー管理、メニュー、パラメータ、ドロップダウン設定
+- **APIレイヤー**: データアクセス用RESTful APIエンドポイント
+- **認証**: ロールベースアクセス付きカスタムユーザー認証
 
-The application is designed for Japanese users (ja-JP locale, Asia/Tokyo timezone) and includes features for data import/export, PDF generation, and Excel integration for business workflows.
+このアプリケーションは日本のユーザー向けに設計されており（ja-JPロケール、Asia/Tokyoタイムゾーン）、ビジネスワークフロー用のデータインポート/エクスポート、PDF生成、Excel統合機能を含んでいます。
 
-## Key Business Areas
-- Staff administration and contact tracking
-- Client relationship management
-- System configuration and user administration
-- Common utilities and shared functionality
-- CSS testing environment for UI development
+## 主要なビジネス領域
+- スタッフ管理と連絡先追跡
+- クライアント関係管理
+- システム設定とユーザー管理
+- 共通ユーティリティと共有機能
+- UI開発用CSSテスト環境

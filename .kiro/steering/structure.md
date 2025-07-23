@@ -1,81 +1,81 @@
-# Project Structure
+# プロジェクト構造
 
-## Root Directory Layout
+## ルートディレクトリレイアウト
 ```
 django-study-base/
-├── apps/                    # Django applications (modular components)
-├── config/                  # Project configuration
-├── templates/               # HTML templates organized by app
-├── statics/                 # Static assets (CSS, JS, fonts)
-├── _sample_data/           # JSON fixtures for data import/export
-├── venv/                   # Python virtual environment
-├── manage.py               # Django management script
-└── db.sqlite3             # SQLite database file
+├── apps/                    # Djangoアプリケーション（モジュラーコンポーネント）
+├── config/                  # プロジェクト設定
+├── templates/               # アプリ別に整理されたHTMLテンプレート
+├── statics/                 # 静的アセット（CSS、JS、フォント）
+├── _sample_data/           # データインポート/エクスポート用JSONフィクスチャ
+├── venv/                   # Python仮想環境
+├── manage.py               # Django管理スクリプト
+└── db.sqlite3             # SQLiteデータベースファイル
 ```
 
-## Apps Directory Structure
-Each app follows Django conventions with these standard files:
-- `models.py`: Database models
-- `views.py`: View logic
-- `urls.py`: URL routing
-- `forms.py`: Form definitions
-- `admin.py`: Django admin configuration
-- `apps.py`: App configuration
-- `migrations/`: Database migration files
+## アプリディレクトリ構造
+各アプリは以下の標準ファイルでDjango規約に従います：
+- `models.py`: データベースモデル
+- `views.py`: ビューロジック
+- `urls.py`: URLルーティング
+- `forms.py`: フォーム定義
+- `admin.py`: Django管理画面設定
+- `apps.py`: アプリ設定
+- `migrations/`: データベースマイグレーションファイル
 
-### Application Modules
-- **`apps/system/`**: Core system functionality
-  - `dropdowns/`: Dropdown/select options management
-  - `useradmin/`: Custom user management and authentication
-  - `menu/`: Navigation menu system
-  - `parameters/`: System configuration parameters
-- **`apps/staff/`**: Employee management
-- **`apps/client/`**: Customer relationship management
-- **`apps/api/`**: REST API endpoints
-- **`apps/common/`**: Shared utilities and common functionality
-- **`apps/home/`**: Homepage and landing pages
-- **`apps/csstest/`**: CSS testing and development
+### アプリケーションモジュール
+- **`apps/system/`**: コアシステム機能
+  - `dropdowns/`: ドロップダウン/選択オプション管理
+  - `useradmin/`: カスタムユーザー管理と認証
+  - `menu/`: ナビゲーションメニューシステム
+  - `parameters/`: システム設定パラメータ
+- **`apps/staff/`**: 従業員管理
+- **`apps/client/`**: 顧客関係管理
+- **`apps/api/`**: REST APIエンドポイント
+- **`apps/common/`**: 共有ユーティリティと共通機能
+- **`apps/home/`**: ホームページとランディングページ
+- **`apps/csstest/`**: CSSテストと開発
 
-## Configuration Structure
+## 設定構造
 ```
 config/
 ├── settings/
-│   ├── settings.py         # Main settings
-│   ├── develop.py          # Development-specific settings
-│   └── product.py          # Production-specific settings
-├── urls.py                 # Root URL configuration
-├── wsgi.py                 # WSGI application
-└── asgi.py                 # ASGI application
+│   ├── settings.py         # メイン設定
+│   ├── develop.py          # 開発環境固有設定
+│   └── product.py          # 本番環境固有設定
+├── urls.py                 # ルートURL設定
+├── wsgi.py                 # WSGIアプリケーション
+└── asgi.py                 # ASGIアプリケーション
 ```
 
-## Templates Organization
-Templates are organized by application with shared templates in common:
+## テンプレート構成
+テンプレートはアプリケーション別に整理され、共通テンプレートはcommonに配置：
 ```
 templates/
-├── common/                 # Shared templates
-├── registration/           # Authentication templates
-├── home/                   # Homepage templates
-├── staff/                  # Staff management templates
-├── client/                 # Client management templates
-└── useradmin/             # User administration templates
+├── common/                 # 共有テンプレート
+├── registration/           # 認証テンプレート
+├── home/                   # ホームページテンプレート
+├── staff/                  # スタッフ管理テンプレート
+├── client/                 # クライアント管理テンプレート
+└── useradmin/             # ユーザー管理テンプレート
 ```
 
-## Static Assets
+## 静的アセット
 ```
 statics/
-├── css/                    # Stylesheets
-├── js/                     # JavaScript files
-└── fonts/                  # Font files
+├── css/                    # スタイルシート
+├── js/                     # JavaScriptファイル
+└── fonts/                  # フォントファイル
 ```
 
-## Naming Conventions
-- **Apps**: Lowercase, descriptive names (e.g., `staff`, `client`)
-- **Models**: PascalCase (e.g., `CustomUser`)
-- **URLs**: Lowercase with hyphens (e.g., `/staff/contact-list/`)
-- **Templates**: Lowercase with underscores (e.g., `staff_list.html`)
-- **Static files**: Organized by type in respective subdirectories
+## 命名規則
+- **アプリ**: 小文字、説明的な名前（例：`staff`、`client`）
+- **モデル**: パスカルケース（例：`CustomUser`）
+- **URL**: 小文字でハイフン区切り（例：`/staff/contact-list/`）
+- **テンプレート**: 小文字でアンダースコア区切り（例：`staff_list.html`）
+- **静的ファイル**: タイプ別にそれぞれのサブディレクトリで整理
 
-## Import Patterns
-- Use relative imports within apps: `from .models import MyModel`
-- Use absolute imports for cross-app references: `from apps.common.utils import helper_function`
-- System apps are referenced as: `apps.system.useradmin.models.CustomUser`
+## インポートパターン
+- アプリ内では相対インポートを使用：`from .models import MyModel`
+- アプリ間参照では絶対インポートを使用：`from apps.common.utils import helper_function`
+- システムアプリの参照：`apps.system.useradmin.models.CustomUser`

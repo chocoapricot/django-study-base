@@ -156,7 +156,7 @@ def client_update(request, pk):
         form = ClientForm(request.POST, instance=client)
         if form.is_valid():
             form.save()
-            return redirect('client:client_list')
+            return redirect('client:client_detail', pk=client.pk)
     else:
         form = ClientForm(instance=client)
     return render(request, 'client/client_form.html', {'form': form})

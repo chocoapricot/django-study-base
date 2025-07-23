@@ -1,40 +1,40 @@
-# Technology Stack
+# 技術スタック
 
-## Framework & Core
-- **Django 5.0.4**: Main web framework
-- **Python**: Backend language
-- **SQLite**: Default database (configurable for MySQL)
+## フレームワーク & コア
+- **Django 5.0.4**: メインWebフレームワーク
+- **Python**: バックエンド言語
+- **SQLite**: デフォルトデータベース（MySQL設定可能）
 
-## Key Dependencies
-- `django-import-export`: Data import/export functionality
-- `django-currentuser`: Track current user in models
-- `pillow`: Image processing (profile photos)
-- `requests`: HTTP client for API calls
-- `openpyxl`: Excel file processing
-- `pymupdf`: PDF processing (replaced pdfrw)
-- `mysqlclient`: MySQL database connector (optional)
+## 主要な依存関係
+- `django-import-export`: データインポート/エクスポート機能
+- `django-currentuser`: モデル内で現在のユーザーを追跡
+- `pillow`: 画像処理（プロフィール写真）
+- `requests`: API呼び出し用HTTPクライアント
+- `openpyxl`: Excelファイル処理
+- `pymupdf`: PDF処理（pdfrwの代替）
+- `mysqlclient`: MySQLデータベースコネクタ（オプション）
 
-## Project Structure
-- **Apps-based architecture**: Modular Django apps in `apps/` directory
-- **Environment-specific settings**: Separate settings files for development/production
-- **Custom user model**: Extended authentication via `apps.system.useradmin.CustomUser`
+## プロジェクト構造
+- **アプリベースアーキテクチャ**: `apps/`ディレクトリ内のモジュラーDjangoアプリ
+- **環境固有設定**: 開発/本番用の個別設定ファイル
+- **カスタムユーザーモデル**: `apps.system.useradmin.CustomUser`による拡張認証
 
-## Common Commands
+## よく使うコマンド
 
-### Environment Setup
+### 環境セットアップ
 ```bash
-# Activate virtual environment
+# 仮想環境をアクティベート
 .\venv\Scripts\Activate
 
-# Install/upgrade dependencies
+# 依存関係のインストール/アップグレード
 python.exe -m pip install --upgrade pip
 pip list --outdated
 pip install --upgrade <package>
 ```
 
-### Database Operations
+### データベース操作
 ```bash
-# Create migrations for all apps
+# 全アプリのマイグレーション作成
 python manage.py makemigrations dropdowns
 python manage.py makemigrations useradmin
 python manage.py makemigrations menu
@@ -45,33 +45,33 @@ python manage.py makemigrations common
 python manage.py makemigrations
 python manage.py migrate
 
-# Create superuser
+# スーパーユーザー作成
 python manage.py createsuperuser
 
-# Database shell access
+# データベースシェルアクセス
 python manage.py dbshell
 ```
 
-### Data Management
+### データ管理
 ```bash
-# Export data to JSON
+# JSONへのデータエクスポート
 python manage.py dumpdata <app> --format=json --indent=4 > _sample_data/<app>.json
 
-# Import data from JSON (ensure UTF-8 encoding)
+# JSONからのデータインポート（UTF-8エンコーディング確認）
 python manage.py loaddata _sample_data/<app>.json
 ```
 
-### Development
+### 開発
 ```bash
-# Run development server
+# 開発サーバー起動
 python manage.py runserver
 
-# Run tests
+# テスト実行
 python manage.py test apps.api.tests
 ```
 
-## Configuration Notes
-- Settings module: `config.settings.settings`
-- Japanese localization (ja-JP, Asia/Tokyo)
-- Static files served from `statics/` directory
-- Templates in `templates/` directory with app-specific subdirectories
+## 設定メモ
+- 設定モジュール: `config.settings.settings`
+- 日本語ローカライゼーション（ja-JP、Asia/Tokyo）
+- 静的ファイルは`statics/`ディレクトリから配信
+- テンプレートは`templates/`ディレクトリにアプリ固有のサブディレクトリで配置
