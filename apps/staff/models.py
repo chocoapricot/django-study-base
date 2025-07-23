@@ -2,8 +2,10 @@ from django.db import models
 from datetime import date
 
 from ..common.models import MyModel
+from concurrency.fields import IntegerVersionField
 
 class Staff(MyModel):
+    version = IntegerVersionField()
     name_last = models.CharField('名前(姓)',max_length=30,help_text='')
     name_first = models.CharField('名前(名)',max_length=30,help_text='')
     name_kana_last = models.CharField('カナ(姓)',max_length=30,help_text='')
