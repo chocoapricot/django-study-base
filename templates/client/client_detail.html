@@ -1,12 +1,12 @@
 {% extends 'common/base.html' %}
 {% load my_dropdown_tags %}
 {% block content %}
+
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">クライアント基本情報</div>
     <div class="card-body">
             {% csrf_token %}
             <div class="row mb-3 align-items-center">
-                                
                 <div class="col-sm-4">
                     <h4>
                         <ruby>

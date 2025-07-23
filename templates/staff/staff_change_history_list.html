@@ -1,50 +1,7 @@
 {% extends 'common/base.html' %}
 {% load my_dropdown_tags %}
 {% block content %}
-<!-- スタッフ基本情報カード -->
-<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header">スタッフ基本情報</div>
-    <div class="card-body">
-        <div class="row mb-2 align-items-center">
-            <div class="col">
-                <div class="col-sm mb-2 d-flex align-items-center">
-                    {% if staff.regist_form_code < 10 %}
-                        <span class="badge bg-primary" style="font-size:15px">{% my_name 'regist_form' staff.regist_form_code %}</span>
-                    {% elif staff.regist_form_code < 20 %}
-                        <span class="badge bg-success" style="font-size:15px">{% my_name 'regist_form' staff.regist_form_code %}</span>
-                    {% elif staff.regist_form_code < 30 %}
-                        <span class="badge bg-info" style="font-size:15px">{% my_name 'regist_form' staff.regist_form_code %}</span>
-                    {% elif staff.regist_form_code < 40 %}
-                        <span class="badge bg-warning" style="font-size:15px">{% my_name 'regist_form' staff.regist_form_code %}</span>
-                    {% elif staff.regist_form_code < 50 %}
-                        <span class="badge bg-danger" style="font-size:15px">{% my_name 'regist_form' staff.regist_form_code %}</span>
-                    {% elif staff.regist_form_code >= 90 %}
-                        <span class="badge bg-dark" style="font-size:15px">{% my_name 'regist_form' staff.regist_form_code %}</span>
-                    {% else %}
-                        <span class="badge bg-light" style="font-size:15px">{% my_name 'regist_form' staff.regist_form_code %}</span>
-                    {% endif %}
-                    {% if staff.employee_no %}
-                        　<span style="font-size:18px">{{ staff.employee_no }}</span>
-                    {% endif %}
-                </div>
-                <h4>
-                    <ruby>
-                        {{ staff.name_last }}<rt>{{ staff.name_kana_last }}</rt>
-                    </ruby>
-                    <ruby>
-                        {{ staff.name_first }}<rt>{{ staff.name_kana_first }}</rt>
-                    </ruby>
-                    {% if staff.sex == 1 %}
-                        <span class="badge bg-info" style="font-size:12px">{% my_name 'sex' staff.sex %}</span>
-                    {% else %}
-                        <span class="badge bg-primary" style="font-size:12px">{% my_name 'sex' staff.sex %}</span>
-                    {% endif %}
-                </h4>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- /スタッフ基本情報カード -->
+{% include 'staff/_staff_info_card.html' with staff=staff %}
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
