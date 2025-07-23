@@ -4,7 +4,6 @@ from ..common.models import MyModel
 from concurrency.fields import IntegerVersionField
 
 class Client(MyModel):
-    version = IntegerVersionField()
     corporate_number=models.CharField('法人番号',max_length=13, unique=True, blank=True, null=True)
     name = models.TextField('会社名')
     name_furigana = models.TextField('会社名カナ')
