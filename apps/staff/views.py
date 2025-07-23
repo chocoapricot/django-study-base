@@ -178,7 +178,7 @@ def staff_update(request, pk):
         form = StaffForm(request.POST, instance=staff)
         if form.is_valid():
             form.save()
-            return redirect('staff_list')
+            return redirect('staff_detail', pk=staff.pk)
     else:
         form = StaffForm(instance=staff)
     return render(request, 'staff/staff_form.html', {'form': form})
