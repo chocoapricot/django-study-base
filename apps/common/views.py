@@ -14,15 +14,21 @@ def applog_list(request):
     
     log_list = AppLog.objects.all().order_by('-timestamp')
     
-    # テキスト検索
+    # テキスト検索（複数キーワードのAND検索対応）
     if query:
-        log_list = log_list.filter(
-            Q(user__username__icontains=query) |
-            Q(action__icontains=query) |
-            Q(model_name__icontains=query) |
-            Q(object_id__icontains=query) |
-            Q(object_repr__icontains=query)
-        )
+        # 半角スペースで分割してキーワードリストを作成
+        keywords = [keyword.strip() for keyword in query.split() if keyword.strip()]
+        
+        # 各キーワードに対してOR条件を作成し、それらをANDで結合
+        for keyword in keywords:
+            keyword_filter = (
+                Q(user__username__icontains=keyword) |
+                Q(action__icontains=keyword) |
+                Q(model_name__icontains=keyword) |
+                Q(object_id__icontains=keyword) |
+                Q(object_repr__icontains=keyword)
+            )
+            log_list = log_list.filter(keyword_filter)
     
     # 日付検索（年月日または年月）
     date_filter_for_url = ''  # URLパラメータ用（ハイフン区切り）
