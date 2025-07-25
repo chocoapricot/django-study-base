@@ -121,7 +121,9 @@ def log_save(sender, instance, created, **kwargs):
         diff_text = None
         if hasattr(_thread_locals, 'applog_diffs'):
             diff_text = _thread_locals.applog_diffs.pop((sender.__name__, instance.pk), None)
-        log_action(instance, 'update', diff_text=diff_text or str(instance))
+        # 実際に変更があった場合のみログを記録
+        if diff_text:
+            log_action(instance, 'update', diff_text=diff_text)
 
 @receiver(post_delete)
 def log_delete(sender, instance, **kwargs):
