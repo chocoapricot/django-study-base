@@ -24,6 +24,9 @@ pip install pdfrw
 #    pip uninstall pypdf
 pip install pymupdf
 
+パンくずリスト
+django-sitetree,django-bootstrap-breadcrumbs,django-breadcrumbs、django-view-breadcrumbsはNG。
+でやってみる。
 
 
 # アップデート確認とアップデート
