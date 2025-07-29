@@ -10,7 +10,8 @@ def log_user_login(sender, request, user, **kwargs):
         action='login',
         model_name='User',
         object_id=str(user.pk),
-        object_repr=f'{user} がログイン'
+        object_repr=f'{user} がログイン',
+        version=None
     )
 
 @receiver(user_logged_out)
@@ -20,5 +21,6 @@ def log_user_logout(sender, request, user, **kwargs):
         action='logout',
         model_name='User',
         object_id=str(user.pk),
-        object_repr=f'{user} がログアウト'
+        object_repr=f'{user} がログアウト',
+        version=None
     )

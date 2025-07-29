@@ -29,6 +29,7 @@ class AppLog(models.Model):
     model_name = models.CharField(max_length=100)
     object_id = models.CharField(max_length=100)
     object_repr = models.TextField()
+    version = models.IntegerField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

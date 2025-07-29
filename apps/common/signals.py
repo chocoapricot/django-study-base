@@ -34,7 +34,8 @@ def log_action(instance, action, diff_text=None):
         action=action,
         model_name=instance.__class__.__name__,
         object_id=str(getattr(instance, 'pk', '')),
-        object_repr=diff_text if diff_text else str(instance)
+        object_repr=diff_text if diff_text else str(instance),
+        version=getattr(instance, 'version', None)
     )
 
 def get_dropdown_display_name(field_name, value, model_name):
