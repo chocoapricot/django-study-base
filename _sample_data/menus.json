@@ -3,6 +3,7 @@
     "model": "menu.menu",
     "pk": 1,
     "fields": {
+        "version": 0,
         "created_at": "2024-10-25T07:19:05.997Z",
         "created_by": 1,
         "updated_at": "2025-07-19T18:50:45.232Z",
@@ -19,6 +20,7 @@
     "model": "menu.menu",
     "pk": 2,
     "fields": {
+        "version": 0,
         "created_at": "2024-10-25T07:19:42.113Z",
         "created_by": 1,
         "updated_at": "2024-11-07T05:07:54.168Z",
@@ -35,6 +37,7 @@
     "model": "menu.menu",
     "pk": 3,
     "fields": {
+        "version": 0,
         "created_at": "2024-10-25T07:20:18.686Z",
         "created_by": 1,
         "updated_at": "2024-11-11T14:09:40.204Z",
@@ -51,13 +54,14 @@
     "model": "menu.menu",
     "pk": 4,
     "fields": {
+        "version": 0,
         "created_at": "2024-10-25T07:21:23.405Z",
         "created_by": 1,
-        "updated_at": "2024-10-25T07:43:16.808Z",
+        "updated_at": "2025-07-21T15:55:33.449Z",
         "updated_by": 1,
         "name": "CSSテスト",
         "url": "/csstest/",
-        "icon": "bi-file-earmark-text",
+        "icon": "bi-palette",
         "icon_style": "color:#ffc107;",
         "disp_seq": 4,
         "active": true
@@ -67,16 +71,17 @@
     "model": "menu.menu",
     "pk": 5,
     "fields": {
+        "version": 0,
         "created_at": "2025-07-19T15:46:59.051Z",
         "created_by": 1,
-        "updated_at": "2025-07-19T18:50:33.299Z",
+        "updated_at": "2025-07-21T15:54:42.828Z",
         "updated_by": 1,
-        "name": "アカウント",
-        "url": "/useradmin/profile/",
-        "icon": "bi-people",
+        "name": "ログ",
+        "url": "/common/applog/",
+        "icon": "bi-list-check",
         "icon_style": "color:#28a745;",
         "disp_seq": 5,
-        "active": false
+        "active": true
     }
 }
 ]
