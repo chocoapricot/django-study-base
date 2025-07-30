@@ -1,3 +1,4 @@
+import sys
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 from django.contrib.contenttypes.models import ContentType
@@ -25,7 +26,7 @@ def log_action(instance, action, diff_text=None):
             if val is not None and val != '':
                 label = getattr(field, 'verbose_name', fname)
                 display_val = get_dropdown_display_name(fname, val, instance.__class__.__name__)
-                create_info_list.append(f"{label}: '{display_val}'")
+                create_info_list.append(f"'{display_val}'")
         
         diff_text = ", ".join(create_info_list) if create_info_list else str(instance)
     
@@ -78,6 +79,8 @@ def get_dropdown_display_name(field_name, value, model_name):
 
 @receiver(pre_save)
 def log_pre_save(sender, instance, **kwargs):
+    if 'migrate' in sys.argv or 'makemigrations' in sys.argv:
+        return
     # AppLog自身やmigrate時は除外
     if sender.__name__ == 'AppLog' or sender._meta.app_label == 'sessions':
         return
@@ -104,7 +107,7 @@ def log_pre_save(sender, instance, **kwargs):
                 old_display = get_dropdown_display_name(fname, old_val, sender.__name__)
                 new_display = get_dropdown_display_name(fname, new_val, sender.__name__)
                 
-                diff_list.append(f"{label}: '{old_display}'→'{new_display}'")
+                diff_list.append(f"'{old_display}'→'{new_display}'")
     diff_text = ", ".join(diff_list) if diff_list else None
     if not hasattr(_thread_locals, 'applog_diffs'):
         _thread_locals.applog_diffs = {}
@@ -113,6 +116,8 @@ def log_pre_save(sender, instance, **kwargs):
 
 @receiver(post_save)
 def log_save(sender, instance, created, **kwargs):
+    if 'migrate' in sys.argv or 'makemigrations' in sys.argv:
+        return
     # AppLog自身やmigrate時は除外
     if sender.__name__ == 'AppLog' or sender._meta.app_label == 'sessions':
         return
@@ -128,6 +133,8 @@ def log_save(sender, instance, created, **kwargs):
 
 @receiver(post_delete)
 def log_delete(sender, instance, **kwargs):
+    if 'migrate' in sys.argv or 'makemigrations' in sys.argv:
+        return
     if sender.__name__ == 'AppLog' or sender._meta.app_label == 'sessions':
         return
     log_action(instance, 'delete')
