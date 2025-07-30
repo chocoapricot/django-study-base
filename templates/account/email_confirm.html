@@ -1,78 +1,12 @@
-{% load parameters %}
+{% extends "account/_account_base.html" %}
 {% load i18n %}
 {% load account %}
 {% load allauth %}
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% trans "Confirm Email Address" %} | {% parameter 'SYSTEM_NAME' %}</title>
-  <link href="/static/css/{% parameter 'GLOBAL_CSS_THEME' %}/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.0/font/bootstrap-icons.min.css" rel="stylesheet">
-  <style>
-    body {
-      background: #f0f0f0;
-      font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
-    }
-    .login-container {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #f0f0f0;
-    }
-    .login-card {
-      width: 100%;
-      max-width: 500px;
-      border-radius: 16px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.10);
-      background: #fff;
-      border: none;
-    }
-    .login-header {
-      background: #fff;
-      border-bottom: 1px solid #e0e0e0;
-      border-radius: 16px 16px 0 0;
-      padding: 1.5rem 1rem 1rem 1rem;
-      text-align: center;
-    }
-    .login-header .logo {
-      font-weight: bold;
-      font-size: 1.5rem;
-      letter-spacing: 1px;
-      margin-bottom: 0.5rem;
-    }
-    .login-header .subtitle {
-      font-size: 1rem;
-      color: #888;
-    }
-    .login-card .card-body {
-      padding: 2rem 2rem 1.5rem 2rem;
-    }
-    .form-label {
-      font-weight: 500;
-    }
-    .form-control {
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-    .login-footer {
-      text-align: center;
-      color: #aaa;
-      font-size: 0.95rem;
-      margin-top: 1.5rem;
-    }
-  </style>
-</head>
-<body>
-  <div class="login-container">
-    <div class="login-card card">
-      <div class="login-header">
-        <div class="logo">{% parameter 'SYSTEM_NAME' %}</div>
-        <div class="subtitle">{% trans "Confirm Email Address" %}</div>
-      </div>
-      <div class="card-body">
+
+{% block title %}{% trans "Confirm Email Address" %}{% endblock %}
+{% block subtitle %}{% trans "Confirm Email Address" %}{% endblock %}
+
+{% block content %}
         {% if confirmation %}
             {% user_display confirmation.email_address.user as user_display %}
             {% if can_confirm %}
@@ -90,11 +24,4 @@
             {% url 'account_email' as email_url %}
             <p class="text-center">{% blocktrans %}This email confirmation link expired or is invalid. Please <a href="{{ email_url }}">issue a new email confirmation request</a>.{% endblocktrans %}</p>
         {% endif %}
-      </div>
-      <div class="login-footer">
-        &copy; 2025 {% parameter 'SYSTEM_NAME' %}
-      </div>
-    </div>
-  </div>
-</body>
-</html>
+{% endblock %}
