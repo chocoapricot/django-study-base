@@ -76,7 +76,7 @@
         <form method="post" autocomplete="off">
           {% csrf_token %}
           <div class="row mb-3 align-items-center">
-            <label for="id_username" class="col-sm-4 col-form-label" style="text-align:right">ユーザー名</label>
+            <label for="id_username" class="col-sm-4 col-form-label" style="text-align:right">ユーザー名またはメールアドレス</label>
             <div class="col-sm-8">
               <div class="input-group align-items-center" style="height: 38px;">
                 {% with un=form.username %}
