@@ -39,6 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'import_export',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+
     'config',
     'apps.system.dropdowns',
     'apps.system.useradmin',
@@ -50,7 +55,17 @@ INSTALLED_APPS = [
     'apps.client',
     'apps.csstest',
     'apps.common',
+    'apps.accounts',
 ]
+
+# allauth設定
+ACCOUNT_LOGIN_METHODS = ['username', 'email']
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1']
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+
+ACCOUNT_ADAPTER = 'apps.accounts.adapters.CustomAccountAdapter'
+SITE_ID = 1
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 MIDDLEWARE = [
@@ -62,6 +77,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -71,6 +87,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, 'templates'),  # この行が必要
+            os.path.join(BASE_DIR, 'venv', 'Lib', 'site-packages', 'allauth', 'templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {

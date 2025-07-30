@@ -1,0 +1,166 @@
+{% load parameters %}
+{% load i18n %}
+{% load allauth account %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>サインアップ | {% parameter 'SYSTEM_NAME' %}</title>
+  <link href="/static/css/{% parameter 'GLOBAL_CSS_THEME' %}/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.0/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f0f0f0;
+      font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+    }
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f0f0f0;
+    }
+    .login-card {
+      width: 100%;
+      max-width: 500px;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+      background: #fff;
+      border: none;
+    }
+    .login-header {
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      border-radius: 16px 16px 0 0;
+      padding: 1.5rem 1rem 1rem 1rem;
+      text-align: center;
+    }
+    .login-header .logo {
+      font-weight: bold;
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+    }
+    .login-header .subtitle {
+      font-size: 1rem;
+      color: #888;
+    }
+    .login-card .card-body {
+      padding: 2rem 2rem 1.5rem 2rem;
+    }
+    .form-label {
+      font-weight: 500;
+    }
+    .form-control {
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    .login-footer {
+      text-align: center;
+      color: #aaa;
+      font-size: 0.95rem;
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card card">
+      <div class="login-header">
+        <div class="logo">{% parameter 'SYSTEM_NAME' %}</div>
+        <div class="subtitle">アカウントを登録してください</div>
+      </div>
+      <div class="card-body">
+        {% if form.errors %}
+          <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+        {% endif %}
+        <form method="post" action="{% url 'account_signup' %}" autocomplete="off">
+          {% csrf_token %}
+          <div class="row mb-3 align-items-center">
+            <label for="id_email" class="col-sm-4 col-form-label" style="text-align:right">メールアドレス</label>
+            <div class="col-sm-8">
+              <div style="height: 38px;">
+                <input type="email" name="email" class="form-control" id="id_email" autocomplete="email" value="{{ form.email.value|default:'' }}" style="height: 100%;">
+              </div>
+            </div>
+          </div>
+          <div class="row mb-3 align-items-center">
+            <label for="id_last_name" class="col-sm-4 col-form-label" style="text-align:right">姓</label>
+            <div class="col-sm-8">
+              <div style="height: 38px;">
+                <input type="text" name="last_name" class="form-control" id="id_last_name" value="{{ form.last_name.value|default:'' }}" style="height: 100%;">
+              </div>
+            </div>
+          </div>
+          <div class="row mb-3 align-items-center">
+            <label for="id_first_name" class="col-sm-4 col-form-label" style="text-align:right">名</label>
+            <div class="col-sm-8">
+              <div style="height: 38px;">
+                <input type="text" name="first_name" class="form-control" id="id_first_name" value="{{ form.first_name.value|default:'' }}" style="height: 100%;">
+              </div>
+            </div>
+          </div>
+          <div class="row mb-3 align-items-center">
+            <label for="id_password1" class="col-sm-4 col-form-label" style="text-align:right">パスワード</label>
+            <div class="col-sm-8">
+              <div class="input-group align-items-center" style="height: 38px;">
+                <input type="password" name="password" class="form-control" id="id_password1" autocomplete="new-password">
+                <span class="input-group-text d-flex align-items-center" style="background: #fff; cursor:pointer; height: 38px; padding: 0 0.75rem;" id="togglePassword1" tabindex="-1">
+                  <i class="bi bi-eye" id="togglePasswordIcon1" style="font-size: 1.2rem;"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-3 align-items-center">
+            <label for="id_password2" class="col-sm-4 col-form-label" style="text-align:right">パスワード（確認）</label>
+            <div class="col-sm-8">
+              <div class="input-group align-items-center" style="height: 38px;">
+                <input type="password" name="password2" class="form-control" id="id_password2" autocomplete="new-password">
+                <span class="input-group-text d-flex align-items-center" style="background: #fff; cursor:pointer; height: 38px; padding: 0 0.75rem;" id="togglePassword2" tabindex="-1">
+                  <i class="bi bi-eye" id="togglePasswordIcon2" style="font-size: 1.2rem;"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">登録</button>
+        </form>
+        <div class="text-center mt-3">
+          <a href="{% url 'account_login' %}">すでにアカウントをお持ちの方はこちら</a>
+        </div>
+      </div>
+      <div class="login-footer">
+        &copy; 2025 {% parameter 'SYSTEM_NAME' %}
+      </div>
+    </div>
+  </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    function setupPasswordToggle(pwInputId, toggleBtnId, toggleIconId) {
+      var pwInput = document.getElementById(pwInputId);
+      var toggleBtn = document.getElementById(toggleBtnId);
+      var toggleIcon = document.getElementById(toggleIconId);
+      if (pwInput && toggleBtn && toggleIcon) {
+        toggleBtn.addEventListener('click', function() {
+          if (pwInput.type === 'password') {
+            pwInput.type = 'text';
+            toggleIcon.classList.remove('bi-eye');
+            toggleIcon.classList.add('bi-eye-slash');
+          } else {
+            pwInput.type = 'password';
+            toggleIcon.classList.remove('bi-eye-slash');
+            toggleIcon.classList.add('bi-eye');
+          }
+        });
+      }
+    }
+    setupPasswordToggle('id_password1', 'togglePassword1', 'togglePasswordIcon1');
+    setupPasswordToggle('id_password2', 'togglePassword2', 'togglePasswordIcon2');
+  });
+</script>
+</body>
+</html>
