@@ -1,18 +1,8 @@
 from .settings import *
 
-# テスト環境専用設定
-ACCOUNT_EMAIL_VERIFICATION = 'none'
-ACCOUNT_TERMS_OF_SERVICE_REQUIRED = False
+# テスト用の設定
+TESTING = True
 
-# テスト用データベース設定
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
-    }
-}
-
-# テスト実行を高速化
-PASSWORD_HASHERS = [
-    'django.contrib.auth.hashers.MD5PasswordHasher',
-]
+# allauthのテスト設定
+ACCOUNT_EMAIL_VERIFICATION = "none"  # テスト中はメール認証を無効化
+ACCOUNT_SIGNUP_FORM_CLASS = 'apps.accounts.forms.CustomSignupForm'
