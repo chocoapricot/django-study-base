@@ -45,9 +45,44 @@ class StaffViewsTest(TestCase):
         Dropdowns.objects.create(category='sex', value='2', name='女性', active=True, disp_seq=2)
         Dropdowns.objects.create(category='regist_form', value='1', name='正社員', active=True, disp_seq=1)
         Dropdowns.objects.create(category='regist_form', value='2', name='契約社員', active=True, disp_seq=2)
+        Dropdowns.objects.create(category='regist_form', value='10', name='派遣社員', active=True, disp_seq=3)
         # Create necessary Dropdowns for StaffContactedForm
         Dropdowns.objects.create(category='contact_type', value='1', name='電話', active=True, disp_seq=1)
         Dropdowns.objects.create(category='contact_type', value='2', name='メール', active=True, disp_seq=2)
+
+        # テスト用スタッフデータを作成
+        self.staff1 = Staff.objects.create(
+            name_last='田中',
+            name_first='太郎',
+            name_kana_last='タナカ',
+            name_kana_first='タロウ',
+            birth_date=date(1990, 1, 1),
+            sex=1,
+            regist_form_code=1,  # 正社員
+            employee_no='EMP001'
+        )
+        
+        self.staff2 = Staff.objects.create(
+            name_last='佐藤',
+            name_first='花子',
+            name_kana_last='サトウ',
+            name_kana_first='ハナコ',
+            birth_date=date(1985, 5, 15),
+            sex=2,
+            regist_form_code=2,  # 契約社員
+            employee_no='EMP002'
+        )
+        
+        self.staff3 = Staff.objects.create(
+            name_last='鈴木',
+            name_first='次郎',
+            name_kana_last='スズキ',
+            name_kana_first='ジロウ',
+            birth_date=date(1992, 8, 20),
+            sex=1,
+            regist_form_code=10,  # 派遣社員
+            employee_no='EMP003'
+        )
 
         self.staff_obj = Staff.objects.create(
             name_last='テスト',
@@ -83,7 +118,118 @@ class StaffViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_list.html')
         self.assertContains(response, 'テスト')
+
+    def test_staff_list_regist_form_filter(self):
+        """登録区分での絞り込み機能をテスト"""
+        # 1. 正社員のみを絞り込み
+        response = self.client.get(reverse('staff_list'), {'regist_form': '1'})
+        self.assertEqual(response.status_code, 200)
+        
+        # 正社員のスタッフが表示されることを確認
+        self.assertContains(response, '田中')  # staff1 (正社員)
+        self.assertNotContains(response, '佐藤')  # staff2 (契約社員)
+        self.assertNotContains(response, '鈴木')  # staff3 (派遣社員)
+        
+        # 2. 契約社員のみを絞り込み
+        response = self.client.get(reverse('staff_list'), {'regist_form': '2'})
+        self.assertEqual(response.status_code, 200)
+        
+        # 契約社員のスタッフが表示されることを確認
+        self.assertNotContains(response, '田中')  # staff1 (正社員)
+        self.assertContains(response, '佐藤')  # staff2 (契約社員)
+        self.assertNotContains(response, '鈴木')  # staff3 (派遣社員)
+        
+        # 3. 派遣社員のみを絞り込み
+        response = self.client.get(reverse('staff_list'), {'regist_form': '10'})
+        self.assertEqual(response.status_code, 200)
+        
+        # 派遣社員のスタッフが表示されることを確認
+        self.assertNotContains(response, '田中')  # staff1 (正社員)
+        self.assertNotContains(response, '佐藤')  # staff2 (契約社員)
+        self.assertContains(response, '鈴木')  # staff3 (派遣社員)
+        
+        # 4. フィルターなし（全て表示）
+        response = self.client.get(reverse('staff_list'))
+        self.assertEqual(response.status_code, 200)
+        
+        # 全てのスタッフが表示されることを確認
+        self.assertContains(response, '田中')  # staff1
+        self.assertContains(response, '佐藤')  # staff2
+        self.assertContains(response, '鈴木')  # staff3
+
+    def test_staff_list_combined_search_and_filter(self):
+        """検索キーワードと登録区分フィルターの組み合わせテスト"""
+        # 1. 「田中」で検索 + 正社員フィルター
+        response = self.client.get(reverse('staff_list'), {
+            'q': '田中',
+            'regist_form': '1'
+        })
+        self.assertEqual(response.status_code, 200)
+        
+        # 田中（正社員）のみが表示されることを確認
+        self.assertContains(response, '田中')
+        self.assertNotContains(response, '佐藤')
+        self.assertNotContains(response, '鈴木')
+        
+        # 2. 「田中」で検索 + 契約社員フィルター（該当なし）
+        response = self.client.get(reverse('staff_list'), {
+            'q': '田中',
+            'regist_form': '2'
+        })
+        self.assertEqual(response.status_code, 200)
+        
+        # テーブル内に該当するスタッフがいないことを確認（検索フォームの値は除外）
+        # テーブルのtbody部分のみをチェック
+        self.assertContains(response, '<tbody>')
+        self.assertContains(response, '</tbody>')
+        # テーブル内に名前が表示されていないことを確認
+        table_content = response.content.decode()
+        tbody_start = table_content.find('<tbody>')
+        tbody_end = table_content.find('</tbody>') + len('</tbody>')
+        tbody_content = table_content[tbody_start:tbody_end]
+        
+        # tbody内に名前が含まれていないことを確認
+        self.assertNotIn('田中', tbody_content)
+        self.assertNotIn('佐藤', tbody_content)
+        self.assertNotIn('鈴木', tbody_content)
+
+    def test_staff_list_regist_form_options(self):
+        """登録区分の選択肢が正しく表示されることをテスト"""
+        response = self.client.get(reverse('staff_list'))
+        self.assertEqual(response.status_code, 200)
+        
+        # 登録区分の選択肢が含まれていることを確認
+        self.assertContains(response, '全ての登録区分')
+        self.assertContains(response, '正社員')
+        self.assertContains(response, '契約社員')
+        self.assertContains(response, '派遣社員')
+        
+        # selectタグが存在することを確認
+        self.assertContains(response, '<select name="regist_form"')
         self.assertContains(response, 'スタッフ')
+
+    def test_regist_form_filter_ui_elements(self):
+        """登録区分フィルターのUI要素が正しく表示されることをテスト"""
+        response = self.client.get(reverse('staff_list'))
+        self.assertEqual(response.status_code, 200)
+        
+        # 検索フォームの要素が存在することを確認
+        self.assertContains(response, 'input-group-text-sm')  # 検索アイコンのサイズクラス
+        self.assertContains(response, 'form-control-sm')      # 検索入力欄のサイズクラス
+        self.assertContains(response, 'form-select-sm')       # セレクトボックスのサイズクラス
+        
+        # 高さ調整のCSSが適用されていることを確認
+        self.assertContains(response, 'height: calc(1.5em + 0.5rem + 2px)')
+        
+        # 検索キーワード入力欄の幅設定を確認
+        self.assertContains(response, 'width: 25em')
+        
+        # 登録区分セレクトボックスの幅設定を確認
+        self.assertContains(response, 'width: 12em')
+        
+        # 検索・リセットボタンが存在することを確認
+        self.assertContains(response, 'type="submit"')
+        self.assertContains(response, 'onclick="resetForm()"')
 
     def test_staff_create_view_get(self):
         response = self.client.get(reverse('staff_create'))
@@ -208,8 +354,8 @@ class StaffViewsTest(TestCase):
 
     def test_staff_contacted_delete_view_post(self):
         contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='削除テスト連絡')
-        response = self.client.post(reverse('staff_delete', args=[contacted_obj.pk]))
-        self.assertEqual(response.status_code, 302)  # Redirects to staff_list
+        response = self.client.post(reverse('staff_contacted_delete', args=[contacted_obj.pk]))
+        self.assertEqual(response.status_code, 302)  # Redirects to staff_detail
         self.assertFalse(StaffContacted.objects.filter(pk=contacted_obj.pk).exists())
 
     def test_staff_change_history_list_view(self):

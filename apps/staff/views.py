@@ -70,8 +70,14 @@ logger = logging.getLogger('staff')
 def staff_list(request):
     sort = request.GET.get('sort', 'pk')  # デフォルトソートをpkに設定
     query = request.GET.get('q', '').strip()
+    regist_form_filter = request.GET.get('regist_form', '').strip()  # 登録区分フィルター
+    
+    # 基本のクエリセット
+    staffs = Staff.objects.all()
+    
+    # キーワード検索
     if query:
-        staffs = Staff.objects.filter(
+        staffs = staffs.filter(
             Q(name_last__icontains=query)
             |Q(name_first__icontains=query)
             |Q(name_kana_last__icontains=query)
@@ -84,9 +90,10 @@ def staff_list(request):
             |Q(email__icontains=query)
             |Q(employee_no__icontains=query)
         )
-    else:
-        query = ''
-        staffs = Staff.objects.all()
+    
+    # 登録区分での絞り込み
+    if regist_form_filter:
+        staffs = staffs.filter(regist_form_code=regist_form_filter)
 
     # ソート可能なフィールドを定義
     sortable_fields = [
@@ -104,11 +111,27 @@ def staff_list(request):
     else:
         staffs = staffs.order_by('pk') # 不正なソート指定の場合はpkでソート
 
+    # 登録区分の選択肢を取得
+    regist_form_options = Dropdowns.objects.filter(
+        category='regist_form', 
+        active=True
+    ).order_by('disp_seq')
+    
+    # 各オプションに選択状態を追加
+    for option in regist_form_options:
+        option.is_selected = (regist_form_filter == option.value)
+
     paginator = Paginator(staffs, 10)  # 1ページあたり10件表示
     page_number = request.GET.get('page')  # URLからページ番号を取得
     staffs_pages = paginator.get_page(page_number)
 
-    return render(request, 'staff/staff_list.html', {'staffs': staffs_pages, 'query':query, 'sort': sort})
+    return render(request, 'staff/staff_list.html', {
+        'staffs': staffs_pages, 
+        'query': query, 
+        'sort': sort,
+        'regist_form_filter': regist_form_filter,
+        'regist_form_options': regist_form_options,
+    })
 
 from django.contrib.auth.decorators import permission_required
 
