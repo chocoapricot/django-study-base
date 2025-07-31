@@ -70,6 +70,7 @@ python manage.py loaddata _sample_data/client.json
 python manage.py dbshell
 
 # テスト実施
+python manage.py test 
 python manage.py test apps.api.tests
 
 # サーバ起動
