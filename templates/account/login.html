@@ -30,7 +30,9 @@
           <button type="submit" class="btn btn-primary w-100">ログイン</button>
         </form>
         <div class="text-center mt-3">
-          <a href="{% url 'terms_of_service' %}">アカウントをお持ちでない方はこちら</a>
+          <a href="{% url 'account_reset_password' %}" class="text-decoration-none me-3">パスワードを忘れた方はこちら</a>
+          <br class="d-block d-sm-none">
+          <a href="{% url 'terms_of_service' %}" class="text-decoration-none">アカウントをお持ちでない方はこちら</a>
         </div>
 {% endblock %}
 

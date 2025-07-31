@@ -1,7 +1,7 @@
-from allauth.account.views import SignupView
+from allauth.account.views import SignupView, PasswordResetView
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from .forms import CustomSignupForm
+from .forms import CustomSignupForm, CustomResetPasswordForm
 
 class CustomSignupView(SignupView):
     form_class = CustomSignupForm
@@ -10,6 +10,11 @@ class CustomSignupView(SignupView):
         if not request.session.get('agreed_to_terms', False):
             return redirect(reverse('terms_of_service'))
         return super().dispatch(request, *args, **kwargs)
+
+class CustomPasswordResetView(PasswordResetView):
+    """カスタムパスワードリセットビュー"""
+    form_class = CustomResetPasswordForm
+    template_name = 'account/password_reset.html'
 
 def terms_of_service(request):
     if request.method == 'POST':
