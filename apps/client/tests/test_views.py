@@ -70,7 +70,13 @@ class ClientViewsTest(TestCase):
         response = self.client.get(reverse('client:client_list'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'client/client_list.html')
-        self.assertContains(response, 'Z_Test Client') # Test ClientをZ_Test Clientに変更
+        # 1ページ目にはClient 01-10が表示される
+        self.assertContains(response, 'Client 01')
+        self.assertContains(response, 'Client 10')
+        # Z_Test Clientは2ページ目に表示されるため、2ページ目もテスト
+        response_page2 = self.client.get(reverse('client:client_list'), {'page': 2})
+        self.assertEqual(response_page2.status_code, 200)
+        self.assertContains(response_page2, 'Z_Test Client')
 
     def test_client_list_sort_pagination(self):
         """クライアント一覧でソート条件がページ移動後も保持されることをテスト"""
@@ -133,10 +139,10 @@ class ClientViewsTest(TestCase):
         self.assertEqual(clients_on_page[0].name, 'Client 01')
         self.assertEqual(clients_on_page[1].name, 'Client 02')
 
-        # 6. 検索クエリとソート条件を保持したまま2ページ目に移動 (Client 01-09, Client 10)
-        # Client 01-09, Client 10 は10件なので、全て1ページ目に表示されるはず
-        # ここでは、検索結果が1ページに収まることを確認する
-        self.assertEqual(len(clients_on_page), 3) # 3件のクライアントが検索されることを確認
+        # 6. 検索クエリとソート条件を保持したまま2ページ目に移動 (Client 01-09)
+        # 'Client 0'で検索すると Client 01-09 の9件がヒットする
+        # ここでは、検索結果が正しく表示されることを確認する
+        self.assertEqual(len(clients_on_page), 9) # 9件のクライアントが検索されることを確認
 
         # 7. 検索クエリとソート条件を組み合わせてテスト (例: 'Client 1'で検索し、名前昇順ソート)
         response = self.client.get(reverse('client:client_list'), {'sort': 'name', 'q': 'Client 1', 'page': 1})
