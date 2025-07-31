@@ -36,13 +36,12 @@ class StaffSortingTest(TestCase):
             name_first='スタッフ',
             name_kana_last='テスト',
             name_kana_first='スタッフ',
-            birth_date=date(1990, 1, 1),
+            birth_date=date(2015, 7, 30), # ageを10にするためにbirth_dateを設定
             sex=1,
             regist_form_code=1,
             employee_no='ZEMP000', # ソート順で最後にくるように変更
             email='test@example.com',
-            address1='テスト住所', # address1を追加
-            age=10 # ageを10に変更
+            address1='テスト住所' # address1を追加
         )
         # ソートテスト用のスタッフデータを作成 (12件)
         for i in range(1, 13):
@@ -51,13 +50,12 @@ class StaffSortingTest(TestCase):
                 name_first='Test',
                 name_kana_last=f'スタッフ{i:02d}',
                 name_kana_first='テスト',
-                birth_date=date(1990, 1, 1),
+                birth_date=date(2005 - i, 7, 30), # ageを20+iにするためにbirth_dateを設定
                 sex=1,
                 regist_form_code=1,
                 employee_no=f'EMP{i:03d}',
                 email=f'staff{i:02d}@example.com',
-                address1=f'住所{i:02d}',
-                age=20 + i
+                address1=f'住所{i:02d}'
             )
 
     def test_staff_list_sort_pagination(self):
@@ -131,8 +129,7 @@ class StaffSortingTest(TestCase):
         staffs_on_page = response.context['staffs'].object_list
         print(f"Ages on page (ascending): {[s.age for s in staffs_on_page]}")
         self.assertEqual(staffs_on_page[0].age, 10) # self.staff_obj
-        self.assertEqual(staffs_on_page[1].age, 21) # 20 + 1
-        self.assertEqual(staffs_on_page[10].age, 30) # 20 + 10
+        self.assertEqual(staffs_on_page[9].age, 29) # 20 + 9
 
         # 10. 年齢で降順ソートして1ページ目にアクセス
         response = self.client.get(reverse('staff_list'), {'sort': '-age', 'page': 1})

@@ -16,12 +16,16 @@ class AuthenticationTestCase(TestCase):
         self.test_password = 'testpassword123!'  # 記号を追加
         self.test_first_name = '太郎'
         self.test_last_name = '田中'
+        self.client.session['agreed_to_terms'] = True # 全てのテストで同意済みとする
+        self.client.session.save()
 
     def tearDown(self):
         # 各テストの後に作成されたユーザーを削除
         User.objects.filter(email=self.test_email).delete()
         User.objects.filter(email='test_adapter_user@example.com').delete()
         EmailAddress.objects.filter(email=self.test_email).delete()
+        # セッションデータをクリア
+        self.client.session.clear()
 
     def test_signup_and_login_flow(self):
         """サインアップからログインまでの一連の流れをテスト"""
@@ -474,3 +478,28 @@ class AuthenticationTestCase(TestCase):
             self.assertIsNone(auth_result, "非アクティブユーザーで認証できてしまいました")
         else:
             print("注意: ユーザーがアクティブ状態で作成されました（テスト環境の可能性）")
+
+    def test_terms_of_service_flow(self):
+        """サービス利用規約の同意フローをテスト"""
+        print("=== サービス利用規約同意フローテスト開始 ===")
+        self.client.session.clear() # このテストではセッションをクリアして同意を強制
+
+        # 1. /accounts/signup/ にアクセスすると /accounts/terms-of-service/ にリダイレクトされることを確認
+        response = self.client.get(reverse('account_signup'))
+        self.assertRedirects(response, reverse('terms_of_service'))
+
+        # 2. 同意なしでフォームを送信するとエラーが表示されることを確認
+        response = self.client.post(reverse('terms_of_service'), {'agree_to_terms': ''})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'サービス利用規約に同意してください。')
+
+        # 3. 同意してフォームを送信すると /accounts/signup/ にリダイレクトされることを確認
+        response = self.client.post(reverse('terms_of_service'), {'agree_to_terms': 'on'})
+        self.assertRedirects(response, reverse('account_signup'))
+
+        # 4. 同意後、/accounts/signup/ に直接アクセスできることを確認
+        response = self.client.get(reverse('account_signup'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'account/signup.html') # allauthのsignupテンプレートが使われることを確認
+
+        print("=== サービス利用規約同意フローテスト終了 ===")

@@ -1,0 +1,39 @@
+{% extends "account/_account_base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Terms of Service" %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">{% trans "サービス利用規約" %}</div>
+                <div class="card-body">
+                    <p>ここにサービス利用規約の本文が入ります。ユーザーはサービスを利用する前にこの規約に同意する必要があります。</p>
+                    <p>例：</p>
+                    <ul>
+                        <li>個人情報の取り扱いについて</li>
+                        <li>サービスの利用範囲について</li>
+                        <li>禁止事項について</li>
+                    </ul>
+                    <p>詳細な規約は、別途リンクまたは全文をここに記載してください。</p>
+
+                    <form method="post" action="{% url 'terms_of_service' %}">
+                        {% csrf_token %}
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" id="agree_to_terms" name="agree_to_terms">
+                            <label class="form-check-label" for="agree_to_terms">{% trans "サービス利用規約に同意します" %}</label>
+                        </div>
+                        {% if error %}
+                            <div class="alert alert-danger">{{ error }}</div>
+                        {% endif %}
+                        <button type="submit" class="btn btn-primary">{% trans "次へ" %}</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
