@@ -214,77 +214,9 @@ python manage.py collectstatic
 # 本番用データベースマイグレーション
 python manage.py migrate --settings=config.settings.product
 ```
-
-## 📚 学習内容
-
-このプロジェクトを通じて以下のDjango機能を学習できます：
-
-### 基本機能
-- **MVCアーキテクチャ**: Model-View-Template パターン
-- **URL設計**: URLconf とルーティング
-- **テンプレートシステム**: Django Template Language
-- **フォーム処理**: ModelForm とバリデーション
-
-### 応用機能
-- **認証システム**: django-allauth を使用したカスタム認証
-- **権限管理**: Permission とグループ管理
-- **データベース設計**: リレーション設計とマイグレーション
-- **テスト**: Unit Test とIntegration Test
-
-### 実践的な機能
-- **CRUD操作**: 基本的なデータ操作
-- **検索・ソート**: QuerySet の活用
-- **ページネーション**: 大量データの表示
-- **ファイル処理**: Excel/PDF の生成・処理
-
-## 🎯 学習のポイント
-
-### コーディング規約
-- PEP 8準拠のコード記述
-- 日本語コメントでの理解促進
-- テストコードによる品質確保
-
 ## 📝 ライセンス
 
 このプロジェクトは学習目的で作成されており、個人利用に限定されます。
-
-## � 学習記ト録
-
-### 実装済み機能
-- ✅ ユーザー認証システム
-- ✅ スタッフ管理CRUD
-- ✅ クライアント管理CRUD
-- ✅ 権限ベースアクセス制御
-- ✅ レスポンシブUI（Bootstrap 5）
-- ✅ テストコード
-
-### 学習中の課題
-- 🔄 API設計とRESTful実装
-- 🔄 パフォーマンス最適化
-- 🔄 セキュリティ強化
-
-## 🏆 謝辞
-
-このプロジェクトは以下のオープンソースプロジェクトを使用しています：
-- [Django](https://djangoproject.com/)
-- [Bootstrap](https://getbootstrap.com/)
-- [django-allauth](https://django-allauth.readthedocs.io/)
-
-## 📈 今後の学習予定
-
-### 学習したい機能
-- [ ] REST API の詳細実装
-- [ ] WebSocket を使用したリアルタイム機能
-- [ ] キャッシュシステムの導入
-- [ ] ログ管理とモニタリング
-- [ ] Docker を使用したコンテナ化
-- [ ] CI/CD パイプラインの構築
-
-## 🎓 参考資料
-
-- [Django公式ドキュメント](https://docs.djangoproject.com/)
-- [django-allauth ドキュメント](https://django-allauth.readthedocs.io/)
-- [Bootstrap 5 ドキュメント](https://getbootstrap.com/docs/5.0/)
 
 ---
 
