@@ -45,10 +45,24 @@ class ClientViewsTest(TestCase):
         Dropdowns.objects.create(category='contact_type', value='1', name='Test Contact Type 1', active=True, disp_seq=1)
         Dropdowns.objects.create(category='contact_type', value='2', name='Test Contact Type 2', active=True, disp_seq=2)
 
+        # self.client_obj = Client.objects.create(
+        #     corporate_number='9999999999999', # より大きな値に設定
+        #     name='Test Client',
+        #     name_furigana='テストクライアント',
+        #     regist_form_client=1
+        # )
+        # ソートテスト用のクライアントデータを作成 (12件)
+        for i in range(1, 13):
+            Client.objects.create(
+                corporate_number=f'10000000000{i:02d}', # 衝突しないように調整
+                name=f'Client {i:02d}',
+                name_furigana=f'クライアント{i:02d}',
+                regist_form_client=1
+            )
         self.client_obj = Client.objects.create(
-            corporate_number='1234567890123',
-            name='Test Client',
-            name_furigana='テストクライアント',
+            corporate_number='9999999999999', # より大きな値に設定
+            name='Z_Test Client', # ソート順で最後にくるように変更
+            name_furigana='ゼットテストクライアント',
             regist_form_client=1
         )
 
@@ -56,7 +70,85 @@ class ClientViewsTest(TestCase):
         response = self.client.get(reverse('client:client_list'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'client/client_list.html')
-        self.assertContains(response, 'Test Client')
+        self.assertContains(response, 'Z_Test Client') # Test ClientをZ_Test Clientに変更
+
+    def test_client_list_sort_pagination(self):
+        """クライアント一覧でソート条件がページ移動後も保持されることをテスト"""
+        # 1. 会社名で昇順ソートして1ページ目にアクセス
+        response = self.client.get(reverse('client:client_list'), {'sort': 'name', 'page': 1})
+        self.assertEqual(response.status_code, 200)
+        clients_on_page = response.context['clients'].object_list
+        self.assertEqual(clients_on_page[0].name, 'Client 01')
+        self.assertEqual(clients_on_page[9].name, 'Client 10') # 10番目のクライアント
+
+        # 2. 2ページ目に移動
+        response = self.client.get(reverse('client:client_list'), {'sort': 'name', 'page': 2})
+        self.assertEqual(response.status_code, 200)
+        clients_on_page = response.context['clients'].object_list
+        self.assertEqual(clients_on_page[0].name, 'Client 11')
+        self.assertEqual(clients_on_page[1].name, 'Client 12')
+        self.assertEqual(clients_on_page[2].name, 'Z_Test Client') # Z_Test Clientが2ページ目に表示されることを確認
+
+        # 3. 会社名で降順ソートして1ページ目にアクセス
+        response = self.client.get(reverse('client:client_list'), {'sort': '-name', 'page': 1})
+        self.assertEqual(response.status_code, 200)
+        clients_on_page = response.context['clients'].object_list
+        self.assertEqual(clients_on_page[0].name, 'Z_Test Client') # Z_Test Clientが最初に表示されることを確認
+        self.assertEqual(clients_on_page[1].name, 'Client 12')
+        self.assertEqual(clients_on_page[9].name, 'Client 04') # 10番目のクライアント
+
+        # 4. 降順ソートを保持したまま2ページ目に移動
+        response = self.client.get(reverse('client:client_list'), {'sort': '-name', 'page': 2})
+        self.assertEqual(response.status_code, 200)
+        clients_on_page = response.context['clients'].object_list
+        self.assertEqual(clients_on_page[0].name, 'Client 03')
+        self.assertEqual(clients_on_page[1].name, 'Client 02')
+        self.assertEqual(clients_on_page[2].name, 'Client 01')
+
+        # 5. 検索クエリとソート条件を組み合わせてテスト (例: 'Client 0'で検索し、名前昇順ソート)
+        response = self.client.get(reverse('client:client_list'), {'sort': 'name', 'q': 'Client 0', 'page': 1})
+        self.assertEqual(response.status_code, 200)
+        clients_on_page = response.context['clients'].object_list
+        self.assertEqual(clients_on_page[0].name, 'Client 01')
+        self.assertEqual(clients_on_page[1].name, 'Client 02')
+
+        # 6. 検索クエリとソート条件を組み合わせてテスト (例: 'Client 0'で検索し、名前昇順ソート)
+        response = self.client.get(reverse('client:client_list'), {'sort': 'name', 'q': 'Client 0', 'page': 1})
+        self.assertEqual(response.status_code, 200)
+        clients_on_page = response.context['clients'].object_list
+        self.assertEqual(clients_on_page[0].name, 'Client 01')
+        self.assertEqual(clients_on_page[1].name, 'Client 02')
+
+        # 6. 検索クエリとソート条件を組み合わせてテスト (例: 'Client 0'で検索し、名前昇順ソート)
+        response = self.client.get(reverse('client:client_list'), {'sort': 'name', 'q': 'Client 0', 'page': 1})
+        self.assertEqual(response.status_code, 200)
+        clients_on_page = response.context['clients'].object_list
+        self.assertEqual(clients_on_page[0].name, 'Client 01')
+        self.assertEqual(clients_on_page[1].name, 'Client 02')
+
+        # 6. 検索クエリとソート条件を組み合わせてテスト (例: 'Client 0'で検索し、名前昇順ソート)
+        response = self.client.get(reverse('client:client_list'), {'sort': 'name', 'q': 'Client 0', 'page': 1})
+        self.assertEqual(response.status_code, 200)
+        clients_on_page = response.context['clients'].object_list
+        self.assertEqual(clients_on_page[0].name, 'Client 01')
+        self.assertEqual(clients_on_page[1].name, 'Client 02')
+
+        # 6. 検索クエリとソート条件を保持したまま2ページ目に移動 (Client 01-09, Client 10)
+        # Client 01-09, Client 10 は10件なので、全て1ページ目に表示されるはず
+        # ここでは、検索結果が1ページに収まることを確認する
+        self.assertEqual(len(clients_on_page), 3) # 3件のクライアントが検索されることを確認
+
+        # 7. 検索クエリとソート条件を組み合わせてテスト (例: 'Client 1'で検索し、名前昇順ソート)
+        response = self.client.get(reverse('client:client_list'), {'sort': 'name', 'q': 'Client 1', 'page': 1})
+        self.assertEqual(response.status_code, 200)
+        clients_on_page = response.context['clients'].object_list
+        self.assertEqual(clients_on_page[0].name, 'Client 10')
+        self.assertEqual(clients_on_page[1].name, 'Client 11')
+        self.assertEqual(clients_on_page[2].name, 'Client 12')
+
+        # 8. 検索クエリとソート条件を保持したまま2ページ目に移動 (Client 10, 11, 12 は3件なので、全て1ページ目に表示されるはず)
+        self.assertEqual(len(clients_on_page), 3) # 3件のクライアントが検索されることを確認
+
 
     def test_client_create_view_get(self):
         response = self.client.get(reverse('client:client_create'))

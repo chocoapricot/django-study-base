@@ -68,9 +68,9 @@ logger = logging.getLogger('staff')
 @login_required
 @permission_required('staff.view_staff', raise_exception=True)
 def staff_list(request):
-    query = request.GET.get('q')  # 検索キーワードを取得
+    sort = request.GET.get('sort', 'pk')  # デフォルトソートをpkに設定
+    query = request.GET.get('q', '').strip()
     if query:
-        query = query.strip()
         staffs = Staff.objects.filter(
             Q(name_last__icontains=query)
             |Q(name_first__icontains=query)
@@ -86,12 +86,29 @@ def staff_list(request):
         )
     else:
         query = ''
-        staffs = Staff.objects.all()  # 検索キーワードがなければ全件取得
+        staffs = Staff.objects.all()
+
+    # ソート可能なフィールドを定義
+    sortable_fields = [
+        'employee_no', '-employee_no',
+        'name_last', '-name_last',
+        'name_first', '-name_first',
+        'email', '-email',
+        'address1', '-address1',
+        'age', '-age',
+        'pk', '-pk',
+    ]
+
+    if sort in sortable_fields:
+        staffs = staffs.order_by(sort)
+    else:
+        staffs = staffs.order_by('pk') # 不正なソート指定の場合はpkでソート
+
     paginator = Paginator(staffs, 10)  # 1ページあたり10件表示
     page_number = request.GET.get('page')  # URLからページ番号を取得
-    staffs_pages = paginator.get_page(page_number)  # ページオブジェクトを取得
+    staffs_pages = paginator.get_page(page_number)
 
-    return render(request, 'staff/staff_list.html', {'staffs': staffs_pages, 'query':query})
+    return render(request, 'staff/staff_list.html', {'staffs': staffs_pages, 'query':query, 'sort': sort})
 
 from django.contrib.auth.decorators import permission_required
 

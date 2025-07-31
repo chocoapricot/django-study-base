@@ -37,10 +37,34 @@
             <thead>
                 <tr>
                     <th><i class="bi bi-person-fill"></i></th>
-                    <th>社員番号</th>
-                    <th>氏名</th>
-                    <th class="d-none d-lg-table-cell">住所</th>
-                    <th>年齢</th>
+                    <th>
+                        <a href="?sort={% if request.GET.sort == 'employee_no' %}-employee_no{% else %}employee_no{% endif %}&q={{ query }}"
+                           class="no-link-style">
+                            社員番号
+                            {% if request.GET.sort == 'employee_no' %}↓{% elif request.GET.sort == '-employee_no' %}↑{% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="?sort={% if request.GET.sort == 'name_last' %}-name_last{% else %}name_last{% endif %}&q={{ query }}"
+                           class="no-link-style">
+                            氏名
+                            {% if request.GET.sort == 'name_last' %}↓{% elif request.GET.sort == '-name_last' %}↑{% endif %}
+                        </a>
+                    </th>
+                    <th class="d-none d-lg-table-cell">
+                        <a href="?sort={% if request.GET.sort == 'address1' %}-address1{% else %}address1{% endif %}&q={{ query }}"
+                           class="no-link-style">
+                            住所
+                            {% if request.GET.sort == 'address1' %}↓{% elif request.GET.sort == '-address1' %}↑{% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="?sort={% if request.GET.sort == 'age' %}-age{% else %}age{% endif %}&q={{ query }}"
+                           class="no-link-style">
+                            年齢
+                            {% if request.GET.sort == 'age' %}↓{% elif request.GET.sort == '-age' %}↑{% endif %}
+                        </a>
+                    </th>
                     <th>登録区分</th>
                     <th>操作</th>
                 </tr>
@@ -102,7 +126,7 @@
             <ul class="pagination pagination-sm">
                 <!-- 最初のページ、前のページ -->
                 <li class="page-item {% if not staffs.has_previous %}disabled{% endif %}">
-                    <a class="page-link" href="{% if staffs.has_previous %}?page=1{% else %}#{% endif %}">&laquo;</a>
+                    <a class="page-link" href="{% if staffs.has_previous %}?page=1&sort={{ request.GET.sort }}&q={{ query }}{% else %}#{% endif %}">&laquo;</a>
                 </li>
                 <!--<li class="page-item {% if not staffs.has_previous %}disabled{% endif %}">
                     <a class="page-link" href="{% if staffs.has_previous %}?page={{ staffs.previous_page_number }}{% else %}#{% endif %}">&lt;</a>
@@ -118,12 +142,12 @@
                     {% elif num > staffs.number|add:-3 and num < staffs.number|add:3 %}
                         <!-- 現在のページから前後2件まで表示 -->
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            <a class="page-link" href="?page={{ num }}&sort={{ request.GET.sort }}&q={{ query }}">{{ num }}</a>
                         </li>
                     {% elif num == 1 or num == staffs.paginator.num_pages %}
                         <!-- 最初と最後のページは常に表示 -->
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            <a class="page-link" href="?page={{ num }}&sort={{ request.GET.sort }}&q={{ query }}">{{ num }}</a>
                         </li>
                     {% elif num == staffs.number|add:-3 or num == staffs.number|add:3 %}
                         <!-- ページの省略記号 -->
@@ -138,7 +162,7 @@
                     <a class="page-link" href="{% if staffs.has_next %}?page={{ staffs.next_page_number }}{% else %}#{% endif %}">&gt;</a>
                 </li>-->
                 <li class="page-item {% if not staffs.has_next %}disabled{% endif %}">
-                    <a class="page-link" href="{% if staffs.has_next %}?page={{ staffs.paginator.num_pages }}{% else %}#{% endif %}">&raquo;</a>
+                    <a class="page-link" href="{% if staffs.has_next %}?page={{ staffs.paginator.num_pages }}&sort={{ request.GET.sort }}&q={{ query }}{% else %}#{% endif %}">&raquo;</a>
                 </li>
             </ul>
         </div>

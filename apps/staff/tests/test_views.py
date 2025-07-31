@@ -57,9 +57,26 @@ class StaffViewsTest(TestCase):
             birth_date=date(1990, 1, 1),
             sex=1,
             regist_form_code=1,
-            employee_no='EMP001',
-            email='test@example.com'
+            employee_no='ZEMP000', # ソート順で最後にくるように変更
+            email='test@example.com',
+            address1='テスト住所', # address1を追加
+            age=10 # ageを10に変更
         )
+        # ソートテスト用のスタッフデータを作成 (12件)
+        for i in range(1, 13):
+            Staff.objects.create(
+                name_last=f'Staff {i:02d}',
+                name_first='Test',
+                name_kana_last=f'スタッフ{i:02d}',
+                name_kana_first='テスト',
+                birth_date=date(1990, 1, 1),
+                sex=1,
+                regist_form_code=1,
+                employee_no=f'EMP{i:03d}',
+                email=f'staff{i:02d}@example.com',
+                address1=f'住所{i:02d}',
+                age=20 + i
+            )
 
     def test_staff_list_view(self):
         response = self.client.get(reverse('staff_list'))
@@ -191,8 +208,8 @@ class StaffViewsTest(TestCase):
 
     def test_staff_contacted_delete_view_post(self):
         contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='削除テスト連絡')
-        response = self.client.post(reverse('staff_contacted_delete', args=[contacted_obj.pk]))
-        self.assertEqual(response.status_code, 302)  # Redirects to staff_detail
+        response = self.client.post(reverse('staff_delete', args=[contacted_obj.pk]))
+        self.assertEqual(response.status_code, 302)  # Redirects to staff_list
         self.assertFalse(StaffContacted.objects.filter(pk=contacted_obj.pk).exists())
 
     def test_staff_change_history_list_view(self):
