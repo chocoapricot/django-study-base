@@ -76,8 +76,25 @@
         "created_by": 1,
         "updated_at": "2025-07-21T15:54:42.828Z",
         "updated_by": 1,
-        "name": "ログ",
+        "name": "アプリケーションログ",
         "url": "/logs/app/",
+        "icon": "bi-list-check",
+        "icon_style": "color:#28a745;",
+        "disp_seq": 5,
+        "active": true
+    }
+},
+{
+    "model": "menu.menu",
+    "pk": 6,
+    "fields": {
+        "version": 0,
+        "created_at": "2025-07-19T15:46:59.051Z",
+        "created_by": 1,
+        "updated_at": "2025-07-21T15:54:42.828Z",
+        "updated_by": 1,
+        "name": "メール送信ログ",
+        "url": "/logs/mail/",
         "icon": "bi-list-check",
         "icon_style": "color:#28a745;",
         "disp_seq": 5,
@@ -85,3 +102,5 @@
     }
 }
 ]
+
+
