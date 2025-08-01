@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'apps.system.menu',
     'apps.system.parameters',
     'apps.system.parameters.templatetags',
+    'apps.system.logs',
     'apps.api',
     'apps.staff',
     'apps.client',
@@ -70,7 +71,7 @@ ACCOUNT_PASSWORD_MIN_LENGTH = 8
 
 ACCOUNT_ADAPTER = 'apps.accounts.adapters.CustomAccountAdapter'
 SITE_ID = 1
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'apps.system.logs.backends.LoggingConsoleEmailBackend'
 
 
 MIDDLEWARE = [

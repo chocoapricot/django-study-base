@@ -30,4 +30,5 @@ urlpatterns = [
     path('csstest/', include('apps.csstest.urls')),
     path('useradmin/', include('apps.system.useradmin.urls')),
     path('common/', include('apps.common.urls')),
+    path('logs/', include('apps.system.logs.urls')),
 ]

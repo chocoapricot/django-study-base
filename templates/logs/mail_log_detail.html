@@ -1,0 +1,141 @@
+{% extends 'common/_base.html' %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        メール送信ログ詳細
+        <a href="{% url 'logs:mail_log_list' %}" class="btn btn-sm btn-secondary">一覧に戻る</a>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="text-muted">基本情報</h6>
+                <table class="table table-sm">
+                    <tr>
+                        <th style="width: 30%;">ID</th>
+                        <td>{{ mail_log.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>メール種別</th>
+                        <td>
+                            {% if mail_log.mail_type == 'signup' %}
+                                <span class="badge bg-primary">{{ mail_log.mail_type_display_name }}</span>
+                            {% elif mail_log.mail_type == 'password_reset' %}
+                                <span class="badge bg-warning">{{ mail_log.mail_type_display_name }}</span>
+                            {% elif mail_log.mail_type == 'password_change' %}
+                                <span class="badge bg-info">{{ mail_log.mail_type_display_name }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ mail_log.mail_type_display_name }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>送信状況</th>
+                        <td>
+                            {% if mail_log.status == 'sent' %}
+                                <span class="badge bg-success">{{ mail_log.status_display_name }}</span>
+                            {% elif mail_log.status == 'failed' %}
+                                <span class="badge bg-danger">{{ mail_log.status_display_name }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ mail_log.status_display_name }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>作成日時</th>
+                        <td>{{ mail_log.created_at|date:"Y-m-d H:i:s" }}</td>
+                    </tr>
+                    <tr>
+                        <th>送信日時</th>
+                        <td>
+                            {% if mail_log.sent_at %}
+                                {{ mail_log.sent_at|date:"Y-m-d H:i:s" }}
+                            {% else %}
+                                <span class="text-muted">未送信</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-muted">送信者・受信者情報</h6>
+                <table class="table table-sm">
+                    <tr>
+                        <th style="width: 30%;">送信者</th>
+                        <td>{{ mail_log.from_email }}</td>
+                    </tr>
+                    <tr>
+                        <th>受信者</th>
+                        <td>{{ mail_log.to_email }}</td>
+                    </tr>
+                    <tr>
+                        <th>受信者ユーザー</th>
+                        <td>
+                            {% if mail_log.recipient_user %}
+                                {{ mail_log.recipient_user.get_full_name|default:mail_log.recipient_user.username }}
+                                <small class="text-muted">({{ mail_log.recipient_user.username }})</small>
+                            {% else %}
+                                <span class="text-muted">未特定</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>バックエンド</th>
+                        <td>{{ mail_log.backend|default:"未設定" }}</td>
+                    </tr>
+                    <tr>
+                        <th>メッセージID</th>
+                        <td>{{ mail_log.message_id|default:"未設定" }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <h6 class="text-muted">メール内容</h6>
+                <div class="card">
+                    <div class="card-header">
+                        <strong>件名:</strong> {{ mail_log.subject }}
+                    </div>
+                    <div class="card-body">
+                        <pre style="white-space: pre-wrap; font-family: inherit; margin: 0;">{{ mail_log.body }}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if mail_log.error_message %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <h6 class="text-muted">エラー情報</h6>
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    {{ mail_log.error_message }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <h6 class="text-muted">システム情報</h6>
+                <table class="table table-sm">
+                    <tr>
+                        <th style="width: 15%;">作成者</th>
+                        <td>{{ mail_log.created_by|default:"システム" }}</td>
+                    </tr>
+                    <tr>
+                        <th>更新者</th>
+                        <td>{{ mail_log.updated_by|default:"システム" }}</td>
+                    </tr>
+                    <tr>
+                        <th>更新日時</th>
+                        <td>{{ mail_log.updated_at|date:"Y-m-d H:i:s" }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
