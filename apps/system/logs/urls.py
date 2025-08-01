@@ -6,4 +6,5 @@ app_name = 'logs'
 urlpatterns = [
     path('mail/', views.mail_log_list, name='mail_log_list'),
     path('mail/<int:pk>/', views.mail_log_detail, name='mail_log_detail'),
+    path('app/', views.app_log_list, name='app_log_list'),
 ]

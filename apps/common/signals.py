@@ -3,7 +3,6 @@ from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
-from .models import AppLog
 import threading
 
 # スレッドローカルで差分を一時保存
@@ -30,6 +29,7 @@ def log_action(instance, action, diff_text=None):
         
         diff_text = ", ".join(create_info_list) if create_info_list else str(instance)
     
+    from apps.system.logs.models import AppLog
     AppLog.objects.create(
         user=user if user and user.is_authenticated else None,
         action=action,

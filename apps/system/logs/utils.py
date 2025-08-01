@@ -1,132 +1,132 @@
-from django.utils import timezone
-from django.contrib.auth import get_user_model
-from .models import MailLog
+# -*- coding: utf-8 -*-
+"""
+ログ関連のユーティリティ関数
+"""
 
-User = get_user_model()
+from .models import AppLog, MailLog
 
-def log_mail(to_email, subject, body, mail_type='general', from_email=None, 
-             recipient_user=None, status='pending', backend=None, message_id=None, 
-             error_message=None):
+
+def log_mail(to_email, subject, body, mail_type='general', recipient_user=None, 
+             from_email=None, status='pending', backend=None, message_id=None, error_message=None):
     """
-    メール送信ログを記録する関数
+    メール送信ログを記録
     
     Args:
-        to_email (str): 受信者メールアドレス
-        subject (str): 件名
-        body (str): 本文
-        mail_type (str): メール種別 ('signup', 'password_reset', 'password_change', 'general')
-        from_email (str): 送信者メールアドレス
-        recipient_user (User): 受信者ユーザー（特定できる場合）
-        status (str): 送信状況 ('sent', 'failed', 'pending')
-        backend (str): メールバックエンド
-        message_id (str): メッセージID
-        error_message (str): エラーメッセージ
+        to_email: 受信者メールアドレス
+        subject: 件名
+        body: 本文
+        mail_type: メール種別
+        recipient_user: 受信者ユーザー（オプション）
+        from_email: 送信者メールアドレス（オプション）
+        status: 送信状況
+        backend: メールバックエンド（オプション）
+        message_id: メッセージID（オプション）
+        error_message: エラーメッセージ（オプション）
     
     Returns:
-        MailLog: 作成されたメールログインスタンス
+        MailLog: 作成されたMailLogインスタンス
     """
-    # 受信者ユーザーを自動検索（指定されていない場合）
-    if not recipient_user and to_email:
-        try:
-            recipient_user = User.objects.get(email__iexact=to_email)
-        except User.DoesNotExist:
-            recipient_user = None
+    from django.conf import settings
     
-    # デフォルトの送信者メールアドレス
     if not from_email:
-        from django.conf import settings
         from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@example.com')
     
-    # デフォルトのバックエンド
-    if not backend:
-        backend = 'default'
-    
-    mail_log = MailLog.objects.create(
-        from_email=from_email,
+    return MailLog.objects.create(
         to_email=to_email,
-        recipient_user=recipient_user,
-        mail_type=mail_type,
         subject=subject,
         body=body,
+        mail_type=mail_type,
+        recipient_user=recipient_user,
+        from_email=from_email,
         status=status,
-        sent_at=timezone.now() if status == 'sent' else None,
         backend=backend,
-        message_id=message_id or '',
-        error_message=error_message or ''
+        message_id=message_id,
+        error_message=error_message
     )
-    
-    return mail_log
+
 
 def update_mail_log_status(mail_log_id, status, error_message=None, message_id=None):
     """
-    メール送信ログの状況を更新する関数
+    メール送信ログのステータスを更新
     
     Args:
-        mail_log_id (int): メールログID
-        status (str): 新しい送信状況
-        error_message (str): エラーメッセージ（失敗時）
-        message_id (str): メッセージID（成功時）
-    
-    Returns:
-        MailLog: 更新されたメールログインスタンス
+        mail_log_id: MailLogのID
+        status: 新しいステータス ('sent', 'failed', 'pending')
+        error_message: エラーメッセージ（オプション）
+        message_id: メッセージID（オプション）
     """
+    from django.utils import timezone
+    
     try:
         mail_log = MailLog.objects.get(id=mail_log_id)
         mail_log.status = status
         
         if status == 'sent':
             mail_log.sent_at = timezone.now()
-            if message_id:
-                mail_log.message_id = message_id
-        elif status == 'failed':
-            if error_message:
-                mail_log.error_message = error_message
         
+        if error_message:
+            mail_log.error_message = error_message
+            
+        if message_id:
+            mail_log.message_id = message_id
+            
         mail_log.save()
         return mail_log
+        
     except MailLog.DoesNotExist:
-        return None
+        pass  # ログが見つからない場合は何もしない
 
-def get_user_mail_logs(user, mail_type=None, limit=None):
+
+def log_view_detail(user, instance):
     """
-    特定ユーザーのメール送信ログを取得する関数
+    詳細画面アクセス時のログ記録
     
     Args:
-        user (User): ユーザー
-        mail_type (str): メール種別でフィルタ（オプション）
-        limit (int): 取得件数制限（オプション）
-    
-    Returns:
-        QuerySet: メールログのクエリセット
+        user: ログインユーザー
+        instance: 閲覧対象のモデルインスタンス
     """
-    queryset = MailLog.objects.filter(recipient_user=user)
-    
-    if mail_type:
-        queryset = queryset.filter(mail_type=mail_type)
-    
-    if limit:
-        queryset = queryset[:limit]
-    
-    return queryset
+    AppLog.objects.create(
+        user=user if user and user.is_authenticated else None,
+        action='view',
+        model_name=instance.__class__.__name__,
+        object_id=str(getattr(instance, 'pk', '')),
+        object_repr=f"{instance} の詳細画面を閲覧"
+    )
 
-def get_mail_logs_by_email(email, mail_type=None, limit=None):
+
+def log_model_action(user, action, instance, version=None):
     """
-    メールアドレスでメール送信ログを取得する関数
+    モデル操作のログ記録
     
     Args:
-        email (str): メールアドレス
-        mail_type (str): メール種別でフィルタ（オプション）
-        limit (int): 取得件数制限（オプション）
-    
-    Returns:
-        QuerySet: メールログのクエリセット
+        user: 操作ユーザー
+        action: 操作種別 ('create', 'update', 'delete', 'login', 'logout', 'view')
+        instance: 操作対象のモデルインスタンス
+        version: バージョン番号（オプション）
     """
-    queryset = MailLog.objects.filter(to_email__iexact=email)
+    AppLog.objects.create(
+        user=user if user and user.is_authenticated else None,
+        action=action,
+        model_name=instance.__class__.__name__,
+        object_id=str(getattr(instance, 'pk', '')),
+        object_repr=str(instance),
+        version=version
+    )
+
+
+def log_user_action(user, action, description):
+    """
+    ユーザー操作のログ記録
     
-    if mail_type:
-        queryset = queryset.filter(mail_type=mail_type)
-    
-    if limit:
-        queryset = queryset[:limit]
-    
-    return queryset
+    Args:
+        user: 操作ユーザー
+        action: 操作種別
+        description: 操作の説明
+    """
+    AppLog.objects.create(
+        user=user if user and user.is_authenticated else None,
+        action=action,
+        model_name='User',
+        object_id=str(getattr(user, 'pk', '')) if user else '',
+        object_repr=description
+    )

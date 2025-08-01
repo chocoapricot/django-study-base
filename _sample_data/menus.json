@@ -77,7 +77,7 @@
         "updated_at": "2025-07-21T15:54:42.828Z",
         "updated_by": 1,
         "name": "ログ",
-        "url": "/common/applog/",
+        "url": "/logs/app/",
         "icon": "bi-list-check",
         "icon_style": "color:#28a745;",
         "disp_seq": 5,

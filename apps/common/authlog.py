@@ -1,10 +1,10 @@
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.dispatch import receiver
 from django_currentuser.middleware import get_current_authenticated_user
-from .models import AppLog
 
 @receiver(user_logged_in)
 def log_user_login(sender, request, user, **kwargs):
+    from apps.system.logs.models import AppLog
     AppLog.objects.create(
         user=user,
         action='login',
@@ -16,6 +16,7 @@ def log_user_login(sender, request, user, **kwargs):
 
 @receiver(user_logged_out)
 def log_user_logout(sender, request, user, **kwargs):
+    from apps.system.logs.models import AppLog
     AppLog.objects.create(
         user=user,
         action='logout',

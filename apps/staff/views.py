@@ -1,7 +1,7 @@
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.paginator import Paginator
-from apps.common.models import AppLog
+from apps.system.logs.models import AppLog
 
 @login_required
 @permission_required('staff.view_staff', raise_exception=True)
@@ -19,7 +19,7 @@ def staff_contacted_detail(request, pk):
     contacted = get_object_or_404(StaffContacted, pk=pk)
     staff = contacted.staff
     # AppLogに詳細画面アクセスを記録
-    from apps.common.models import log_view_detail
+    from apps.system.logs.utils import log_view_detail
     log_view_detail(request.user, contacted)
     return render(request, 'staff/staff_contacted_detail.html', {'contacted': contacted, 'staff': staff})
 import os
@@ -154,10 +154,9 @@ def staff_detail(request, pk):
     # 連絡履歴（最新5件）
     contacted_list = staff.contacted_histories.all()[:5]
     # AppLogに詳細画面アクセスを記録
-    from apps.common.models import log_view_detail
+    from apps.system.logs.utils import log_view_detail
     log_view_detail(request.user, staff)
     # 変更履歴（AppLogから取得、最新5件）
-    from apps.common.models import AppLog
     change_logs = AppLog.objects.filter(model_name='Staff', object_id=str(staff.pk), action__in=['create', 'update']).order_by('-timestamp')[:5]
     change_logs_count = AppLog.objects.filter(model_name='Staff', object_id=str(staff.pk), action__in=['create', 'update']).count()
     return render(request, 'staff/staff_detail.html', {

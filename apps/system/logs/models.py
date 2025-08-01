@@ -87,3 +87,54 @@ class MailLog(MyModel):
     def status_display_name(self):
         """送信状況の表示名"""
         return dict(self.STATUS_CHOICES).get(self.status, self.status)
+
+
+# アプリケーション操作ログ
+class AppLog(models.Model):
+    """アプリケーション操作ログモデル"""
+    
+    ACTION_CHOICES = [
+        ('create', '作成'),
+        ('update', '編集'),
+        ('delete', '削除'),
+        ('login', 'ログイン'),
+        ('logout', 'ログアウト'),
+        ('view', '閲覧'),
+    ]
+    
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        verbose_name='ユーザー',
+        related_name='system_app_logs'
+    )
+    action = models.CharField('操作', max_length=10, choices=ACTION_CHOICES)
+    model_name = models.CharField('モデル名', max_length=100)
+    object_id = models.CharField('オブジェクトID', max_length=100)
+    object_repr = models.TextField('オブジェクト表現')
+    version = models.IntegerField('バージョン', null=True, blank=True)
+    timestamp = models.DateTimeField('タイムスタンプ', auto_now_add=True)
+
+    class Meta:
+        db_table = 'apps_system_app_log'
+        verbose_name = 'アプリケーション操作ログ'
+        verbose_name_plural = 'アプリケーション操作ログ'
+        ordering = ['-timestamp']
+        indexes = [
+            models.Index(fields=['user']),
+            models.Index(fields=['action']),
+            models.Index(fields=['model_name']),
+            models.Index(fields=['timestamp']),
+        ]
+
+    def __str__(self):
+        return f"{self.timestamp} {self.user} {self.action} {self.model_name} {self.object_repr}"
+
+    @property
+    def action_display_name(self):
+        """操作の表示名"""
+        return dict(self.ACTION_CHOICES).get(self.action, self.action)
+
+

@@ -71,7 +71,8 @@ def client_detail(request, pk):
     # 連絡履歴（最新5件）
     contacted_list = client.contacted_histories.all()[:5]
     # AppLogに詳細画面アクセスを記録
-    from apps.common.models import log_view_detail, AppLog
+    from apps.system.logs.utils import log_view_detail
+    from apps.system.logs.models import AppLog
     log_view_detail(request.user, client)
     # 変更履歴（AppLogから取得、最新5件）
     change_logs = AppLog.objects.filter(model_name='Client', object_id=str(client.pk), action__in=['create', 'update']).order_by('-timestamp')[:5]
@@ -89,7 +90,7 @@ def client_detail(request, pk):
 @permission_required('client.view_client', raise_exception=True)
 def client_change_history_list(request, pk):
     client = get_object_or_404(Client, pk=pk)
-    from apps.common.models import AppLog
+    from apps.system.logs.models import AppLog
     logs = AppLog.objects.filter(model_name='Client', object_id=str(client.pk), action__in=['create', 'update']).order_by('-timestamp')
     paginator = Paginator(logs, 20)
     page = request.GET.get('page')

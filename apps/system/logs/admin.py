@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import MailLog
+from .models import MailLog, AppLog
 
 @admin.register(MailLog)
 class MailLogAdmin(admin.ModelAdmin):
@@ -36,6 +36,44 @@ class MailLogAdmin(admin.ModelAdmin):
         ('システム情報', {
             'fields': ('created_at', 'updated_at', 'created_by', 'updated_by'),
             'classes': ('collapse',)
+        }),
+    )
+    
+    def has_add_permission(self, request):
+        """追加権限を無効化（ログは自動生成のため）"""
+        return False
+    
+    def has_change_permission(self, request, obj=None):
+        """変更権限を無効化（ログは変更不可）"""
+        return False
+
+
+@admin.register(AppLog)
+class AppLogAdmin(admin.ModelAdmin):
+    """アプリケーション操作ログの管理画面"""
+    
+    list_display = [
+        'id', 'timestamp', 'user', 'action', 'model_name', 
+        'object_id', 'object_repr'
+    ]
+    list_filter = [
+        'action', 'model_name', 'timestamp'
+    ]
+    search_fields = [
+        'user__username', 'model_name', 'object_repr'
+    ]
+    readonly_fields = [
+        'user', 'action', 'model_name', 'object_id', 
+        'object_repr', 'version', 'timestamp'
+    ]
+    ordering = ['-timestamp']
+    
+    fieldsets = (
+        ('基本情報', {
+            'fields': ('user', 'action', 'timestamp')
+        }),
+        ('対象オブジェクト', {
+            'fields': ('model_name', 'object_id', 'object_repr', 'version')
         }),
     )
     
