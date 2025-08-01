@@ -69,6 +69,21 @@ django-study-base/
 └── requirements.txt        # 依存関係
 ```
 
+## データベーステーブル一覧
+
+| テーブル名 | 説明 |
+| --- | --- |
+| `apps_client` | クライアント |
+| `apps_client_contacted` | クライアント連絡履歴 |
+| `apps_staff` | スタッフ |
+| `apps_staff_contacted` | スタッフ連絡履歴 |
+| `apps_system_dropdowns` | プルダウン |
+| `apps_system_mail_log` | メール送信ログ |
+| `apps_system_app_log` | アプリケーション操作ログ |
+| `apps_system_menu` | メニュー |
+| `apps_system_parameter` | パラメータ |
+| `apps_system_custom_user` | カスタムユーザー |
+
 ## 🚀 セットアップ
 
 ### 前提条件
@@ -214,21 +229,6 @@ python manage.py collectstatic
 # 本番用データベースマイグレーション
 python manage.py migrate --settings=config.settings.product
 ```
-
-## データベーステーブル一覧
-
-| テーブル名 | 説明 |
-| --- | --- |
-| `apps_client` | クライアント |
-| `apps_client_contacted` | クライアント連絡履歴 |
-| `apps_staff` | スタッフ |
-| `apps_staff_contacted` | スタッフ連絡履歴 |
-| `apps_system_dropdowns` | プルダウン |
-| `apps_system_mail_log` | メール送信ログ |
-| `apps_system_app_log` | アプリケーション操作ログ |
-| `apps_system_menu` | メニュー |
-| `apps_system_parameter` | パラメータ |
-| `apps_system_custom_user` | カスタムユーザー |
 
 ## 📝 ライセンス
 

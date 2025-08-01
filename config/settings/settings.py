@@ -68,6 +68,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 # パスワードリセット設定
 ACCOUNT_PASSWORD_MIN_LENGTH = 8
+ACCOUNT_PASSWORD_RESET_TOKEN_TIMEOUT = 3600  # 1時間（テスト用に長めに設定）
 
 ACCOUNT_ADAPTER = 'apps.accounts.adapters.CustomAccountAdapter'
 SITE_ID = 1
