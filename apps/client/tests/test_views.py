@@ -118,6 +118,96 @@ class ClientViewsTest(TestCase):
         self.assertEqual(clients_on_page[0].name, 'Client 01')
         self.assertEqual(clients_on_page[1].name, 'Client 02')
 
+    def test_client_list_regist_form_filter(self):
+        """クライアント一覧で登録区分による絞り込み機能をテスト"""
+        from apps.system.dropdowns.models import Dropdowns
+        
+        # 追加の登録区分データを作成
+        Dropdowns.objects.create(category='regist_form_client', value='10', name='登録済', active=True, disp_seq=2)
+        Dropdowns.objects.create(category='regist_form_client', value='20', name='商談中', active=True, disp_seq=3)
+        
+        # 異なる登録区分のクライアントを作成
+        client1 = Client.objects.create(
+            corporate_number='1111111111111',
+            name='登録中クライアント',
+            name_furigana='トウロクチュウクライアント',
+            regist_form_client=1
+        )
+        client2 = Client.objects.create(
+            corporate_number='2222222222222',
+            name='登録済クライアント',
+            name_furigana='トウロクズミクライアント',
+            regist_form_client=10
+        )
+        client3 = Client.objects.create(
+            corporate_number='3333333333333',
+            name='商談中クライアント',
+            name_furigana='ショウダンチュウクライアント',
+            regist_form_client=20
+        )
+        
+        # 1. 全件表示（フィルタなし）
+        response = self.client.get(reverse('client:client_list'))
+        self.assertEqual(response.status_code, 200)
+        # 新しく作成したクライアントが表示されることを確認
+        # ページネーションがあるので、全ページをチェック
+        all_content = response.content.decode()
+        if '登録中クライアント' not in all_content:
+            # 2ページ目もチェック
+            response_page2 = self.client.get(reverse('client:client_list'), {'page': 2})
+            all_content += response_page2.content.decode()
+        
+        self.assertIn('登録中クライアント', all_content)
+        self.assertIn('登録済クライアント', all_content)
+        self.assertIn('商談中クライアント', all_content)
+        
+        # 2. 登録区分「1」（登録中）で絞り込み
+        response = self.client.get(reverse('client:client_list'), {'regist_form_client': '1'})
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        # ページネーションがある場合は全ページをチェック
+        if '登録中クライアント' not in content:
+            response_page2 = self.client.get(reverse('client:client_list'), {'regist_form_client': '1', 'page': 2})
+            content += response_page2.content.decode()
+        
+        self.assertIn('登録中クライアント', content)
+        self.assertNotIn('登録済クライアント', content)
+        self.assertNotIn('商談中クライアント', content)
+        
+        # 3. 登録区分「10」（登録済）で絞り込み
+        response = self.client.get(reverse('client:client_list'), {'regist_form_client': '10'})
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertNotIn('登録中クライアント', content)
+        self.assertIn('登録済クライアント', content)
+        self.assertNotIn('商談中クライアント', content)
+        
+        # 4. 登録区分「20」（商談中）で絞り込み
+        response = self.client.get(reverse('client:client_list'), {'regist_form_client': '20'})
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertNotIn('登録中クライアント', content)
+        self.assertNotIn('登録済クライアント', content)
+        self.assertIn('商談中クライアント', content)
+        
+        # 5. キーワード検索と登録区分の組み合わせ
+        response = self.client.get(reverse('client:client_list'), {
+            'q': '登録済',
+            'regist_form_client': '10'
+        })
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode()
+        self.assertNotIn('登録中クライアント', content)
+        self.assertIn('登録済クライアント', content)
+        self.assertNotIn('商談中クライアント', content)
+        
+        # 6. ドロップダウンオプションがテンプレートに渡されていることを確認
+        response = self.client.get(reverse('client:client_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('regist_form_options', response.context)
+        regist_form_options = response.context['regist_form_options']
+        self.assertTrue(regist_form_options.count() >= 3)  # 最低3つのオプションがあることを確認
+
         # 6. 検索クエリとソート条件を組み合わせてテスト (例: 'Client 0'で検索し、名前昇順ソート)
         response = self.client.get(reverse('client:client_list'), {'sort': 'name', 'q': 'Client 0', 'page': 1})
         self.assertEqual(response.status_code, 200)

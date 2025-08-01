@@ -82,7 +82,7 @@
             <tbody>
                 {% for log in mail_logs %}
                 <tr>
-                    <td>{{ log.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>{{ log.created_at|date:"Y/m/d H:i:s" }}</td>
                     <td>
                         {% if log.mail_type == 'signup' %}
                             <span class="badge bg-primary" style="font-size:12px">{{ log.mail_type_display_name }}</span>

@@ -43,13 +43,13 @@
                     </tr>
                     <tr>
                         <th>作成日時</th>
-                        <td>{{ mail_log.created_at|date:"Y-m-d H:i:s" }}</td>
+                        <td>{{ mail_log.created_at|date:"Y/m/d H:i:s" }}</td>
                     </tr>
                     <tr>
                         <th>送信日時</th>
                         <td>
                             {% if mail_log.sent_at %}
-                                {{ mail_log.sent_at|date:"Y-m-d H:i:s" }}
+                                {{ mail_log.sent_at|date:"Y/m/d H:i:s" }}
                             {% else %}
                                 <span class="text-muted">未送信</span>
                             {% endif %}
@@ -131,7 +131,7 @@
                     </tr>
                     <tr>
                         <th>更新日時</th>
-                        <td>{{ mail_log.updated_at|date:"Y-m-d H:i:s" }}</td>
+                        <td>{{ mail_log.updated_at|date:"Y/m/d H:i:s" }}</td>
                     </tr>
                 </table>
             </div>

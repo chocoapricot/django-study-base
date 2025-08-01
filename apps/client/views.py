@@ -30,7 +30,11 @@ logger = logging.getLogger('client')
 def client_list(request):
     sort = request.GET.get('sort', 'corporate_number')
     query = request.GET.get('q', '').strip()
+    regist_form_client = request.GET.get('regist_form_client', '').strip()
+    
     clients = Client.objects.all()
+    
+    # キーワード検索
     if query:
         clients = clients.filter(
             Q(name__icontains=query)
@@ -38,6 +42,11 @@ def client_list(request):
             | Q(address__icontains=query)
             | Q(memo__icontains=query)
         )
+    
+    # 登録区分での絞り込み
+    if regist_form_client:
+        clients = clients.filter(regist_form_client=regist_form_client)
+    
     # ソート可能なフィールドを追加
     sortable_fields = [
         'corporate_number', '-corporate_number',
@@ -46,10 +55,24 @@ def client_list(request):
     ]
     if sort in sortable_fields:
         clients = clients.order_by(sort)
+    
+    # 登録区分のドロップダウンデータを取得
+    from apps.system.dropdowns.models import Dropdowns
+    regist_form_options = Dropdowns.objects.filter(
+        category='regist_form_client', 
+        active=True
+    ).order_by('disp_seq')
+    
     paginator = Paginator(clients, 10)
     page_number = request.GET.get('page')
     clients_pages = paginator.get_page(page_number)
-    return render(request, 'client/client_list.html', {'clients': clients_pages, 'query': query})
+    
+    return render(request, 'client/client_list.html', {
+        'clients': clients_pages, 
+        'query': query,
+        'regist_form_client': regist_form_client,
+        'regist_form_options': regist_form_options
+    })
 
 @login_required
 @permission_required('client.add_client', raise_exception=True)
