@@ -3,6 +3,7 @@ from django.core.mail.backends.smtp import EmailBackend as SMTPEmailBackend
 from django.utils import timezone
 from .utils import log_mail, update_mail_log_status
 import logging
+import uuid
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +26,9 @@ class LoggingEmailBackend:
                 # メール種別を推定
                 mail_type = self._determine_mail_type(message.subject, message.body)
                 
+                # メッセージIDを生成
+                message_id = str(uuid.uuid4())
+                
                 # 受信者ごとにログを作成
                 for to_email in message.to:
                     mail_log = log_mail(
@@ -34,7 +38,8 @@ class LoggingEmailBackend:
                         mail_type=mail_type,
                         from_email=message.from_email,
                         status='pending',
-                        backend=self.__class__.__name__
+                        backend=self.__class__.__name__,
+                        message_id=message_id
                     )
                     self.mail_logs[id(message)] = mail_log
                 

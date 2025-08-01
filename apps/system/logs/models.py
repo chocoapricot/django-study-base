@@ -56,7 +56,7 @@ class MailLog(MyModel):
     
     # 追加情報
     backend = models.CharField('メールバックエンド', max_length=100, blank=True)
-    message_id = models.CharField('メッセージID', max_length=255, blank=True)
+    message_id = models.CharField('メッセージID', max_length=255, blank=True, null=True)
     
     class Meta:
         db_table = 'apps_system_mail_log'
