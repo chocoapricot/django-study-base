@@ -67,6 +67,7 @@ python manage.py loaddata _sample_data/parameters.json
 python manage.py loaddata _sample_data/staff.json
 python manage.py loaddata _sample_data/staff_contacted.json
 python manage.py loaddata _sample_data/client.json
+python manage.py loaddata _sample_data/client_contacted.json
 
 # データベースアクセス
 python manage.py dbshell
