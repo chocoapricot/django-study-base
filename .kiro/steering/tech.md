@@ -10,6 +10,7 @@
 - `django-currentuser`: モデル内で現在のユーザーを追跡
 - `pillow`: 画像処理（プロフィール写真）
 - `requests`: API呼び出し用HTTPクライアント
+- `python-stdnum`: 各種標準番号の検証
 - `openpyxl`: Excelファイル処理
 - `pymupdf`: PDF処理（pdfrwの代替）
 - `mysqlclient`: MySQLデータベースコネクタ（オプション）
@@ -37,8 +38,6 @@ pip install --upgrade <package>
 # 全アプリのマイグレーション作成
 python manage.py makemigrations settings
 python manage.py makemigrations useradmin
-python manage.py makemigrations menu
-python manage.py makemigrations parameters
 python manage.py makemigrations staff
 python manage.py makemigrations client
 python manage.py makemigrations common

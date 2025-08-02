@@ -14,6 +14,12 @@ class ClientForm(forms.ModelForm):
         value = to_fullwidth_katakana(value)
         return value
 
+    def clean_corporate_number(self):
+        corporate_number = self.cleaned_data.get('corporate_number')
+        from .validators import validate_corporate_number
+        validate_corporate_number(corporate_number)
+        return corporate_number
+
     regist_form_client = forms.ChoiceField(
         choices=[],
         label='登録区分',  # 日本語ラベル
