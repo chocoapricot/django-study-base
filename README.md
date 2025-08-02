@@ -65,6 +65,8 @@ django-study-base/
 ├── config/                 # プロジェクト設定
 ├── templates/              # HTMLテンプレート
 ├── statics/                # 静的ファイル
+├── _scripts/               # 管理・運用スクリプト
+├── docs/                   # ドキュメント
 ├── _sample_data/          # サンプルデータ
 └── requirements.txt        # 依存関係
 ```
@@ -116,6 +118,10 @@ pip install -r requirements.txt
 
 4. **データベースのセットアップ**
 ```bash
+# 自動セットアップ（推奨）
+python _scripts/reset_database.py
+
+# または手動セットアップ
 python manage.py makemigrations
 python manage.py migrate
 ```
@@ -125,7 +131,12 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
-6. **開発サーバーの起動**
+6. **サンプルデータのインポート（オプション）**
+```bash
+python _scripts/load_sample_data.py
+```
+
+7. **開発サーバーの起動**
 ```bash
 python manage.py runserver
 ```

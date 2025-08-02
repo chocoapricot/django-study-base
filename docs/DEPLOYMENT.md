@@ -58,24 +58,50 @@ python manage.py runserver
 # http://127.0.0.1:8000/
 ```
 
+## データベースリセット
+
+### 自動リセットスクリプト（推奨）
+
+```bash
+# Pythonスクリプトを使用
+python _scripts/reset_database.py
+
+# またはバッチファイルを使用（Windows）
+_scripts/reset_database.bat
+```
+
+### 手動リセット手順
+
+```bash
+# 1. データベースファイルを削除
+del db.sqlite3
+
+# 2. マイグレーションを適用
+python manage.py migrate
+
+# 3. スーパーユーザーの作成
+python manage.py createsuperuser
+
+# 4. サンプルデータのインポート（必要に応じて）
+python _scripts/load_sample_data.py
+```
+
 ## トラブルシューティング
 
 ### common_applogエラーが発生した場合
 
 ```bash
-# マイグレーションの状況確認
-python manage.py showmigrations common
+# リセットスクリプトを使用（推奨）
+python _scripts/reset_database.py
 
-# 必要に応じて偽装適用
-python manage.py migrate common 0005_delete_applog --fake
+# または手動で修正
+python manage.py migrate logs
 ```
 
 ### データベースの整合性確認
 
 ```bash
-# データベースシェルでテーブル確認
-python manage.py dbshell
-# または
+# テーブル一覧を確認
 python -c "import sqlite3; conn = sqlite3.connect('db.sqlite3'); cursor = conn.cursor(); cursor.execute('SELECT name FROM sqlite_master WHERE type=\"table\";'); print(cursor.fetchall()); conn.close()"
 ```
 

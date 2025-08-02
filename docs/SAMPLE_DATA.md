@@ -8,7 +8,6 @@
 
 ### 基本マスタデータ
 - `dropdowns.json`: ドロップダウン選択肢（性別、登録区分、連絡種別等）
-- `useradmin.json`: カスタムユーザーデータ
 
 ### 業務データ
 - `staff.json`: スタッフ（従業員）データ
@@ -18,16 +17,19 @@
 
 ## データインポート手順
 
-### 1. 基本マスタデータのインポート（必須）
+### 1. スーパーユーザーの作成（必須）
 ```bash
-# ドロップダウンデータ（最初にインポート）
-python manage.py loaddata _sample_data/dropdowns.json
-
-# ユーザーデータ
-python manage.py loaddata _sample_data/useradmin.json
+# サンプルデータが参照するユーザー（ID=1）を作成
+python manage.py createsuperuser
 ```
 
-### 2. 業務データのインポート
+### 2. 基本マスタデータのインポート
+```bash
+# ドロップダウンデータ
+python manage.py loaddata _sample_data/dropdowns.json
+```
+
+### 3. 業務データのインポート
 ```bash
 # スタッフデータ
 python manage.py loaddata _sample_data/staff.json
@@ -42,10 +44,30 @@ python manage.py loaddata _sample_data/client.json
 python manage.py loaddata _sample_data/client_contacted.json
 ```
 
-### 3. 全データの一括インポート
+### 4. 全データの一括インポート
+
+#### 自動インポートスクリプト（推奨）
 ```bash
-# 全サンプルデータを一括でインポート
-python manage.py loaddata _sample_data/*.json
+# Pythonスクリプトを使用
+python _scripts/load_sample_data.py
+
+# またはバッチファイルを使用（Windows）
+_scripts/load_sample_data.bat
+```
+
+#### 手動で全データをインポート
+```bash
+# 1. スーパーユーザーを作成（ID=1になるように最初に作成）
+python manage.py createsuperuser
+
+# 2. 依存関係を考慮した正しい順序でインポート
+python manage.py loaddata _sample_data/dropdowns.json
+python manage.py loaddata _sample_data/parameters.json
+python manage.py loaddata _sample_data/menus.json
+python manage.py loaddata _sample_data/staff.json
+python manage.py loaddata _sample_data/staff_contacted.json
+python manage.py loaddata _sample_data/client.json
+python manage.py loaddata _sample_data/client_contacted.json
 ```
 
 ## データエクスポート手順
@@ -87,8 +109,8 @@ python manage.py dumpdata client.clientcontacted --format=json --indent=4 > _sam
 ## 注意事項
 
 ### インポート順序
-1. **ドロップダウンデータを最初にインポート**: 他のデータが参照するため
-2. **ユーザーデータを次にインポート**: 作成者・更新者として参照されるため
+1. **スーパーユーザーを最初に作成**: 作成者・更新者として参照されるため（ID=1）
+2. **ドロップダウンデータをインポート**: 他のデータが参照するため
 3. **基本データ（スタッフ・クライアント）をインポート**
 4. **関連データ（連絡履歴）を最後にインポート**
 
