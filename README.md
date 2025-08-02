@@ -78,10 +78,12 @@ django-study-base/
 | `apps_client_contacted` | クライアント連絡履歴 |
 | `apps_staff` | スタッフ |
 | `apps_staff_contacted` | スタッフ連絡履歴 |
-| `apps_system_settings` | 設定 (ドロップダウン、メニュー、パラメータを統合) |
+| `apps_system_dropdowns` | プルダウン |
+| `apps_system_parameter` | パラメータ |
+| `apps_system_menu` | メニュー |
 | `apps_system_mail_log` | メール送信ログ |
 | `apps_system_app_log` | アプリケーション操作ログ |
-| `apps_system_custom_user` | カスタムユーザー |
+| `auth_user` | カスタムユーザー |
 
 ## 🚀 セットアップ
 
