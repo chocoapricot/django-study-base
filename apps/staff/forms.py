@@ -13,7 +13,7 @@ class StaffContactedForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        from apps.system.dropdowns.models import Dropdowns
+        from apps.system.settings.models import Dropdowns
         self.fields['contact_type'].choices = [
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='contact_type').order_by('disp_seq')
@@ -72,7 +72,7 @@ class StaffForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # ここでのみDropdownsをimport.そうしないとmigrateでエラーになる
-        from apps.system.dropdowns.models import Dropdowns
+        from apps.system.settings.models import Dropdowns
         self.fields['sex'].choices = [
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='sex').order_by('disp_seq')

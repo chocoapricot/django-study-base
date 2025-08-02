@@ -1,17 +1,19 @@
-# 変更履歴
+# Changelog
 
-## 2025-08-03
-- **データベースリセットスクリプトの最適化**: scriptsフォルダを_scriptsに変更、マイグレーション処理を簡潔化
-- **commonアプリマイグレーション問題の根本解決**: 複雑なマイグレーション履歴をクリーンアップ、--fakeオプションを削除
-- **サンプルデータインポートスクリプトの改善**: 不親切な注意メッセージを削除、ユーザー体験を向上
-- **対話型コマンド問題の解決**: createsuperuserを適切に分離、スクリプトの責務を明確化
+All notable changes to this project will be documented in this file.
 
-## 2025-08-03
-- **クライアント連絡履歴サンプルデータ追加**: 30件のサンプルデータを作成
-- **サンプルデータ管理ガイド作成**: データインポート/エクスポート手順を文書化
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 2025-08-03
-- **Django 5.2.4アップデート**: 5.2.1から5.2.4に更新
-- **requirements.txt更新**: pytestを追加、実際の環境と整合
-- **マイグレーション修正**: common_applogテーブル削除の問題を解決
-- **変更管理文書作成**: CHANGELOG.mdとDEPLOYMENT.mdを新規作成
+## [Unreleased]
+
+### Added
+- `apps/system/settings` application to consolidate system-wide settings.
+
+### Changed
+- Merged `apps/system/dropdowns`, `apps/system/menu`, and `apps/system/parameters` into the new `apps/system/settings` application.
+- Updated all related imports and references throughout the codebase.
+- Updated documentation to reflect the new application structure.
+
+### Removed
+- Deleted the old `apps/system/dropdowns`, `apps/system/menu`, and `apps/system/parameters` applications.

@@ -1,6 +1,6 @@
 # helpers.py
 import requests
-from apps.system.parameters.utils import my_parameter
+from apps.system.settings.utils import my_parameter
 
 def fetch_company_info(corporate_number):
     base_url = my_parameter("GBIZ_API_PATH",'https://info.gbiz.go.jp/hojin/v1/hojin/')

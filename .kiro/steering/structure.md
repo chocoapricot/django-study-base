@@ -25,7 +25,7 @@ django-study-base/
 
 ### アプリケーションモジュール
 - **`apps/system/`**: コアシステム機能
-  - `dropdowns/`: ドロップダウン/選択オプション管理
+  - `settings/`: 設定/選択オプション管理
   - `useradmin/`: カスタムユーザー管理と認証
   - `menu/`: ナビゲーションメニューシステム
   - `parameters/`: システム設定パラメータ

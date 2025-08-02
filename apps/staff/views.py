@@ -31,9 +31,9 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Staff, StaffContacted
 from .forms import StaffForm, StaffContactedForm
-from apps.system.parameters.utils import my_parameter
+from apps.system.settings.utils import my_parameter
 from django.db.models import Q
-from apps.system.dropdowns.models import Dropdowns
+from apps.system.settings.models import Dropdowns
 from apps.common.utils import fill_excel_from_template, fill_pdf_from_template
 from django.contrib.auth.decorators import login_required, permission_required
 
@@ -56,9 +56,9 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Staff, StaffContacted
 from .forms import StaffForm, StaffContactedForm
-from apps.system.parameters.utils import my_parameter
+from apps.system.settings.utils import my_parameter
 from django.db.models import Q
-from apps.system.dropdowns.models import Dropdowns
+from apps.system.settings.models import Dropdowns
 from apps.common.utils import fill_excel_from_template, fill_pdf_from_template
 from django.contrib.auth.decorators import login_required
 

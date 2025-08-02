@@ -2,7 +2,7 @@
 import re
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
-from apps.system.parameters.utils import my_parameter
+from apps.system.settings.utils import my_parameter
 
 
 class MyPasswordValidator:

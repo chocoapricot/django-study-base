@@ -24,7 +24,7 @@ class ClientForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # ここでのみDropdownsをimport.そうしないとmigrateでエラーになる
-        from apps.system.dropdowns.models import Dropdowns
+        from apps.system.settings.models import Dropdowns
         self.fields['regist_form_client'].choices = [
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='regist_form_client').order_by('disp_seq')
@@ -61,7 +61,7 @@ class ClientContactedForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        from apps.system.dropdowns.models import Dropdowns
+        from apps.system.settings.models import Dropdowns
         self.fields['contact_type'].choices = [
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='contact_type').order_by('disp_seq')

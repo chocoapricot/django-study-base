@@ -1,6 +1,6 @@
 [
 {
-    "model": "settings.dropdowns",
+    "model": "dropdowns.dropdowns",
     "pk": 1,
     "fields": {
         "created_at": "2024-10-25T05:04:59.905Z",
@@ -15,7 +15,7 @@
     }
 },
 {
-    "model": "settings.dropdowns",
+    "model": "dropdowns.dropdowns",
     "pk": 2,
     "fields": {
         "created_at": "2024-10-25T05:05:11.695Z",
@@ -30,7 +30,7 @@
     }
 },
 {
-    "model": "settings.dropdowns",
+    "model": "dropdowns.dropdowns",
     "pk": 3,
     "fields": {
         "created_at": "2024-11-06T15:55:50.740Z",
@@ -45,7 +45,7 @@
     }
 },
 {
-    "model": "settings.dropdowns",
+    "model": "dropdowns.dropdowns",
     "pk": 4,
     "fields": {
         "created_at": "2024-11-06T15:56:44.222Z",
@@ -60,7 +60,7 @@
     }
 },
 {
-    "model": "settings.dropdowns",
+    "model": "dropdowns.dropdowns",
     "pk": 5,
     "fields": {
         "created_at": "2024-11-06T15:57:02.294Z",
@@ -75,7 +75,7 @@
     }
 },
 {
-    "model": "settings.dropdowns",
+    "model": "dropdowns.dropdowns",
     "pk": 6,
     "fields": {
         "created_at": "2024-11-06T15:57:21.195Z",
@@ -90,7 +90,7 @@
     }
 },
 {
-    "model": "settings.dropdowns",
+    "model": "dropdowns.dropdowns",
     "pk": 7,
     "fields": {
         "created_at": "2024-11-06T15:57:46.793Z",
@@ -105,7 +105,7 @@
     }
 },
 {
-    "model": "settings.dropdowns",
+    "model": "dropdowns.dropdowns",
     "pk": 8,
     "fields": {
         "created_at": "2024-11-07T05:05:40.059Z",
@@ -120,7 +120,7 @@
     }
 },
 {
-    "model": "settings.dropdowns",
+    "model": "dropdowns.dropdowns",
     "pk": 9,
     "fields": {
         "created_at": "2024-11-12T16:53:17.612Z",
@@ -135,7 +135,7 @@
     }
 },
 {
-    "model": "settings.dropdowns",
+    "model": "dropdowns.dropdowns",
     "pk": 10,
     "fields": {
         "created_at": "2024-11-12T16:53:31.222Z",
@@ -150,7 +150,7 @@
     }
 },
 {
-    "model": "settings.dropdowns",
+    "model": "dropdowns.dropdowns",
     "pk": 11,
     "fields": {
         "created_at": "2024-11-12T16:54:40.778Z",
@@ -165,7 +165,7 @@
     }
 },
 {
-    "model": "settings.dropdowns",
+    "model": "dropdowns.dropdowns",
     "pk": 12,
     "fields": {
         "created_at": "2024-11-12T17:28:05.900Z",
@@ -176,66 +176,6 @@
         "name": "商談中",
         "value": "20",
         "disp_seq": 20,
-        "active": true
-    }
-},
-{
-    "model": "settings.dropdowns",
-    "pk": 13,
-    "fields": {
-        "created_at": "2025-07-12T15:54:13.431Z",
-        "created_by": 1,
-        "updated_at": "2025-07-12T15:56:57.202Z",
-        "updated_by": 1,
-        "category": "contact_type",
-        "name": "問い合わせ",
-        "value": "10",
-        "disp_seq": 10,
-        "active": true
-    }
-},
-{
-    "model": "settings.dropdowns",
-    "pk": 14,
-    "fields": {
-        "created_at": "2025-07-12T15:54:34.607Z",
-        "created_by": 1,
-        "updated_at": "2025-07-12T15:54:34.607Z",
-        "updated_by": 1,
-        "category": "contact_type",
-        "name": "打ち合わせ",
-        "value": "20",
-        "disp_seq": 20,
-        "active": true
-    }
-},
-{
-    "model": "settings.dropdowns",
-    "pk": 15,
-    "fields": {
-        "created_at": "2025-07-12T15:57:30.705Z",
-        "created_by": 1,
-        "updated_at": "2025-07-12T16:00:14.419Z",
-        "updated_by": 1,
-        "category": "contact_type",
-        "name": "メール配信",
-        "value": "50",
-        "disp_seq": 50,
-        "active": true
-    }
-},
-{
-    "model": "settings.dropdowns",
-    "pk": 16,
-    "fields": {
-        "created_at": "2025-07-12T16:00:55.130Z",
-        "created_by": 1,
-        "updated_at": "2025-07-12T16:00:55.130Z",
-        "updated_by": 1,
-        "category": "contact_type",
-        "name": "クレーム",
-        "value": "40",
-        "disp_seq": 40,
         "active": true
     }
 }

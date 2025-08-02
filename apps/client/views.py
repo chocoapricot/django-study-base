@@ -57,7 +57,7 @@ def client_list(request):
         clients = clients.order_by(sort)
     
     # 登録区分のドロップダウンデータを取得
-    from apps.system.dropdowns.models import Dropdowns
+    from apps.system.settings.models import Dropdowns
     regist_form_options = Dropdowns.objects.filter(
         category='regist_form_client', 
         active=True

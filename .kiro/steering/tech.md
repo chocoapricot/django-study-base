@@ -35,7 +35,7 @@ pip install --upgrade <package>
 ### データベース操作
 ```bash
 # 全アプリのマイグレーション作成
-python manage.py makemigrations dropdowns
+python manage.py makemigrations settings
 python manage.py makemigrations useradmin
 python manage.py makemigrations menu
 python manage.py makemigrations parameters

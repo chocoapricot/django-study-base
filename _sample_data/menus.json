@@ -1,6 +1,6 @@
 [
 {
-    "model": "menu.menu",
+    "model": "settings.menu",
     "pk": 1,
     "fields": {
         "version": 0,
@@ -17,7 +17,7 @@
     }
 },
 {
-    "model": "menu.menu",
+    "model": "settings.menu",
     "pk": 2,
     "fields": {
         "version": 0,
@@ -34,7 +34,7 @@
     }
 },
 {
-    "model": "menu.menu",
+    "model": "settings.menu",
     "pk": 3,
     "fields": {
         "version": 0,
@@ -51,7 +51,7 @@
     }
 },
 {
-    "model": "menu.menu",
+    "model": "settings.menu",
     "pk": 4,
     "fields": {
         "version": 0,
@@ -68,7 +68,7 @@
     }
 },
 {
-    "model": "menu.menu",
+    "model": "settings.menu",
     "pk": 5,
     "fields": {
         "version": 0,
@@ -85,7 +85,7 @@
     }
 },
 {
-    "model": "menu.menu",
+    "model": "settings.menu",
     "pk": 6,
     "fields": {
         "version": 0,
