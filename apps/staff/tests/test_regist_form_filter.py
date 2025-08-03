@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from apps.staff.models import Staff
-from apps.system.dropdowns.models import Dropdowns
+from apps.system.settings.models import Dropdowns
 from datetime import date
 
 User = get_user_model()

@@ -38,7 +38,7 @@ class ClientViewsTest(TestCase):
         self.user.user_permissions.add(self.change_clientcontacted_permission)
         self.user.user_permissions.add(self.delete_clientcontacted_permission)
 
-        from apps.system.dropdowns.models import Dropdowns
+        from apps.system.settings.models import Dropdowns
         # Create necessary Dropdowns for ClientForm
         Dropdowns.objects.create(category='regist_form_client', value='1', name='Test Regist Form', active=True, disp_seq=1)
         # Create necessary Dropdowns for ClientContactedForm
@@ -120,7 +120,7 @@ class ClientViewsTest(TestCase):
 
     def test_client_list_regist_form_filter(self):
         """クライアント一覧で登録区分による絞り込み機能をテスト"""
-        from apps.system.dropdowns.models import Dropdowns
+        from apps.system.settings.models import Dropdowns
         
         # 追加の登録区分データを作成
         Dropdowns.objects.create(category='regist_form_client', value='10', name='登録済', active=True, disp_seq=2)
@@ -253,7 +253,7 @@ class ClientViewsTest(TestCase):
 
     def test_client_create_view_post(self):
         data = {
-            'corporate_number': '9876543210987',
+            'corporate_number': '5835678256246', # stdnumが有効と判断する法人番号
             'name': 'New Client',
             'name_furigana': 'ニュークライアントカキクケコ',
             'regist_form_client': 1
