@@ -1,0 +1,20 @@
+{% extends 'common/_base.html' %}
+
+{% block content %}
+<div class="content-box card bg-secondary mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">会社情報</div>
+    <div class="card-body">
+        <h4 class="card-title">{{ company.name }}</h4>
+        <p class="card-text"><strong>法人番号:</strong> {{ company.corporate_number }}</p>
+        <p class="card-text"><strong>郵便番号:</strong> {{ company.postal_code }}</p>
+        <p class="card-text"><strong>住所:</strong> {{ company.address }}</p>
+        <p class="card-text"><strong>電話番号:</strong> {{ company.phone_number }}</p>
+        <p class="card-text"><strong>URL:</strong> <a href="{{ company.url }}" target="_blank">{{ company.url }}</a></p>
+        <p class="card-text"><strong>作成日時:</strong> {{ company.created_at }}</p>
+        <p class="card-text"><strong>更新日時:</strong> {{ company.updated_at }}</p>
+        <p class="card-text"><strong>作成者:</strong> {{ company.created_by.username }}</p>
+        <p class="card-text"><strong>更新者:</strong> {{ company.updated_by.username }}</p>
+        <a href="{% url 'company:company_edit' %}" class="btn btn-primary">編集</a>
+    </div>
+</div>
+{% endblock %}

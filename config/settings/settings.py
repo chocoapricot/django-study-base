@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'apps.csstest',
     'apps.common',
     'apps.accounts',
+    'apps.company',
 ]
 
 # allauth設定

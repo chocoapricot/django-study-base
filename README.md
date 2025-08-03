@@ -84,6 +84,8 @@ django-study-base/
 | `apps_system_mail_log` | メール送信ログ |
 | `apps_system_app_log` | アプリケーション操作ログ |
 | `auth_user` | カスタムユーザー |
+| `apps_company` | 会社 |
+| `apps_company_department` | 部署 |
 
 ## 🚀 セットアップ
 

@@ -39,35 +39,22 @@ pip install -r requirements.txt
 pip list --outdated
 pip install --upgrade XXX
 
-# DB作成
-python manage.py makemigrations dropdowns
-python manage.py makemigrations useradmin
-python manage.py makemigrations menu
-python manage.py makemigrations parameters
-python manage.py makemigrations staff
-python manage.py makemigrations client
-python manage.py makemigrations common
-python manage.py makemigrations 
-python manage.py migrate
+# DBリセットして作成
+python _scripts/reset_database.py
 
 # 最初のユーザ作成
 python manage.py createsuperuser
 
-# インポートエクスポート
+# DBデータ読み込み
+python _scripts/load_sample_data.py
+
+# エクスポート
 python manage.py dumpdata dropdowns --format=json --indent=4 > _sample_data/dropdowns.json
 python manage.py dumpdata menu --format=json --indent=4 > _sample_data/menus.json
 python manage.py dumpdata parameters --format=json --indent=4 > _sample_data/parameters.json
 python manage.py dumpdata staff --format=json --indent=4 > _sample_data/staff.json
 python manage.py dumpdata client --format=json --indent=4 > _sample_data/client.json
 #   UTF16からUTF8に変更してから取り込む必要あり
-#   全消しした場合には、先にユーザを追加しないと登録できない
-python manage.py loaddata _sample_data/dropdowns.json
-python manage.py loaddata _sample_data/menus.json
-python manage.py loaddata _sample_data/parameters.json
-python manage.py loaddata _sample_data/staff.json
-python manage.py loaddata _sample_data/staff_contacted.json
-python manage.py loaddata _sample_data/client.json
-python manage.py loaddata _sample_data/client_contacted.json
 
 # データベースアクセス
 python manage.py dbshell

@@ -1,0 +1,18 @@
+{% extends 'common/_base.html' %}
+
+{% block content %}
+<div class="content-box card bg-secondary mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">会社情報編集</div>
+    <div class="card-body">
+        <h4 class="card-title">会社情報</h4>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">保存</button>
+        </form>
+        <hr>
+        <p class="card-text"><strong>作成者:</strong> {{ form.instance.created_by.username }}</p>
+        <p class="card-text"><strong>更新者:</strong> {{ form.instance.updated_by.username }}</p>
+    </div>
+</div>
+{% endblock %}
