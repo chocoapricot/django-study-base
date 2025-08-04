@@ -82,9 +82,9 @@ ACCOUNT_LOGIN_BY_CODE_MAX_ATTEMPTS = 0  # 最大試行回数を0に設定
 
 # パスワードリセット設定
 ACCOUNT_PASSWORD_MIN_LENGTH = 8
-ACCOUNT_PASSWORD_RESET_TOKEN_TIMEOUT = 86400  # 24時間（より長い有効期限）
+ACCOUNT_PASSWORD_RESET_TOKEN_TIMEOUT = 600
 ACCOUNT_PASSWORD_RESET_FROM_KEY_DONE_URL = '/accounts/login/'  # リセット完了後のリダイレクト先
-ACCOUNT_PASSWORD_RESET_TIMEOUT = 86400  # パスワードリセットトークンの有効期限（秒）
+ACCOUNT_PASSWORD_RESET_TIMEOUT = 600  # パスワードリセットトークンの有効期限（秒）
 ACCOUNT_PASSWORD_RESET_SERIALIZER = None  # デフォルトのシリアライザーを使用
 
 ACCOUNT_ADAPTER = 'apps.accounts.adapters.CustomAccountAdapter'
