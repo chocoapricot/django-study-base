@@ -1,5 +1,5 @@
 from django import forms
-from .models import Company
+from .models import Company, CompanyDepartment
 
 class CompanyForm(forms.ModelForm):
     class Meta:
@@ -12,4 +12,13 @@ class CompanyForm(forms.ModelForm):
             'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
             'url': forms.URLInput(attrs={'class': 'form-control'}),
+        }
+
+class CompanyDepartmentForm(forms.ModelForm):
+    class Meta:
+        model = CompanyDepartment
+        fields = ['name', 'description']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }

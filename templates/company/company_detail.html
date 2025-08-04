@@ -1,20 +1,52 @@
 {% extends 'common/_base.html' %}
-
 {% block content %}
-<div class="content-box card bg-secondary mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header">会社情報</div>
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        会社情報
+        <a href="{% url 'company:company_edit' %}" class="btn btn-sm btn-primary">編集</a>
+    </div>
     <div class="card-body">
-        <h4 class="card-title">{{ company.name }}</h4>
-        <p class="card-text"><strong>法人番号:</strong> {{ company.corporate_number }}</p>
-        <p class="card-text"><strong>郵便番号:</strong> {{ company.postal_code }}</p>
-        <p class="card-text"><strong>住所:</strong> {{ company.address }}</p>
-        <p class="card-text"><strong>電話番号:</strong> {{ company.phone_number }}</p>
-        <p class="card-text"><strong>URL:</strong> <a href="{{ company.url }}" target="_blank">{{ company.url }}</a></p>
-        <p class="card-text"><strong>作成日時:</strong> {{ company.created_at }}</p>
-        <p class="card-text"><strong>更新日時:</strong> {{ company.updated_at }}</p>
-        <p class="card-text"><strong>作成者:</strong> {{ company.created_by.username }}</p>
-        <p class="card-text"><strong>更新者:</strong> {{ company.updated_by.username }}</p>
-        <a href="{% url 'company:company_edit' %}" class="btn btn-primary">編集</a>
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table table-borderless">
+                    <tr>
+                        <th style="width: 30%;">会社名</th>
+                        <td>{{ company.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>法人番号</th>
+                        <td>{{ company.corporate_number|default:"未設定" }}</td>
+                    </tr>
+                    <tr>
+                        <th>郵便番号</th>
+                        <td>{{ company.postal_code|default:"未設定" }}</td>
+                    </tr>
+                    <tr>
+                        <th>住所</th>
+                        <td>{{ company.address|default:"未設定" }}</td>
+                    </tr>
+                    <tr>
+                        <th>電話番号</th>
+                        <td>{{ company.phone_number|default:"未設定" }}</td>
+                    </tr>
+                    <tr>
+                        <th>URL</th>
+                        <td>
+                            {% if company.url %}
+                                <a href="{{ company.url }}" target="_blank">{{ company.url }}</a>
+                            {% else %}
+                                未設定
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <h5>部署管理</h5>
+            <a href="{% url 'company:department_list' %}" class="btn btn-outline-primary">部署一覧を見る</a>
+        </div>
     </div>
 </div>
 {% endblock %}
