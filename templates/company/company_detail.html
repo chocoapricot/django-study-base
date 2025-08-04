@@ -1,52 +1,215 @@
 {% extends 'common/_base.html' %}
 {% block content %}
+
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        会社情報
-        <a href="{% url 'company:company_edit' %}" class="btn btn-sm btn-primary">編集</a>
-    </div>
+    <div class="card-header">会社基本情報</div>
     <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
-                <table class="table table-borderless">
-                    <tr>
-                        <th style="width: 30%;">会社名</th>
-                        <td>{{ company.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>法人番号</th>
-                        <td>{{ company.corporate_number|default:"未設定" }}</td>
-                    </tr>
-                    <tr>
-                        <th>郵便番号</th>
-                        <td>{{ company.postal_code|default:"未設定" }}</td>
-                    </tr>
-                    <tr>
-                        <th>住所</th>
-                        <td>{{ company.address|default:"未設定" }}</td>
-                    </tr>
-                    <tr>
-                        <th>電話番号</th>
-                        <td>{{ company.phone_number|default:"未設定" }}</td>
-                    </tr>
-                    <tr>
-                        <th>URL</th>
-                        <td>
-                            {% if company.url %}
-                                <a href="{{ company.url }}" target="_blank">{{ company.url }}</a>
-                            {% else %}
-                                未設定
-                            {% endif %}
-                        </td>
-                    </tr>
-                </table>
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-4">
+                <h4>{{ company.name }}</h4>
             </div>
         </div>
-        
-        <div class="mt-4">
-            <h5>部署管理</h5>
-            <a href="{% url 'company:department_list' %}" class="btn btn-outline-primary">部署一覧を見る</a>
+
+        {% if company.corporate_number %}
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>法人番号</strong>
+            </div>
+            <div class="col-sm-4">
+                <span class="copy-target">{{ company.corporate_number }}</span>
+                <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
+                <span class="copy-message">コピーしました!</span>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if company.postal_code or company.address %}
+        <div class="row mb-3 align-items-top">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>住所</strong>
+            </div>
+            <div class="col-sm-4">
+                {% if company.postal_code %}〒 {{ company.postal_code }}<br/>{% endif %}
+                {{ company.address }}
+                {% if company.address %}
+                <a href="https://www.google.com/maps/search/?api=1&query={{ company.address | urlencode }}" target="_blank" class="text-decoration-none" style="color:green;margin-left: 5px;" aria-label="Googleマップで開く">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if company.phone_number %}
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>電話番号</strong>
+            </div>
+            <div class="col-sm-4">
+                <span class="copy-target">{{ company.phone_number }}</span>
+                <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
+                <span class="copy-message">コピーしました!</span>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if company.url %}
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>URL</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ company.url }}
+                <a href="{{ company.url }}" target="_blank" class="text-decoration-none" style="color:green;margin-left: 5px;" aria-label="別ウィンドウで開く">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="d-flex justify-content-start">
+            <a href="{% url 'company:company_edit' %}" class="btn btn-sm btn-primary me-2">編集</a>
         </div>
     </div>
 </div>
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        部署一覧
+        <a href="{% url 'company:department_create' %}" class="btn btn-sm btn-primary">部署追加</a>
+    </div>
+    <div class="card-body mb-0" style="margin-bottom: 2rem;">
+        <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>部署名</th>
+                    <th>説明</th>
+                    <th>作成日</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for department in departments %}
+                <tr>
+                    <td><a href="{% url 'company:department_detail' department.pk %}">{{ department.name }}</a></td>
+                    <td>{{ department.description|default:"" }}</td>
+                    <td>{{ department.created_at|date:"Y/m/d" }}</td>
+                    <td>
+                        <a href="{% url 'company:department_edit' department.pk %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="編集">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{% url 'company:department_delete' department.pk %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="削除">
+                            <i class="bi bi-x"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4">部署が登録されていません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if departments %}
+        <div class="text-center">
+            <a href="{% url 'company:department_list' %}" class="btn btn-link">部署管理画面へ</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        変更履歴
+    </div>
+    <div class="card-body mb-0">
+        <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>対象</th>
+                    <th>操作</th>
+                    <th>内容</th>
+                    <th>変更者</th>
+                    <th>日時</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in change_logs %}
+                <tr>
+                    <td>
+                        {% if log.model_name == 'Company' %}
+                            <span class="badge bg-primary">会社情報</span>
+                        {% elif log.model_name == 'CompanyDepartment' %}
+                            <span class="badge bg-info">部署</span>
+                        {% else %}
+                            {{ log.model_name }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.action == 'create' %}
+                            <span class="badge bg-success">作成</span>
+                        {% elif log.action == 'update' %}
+                            <span class="badge bg-warning">編集</span>
+                        {% elif log.action == 'delete' %}
+                            <span class="badge bg-danger">削除</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ log.action|title }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ log.object_repr|truncatechars:40 }}</td>
+                    <td>
+                        {% if log.user %}
+                            {% if log.user.last_name or log.user.first_name %}
+                                {{ log.user.last_name }} {{ log.user.first_name }}
+                            {% else %}
+                                {{ log.user.username }}
+                            {% endif %}
+                        {% else %}-{% endif %}
+                    </td>
+                    <td>{{ log.timestamp|date:'Y/m/d H:i:s' }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5">履歴がありません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if change_logs_count > 5 %}
+    <div class="card-footer d-flex justify-content-center align-items-center">
+        <a href="{% url 'company:change_history_list' %}" class="btn btn-link">全て表示 (全{{ change_logs_count }}件)</a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .copy-message {
+        display: none;
+        color: green;
+        font-size: 0.8em;
+        margin-left: 5px;
+    }
+    .copy-icon {
+        color: green;
+        font-size: 0.8em;
+        cursor: pointer;
+        margin-left: 5px;
+    }
+</style>
+<script>
+    function copyToClipboard(button) {
+        // ボタンの前の .copy-target を探してテキストを取得
+        const targetText = button.previousElementSibling.innerText;
+        navigator.clipboard.writeText(targetText).then(() => {
+            // コピーが成功したらメッセージを表示
+            const copyMessage = button.nextElementSibling;
+            copyMessage.style.display = "inline";
+    
+            // 2秒後にメッセージを非表示にする
+            setTimeout(() => {
+                copyMessage.style.display = "none";
+            }, 1000);
+        }).catch(err => {
+            console.error("コピーに失敗しました: ", err);
+        });
+    }
+</script>
+
 {% endblock %}

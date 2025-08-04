@@ -1,40 +1,113 @@
 {% extends 'common/_base.html' %}
 {% block content %}
+
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        部署詳細
-        <div>
-            <a href="{% url 'company:department_edit' department.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
-            <a href="{% url 'company:department_list' %}" class="btn btn-sm btn-secondary">一覧に戻る</a>
-        </div>
-    </div>
+    <div class="card-header">部署基本情報</div>
     <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
-                <table class="table table-borderless">
-                    <tr>
-                        <th style="width: 30%;">部署名</th>
-                        <td>{{ department.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>説明</th>
-                        <td>{{ department.description|default:"未設定" }}</td>
-                    </tr>
-                    <tr>
-                        <th>作成日</th>
-                        <td>{{ department.created_at|date:"Y年m月d日 H:i" }}</td>
-                    </tr>
-                    <tr>
-                        <th>更新日</th>
-                        <td>{{ department.updated_at|date:"Y年m月d日 H:i" }}</td>
-                    </tr>
-                </table>
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-4">
+                <h4>{{ department.name }}</h4>
             </div>
         </div>
-        
-        <div class="mt-4">
-            <a href="{% url 'company:department_delete' department.pk %}" class="btn btn-outline-danger">削除</a>
+
+        {% if department.description %}
+        <div class="row mb-3 align-items-top">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>説明</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ department.description }}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if department.postal_code or department.address %}
+        <div class="row mb-3 align-items-top">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>住所</strong>
+            </div>
+            <div class="col-sm-4">
+                {% if department.postal_code %}〒 {{ department.postal_code }}<br/>{% endif %}
+                {{ department.address }}
+                {% if department.address %}
+                <a href="https://www.google.com/maps/search/?api=1&query={{ department.address | urlencode }}" target="_blank" class="text-decoration-none" style="color:green;margin-left: 5px;" aria-label="Googleマップで開く">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if department.phone_number %}
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>電話番号</strong>
+            </div>
+            <div class="col-sm-4">
+                <span class="copy-target">{{ department.phone_number }}</span>
+                <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
+                <span class="copy-message">コピーしました!</span>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>作成日</strong>
+            </div>
+            <div class="col-sm-4">
+                {{ department.created_at|date:"Y年m月d日 H:i" }}
+            </div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>更新日</strong>
+            </div>
+            <div class="col-sm-4">
+                {{ department.updated_at|date:"Y年m月d日 H:i" }}
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-start">
+            <a href="{% url 'company:department_edit' department.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
+            <a href="{% url 'company:department_delete' department.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+            <a href="{% url 'company:department_list' %}" class="btn btn-sm btn-secondary me-2">一覧に戻る</a>
         </div>
     </div>
 </div>
+
+<style>
+    .copy-message {
+        display: none;
+        color: green;
+        font-size: 0.8em;
+        margin-left: 5px;
+    }
+    .copy-icon {
+        color: green;
+        font-size: 0.8em;
+        cursor: pointer;
+        margin-left: 5px;
+    }
+</style>
+<script>
+    function copyToClipboard(button) {
+        // ボタンの前の .copy-target を探してテキストを取得
+        const targetText = button.previousElementSibling.innerText;
+        navigator.clipboard.writeText(targetText).then(() => {
+            // コピーが成功したらメッセージを表示
+            const copyMessage = button.nextElementSibling;
+            copyMessage.style.display = "inline";
+    
+            // 2秒後にメッセージを非表示にする
+            setTimeout(() => {
+                copyMessage.style.display = "none";
+            }, 1000);
+        }).catch(err => {
+            console.error("コピーに失敗しました: ", err);
+        });
+    }
+</script>
+
 {% endblock %}

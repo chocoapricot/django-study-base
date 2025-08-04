@@ -1,70 +1,149 @@
 {% extends 'common/_base.html' %}
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="card-header">
         会社情報編集
-        <a href="{% url 'company:company_detail' %}" class="btn btn-sm btn-secondary">戻る</a>
     </div>
     <div class="card-body">
         <form method="post">
             {% csrf_token %}
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}</label>
-                        {{ form.name }}
-                        {% if form.name.errors %}
-                            <div class="text-danger">{{ form.name.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.corporate_number.id_for_label }}" class="form-label">{{ form.corporate_number.label }}</label>
-                        {{ form.corporate_number }}
-                        {% if form.corporate_number.errors %}
-                            <div class="text-danger">{{ form.corporate_number.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.postal_code.id_for_label }}" class="form-label">{{ form.postal_code.label }}</label>
-                        {{ form.postal_code }}
-                        {% if form.postal_code.errors %}
-                            <div class="text-danger">{{ form.postal_code.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.address.id_for_label }}" class="form-label">{{ form.address.label }}</label>
-                        {{ form.address }}
-                        {% if form.address.errors %}
-                            <div class="text-danger">{{ form.address.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.phone_number.id_for_label }}" class="form-label">{{ form.phone_number.label }}</label>
-                        {{ form.phone_number }}
-                        {% if form.phone_number.errors %}
-                            <div class="text-danger">{{ form.phone_number.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.url.id_for_label }}" class="form-label">{{ form.url.label }}</label>
-                        {{ form.url }}
-                        {% if form.url.errors %}
-                            <div class="text-danger">{{ form.url.errors }}</div>
-                        {% endif %}
-                    </div>
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.name.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger">{{ form.name.errors }}</div>
+                    {% endif %}
                 </div>
             </div>
             
-            <div class="mt-3">
-                <button type="submit" class="btn btn-primary">保存</button>
-                <a href="{% url 'company:company_detail' %}" class="btn btn-secondary">キャンセル</a>
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.corporate_number.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.corporate_number.label }}
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="半角数字13桁ハイフンなし"></i>
+                </label>
+                <div class="col-sm-4">
+                    {{ form.corporate_number }}
+                    {% if form.corporate_number.errors %}
+                        <div class="text-danger">{{ form.corporate_number.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm">
+                    <button type="button" class="btn btn-sm btn-secondary me-2" onclick="searchCorporateInfo()">法人情報取得</button>
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="経産省のgBizINFO-APIで取得"></i>
+                </div>
+            </div>
+            
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.postal_code.label }}
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="半角数字7桁ハイフンなし"></i>
+                </label>
+                <div class="col-sm-3">
+                    {{ form.postal_code }}
+                    {% if form.postal_code.errors %}
+                        <div class="text-danger">{{ form.postal_code.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm">
+                    <button type="button" class="btn btn-sm btn-secondary me-2" onclick="searchAddress()">住所検索</button>
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="フリーの郵便番号APIで取得"></i>
+                </div>
+            </div>
+            
+            <div class="row mb-3 align-items-top">
+                <label for="{{ form.address.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.address.label }}</label>
+                <div class="col-sm-10">
+                    {{ form.address }}
+                    {% if form.address.errors %}
+                        <div class="text-danger">{{ form.address.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.phone_number.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.phone_number.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.phone_number }}
+                    {% if form.phone_number.errors %}
+                        <div class="text-danger">{{ form.phone_number.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.url.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.url.label }}</label>
+                <div class="col-sm-8">
+                    {{ form.url }}
+                    {% if form.url.errors %}
+                        <div class="text-danger">{{ form.url.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-sm btn-primary me-3">保存</button>
+                <a href="{% url 'company:company_detail' %}" class="btn btn-sm btn-secondary">キャンセル</a>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+// 郵便番号から住所を検索
+function searchAddress() {
+    const postalCode = document.getElementById('id_postal_code').value.replace(/[^0-9]/g, '');
+    if (postalCode.length !== 7) {
+        alert('郵便番号は7桁で入力してください');
+        return;
+    }
+    
+    fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${postalCode}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.results && data.results.length > 0) {
+                const result = data.results[0];
+                const address = result.address1 + result.address2 + result.address3;
+                document.getElementById('id_address').value = address;
+            } else {
+                alert('住所が見つかりませんでした');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('住所検索でエラーが発生しました');
+        });
+}
+
+// 法人番号から法人情報を取得
+function searchCorporateInfo() {
+    const corporateNumber = document.getElementById('id_corporate_number').value.replace(/[^0-9]/g, '');
+    if (corporateNumber.length !== 13) {
+        alert('法人番号は13桁で入力してください');
+        return;
+    }
+    
+    fetch(`https://info.gbiz.go.jp/hojin/v1/hojin/${corporateNumber}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.hojin_infos && data.hojin_infos.length > 0) {
+                const info = data.hojin_infos[0];
+                if (info.name) {
+                    document.getElementById('id_name').value = info.name;
+                }
+                if (info.location) {
+                    document.getElementById('id_address').value = info.location;
+                }
+                if (info.postal_code) {
+                    document.getElementById('id_postal_code').value = info.postal_code;
+                }
+            } else {
+                alert('法人情報が見つかりませんでした');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('法人情報取得でエラーが発生しました');
+        });
+}
+</script>
+
 {% endblock %}

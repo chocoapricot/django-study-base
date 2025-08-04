@@ -14,4 +14,7 @@ urlpatterns = [
     path('departments/<int:pk>/', views.department_detail, name='department_detail'),
     path('departments/<int:pk>/edit/', views.department_edit, name='department_edit'),
     path('departments/<int:pk>/delete/', views.department_delete, name='department_delete'),
+    
+    # 変更履歴
+    path('change-history/', views.change_history_list, name='change_history_list'),
 ]

@@ -4,6 +4,9 @@ from apps.common.models import MyModel
 class CompanyDepartment(MyModel):
     name = models.CharField('部署名', max_length=100, unique=True)
     description = models.TextField('説明', blank=True, null=True)
+    postal_code = models.CharField('郵便番号', max_length=7, blank=True, null=True)
+    address = models.TextField('住所', blank=True, null=True)
+    phone_number = models.CharField('電話番号', max_length=20, blank=True, null=True)
     
     class Meta:
         db_table = 'apps_company_department'

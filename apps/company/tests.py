@@ -81,6 +81,20 @@ class CompanyViewTest(TestCase):
         response = self.client.get(reverse('company:company_edit'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "会社情報編集")
+    
+    def test_company_edit_no_changes(self):
+        """会社編集で変更がない場合のテスト"""
+        self.client.login(username='testuser', password='testpass123')
+        # 既存のデータと同じ内容でPOST
+        response = self.client.post(reverse('company:company_edit'), {
+            'name': self.company.name,
+            'corporate_number': self.company.corporate_number or '',
+            'postal_code': '',
+            'address': '',
+            'phone_number': '',
+            'url': ''
+        })
+        self.assertEqual(response.status_code, 302)  # リダイレクト
 
 class DepartmentViewTest(TestCase):
     """部署ビューのテスト"""
@@ -154,3 +168,15 @@ class DepartmentViewTest(TestCase):
         response = self.client.post(reverse('company:department_delete', kwargs={'pk': department_id}))
         self.assertEqual(response.status_code, 302)  # リダイレクト
         self.assertFalse(CompanyDepartment.objects.filter(pk=department_id).exists())
+    
+
+    
+    def test_department_edit_no_changes(self):
+        """部署編集で変更がない場合のテスト"""
+        self.client.login(username='testuser', password='testpass123')
+        # 既存のデータと同じ内容でPOST
+        response = self.client.post(reverse('company:department_edit', kwargs={'pk': self.department.pk}), {
+            'name': self.department.name,
+            'description': self.department.description or ''
+        })
+        self.assertEqual(response.status_code, 302)  # リダイレクト
