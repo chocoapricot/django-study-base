@@ -2,12 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Company, CompanyDepartment
 from .forms import CompanyForm, CompanyDepartmentForm
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from apps.system.logs.models import AppLog
 from apps.system.logs.utils import log_view_detail, log_model_action
 from django.db.models import Q
 
 @login_required
+@permission_required('company.view_company', raise_exception=True)
 def company_detail(request):
     company = Company.objects.first()
     if not company:
@@ -47,6 +48,7 @@ def company_detail(request):
     })
 
 @login_required
+@permission_required('company.change_company', raise_exception=True)
 def company_edit(request):
     company = Company.objects.first()
     if not company:
@@ -73,6 +75,7 @@ def company_edit(request):
 # 部署管理のビュー
 
 @login_required
+@permission_required('company.view_companydepartment', raise_exception=True)
 def department_detail(request, pk):
     department = get_object_or_404(CompanyDepartment, pk=pk)
     log_view_detail(request.user, department)
@@ -87,6 +90,7 @@ def department_detail(request, pk):
     })
 
 @login_required
+@permission_required('company.add_companydepartment', raise_exception=True)
 def department_create(request):
     if request.method == 'POST':
         form = CompanyDepartmentForm(request.POST)
@@ -101,6 +105,7 @@ def department_create(request):
     return render(request, 'company/department_form.html', {'form': form, 'title': '部署作成'})
 
 @login_required
+@permission_required('company.change_companydepartment', raise_exception=True)
 def department_edit(request, pk):
     department = get_object_or_404(CompanyDepartment, pk=pk)
     if request.method == 'POST':
@@ -129,6 +134,7 @@ def department_edit(request, pk):
     })
 
 @login_required
+@permission_required('company.delete_companydepartment', raise_exception=True)
 def department_delete(request, pk):
     department = get_object_or_404(CompanyDepartment, pk=pk)
     if request.method == 'POST':
@@ -140,6 +146,7 @@ def department_delete(request, pk):
     return render(request, 'company/department_confirm_delete.html', {'department': department})
 
 @login_required
+@permission_required('company.view_company', raise_exception=True)
 def change_history_list(request):
     """会社と部署の変更履歴一覧"""
     company = Company.objects.first()
