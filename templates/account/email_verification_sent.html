@@ -1,0 +1,29 @@
+{% extends "account/_account_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Email Verification Sent" %}{% endblock %}
+{% block subtitle %}{% trans "メール認証を送信しました" %}{% endblock %}
+
+{% block content %}
+        <div class="alert alert-success">
+          <i class="bi bi-check-circle"></i>
+          確認メールを送信しました。
+        </div>
+        
+        <p class="text-center">
+          メールに記載されたリンクをクリックして、アカウントの認証を完了してください。
+        </p>
+        
+        <div class="alert alert-info">
+          <i class="bi bi-info-circle"></i>
+          <strong>メールが届かない場合：</strong>
+          <ul class="mb-0 mt-2">
+            <li>迷惑メールフォルダをご確認ください</li>
+            <li>しばらく時間をおいてから再度ご確認ください</li>
+          </ul>
+        </div>
+        
+        <div class="text-center mt-4">
+          <a href="{% url 'account_login' %}" class="btn btn-sm btn-secondary">ログイン画面に戻る</a>
+        </div>
+{% endblock %}

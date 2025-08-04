@@ -6,6 +6,15 @@
 {% block subtitle %}{% trans "アカウントを登録してください" %}{% endblock %}
 
 {% block content %}
+        {% if form.errors %}
+          <div class="alert alert-danger">
+            {% for field, errors in form.errors.items %}
+              {% for error in errors %}
+                <div>{{ error }}</div>
+              {% endfor %}
+            {% endfor %}
+          </div>
+        {% endif %}
         <form method="post" action="{% url 'account_signup' %}" autocomplete="off">
           {% csrf_token %}
           <div class="row mb-3 align-items-center">
@@ -36,7 +45,7 @@
             <label for="id_password1" class="col-sm-4 col-form-label" style="text-align:right">パスワード</label>
             <div class="col-sm-8">
               <div class="input-group align-items-center" style="height: 38px;">
-                <input type="password" name="password" class="form-control" id="id_password1" autocomplete="new-password">
+                <input type="password" name="password1" class="form-control" id="id_password1" autocomplete="new-password">
                 <span class="input-group-text d-flex align-items-center" style="background: #fff; cursor:pointer; height: 38px; padding: 0 0.75rem;" id="togglePassword1" tabindex="-1">
                   <i class="bi bi-eye" id="togglePasswordIcon1" style="font-size: 1.2rem;"></i>
                 </span>
@@ -51,6 +60,16 @@
                 <span class="input-group-text d-flex align-items-center" style="background: #fff; cursor:pointer; height: 38px; padding: 0 0.75rem;" id="togglePassword2" tabindex="-1">
                   <i class="bi bi-eye" id="togglePasswordIcon2" style="font-size: 1.2rem;"></i>
                 </span>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-sm-8 offset-sm-4">
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="agree_terms" required>
+                <label class="form-check-label" for="agree_terms">
+                  <a href="/custom/terms-of-service/" target="_blank">サービス利用規約</a>に同意します
+                </label>
               </div>
             </div>
           </div>

@@ -55,7 +55,7 @@ class MailLog(MyModel):
     error_message = models.TextField('エラーメッセージ', blank=True, null=True)
     
     # 追加情報
-    backend = models.CharField('メールバックエンド', max_length=100, blank=True)
+    backend = models.CharField('メールバックエンド', max_length=100, blank=True, null=True)
     message_id = models.CharField('メッセージID', max_length=255, blank=True, null=True)
     
     class Meta:

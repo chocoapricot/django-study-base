@@ -20,8 +20,8 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('apps.accounts.urls')), # accountsアプリのURLを追加
-    path('accounts/', include('allauth.urls')),
+    path('accounts/', include('allauth.urls')),  # allauthの標準URLのみを使用
+    path('custom/', include('apps.accounts.urls')), # カスタムURLは別パスに移動
     # path('accounts/', include('django.contrib.auth.urls')),
     path('', include('apps.home.urls')),
     path('api/', include('apps.api.urls')),

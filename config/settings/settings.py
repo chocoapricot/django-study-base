@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',  # Sitesフレームワークを追加
     'import_export',
 
     'allauth',
@@ -59,19 +60,36 @@ INSTALLED_APPS = [
 ]
 
 # allauth設定
-ACCOUNT_LOGIN_METHODS = ['username', 'email']
-#ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-#ACCOUNT_LOGIN_METHODS = {'email'}
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1']
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_LOGIN_METHODS = ['email']  # メールのみでログイン
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # アカウント登録時のメール認証は必須
+ACCOUNT_SIGNUP_FIELDS = ['email*']  # メール認証必須の場合は'email*'が必要
+ACCOUNT_LOGIN_BY_CODE_ENABLED = False  # ログインコード機能を無効化
+ACCOUNT_EMAIL_CONFIRMATION_HMAC = True  # HMACベースのメール確認を使用
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True  # メール確認後に自動ログイン
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/accounts/login/'  # 匿名ユーザーのリダイレクト先
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/'  # 認証済みユーザーのリダイレクト先
+ACCOUNT_AUTHENTICATION_METHOD = 'email'  # メールアドレスでの認証
+ACCOUNT_UNIQUE_EMAIL = True  # メールアドレスの一意性を保証
+ACCOUNT_USERNAME_REQUIRED = False  # ユーザー名は不要
+ACCOUNT_FORMS = {
+    'signup': 'apps.accounts.forms.CustomSignupForm',
+    # 'reset_password': 'apps.accounts.forms.CustomResetPasswordForm',  # 一時的にコメントアウト
+}
+
+# ログインコード機能を完全に無効化
+ACCOUNT_LOGIN_BY_CODE_TIMEOUT = 0  # タイムアウトを0に設定
+ACCOUNT_LOGIN_BY_CODE_MAX_ATTEMPTS = 0  # 最大試行回数を0に設定
 
 # パスワードリセット設定
 ACCOUNT_PASSWORD_MIN_LENGTH = 8
-ACCOUNT_PASSWORD_RESET_TOKEN_TIMEOUT = 3600  # 1時間（テスト用に長めに設定）
+ACCOUNT_PASSWORD_RESET_TOKEN_TIMEOUT = 86400  # 24時間（より長い有効期限）
+ACCOUNT_PASSWORD_RESET_FROM_KEY_DONE_URL = '/accounts/login/'  # リセット完了後のリダイレクト先
+ACCOUNT_PASSWORD_RESET_TIMEOUT = 86400  # パスワードリセットトークンの有効期限（秒）
+ACCOUNT_PASSWORD_RESET_SERIALIZER = None  # デフォルトのシリアライザーを使用
 
 ACCOUNT_ADAPTER = 'apps.accounts.adapters.CustomAccountAdapter'
 SITE_ID = 1
-EMAIL_BACKEND = 'apps.system.logs.backends.LoggingConsoleEmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # 一時的に標準バックエンドに変更
 
 
 MIDDLEWARE = [
@@ -124,8 +142,8 @@ DATABASES = {
 AUTH_USER_MODEL = 'useradmin.CustomUser'
 
 AUTHENTICATION_BACKENDS = [
-    'apps.common.backends.MyPasswordRules',
     'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 
@@ -166,6 +184,10 @@ TIME_ZONE = 'Asia/Tokyo'
 USE_I18N = True
 
 USE_TZ = True
+
+# タイムゾーン関連の追加設定
+import datetime
+DATETIME_FORMAT = 'Y-m-d H:i:s'
 
 
 # Static files (CSS, JavaScript, Images)

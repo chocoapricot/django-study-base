@@ -146,50 +146,49 @@ class PasswordResetTest(TestCase):
         self.assertContains(response, '無効なリンクです')
         self.assertContains(response, 'パスワードリセットをやり直す')
 
-    # FIXME: 有効なトークンでのパスワード変更テスト
-    # def test_password_reset_from_key_post_valid(self):
-    #     """有効なトークンでのパスワード変更テスト"""
-    #     # 実際のパスワードリセット要求を行ってトークンを取得
-    #     response = self.client.post(reverse('account_reset_password'), {
-    #         'email': 'test@example.com'
-    #     })
-    #     self.assertEqual(response.status_code, 302)
-    #     
-    #     # メールが送信されることを確認
-    #     self.assertEqual(len(mail.outbox), 1)
-    #     email = mail.outbox[0]
-    #     
-    #     # メール本文からリセットリンクを抽出
-    #     import re
-    #     link_pattern = r'/accounts/password/reset/key/([^/\s]+)/'
-    #     match = re.search(link_pattern, email.body)
-    #     self.assertIsNotNone(match, "パスワードリセットリンクがメール本文に見つかりません")
-    #     
-    #     # uidb36-tokenの形式から分離
-    #     key_part = match.group(1)
-    #     # 最後のハイフンで分割（トークンは32文字のハッシュ）
-    #     parts = key_part.split('-')
-    #     if len(parts) >= 2:
-    #         # 最後の部分がトークン（32文字のハッシュ）
-    #         token = parts[-1]
-    #         uidb36 = '-'.join(parts[:-1])
-    #     else:
-    #         self.fail(f"無効なキー形式: {key_part}")
-    #     
-    #     new_password = 'newpassword123!'
-    #     response = self.client.post(reverse('account_reset_password_from_key', 
-    #                                       kwargs={'uidb36': uidb36, 'key': token}), {
-    #         'password1': new_password,
-    #         'password2': new_password
-    #     })
-    #     
-    #     # リダイレクトされることを確認（テスト環境では失敗する可能性があります）
-    #     self.assertEqual(response.status_code, 302)
-    #     self.assertRedirects(response, reverse('account_reset_password_from_key_done'))
-    #     
-    #     # パスワードが変更されていることを確認
-    #     self.user.refresh_from_db()
-    #     self.assertTrue(self.user.check_password(new_password))
+    def test_password_reset_from_key_post_valid(self):
+        """有効なトークンでのパスワード変更テスト"""
+        # 実際のパスワードリセット要求を行ってトークンを取得
+        response = self.client.post(reverse('account_reset_password'), {
+            'email': 'test@example.com'
+        })
+        self.assertEqual(response.status_code, 302)
+        
+        # メールが送信されることを確認
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        
+        # メール本文からリセットリンクを抽出
+        import re
+        link_pattern = r'/accounts/password/reset/key/([^/\s]+)/'
+        match = re.search(link_pattern, email.body)
+        self.assertIsNotNone(match, "パスワードリセットリンクがメール本文に見つかりません")
+        
+        # uidb36-tokenの形式から分離
+        key_part = match.group(1)
+        # 最後のハイフンで分割（トークンは32文字のハッシュ）
+        parts = key_part.split('-')
+        if len(parts) >= 2:
+            # 最後の部分がトークン（32文字のハッシュ）
+            token = parts[-1]
+            uidb36 = '-'.join(parts[:-1])
+        else:
+            self.fail(f"無効なキー形式: {key_part}")
+        
+        new_password = 'newpassword123!'
+        response = self.client.post(reverse('account_reset_password_from_key', 
+                                          kwargs={'uidb36': uidb36, 'key': token}), {
+            'password1': new_password,
+            'password2': new_password
+        })
+        
+        # リダイレクトされることを確認（テスト環境では失敗する可能性があります）
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('account_reset_password_from_key_done'))
+        
+        # パスワードが変更されていることを確認
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password(new_password))
 
     def test_password_reset_from_key_post_password_mismatch(self):
         """パスワード確認が一致しない場合のテスト"""
@@ -223,54 +222,53 @@ class PasswordResetTest(TestCase):
         self.assertContains(response, 'パスワードを忘れた方はこちら')
         self.assertContains(response, reverse('account_reset_password'))
 
-    # FIXME: パスワードリセットの一連の流れの統合テスト
-    # def test_password_reset_flow_integration(self):
-    #     """パスワードリセットの一連の流れの統合テスト"""
-    #     # 1. パスワードリセット要求
-    #     response = self.client.post(reverse('account_reset_password'), {
-    #         'email': 'test@example.com'
-    #     })
-    #     self.assertEqual(response.status_code, 302)
-    #     
-    #     # 2. メール送信確認
-    #     self.assertEqual(len(mail.outbox), 1)
-    #     email = mail.outbox[0]
-    #     
-    #     # 3. メール内のリンクを抽出
-    #     import re
-    #     link_pattern = r'/accounts/password/reset/key/([^/\s]+)/'
-    #     match = re.search(link_pattern, email.body)
-    #     self.assertIsNotNone(match, "パスワードリセットリンクがメール本文に見つかりません")
-    #     
-    #     # uidb36-tokenの形式から分離
-    #     key_part = match.group(1)
-    #     # 最後のハイフンで分割（トークンは32文字のハッシュ）
-    #     parts = key_part.split('-')
-    #     if len(parts) >= 2:
-    #         # 最後の部分がトークン（32文字のハッシュ）
-    #         token = parts[-1]
-    #         uidb36 = '-'.join(parts[:-1])
-    #     else:
-    #         self.fail(f"無効なキー形式: {key_part}")
-    #     
-    #     # 4. パスワードリセットフォームにアクセス
-    #     response = self.client.get(reverse('account_reset_password_from_key', 
-    #                                      kwargs={'uidb36': uidb36, 'key': token}))
-    #     self.assertEqual(response.status_code, 200)
-    #     
-    #     # 5. 新しいパスワードを設定
-    #     new_password = 'newintegrationpassword123!'
-    #     response = self.client.post(reverse('account_reset_password_from_key', 
-    #                                       kwargs={'uidb36': uidb36, 'key': token}), {
-    #         'password1': new_password,
-    #         'password2': new_password
-    #     })
-    #     
-    #     self.assertEqual(response.status_code, 302)
-    #     
-    #     # 6. 新しいパスワードでログインできることを確認
-    #     login_response = self.client.post(reverse('account_login'), {
-    #         'login': 'testuser',
-    #         'password': new_password
-    #     })
-    #     self.assertEqual(login_response.status_code, 302)  # ログイン成功でリダイレクト
+    def test_password_reset_flow_integration(self):
+        """パスワードリセットの一連の流れの統合テスト"""
+        # 1. パスワードリセット要求
+        response = self.client.post(reverse('account_reset_password'), {
+            'email': 'test@example.com'
+        })
+        self.assertEqual(response.status_code, 302)
+        
+        # 2. メール送信確認
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        
+        # 3. メール内のリンクを抽出
+        import re
+        link_pattern = r'/accounts/password/reset/key/([^/\s]+)/'
+        match = re.search(link_pattern, email.body)
+        self.assertIsNotNone(match, "パスワードリセットリンクがメール本文に見つかりません")
+        
+        # uidb36-tokenの形式から分離
+        key_part = match.group(1)
+        # 最後のハイフンで分割（トークンは32文字のハッシュ）
+        parts = key_part.split('-')
+        if len(parts) >= 2:
+            # 最後の部分がトークン（32文字のハッシュ）
+            token = parts[-1]
+            uidb36 = '-'.join(parts[:-1])
+        else:
+            self.fail(f"無効なキー形式: {key_part}")
+        
+        # 4. パスワードリセットフォームにアクセス
+        response = self.client.get(reverse('account_reset_password_from_key', 
+                                         kwargs={'uidb36': uidb36, 'key': token}))
+        self.assertEqual(response.status_code, 200)
+        
+        # 5. 新しいパスワードを設定
+        new_password = 'newintegrationpassword123!'
+        response = self.client.post(reverse('account_reset_password_from_key', 
+                                          kwargs={'uidb36': uidb36, 'key': token}), {
+            'password1': new_password,
+            'password2': new_password
+        })
+        
+        self.assertEqual(response.status_code, 302)
+        
+        # 6. 新しいパスワードでログインできることを確認
+        login_response = self.client.post(reverse('account_login'), {
+            'login': 'testuser',
+            'password': new_password
+        })
+        self.assertEqual(login_response.status_code, 302)  # ログイン成功でリダイレクト
