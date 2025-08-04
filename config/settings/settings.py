@@ -33,12 +33,12 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    'django.contrib.sites',  # Sitesフレームワークを追加
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',  # Sitesフレームワークを追加
     'import_export',
 
     'allauth',
@@ -68,17 +68,19 @@ ACCOUNT_EMAIL_CONFIRMATION_HMAC = True  # HMACベースのメール確認を使�
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True  # メール確認後に自動ログイン
 ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/accounts/login/'  # 匿名ユーザーのリダイレクト先
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/'  # 認証済みユーザーのリダイレクト先
-ACCOUNT_AUTHENTICATION_METHOD = 'email'  # メールアドレスでの認証
 ACCOUNT_UNIQUE_EMAIL = True  # メールアドレスの一意性を保証
-ACCOUNT_USERNAME_REQUIRED = False  # ユーザー名は不要
+# 認証済みならコードを送らずログイン
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+
 ACCOUNT_FORMS = {
     'signup': 'apps.accounts.forms.CustomSignupForm',
     # 'reset_password': 'apps.accounts.forms.CustomResetPasswordForm',  # 一時的にコメントアウト
 }
 
 # ログインコード機能を完全に無効化
-ACCOUNT_LOGIN_BY_CODE_TIMEOUT = 0  # タイムアウトを0に設定
-ACCOUNT_LOGIN_BY_CODE_MAX_ATTEMPTS = 0  # 最大試行回数を0に設定
+#ACCOUNT_LOGIN_BY_CODE_TIMEOUT = 0  # タイムアウトを0に設定
+#ACCOUNT_LOGIN_BY_CODE_MAX_ATTEMPTS = 0  # 最大試行回数を0に設定
 
 # パスワードリセット設定
 ACCOUNT_PASSWORD_MIN_LENGTH = 8

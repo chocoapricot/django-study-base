@@ -3,14 +3,6 @@ from django.conf import settings
 from apps.system.logs.utils import log_mail
 from allauth.account.models import EmailAddress
 class CustomAccountAdapter(DefaultAccountAdapter):
-    def is_login_by_code_enabled(self):
-        """ログインコード機能を無効化"""
-        return False
-    
-    def get_password_reset_timeout(self):
-        """パスワードリセットのタイムアウトを設定"""
-        return 86400  # 24時間
-    
     def save_user(self, request, user, form, commit=True):
         # まずallauthのデフォルトの保存処理を実行
         user = super().save_user(request, user, form, commit=False)
