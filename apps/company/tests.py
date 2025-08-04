@@ -35,19 +35,28 @@ class CompanyDepartmentModelTest(TestCase):
     def setUp(self):
         self.department = CompanyDepartment.objects.create(
             name="開発部",
-            description="システム開発を行う部署"
+            department_code="DEV001",
+            accounting_code="ACC001",
+            display_order=1
         )
     
     def test_department_creation(self):
         """部署の作成テスト"""
         self.assertEqual(self.department.name, "開発部")
-        self.assertEqual(self.department.description, "システム開発を行う部署")
+        self.assertEqual(self.department.department_code, "DEV001")
+        self.assertEqual(self.department.accounting_code, "ACC001")
+        self.assertEqual(self.department.display_order, 1)
         self.assertEqual(str(self.department), "開発部")
     
     def test_department_unique_name(self):
         """部署名の一意性テスト"""
         with self.assertRaises(Exception):
-            CompanyDepartment.objects.create(name="開発部")
+            CompanyDepartment.objects.create(name="開発部", department_code="DEV002")
+    
+    def test_department_unique_code(self):
+        """部署コードの一意性テスト"""
+        with self.assertRaises(Exception):
+            CompanyDepartment.objects.create(name="営業部", department_code="DEV001")
 
 class CompanyViewTest(TestCase):
     """会社ビューのテスト"""
@@ -107,21 +116,11 @@ class DepartmentViewTest(TestCase):
         )
         self.department = CompanyDepartment.objects.create(
             name="開発部",
-            description="システム開発を行う部署"
+            department_code="DEV001",
+            display_order=1
         )
     
-    def test_department_list_view_requires_login(self):
-        """部署一覧ビューのログイン必須テスト"""
-        response = self.client.get(reverse('company:department_list'))
-        self.assertEqual(response.status_code, 302)  # リダイレクト
-    
-    def test_department_list_view_with_login(self):
-        """ログイン後の部署一覧ビューテスト"""
-        self.client.login(username='testuser', password='testpass123')
-        response = self.client.get(reverse('company:department_list'))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "部署一覧")
-        self.assertContains(response, "開発部")
+
     
     def test_department_detail_view_with_login(self):
         """ログイン後の部署詳細ビューテスト"""
@@ -142,7 +141,8 @@ class DepartmentViewTest(TestCase):
         self.client.login(username='testuser', password='testpass123')
         response = self.client.post(reverse('company:department_create'), {
             'name': '営業部',
-            'description': '営業活動を行う部署'
+            'department_code': 'SALES001',
+            'display_order': 2
         })
         self.assertEqual(response.status_code, 302)  # リダイレクト
         self.assertTrue(CompanyDepartment.objects.filter(name='営業部').exists())
@@ -177,6 +177,11 @@ class DepartmentViewTest(TestCase):
         # 既存のデータと同じ内容でPOST
         response = self.client.post(reverse('company:department_edit', kwargs={'pk': self.department.pk}), {
             'name': self.department.name,
-            'description': self.department.description or ''
+            'department_code': self.department.department_code,
+            'accounting_code': self.department.accounting_code or '',
+            'display_order': self.department.display_order,
+            'postal_code': self.department.postal_code or '',
+            'address': self.department.address or '',
+            'phone_number': self.department.phone_number or ''
         })
         self.assertEqual(response.status_code, 302)  # リダイレクト

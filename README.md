@@ -9,6 +9,7 @@ Django学習用のプロジェクトです。スタッフ管理とクライア�
 ### 📊 管理機能
 - **スタッフ管理**: 従業員データの管理と追跡
 - **クライアント管理**: 顧客関係管理機能
+- **会社・部署管理**: 会社情報と部署の体系的管理
 - **連絡履歴管理**: スタッフ・クライアントとの連絡記録
 
 ### 🔐 認証・セキュリティ
@@ -58,6 +59,7 @@ django-study-base/
 │   │   └── useradmin/      # ユーザー管理
 │   ├── staff/              # スタッフ管理
 │   ├── client/             # クライアント管理
+│   ├── company/            # 会社・部署管理
 │   ├── accounts/           # 認証システム
 │   ├── common/             # 共通機能
 │   └── api/                # REST API
@@ -78,14 +80,14 @@ django-study-base/
 | `apps_client_contacted` | クライアント連絡履歴 |
 | `apps_staff` | スタッフ |
 | `apps_staff_contacted` | スタッフ連絡履歴 |
+| `apps_company` | 会社 |
+| `apps_company_department` | 部署 |
 | `apps_system_dropdowns` | プルダウン |
 | `apps_system_parameter` | パラメータ |
 | `apps_system_menu` | メニュー |
 | `apps_system_mail_log` | メール送信ログ |
 | `apps_system_app_log` | アプリケーション操作ログ |
 | `auth_user` | カスタムユーザー |
-| `apps_company` | 会社 |
-| `apps_company_department` | 部署 |
 
 ## 🚀 セットアップ
 
@@ -174,12 +176,14 @@ python manage.py test --verbosity=2
 ```bash
 python manage.py dumpdata staff --format=json --indent=4 > _sample_data/staff.json
 python manage.py dumpdata client --format=json --indent=4 > _sample_data/client.json
+python manage.py dumpdata company --format=json --indent=4 > _sample_data/company.json
 ```
 
 ### データのインポート
 ```bash
 python manage.py loaddata _sample_data/staff.json
 python manage.py loaddata _sample_data/client.json
+python manage.py loaddata _sample_data/company.json
 ```
 
 ## 🔧 設定
@@ -209,6 +213,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ### REST APIエンドポイント
 - `/api/staff/` - スタッフ管理API
 - `/api/client/` - クライアント管理API
+- `/api/company/` - 会社・部署管理API
 
 ### 認証
 - django-allauthベースの認証

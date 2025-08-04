@@ -10,16 +10,23 @@
             </div>
         </div>
 
-        {% if department.description %}
-        <div class="row mb-3 align-items-top">
+        <div class="row mb-3 align-items-center">
             <div class="col-sm-2" style="text-align:right">
-                <strong>説明</strong>
+                <strong>部署コード</strong>
             </div>
-            <div class="col-sm-10">
-                {{ department.description }}
+            <div class="col-sm-4">
+                {{ department.department_code }}
             </div>
         </div>
-        {% endif %}
+
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>会計コード</strong>
+            </div>
+            <div class="col-sm-4">
+                {{ department.accounting_code|default:"未設定" }}
+            </div>
+        </div>
 
         {% if department.postal_code or department.address %}
         <div class="row mb-3 align-items-top">
@@ -51,31 +58,17 @@
         </div>
         {% endif %}
 
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2" style="text-align:right">
-                <strong>作成日</strong>
-            </div>
-            <div class="col-sm-4">
-                {{ department.created_at|date:"Y年m月d日 H:i" }}
-            </div>
-        </div>
 
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2" style="text-align:right">
-                <strong>更新日</strong>
-            </div>
-            <div class="col-sm-4">
-                {{ department.updated_at|date:"Y年m月d日 H:i" }}
-            </div>
-        </div>
 
         <div class="d-flex justify-content-start">
             <a href="{% url 'company:department_edit' department.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
             <a href="{% url 'company:department_delete' department.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
-            <a href="{% url 'company:department_list' %}" class="btn btn-sm btn-secondary me-2">一覧に戻る</a>
+            <a href="{% url 'company:company_detail' %}" class="btn btn-sm btn-secondary me-2">会社情報に戻る</a>
         </div>
     </div>
 </div>
+
+{% include 'company/_department_list_table.html' %}
 
 <style>
     .copy-message {

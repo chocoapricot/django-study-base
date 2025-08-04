@@ -1,9 +1,8 @@
 {% extends 'common/_base.html' %}
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="card-header">
         部署削除確認
-        <a href="{% url 'company:department_detail' department.pk %}" class="btn btn-sm btn-secondary">戻る</a>
     </div>
     <div class="card-body">
         <div class="alert alert-warning" role="alert">
@@ -19,12 +18,12 @@
                         <td>{{ department.name }}</td>
                     </tr>
                     <tr>
-                        <th>説明</th>
-                        <td>{{ department.description|default:"未設定" }}</td>
+                        <th>部署コード</th>
+                        <td>{{ department.department_code }}</td>
                     </tr>
                     <tr>
-                        <th>作成日</th>
-                        <td>{{ department.created_at|date:"Y年m月d日 H:i" }}</td>
+                        <th>会計コード</th>
+                        <td>{{ department.accounting_code|default:"未設定" }}</td>
                     </tr>
                 </table>
             </div>
@@ -32,8 +31,8 @@
         
         <form method="post" class="mt-4">
             {% csrf_token %}
-            <button type="submit" class="btn btn-sm btn-dark">削除する</button>
-            <a href="{% url 'company:department_detail' department.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
+            <button type="submit" class="btn btn-sm btn-dark">削除</button>
+            <a href="{% url 'company:department_detail' department.pk %}" class="btn btn-sm btn-secondary">戻る</a>
         </form>
     </div>
 </div>

@@ -3,7 +3,9 @@ from apps.common.models import MyModel
 
 class CompanyDepartment(MyModel):
     name = models.CharField('部署名', max_length=100, unique=True)
-    description = models.TextField('説明', blank=True, null=True)
+    department_code = models.CharField('部署コード', max_length=20, unique=True)
+    accounting_code = models.CharField('会計コード', max_length=20, blank=True, null=True)
+    display_order = models.PositiveIntegerField('表示順', default=0)
     postal_code = models.CharField('郵便番号', max_length=7, blank=True, null=True)
     address = models.TextField('住所', blank=True, null=True)
     phone_number = models.CharField('電話番号', max_length=20, blank=True, null=True)
@@ -12,6 +14,7 @@ class CompanyDepartment(MyModel):
         db_table = 'apps_company_department'
         verbose_name = '部署'
         verbose_name_plural = '部署'
+        ordering = ['display_order', 'name']
 
     def __str__(self):
         return self.name

@@ -20,8 +20,8 @@ def company_detail(request):
     # 詳細画面アクセスをログに記録
     log_view_detail(request.user, company)
 
-    # 部署一覧も取得（最新5件）
-    departments = CompanyDepartment.objects.all().order_by('-created_at')[:5]
+    # 部署一覧も取得（表示順で最新5件）
+    departments = CompanyDepartment.objects.all().order_by('display_order', 'name')[:5]
     
     # 会社と部署の変更履歴を統合して取得（最新10件）
     company_logs = AppLog.objects.filter(
@@ -71,16 +71,20 @@ def company_edit(request):
     return render(request, 'company/company_edit.html', {'form': form})
 
 # 部署管理のビュー
-@login_required
-def department_list(request):
-    departments = CompanyDepartment.objects.all().order_by('name')
-    return render(request, 'company/department_list.html', {'departments': departments})
 
 @login_required
 def department_detail(request, pk):
     department = get_object_or_404(CompanyDepartment, pk=pk)
     log_view_detail(request.user, department)
-    return render(request, 'company/department_detail.html', {'department': department})
+    
+    # 全部署一覧を取得
+    departments = CompanyDepartment.objects.all().order_by('display_order', 'name')
+    
+    return render(request, 'company/department_detail.html', {
+        'department': department,
+        'departments': departments,
+        'current_department': department
+    })
 
 @login_required
 def department_create(request):
@@ -90,7 +94,7 @@ def department_create(request):
             department = form.save()
             log_model_action(request.user, 'create', department)
             messages.success(request, '部署が作成されました。')
-            return redirect('company:department_list')
+            return redirect('company:company_detail')
     else:
         form = CompanyDepartmentForm()
     
@@ -113,7 +117,16 @@ def department_edit(request, pk):
     else:
         form = CompanyDepartmentForm(instance=department)
     
-    return render(request, 'company/department_form.html', {'form': form, 'department': department, 'title': '部署編集'})
+    # 全部署一覧を取得
+    departments = CompanyDepartment.objects.all().order_by('display_order', 'name')
+    
+    return render(request, 'company/department_form.html', {
+        'form': form, 
+        'department': department, 
+        'title': '部署編集',
+        'departments': departments,
+        'current_department': department
+    })
 
 @login_required
 def department_delete(request, pk):
@@ -122,7 +135,7 @@ def department_delete(request, pk):
         log_model_action(request.user, 'delete', department)
         department.delete()
         messages.success(request, '部署が削除されました。')
-        return redirect('company:department_list')
+        return redirect('company:company_detail')
     
     return render(request, 'company/department_confirm_delete.html', {'department': department})
 

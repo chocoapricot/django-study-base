@@ -42,12 +42,14 @@ class CompanyForm(forms.ModelForm):
 class CompanyDepartmentForm(forms.ModelForm):
     class Meta:
         model = CompanyDepartment
-        fields = ['name', 'description', 'postal_code', 'address', 'phone_number']
+        fields = ['name', 'department_code', 'accounting_code', 'display_order', 'postal_code', 'address', 'phone_number']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'department_code': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'accounting_code': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
             'postal_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'id': 'id_postal_code_dept'}),
-            'address': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3, 'id': 'id_address_dept'}),
+            'address': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'id': 'id_address_dept'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
         }
     

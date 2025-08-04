@@ -29,6 +29,7 @@ django-study-base/
   - `useradmin/`: カスタムユーザー管理と認証
 - **`apps/staff/`**: 従業員管理
 - **`apps/client/`**: 顧客関係管理
+- **`apps/company/`**: 会社・部署管理
 - **`apps/api/`**: REST APIエンドポイント
 - **`apps/common/`**: 共有ユーティリティと共通機能
 - **`apps/home/`**: ホームページとランディングページ
@@ -55,6 +56,7 @@ templates/
 ├── home/                   # ホームページテンプレート
 ├── staff/                  # スタッフ管理テンプレート
 ├── client/                 # クライアント管理テンプレート
+├── company/                # 会社・部署管理テンプレート
 └── useradmin/             # ユーザー管理テンプレート
 ```
 
@@ -67,10 +69,10 @@ statics/
 ```
 
 ## 命名規則
-- **アプリ**: 小文字、説明的な名前（例：`staff`、`client`）
-- **モデル**: パスカルケース（例：`CustomUser`）
-- **URL**: 小文字でハイフン区切り（例：`/staff/contact-list/`）
-- **テンプレート**: 小文字でアンダースコア区切り（例：`staff_list.html`）
+- **アプリ**: 小文字、説明的な名前（例：`staff`、`client`、`company`）
+- **モデル**: パスカルケース（例：`CustomUser`、`Company`、`CompanyDepartment`）
+- **URL**: 小文字でハイフン区切り（例：`/staff/contact-list/`、`/company/department-list/`）
+- **テンプレート**: 小文字でアンダースコア区切り（例：`staff_list.html`、`company_detail.html`）
 - **静的ファイル**: タイプ別にそれぞれのサブディレクトリで整理
 
 ## インポートパターン

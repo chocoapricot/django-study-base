@@ -8,16 +8,6 @@
         <form method="post">
             {% csrf_token %}
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.name.label }}</label>
-                <div class="col-sm-6">
-                    {{ form.name }}
-                    {% if form.name.errors %}
-                        <div class="text-danger">{{ form.name.errors }}</div>
-                    {% endif %}
-                </div>
-            </div>
-            
-            <div class="row mb-3 align-items-center">
                 <label for="{{ form.corporate_number.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.corporate_number.label }}
                     <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="半角数字13桁ハイフンなし"></i>
                 </label>
@@ -28,12 +18,22 @@
                     {% endif %}
                 </div>
                 <div class="col-sm">
-                    <button type="button" class="btn btn-sm btn-secondary me-2" onclick="searchCorporateInfo()">法人情報取得</button>
+                    <button type="button" class="btn btn-sm btn-secondary me-2" onclick="searchCorporateInfo()">gBiz</button>
                     <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="経産省のgBizINFO-APIで取得"></i>
                 </div>
             </div>
             
             <div class="row mb-3 align-items-center">
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.name.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger">{{ form.name.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row align-items-center">
                 <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.postal_code.label }}
                     <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="半角数字7桁ハイフンなし"></i>
                 </label>
@@ -44,12 +44,12 @@
                     {% endif %}
                 </div>
                 <div class="col-sm">
-                    <button type="button" class="btn btn-sm btn-secondary me-2" onclick="searchAddress()">住所検索</button>
+                    <button type="button" class="btn btn-sm btn-secondary me-2" onclick="searchAddress()">住所</button>
                     <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="フリーの郵便番号APIで取得"></i>
                 </div>
             </div>
             
-            <div class="row mb-3 align-items-top">
+            <div class="row align-items-top">
                 <label for="{{ form.address.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.address.label }}</label>
                 <div class="col-sm-10">
                     {{ form.address }}
@@ -59,7 +59,7 @@
                 </div>
             </div>
             
-            <div class="row mb-3 align-items-center">
+            <div class="row align-items-center">
                 <label for="{{ form.phone_number.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.phone_number.label }}</label>
                 <div class="col-sm-6">
                     {{ form.phone_number }}
@@ -80,8 +80,8 @@
             </div>
             
             <div class="mt-4">
-                <button type="submit" class="btn btn-sm btn-primary me-3">保存</button>
-                <a href="{% url 'company:company_detail' %}" class="btn btn-sm btn-secondary">キャンセル</a>
+                <button type="submit" class="btn btn-sm btn-primary me-1">保存</button>
+                <a href="{% url 'company:company_detail' %}" class="btn btn-sm btn-secondary">戻る</a>
             </div>
         </form>
     </div>

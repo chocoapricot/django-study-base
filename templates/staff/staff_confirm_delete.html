@@ -4,8 +4,10 @@
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">スタッフ削除</div>
     <div class="card-body">
-        <h5 class="card-title">{{ staff.name_last }}を削除しますか？</h5>
-        <!-- <p class="card-text">これはサンプルです.</p> -->
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            {{ staff.name_last }}を削除しますか？この操作は取り消せません。
+        </div>
         <form method="post">
             {% csrf_token %}
             <div class="d-flex justify-content-start">

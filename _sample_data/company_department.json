@@ -1,0 +1,92 @@
+[
+{
+    "model": "company.companydepartment",
+    "pk": 1,
+    "fields": {
+        "version": 1,
+        "created_at": "2025-01-01T00:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00.000Z",
+        "updated_by": 1,
+        "name": "総務部",
+        "department_code": "SOMU",
+        "accounting_code": "ACC001",
+        "display_order": 10,
+        "postal_code": "1000001",
+        "address": "東京都千代田区千代田1-1-1 サンプルビル10F",
+        "phone_number": "03-1234-5678"
+    }
+},
+{
+    "model": "company.companydepartment",
+    "pk": 2,
+    "fields": {
+        "version": 1,
+        "created_at": "2025-01-01T00:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00.000Z",
+        "updated_by": 1,
+        "name": "営業部",
+        "department_code": "EIGYO",
+        "accounting_code": "ACC002",
+        "display_order": 20,
+        "postal_code": "1000001",
+        "address": "東京都千代田区千代田1-1-1 サンプルビル9F",
+        "phone_number": "03-1234-5679"
+    }
+},
+{
+    "model": "company.companydepartment",
+    "pk": 3,
+    "fields": {
+        "version": 1,
+        "created_at": "2025-01-01T00:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00.000Z",
+        "updated_by": 1,
+        "name": "開発部",
+        "department_code": "DEV",
+        "accounting_code": "ACC003",
+        "display_order": 30,
+        "postal_code": "1000001",
+        "address": "東京都千代田区千代田1-1-1 サンプルビル8F",
+        "phone_number": "03-1234-5680"
+    }
+},
+{
+    "model": "company.companydepartment",
+    "pk": 4,
+    "fields": {
+        "version": 1,
+        "created_at": "2025-01-01T00:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00.000Z",
+        "updated_by": 1,
+        "name": "経理部",
+        "department_code": "KEIRI",
+        "accounting_code": "ACC004",
+        "display_order": 40,
+        "postal_code": null,
+        "address": null,
+        "phone_number": null
+    }
+},
+{
+    "model": "company.companydepartment",
+    "pk": 5,
+    "fields": {
+        "version": 1,
+        "created_at": "2025-01-01T00:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00.000Z",
+        "updated_by": 1,
+        "name": "人事部",
+        "department_code": "JINJI",
+        "accounting_code": null,
+        "display_order": 50,
+        "postal_code": null,
+        "address": null,
+        "phone_number": null
+    }
+}
+]

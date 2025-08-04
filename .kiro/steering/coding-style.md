@@ -98,6 +98,21 @@
   </a>
   ```
 
+## 削除確認画面のアラートメッセージルール
+- **必須要素**: すべての削除確認画面に警告アラートを表示
+- **アラートクラス**: `alert alert-warning` を使用
+- **アイコン**: `bi-exclamation-triangle-fill` を使用
+- **メッセージ**: 「この操作は取り消せません。」を必ず含める
+- **推奨実装**:
+  ```html
+  <div class="alert alert-warning" role="alert">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      [対象]を削除しますか？この操作は取り消せません。
+  </div>
+  ```
+- **配置**: カードボディの最初に配置
+- **目的**: ユーザーに削除操作の重要性と不可逆性を明確に伝える
+
 ## フォームウィジェットの統一ルール
 - **必須クラス**: すべてのフォーム入力欄に `form-control form-control-sm` を適用
 - **テキスト入力**: `forms.TextInput(attrs={'class': 'form-control form-control-sm'})`
