@@ -1,5 +1,8 @@
 from django import forms
 from .models import Company, CompanyDepartment
+from stdnum.util import get_cc_module
+
+jp_corporate_number = get_cc_module('jp', 'corporate_number')
 
 class CompanyForm(forms.ModelForm):
     class Meta:
@@ -14,6 +17,12 @@ class CompanyForm(forms.ModelForm):
             'url': forms.URLInput(attrs={'class': 'form-control form-control-sm'}),
         }
     
+    def clean_corporate_number(self):
+        corporate_number = self.cleaned_data.get('corporate_number')
+        if corporate_number and not jp_corporate_number.is_valid(corporate_number):
+            raise forms.ValidationError("有効な法人番号ではありません。")
+        return corporate_number
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # 初期値を保存して変更検知に使用

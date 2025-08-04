@@ -2,8 +2,25 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from .models import Company, CompanyDepartment
+from .forms import CompanyForm
 
 User = get_user_model()
+
+class CompanyFormTest(TestCase):
+    """会社情報フォームのテスト"""
+
+    def test_corporate_number_validation(self):
+        """法人番号のバリデーションテスト"""
+        # 無効な法人番号
+        form_data = {'corporate_number': '123456789012'}
+        form = CompanyForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('corporate_number', form.errors)
+
+        # 有効な法人番号
+        form_data = {'name': 'テスト', 'corporate_number': '1010001052596'}
+        form = CompanyForm(data=form_data)
+        self.assertTrue(form.is_valid())
 
 class CompanyModelTest(TestCase):
     """会社モデルのテスト"""
