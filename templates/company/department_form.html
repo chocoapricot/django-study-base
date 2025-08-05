@@ -48,6 +48,30 @@
             </div>
             
             <div class="row align-items-center">
+                <label for="{{ form.valid_from.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.valid_from.label }}
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="未入力の場合は無期限"></i>
+                </label>
+                <div class="col-sm-3">
+                    {{ form.valid_from }}
+                    {% if form.valid_from.errors %}
+                        <div class="text-danger">{{ form.valid_from.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.valid_to.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.valid_to.label }}
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="未入力の場合は無期限"></i>
+                </label>
+                <div class="col-sm-3">
+                    {{ form.valid_to }}
+                    {% if form.valid_to.errors %}
+                        <div class="text-danger">{{ form.valid_to.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row align-items-center">
                 <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.postal_code.label }}
                     <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="半角数字7桁ハイフンなし"></i>
                 </label>

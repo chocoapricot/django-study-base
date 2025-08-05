@@ -28,6 +28,24 @@
             </div>
         </div>
 
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>有効期限</strong>
+            </div>
+            <div class="col-sm-6">
+                {% if department.valid_from or department.valid_to %}
+                    {{ department.valid_from|date:"Y年m月d日"|default:"無期限" }}～{{ department.valid_to|date:"Y年m月d日"|default:"無期限" }}
+                {% else %}
+                    無期限
+                {% endif %}
+                {% if not department.is_valid_on_date %}
+                    <span class="badge bg-secondary ms-2">現在無効</span>
+                {% else %}
+                    <span class="badge bg-success ms-2">有効</span>
+                {% endif %}
+            </div>
+        </div>
+
         {% if department.postal_code or department.address %}
         <div class="row mb-3 align-items-top">
             <div class="col-sm-2" style="text-align:right">

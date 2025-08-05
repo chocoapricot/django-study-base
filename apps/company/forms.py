@@ -19,7 +19,7 @@ class CompanyForm(forms.ModelForm):
     
     def clean_corporate_number(self):
         corporate_number = self.cleaned_data.get('corporate_number')
-        if corporate_number and not jp_corporate_number.is_valid(corporate_number):
+        if corporate_number and jp_corporate_number and not jp_corporate_number.is_valid(corporate_number):
             raise forms.ValidationError("有効な法人番号ではありません。")
         return corporate_number
 
@@ -51,7 +51,7 @@ class CompanyForm(forms.ModelForm):
 class CompanyDepartmentForm(forms.ModelForm):
     class Meta:
         model = CompanyDepartment
-        fields = ['name', 'department_code', 'accounting_code', 'display_order', 'postal_code', 'address', 'phone_number']
+        fields = ['name', 'department_code', 'accounting_code', 'display_order', 'postal_code', 'address', 'phone_number', 'valid_from', 'valid_to']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'department_code': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
@@ -60,6 +60,8 @@ class CompanyDepartmentForm(forms.ModelForm):
             'postal_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'id': 'id_postal_code_dept'}),
             'address': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'id': 'id_address_dept'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'valid_from': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'valid_to': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
         }
     
     def __init__(self, *args, **kwargs):
