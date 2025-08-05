@@ -57,12 +57,12 @@ def main():
         ("python manage.py loaddata _sample_data/dropdowns.json", "ドロップダウンデータ"),
         ("python manage.py loaddata _sample_data/parameters.json", "パラメータデータ"),
         ("python manage.py loaddata _sample_data/menus.json", "メニューデータ"),
+        ("python manage.py loaddata _sample_data/company.json", "会社データ"),
+        ("python manage.py loaddata _sample_data/company_department.json", "部署データ"),
         ("python manage.py loaddata _sample_data/staff.json", "スタッフデータ"),
         ("python manage.py loaddata _sample_data/staff_contacted.json", "スタッフ連絡履歴データ"),
         ("python manage.py loaddata _sample_data/client.json", "クライアントデータ"),
         ("python manage.py loaddata _sample_data/client_contacted.json", "クライアント連絡履歴データ"),
-        ("python manage.py loaddata _sample_data/company.json", "会社データ"),
-        ("python manage.py loaddata _sample_data/company_department.json", "部署データ"),
     ]
     
     for command, description in import_commands:
@@ -75,6 +75,8 @@ def main():
     print("- ドロップダウン選択肢")
     print("- システムパラメータ")
     print("- メニュー設定")
+    print("- 会社データ")
+    print("- 部署データ")
     print("- スタッフデータ")
     print("- スタッフ連絡履歴")
     print("- クライアントデータ")

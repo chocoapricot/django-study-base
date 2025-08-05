@@ -48,10 +48,12 @@ _scripts/load_sample_data.bat
 1. dropdowns.json - ドロップダウン選択肢
 2. parameters.json - システムパラメータ
 3. menus.json - メニュー設定
-4. staff.json - スタッフデータ
-5. staff_contacted.json - スタッフ連絡履歴
-6. client.json - クライアントデータ
-7. client_contacted.json - クライアント連絡履歴
+4. company.json - 会社データ
+5. company_department.json - 部署データ
+6. staff.json - スタッフデータ
+7. staff_contacted.json - スタッフ連絡履歴
+8. client.json - クライアントデータ
+9. client_contacted.json - クライアント連絡履歴
 
 ## 注意事項
 

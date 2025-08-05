@@ -129,7 +129,7 @@
                         {% if staff.department_code %}
                             {{ staff.get_current_department_name|truncatechars:15 }}
                         {% else %}
-                            <span class="text-muted">未設定</span>
+                            <span class="text-muted">-</span>
                         {% endif %}
                     </td>
                     <td>

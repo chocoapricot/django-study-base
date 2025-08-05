@@ -22,6 +22,14 @@ echo メニューデータをインポート中...
 python manage.py loaddata _sample_data/menus.json
 if errorlevel 1 goto error
 
+echo 会社データをインポート中...
+python manage.py loaddata _sample_data/company.json
+if errorlevel 1 goto error
+
+echo 部署データをインポート中...
+python manage.py loaddata _sample_data/company_department.json
+if errorlevel 1 goto error
+
 echo スタッフデータをインポート中...
 python manage.py loaddata _sample_data/staff.json
 if errorlevel 1 goto error
@@ -45,6 +53,8 @@ echo 📈 インポートされたデータ:
 echo - ドロップダウン選択肢
 echo - システムパラメータ
 echo - メニュー設定
+echo - 会社データ
+echo - 部署データ
 echo - スタッフデータ
 echo - スタッフ連絡履歴
 echo - クライアントデータ

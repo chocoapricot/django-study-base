@@ -86,7 +86,7 @@
             "employee_no": "EMP003",
             "hire_date": "2019-10-01",
             "resignation_date": "2024-03-31",
-            "department_code": "KAIHATSU"
+            "department_code": "DEV"
         }
     },
     {
@@ -176,7 +176,7 @@
             "employee_no": "EMP006",
             "hire_date": "2021-03-01",
             "resignation_date": null,
-            "department_code": "KAIHATSU"
+            "department_code": "DEV"
         }
     },
     {
@@ -356,7 +356,7 @@
             "employee_no": "EMP012",
             "hire_date": "2020-02-01",
             "resignation_date": null,
-            "department_code": "KAIHATSU"
+            "department_code": "DEV"
         }
     },
     {
@@ -443,10 +443,10 @@
             "phone": "090-4321-0987",
             "email": "akechi-mitsuhide@staff",
             "regist_form_code": 90,
-            "employee_no": "EMP015",
+            "employee_no": "",
             "hire_date": "2018-10-01",
             "resignation_date": "2023-06-30",
-            "department_code": "KAIHATSU"
+            "department_code": "DEV"
         }
     },
     {
@@ -533,10 +533,10 @@
             "phone": "080-1098-7654",
             "email": "matsunaga-hisahide@staff",
             "regist_form_code": 90,
-            "employee_no": "EMP018",
+            "employee_no": "",
             "hire_date": "2019-09-01",
             "resignation_date": "2024-01-31",
-            "department_code": "KAIHATSU"
+            "department_code": "DEV"
         }
     },
     {
@@ -626,7 +626,7 @@
             "employee_no": "EMP021",
             "hire_date": "2021-05-01",
             "resignation_date": null,
-            "department_code": "KAIHATSU"
+            "department_code": "DEV"
         }
     },
     {
@@ -716,7 +716,7 @@
             "employee_no": "EMP024",
             "hire_date": "2021-12-01",
             "resignation_date": null,
-            "department_code": "KAIHATSU"
+            "department_code": "DEV"
         }
     },
     {
@@ -806,7 +806,7 @@
             "employee_no": "EMP027",
             "hire_date": "2023-07-01",
             "resignation_date": null,
-            "department_code": "KAIHATSU"
+            "department_code": "DEV"
         }
     },
     {
@@ -896,7 +896,7 @@
             "employee_no": "EMP030",
             "hire_date": "2023-11-01",
             "resignation_date": null,
-            "department_code": "KAIHATSU"
+            "department_code": "DEV"
         }
     },
     {
@@ -986,7 +986,7 @@
             "employee_no": "EMP033",
             "hire_date": "2020-05-01",
             "resignation_date": null,
-            "department_code": "KAIHATSU"
+            "department_code": "DEV"
         }
     }
 ]

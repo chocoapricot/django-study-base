@@ -13,6 +13,35 @@ REM マイグレーションを適用
 echo.
 echo 📋 マイグレーションを適用中...
 
+echo 設定アプリのマイグレーション作成中...
+python manage.py makemigrations settings
+if errorlevel 1 goto error
+
+echo ユーザー管理アプリのマイグレーション作成中...
+python manage.py makemigrations useradmin
+if errorlevel 1 goto error
+
+echo スタッフアプリのマイグレーション作成中...
+python manage.py makemigrations staff
+if errorlevel 1 goto error
+
+echo クライアントアプリのマイグレーション作成中...
+python manage.py makemigrations client
+if errorlevel 1 goto error
+
+echo 会社アプリのマイグレーション作成中...
+python manage.py makemigrations company
+if errorlevel 1 goto error
+
+echo 共通アプリのマイグレーション作成中...
+python manage.py makemigrations common
+if errorlevel 1 goto error
+
+echo 全体のマイグレーション作成中...
+python manage.py makemigrations
+if errorlevel 1 goto error
+
+echo データベースマイグレーション適用中...
 python manage.py migrate
 if errorlevel 1 goto error
 
