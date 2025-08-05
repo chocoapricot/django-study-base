@@ -45,9 +45,15 @@ class CustomResetPasswordForm(ResetPasswordForm):
             # メールアドレスが登録されているかチェック
             users = User.objects.filter(email__iexact=email)
             if not users.exists():
-                raise forms.ValidationError(
-                    "このメールアドレスは登録されていません。"
-                )
-            # allauthが期待するusers属性を設定
-            self.users = users
+                # セキュリティのため、エラーメッセージは表示せずに空のユーザーリストを設定
+                self.users = User.objects.none()
+            else:
+                # allauthが期待するusers属性を設定
+                self.users = users
         return email
+    
+    def save(self, request, **kwargs):
+        # ユーザーが存在しない場合はメールを送信しない
+        if hasattr(self, 'users') and not self.users.exists():
+            return
+        return super().save(request, **kwargs)

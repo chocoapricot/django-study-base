@@ -3,6 +3,26 @@ from django.conf import settings
 from apps.system.logs.utils import log_mail
 from allauth.account.models import EmailAddress
 class CustomAccountAdapter(DefaultAccountAdapter):
+    def is_login_by_code_enabled(self):
+        """ログインコード機能を完全に無効化"""
+        return False
+    
+    def can_send_login_code(self, request, user):
+        """ログインコードの送信を無効化"""
+        return False
+    
+    def should_send_login_code(self, request, user):
+        """ログインコードの送信判定を無効化"""
+        return False
+    
+    def pre_authenticate(self, request, **credentials):
+        """認証前の処理でログインコード機能を回避"""
+        return None
+    
+    def authenticate(self, request, **credentials):
+        """通常の認証のみを使用"""
+        return super().authenticate(request, **credentials)
+    
     def save_user(self, request, user, form, commit=True):
         # まずallauthのデフォルトの保存処理を実行
         user = super().save_user(request, user, form, commit=False)
