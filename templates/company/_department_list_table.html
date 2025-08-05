@@ -23,7 +23,7 @@
                     <td>{{ department.accounting_code|default:"" }}</td>
                     <td>
                         {% if department.valid_from or department.valid_to %}
-                            {{ department.valid_from|date:"Y/m/d"|default:"無期限" }}～{{ department.valid_to|date:"Y/m/d"|default:"無期限" }}
+                            {{ department.valid_from|date:"Y/m/d"|default:"無期限" }}～{{ department.valid_to|date:"Y/m/d"|default:"" }}
                         {% else %}
                             無期限
                         {% endif %}

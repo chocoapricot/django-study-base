@@ -33,6 +33,16 @@
                 </div>
             </div>
             
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.representative.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.representative.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.representative }}
+                    {% if form.representative.errors %}
+                        <div class="text-danger">{{ form.representative.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
             <div class="row align-items-center">
                 <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.postal_code.label }}
                     <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="半角数字7桁ハイフンなし"></i>
@@ -121,13 +131,16 @@ function searchCorporateInfo() {
         return;
     }
     
-    fetch(`https://info.gbiz.go.jp/hojin/v1/hojin/${corporateNumber}`)
+    fetch(`{% url 'get_company_info' %}?corporate_number=${corporateNumber}`)
         .then(response => response.json())
         .then(data => {
-            if (data.hojin_infos && data.hojin_infos.length > 0) {
-                const info = data.hojin_infos[0];
+            if (data.success) {
+                const info = data.data;
                 if (info.name) {
                     document.getElementById('id_name').value = info.name;
+                }
+                if (info.representative_name) {
+                    document.getElementById('id_representative').value = info.representative_name;
                 }
                 if (info.location) {
                     document.getElementById('id_address').value = info.location;
@@ -135,8 +148,9 @@ function searchCorporateInfo() {
                 if (info.postal_code) {
                     document.getElementById('id_postal_code').value = info.postal_code;
                 }
+                alert('法人情報を取得しました');
             } else {
-                alert('法人情報が見つかりませんでした');
+                alert(data.error || '法人情報が見つかりませんでした');
             }
         })
         .catch(error => {

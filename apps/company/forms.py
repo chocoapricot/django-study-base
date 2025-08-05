@@ -7,12 +7,13 @@ jp_corporate_number = get_cc_module('jp', 'corporate_number')
 class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company
-        fields = ['name', 'corporate_number', 'postal_code', 'address', 'phone_number', 'url']
+        fields = ['name', 'corporate_number', 'representative', 'postal_code', 'address', 'phone_number', 'url']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'corporate_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'representative': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'postal_code': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'address': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'address': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'url': forms.URLInput(attrs={'class': 'form-control form-control-sm'}),
         }

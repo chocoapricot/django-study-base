@@ -38,12 +38,11 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.employee_no.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">社員番号</label>
+                <label for="{{ form.employee_no.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">社員番号
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="半角英数字10文字まで（空欄可）"></i>
+                </label>
                 <div class="col-sm-4">
                     {{ form.employee_no }}
-                </div>
-                <div class="col-sm-6 align-self-center">
-                    <span class="text-muted" style="font-size:12px">半角英数字10文字まで（空欄可）</span>
                 </div>
             </div>
 
@@ -88,12 +87,11 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.department_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.department_code.label }}</label>
+                <label for="{{ form.department_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.department_code.label }}
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="現在有効な部署のみ表示"></i>
+                </label>
                 <div class="col-sm-6">
                     {{ form.department_code }}
-                </div>
-                <div class="col-sm-4 align-self-center">
-                    <span class="text-muted" style="font-size:12px">現在有効な部署のみ表示</span>
                 </div>
             </div>
 

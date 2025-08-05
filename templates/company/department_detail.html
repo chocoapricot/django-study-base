@@ -10,7 +10,7 @@
             </div>
         </div>
 
-        <div class="row mb-3 align-items-center">
+        <div class="row align-items-center">
             <div class="col-sm-2" style="text-align:right">
                 <strong>部署コード</strong>
             </div>
@@ -34,7 +34,7 @@
             </div>
             <div class="col-sm-6">
                 {% if department.valid_from or department.valid_to %}
-                    {{ department.valid_from|date:"Y年m月d日"|default:"無期限" }}～{{ department.valid_to|date:"Y年m月d日"|default:"無期限" }}
+                    {{ department.valid_from|date:"Y/m/d/"|default:"無期限" }}～{{ department.valid_to|date:"Y/m/d"|default:"" }}
                 {% else %}
                     無期限
                 {% endif %}

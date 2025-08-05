@@ -124,8 +124,9 @@ class Company(MyModel):
     name = models.CharField('会社名', max_length=255, unique=True)
     # 会社情報として必要そうなフィールドを追加（例）
     corporate_number = models.CharField('法人番号', max_length=13, blank=True, null=True, unique=True)
+    representative = models.CharField('代表者', max_length=100, blank=True, null=True)
     postal_code = models.CharField('郵便番号', max_length=7, blank=True, null=True)
-    address = models.TextField('住所', blank=True, null=True)
+    address = models.CharField('住所', max_length=500, blank=True, null=True)
     phone_number = models.CharField('電話番号', max_length=20, blank=True, null=True)
     url = models.URLField('URL', blank=True, null=True)
     

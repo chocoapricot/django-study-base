@@ -71,7 +71,7 @@
                 </div>
             </div>
             
-            <div class="row align-items-center">
+            <div class="row mb-1 align-items-center">
                 <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.postal_code.label }}
                     <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="半角数字7桁ハイフンなし"></i>
                 </label>
@@ -82,7 +82,7 @@
                     {% endif %}
                 </div>
                 <div class="col-sm">
-                    <button type="button" class="btn btn-sm btn-secondary me-2" onclick="searchAddressDept()">住所検索</button>
+                    <button type="button" class="btn btn-sm btn-secondary me-2" onclick="searchAddressDept()">住所</button>
                     <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="フリーの郵便番号APIで取得"></i>
                 </div>
             </div>
