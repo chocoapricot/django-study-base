@@ -102,7 +102,13 @@ def department_create(request):
     else:
         form = CompanyDepartmentForm()
     
-    return render(request, 'company/department_form.html', {'form': form, 'title': '部署作成'})
+    departments = CompanyDepartment.objects.all().order_by('display_order', 'name')
+
+    return render(request, 'company/department_form.html', {
+        'form': form,
+        'title': '部署作成',
+        'departments': departments,
+    })
 
 @login_required
 @permission_required('company.change_companydepartment', raise_exception=True)
