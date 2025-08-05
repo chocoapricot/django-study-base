@@ -53,6 +53,17 @@ class StaffForm(forms.ModelForm):
             if not re.fullmatch(r'^[A-Za-z0-9]{1,10}$', value):
                 raise forms.ValidationError('社員番号は半角英数字10文字以内で入力してください。')
         return value
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        hire_date = cleaned_data.get('hire_date')
+        resignation_date = cleaned_data.get('resignation_date')
+        
+        # 入社日と退職日の妥当性チェック
+        if hire_date and resignation_date and hire_date > resignation_date:
+            raise forms.ValidationError('入社日は退職日より前の日付を入力してください。')
+        
+        return cleaned_data
 
     sex = forms.ChoiceField(
         choices=[],
@@ -68,11 +79,22 @@ class StaffForm(forms.ModelForm):
         widget=forms.Select(attrs={'class':'form-select form-select-sm'}) ,
         required=True,
     )
+    
+    department_code = forms.ChoiceField(
+        choices=[],
+        label='所属部署',
+        widget=forms.Select(attrs={'class':'form-select form-select-sm'}),
+        required=False,
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # ここでのみDropdownsをimport.そうしないとmigrateでエラーになる
         from apps.system.settings.models import Dropdowns
+        from apps.company.models import CompanyDepartment
+        from django.utils import timezone
+        from django.db import models
+        
         self.fields['sex'].choices = [
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='sex').order_by('disp_seq')
@@ -80,6 +102,14 @@ class StaffForm(forms.ModelForm):
         self.fields['regist_form_code'].choices = [
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='regist_form').order_by('disp_seq')
+        ]
+        
+        # 現在有効な部署の選択肢を設定
+        current_date = timezone.now().date()
+        valid_departments = CompanyDepartment.get_valid_departments(current_date)
+        self.fields['department_code'].choices = [('', '選択してください')] + [
+            (dept.department_code, f"{dept.name} ({dept.department_code})")
+            for dept in valid_departments
         ]
     class Meta:
         model = Staff
@@ -89,6 +119,7 @@ class StaffForm(forms.ModelForm):
             'name_last','name_first','name_kana_last','name_kana_first',
             'birth_date','sex',
             # 'age', ← ここは除外
+            'hire_date', 'resignation_date', 'department_code',  # 新しいフィールドを追加
             'postal_code','address1','address2','address3', 'phone', 'email'
         ]
         widgets = {
@@ -98,6 +129,8 @@ class StaffForm(forms.ModelForm):
             'name_kana_last': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'name_kana_first': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'birth_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'hire_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'resignation_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             #'sex': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             #'age': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'postal_code': forms.TextInput(attrs={

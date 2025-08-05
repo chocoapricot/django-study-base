@@ -25,6 +25,18 @@
                     {{ form.regist_form_code }}
                 </div>
             </div>
+
+            <div class="row align-items-center">
+                <label for="{{ form.hire_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.hire_date.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.hire_date }}
+                </div>
+                <label for="{{ form.resignation_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.resignation_date.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.resignation_date }}
+                </div>
+            </div>
+
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.employee_no.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">社員番号</label>
                 <div class="col-sm-4">
@@ -58,23 +70,30 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.birth_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.birth_date.label }}</label>
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     {{ form.birth_date }}
                 </div>
-                <div class="col-sm-6 align-self-center">
-                    今日時点で<span id="age-display"></span>歳
+                <div class="col-sm-2">
+                    （<span id="age-display"></span>歳）
                 </div>
-            </div>
-
-            <div class="row mb-3 align-items-center">
                 <label for="{{ form.sex.id_for_label }}" class="col-sm-2 col-form-label text-end">{{ form.sex.label }}</label>
-                <div class="col-sm-3">
+                <div class="col-sm-4">
                     {% for radio in form.sex %}
                     <div class="form-check form-check-inline" style="padding-left:0em">
                         {{ radio.tag }}
                         <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
                     </div>
                     {% endfor %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.department_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.department_code.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.department_code }}
+                </div>
+                <div class="col-sm-4 align-self-center">
+                    <span class="text-muted" style="font-size:12px">現在有効な部署のみ表示</span>
                 </div>
             </div>
 
@@ -192,6 +211,8 @@
         updateAge();
         birthInput.addEventListener("change", updateAge);
     }
+
+
 </script>
 {% endblock %}
 

@@ -64,7 +64,7 @@ ACCOUNT_LOGIN_METHODS = {'email'}  # メールのみでログイン（新形式�
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # アカウント登録時のメール認証は必須
 ACCOUNT_EMAIL_VERIFICATION_BY_CODE_ENABLED = False  # メール認証でのコード機能を無効化
 ACCOUNT_SIGNUP_FIELDS = ['email*']  # メール認証必須の場合は'email*'が必要
-ACCOUNT_LOGIN_BY_CODE_ENABLED = False  # ログインコード機能を無効化
+#ACCOUNT_LOGIN_BY_CODE_ENABLED = False  # ログインコード機能を無効化
 ACCOUNT_EMAIL_CONFIRMATION_HMAC = True  # HMACベースのメール確認を使用
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True  # メール確認後に自動ログイン
 ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/accounts/login/'  # 匿名ユーザーのリダイレクト先
@@ -77,10 +77,10 @@ ACCOUNT_RATE_LIMITS = {
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 # ログインコード機能を完全に無効化
-ACCOUNT_LOGIN_BY_CODE_ENABLED = False  # 重複だが確実に無効化
-ACCOUNT_LOGIN_BY_CODE_TIMEOUT = 0  # タイムアウトを0に設定
-ACCOUNT_LOGIN_BY_CODE_MAX_ATTEMPTS = 0  # 最大試行回数を0に設定
-ACCOUNT_LOGIN_BY_CODE_REQUIRED = False  # ログインコードを必須にしない
+#ACCOUNT_LOGIN_BY_CODE_ENABLED = False  # 重複だが確実に無効化
+#ACCOUNT_LOGIN_BY_CODE_TIMEOUT = 0  # タイムアウトを0に設定
+#ACCOUNT_LOGIN_BY_CODE_MAX_ATTEMPTS = 0  # 最大試行回数を0に設定
+#ACCOUNT_LOGIN_BY_CODE_REQUIRED = False  # ログインコードを必須にしない
 
 ACCOUNT_FORMS = {
     'signup': 'apps.accounts.forms.CustomSignupForm',

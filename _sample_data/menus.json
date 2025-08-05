@@ -117,6 +117,23 @@
         "disp_seq": 7,
         "active": true
     }
+},
+{
+    "model": "settings.menu",
+    "pk": 8,
+    "fields": {
+        "version": 0,
+        "created_at": "2025-07-19T15:46:59.051Z",
+        "created_by": 1,
+        "updated_at": "2025-07-21T15:54:42.828Z",
+        "updated_by": 1,
+        "name": "管理サイト",
+        "url": "/admin/",
+        "icon": "bi-list-check",
+        "icon_style": "color:#28a745;",
+        "disp_seq": 8,
+        "active": true
+    }
 }
 ]
 

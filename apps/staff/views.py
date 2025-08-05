@@ -71,6 +71,7 @@ def staff_list(request):
     sort = request.GET.get('sort', 'pk')  # デフォルトソートをpkに設定
     query = request.GET.get('q', '').strip()
     regist_form_filter = request.GET.get('regist_form', '').strip()  # 登録区分フィルター
+    department_filter = request.GET.get('department', '').strip()  # 所属部署フィルター
     
     # 基本のクエリセット
     staffs = Staff.objects.all()
@@ -94,6 +95,10 @@ def staff_list(request):
     # 登録区分での絞り込み
     if regist_form_filter:
         staffs = staffs.filter(regist_form_code=regist_form_filter)
+    
+    # 所属部署での絞り込み
+    if department_filter:
+        staffs = staffs.filter(department_code=department_filter)
 
     # ソート可能なフィールドを定義
     sortable_fields = [
@@ -120,6 +125,16 @@ def staff_list(request):
     # 各オプションに選択状態を追加
     for option in regist_form_options:
         option.is_selected = (regist_form_filter == option.value)
+    
+    # 所属部署の選択肢を取得（現在有効な部署のみ）
+    from apps.company.models import CompanyDepartment
+    from django.utils import timezone
+    current_date = timezone.now().date()
+    department_options = CompanyDepartment.get_valid_departments(current_date)
+    
+    # 各部署オプションに選択状態を追加
+    for dept in department_options:
+        dept.is_selected = (department_filter == dept.department_code)
 
     paginator = Paginator(staffs, 10)  # 1ページあたり10件表示
     page_number = request.GET.get('page')  # URLからページ番号を取得
@@ -131,6 +146,8 @@ def staff_list(request):
         'sort': sort,
         'regist_form_filter': regist_form_filter,
         'regist_form_options': regist_form_options,
+        'department_filter': department_filter,
+        'department_options': department_options,
     })
 
 from django.contrib.auth.decorators import permission_required

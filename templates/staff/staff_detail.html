@@ -44,11 +44,17 @@
                                 {% else %}
                                     <span class="badge bg-light" style="font-size:15px">{% my_name 'regist_form' staff.regist_form_code %}</span>
                                 {% endif %}
-                                {% if staff.employee_no %}
-                                    　<span class="copy-target" style="font-size:18px">{{ staff.employee_no }}</span>
-                                    <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
-                                    <span class="copy-message">コピーしました!</span>
+                                　
+                                {% if staff.get_employment_status == "在職中" %}
+                                    <span class="badge bg-success">{{ staff.get_employment_status }}</span>　{{ staff.hire_date|date:"Y/m/d" }}入社
+                                {% elif staff.get_employment_status == "退職済み" %}
+                                    <span class="badge bg-secondary">{{ staff.get_employment_status }}</span>　{{ staff.resignation_date|date:"Y/m/d" }}退職
+                                {% elif staff.get_employment_status == "入社前" %}
+                                    <span class="badge bg-warning">{{ staff.get_employment_status }}</span>　{{ staff.hire_date|date:"Y/m/d" }}入社
+                                {% else %}
+                                    <span class="badge bg-light text-dark">{{ staff.get_employment_status }}</span>
                                 {% endif %}
+
                             </div>
                             <h4>
                                 <ruby>
@@ -62,6 +68,13 @@
                                 {% else %}
                                     <span class="badge bg-primary" style="font-size:12px">{% my_name 'sex' staff.sex%}</span>
                                 {% endif %}
+                                {% if staff.employee_no %}
+                                    <span style="font-size:18px">　No.
+                                        <span class="copy-target" style="font-size:18px">{{ staff.employee_no }}</span>
+                                        <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
+                                        <span class="copy-message">コピーしました!</span>
+                                    </span>
+                                {% endif %}
                             </h4>
                         </div>
                     </div>
@@ -72,6 +85,19 @@
                         </div>
                         <div class="col-sm">
                             {{ staff.birth_date }}（<span id="age-display">{{ staff.age }}</span>歳）
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-sm-4" style="text-align:right">
+                            <strong>所属部署</strong>
+                        </div>
+                        <div class="col-sm">
+                            {% if staff.department_code %}
+                                {{ staff.get_current_department_name }}
+                                <span class="text-muted">({{ staff.department_code }})</span>
+                            {% else %}
+                                <span class="text-muted">未設定</span>
+                            {% endif %}
                         </div>
                     </div>
 

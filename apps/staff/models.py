@@ -22,6 +22,10 @@ class Staff(MyModel):
     email = models.CharField('E-MAIL',max_length=255, unique=True, blank=True, null=True)
     regist_form_code = models.IntegerField('登録区分',blank=True, null=True)
     employee_no = models.CharField('社員番号', max_length=10, blank=True, null=True, help_text='半角英数字10文字まで')
+    # 入社・退職・所属情報
+    hire_date = models.DateField('入社日', blank=True, null=True)
+    resignation_date = models.DateField('退職日', blank=True, null=True)
+    department_code = models.CharField('所属部署コード', max_length=20, blank=True, null=True, help_text='会社部署の部署コードを参照')
 
     class Meta:
         db_table = 'apps_staff'  # 既存のテーブル名を指定
@@ -37,6 +41,73 @@ class Staff(MyModel):
                 (today.month, today.day) < (self.birth_date.month, self.birth_date.day)
             )
         super().save(*args, **kwargs)  # 親クラスの save を呼び出す
+
+    def get_department_name(self, date=None):
+        """指定日時点での所属部署名を取得"""
+        if not self.department_code:
+            return None
+        
+        from apps.company.models import CompanyDepartment
+        from django.utils import timezone
+        
+        if date is None:
+            date = timezone.now().date()
+        
+        try:
+            # 指定日時点で有効な部署を取得
+            department = CompanyDepartment.objects.filter(
+                department_code=self.department_code
+            ).filter(
+                models.Q(valid_from__isnull=True) | models.Q(valid_from__lte=date)
+            ).filter(
+                models.Q(valid_to__isnull=True) | models.Q(valid_to__gte=date)
+            ).first()
+            
+            return department.name if department else f"{self.department_code} (無効)"
+        except Exception:
+            return f"部署コード: {self.department_code} (エラー)"
+    
+    def get_current_department_name(self):
+        """現在の所属部署名を取得"""
+        return self.get_department_name()
+    
+    def is_active_employee(self, date=None):
+        """指定日時点で在職中かどうかを判定"""
+        from django.utils import timezone
+        
+        if date is None:
+            date = timezone.now().date()
+        
+        # 入社日チェック
+        if self.hire_date and date < self.hire_date:
+            return False
+        
+        # 退職日チェック
+        if self.resignation_date and date > self.resignation_date:
+            return False
+        
+        return True
+    
+    def get_employment_status(self, date=None):
+        """指定日時点での雇用状況を取得"""
+        from django.utils import timezone
+        
+        if date is None:
+            date = timezone.now().date()
+        
+        if not self.hire_date:
+            return "入社日未設定"
+        
+        if date < self.hire_date:
+            return "入社前"
+        
+        if self.resignation_date:
+            if date > self.resignation_date:
+                return "退職済み"
+            elif date == self.resignation_date:
+                return "退職日"
+        
+        return "在職中"
 
     def __str__(self):
         return self.name_last + " " + self.name_first
