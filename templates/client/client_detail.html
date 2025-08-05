@@ -128,6 +128,110 @@
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
+        組織一覧
+        {% if perms.client.add_clientdepartment %}
+        <a href="{% url 'client:client_department_create' client.id %}" class="btn btn-sm btn-primary">組織追加</a>
+        {% endif %}
+    </div>
+    <div class="card-body mb-0">
+        <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>組織名</th>
+                    <th>組織コード</th>
+                    <th>電話番号</th>
+                    <th>メールアドレス</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for department in departments %}
+                <tr>
+                    <td>{{ department.name }}</td>
+                    <td>{{ department.department_code|default:"-" }}</td>
+                    <td>{{ department.phone_number|default:"-" }}</td>
+                    <td>{{ department.email|default:"-" }}</td>
+                    <td>
+                        {% if perms.client.change_clientdepartment %}
+                        <a href="{% url 'client:client_department_update' department.pk %}" class="btn btn-primary btn-sm" title="編集">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        {% endif %}
+                        {% if perms.client.delete_clientdepartment %}
+                        <a href="{% url 'client:client_department_delete' department.pk %}" class="btn btn-dark btn-sm" title="削除">
+                            <i class="bi bi-x"></i>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5">組織がありません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if departments_count > 5 %}
+    <div class="card-footer d-flex justify-content-center align-items-center">
+        <a href="{% url 'client:client_department_list' client.id %}" class="btn btn-link">全て表示 (全{{ departments_count }}件)</a>
+    </div>
+    {% endif %}
+</div>
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        担当者一覧
+        {% if perms.client.add_clientuser %}
+        <a href="{% url 'client:client_user_create' client.id %}" class="btn btn-sm btn-primary">担当者追加</a>
+        {% endif %}
+    </div>
+    <div class="card-body mb-0">
+        <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>氏名</th>
+                    <th>所属組織</th>
+                    <th>役職</th>
+                    <th>電話番号</th>
+                    <th>メールアドレス</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.department.name|default:"-" }}</td>
+                    <td>{{ user.position|default:"-" }}</td>
+                    <td>{{ user.phone_number|default:"-" }}</td>
+                    <td>{{ user.email|default:"-" }}</td>
+                    <td>
+                        {% if perms.client.change_clientuser %}
+                        <a href="{% url 'client:client_user_update' user.pk %}" class="btn btn-primary btn-sm" title="編集">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        {% endif %}
+                        {% if perms.client.delete_clientuser %}
+                        <a href="{% url 'client:client_user_delete' user.pk %}" class="btn btn-dark btn-sm" title="削除">
+                            <i class="bi bi-x"></i>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6">担当者がいません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if users_count > 5 %}
+    <div class="card-footer d-flex justify-content-center align-items-center">
+        <a href="{% url 'client:client_user_list' client.id %}" class="btn btn-link">全て表示 (全{{ users_count }}件)</a>
+    </div>
+    {% endif %}
+</div>
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
         連絡履歴
         {% if perms.client.add_clientcontacted %}
         <a href="{% url 'client:client_contacted_create' client.id %}" class="btn btn-sm btn-primary">連絡登録</a>
@@ -196,6 +300,7 @@
         <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
             <thead>
                 <tr>
+                    <th>対象</th>
                     <th>操作</th>
                     <th>内容</th>
                     <th>変更者</th>
@@ -206,9 +311,26 @@
                 {% for log in change_logs %}
                 <tr>
                     <td>
-                        {% if log.action == 'create' %}作成
-                        {% elif log.action == 'update' %}編集
-                        {% else %}{{ log.action|title }}{% endif %}
+                        {% if log.model_name == 'Client' %}
+                            <span class="badge bg-primary">クライアント</span>
+                        {% elif log.model_name == 'ClientDepartment' %}
+                            <span class="badge bg-info">組織</span>
+                        {% elif log.model_name == 'ClientUser' %}
+                            <span class="badge bg-success">担当者</span>
+                        {% else %}
+                            {{ log.model_name }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.action == 'create' %}
+                            <span class="badge bg-success">作成</span>
+                        {% elif log.action == 'update' %}
+                            <span class="badge bg-warning">編集</span>
+                        {% elif log.action == 'delete' %}
+                            <span class="badge bg-danger">削除</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ log.action|title }}</span>
+                        {% endif %}
                     </td>
                     <td>{{ log.object_repr|truncatechars:40 }}</td>
                     <td>
@@ -219,12 +341,12 @@
                     <td>{{ log.timestamp|date:'Y/m/d H:i:s' }}</td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="4">履歴がありません</td></tr>
+                <tr><td colspan="5">履歴がありません</td></tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-    {% if change_logs_count > 0 %}
+    {% if change_logs_count > 5 %}
     <div class="card-footer d-flex justify-content-center align-items-center">
         <a href="{% url 'client:client_change_history_list' client.pk %}">全て表示 (全{{ change_logs_count }}件)</a>
     </div>

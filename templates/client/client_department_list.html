@@ -1,0 +1,69 @@
+{% extends 'common/_base.html' %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        組織一覧 - {{ client.name }}
+        {% if perms.client.add_clientdepartment %}
+        <a href="{% url 'client:client_department_create' client.id %}" class="btn btn-sm btn-primary">組織追加</a>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>組織名</th>
+                    <th>組織コード</th>
+                    <th>郵便番号</th>
+                    <th>住所</th>
+                    <th>電話番号</th>
+                    <th>メールアドレス</th>
+                    <th>有効期間</th>
+                    <th>表示順</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for department in departments %}
+                <tr>
+                    <td>{{ department.name }}</td>
+                    <td>{{ department.department_code|default:"-" }}</td>
+                    <td>{{ department.postal_code|default:"-" }}</td>
+                    <td>{{ department.address|default:"-" }}</td>
+                    <td>{{ department.phone_number|default:"-" }}</td>
+                    <td>{{ department.email|default:"-" }}</td>
+                    <td>
+                        {% if department.valid_from or department.valid_to %}
+                            {{ department.valid_from|date:"Y/m/d"|default:"無期限" }}～{{ department.valid_to|date:"Y/m/d"|default:"無期限" }}
+                        {% else %}
+                            無期限
+                        {% endif %}
+                    </td>
+                    <td>{{ department.display_order }}</td>
+                    <td>
+                        {% if perms.client.change_clientdepartment %}
+                        <a href="{% url 'client:client_department_update' department.pk %}" class="btn btn-primary btn-sm" title="編集">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        {% endif %}
+                        {% if perms.client.delete_clientdepartment %}
+                        <a href="{% url 'client:client_department_delete' department.pk %}" class="btn btn-dark btn-sm" title="削除">
+                            <i class="bi bi-x"></i>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="9">組織がありません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="row mt-3">
+            <div class="col text-left">
+                <a href="{% url 'client:client_detail' client.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

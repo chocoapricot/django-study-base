@@ -16,10 +16,11 @@ import logging
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
+from django.db import models
 from django.http import JsonResponse
 # クライアント連絡履歴用インポート
-from .models import Client, ClientContacted
-from .forms import ClientForm, ClientContactedForm
+from .models import Client, ClientContacted, ClientDepartment, ClientUser
+from .forms import ClientForm, ClientContactedForm, ClientDepartmentForm, ClientUserForm
 # from apps.api.helpers import fetch_company_info  # API呼び出し関数をインポート
 
 # ロガーの作成
@@ -93,17 +94,37 @@ def client_detail(request, pk):
     form = ClientForm(instance=client)
     # 連絡履歴（最新5件）
     contacted_list = client.contacted_histories.all()[:5]
+    # 組織一覧（最新5件）
+    departments = client.departments.all()[:5]
+    departments_count = client.departments.count()
+    # 担当者一覧（最新5件）
+    users = client.users.all()[:5]
+    users_count = client.users.count()
     # AppLogに詳細画面アクセスを記録
     from apps.system.logs.utils import log_view_detail
     from apps.system.logs.models import AppLog
     log_view_detail(request.user, client)
-    # 変更履歴（AppLogから取得、最新5件）
-    change_logs = AppLog.objects.filter(model_name='Client', object_id=str(client.pk), action__in=['create', 'update']).order_by('-timestamp')[:5]
-    change_logs_count = AppLog.objects.filter(model_name='Client', object_id=str(client.pk), action__in=['create', 'update']).count()
+    # 変更履歴（AppLogから取得、最新5件）- クライアント、組織、担当者の変更を含む
+    change_logs = AppLog.objects.filter(
+        models.Q(model_name='Client', object_id=str(client.pk)) |
+        models.Q(model_name='ClientDepartment', object_repr__startswith=f'{client.name} - ') |
+        models.Q(model_name='ClientUser', object_repr__startswith=f'{client.name} - '),
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')[:5]
+    change_logs_count = AppLog.objects.filter(
+        models.Q(model_name='Client', object_id=str(client.pk)) |
+        models.Q(model_name='ClientDepartment', object_repr__startswith=f'{client.name} - ') |
+        models.Q(model_name='ClientUser', object_repr__startswith=f'{client.name} - '),
+        action__in=['create', 'update', 'delete']
+    ).count()
     return render(request, 'client/client_detail.html', {
         'client': client,
         'form': form,
         'contacted_list': contacted_list,
+        'departments': departments,
+        'departments_count': departments_count,
+        'users': users,
+        'users_count': users_count,
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
     })
@@ -114,7 +135,13 @@ def client_detail(request, pk):
 def client_change_history_list(request, pk):
     client = get_object_or_404(Client, pk=pk)
     from apps.system.logs.models import AppLog
-    logs = AppLog.objects.filter(model_name='Client', object_id=str(client.pk), action__in=['create', 'update']).order_by('-timestamp')
+    # クライアント、組織、担当者の変更履歴を含む
+    logs = AppLog.objects.filter(
+        models.Q(model_name='Client', object_id=str(client.pk)) |
+        models.Q(model_name='ClientDepartment', object_repr__startswith=f'{client.name} - ') |
+        models.Q(model_name='ClientUser', object_repr__startswith=f'{client.name} - '),
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')
     paginator = Paginator(logs, 20)
     page = request.GET.get('page')
     logs_page = paginator.get_page(page)
@@ -197,10 +224,114 @@ def client_delete(request, pk):
 
 
 
-# def get_company_info(request):
-#     corporate_number = request.GET.get("corporate_number")
-#     if corporate_number:
-#         company_info = fetch_company_info(corporate_number)
-#         if company_info:
-#             return JsonResponse({"success": True, "data": company_info})
-#     return JsonResponse({"success": False, "error": "企業情報の取得に失敗しました。"})
+# クライアント組織 CRUD
+@login_required
+@permission_required('client.add_clientdepartment', raise_exception=True)
+def client_department_create(request, client_pk):
+    client = get_object_or_404(Client, pk=client_pk)
+    if request.method == 'POST':
+        form = ClientDepartmentForm(request.POST)
+        if form.is_valid():
+            department = form.save(commit=False)
+            department.client = client
+            department.save()
+            # 変更履歴を記録
+            from apps.system.logs.utils import log_model_action
+            log_model_action(request.user, 'create', department)
+            return redirect('client:client_detail', pk=client.pk)
+    else:
+        form = ClientDepartmentForm()
+    return render(request, 'client/client_department_form.html', {'form': form, 'client': client})
+
+@login_required
+@permission_required('client.view_clientdepartment', raise_exception=True)
+def client_department_list(request, client_pk):
+    client = get_object_or_404(Client, pk=client_pk)
+    departments = client.departments.all()
+    return render(request, 'client/client_department_list.html', {'client': client, 'departments': departments})
+
+@login_required
+@permission_required('client.change_clientdepartment', raise_exception=True)
+def client_department_update(request, pk):
+    department = get_object_or_404(ClientDepartment, pk=pk)
+    client = department.client
+    if request.method == 'POST':
+        form = ClientDepartmentForm(request.POST, instance=department)
+        if form.is_valid():
+            form.save()
+            # 変更履歴を記録
+            from apps.system.logs.utils import log_model_action
+            log_model_action(request.user, 'update', department)
+            return redirect('client:client_detail', pk=client.pk)
+    else:
+        form = ClientDepartmentForm(instance=department)
+    return render(request, 'client/client_department_form.html', {'form': form, 'client': client, 'department': department})
+
+@login_required
+@permission_required('client.delete_clientdepartment', raise_exception=True)
+def client_department_delete(request, pk):
+    department = get_object_or_404(ClientDepartment, pk=pk)
+    client = department.client
+    if request.method == 'POST':
+        # 変更履歴を記録（削除前に記録）
+        from apps.system.logs.utils import log_model_action
+        log_model_action(request.user, 'delete', department)
+        department.delete()
+        return redirect('client:client_detail', pk=client.pk)
+    return render(request, 'client/client_department_confirm_delete.html', {'department': department, 'client': client})
+
+# クライアント担当者 CRUD
+@login_required
+@permission_required('client.add_clientuser', raise_exception=True)
+def client_user_create(request, client_pk):
+    client = get_object_or_404(Client, pk=client_pk)
+    if request.method == 'POST':
+        form = ClientUserForm(request.POST, client=client)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.client = client
+            user.save()
+            # 変更履歴を記録
+            from apps.system.logs.utils import log_model_action
+            log_model_action(request.user, 'create', user)
+            return redirect('client:client_detail', pk=client.pk)
+    else:
+        form = ClientUserForm(client=client)
+    return render(request, 'client/client_user_form.html', {'form': form, 'client': client})
+
+@login_required
+@permission_required('client.view_clientuser', raise_exception=True)
+def client_user_list(request, client_pk):
+    client = get_object_or_404(Client, pk=client_pk)
+    users = client.users.all()
+    return render(request, 'client/client_user_list.html', {'client': client, 'users': users})
+
+@login_required
+@permission_required('client.change_clientuser', raise_exception=True)
+def client_user_update(request, pk):
+    user = get_object_or_404(ClientUser, pk=pk)
+    client = user.client
+    if request.method == 'POST':
+        form = ClientUserForm(request.POST, instance=user, client=client)
+        if form.is_valid():
+            form.save()
+            # 変更履歴を記録
+            from apps.system.logs.utils import log_model_action
+            log_model_action(request.user, 'update', user)
+            return redirect('client:client_detail', pk=client.pk)
+    else:
+        form = ClientUserForm(instance=user, client=client)
+    return render(request, 'client/client_user_form.html', {'form': form, 'client': client, 'user': user})
+
+@login_required
+@permission_required('client.delete_clientuser', raise_exception=True)
+def client_user_delete(request, pk):
+    user = get_object_or_404(ClientUser, pk=pk)
+    client = user.client
+    if request.method == 'POST':
+        # 変更履歴を記録（削除前に記録）
+        from apps.system.logs.utils import log_model_action
+        log_model_action(request.user, 'delete', user)
+        user.delete()
+        return redirect('client:client_detail', pk=client.pk)
+    return render(request, 'client/client_user_confirm_delete.html', {'user': user, 'client': client})

@@ -1,0 +1,145 @@
+{% extends 'common/_base.html' %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        {% if department %}組織編集{% else %}組織追加{% endif %} - {{ client.name }}
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {% if form.errors %}
+            <div class="alert alert-dismissible alert-primary">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                {{ form.errors }}
+            </div>
+            {% endif %}
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.name.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger">{{ form.name.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.department_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.department_code.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.department_code }}
+                    {% if form.department_code.errors %}
+                        <div class="text-danger">{{ form.department_code.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.postal_code.label }}</label>
+                <div class="col-sm-3">
+                    {{ form.postal_code }}
+                    {% if form.postal_code.errors %}
+                        <div class="text-danger">{{ form.postal_code.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm">
+                    <button type="button" class="btn btn-sm btn-secondary me-2" onclick="searchAddress()">住所</button>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.address.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.address.label }}</label>
+                <div class="col-sm-10">
+                    {{ form.address }}
+                    {% if form.address.errors %}
+                        <div class="text-danger">{{ form.address.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.phone_number.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.phone_number.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.phone_number }}
+                    {% if form.phone_number.errors %}
+                        <div class="text-danger">{{ form.phone_number.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.email.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.email.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="text-danger">{{ form.email.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.display_order.label }}</label>
+                <div class="col-sm-2">
+                    {{ form.display_order }}
+                    {% if form.display_order.errors %}
+                        <div class="text-danger">{{ form.display_order.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <label for="{{ form.valid_from.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.valid_from.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.valid_from }}
+                    {% if form.valid_from.errors %}
+                        <div class="text-danger">{{ form.valid_from.errors }}</div>
+                    {% endif %}
+                </div>
+                <label for="{{ form.valid_to.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.valid_to.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.valid_to }}
+                    {% if form.valid_to.errors %}
+                        <div class="text-danger">{{ form.valid_to.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
+                    <a href="{% url 'client:client_detail' client.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// 郵便番号から住所を検索
+function searchAddress() {
+    const postalCode = document.getElementById('id_postal_code').value.replace(/[^0-9]/g, '');
+    if (postalCode.length !== 7) {
+        alert('郵便番号は7桁で入力してください');
+        return;
+    }
+    
+    fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${postalCode}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.results && data.results.length > 0) {
+                const result = data.results[0];
+                const address = result.address1 + result.address2 + result.address3;
+                document.getElementById('id_address').value = address;
+            } else {
+                alert('住所が見つかりませんでした');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('住所検索でエラーが発生しました');
+        });
+}
+</script>
+
+{% endblock %}

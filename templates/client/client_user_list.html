@@ -1,0 +1,67 @@
+{% extends 'common/_base.html' %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        担当者一覧 - {{ client.name }}
+        {% if perms.client.add_clientuser %}
+        <a href="{% url 'client:client_user_create' client.id %}" class="btn btn-sm btn-primary">担当者追加</a>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>氏名</th>
+                    <th>氏名カナ</th>
+                    <th>所属組織</th>
+                    <th>役職</th>
+                    <th>電話番号</th>
+                    <th>メールアドレス</th>
+                    <th>表示順</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.name }}</td>
+                    <td>
+                        {% if user.name_kana_last or user.name_kana_first %}
+                            {{ user.name_kana_last }} {{ user.name_kana_first }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{ user.department.name|default:"-" }}</td>
+                    <td>{{ user.position|default:"-" }}</td>
+                    <td>{{ user.phone_number|default:"-" }}</td>
+                    <td>{{ user.email|default:"-" }}</td>
+                    <td>{{ user.display_order }}</td>
+                    <td>
+                        {% if perms.client.change_clientuser %}
+                        <a href="{% url 'client:client_user_update' user.pk %}" class="btn btn-primary btn-sm" title="編集">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        {% endif %}
+                        {% if perms.client.delete_clientuser %}
+                        <a href="{% url 'client:client_user_delete' user.pk %}" class="btn btn-dark btn-sm" title="削除">
+                            <i class="bi bi-x"></i>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8">担当者がいません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="row mt-3">
+            <div class="col text-left">
+                <a href="{% url 'client:client_detail' client.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

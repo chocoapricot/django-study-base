@@ -1,0 +1,78 @@
+{% extends 'common/_base.html' %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        担当者削除確認 - {{ client.name }}
+    </div>
+    <div class="card-body">
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            担当者「{{ user.name }}」を削除しますか？この操作は取り消せません。
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>氏名</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ user.name }}
+            </div>
+        </div>
+
+        {% if user.name_kana_last or user.name_kana_first %}
+        <div class="row mb-3">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>氏名カナ</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ user.name_kana_last }} {{ user.name_kana_first }}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if user.department %}
+        <div class="row mb-3">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>所属組織</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ user.department.name }}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if user.position %}
+        <div class="row mb-3">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>役職</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ user.position }}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if user.email %}
+        <div class="row mb-3">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>メールアドレス</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ user.email }}
+            </div>
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <button type="submit" class="btn btn-sm btn-dark me-2">削除する</button>
+                    <a href="{% url 'client:client_detail' client.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

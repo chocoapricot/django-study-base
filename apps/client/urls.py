@@ -2,7 +2,9 @@ from django.urls import path
 from .views import (
     client_list, client_create, client_detail, client_update, client_delete,
     client_contacted_create, client_contacted_list, client_contacted_update, client_contacted_delete, client_contacted_detail,
-    client_change_history_list
+    client_change_history_list,
+    client_department_create, client_department_list, client_department_update, client_department_delete,
+    client_user_create, client_user_list, client_user_update, client_user_delete
 )
 
 app_name = 'client'
@@ -21,5 +23,15 @@ urlpatterns = [
     path('client/contacted/<int:pk>/delete/', client_contacted_delete, name='client_contacted_delete'),
     # 変更履歴
     path('client/<int:pk>/change_history/', client_change_history_list, name='client_change_history_list'),
+    # クライアント組織
+    path('client/<int:client_pk>/department/create/', client_department_create, name='client_department_create'),
+    path('client/<int:client_pk>/department/list/', client_department_list, name='client_department_list'),
+    path('client/department/<int:pk>/update/', client_department_update, name='client_department_update'),
+    path('client/department/<int:pk>/delete/', client_department_delete, name='client_department_delete'),
+    # クライアント担当者
+    path('client/<int:client_pk>/user/create/', client_user_create, name='client_user_create'),
+    path('client/<int:client_pk>/user/list/', client_user_list, name='client_user_list'),
+    path('client/user/<int:pk>/update/', client_user_update, name='client_user_update'),
+    path('client/user/<int:pk>/delete/', client_user_delete, name='client_user_delete'),
 ]
 
