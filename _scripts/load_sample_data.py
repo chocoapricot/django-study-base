@@ -36,7 +36,9 @@ def main():
         "_sample_data/staff.json",
         "_sample_data/staff_contacted.json",
         "_sample_data/client.json",
-        "_sample_data/client_contacted.json"
+        "_sample_data/client_contacted.json",
+        "_sample_data/company.json",
+        "_sample_data/company_department.json"
     ]
     
     missing_files = []
@@ -59,6 +61,8 @@ def main():
         ("python manage.py loaddata _sample_data/staff_contacted.json", "スタッフ連絡履歴データ"),
         ("python manage.py loaddata _sample_data/client.json", "クライアントデータ"),
         ("python manage.py loaddata _sample_data/client_contacted.json", "クライアント連絡履歴データ"),
+        ("python manage.py loaddata _sample_data/company.json", "会社データ"),
+        ("python manage.py loaddata _sample_data/company_department.json", "部署データ"),
     ]
     
     for command, description in import_commands:
