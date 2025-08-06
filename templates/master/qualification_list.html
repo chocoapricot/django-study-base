@@ -78,10 +78,7 @@
                         </td>
                         <td>{{ qualification.display_order }}</td>
                         <td>
-                            <a href="{% url 'master:qualification_detail' qualification.pk %}" class="btn btn-primary btn-sm" title="詳細">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                            <a href="{% url 'master:qualification_update' qualification.pk %}" class="btn btn-secondary btn-sm" title="編集">
+                            <a href="{% url 'master:qualification_update' qualification.pk %}" class="btn btn-dark btn-sm" title="編集">
                                 <i class="bi bi-pencil"></i>
                             </a>
                             <a href="{% url 'master:qualification_delete' qualification.pk %}" class="btn btn-dark btn-sm" title="削除">
