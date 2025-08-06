@@ -1,0 +1,342 @@
+[
+    {
+        "model": "master.skill",
+        "pk": 1,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "Java",
+            "category": "プログラミング言語",
+            "description": "オブジェクト指向プログラミング言語Javaでの開発スキル",
+            "required_level": "intermediate",
+            "is_active": true,
+            "display_order": 1
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 2,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "Python",
+            "category": "プログラミング言語",
+            "description": "汎用プログラミング言語Pythonでの開発スキル",
+            "required_level": "intermediate",
+            "is_active": true,
+            "display_order": 2
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 3,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "JavaScript",
+            "category": "プログラミング言語",
+            "description": "Webフロントエンド開発に必要なJavaScriptスキル",
+            "required_level": "intermediate",
+            "is_active": true,
+            "display_order": 3
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 4,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "C#",
+            "category": "プログラミング言語",
+            "description": "Microsoft .NETフレームワークでの開発スキル",
+            "required_level": "intermediate",
+            "is_active": true,
+            "display_order": 4
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 5,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "SQL",
+            "category": "データベース",
+            "description": "データベース操作・設計に関するSQLスキル",
+            "required_level": "intermediate",
+            "is_active": true,
+            "display_order": 5
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 6,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "Oracle Database",
+            "category": "データベース",
+            "description": "Oracle Databaseの管理・運用スキル",
+            "required_level": "advanced",
+            "is_active": true,
+            "display_order": 6
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 7,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "MySQL",
+            "category": "データベース",
+            "description": "MySQLデータベースの管理・運用スキル",
+            "required_level": "intermediate",
+            "is_active": true,
+            "display_order": 7
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 8,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "AWS",
+            "category": "クラウド",
+            "description": "Amazon Web Servicesを使用したクラウドシステム構築・運用スキル",
+            "required_level": "advanced",
+            "is_active": true,
+            "display_order": 8
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 9,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "Microsoft Azure",
+            "category": "クラウド",
+            "description": "Microsoft Azureを使用したクラウドシステム構築・運用スキル",
+            "required_level": "advanced",
+            "is_active": true,
+            "display_order": 9
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 10,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "Docker",
+            "category": "インフラ",
+            "description": "コンテナ技術Dockerを使用したアプリケーション配置・運用スキル",
+            "required_level": "intermediate",
+            "is_active": true,
+            "display_order": 10
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 11,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "Kubernetes",
+            "category": "インフラ",
+            "description": "コンテナオーケストレーションツールKubernetesの運用スキル",
+            "required_level": "expert",
+            "is_active": true,
+            "display_order": 11
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 12,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "Linux",
+            "category": "インフラ",
+            "description": "Linuxサーバーの構築・管理・運用スキル",
+            "required_level": "intermediate",
+            "is_active": true,
+            "display_order": 12
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 13,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "React",
+            "category": "フロントエンド",
+            "description": "ReactライブラリーでのWebアプリケーション開発スキル",
+            "required_level": "intermediate",
+            "is_active": true,
+            "display_order": 13
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 14,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "Vue.js",
+            "category": "フロントエンド",
+            "description": "Vue.jsフレームワークでのWebアプリケーション開発スキル",
+            "required_level": "intermediate",
+            "is_active": true,
+            "display_order": 14
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 15,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "Django",
+            "category": "フレームワーク",
+            "description": "PythonのWebフレームワークDjangoでの開発スキル",
+            "required_level": "intermediate",
+            "is_active": true,
+            "display_order": 15
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 16,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "Spring Framework",
+            "category": "フレームワーク",
+            "description": "JavaのWebフレームワークSpringでの開発スキル",
+            "required_level": "advanced",
+            "is_active": true,
+            "display_order": 16
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 17,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "プロジェクト管理",
+            "category": "マネジメント",
+            "description": "プロジェクトの計画・実行・管理に関するスキル",
+            "required_level": "advanced",
+            "is_active": true,
+            "display_order": 17
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 18,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "チームリーダーシップ",
+            "category": "マネジメント",
+            "description": "チームを率いて目標達成に導くリーダーシップスキル",
+            "required_level": "advanced",
+            "is_active": true,
+            "display_order": 18
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 19,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "要件定義",
+            "category": "システム設計",
+            "description": "システム開発における要件定義・分析スキル",
+            "required_level": "advanced",
+            "is_active": true,
+            "display_order": 19
+        }
+    },
+    {
+        "model": "master.skill",
+        "pk": 20,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:25:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:25:00.000Z",
+            "updated_by": 1,
+            "name": "システム設計",
+            "category": "システム設計",
+            "description": "システムアーキテクチャ設計・詳細設計スキル",
+            "required_level": "expert",
+            "is_active": true,
+            "display_order": 20
+        }
+    }
+]

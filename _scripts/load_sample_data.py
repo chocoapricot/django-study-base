@@ -33,14 +33,16 @@ def main():
         "_sample_data/dropdowns.json",
         "_sample_data/parameters.json", 
         "_sample_data/menus.json",
+        "_sample_data/master_qualifications.json",
+        "_sample_data/master_skills.json",
+        "_sample_data/company.json",
+        "_sample_data/company_department.json",
         "_sample_data/staff.json",
         "_sample_data/staff_contacted.json",
         "_sample_data/client.json",
         "_sample_data/client_contacted.json",
         "_sample_data/client_department.json",
-        "_sample_data/client_user.json",
-        "_sample_data/company.json",
-        "_sample_data/company_department.json"
+        "_sample_data/client_user.json"
     ]
     
     missing_files = []
@@ -59,6 +61,8 @@ def main():
         ("python manage.py loaddata _sample_data/dropdowns.json", "ドロップダウンデータ"),
         ("python manage.py loaddata _sample_data/parameters.json", "パラメータデータ"),
         ("python manage.py loaddata _sample_data/menus.json", "メニューデータ"),
+        ("python manage.py loaddata _sample_data/master_qualifications.json", "資格マスタデータ"),
+        ("python manage.py loaddata _sample_data/master_skills.json", "技能マスタデータ"),
         ("python manage.py loaddata _sample_data/company.json", "会社データ"),
         ("python manage.py loaddata _sample_data/company_department.json", "部署データ"),
         ("python manage.py loaddata _sample_data/staff.json", "スタッフデータ"),
@@ -79,6 +83,8 @@ def main():
     print("- ドロップダウン選択肢")
     print("- システムパラメータ")
     print("- メニュー設定")
+    print("- 資格マスタ")
+    print("- 技能マスタ")
     print("- 会社データ")
     print("- 部署データ")
     print("- スタッフデータ")

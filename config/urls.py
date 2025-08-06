@@ -32,4 +32,5 @@ urlpatterns = [
     path('common/', include('apps.common.urls')),
     path('logs/', include('apps.system.logs.urls')),
     path('company/', include('apps.company.urls')),
+    path('master/', include('apps.master.urls')),
 ]

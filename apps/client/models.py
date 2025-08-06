@@ -32,7 +32,6 @@ class ClientDepartment(MyModel):
     postal_code = models.CharField('郵便番号', max_length=7, blank=True, null=True)
     address = models.CharField('住所', max_length=500, blank=True, null=True)
     phone_number = models.CharField('電話番号', max_length=20, blank=True, null=True)
-    email = models.EmailField('メールアドレス', blank=True, null=True)
     display_order = models.PositiveIntegerField('表示順', default=0)
     # 有効期間フィールドを追加
     valid_from = models.DateField('有効期限開始日', blank=True, null=True, help_text='未入力の場合は無期限')
@@ -109,6 +108,8 @@ class ClientUser(MyModel):
 # クライアント連絡履歴モデル
 class ClientContacted(MyModel):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='contacted_histories', verbose_name='クライアント')
+    department = models.ForeignKey(ClientDepartment, on_delete=models.SET_NULL, blank=True, null=True, related_name='contacted_histories', verbose_name='組織')
+    user = models.ForeignKey(ClientUser, on_delete=models.SET_NULL, blank=True, null=True, related_name='contacted_histories', verbose_name='担当者')
     contacted_at = models.DateTimeField('連絡日時', auto_now_add=True)
     content = models.CharField('対応内容', max_length=255, blank=False, null=False)
     detail = models.TextField('対応詳細', blank=True, null=True)

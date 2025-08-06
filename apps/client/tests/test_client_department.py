@@ -29,7 +29,6 @@ class ClientDepartmentModelTest(TestCase):
             postal_code='1000001',
             address='東京都千代田区千代田1-1',
             phone_number='03-1234-5678',
-            email='sales@test.com',
             display_order=1
         )
         
@@ -72,7 +71,6 @@ class ClientDepartmentFormTest(TestCase):
             'postal_code': '1000001',
             'address': '東京都千代田区千代田1-1',
             'phone_number': '03-1234-5678',
-            'email': 'sales@test.com',
             'display_order': 1,
             'valid_from': '2024-01-01',
             'valid_to': '2024-12-31'
@@ -85,16 +83,6 @@ class ClientDepartmentFormTest(TestCase):
         form = ClientDepartmentForm(data={})
         self.assertFalse(form.is_valid())
         self.assertIn('name', form.errors)
-
-    def test_email_validation(self):
-        """メールアドレスのバリデーションテスト"""
-        form_data = {
-            'name': '営業部',
-            'email': 'invalid-email'
-        }
-        form = ClientDepartmentForm(data=form_data)
-        self.assertFalse(form.is_valid())
-        self.assertIn('email', form.errors)
 
     def test_valid_period_validation(self):
         """有効期間のバリデーションテスト"""

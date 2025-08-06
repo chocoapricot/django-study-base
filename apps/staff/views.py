@@ -45,7 +45,7 @@ def staff_contacted_delete(request, pk):
     staff = contacted.staff
     if request.method == 'POST':
         contacted.delete()
-        return redirect('staff_detail', pk=staff.pk)
+        return redirect('staff:staff_detail', pk=staff.pk)
     return render(request, 'staff/staff_contacted_confirm_delete.html', {'contacted': contacted, 'staff': staff})
 import os
 import logging
@@ -159,7 +159,7 @@ def staff_create(request):
         form = StaffForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('staff_list')
+            return redirect('staff:staff_list')
     else:
         form = StaffForm()
     return render(request, 'staff/staff_form.html', {'form': form})
@@ -195,7 +195,7 @@ def staff_contacted_create(request, staff_pk):
             contacted = form.save(commit=False)
             contacted.staff = staff
             contacted.save()
-            return redirect('staff_detail', pk=staff.pk)
+            return redirect('staff:staff_detail', pk=staff.pk)
     else:
         form = StaffContactedForm()
     return render(request, 'staff/staff_contacted_form.html', {'form': form, 'staff': staff})
@@ -221,7 +221,7 @@ def staff_contacted_update(request, pk):
         form = StaffContactedForm(request.POST, instance=contacted)
         if form.is_valid():
             form.save()
-            return redirect('staff_detail', pk=staff.pk)
+            return redirect('staff:staff_detail', pk=staff.pk)
     else:
         form = StaffContactedForm(instance=contacted)
     return render(request, 'staff/staff_contacted_form.html', {'form': form, 'staff': staff, 'contacted': contacted})
@@ -234,7 +234,7 @@ def staff_update(request, pk):
         form = StaffForm(request.POST, instance=staff)
         if form.is_valid():
             form.save()
-            return redirect('staff_detail', pk=staff.pk)
+            return redirect('staff:staff_detail', pk=staff.pk)
     else:
         form = StaffForm(instance=staff)
     return render(request, 'staff/staff_form.html', {'form': form})
@@ -245,7 +245,7 @@ def staff_delete(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
     if request.method == 'POST':
         staff.delete()
-        return redirect('staff_list')
+        return redirect('staff:staff_list')
     return render(request, 'staff/staff_confirm_delete.html', {'staff': staff})
 
 @login_required

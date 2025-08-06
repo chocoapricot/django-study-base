@@ -132,3 +132,119 @@ class StaffContacted(MyModel):
 
     def __str__(self):
         return f"{self.staff} {self.contacted_at:%Y-%m-%d %H:%M} {self.content[:20]}"
+
+
+# スタッフ資格関連モデル
+class StaffQualification(MyModel):
+    """スタッフ資格"""
+    
+    staff = models.ForeignKey(
+        Staff, 
+        on_delete=models.CASCADE, 
+        related_name='qualifications',
+        verbose_name='スタッフ'
+    )
+    qualification = models.ForeignKey(
+        'master.Qualification',
+        on_delete=models.CASCADE,
+        verbose_name='資格'
+    )
+    acquired_date = models.DateField('取得日', blank=True, null=True)
+    expiry_date = models.DateField('有効期限', blank=True, null=True)
+    certificate_number = models.CharField('証明書番号', max_length=100, blank=True, null=True)
+    memo = models.TextField('メモ', blank=True, null=True)
+    
+    class Meta:
+        db_table = 'apps_staff_qualification'
+        verbose_name = 'スタッフ資格'
+        verbose_name_plural = 'スタッフ資格'
+        unique_together = ['staff', 'qualification']
+        ordering = ['-acquired_date']
+        indexes = [
+            models.Index(fields=['staff']),
+            models.Index(fields=['qualification']),
+            models.Index(fields=['acquired_date']),
+            models.Index(fields=['expiry_date']),
+        ]
+    
+    def __str__(self):
+        return f"{self.staff} - {self.qualification}"
+    
+    @property
+    def is_expired(self):
+        """資格が期限切れかどうか"""
+        if not self.expiry_date:
+            return False
+        from django.utils import timezone
+        return self.expiry_date < timezone.now().date()
+    
+    @property
+    def is_expiring_soon(self, days=30):
+        """資格が間もなく期限切れかどうか（デフォルト30日以内）"""
+        if not self.expiry_date:
+            return False
+        from django.utils import timezone
+        from datetime import timedelta
+        return self.expiry_date <= timezone.now().date() + timedelta(days=days)
+
+
+# スタッフ技能関連モデル
+class StaffSkill(MyModel):
+    """スタッフ技能"""
+    
+    LEVEL_CHOICES = [
+        ('beginner', '初級'),
+        ('intermediate', '中級'),
+        ('advanced', '上級'),
+        ('expert', 'エキスパート'),
+    ]
+    
+    staff = models.ForeignKey(
+        Staff, 
+        on_delete=models.CASCADE, 
+        related_name='skills',
+        verbose_name='スタッフ'
+    )
+    skill = models.ForeignKey(
+        'master.Skill',
+        on_delete=models.CASCADE,
+        verbose_name='技能'
+    )
+    level = models.CharField(
+        'レベル',
+        max_length=20,
+        choices=LEVEL_CHOICES,
+        default='beginner'
+    )
+    acquired_date = models.DateField('習得日', blank=True, null=True)
+    years_of_experience = models.IntegerField('経験年数', blank=True, null=True)
+    memo = models.TextField('メモ', blank=True, null=True)
+    
+    class Meta:
+        db_table = 'apps_staff_skill'
+        verbose_name = 'スタッフ技能'
+        verbose_name_plural = 'スタッフ技能'
+        unique_together = ['staff', 'skill']
+        ordering = ['-acquired_date']
+        indexes = [
+            models.Index(fields=['staff']),
+            models.Index(fields=['skill']),
+            models.Index(fields=['level']),
+            models.Index(fields=['acquired_date']),
+        ]
+    
+    def __str__(self):
+        return f"{self.staff} - {self.skill} ({self.get_level_display()})"
+    
+    @property
+    def level_display_name(self):
+        """レベルの表示名"""
+        return dict(self.LEVEL_CHOICES).get(self.level, self.level)
+    
+    @property
+    def meets_required_level(self):
+        """必要レベルを満たしているかどうか"""
+        level_order = ['beginner', 'intermediate', 'advanced', 'expert']
+        current_level_index = level_order.index(self.level) if self.level in level_order else 0
+        required_level_index = level_order.index(self.skill.required_level) if self.skill.required_level in level_order else 0
+        return current_level_index >= required_level_index

@@ -51,12 +51,12 @@
         <div class="row mb-3 align-items-center">
             <div class="col-12 d-flex justify-content-start align-items-center">
                 {% if perms.staff.change_staffcontacted %}
-                <a href="{% url 'staff_contacted_update' contacted.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
+                <a href="{% url 'staff:staff_contacted_update' contacted.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
                 {% endif %}
                 {% if perms.staff.delete_staffcontacted %}
-                <a href="{% url 'staff_contacted_delete' contacted.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+                <a href="{% url 'staff:staff_contacted_delete' contacted.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
                 {% endif %}
-                <a href="{% url 'staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
             </div>
         </div>
 </div>

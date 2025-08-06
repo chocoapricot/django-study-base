@@ -10,10 +10,27 @@
     </div>
     <div class="card-body">
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2" style="text-align:right"><strong>クライアント</strong></div>
-            <div class="col-sm-10">{{ client.name }}</div>
+            <div class="col-sm-2" style="text-align:right"><strong>組織</strong></div>
+            <div class="col-sm-10">
+                {% if contacted.department %}
+                    {{ contacted.department.name }}
+                {% else %}
+                    <span class="text-muted">未設定</span>
+                {% endif %}
+            </div>
         </div>
-        <!-- 対応者・日時は最後にまとめて表示 -->
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right"><strong>担当者</strong></div>
+            <div class="col-sm-10">
+                {% if contacted.user %}
+                    {{ contacted.user.name }}
+                    {% if contacted.user.position %}
+                        <span class="text-muted">（{{ contacted.user.position }}）</span>
+                    {% endif %}
+                {% else %}
+                    <span class="text-muted">未設定</span>
+                {% endif %}
+            </div>
         </div>
         <div class="row mb-3 align-items-center">
             <div class="col-sm-2" style="text-align:right"><strong>連絡種別</strong></div>

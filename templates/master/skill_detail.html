@@ -1,0 +1,101 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block title %}技能詳細 - {{ skill.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">技能詳細</h5>
+                </div>
+                
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" style="text-align:right">技能名</label>
+                        <div class="col-sm-6">
+                            <p class="form-control-plaintext">{{ skill.name }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" style="text-align:right">カテゴリ</label>
+                        <div class="col-sm-6">
+                            <p class="form-control-plaintext">{{ skill.category|default:"-" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" style="text-align:right">必要レベル</label>
+                        <div class="col-sm-6">
+                            <p class="form-control-plaintext">
+                                <span class="badge bg-primary">{{ skill.get_required_level_display }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {% if skill.description %}
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" style="text-align:right">説明</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-plaintext">{{ skill.description }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" style="text-align:right">状態</label>
+                        <div class="col-sm-6">
+                            <p class="form-control-plaintext">
+                                {% if skill.is_active %}
+                                    <span class="badge bg-success">有効</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">無効</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" style="text-align:right">表示順</label>
+                        <div class="col-sm-6">
+                            <p class="form-control-plaintext">{{ skill.display_order }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" style="text-align:right">作成日時</label>
+                        <div class="col-sm-6">
+                            <p class="form-control-plaintext">{{ skill.created_at|date:"Y年m月d日 H:i" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" style="text-align:right">更新日時</label>
+                        <div class="col-sm-6">
+                            <p class="form-control-plaintext">{{ skill.updated_at|date:"Y年m月d日 H:i" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-6">
+                            <a href="{% url 'master:skill_update' skill.pk %}" class="btn btn-sm btn-primary">編集</a>
+                            <a href="{% url 'master:skill_delete' skill.pk %}" class="btn btn-sm btn-dark">削除</a>
+                            <a href="{% url 'master:skill_list' %}" class="btn btn-sm btn-secondary">一覧に戻る</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <a href="{% url 'master:skill_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

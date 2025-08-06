@@ -5,7 +5,7 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         スタッフ一覧
         {% if perms.staff.add_staff %}
-        <a href="{% url 'staff_create' %}" class="btn btn-sm btn-primary me-2">新規作成</a>
+        <a href="{% url 'staff:staff_create' %}" class="btn btn-sm btn-primary me-2">新規作成</a>
         {% endif %}
     </div>
     <div class="card-body">
@@ -14,7 +14,7 @@
         -->
         <!-- <p class="card-text">これはサンプルです.</p> -->
 
-        <form method="get" action="{% url 'staff_list' %}" class="form-inline d-flex mb-3">
+        <form method="get" action="{% url 'staff:staff_list' %}" class="form-inline d-flex mb-3">
             <div class="input-group me-2" style="width: 25em;">
                 <span class="input-group-text input-group-text-sm" style="height: calc(1.5em + 0.5rem + 2px);">
                     <i class="bi bi-search"></i> <!-- Bootstrap Iconsの虫眼鏡アイコン -->
@@ -95,14 +95,14 @@
                 <tr>
                     <td>
                         <div class="d-flex align-items-center">
-                            <img src="{% url 'staff_face' staff.pk %}" class="rounded-circle img-fluid" width="40" height="40" style="object-fit: cover;width:40px;height:40px">
+                            <img src="{% url 'staff:staff_face' staff.pk %}" class="rounded-circle img-fluid" width="40" height="40" style="object-fit: cover;width:40px;height:40px">
                         </div>
                     </td>
                     <td>
                         {{ staff.employee_no|default:"" }}
                     </td>
                     <td>
-                        <a href="{% url 'staff_detail' staff.pk %}">
+                        <a href="{% url 'staff:staff_detail' staff.pk %}">
                             <ruby>
                             {{ staff.name_last }} {{ staff.name_first }}<!--rt>{{ staff.name_kana_last }} {{ staff.name_kana_first }}</rt-->
                             </ruby>
@@ -135,13 +135,13 @@
                     <td>
                         <!-- 編集アイコン -->
                         {% if perms.staff.change_staff %}
-                        <a href="{% url 'staff_update' staff.pk %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="編集">
+                        <a href="{% url 'staff:staff_update' staff.pk %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="編集">
                           <i class="bi bi-pencil"></i>
                         </a>
                         {% endif %}
                         <!-- 削除アイコン -->
                         {% if perms.staff.delete_staff %}
-                        <a href="{% url 'staff_delete' staff.pk %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="削除">
+                        <a href="{% url 'staff:staff_delete' staff.pk %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="削除">
                           <i class="bi bi-x"></i>
                         </a>
                         {% endif %}

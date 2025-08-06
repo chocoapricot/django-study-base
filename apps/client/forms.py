@@ -66,14 +66,13 @@ from .models import ClientContacted, ClientDepartment, ClientUser
 class ClientDepartmentForm(forms.ModelForm):
     class Meta:
         model = ClientDepartment
-        fields = ['name', 'department_code', 'postal_code', 'address', 'phone_number', 'email', 'display_order', 'valid_from', 'valid_to']
+        fields = ['name', 'department_code', 'postal_code', 'address', 'phone_number', 'display_order', 'valid_from', 'valid_to']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'department_code': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'postal_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'pattern': '[0-9]{7}', 'inputmode': 'numeric', 'maxlength': '7'}),
             'address': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
             'valid_from': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'valid_to': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
@@ -115,17 +114,28 @@ class ClientContactedForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
+        client = kwargs.pop('client', None)
         super().__init__(*args, **kwargs)
         from apps.system.settings.models import Dropdowns
         self.fields['contact_type'].choices = [
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='contact_type').order_by('disp_seq')
         ]
+        
+        # クライアントが指定されている場合、組織と担当者の選択肢を絞り込む
+        if client:
+            self.fields['department'].queryset = ClientDepartment.objects.filter(client=client).order_by('display_order', 'name')
+            self.fields['user'].queryset = ClientUser.objects.filter(client=client).order_by('display_order', 'name_last', 'name_first')
+        else:
+            self.fields['department'].queryset = ClientDepartment.objects.none()
+            self.fields['user'].queryset = ClientUser.objects.none()
 
     class Meta:
         model = ClientContacted
-        fields = ['contact_type', 'content', 'detail']
+        fields = ['department', 'user', 'contact_type', 'content', 'detail']
         widgets = {
-            'content': forms.TextInput(attrs={'class': 'form-control'}),
-            'detail': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'department': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'user': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'content': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'detail': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }

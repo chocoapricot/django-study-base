@@ -153,14 +153,14 @@ def client_change_history_list(request, pk):
 def client_contacted_create(request, client_pk):
     client = get_object_or_404(Client, pk=client_pk)
     if request.method == 'POST':
-        form = ClientContactedForm(request.POST)
+        form = ClientContactedForm(request.POST, client=client)
         if form.is_valid():
             contacted = form.save(commit=False)
             contacted.client = client
             contacted.save()
             return redirect('client:client_detail', pk=client.pk)
     else:
-        form = ClientContactedForm()
+        form = ClientContactedForm(client=client)
     return render(request, 'client/client_contacted_form.html', {'form': form, 'client': client})
 
 # クライアント連絡履歴 一覧
@@ -181,12 +181,12 @@ def client_contacted_update(request, pk):
     contacted = get_object_or_404(ClientContacted, pk=pk)
     client = contacted.client
     if request.method == 'POST':
-        form = ClientContactedForm(request.POST, instance=contacted)
+        form = ClientContactedForm(request.POST, instance=contacted, client=client)
         if form.is_valid():
             form.save()
             return redirect('client:client_detail', pk=client.pk)
     else:
-        form = ClientContactedForm(instance=contacted)
+        form = ClientContactedForm(instance=contacted, client=client)
     return render(request, 'client/client_contacted_form.html', {'form': form, 'client': client, 'contacted': contacted})
 
 @login_required
@@ -241,7 +241,7 @@ def client_department_create(request, client_pk):
             return redirect('client:client_detail', pk=client.pk)
     else:
         form = ClientDepartmentForm()
-    return render(request, 'client/client_department_form.html', {'form': form, 'client': client})
+    return render(request, 'client/client_department_form.html', {'form': form, 'client': client, 'show_client_info': True})
 
 @login_required
 @permission_required('client.view_clientdepartment', raise_exception=True)
@@ -265,7 +265,7 @@ def client_department_update(request, pk):
             return redirect('client:client_detail', pk=client.pk)
     else:
         form = ClientDepartmentForm(instance=department)
-    return render(request, 'client/client_department_form.html', {'form': form, 'client': client, 'department': department})
+    return render(request, 'client/client_department_form.html', {'form': form, 'client': client, 'department': department, 'show_client_info': True})
 
 @login_required
 @permission_required('client.delete_clientdepartment', raise_exception=True)
@@ -278,7 +278,7 @@ def client_department_delete(request, pk):
         log_model_action(request.user, 'delete', department)
         department.delete()
         return redirect('client:client_detail', pk=client.pk)
-    return render(request, 'client/client_department_confirm_delete.html', {'department': department, 'client': client})
+    return render(request, 'client/client_department_confirm_delete.html', {'department': department, 'client': client, 'show_client_info': True})
 
 # クライアント担当者 CRUD
 @login_required
@@ -297,14 +297,14 @@ def client_user_create(request, client_pk):
             return redirect('client:client_detail', pk=client.pk)
     else:
         form = ClientUserForm(client=client)
-    return render(request, 'client/client_user_form.html', {'form': form, 'client': client})
+    return render(request, 'client/client_user_form.html', {'form': form, 'client': client, 'show_client_info': True})
 
 @login_required
 @permission_required('client.view_clientuser', raise_exception=True)
 def client_user_list(request, client_pk):
     client = get_object_or_404(Client, pk=client_pk)
     users = client.users.all()
-    return render(request, 'client/client_user_list.html', {'client': client, 'users': users})
+    return render(request, 'client/client_user_list.html', {'client': client, 'users': users, 'show_client_info': True})
 
 @login_required
 @permission_required('client.change_clientuser', raise_exception=True)
@@ -321,7 +321,7 @@ def client_user_update(request, pk):
             return redirect('client:client_detail', pk=client.pk)
     else:
         form = ClientUserForm(instance=user, client=client)
-    return render(request, 'client/client_user_form.html', {'form': form, 'client': client, 'user': user})
+    return render(request, 'client/client_user_form.html', {'form': form, 'client': client, 'user': user, 'show_client_info': True})
 
 @login_required
 @permission_required('client.delete_clientuser', raise_exception=True)
@@ -334,4 +334,4 @@ def client_user_delete(request, pk):
         log_model_action(request.user, 'delete', user)
         user.delete()
         return redirect('client:client_detail', pk=client.pk)
-    return render(request, 'client/client_user_confirm_delete.html', {'user': user, 'client': client})
+    return render(request, 'client/client_user_confirm_delete.html', {'user': user, 'client': client, 'show_client_info': True})

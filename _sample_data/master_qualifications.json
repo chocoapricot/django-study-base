@@ -1,0 +1,218 @@
+[
+    {
+        "model": "master.qualification",
+        "pk": 1,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:20:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:20:00.000Z",
+            "updated_by": 1,
+            "name": "基本情報技術者試験",
+            "category": "national",
+            "description": "情報処理技術者としての基本的な知識・技能を認定する国家試験",
+            "issuing_organization": "独立行政法人情報処理推進機構（IPA）",
+            "validity_period": null,
+            "is_active": true,
+            "display_order": 1
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 2,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:20:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:20:00.000Z",
+            "updated_by": 1,
+            "name": "応用情報技術者試験",
+            "category": "national",
+            "description": "高度IT人材となるために必要な応用的知識・技能を認定する国家試験",
+            "issuing_organization": "独立行政法人情報処理推進機構（IPA）",
+            "validity_period": null,
+            "is_active": true,
+            "display_order": 2
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 3,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:20:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:20:00.000Z",
+            "updated_by": 1,
+            "name": "システムアーキテクト試験",
+            "category": "national",
+            "description": "システム開発の上流工程を主導する立場で、豊富な業務知識に基づいて的確な分析を行い、業務ニーズに適した情報システムのグランドデザインを設計・提案・評価する能力を認定",
+            "issuing_organization": "独立行政法人情報処理推進機構（IPA）",
+            "validity_period": null,
+            "is_active": true,
+            "display_order": 3
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 4,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:20:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:20:00.000Z",
+            "updated_by": 1,
+            "name": "プロジェクトマネージャ試験",
+            "category": "national",
+            "description": "プロジェクトの責任者として、プロジェクトを計画・実行・管理する能力を認定",
+            "issuing_organization": "独立行政法人情報処理推進機構（IPA）",
+            "validity_period": null,
+            "is_active": true,
+            "display_order": 4
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 5,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:20:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:20:00.000Z",
+            "updated_by": 1,
+            "name": "情報セキュリティマネジメント試験",
+            "category": "national",
+            "description": "情報セキュリティマネジメントの計画・運用・評価・改善を通して組織の情報セキュリティ確保に貢献する能力を認定",
+            "issuing_organization": "独立行政法人情報処理推進機構（IPA）",
+            "validity_period": null,
+            "is_active": true,
+            "display_order": 5
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 6,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:20:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:20:00.000Z",
+            "updated_by": 1,
+            "name": "Oracle Certified Java Programmer",
+            "category": "private",
+            "description": "Javaプログラミング言語の知識とスキルを認定するOracle社の資格",
+            "issuing_organization": "Oracle Corporation",
+            "validity_period": null,
+            "is_active": true,
+            "display_order": 6
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 7,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:20:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:20:00.000Z",
+            "updated_by": 1,
+            "name": "AWS認定ソリューションアーキテクト",
+            "category": "private",
+            "description": "Amazon Web Servicesを使用したシステム設計・構築能力を認定",
+            "issuing_organization": "Amazon Web Services",
+            "validity_period": 3,
+            "is_active": true,
+            "display_order": 7
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 8,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:20:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:20:00.000Z",
+            "updated_by": 1,
+            "name": "Microsoft Azure認定",
+            "category": "private",
+            "description": "Microsoft Azureクラウドプラットフォームの技術的スキルを認定",
+            "issuing_organization": "Microsoft Corporation",
+            "validity_period": 2,
+            "is_active": true,
+            "display_order": 8
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 9,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:20:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:20:00.000Z",
+            "updated_by": 1,
+            "name": "TOEIC",
+            "category": "public",
+            "description": "英語によるコミュニケーション能力を評価するテスト",
+            "issuing_organization": "一般財団法人国際ビジネスコミュニケーション協会",
+            "validity_period": 2,
+            "is_active": true,
+            "display_order": 9
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 10,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:20:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:20:00.000Z",
+            "updated_by": 1,
+            "name": "簿記検定2級",
+            "category": "public",
+            "description": "商業簿記・工業簿記の基本的な知識と技能を認定",
+            "issuing_organization": "日本商工会議所",
+            "validity_period": null,
+            "is_active": true,
+            "display_order": 10
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 11,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:20:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:20:00.000Z",
+            "updated_by": 1,
+            "name": "社内システム管理者認定",
+            "category": "internal",
+            "description": "社内システムの管理・運用に関する知識と技能を認定する社内資格",
+            "issuing_organization": "当社",
+            "validity_period": 3,
+            "is_active": true,
+            "display_order": 11
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 12,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-08-06T21:20:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-08-06T21:20:00.000Z",
+            "updated_by": 1,
+            "name": "社内プロジェクトリーダー認定",
+            "category": "internal",
+            "description": "プロジェクトリーダーとしての能力を認定する社内資格",
+            "issuing_organization": "当社",
+            "validity_period": null,
+            "is_active": true,
+            "display_order": 12
+        }
+    }
+]

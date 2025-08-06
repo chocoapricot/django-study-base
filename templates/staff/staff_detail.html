@@ -12,9 +12,9 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">印刷</a>
                         <div class="dropdown-menu">
-                            <a href="{% url 'staff_rirekisho' staff.pk %}" class="dropdown-item"><i class="bi bi-file-excel"></i>　履歴書　(Excel)</a>
-                            <a href="{% url 'staff_kyushoku' staff.pk %}" class="dropdown-item"><i class="bi bi-file-excel"></i>　求職申込書　(Excel)</a>
-                            <a href="{% url 'staff_fuyokojo' staff.pk %}" class="dropdown-item"><i class="bi bi-filetype-pdf"></i>　扶養控除申告書　(PDF)</a>
+                            <a href="{% url 'staff:staff_rirekisho' staff.pk %}" class="dropdown-item"><i class="bi bi-file-excel"></i>　履歴書　(Excel)</a>
+                            <a href="{% url 'staff:staff_kyushoku' staff.pk %}" class="dropdown-item"><i class="bi bi-file-excel"></i>　求職申込書　(Excel)</a>
+                            <a href="{% url 'staff:staff_fuyokojo' staff.pk %}" class="dropdown-item"><i class="bi bi-filetype-pdf"></i>　扶養控除申告書　(PDF)</a>
                         </div>
                     </li>
                 </ul>
@@ -23,8 +23,8 @@
                     {% csrf_token %}
                     <div class="row mb-3 align-items-center">
                         <div class="col-sm-4 d-flex justify-content-center">
-                            <img src="{% url 'staff_face' staff.pk %}" class="rounded-circle img-fluid" width="100" height="100" style="border-radius: 15%;">
-        <!--                   <img src="{% url 'staff_face' staff.pk %}" class="img-fluid" width="100" height="100" style="border-radius: 15%;">-->
+                            <img src="{% url 'staff:staff_face' staff.pk %}" class="rounded-circle img-fluid" width="100" height="100" style="border-radius: 15%;">
+        <!--                   <img src="{% url 'staff:staff_face' staff.pk %}" class="img-fluid" width="100" height="100" style="border-radius: 15%;">-->
                         </div>
                         
                         <div class="col-sm">
@@ -135,12 +135,12 @@
 
                     <div class="d-flex justify-content-start">
                         {% if perms.staff.change_staff %}
-                        <a href="{% url 'staff_update' staff.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
+                        <a href="{% url 'staff:staff_update' staff.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
                         {% endif %}
                         {% if perms.staff.delete_staff %}
-                        <a href="{% url 'staff_delete' staff.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+                        <a href="{% url 'staff:staff_delete' staff.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
                         {% endif %}
-                        <a href="{% url 'staff_list' %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+                        <a href="{% url 'staff:staff_list' %}" class="btn btn-sm btn-secondary me-2">戻る</a>
                     </div>
             </div>
         </div>
@@ -243,7 +243,7 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         連絡履歴
         {% if perms.staff.add_staffcontacted %}
-        <a href="{% url 'staff_contacted_create' staff.pk %}" class="btn btn-sm btn-primary me-2">連絡登録</a>
+        <a href="{% url 'staff:staff_contacted_create' staff.pk %}" class="btn btn-sm btn-primary me-2">連絡登録</a>
         {% endif %}
     </div>
     <div class="card-body mb-0">
@@ -278,7 +278,7 @@
                             {% endif %}
                         {% endif %}
                     </td>
-                    <td><a href="{% url 'staff_contacted_detail' c.pk %}">{{ c.content|truncatechars:20 }}</a></td>
+                    <td><a href="{% url 'staff:staff_contacted_detail' c.pk %}">{{ c.content|truncatechars:20 }}</a></td>
                     <td>
                         {% if c.created_by.last_name or c.created_by.first_name %}
                             {{ c.created_by.last_name }} {{ c.created_by.first_name }}
@@ -296,7 +296,7 @@
     </div>
     {% if staff.contacted_histories.count > 5 %}
     <div class="card-footer d-flex justify-content-center align-items-center">
-        <a href="{% url 'staff_contacted_list' staff.pk %}">全て表示 (全{{ staff.contacted_histories.count }}件)</a>
+        <a href="{% url 'staff:staff_contacted_list' staff.pk %}">全て表示 (全{{ staff.contacted_histories.count }}件)</a>
     </div>
     {% endif %}
 </div>
@@ -339,7 +339,7 @@
     </div>
     {% if change_logs_count > 0 %}
     <div class="card-footer d-flex justify-content-center align-items-center">
-        <a href="{% url 'staff_change_history_list' staff.pk %}">全て表示 (全{{ change_logs_count }}件)</a>
+        <a href="{% url 'staff:staff_change_history_list' staff.pk %}">全て表示 (全{{ change_logs_count }}件)</a>
     </div>
     {% endif %}
 </div>
