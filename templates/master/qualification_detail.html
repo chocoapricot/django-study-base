@@ -4,104 +4,96 @@
 {% block title %}資格詳細 - {{ qualification.name }}{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">資格詳細</h5>
-                </div>
-                
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label" style="text-align:right">資格名</label>
-                        <div class="col-sm-6">
-                            <p class="form-control-plaintext">{{ qualification.name }}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label" style="text-align:right">カテゴリ</label>
-                        <div class="col-sm-6">
-                            <p class="form-control-plaintext">
-                                <span class="badge bg-primary">{{ qualification.get_category_display }}</span>
-                            </p>
-                        </div>
-                    </div>
-                    
-                    {% if qualification.issuing_organization %}
-                    <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label" style="text-align:right">発行機関</label>
-                        <div class="col-sm-6">
-                            <p class="form-control-plaintext">{{ qualification.issuing_organization }}</p>
-                        </div>
-                    </div>
-                    {% endif %}
-                    
-                    <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label" style="text-align:right">有効期間</label>
-                        <div class="col-sm-6">
-                            <p class="form-control-plaintext">
-                                {% if qualification.validity_period %}
-                                    {{ qualification.validity_period }}年
-                                {% else %}
-                                    無期限
-                                {% endif %}
-                            </p>
-                        </div>
-                    </div>
-                    
-
-                    
-                    <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label" style="text-align:right">状態</label>
-                        <div class="col-sm-6">
-                            <p class="form-control-plaintext">
-                                {% if qualification.is_active %}
-                                    <span class="badge bg-success">有効</span>
-                                {% else %}
-                                    <span class="badge bg-secondary">無効</span>
-                                {% endif %}
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label" style="text-align:right">表示順</label>
-                        <div class="col-sm-6">
-                            <p class="form-control-plaintext">{{ qualification.display_order }}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label" style="text-align:right">作成日時</label>
-                        <div class="col-sm-6">
-                            <p class="form-control-plaintext">{{ qualification.created_at|date:"Y年m月d日 H:i" }}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label" style="text-align:right">更新日時</label>
-                        <div class="col-sm-6">
-                            <p class="form-control-plaintext">{{ qualification.updated_at|date:"Y年m月d日 H:i" }}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-sm-2"></div>
-                        <div class="col-sm-6">
-                            <a href="{% url 'master:qualification_update' qualification.pk %}" class="btn btn-sm btn-primary">編集</a>
-                            <a href="{% url 'master:qualification_delete' qualification.pk %}" class="btn btn-sm btn-dark">削除</a>
-                            <a href="{% url 'master:qualification_list' %}" class="btn btn-sm btn-secondary">一覧に戻る</a>
-                        </div>
-                    </div>
-                </div>
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        資格詳細
+    </div>
+    <div class="card-body mb-0">
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" style="text-align:right">資格名</label>
+            <div class="col-sm-6">
+                <p class="form-control-plaintext">{{ qualification.name }}</p>
             </div>
-            
-            <div class="row mt-3">
-                <div class="col text-left">
-                    <a href="{% url 'master:qualification_list' %}" class="btn btn-sm btn-secondary">戻る</a>
-                </div>
+        </div>
+        
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" style="text-align:right">カテゴリ</label>
+            <div class="col-sm-6">
+                <p class="form-control-plaintext">
+                    <span class="badge bg-primary">{{ qualification.get_category_display }}</span>
+                </p>
+            </div>
+        </div>
+        
+        {% if qualification.issuing_organization %}
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" style="text-align:right">発行機関</label>
+            <div class="col-sm-6">
+                <p class="form-control-plaintext">{{ qualification.issuing_organization }}</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" style="text-align:right">有効期間</label>
+            <div class="col-sm-6">
+                <p class="form-control-plaintext">
+                    {% if qualification.validity_period %}
+                        {{ qualification.validity_period }}年
+                    {% else %}
+                        無期限
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        
+
+        
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" style="text-align:right">状態</label>
+            <div class="col-sm-6">
+                <p class="form-control-plaintext">
+                    {% if qualification.is_active %}
+                        <span class="badge bg-success">有効</span>
+                    {% else %}
+                        <span class="badge bg-secondary">無効</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" style="text-align:right">表示順</label>
+            <div class="col-sm-6">
+                <p class="form-control-plaintext">{{ qualification.display_order }}</p>
+            </div>
+        </div>
+        
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" style="text-align:right">作成日時</label>
+            <div class="col-sm-6">
+                <p class="form-control-plaintext">{{ qualification.created_at|date:"Y年m月d日 H:i" }}</p>
+            </div>
+        </div>
+        
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" style="text-align:right">更新日時</label>
+            <div class="col-sm-6">
+                <p class="form-control-plaintext">{{ qualification.updated_at|date:"Y年m月d日 H:i" }}</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-6">
+                <a href="{% url 'master:qualification_update' qualification.pk %}" class="btn btn-sm btn-primary">編集</a>
+                <a href="{% url 'master:qualification_delete' qualification.pk %}" class="btn btn-sm btn-dark">削除</a>
+                <a href="{% url 'master:qualification_list' %}" class="btn btn-sm btn-secondary">一覧に戻る</a>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col text-left">
+                <a href="{% url 'master:qualification_list' %}" class="btn btn-sm btn-secondary">戻る</a>
             </div>
         </div>
     </div>

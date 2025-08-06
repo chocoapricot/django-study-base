@@ -4,102 +4,95 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">{{ title }}</h5>
-                </div>
-                
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">資格名 <span class="text-danger">*</span></label>
-                            <div class="col-sm-6">
-                                {{ form.name }}
-                                {% if form.name.errors %}
-                                    <div class="text-danger small">{{ form.name.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.category.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">カテゴリ</label>
-                            <div class="col-sm-4">
-                                {{ form.category }}
-                                {% if form.category.errors %}
-                                    <div class="text-danger small">{{ form.category.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.issuing_organization.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">発行機関</label>
-                            <div class="col-sm-6">
-                                {{ form.issuing_organization }}
-                                {% if form.issuing_organization.errors %}
-                                    <div class="text-danger small">{{ form.issuing_organization.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.validity_period.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">有効期間（年）
-                                <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="無期限の場合は空欄"></i>
-                            </label>
-                            <div class="col-sm-3">
-                                {{ form.validity_period }}
-                                {% if form.validity_period.errors %}
-                                    <div class="text-danger small">{{ form.validity_period.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-
-                        
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">表示順</label>
-                            <div class="col-sm-3">
-                                {{ form.display_order }}
-                                {% if form.display_order.errors %}
-                                    <div class="text-danger small">{{ form.display_order.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="row mb-3 align-items-center">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-6">
-                                <div class="form-check">
-                                    {{ form.is_active }}
-                                    <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
-                                        有効
-                                    </label>
-                                </div>
-                                {% if form.is_active.errors %}
-                                    <div class="text-danger small">{{ form.is_active.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-6">
-                                <button type="submit" class="btn btn-sm btn-primary">保存</button>
-                                <a href="{% url 'master:qualification_list' %}" class="btn btn-sm btn-secondary">キャンセル</a>
-                            </div>
-                        </div>
-                    </form>
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        {{ title }}
+    </div>
+    <div class="card-body mb-0">
+ 
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">資格名 <span class="text-danger">*</span></label>
+                <div class="col-sm-6">
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                    {% endif %}
                 </div>
             </div>
             
-            <div class="row mt-3">
-                <div class="col text-left">
-                    <a href="{% url 'master:qualification_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.category.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">カテゴリ</label>
+                <div class="col-sm-4">
+                    {{ form.category }}
+                    {% if form.category.errors %}
+                        <div class="text-danger small">{{ form.category.errors.0 }}</div>
+                    {% endif %}
                 </div>
+            </div>
+            
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.issuing_organization.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">発行機関</label>
+                <div class="col-sm-6">
+                    {{ form.issuing_organization }}
+                    {% if form.issuing_organization.errors %}
+                        <div class="text-danger small">{{ form.issuing_organization.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.validity_period.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">有効期間（年）
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="無期限の場合は空欄"></i>
+                </label>
+                <div class="col-sm-3">
+                    {{ form.validity_period }}
+                    {% if form.validity_period.errors %}
+                        <div class="text-danger small">{{ form.validity_period.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+
+            
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">表示順</label>
+                <div class="col-sm-3">
+                    {{ form.display_order }}
+                    {% if form.display_order.errors %}
+                        <div class="text-danger small">{{ form.display_order.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-6">
+                    <div class="form-check">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                            有効
+                        </label>
+                    </div>
+                    {% if form.is_active.errors %}
+                        <div class="text-danger small">{{ form.is_active.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-6">
+                    <button type="submit" class="btn btn-sm btn-primary">保存</button>
+                    <a href="{% url 'master:qualification_list' %}" class="btn btn-sm btn-secondary">キャンセル</a>
+                </div>
+            </div>
+        </form>
+        <div class="row mt-3">
+            <div class="col text-left">
+                <a href="{% url 'master:qualification_list' %}" class="btn btn-sm btn-secondary">戻る</a>
             </div>
         </div>
     </div>
