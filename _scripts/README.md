@@ -53,7 +53,9 @@ _scripts/load_sample_data.bat
 6. staff.json - スタッフデータ
 7. staff_contacted.json - スタッフ連絡履歴
 8. client.json - クライアントデータ
-9. client_contacted.json - クライアント連絡履歴
+9. client_department.json - クライアント組織データ
+10. client_user.json - クライアント担当者データ
+11. client_contacted.json - クライアント連絡履歴
 
 ## 注意事項
 

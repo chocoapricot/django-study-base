@@ -42,6 +42,14 @@ echo クライアントデータをインポート中...
 python manage.py loaddata _sample_data/client.json
 if errorlevel 1 goto error
 
+echo クライアント組織データをインポート中...
+python manage.py loaddata _sample_data/client_department.json
+if errorlevel 1 goto error
+
+echo クライアント担当者データをインポート中...
+python manage.py loaddata _sample_data/client_user.json
+if errorlevel 1 goto error
+
 echo クライアント連絡履歴データをインポート中...
 python manage.py loaddata _sample_data/client_contacted.json
 if errorlevel 1 goto error
@@ -58,6 +66,8 @@ echo - 部署データ
 echo - スタッフデータ
 echo - スタッフ連絡履歴
 echo - クライアントデータ
+echo - クライアント組織データ
+echo - クライアント担当者データ
 echo - クライアント連絡履歴
 goto end
 

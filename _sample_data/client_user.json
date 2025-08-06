@@ -1,0 +1,317 @@
+[
+{
+    "model": "client.clientuser",
+    "pk": 1,
+    "fields": {
+        "created_at": "2024-10-30T11:49:18.158Z",
+        "created_by": 1,
+        "updated_at": "2024-10-31T04:14:34.286Z",
+        "updated_by": 1,
+        "client": 3,
+        "department": 1,
+        "name_last": "田中",
+        "name_first": "太郎",
+        "name_kana_last": "タナカ",
+        "name_kana_first": "タロウ",
+        "position": "営業部長",
+        "phone_number": "03-1234-5679",
+        "email": "tanaka@toyota.co.jp",
+        "memo": "主要取引先担当",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 2,
+    "fields": {
+        "created_at": "2024-10-30T11:51:18.158Z",
+        "created_by": 1,
+        "updated_at": "2024-10-31T04:14:34.286Z",
+        "updated_by": 1,
+        "client": 3,
+        "department": 1,
+        "name_last": "佐藤",
+        "name_first": "花子",
+        "name_kana_last": "サトウ",
+        "name_kana_first": "ハナコ",
+        "position": "営業課長",
+        "phone_number": "03-1234-5680",
+        "email": "sato@toyota.co.jp",
+        "memo": "新規開拓担当",
+        "display_order": 2
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 3,
+    "fields": {
+        "created_at": "2024-10-30T11:53:18.158Z",
+        "created_by": 1,
+        "updated_at": "2024-10-31T04:14:34.286Z",
+        "updated_by": 1,
+        "client": 3,
+        "department": 2,
+        "name_last": "鈴木",
+        "name_first": "一郎",
+        "name_kana_last": "スズキ",
+        "name_kana_first": "イチロウ",
+        "position": "技術部長",
+        "phone_number": "0565-28-2122",
+        "email": "suzuki@toyota.co.jp",
+        "memo": "技術責任者",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 4,
+    "fields": {
+        "created_at": "2024-10-30T11:55:18.158Z",
+        "created_by": 1,
+        "updated_at": "2024-10-31T04:14:34.286Z",
+        "updated_by": 1,
+        "client": 4,
+        "department": 3,
+        "name_last": "高橋",
+        "name_first": "次郎",
+        "name_kana_last": "タカハシ",
+        "name_kana_first": "ジロウ",
+        "position": "開発部長",
+        "phone_number": "03-5468-3001",
+        "email": "takahashi@softbank.co.jp",
+        "memo": "システム開発責任者",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 5,
+    "fields": {
+        "created_at": "2024-10-30T11:57:18.158Z",
+        "created_by": 1,
+        "updated_at": "2024-10-31T04:14:34.286Z",
+        "updated_by": 1,
+        "client": 4,
+        "department": 4,
+        "name_last": "山田",
+        "name_first": "美咲",
+        "name_kana_last": "ヤマダ",
+        "name_kana_first": "ミサキ",
+        "position": "企画課長",
+        "phone_number": "03-6889-2001",
+        "email": "yamada@softbank.co.jp",
+        "memo": "営業企画担当",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 6,
+    "fields": {
+        "created_at": "2024-10-30T11:59:18.158Z",
+        "created_by": 1,
+        "updated_at": "2024-10-31T04:14:34.286Z",
+        "updated_by": 1,
+        "client": 5,
+        "department": 5,
+        "name_last": "伊藤",
+        "name_first": "健太",
+        "name_kana_last": "イトウ",
+        "name_kana_first": "ケンタ",
+        "position": "商品企画部長",
+        "phone_number": "03-5423-3312",
+        "email": "ito@rakuten.co.jp",
+        "memo": "商品戦略責任者",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 7,
+    "fields": {
+        "created_at": "2024-10-30T12:01:18.158Z",
+        "created_by": 1,
+        "updated_at": "2024-10-31T04:14:34.286Z",
+        "updated_by": 1,
+        "client": 5,
+        "department": 6,
+        "name_last": "渡辺",
+        "name_first": "由美",
+        "name_kana_last": "ワタナベ",
+        "name_kana_first": "ユミ",
+        "position": "マーケティング課長",
+        "phone_number": "03-4755-2001",
+        "email": "watanabe@rakuten.co.jp",
+        "memo": "デジタルマーケティング担当",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 8,
+    "fields": {
+        "created_at": "2024-10-30T12:03:18.158Z",
+        "created_by": 1,
+        "updated_at": "2024-10-31T04:14:34.286Z",
+        "updated_by": 1,
+        "client": 6,
+        "department": 7,
+        "name_last": "中村",
+        "name_first": "博",
+        "name_kana_last": "ナカムラ",
+        "name_kana_first": "ヒロシ",
+        "position": "研究部長",
+        "phone_number": "03-3201-2346",
+        "email": "nakamura@ntt.co.jp",
+        "memo": "AI研究責任者",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 9,
+    "fields": {
+        "created_at": "2024-10-30T12:05:18.158Z",
+        "created_by": 1,
+        "updated_at": "2024-10-31T04:14:34.286Z",
+        "updated_by": 1,
+        "client": 8,
+        "department": 8,
+        "name_last": "小林",
+        "name_first": "恵子",
+        "name_kana_last": "コバヤシ",
+        "name_kana_first": "ケイコ",
+        "position": "総務課長",
+        "phone_number": "03-3475-4322",
+        "email": "kobayashi@mitsubishi.co.jp",
+        "memo": "人事・総務担当",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 10,
+    "fields": {
+        "created_at": "2024-10-30T12:07:18.158Z",
+        "created_by": 1,
+        "updated_at": "2024-10-31T04:14:34.286Z",
+        "updated_by": 1,
+        "client": 8,
+        "department": 9,
+        "name_last": "加藤",
+        "name_first": "雄一",
+        "name_kana_last": "カトウ",
+        "name_kana_first": "ユウイチ",
+        "position": "事業開発部長",
+        "phone_number": "03-3218-5679",
+        "email": "kato@mitsubishi.co.jp",
+        "memo": "新規事業開発責任者",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 11,
+    "fields": {
+        "created_at": "2024-10-30T12:09:18.158Z",
+        "created_by": 1,
+        "updated_at": "2024-10-31T04:14:34.286Z",
+        "updated_by": 1,
+        "client": 18,
+        "department": null,
+        "name_last": "松本",
+        "name_first": "直樹",
+        "name_kana_last": "マツモト",
+        "name_kana_first": "ナオキ",
+        "position": "代表取締役",
+        "phone_number": "06-6348-1000",
+        "email": "matsumoto@panasonic.co.jp",
+        "memo": "経営責任者",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 12,
+    "fields": {
+        "created_at": "2024-10-30T12:11:18.158Z",
+        "created_by": 1,
+        "updated_at": "2024-10-31T04:14:34.286Z",
+        "updated_by": 1,
+        "client": 13,
+        "department": null,
+        "name_last": "森田",
+        "name_first": "智子",
+        "name_kana_last": "モリタ",
+        "name_kana_first": "トモコ",
+        "position": "営業担当",
+        "phone_number": "052-231-1234",
+        "email": "morita@denso.co.jp",
+        "memo": "窓口担当者",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 13,
+    "fields": {
+        "created_at": "2024-10-30T12:13:18.158Z",
+        "created_by": 1,
+        "updated_at": "2024-10-31T04:14:34.286Z",
+        "updated_by": 1,
+        "client": 19,
+        "department": null,
+        "name_last": "石井",
+        "name_first": "和也",
+        "name_kana_last": "イシイ",
+        "name_kana_first": "カズヤ",
+        "position": "プロジェクトマネージャー",
+        "phone_number": "03-5321-4567",
+        "email": "ishii@fujitsu.co.jp",
+        "memo": "システム開発PM",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 14,
+    "fields": {
+        "created_at": "2024-10-30T12:15:18.158Z",
+        "created_by": 1,
+        "updated_at": "2024-10-31T04:14:34.286Z",
+        "updated_by": 1,
+        "client": 21,
+        "department": null,
+        "name_last": "清水",
+        "name_first": "麻衣",
+        "name_kana_last": "シミズ",
+        "name_kana_first": "マイ",
+        "position": "営業部長",
+        "phone_number": "045-222-3456",
+        "email": "shimizu@canon.co.jp",
+        "memo": "関東地区営業責任者",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 15,
+    "fields": {
+        "created_at": "2024-10-30T12:17:18.158Z",
+        "created_by": 1,
+        "updated_at": "2024-10-31T04:14:34.286Z",
+        "updated_by": 1,
+        "client": 24,
+        "department": null,
+        "name_last": "橋本",
+        "name_first": "拓也",
+        "name_kana_last": "ハシモト",
+        "name_kana_first": "タクヤ",
+        "position": "技術顧問",
+        "phone_number": "011-123-4567",
+        "email": "hashimoto@hokkaido-tech.co.jp",
+        "memo": "技術コンサルタント",
+        "display_order": 1
+    }
+}
+]
