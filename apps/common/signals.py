@@ -107,7 +107,7 @@ def log_pre_save(sender, instance, **kwargs):
                 old_display = get_dropdown_display_name(fname, old_val, sender.__name__)
                 new_display = get_dropdown_display_name(fname, new_val, sender.__name__)
                 
-                diff_list.append(f"'{old_display}'→'{new_display}'")
+                diff_list.append(f"{label}: '{old_display}'→'{new_display}'")
     diff_text = ", ".join(diff_list) if diff_list else None
     if not hasattr(_thread_locals, 'applog_diffs'):
         _thread_locals.applog_diffs = {}
