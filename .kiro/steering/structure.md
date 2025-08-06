@@ -25,11 +25,13 @@ django-study-base/
 
 ### アプリケーションモジュール
 - **`apps/system/`**: コアシステム機能
+  - `logs/`: ログ管理
   - `settings/`: 設定/選択オプション管理 (ドロップダウン、メニュー、パラメータを統合)
   - `useradmin/`: カスタムユーザー管理と認証
 - **`apps/staff/`**: 従業員管理
 - **`apps/client/`**: 顧客関係管理
 - **`apps/company/`**: 会社・部署管理
+- **`apps/master/`**: マスター管理 (資格、スキルなど)
 - **`apps/api/`**: REST APIエンドポイント
 - **`apps/common/`**: 共有ユーティリティと共通機能
 - **`apps/home/`**: ホームページとランディングページ
