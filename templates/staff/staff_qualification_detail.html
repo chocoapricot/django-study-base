@@ -1,0 +1,77 @@
+{% extends 'common/_base.html' %}
+{% load my_dropdown_tags %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">スタッフ資格詳細</div>
+    <div class="card-body">
+        {% if staff %}
+        {% include 'staff/_staff_info_card.html' with staff=staff %}
+        {% endif %}
+
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>資格名</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ staff_qualification.qualification.name }}
+            </div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>取得日</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ staff_qualification.acquired_date|date:"Y/m/d" }}
+            </div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>有効期限</strong>
+            </div>
+            <div class="col-sm-10">
+                {% if staff_qualification.expiry_date %}
+                    {{ staff_qualification.expiry_date|date:"Y/m/d" }}
+                    {% if staff_qualification.is_expired %}
+                        <span class="badge bg-danger">期限切れ</span>
+                    {% elif staff_qualification.is_expiring_soon %}
+                        <span class="badge bg-warning">期限間近</span>
+                    {% endif %}
+                {% else %}
+                    無期限
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>証明書番号</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ staff_qualification.certificate_number|default:"-" }}
+            </div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2" style="text-align:right">
+                <strong>メモ</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ staff_qualification.memo|default:"-" }}
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-start">
+            {% if perms.staff.change_staffqualification %}
+            <a href="{% url 'staff:staff_qualification_update' staff_qualification.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
+            {% endif %}
+            {% if perms.staff.delete_staffqualification %}
+            <a href="{% url 'staff:staff_qualification_delete' staff_qualification.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+            {% endif %}
+            <a href="{% url 'staff:staff_qualification_list' staff.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

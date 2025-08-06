@@ -1,0 +1,63 @@
+{% extends 'common/_base.html' %}
+{% load my_dropdown_tags %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">スタッフ資格{{ title }}</div>
+    <div class="card-body">
+        {% if staff %}
+        {% include 'staff/_staff_info_card.html' with staff=staff %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            {% if form.errors %}
+            <div class="alert alert-dismissible alert-primary">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                {{ form.errors }}
+            </div>
+            {% endif %}
+            
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.qualification.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.qualification.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.qualification }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.acquired_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.acquired_date.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.acquired_date }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.expiry_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.expiry_date.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.expiry_date }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.certificate_number.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.certificate_number.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.certificate_number }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.memo.label }}</label>
+                <div class="col-sm-10">
+                    {{ form.memo }}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
+                <a href="{% if staff_qualification %}{% url 'staff:staff_qualification_detail' staff_qualification.pk %}{% else %}{% url 'staff:staff_qualification_list' staff.pk %}{% endif %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
