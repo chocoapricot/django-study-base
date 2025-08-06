@@ -13,7 +13,6 @@
         "postal_code": "1000001",
         "address": "東京都千代田区千代田1-1-1 営業ビル3F",
         "phone_number": "03-1234-5678",
-        "email": "sales@toyota.co.jp",
         "display_order": 1,
         "valid_from": "2020-01-01",
         "valid_to": null
@@ -33,7 +32,6 @@
         "postal_code": "4710826",
         "address": "愛知県豊田市トヨタ町1番地 技術センター",
         "phone_number": "0565-28-2121",
-        "email": "tech@toyota.co.jp",
         "display_order": 2,
         "valid_from": "2020-01-01",
         "valid_to": null
@@ -53,7 +51,6 @@
         "postal_code": "1500001",
         "address": "東京都渋谷区神宮前6-19-20 開発センター",
         "phone_number": "03-5468-3000",
-        "email": "dev@softbank.co.jp",
         "display_order": 1,
         "valid_from": "2019-04-01",
         "valid_to": null
@@ -73,7 +70,6 @@
         "postal_code": "1050001",
         "address": "東京都港区虎ノ門1-2-8 営業本部",
         "phone_number": "03-6889-2000",
-        "email": "sales@softbank.co.jp",
         "display_order": 2,
         "valid_from": "2019-04-01",
         "valid_to": null
@@ -93,7 +89,6 @@
         "postal_code": "1500013",
         "address": "東京都渋谷区恵比寿4-20-3 商品開発センター",
         "phone_number": "03-5423-3311",
-        "email": "product@rakuten.co.jp",
         "display_order": 1,
         "valid_from": "2021-01-01",
         "valid_to": null
@@ -113,7 +108,6 @@
         "postal_code": "1580094",
         "address": "東京都世田谷区玉川1-14-1 マーケティング本部",
         "phone_number": "03-4755-2000",
-        "email": "marketing@rakuten.co.jp",
         "display_order": 2,
         "valid_from": "2021-01-01",
         "valid_to": null
@@ -133,7 +127,6 @@
         "postal_code": "1000004",
         "address": "東京都千代田区大手町1-5-1 研究所",
         "phone_number": "03-3201-2345",
-        "email": "rd@ntt.co.jp",
         "display_order": 1,
         "valid_from": "2018-01-01",
         "valid_to": null
@@ -153,7 +146,6 @@
         "postal_code": "1070052",
         "address": "東京都港区赤坂9-7-1 本社ビル",
         "phone_number": "03-3475-4321",
-        "email": "admin@mitsubishi.co.jp",
         "display_order": 1,
         "valid_from": "2020-04-01",
         "valid_to": null
@@ -173,7 +165,6 @@
         "postal_code": "1000005",
         "address": "東京都千代田区丸の内2-5-2 事業開発センター",
         "phone_number": "03-3218-5678",
-        "email": "bizdev@mitsubishi.co.jp",
         "display_order": 2,
         "valid_from": "2020-04-01",
         "valid_to": null
@@ -193,7 +184,6 @@
         "postal_code": "5300001",
         "address": "大阪府大阪市北区梅田3-1-3",
         "phone_number": "06-6348-1234",
-        "email": "old-sales@panasonic.co.jp",
         "display_order": 1,
         "valid_from": "2018-01-01",
         "valid_to": "2023-03-31"
