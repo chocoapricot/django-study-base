@@ -1,0 +1,38 @@
+{% extends 'common/_base.html' %}
+{% load my_dropdown_tags %}
+{% block content %}
+{% include 'staff/_staff_info_card.html' with staff=staff %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        スタッフスキル一覧
+    </div>
+    <div class="card-body mb-0">
+        <table class="table table-hover me-2 mt-2" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>スキル名</th>
+                    <th>習熟度</th>
+                    <th>備考</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for skill in skills %}
+                <tr>
+                    <td>{{ skill.skill.name }}</td>
+                    <td>{{ skill.proficiency }}</td>
+                    <td>{{ skill.notes }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3">スキル情報なし</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="row">
+            <div class="col text-left">
+                <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
