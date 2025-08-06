@@ -86,7 +86,7 @@
     },
     {
         "model": "settings.menu",
-        "pk": 9,
+        "pk": 6,
         "fields": {
             "version": 0,
             "created_at": "2025-08-06T12:12:24.013Z",
@@ -103,7 +103,7 @@
     },
     {
         "model": "settings.menu",
-        "pk": 9,
+        "pk": 7,
         "fields": {
             "version": 0,
             "created_at": "2025-08-06T12:12:24.013Z",
@@ -114,41 +114,7 @@
             "url": "/master/skill/",
             "icon": "bi-database",
             "icon_style": "color:#6f42c1;",
-            "disp_seq": 6,
-            "active": true
-        }
-    },
-    {
-        "model": "settings.menu",
-        "pk": 6,
-        "fields": {
-            "version": 0,
-            "created_at": "2025-07-19T15:46:59.051Z",
-            "created_by": 1,
-            "updated_at": "2025-07-21T15:54:42.828Z",
-            "updated_by": 1,
-            "name": "アプリケーションログ",
-            "url": "/logs/app/",
-            "icon": "bi-list-check",
-            "icon_style": "color:#28a745;",
             "disp_seq": 7,
-            "active": true
-        }
-    },
-    {
-        "model": "settings.menu",
-        "pk": 7,
-        "fields": {
-            "version": 0,
-            "created_at": "2025-07-19T15:46:59.051Z",
-            "created_by": 1,
-            "updated_at": "2025-07-21T15:54:42.828Z",
-            "updated_by": 1,
-            "name": "メール送信ログ",
-            "url": "/logs/mail/",
-            "icon": "bi-list-check",
-            "icon_style": "color:#28a745;",
-            "disp_seq": 8,
             "active": true
         }
     },
@@ -159,13 +125,47 @@
             "version": 0,
             "created_at": "2025-07-19T15:46:59.051Z",
             "created_by": 1,
+            "updated_at": "2025-07-21T15:54:42.828Z",
+            "updated_by": 1,
+            "name": "アプリケーションログ",
+            "url": "/logs/app/",
+            "icon": "bi-list-check",
+            "icon_style": "color:#28a745;",
+            "disp_seq": 8,
+            "active": true
+        }
+    },
+    {
+        "model": "settings.menu",
+        "pk": 9,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-07-19T15:46:59.051Z",
+            "created_by": 1,
+            "updated_at": "2025-07-21T15:54:42.828Z",
+            "updated_by": 1,
+            "name": "メール送信ログ",
+            "url": "/logs/mail/",
+            "icon": "bi-list-check",
+            "icon_style": "color:#28a745;",
+            "disp_seq": 9,
+            "active": true
+        }
+    },
+    {
+        "model": "settings.menu",
+        "pk": 10,
+        "fields": {
+            "version": 0,
+            "created_at": "2025-07-19T15:46:59.051Z",
+            "created_by": 1,
             "updated_at": "2025-08-06T21:15:00.000Z",
             "updated_by": 1,
             "name": "管理サイト",
             "url": "/admin/",
             "icon": "bi-gear",
             "icon_style": "color:#dc3545;",
-            "disp_seq": 9,
+            "disp_seq": 10,
             "active": true
         }
     }
