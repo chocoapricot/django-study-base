@@ -153,7 +153,7 @@
                     <td>{{ department.email|default:"-" }}</td>
                     <td>
                         {% if perms.client.change_clientdepartment %}
-                        <a href="{% url 'client:client_department_update' department.pk %}" class="btn btn-primary btn-sm" title="編集">
+                        <a href="{% url 'client:client_department_update' department.pk %}" class="btn btn-dark btn-sm" title="編集">
                             <i class="bi bi-pencil"></i>
                         </a>
                         {% endif %}
@@ -206,7 +206,7 @@
                     <td>{{ user.email|default:"-" }}</td>
                     <td>
                         {% if perms.client.change_clientuser %}
-                        <a href="{% url 'client:client_user_update' user.pk %}" class="btn btn-primary btn-sm" title="編集">
+                        <a href="{% url 'client:client_user_update' user.pk %}" class="btn btn-dark btn-sm" title="編集">
                             <i class="bi bi-pencil"></i>
                         </a>
                         {% endif %}
