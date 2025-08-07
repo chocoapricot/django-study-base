@@ -3,6 +3,12 @@
 ## 2025-08-08
 
 ### Changed
+- **管理画面**:
+    - 会社および部署モデルを管理サイトから登録解除しました。
+
+## 2025-08-08
+
+### Changed
 - **テスト**:
     - `apps/master/models.py`の`Qualification`および`Skill`モデルの`save`メソッドから`skip_validation`引数を削除しました。
     - `apps/staff/tests/test_staff_qualification.py`および`apps/staff/tests/test_staff_skill.py`のテストコードを修正し、`Qualification`および`Skill`モデルのインスタンス作成時に`skip_validation`引数を渡さないようにしました。
