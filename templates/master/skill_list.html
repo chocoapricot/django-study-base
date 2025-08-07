@@ -26,14 +26,7 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <select name="required_level" class="form-control form-control-sm">
-                        <option value="">全レベル</option>
-                        {% for value, label in level_choices %}
-                            <option value="{{ value }}" {% if level_filter == value %}selected{% endif %}>{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+
                 <div class="col-md-2">
                     <select name="is_active" class="form-control form-control-sm">
                         <option value="">全て</option>
@@ -55,7 +48,6 @@
                     <tr>
                         <th>技能名</th>
                         <th>カテゴリ</th>
-                        <th>必要レベル</th>
                         <th>状態</th>
                         <th>表示順</th>
                         <th>操作</th>
@@ -68,7 +60,6 @@
                             <a href="{% url 'master:skill_detail' skill.pk %}">{{ skill.name }}</a>
                         </td>
                         <td>{{ skill.category|default:"-" }}</td>
-                        <td>{{ skill.get_required_level_display }}</td>
                         <td>
                             {% if skill.is_active %}
                                 <span class="badge bg-success">有効</span>
@@ -88,7 +79,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center">技能が登録されていません。</td>
+                        <td colspan="5" class="text-center">技能が登録されていません。</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -101,7 +92,7 @@
             <ul class="pagination pagination-sm justify-content-center">
                 {% if page_obj.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if level_filter %}&required_level={{ level_filter }}{% endif %}{% if is_active_filter %}&is_active={{ is_active_filter }}{% endif %}">前へ</a>
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if is_active_filter %}&is_active={{ is_active_filter }}{% endif %}">前へ</a>
                     </li>
                 {% endif %}
                 
@@ -112,14 +103,14 @@
                         </li>
                     {% else %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if level_filter %}&required_level={{ level_filter }}{% endif %}{% if is_active_filter %}&is_active={{ is_active_filter }}{% endif %}">{{ num }}</a>
+                            <a class="page-link" href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if is_active_filter %}&is_active={{ is_active_filter }}{% endif %}">{{ num }}</a>
                         </li>
                     {% endif %}
                 {% endfor %}
                 
                 {% if page_obj.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if level_filter %}&required_level={{ level_filter }}{% endif %}{% if is_active_filter %}&is_active={{ is_active_filter }}{% endif %}">次へ</a>
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if is_active_filter %}&is_active={{ is_active_filter }}{% endif %}">次へ</a>
                     </li>
                 {% endif %}
             </ul>

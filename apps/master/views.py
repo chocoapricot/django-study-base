@@ -19,7 +19,6 @@ def qualification_list(request):
     if search_query:
         qualifications = qualifications.filter(
             Q(name__icontains=search_query) |
-            Q(issuing_organization__icontains=search_query) |
             Q(description__icontains=search_query)
         )
     
@@ -146,10 +145,7 @@ def skill_list(request):
     if category_filter:
         skills = skills.filter(category=category_filter)
     
-    # レベルフィルタ
-    level_filter = request.GET.get('required_level', '')
-    if level_filter:
-        skills = skills.filter(required_level=level_filter)
+
     
     # アクティブフィルタ
     is_active_filter = request.GET.get('is_active', '')
@@ -168,10 +164,8 @@ def skill_list(request):
         'page_obj': page_obj,
         'search_query': search_query,
         'category_filter': category_filter,
-        'level_filter': level_filter,
         'is_active_filter': is_active_filter,
         'categories': categories,
-        'level_choices': Skill.LEVEL_CHOICES,
     }
     return render(request, 'master/skill_list.html', context)
 

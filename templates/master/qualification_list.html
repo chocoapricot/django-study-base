@@ -16,7 +16,7 @@
         <form method="get" class="mb-3">
             <div class="row">
                 <div class="col-md-4">
-                    <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-sm" placeholder="資格名・発行機関で検索">
+                    <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-sm" placeholder="資格名で検索">
                 </div>
                 <div class="col-md-2">
                     <select name="category" class="form-control form-control-sm">
@@ -47,8 +47,6 @@
                     <tr>
                         <th>資格名</th>
                         <th>カテゴリ</th>
-                        <th>発行機関</th>
-                        <th>有効期間</th>
                         <th>状態</th>
                         <th>表示順</th>
                         <th>操作</th>
@@ -61,14 +59,6 @@
                             <a href="{% url 'master:qualification_detail' qualification.pk %}">{{ qualification.name }}</a>
                         </td>
                         <td>{{ qualification.get_category_display }}</td>
-                        <td>{{ qualification.issuing_organization|default:"-" }}</td>
-                        <td>
-                            {% if qualification.validity_period %}
-                                {{ qualification.validity_period }}年
-                            {% else %}
-                                無期限
-                            {% endif %}
-                        </td>
                         <td>
                             {% if qualification.is_active %}
                                 <span class="badge bg-success">有効</span>
@@ -88,7 +78,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center">資格が登録されていません。</td>
+                        <td colspan="5" class="text-center">資格が登録されていません。</td>
                     </tr>
                     {% endfor %}
                 </tbody>

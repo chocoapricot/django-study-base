@@ -34,28 +34,15 @@
             </div>
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.issuing_organization.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">発行機関</label>
-                <div class="col-sm-6">
-                    {{ form.issuing_organization }}
-                    {% if form.issuing_organization.errors %}
-                        <div class="text-danger small">{{ form.issuing_organization.errors.0 }}</div>
+                <label for="{{ form.description.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">説明</label>
+                <div class="col-sm-8">
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="text-danger small">{{ form.description.errors.0 }}</div>
                     {% endif %}
                 </div>
             </div>
             
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.validity_period.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">有効期間（年）
-                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="無期限の場合は空欄"></i>
-                </label>
-                <div class="col-sm-3">
-                    {{ form.validity_period }}
-                    {% if form.validity_period.errors %}
-                        <div class="text-danger small">{{ form.validity_period.errors.0 }}</div>
-                    {% endif %}
-                </div>
-            </div>
-            
-
             
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">表示順</label>

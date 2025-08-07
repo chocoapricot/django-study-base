@@ -25,29 +25,15 @@
             </div>
         </div>
         
-        {% if qualification.issuing_organization %}
+        {% if qualification.description %}
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">発行機関</label>
+            <label class="col-sm-2 col-form-label" style="text-align:right">説明</label>
             <div class="col-sm-6">
-                <p class="form-control-plaintext">{{ qualification.issuing_organization }}</p>
+                <p class="form-control-plaintext">{{ qualification.description|linebreaksbr }}</p>
             </div>
         </div>
         {% endif %}
         
-        <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">有効期間</label>
-            <div class="col-sm-6">
-                <p class="form-control-plaintext">
-                    {% if qualification.validity_period %}
-                        {{ qualification.validity_period }}年
-                    {% else %}
-                        無期限
-                    {% endif %}
-                </p>
-            </div>
-        </div>
-        
-
         
         <div class="row mb-3">
             <label class="col-sm-2 col-form-label" style="text-align:right">状態</label>

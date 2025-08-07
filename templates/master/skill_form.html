@@ -32,15 +32,6 @@
                 </div>
             </div>
             
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.required_level.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">必要レベル</label>
-                <div class="col-sm-4">
-                    {{ form.required_level }}
-                    {% if form.required_level.errors %}
-                        <div class="text-danger small">{{ form.required_level.errors.0 }}</div>
-                    {% endif %}
-                </div>
-            </div>
             
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.description.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">説明</label>

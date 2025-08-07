@@ -19,8 +19,7 @@ class QualificationModelTest(TestCase):
         qualification = Qualification.objects.create(
             name='基本情報技術者試験',
             category='national',
-            issuing_organization='IPA',
-            validity_period=None,
+            description='基本情報技術者試験の説明',
             is_active=True,
             display_order=1,
             created_by=self.user,
@@ -29,8 +28,7 @@ class QualificationModelTest(TestCase):
         
         self.assertEqual(qualification.name, '基本情報技術者試験')
         self.assertEqual(qualification.category, 'national')
-        self.assertEqual(qualification.issuing_organization, 'IPA')
-        self.assertIsNone(qualification.validity_period)
+        self.assertEqual(qualification.description, '基本情報技術者試験の説明')
         self.assertTrue(qualification.is_active)
         self.assertEqual(str(qualification), '基本情報技術者試験')
 
@@ -66,27 +64,7 @@ class QualificationModelTest(TestCase):
         
         self.assertEqual(qualification.category_display_name, '国家資格')
 
-    def test_qualification_has_validity_period(self):
-        """有効期間の有無判定テスト"""
-        # 有効期間あり
-        qual_with_period = Qualification.objects.create(
-            name='有効期間あり資格',
-            category='private',
-            validity_period=3,
-            created_by=self.user,
-            updated_by=self.user
-        )
-        self.assertTrue(qual_with_period.has_validity_period)
-        
-        # 有効期間なし
-        qual_without_period = Qualification.objects.create(
-            name='有効期間なし資格',
-            category='national',
-            validity_period=None,
-            created_by=self.user,
-            updated_by=self.user
-        )
-        self.assertFalse(qual_without_period.has_validity_period)
+
 
 
 class QualificationFormTest(TestCase):
@@ -95,8 +73,7 @@ class QualificationFormTest(TestCase):
         form_data = {
             'name': 'テスト資格',
             'category': 'national',
-            'issuing_organization': 'テスト機関',
-            'validity_period': 3,
+            'description': 'テスト資格の説明',
             'is_active': True,
             'display_order': 1
         }
@@ -109,17 +86,7 @@ class QualificationFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('name', form.errors)
 
-    def test_validity_period_validation(self):
-        """有効期間のバリデーションテスト"""
-        form_data = {
-            'name': 'テスト資格',
-            'category': 'private',
-            'validity_period': 0,  # 0年は有効
-            'is_active': True,
-            'display_order': 1
-        }
-        form = QualificationForm(data=form_data)
-        self.assertTrue(form.is_valid())  # 0年は有効とする
+
 
 
 class QualificationViewTest(TestCase):
@@ -142,7 +109,7 @@ class QualificationViewTest(TestCase):
         self.qualification = Qualification.objects.create(
             name='テスト資格',
             category='national',
-            issuing_organization='テスト機関',
+            description='テスト資格の説明',
             created_by=self.user,
             updated_by=self.user
         )
@@ -180,8 +147,7 @@ class QualificationViewTest(TestCase):
         form_data = {
             'name': '新しい資格',
             'category': 'private',
-            'issuing_organization': '新機関',
-            'validity_period': 2,
+            'description': '新しい資格の説明',
             'is_active': True,
             'display_order': 1
         }
@@ -212,7 +178,7 @@ class QualificationViewTest(TestCase):
         form_data = {
             'name': '更新された資格',
             'category': 'private',
-            'issuing_organization': '更新機関',
+            'description': '更新された資格の説明',
             'is_active': True,
             'display_order': 1
         }

@@ -20,7 +20,6 @@ class SkillModelTest(TestCase):
             name='Java',
             category='プログラミング言語',
             description='Javaプログラミングスキル',
-            required_level='intermediate',
             is_active=True,
             display_order=1,
             created_by=self.user,
@@ -30,7 +29,6 @@ class SkillModelTest(TestCase):
         self.assertEqual(skill.name, 'Java')
         self.assertEqual(skill.category, 'プログラミング言語')
         self.assertEqual(skill.description, 'Javaプログラミングスキル')
-        self.assertEqual(skill.required_level, 'intermediate')
         self.assertTrue(skill.is_active)
         self.assertEqual(str(skill), 'Java')
 
@@ -55,17 +53,7 @@ class SkillModelTest(TestCase):
         self.assertEqual(skills[0], skill2)  # display_order=1が先
         self.assertEqual(skills[1], skill1)  # display_order=2が後
 
-    def test_skill_required_level_display(self):
-        """必要レベル表示名のテスト"""
-        skill = Skill.objects.create(
-            name='テスト技能',
-            category='テスト',
-            required_level='advanced',
-            created_by=self.user,
-            updated_by=self.user
-        )
-        
-        self.assertEqual(skill.required_level_display_name, '上級')
+
 
 
 class SkillFormTest(TestCase):
@@ -75,7 +63,6 @@ class SkillFormTest(TestCase):
             'name': 'Python',
             'category': 'プログラミング言語',
             'description': 'Pythonプログラミングスキル',
-            'required_level': 'intermediate',
             'is_active': True,
             'display_order': 1
         }
@@ -88,18 +75,7 @@ class SkillFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('name', form.errors)
 
-    def test_required_level_choices(self):
-        """必要レベル選択肢のテスト"""
-        form_data = {
-            'name': 'テスト技能',
-            'category': 'テスト',
-            'required_level': 'invalid_level',  # 無効なレベル
-            'is_active': True,
-            'display_order': 1
-        }
-        form = SkillForm(data=form_data)
-        self.assertFalse(form.is_valid())
-        self.assertIn('required_level', form.errors)
+
 
 
 class SkillViewTest(TestCase):
@@ -123,7 +99,6 @@ class SkillViewTest(TestCase):
             name='テスト技能',
             category='テストカテゴリ',
             description='テスト技能の説明',
-            required_level='intermediate',
             created_by=self.user,
             updated_by=self.user
         )
@@ -162,7 +137,6 @@ class SkillViewTest(TestCase):
             'name': '新しい技能',
             'category': '新カテゴリ',
             'description': '新しい技能の説明',
-            'required_level': 'advanced',
             'is_active': True,
             'display_order': 1
         }
@@ -194,7 +168,6 @@ class SkillViewTest(TestCase):
             'name': '更新された技能',
             'category': '更新カテゴリ',
             'description': '更新された説明',
-            'required_level': 'expert',
             'is_active': True,
             'display_order': 1
         }
@@ -207,7 +180,7 @@ class SkillViewTest(TestCase):
         self.assertEqual(response.status_code, 302)  # リダイレクト
         self.skill.refresh_from_db()
         self.assertEqual(self.skill.name, '更新された技能')
-        self.assertEqual(self.skill.required_level, 'expert')
+        self.assertEqual(self.skill.category, '更新カテゴリ')
 
     def test_skill_delete_view(self):
         """技能削除ビューのテスト"""
@@ -253,13 +226,3 @@ class SkillViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'テスト技能')
 
-    def test_skill_level_filter(self):
-        """技能レベルフィルタのテスト"""
-        self.test_client.login(username='testuser', password='testpass123')
-        
-        response = self.test_client.get(
-            reverse('master:skill_list'),
-            {'required_level': 'intermediate'}
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'テスト技能')
