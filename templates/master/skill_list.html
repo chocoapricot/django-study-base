@@ -53,92 +53,64 @@
             </div>
         </form>
         
-        <!-- 技能階層一覧 -->
-        {% if hierarchical_data %}
-            {% for category_data in hierarchical_data %}
-                <div class="card mb-3">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <div>
-                            <i class="bi bi-folder"></i>
-                            <strong>{{ category_data.category.name }}</strong>
-                            <span class="badge bg-light text-dark ms-2">{{ category_data.skills|length }}件</span>
-                        </div>
-                        <div>
-                            <a href="{% url 'master:skill_detail' category_data.category.pk %}" class="btn btn-sm btn-outline-light" title="詳細">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                            <a href="{% url 'master:skill_update' category_data.category.pk %}" class="btn btn-sm btn-outline-light" title="編集">
+        <!-- 技能一覧テーブル -->
+        <div class="table-responsive">
+            <table class="table table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th width="50%">名称</th>
+                        <th width="20%">説明</th>
+                        <th width="10%">状態</th>
+                        <th width="10%">表示順</th>
+                        <th width="10%">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>
+                            {% if item.is_category %}
+                                <i class="bi bi-folder text-primary me-2"></i>
+                                <strong><a href="{% url 'master:skill_detail' item.pk %}">{{ item.name }}</a></strong>
+                            {% else %}
+                                <span class="ms-3">
+                                    <i class="bi bi-file-text text-muted me-2"></i>
+                                    <a href="{% url 'master:skill_detail' item.pk %}">{{ item.name }}</a>
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.description %}
+                                <small class="text-muted">{{ item.description|truncatechars:40 }}</small>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.is_active %}
+                                <span class="badge bg-success">有効</span>
+                            {% else %}
+                                <span class="badge bg-secondary">無効</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.display_order }}</td>
+                        <td>
+                            <a href="{% url 'master:skill_update' item.pk %}" class="btn btn-dark btn-sm" title="編集">
                                 <i class="bi bi-pencil"></i>
                             </a>
-                            <a href="{% url 'master:skill_delete' category_data.category.pk %}" class="btn btn-sm btn-outline-light" title="削除">
+                            <a href="{% url 'master:skill_delete' item.pk %}" class="btn btn-dark btn-sm" title="削除">
                                 <i class="bi bi-x"></i>
                             </a>
-                        </div>
-                    </div>
-                    
-                    {% if category_data.category.description %}
-                    <div class="card-body py-2">
-                        <small class="text-muted">{{ category_data.category.description }}</small>
-                    </div>
-                    {% endif %}
-                    
-                    {% if category_data.skills %}
-                    <div class="table-responsive">
-                        <table class="table table-sm table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th width="40%">技能名</th>
-                                    <th width="30%">説明</th>
-                                    <th width="10%">状態</th>
-                                    <th width="10%">表示順</th>
-                                    <th width="10%">操作</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for skill in category_data.skills %}
-                                <tr>
-                                    <td>
-                                        <i class="bi bi-file-text text-muted me-1"></i>
-                                        <a href="{% url 'master:skill_detail' skill.pk %}">{{ skill.name }}</a>
-                                    </td>
-                                    <td>
-                                        <small class="text-muted">{{ skill.description|truncatechars:50 }}</small>
-                                    </td>
-                                    <td>
-                                        {% if skill.is_active %}
-                                            <span class="badge bg-success">有効</span>
-                                        {% else %}
-                                            <span class="badge bg-secondary">無効</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ skill.display_order }}</td>
-                                    <td>
-                                        <a href="{% url 'master:skill_update' skill.pk %}" class="btn btn-dark btn-sm" title="編集">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <a href="{% url 'master:skill_delete' skill.pk %}" class="btn btn-dark btn-sm" title="削除">
-                                            <i class="bi bi-x"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% else %}
-                    <div class="card-body text-center text-muted">
-                        <i class="bi bi-inbox"></i>
-                        このカテゴリには技能が登録されていません。
-                    </div>
-                    {% endif %}
-                </div>
-            {% endfor %}
-        {% else %}
-            <div class="alert alert-info text-center">
-                <i class="bi bi-info-circle"></i>
-                条件に一致する技能・カテゴリが見つかりませんでした。
-            </div>
-        {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">技能・カテゴリが登録されていません。</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
     </div>
 </div>

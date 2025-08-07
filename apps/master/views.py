@@ -176,21 +176,22 @@ def skill_list(request):
         # 技能のみ表示
         categories_query = Skill.objects.none()
     
-    # 階層構造でデータを整理
-    hierarchical_data = []
+    # シンプルな一覧用データを整理
+    items = []
     
     for category in categories_query.filter(is_active=True).order_by('display_order', 'name'):
+        # カテゴリを追加
+        items.append(category)
+        
+        # カテゴリに属する技能を追加
         category_skills = skills_query.filter(parent=category, is_active=True).order_by('display_order', 'name')
-        hierarchical_data.append({
-            'category': category,
-            'skills': list(category_skills)
-        })
+        items.extend(category_skills)
     
     # フィルタ用のカテゴリ一覧
     all_categories = Skill.get_categories()
     
     context = {
-        'hierarchical_data': hierarchical_data,
+        'items': items,
         'search_query': search_query,
         'level_filter': level_filter,
         'category_filter': category_filter,
