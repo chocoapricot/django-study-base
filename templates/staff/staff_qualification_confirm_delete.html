@@ -1,0 +1,19 @@
+{% extends 'common/_base.html' %}
+
+{% block content %}
+{% include 'staff/_staff_info_card.html' with staff=staff %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        保有資格の削除
+    </div>
+    <div class="card-body">
+        <p>本当に「{{ qualification.qualification.name }}」を削除しますか？</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-danger">削除</button>
+            <a href="{% url 'staff:staff_qualification_list' staff.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -29,7 +29,7 @@ from django.conf import settings
 from django.http import HttpResponse, FileResponse
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Staff, StaffContacted
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill
 from .forms import StaffForm, StaffContactedForm
 from apps.system.settings.utils import my_parameter
 from django.db.models import Q
@@ -54,7 +54,7 @@ from django.conf import settings
 from django.http import HttpResponse, FileResponse
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Staff, StaffContacted
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill
 from .forms import StaffForm, StaffContactedForm
 from apps.system.settings.utils import my_parameter
 from django.db.models import Q
@@ -382,8 +382,45 @@ def staff_qualification_create(request, staff_pk):
         from .forms import StaffQualificationForm
         form = StaffQualificationForm()
     
-    return render(request, 'staff/staff_qualification_create.html', {
+    return render(request, 'staff/staff_qualification_form.html', {
         'form': form,
+        'staff': staff
+    })
+
+# スタッフ資格編集
+@login_required
+@permission_required('staff.change_staffqualification', raise_exception=True)
+def staff_qualification_update(request, pk):
+    qualification = get_object_or_404(StaffQualification, pk=pk)
+    staff = qualification.staff
+    if request.method == 'POST':
+        from .forms import StaffQualificationForm
+        form = StaffQualificationForm(request.POST, instance=qualification)
+        if form.is_valid():
+            form.save()
+            return redirect('staff:staff_qualification_list', staff_pk=staff.pk)
+    else:
+        from .forms import StaffQualificationForm
+        form = StaffQualificationForm(instance=qualification)
+    
+    return render(request, 'staff/staff_qualification_form.html', {
+        'form': form,
+        'staff': staff,
+        'qualification': qualification
+    })
+
+# スタッフ資格削除
+@login_required
+@permission_required('staff.delete_staffqualification', raise_exception=True)
+def staff_qualification_delete(request, pk):
+    qualification = get_object_or_404(StaffQualification, pk=pk)
+    staff = qualification.staff
+    if request.method == 'POST':
+        qualification.delete()
+        return redirect('staff:staff_qualification_list', staff_pk=staff.pk)
+    
+    return render(request, 'staff/staff_qualification_confirm_delete.html', {
+        'qualification': qualification,
         'staff': staff
     })
 
@@ -405,10 +442,48 @@ def staff_skill_create(request, staff_pk):
         from .forms import StaffSkillForm
         form = StaffSkillForm()
     
-    return render(request, 'staff/staff_skill_create.html', {
+    return render(request, 'staff/staff_skill_form.html', {
         'form': form,
         'staff': staff
     })
+
+# スタッフ技能編集
+@login_required
+@permission_required('staff.change_staffskill', raise_exception=True)
+def staff_skill_update(request, pk):
+    skill = get_object_or_404(StaffSkill, pk=pk)
+    staff = skill.staff
+    if request.method == 'POST':
+        from .forms import StaffSkillForm
+        form = StaffSkillForm(request.POST, instance=skill)
+        if form.is_valid():
+            form.save()
+            return redirect('staff:staff_skill_list', staff_pk=staff.pk)
+    else:
+        from .forms import StaffSkillForm
+        form = StaffSkillForm(instance=skill)
+    
+    return render(request, 'staff/staff_skill_form.html', {
+        'form': form,
+        'staff': staff,
+        'skill': skill
+    })
+
+# スタッフ技能削除
+@login_required
+@permission_required('staff.delete_staffskill', raise_exception=True)
+def staff_skill_delete(request, pk):
+    skill = get_object_or_404(StaffSkill, pk=pk)
+    staff = skill.staff
+    if request.method == 'POST':
+        skill.delete()
+        return redirect('staff:staff_skill_list', staff_pk=staff.pk)
+    
+    return render(request, 'staff/staff_skill_confirm_delete.html', {
+        'skill': skill,
+        'staff': staff
+    })
+
 
 
 # スタッフ資格一覧

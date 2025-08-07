@@ -3,7 +3,9 @@ from django.urls import path
 from .views import (
     staff_list, staff_create, staff_detail, staff_update, staff_delete, staff_face, staff_rirekisho, staff_fuyokojo, staff_kyushoku,
     staff_contacted_create, staff_contacted_list, staff_contacted_update, staff_contacted_delete, staff_contacted_detail,
-    staff_change_history_list, staff_qualification_create, staff_skill_create, staff_qualification_list, staff_skill_list
+    staff_change_history_list, 
+    staff_qualification_list, staff_qualification_create, staff_qualification_update, staff_qualification_delete,
+    staff_skill_list, staff_skill_create, staff_skill_update, staff_skill_delete
 )
 
 app_name = 'staff'
@@ -32,8 +34,12 @@ urlpatterns = [
     # 資格管理
     path('staff/<int:staff_pk>/qualification/', staff_qualification_list, name='staff_qualification_list'),
     path('staff/<int:staff_pk>/qualification/create/', staff_qualification_create, name='staff_qualification_create'),
+    path('staff/qualification/<int:pk>/update/', staff_qualification_update, name='staff_qualification_update'),
+    path('staff/qualification/<int:pk>/delete/', staff_qualification_delete, name='staff_qualification_delete'),
     
     # 技能管理
     path('staff/<int:staff_pk>/skill/', staff_skill_list, name='staff_skill_list'),
     path('staff/<int:staff_pk>/skill/create/', staff_skill_create, name='staff_skill_create'),
+    path('staff/skill/<int:pk>/update/', staff_skill_update, name='staff_skill_update'),
+    path('staff/skill/<int:pk>/delete/', staff_skill_delete, name='staff_skill_delete'),
 ]

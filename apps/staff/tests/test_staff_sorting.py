@@ -61,14 +61,14 @@ class StaffSortingTest(TestCase):
     def test_staff_list_sort_pagination(self):
         """スタッフ一覧でソート条件がページ移動後も保持されることをテスト"""
         # 1. 社員番号で昇順ソートして1ページ目にアクセス
-        response = self.client.get(reverse('staff_list'), {'sort': 'employee_no', 'page': 1})
+        response = self.client.get(reverse('staff:staff_list'), {'sort': 'employee_no', 'page': 1})
         self.assertEqual(response.status_code, 200)
         staffs_on_page = response.context['staffs'].object_list
         self.assertEqual(staffs_on_page[0].employee_no, 'EMP001')
         self.assertEqual(staffs_on_page[9].employee_no, 'EMP010')
 
         # 2. 2ページ目に移動
-        response = self.client.get(reverse('staff_list'), {'sort': 'employee_no', 'page': 2})
+        response = self.client.get(reverse('staff:staff_list'), {'sort': 'employee_no', 'page': 2})
         self.assertEqual(response.status_code, 200)
         staffs_on_page = response.context['staffs'].object_list
         self.assertEqual(staffs_on_page[0].employee_no, 'EMP011')
@@ -76,7 +76,7 @@ class StaffSortingTest(TestCase):
         self.assertEqual(staffs_on_page[2].employee_no, 'ZEMP000') # self.staff_obj
 
         # 3. 氏名（姓）で降順ソートして1ページ目にアクセス
-        response = self.client.get(reverse('staff_list'), {'sort': '-name_last', 'page': 1})
+        response = self.client.get(reverse('staff:staff_list'), {'sort': '-name_last', 'page': 1})
         self.assertEqual(response.status_code, 200)
         staffs_on_page = response.context['staffs'].object_list
         self.assertEqual(staffs_on_page[0].name_last, 'テスト') # self.staff_obj
@@ -84,7 +84,7 @@ class StaffSortingTest(TestCase):
         self.assertEqual(staffs_on_page[9].name_last, 'Staff 04')
 
         # 4. 降順ソートを保持したまま2ページ目に移動
-        response = self.client.get(reverse('staff_list'), {'sort': '-name_last', 'page': 2})
+        response = self.client.get(reverse('staff:staff_list'), {'sort': '-name_last', 'page': 2})
         self.assertEqual(response.status_code, 200)
         staffs_on_page = response.context['staffs'].object_list
         self.assertEqual(staffs_on_page[0].name_last, 'Staff 03')
@@ -92,7 +92,7 @@ class StaffSortingTest(TestCase):
         self.assertEqual(staffs_on_page[2].name_last, 'Staff 01')
 
         # 5. 検索クエリとソート条件を組み合わせてテスト (例: 'Staff 0'で検索し、社員番号昇順ソート)
-        response = self.client.get(reverse('staff_list'), {'sort': 'employee_no', 'q': 'Staff 0', 'page': 1})
+        response = self.client.get(reverse('staff:staff_list'), {'sort': 'employee_no', 'q': 'Staff 0', 'page': 1})
         self.assertEqual(response.status_code, 200)
         staffs_on_page = response.context['staffs'].object_list
         self.assertEqual(staffs_on_page[0].employee_no, 'EMP001')
@@ -100,7 +100,7 @@ class StaffSortingTest(TestCase):
         self.assertEqual(len(staffs_on_page), 9) # Staff 01-09の9件
 
         # 6. 検索クエリとソート条件を組み合わせてテスト (例: 'Staff 1'で検索し、社員番号昇順ソート)
-        response = self.client.get(reverse('staff_list'), {'sort': 'employee_no', 'q': 'Staff 1', 'page': 1})
+        response = self.client.get(reverse('staff:staff_list'), {'sort': 'employee_no', 'q': 'Staff 1', 'page': 1})
         self.assertEqual(response.status_code, 200)
         staffs_on_page = response.context['staffs'].object_list
         self.assertEqual(staffs_on_page[0].employee_no, 'EMP010')
@@ -109,7 +109,7 @@ class StaffSortingTest(TestCase):
         self.assertEqual(len(staffs_on_page), 3) # Staff 10-12の3件
 
         # 7. 住所で昇順ソートして1ページ目にアクセス
-        response = self.client.get(reverse('staff_list'), {'sort': 'address1', 'page': 1})
+        response = self.client.get(reverse('staff:staff_list'), {'sort': 'address1', 'page': 1})
         self.assertEqual(response.status_code, 200)
         staffs_on_page = response.context['staffs'].object_list
         self.assertEqual(staffs_on_page[0].address1, 'テスト住所') # self.staff_obj
@@ -117,14 +117,14 @@ class StaffSortingTest(TestCase):
         self.assertEqual(staffs_on_page[9].address1, '住所09') # 10番目の要素は住所09
 
         # 8. 住所で降順ソートして1ページ目にアクセス
-        response = self.client.get(reverse('staff_list'), {'sort': '-address1', 'page': 1})
+        response = self.client.get(reverse('staff:staff_list'), {'sort': '-address1', 'page': 1})
         self.assertEqual(response.status_code, 200)
         staffs_on_page = response.context['staffs'].object_list
         self.assertEqual(staffs_on_page[0].address1, '住所12')
         self.assertEqual(staffs_on_page[9].address1, '住所03')
 
         # 9. 年齢で昇順ソートして1ページ目にアクセス
-        response = self.client.get(reverse('staff_list'), {'sort': 'age', 'page': 1})
+        response = self.client.get(reverse('staff:staff_list'), {'sort': 'age', 'page': 1})
         self.assertEqual(response.status_code, 200)
         staffs_on_page = response.context['staffs'].object_list
         print(f"Ages on page (ascending): {[s.age for s in staffs_on_page]}")
@@ -132,7 +132,7 @@ class StaffSortingTest(TestCase):
         self.assertEqual(staffs_on_page[9].age, 29) # 20 + 9
 
         # 10. 年齢で降順ソートして1ページ目にアクセス
-        response = self.client.get(reverse('staff_list'), {'sort': '-age', 'page': 1})
+        response = self.client.get(reverse('staff:staff_list'), {'sort': '-age', 'page': 1})
         self.assertEqual(response.status_code, 200)
         staffs_on_page = response.context['staffs'].object_list
         print(f"Ages on page (descending): {[s.age for s in staffs_on_page]}")

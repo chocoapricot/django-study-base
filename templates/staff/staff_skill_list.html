@@ -1,6 +1,8 @@
 {% extends 'common/_base.html' %}
 
 {% block content %}
+{% include 'staff/_staff_info_card.html' with staff=staff %}
+
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         {{ staff.name_last }} {{ staff.name_first }} - 保有技能一覧
@@ -17,7 +19,8 @@
                         <th width="15%">レベル</th>
                         <th width="15%">習得日</th>
                         <th width="15%">経験年数</th>
-                        <th width="25%">メモ</th>
+                        <th width="15%">メモ</th>
+                        <th width="10%"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,10 +48,18 @@
                         <td>{{ s.acquired_date|date:"Y/m/d"|default:"-" }}</td>
                         <td>{{ s.years_of_experience|default:"-" }}年</td>
                         <td>{{ s.memo|truncatechars:30|default:"-" }}</td>
+                        <td>
+                            {% if perms.staff.change_staffskill %}
+                            <a href="{% url 'staff:staff_skill_update' s.pk %}" class="btn btn-sm btn-primary">編集</a>
+                            {% endif %}
+                            {% if perms.staff.delete_staffskill %}
+                            <a href="{% url 'staff:staff_skill_delete' s.pk %}" class="btn btn-sm btn-danger">削除</a>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="text-center">登録されている技能はありません</td>
+                        <td colspan="6" class="text-center">登録されている技能はありません</td>
                     </tr>
                     {% endfor %}
                 </tbody>

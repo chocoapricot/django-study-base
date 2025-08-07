@@ -26,8 +26,6 @@ class StaffQualificationModelTest(TestCase):
         )
         self.qualification = Qualification.objects.create(
             name='基本情報技術者試験',
-            category='national',
-            validity_period=None,
             created_by=self.user,
             updated_by=self.user
         )
@@ -86,7 +84,6 @@ class StaffQualificationModelTest(TestCase):
             staff=self.staff,
             qualification=Qualification.objects.create(
                 name='有効資格',
-                category='private',
                 created_by=self.user,
                 updated_by=self.user
             ),
@@ -115,7 +112,6 @@ class StaffQualificationModelTest(TestCase):
             staff=self.staff,
             qualification=Qualification.objects.create(
                 name='余裕資格',
-                category='private',
                 created_by=self.user,
                 updated_by=self.user
             ),
@@ -135,7 +131,6 @@ class StaffQualificationFormTest(TestCase):
         )
         self.qualification = Qualification.objects.create(
             name='テスト資格',
-            category='private',
             is_active=True,
             created_by=self.user,
             updated_by=self.user
@@ -164,7 +159,6 @@ class StaffQualificationFormTest(TestCase):
         # 非アクティブな資格を作成
         inactive_qual = Qualification.objects.create(
             name='非アクティブ資格',
-            category='private',
             is_active=False,
             created_by=self.user,
             updated_by=self.user
@@ -206,7 +200,6 @@ class StaffQualificationViewTest(TestCase):
         )
         self.qualification = Qualification.objects.create(
             name='テスト資格',
-            category='private',
             is_active=True,
             created_by=self.user,
             updated_by=self.user
@@ -245,7 +238,6 @@ class StaffQualificationViewTest(TestCase):
         
         new_qualification = Qualification.objects.create(
             name='新しい資格',
-            category='private',
             is_active=True,
             created_by=self.user,
             updated_by=self.user

@@ -1,61 +1,72 @@
 {% extends 'common/_base.html' %}
-{% load my_dropdown_tags %}
 
 {% block content %}
-<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header">スタッフ技能{{ title }}</div>
-    <div class="card-body">
-        {% if staff %}
-        {% include 'staff/_staff_info_card.html' with staff=staff %}
-        {% endif %}
+{% include 'staff/_staff_info_card.html' with staff=staff %}
 
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        {{ staff.name_last }} {{ staff.name_first }} - {% if skill %}技能編集{% else %}技能登録{% endif %}
+    </div>
+    <div class="card-body">
         <form method="post">
             {% csrf_token %}
-            {% if form.errors %}
-            <div class="alert alert-dismissible alert-primary">
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                {{ form.errors }}
-            </div>
-            {% endif %}
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.skill.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.skill.label }}</label>
+                <label for="{{ form.skill.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">技能</label>
                 <div class="col-sm-6">
                     {{ form.skill }}
+                    {% if form.skill.errors %}
+                        <div class="text-danger">{{ form.skill.errors }}</div>
+                    {% endif %}
                 </div>
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.level.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.level.label }}</label>
-                <div class="col-sm-4">
+                <label for="{{ form.level.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">レベル</label>
+                <div class="col-sm-3">
                     {{ form.level }}
+                    {% if form.level.errors %}
+                        <div class="text-danger">{{ form.level.errors }}</div>
+                    {% endif %}
                 </div>
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.acquired_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.acquired_date.label }}</label>
-                <div class="col-sm-4">
+                <label for="{{ form.acquired_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">習得日</label>
+                <div class="col-sm-3">
                     {{ form.acquired_date }}
+                    {% if form.acquired_date.errors %}
+                        <div class="text-danger">{{ form.acquired_date.errors }}</div>
+                    {% endif %}
                 </div>
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.years_of_experience.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.years_of_experience.label }}</label>
-                <div class="col-sm-4">
+                <label for="{{ form.years_of_experience.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">経験年数</label>
+                <div class="col-sm-2">
                     {{ form.years_of_experience }}
+                    {% if form.years_of_experience.errors %}
+                        <div class="text-danger">{{ form.years_of_experience.errors }}</div>
+                    {% endif %}
                 </div>
+                <div class="col-sm">年</div>
             </div>
 
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.memo.label }}</label>
-                <div class="col-sm-10">
+            <div class="row mb-3 align-items-top">
+                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">メモ</label>
+                <div class="col-sm-8">
                     {{ form.memo }}
+                    {% if form.memo.errors %}
+                        <div class="text-danger">{{ form.memo.errors }}</div>
+                    {% endif %}
                 </div>
             </div>
 
-            <div class="d-flex justify-content-start">
-                <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
-                <a href="{% if staff_skill %}{% url 'staff:staff_skill_detail' staff_skill.pk %}{% else %}{% url 'staff:staff_skill_list' staff.pk %}{% endif %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+            <div class="row mt-4">
+                <div class="col-sm-10 offset-sm-2">
+                    <button type="submit" class="btn btn-sm btn-primary me-2">{% if skill %}更新{% else %}登録{% endif %}</button>
+                    <a href="{% url 'staff:staff_skill_list' staff.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
+                </div>
             </div>
         </form>
     </div>
