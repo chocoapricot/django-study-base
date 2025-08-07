@@ -4,6 +4,9 @@ from . import views
 app_name = 'master'
 
 urlpatterns = [
+    # マスタ一覧
+    path('', views.master_index_list, name='master_index_list'),
+    
     # 資格管理
     path('qualification/', views.qualification_list, name='qualification_list'),
     path('qualification/category/create/', views.qualification_category_create, name='qualification_category_create'),

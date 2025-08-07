@@ -133,10 +133,11 @@
                         </div>
                     </div>
 
-                    <!-- 資格・技能セクション -->
-                    <div class="row mb-4">
-                        <div class="col-sm-6">
-                            <h6><strong>保有資格</strong></h6>
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-sm-4" style="text-align:right">
+                            <strong>資格</strong>
+                        </div>
+                        <div class="col-sm">
                             {% if qualifications %}
                                 <div class="table-responsive">
                                     <table class="table table-sm table-hover">
@@ -169,17 +170,19 @@
                                     </table>
                                 </div>
                             {% else %}
-                                <p class="text-muted">登録されている資格はありません</p>
+                                <span class="text-muted">無し</s>
                             {% endif %}
-                            <div class="mt-2">
-                                {% if perms.staff.add_staffqualification %}
-                                <a href="{% url 'staff:staff_qualification_create' staff.pk %}" class="btn btn-sm btn-success me-2">資格登録</a>
-                                {% endif %}
-                                <a href="{% url 'staff:staff_qualification_list' staff.pk %}" class="btn btn-sm btn-outline-secondary">全て表示</a>
-                            </div>
+                            {% if perms.staff.add_staffqualification %}
+                            <a href="{% url 'staff:staff_qualification_create' staff.pk %}" class="btn btn-sm btn-success me-2">資格登録</a>
+                            {% endif %}
                         </div>
-                        <div class="col-sm-6">
-                            <h6><strong>保有技能</strong></h6>
+                    </div>
+
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-sm-4" style="text-align:right">
+                            <strong>技能</strong>
+                        </div>
+                        <div class="col-sm">
                             {% if skills %}
                                 <div class="table-responsive">
                                     <table class="table table-sm table-hover">
@@ -214,14 +217,10 @@
                                     </table>
                                 </div>
                             {% else %}
-                                <p class="text-muted">登録されている技能はありません</p>
                             {% endif %}
-                            <div class="mt-2">
-                                {% if perms.staff.add_staffskill %}
-                                <a href="{% url 'staff:staff_skill_create' staff.pk %}" class="btn btn-sm btn-success me-2">技能登録</a>
-                                {% endif %}
-                                <a href="{% url 'staff:staff_skill_list' staff.pk %}" class="btn btn-sm btn-outline-secondary">全て表示</a>
-                            </div>
+                            {% if perms.staff.add_staffskill %}
+                            <a href="{% url 'staff:staff_skill_create' staff.pk %}" class="btn btn-sm btn-success me-2">技能登録</a>
+                            {% endif %}
                         </div>
                     </div>
 

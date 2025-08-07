@@ -3,8 +3,96 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.urls import reverse
+from django.apps import apps
 from .models import Qualification, Skill
 from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm
+
+
+# マスタ設定データ
+MASTER_CONFIGS = [
+    {
+        'name': '資格管理',
+        'description': '資格・免許・認定等の管理',
+        'model': 'master.Qualification',
+        'url_name': 'master:qualification_list',
+        'icon': 'bi-award',
+        'permission': 'master.view_qualification'
+    },
+    {
+        'name': '技能管理', 
+        'description': 'スキル・技術・能力等の管理',
+        'model': 'master.Skill',
+        'url_name': 'master:skill_list',
+        'icon': 'bi-tools',
+        'permission': 'master.view_skill'
+    }
+]
+
+
+def get_category_count(model_class):
+    """レベル1（カテゴリ）のデータ数を取得"""
+    try:
+        return model_class.objects.filter(level=1, is_active=True).count()
+    except Exception:
+        return 0
+
+
+def get_data_count(model_class):
+    """レベル2（データ）のデータ数を取得"""
+    try:
+        return model_class.objects.filter(level=2, is_active=True).count()
+    except Exception:
+        return 0
+
+
+@login_required
+@permission_required('master.view_qualification', raise_exception=True)
+def master_index_list(request):
+    """マスタ一覧画面を表示"""
+    masters = []
+    
+    for config in MASTER_CONFIGS:
+        # 権限チェック
+        if not request.user.has_perm(config['permission']):
+            continue
+            
+        try:
+            # モデルクラスを動的に取得
+            model_class = apps.get_model(config['model'])
+            
+            # データ件数を集計
+            category_count = get_category_count(model_class)
+            data_count = get_data_count(model_class)
+            total_count = category_count + data_count
+            
+            # URLを生成
+            try:
+                url = reverse(config['url_name'])
+            except Exception:
+                url = '#'  # URLが生成できない場合のフォールバック
+            
+            # マスタ情報を構築
+            master_info = {
+                'name': config['name'],
+                'description': config['description'],
+                'category_count': category_count,
+                'data_count': data_count,
+                'total_count': total_count,
+                'url': url,
+                'icon': config['icon']
+            }
+            
+            masters.append(master_info)
+            
+        except Exception:
+            # モデルクラスが存在しない場合などのエラーハンドリング
+            continue
+    
+    context = {
+        'masters': masters,
+    }
+    return render(request, 'master/master_index_list.html', context)
 
 
 # 資格管理ビュー
