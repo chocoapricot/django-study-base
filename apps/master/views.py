@@ -4,45 +4,88 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
 from .models import Qualification, Skill
-from .forms import QualificationForm, SkillForm, SkillCategoryForm
+from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm
 
 
 # 資格管理ビュー
 @login_required
 @permission_required('master.view_qualification', raise_exception=True)
 def qualification_list(request):
-    """資格一覧"""
-    qualifications = Qualification.objects.all()
-    
+    """資格一覧（階層表示）"""
     # 検索機能
     search_query = request.GET.get('q', '')
-    if search_query:
-        qualifications = qualifications.filter(
-            Q(name__icontains=search_query) |
-            Q(description__icontains=search_query)
-        )
     
-    # カテゴリフィルタ
+    # レベルフィルタ
+    level_filter = request.GET.get('level', '')
+    
+    # カテゴリフィルタ（親カテゴリ）
     category_filter = request.GET.get('category', '')
-    if category_filter:
-        qualifications = qualifications.filter(category=category_filter)
     
     # アクティブフィルタ
     is_active_filter = request.GET.get('is_active', '')
-    if is_active_filter:
-        qualifications = qualifications.filter(is_active=is_active_filter == 'true')
     
-    # ページネーション
-    paginator = Paginator(qualifications, 20)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    # フィルタ条件に基づいてカテゴリと資格を取得
+    categories_query = Qualification.objects.filter(level=1)
+    qualifications_query = Qualification.objects.filter(level=2).select_related('parent')
+    
+    # 検索条件を適用
+    if search_query:
+        categories_query = categories_query.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+        qualifications_query = qualifications_query.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(parent__name__icontains=search_query)
+        )
+    
+    # アクティブフィルタを適用
+    if is_active_filter:
+        is_active = is_active_filter == 'true'
+        categories_query = categories_query.filter(is_active=is_active)
+        qualifications_query = qualifications_query.filter(is_active=is_active)
+    
+    # カテゴリフィルタを適用
+    if category_filter:
+        categories_query = categories_query.filter(pk=category_filter)
+        qualifications_query = qualifications_query.filter(parent_id=category_filter)
+    
+    # レベルフィルタを適用
+    if level_filter == '1':
+        # カテゴリのみ表示
+        qualifications_query = Qualification.objects.none()
+    elif level_filter == '2':
+        # 資格のみ表示 - カテゴリは表示しないが、資格は表示する
+        categories_query = Qualification.objects.none()
+    
+    # シンプルな一覧用データを整理
+    items = []
+    
+    if level_filter == '2':
+        # 資格のみ表示の場合は、資格を直接追加
+        items.extend(qualifications_query.filter(is_active=True).order_by('display_order', 'name'))
+    else:
+        # 通常の表示（カテゴリと資格、またはカテゴリのみ）
+        for category in categories_query.filter(is_active=True).order_by('display_order', 'name'):
+            # カテゴリを追加
+            items.append(category)
+            
+            # カテゴリに属する資格を追加
+            category_qualifications = qualifications_query.filter(parent=category, is_active=True).order_by('display_order', 'name')
+            items.extend(category_qualifications)
+    
+    # フィルタ用のカテゴリ一覧
+    all_categories = Qualification.get_categories()
     
     context = {
-        'page_obj': page_obj,
+        'items': items,
         'search_query': search_query,
+        'level_filter': level_filter,
         'category_filter': category_filter,
         'is_active_filter': is_active_filter,
-        'category_choices': Qualification.CATEGORY_CHOICES,
+        'categories': all_categories,
+        'level_choices': Qualification.LEVEL_CHOICES,
     }
     return render(request, 'master/qualification_list.html', context)
 
@@ -56,6 +99,29 @@ def qualification_detail(request, pk):
         'qualification': qualification,
     }
     return render(request, 'master/qualification_detail.html', context)
+
+
+@login_required
+@permission_required('master.add_qualification', raise_exception=True)
+def qualification_category_create(request):
+    """資格カテゴリ作成"""
+    if request.method == 'POST':
+        form = QualificationCategoryForm(request.POST)
+        if form.is_valid():
+            category = form.save(commit=False)
+            category.created_by = request.user
+            category.updated_by = request.user
+            category.save()
+            messages.success(request, f'カテゴリ「{category.name}」を作成しました。')
+            return redirect('master:qualification_detail', pk=category.pk)
+    else:
+        form = QualificationCategoryForm()
+    
+    context = {
+        'form': form,
+        'title': 'カテゴリ作成',
+    }
+    return render(request, 'master/qualification_category_form.html', context)
 
 
 @login_required
@@ -87,23 +153,33 @@ def qualification_update(request, pk):
     """資格更新"""
     qualification = get_object_or_404(Qualification, pk=pk)
     
+    # カテゴリか資格かによってフォームを切り替え
+    if qualification.is_category:
+        form_class = QualificationCategoryForm
+        template_name = 'master/qualification_category_form.html'
+        title = 'カテゴリ編集'
+    else:
+        form_class = QualificationForm
+        template_name = 'master/qualification_form.html'
+        title = '資格編集'
+    
     if request.method == 'POST':
-        form = QualificationForm(request.POST, instance=qualification)
+        form = form_class(request.POST, instance=qualification)
         if form.is_valid():
             qualification = form.save(commit=False)
             qualification.updated_by = request.user
             qualification.save()
-            messages.success(request, f'資格「{qualification.name}」を更新しました。')
+            messages.success(request, f'「{qualification.name}」を更新しました。')
             return redirect('master:qualification_detail', pk=qualification.pk)
     else:
-        form = QualificationForm(instance=qualification)
+        form = form_class(instance=qualification)
     
     context = {
         'form': form,
         'qualification': qualification,
-        'title': '資格編集',
+        'title': title,
     }
-    return render(request, 'master/qualification_form.html', context)
+    return render(request, template_name, context)
 
 
 @login_required

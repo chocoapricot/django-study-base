@@ -6,24 +6,39 @@
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        資格詳細
+        {% if qualification.is_category %}カテゴリ詳細{% else %}資格詳細{% endif %}
     </div>
     <div class="card-body mb-0">
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">資格名</label>
+            <label class="col-sm-2 col-form-label" style="text-align:right">名称</label>
             <div class="col-sm-6">
                 <p class="form-control-plaintext">{{ qualification.name }}</p>
             </div>
         </div>
         
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">カテゴリ</label>
+            <label class="col-sm-2 col-form-label" style="text-align:right">レベル</label>
             <div class="col-sm-6">
                 <p class="form-control-plaintext">
-                    <span class="badge bg-primary">{{ qualification.get_category_display }}</span>
+                    {% if qualification.is_category %}
+                        <span class="badge bg-info">{{ qualification.level_display_name }}</span>
+                    {% else %}
+                        <span class="badge bg-primary">{{ qualification.level_display_name }}</span>
+                    {% endif %}
                 </p>
             </div>
         </div>
+        
+        {% if qualification.parent %}
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" style="text-align:right">親カテゴリ</label>
+            <div class="col-sm-6">
+                <p class="form-control-plaintext">
+                    <a href="{% url 'master:qualification_detail' qualification.parent.pk %}">{{ qualification.parent.name }}</a>
+                </p>
+            </div>
+        </div>
+        {% endif %}
         
         {% if qualification.description %}
         <div class="row mb-3">
@@ -68,6 +83,33 @@
                 <p class="form-control-plaintext">{{ qualification.updated_at|date:"Y年m月d日 H:i" }}</p>
             </div>
         </div>
+        
+        {% if qualification.is_category %}
+        <!-- カテゴリの場合、子資格を表示 -->
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" style="text-align:right">子資格</label>
+            <div class="col-sm-10">
+                {% with children=qualification.get_children %}
+                    {% if children %}
+                        <ul class="list-unstyled">
+                            {% for child in children %}
+                                <li class="mb-1">
+                                    <a href="{% url 'master:qualification_detail' child.pk %}">{{ child.name }}</a>
+                                    {% if child.is_active %}
+                                        <span class="badge bg-success ms-2">有効</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary ms-2">無効</span>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="form-control-plaintext text-muted">子資格はありません</p>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+        {% endif %}
         
         <div class="row">
             <div class="col-sm-2"></div>

@@ -3,22 +3,22 @@ from apps.common.models import MyModel
 
 
 class Qualification(MyModel):
-    """資格マスター"""
+    """資格マスター（階層構造対応）"""
     
-    CATEGORY_CHOICES = [
-        ('national', '国家資格'),
-        ('public', '公的資格'),
-        ('private', '民間資格'),
-        ('internal', '社内資格'),
-        ('other', 'その他'),
+    LEVEL_CHOICES = [
+        (1, 'カテゴリ'),
+        (2, '資格'),
     ]
     
-    name = models.CharField('資格名', max_length=100)
-    category = models.CharField(
-        'カテゴリ', 
-        max_length=20, 
-        choices=CATEGORY_CHOICES,
-        default='private'
+    name = models.CharField('名称', max_length=100)
+    level = models.IntegerField('階層レベル', choices=LEVEL_CHOICES, default=2)
+    parent = models.ForeignKey(
+        'self', 
+        on_delete=models.CASCADE, 
+        null=True, 
+        blank=True, 
+        verbose_name='親カテゴリ',
+        related_name='children'
     )
     description = models.TextField('説明', blank=True, null=True)
     is_active = models.BooleanField('有効', default=True)
@@ -28,20 +28,87 @@ class Qualification(MyModel):
         db_table = 'apps_master_qualification'
         verbose_name = '資格'
         verbose_name_plural = '資格'
-        ordering = ['display_order', 'name']
+        ordering = ['level', 'display_order', 'name']
         indexes = [
-            models.Index(fields=['category']),
+            models.Index(fields=['level']),
+            models.Index(fields=['parent']),
             models.Index(fields=['is_active']),
             models.Index(fields=['display_order']),
         ]
     
     def __str__(self):
-        return self.name
+        if self.level == 1:
+            return f"[カテゴリ] {self.name}"
+        else:
+            parent_name = self.parent.name if self.parent else "未分類"
+            return f"{parent_name} > {self.name}"
     
     @property
-    def category_display_name(self):
-        """カテゴリの表示名"""
-        return dict(self.CATEGORY_CHOICES).get(self.category, self.category)
+    def is_category(self):
+        """カテゴリかどうか"""
+        return self.level == 1
+    
+    @property
+    def is_qualification(self):
+        """資格かどうか"""
+        return self.level == 2
+    
+    @property
+    def level_display_name(self):
+        """階層レベルの表示名"""
+        return dict(self.LEVEL_CHOICES).get(self.level, self.level)
+    
+    @property
+    def full_name(self):
+        """フルパス名称"""
+        if self.level == 1:
+            return self.name
+        else:
+            parent_name = self.parent.name if self.parent else "未分類"
+            return f"{parent_name} > {self.name}"
+    
+    def get_children(self):
+        """子要素を取得"""
+        return self.children.filter(is_active=True).order_by('display_order', 'name')
+    
+    @classmethod
+    def get_categories(cls):
+        """カテゴリ一覧を取得"""
+        return cls.objects.filter(level=1, is_active=True).order_by('display_order', 'name')
+    
+    @classmethod
+    def get_qualifications(cls, category=None):
+        """資格一覧を取得"""
+        qualifications = cls.objects.filter(level=2, is_active=True)
+        if category:
+            qualifications = qualifications.filter(parent=category)
+        return qualifications.order_by('display_order', 'name')
+    
+    def clean(self):
+        """バリデーション"""
+        from django.core.exceptions import ValidationError
+        
+        # レベル1（カテゴリ）は親を持てない
+        if self.level == 1 and self.parent:
+            raise ValidationError('カテゴリは親を持つことができません。')
+        
+        # レベル2（資格）は親が必要（レベル1のみ）
+        if self.level == 2:
+            if not self.parent:
+                raise ValidationError('資格は親カテゴリが必要です。')
+            if self.parent.level != 1:
+                raise ValidationError('資格の親はカテゴリである必要があります。')
+        
+        # 自分自身を親にできない
+        if self.parent == self:
+            raise ValidationError('自分自身を親にすることはできません。')
+    
+    def save(self, *args, **kwargs):
+        """保存時のバリデーション"""
+        # skip_validationが指定されていない場合のみバリデーション実行
+        if not kwargs.pop('skip_validation', False):
+            self.clean()
+        super().save(*args, **kwargs)
 
 
 class Skill(MyModel):

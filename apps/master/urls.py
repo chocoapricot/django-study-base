@@ -6,6 +6,7 @@ app_name = 'master'
 urlpatterns = [
     # 資格管理
     path('qualification/', views.qualification_list, name='qualification_list'),
+    path('qualification/category/create/', views.qualification_category_create, name='qualification_category_create'),
     path('qualification/create/', views.qualification_create, name='qualification_create'),
     path('qualification/<int:pk>/', views.qualification_detail, name='qualification_detail'),
     path('qualification/<int:pk>/update/', views.qualification_update, name='qualification_update'),
