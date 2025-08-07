@@ -24,8 +24,16 @@ class StaffQualificationModelTest(TestCase):
             created_by=self.user,
             updated_by=self.user
         )
+        self.category = Qualification.objects.create(
+            name='国家資格',
+            level=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
         self.qualification = Qualification.objects.create(
             name='基本情報技術者試験',
+            level=2,
+            parent=self.category,
             created_by=self.user,
             updated_by=self.user
         )
@@ -46,7 +54,7 @@ class StaffQualificationModelTest(TestCase):
         self.assertEqual(staff_qual.qualification, self.qualification)
         self.assertEqual(staff_qual.acquired_date, date(2024, 1, 15))
         self.assertEqual(staff_qual.certificate_number, 'TEST123')
-        self.assertEqual(str(staff_qual), '田中 太郎 - 基本情報技術者試験')
+        self.assertEqual(str(staff_qual), '田中 太郎 - 国家資格 > 基本情報技術者試験')
 
     def test_staff_qualification_unique_constraint(self):
         """スタッフ資格の一意制約テスト"""
@@ -84,6 +92,8 @@ class StaffQualificationModelTest(TestCase):
             staff=self.staff,
             qualification=Qualification.objects.create(
                 name='有効資格',
+                level=2,
+                parent=self.category,
                 created_by=self.user,
                 updated_by=self.user
             ),
@@ -112,6 +122,8 @@ class StaffQualificationModelTest(TestCase):
             staff=self.staff,
             qualification=Qualification.objects.create(
                 name='余裕資格',
+                level=2,
+                parent=self.category,
                 created_by=self.user,
                 updated_by=self.user
             ),
@@ -129,8 +141,16 @@ class StaffQualificationFormTest(TestCase):
             username='testuser',
             password='testpass123'
         )
+        self.category = Qualification.objects.create(
+            name='民間資格',
+            level=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
         self.qualification = Qualification.objects.create(
             name='テスト資格',
+            level=2,
+            parent=self.category,
             is_active=True,
             created_by=self.user,
             updated_by=self.user
@@ -159,6 +179,8 @@ class StaffQualificationFormTest(TestCase):
         # 非アクティブな資格を作成
         inactive_qual = Qualification.objects.create(
             name='非アクティブ資格',
+            level=2,
+            parent=self.category,
             is_active=False,
             created_by=self.user,
             updated_by=self.user
@@ -198,8 +220,16 @@ class StaffQualificationViewTest(TestCase):
             created_by=self.user,
             updated_by=self.user
         )
+        self.category = Qualification.objects.create(
+            name='民間資格',
+            level=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
         self.qualification = Qualification.objects.create(
             name='テスト資格',
+            level=2,
+            parent=self.category,
             is_active=True,
             created_by=self.user,
             updated_by=self.user
@@ -238,6 +268,8 @@ class StaffQualificationViewTest(TestCase):
         
         new_qualification = Qualification.objects.create(
             name='新しい資格',
+            level=2,
+            parent=self.category,
             is_active=True,
             created_by=self.user,
             updated_by=self.user
@@ -262,15 +294,7 @@ class StaffQualificationViewTest(TestCase):
             ).exists()
         )
 
-    def test_staff_qualification_detail_view(self):
-        """スタッフ資格詳細ビューのテスト"""
-        self.test_client.login(username='testuser', password='testpass123')
-        
-        response = self.test_client.get(
-            reverse('staff:staff_qualification_detail', kwargs={'pk': self.staff_qualification.pk})
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'テスト資格')
+    
 
     def test_staff_qualification_update_view(self):
         """スタッフ資格更新ビューのテスト"""

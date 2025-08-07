@@ -104,8 +104,6 @@ class Qualification(MyModel):
             raise ValidationError('自分自身を親にすることはできません。')
     
     def save(self, *args, **kwargs):
-        """保存時のバリデーション"""
-        # skip_validationが指定されていない場合のみバリデーション実行
         if not kwargs.pop('skip_validation', False):
             self.clean()
         super().save(*args, **kwargs)
@@ -213,8 +211,6 @@ class Skill(MyModel):
             raise ValidationError('自分自身を親にすることはできません。')
     
     def save(self, *args, **kwargs):
-        """保存時のバリデーション"""
-        # skip_validationが指定されていない場合のみバリデーション実行
         if not kwargs.pop('skip_validation', False):
             self.clean()
         super().save(*args, **kwargs)

@@ -24,10 +24,16 @@ class StaffSkillModelTest(TestCase):
             created_by=self.user,
             updated_by=self.user
         )
+        self.category = Skill.objects.create(
+            name='プログラミング言語',
+            level=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
         self.skill = Skill.objects.create(
             name='Java',
-            category='プログラミング言語',
-            required_level='intermediate',
+            level=2,
+            parent=self.category,
             created_by=self.user,
             updated_by=self.user
         )
@@ -50,7 +56,7 @@ class StaffSkillModelTest(TestCase):
         self.assertEqual(staff_skill.level, 'advanced')
         self.assertEqual(staff_skill.acquired_date, date(2024, 1, 15))
         self.assertEqual(staff_skill.years_of_experience, 3)
-        self.assertEqual(str(staff_skill), '田中 太郎 - Java (上級)')
+        self.assertEqual(str(staff_skill), '田中 太郎 - プログラミング言語 > Java (上級)')
 
     def test_staff_skill_unique_constraint(self):
         """スタッフ技能の一意制約テスト"""
@@ -84,33 +90,7 @@ class StaffSkillModelTest(TestCase):
         
         self.assertEqual(staff_skill.level_display_name, 'エキスパート')
 
-    def test_meets_required_level_property(self):
-        """必要レベル達成判定のテスト"""
-        # 必要レベルを満たしている場合
-        advanced_skill = StaffSkill.objects.create(
-            staff=self.staff,
-            skill=self.skill,  # required_level='intermediate'
-            level='advanced',
-            created_by=self.user,
-            updated_by=self.user
-        )
-        self.assertTrue(advanced_skill.meets_required_level)
-        
-        # 必要レベルを満たしていない場合
-        beginner_skill = StaffSkill.objects.create(
-            staff=self.staff,
-            skill=Skill.objects.create(
-                name='Python',
-                category='プログラミング言語',
-                required_level='advanced',
-                created_by=self.user,
-                updated_by=self.user
-            ),
-            level='beginner',
-            created_by=self.user,
-            updated_by=self.user
-        )
-        self.assertFalse(beginner_skill.meets_required_level)
+    
 
 
 class StaffSkillFormTest(TestCase):
@@ -119,10 +99,16 @@ class StaffSkillFormTest(TestCase):
             username='testuser',
             password='testpass123'
         )
+        self.category = Skill.objects.create(
+            name='テストカテゴリ',
+            level=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
         self.skill = Skill.objects.create(
             name='テスト技能',
-            category='テスト',
-            required_level='intermediate',
+            level=2,
+            parent=self.category,
             is_active=True,
             created_by=self.user,
             updated_by=self.user
@@ -151,7 +137,8 @@ class StaffSkillFormTest(TestCase):
         # 非アクティブな技能を作成
         inactive_skill = Skill.objects.create(
             name='非アクティブ技能',
-            category='テスト',
+            level=2,
+            parent=self.category,
             is_active=False,
             created_by=self.user,
             updated_by=self.user
@@ -191,10 +178,16 @@ class StaffSkillViewTest(TestCase):
             created_by=self.user,
             updated_by=self.user
         )
+        self.category = Skill.objects.create(
+            name='テストカテゴリ',
+            level=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
         self.skill = Skill.objects.create(
             name='テスト技能',
-            category='テスト',
-            required_level='intermediate',
+            level=2,
+            parent=self.category,
             is_active=True,
             created_by=self.user,
             updated_by=self.user
@@ -234,8 +227,8 @@ class StaffSkillViewTest(TestCase):
         
         new_skill = Skill.objects.create(
             name='新しい技能',
-            category='テスト',
-            required_level='beginner',
+            level=2,
+            parent=self.category,
             is_active=True,
             created_by=self.user,
             updated_by=self.user
@@ -261,15 +254,7 @@ class StaffSkillViewTest(TestCase):
             ).exists()
         )
 
-    def test_staff_skill_detail_view(self):
-        """スタッフ技能詳細ビューのテスト"""
-        self.test_client.login(username='testuser', password='testpass123')
-        
-        response = self.test_client.get(
-            reverse('staff:staff_skill_detail', kwargs={'pk': self.staff_skill.pk})
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'テスト技能')
+    
 
     def test_staff_skill_update_view(self):
         """スタッフ技能更新ビューのテスト"""

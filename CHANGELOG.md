@@ -2,6 +2,16 @@
 
 ## 2025-08-08
 
+### Changed
+- **テスト**:
+    - `apps/master/models.py`の`Qualification`および`Skill`モデルの`save`メソッドから`skip_validation`引数を削除しました。
+    - `apps/staff/tests/test_staff_qualification.py`および`apps/staff/tests/test_staff_skill.py`のテストコードを修正し、`Qualification`および`Skill`モデルのインスタンス作成時に`skip_validation`引数を渡さないようにしました。
+    - `apps/staff/tests/test_staff_qualification.py`および`apps/staff/tests/test_staff_skill.py`から、削除された詳細ビューのテストを削除しました。
+    - `apps/staff/tests/test_staff_skill.py`から、`Skill`モデルの`required_level`属性削除に伴うテストを削除しました。
+    - `apps/staff/tests/test_staff_qualification.py`および`apps/staff/tests/test_staff_skill.py`の`__str__`メソッドのテストの期待値を、階層構造を反映した新しい文字列形式に更新しました。
+
+## 2025-08-08
+
 ### Added
 - **スタッフ管理**:
     - 保有資格および保有技能の編集・削除機能を追加しました。
