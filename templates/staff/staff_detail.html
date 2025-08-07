@@ -133,6 +133,98 @@
                         </div>
                     </div>
 
+                    <!-- 資格・技能セクション -->
+                    <div class="row mb-4">
+                        <div class="col-sm-6">
+                            <h6><strong>保有資格</strong></h6>
+                            {% if qualifications %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>資格名</th>
+                                                <th>取得日</th>
+                                                <th>有効期限</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for q in qualifications %}
+                                            <tr>
+                                                <td>{{ q.qualification.name }}</td>
+                                                <td>{{ q.acquired_date|date:"Y/m/d"|default:"-" }}</td>
+                                                <td>
+                                                    {% if q.expiry_date %}
+                                                        {% if q.is_expired %}
+                                                            <span class="text-danger">{{ q.expiry_date|date:"Y/m/d" }}</span>
+                                                        {% else %}
+                                                            {{ q.expiry_date|date:"Y/m/d" }}
+                                                        {% endif %}
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">登録されている資格はありません</p>
+                            {% endif %}
+                            <div class="mt-2">
+                                {% if perms.staff.add_staffqualification %}
+                                <a href="{% url 'staff:staff_qualification_create' staff.pk %}" class="btn btn-sm btn-success me-2">資格登録</a>
+                                {% endif %}
+                                <a href="{% url 'staff:staff_qualification_list' staff.pk %}" class="btn btn-sm btn-outline-secondary">全て表示</a>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <h6><strong>保有技能</strong></h6>
+                            {% if skills %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>技能名</th>
+                                                <th>レベル</th>
+                                                <th>経験年数</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for s in skills %}
+                                            <tr>
+                                                <td>{{ s.skill.name }}</td>
+                                                <td>
+                                                    {% if s.level == 'beginner' %}
+                                                        <span class="badge bg-secondary">初級</span>
+                                                    {% elif s.level == 'intermediate' %}
+                                                        <span class="badge bg-primary">中級</span>
+                                                    {% elif s.level == 'advanced' %}
+                                                        <span class="badge bg-success">上級</span>
+                                                    {% elif s.level == 'expert' %}
+                                                        <span class="badge bg-warning">エキスパート</span>
+                                                    {% else %}
+                                                        {{ s.get_level_display }}
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ s.years_of_experience|default:"-" }}年</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">登録されている技能はありません</p>
+                            {% endif %}
+                            <div class="mt-2">
+                                {% if perms.staff.add_staffskill %}
+                                <a href="{% url 'staff:staff_skill_create' staff.pk %}" class="btn btn-sm btn-success me-2">技能登録</a>
+                                {% endif %}
+                                <a href="{% url 'staff:staff_skill_list' staff.pk %}" class="btn btn-sm btn-outline-secondary">全て表示</a>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="d-flex justify-content-start">
                         {% if perms.staff.change_staff %}
                         <a href="{% url 'staff:staff_update' staff.pk %}" class="btn btn-sm btn-primary me-2">編集</a>

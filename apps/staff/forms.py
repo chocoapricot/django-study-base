@@ -1,7 +1,7 @@
 # forms.py
 from django import forms
 from django.forms import TextInput
-from .models import Staff, StaffContacted
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill
 # スタッフ連絡履歴フォーム
 class StaffContactedForm(forms.ModelForm):
     contact_type = forms.ChoiceField(
@@ -144,3 +144,53 @@ class StaffForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
             # 'regist_form_code': forms.Select(attrs={'class': 'form-control form-control-sm form-select-sm'}),
         }
+
+
+class StaffQualificationForm(forms.ModelForm):
+    """スタッフ資格フォーム"""
+    
+    class Meta:
+        model = StaffQualification
+        fields = ['qualification', 'acquired_date', 'expiry_date', 'certificate_number', 'memo']
+        widgets = {
+            'qualification': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'acquired_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'expiry_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'certificate_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # 資格のみ（レベル2）を選択肢として設定
+        from apps.master.models import Qualification
+        qualifications = Qualification.objects.filter(level=2, is_active=True).select_related('parent').order_by('parent__display_order', 'parent__name', 'display_order', 'name')
+        self.fields['qualification'].choices = [('', '選択してください')] + [
+            (q.pk, f"{q.parent.name} > {q.name}" if q.parent else q.name)
+            for q in qualifications
+        ]
+
+
+class StaffSkillForm(forms.ModelForm):
+    """スタッフ技能フォーム"""
+    
+    class Meta:
+        model = StaffSkill
+        fields = ['skill', 'level', 'acquired_date', 'years_of_experience', 'memo']
+        widgets = {
+            'skill': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'level': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'acquired_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'years_of_experience': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # 技能のみ（レベル2）を選択肢として設定
+        from apps.master.models import Skill
+        skills = Skill.objects.filter(level=2, is_active=True).select_related('parent').order_by('parent__display_order', 'parent__name', 'display_order', 'name')
+        self.fields['skill'].choices = [('', '選択してください')] + [
+            (s.pk, f"{s.parent.name} > {s.name}" if s.parent else s.name)
+            for s in skills
+        ]

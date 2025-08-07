@@ -170,6 +170,10 @@ def staff_detail(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
     # 連絡履歴（最新5件）
     contacted_list = staff.contacted_histories.all()[:5]
+    # 資格情報（最新5件）
+    qualifications = staff.qualifications.select_related('qualification').order_by('-acquired_date')[:5]
+    # 技能情報（最新5件）
+    skills = staff.skills.select_related('skill').order_by('-acquired_date')[:5]
     # AppLogに詳細画面アクセスを記録
     from apps.system.logs.utils import log_view_detail
     log_view_detail(request.user, staff)
@@ -179,6 +183,8 @@ def staff_detail(request, pk):
     return render(request, 'staff/staff_detail.html', {
         'staff': staff,
         'contacted_list': contacted_list,
+        'qualifications': qualifications,
+        'skills': skills,
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
     })
@@ -359,3 +365,73 @@ def staff_fuyokojo(request, pk):
     response = HttpResponse(output_pdf.read(), content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="staff_fuyokojo_'+str(pk)+'.pdf"'
     return response
+# スタッフ資格登録
+@login_required
+@permission_required('staff.add_staffqualification', raise_exception=True)
+def staff_qualification_create(request, staff_pk):
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    if request.method == 'POST':
+        from .forms import StaffQualificationForm
+        form = StaffQualificationForm(request.POST)
+        if form.is_valid():
+            qualification = form.save(commit=False)
+            qualification.staff = staff
+            qualification.save()
+            return redirect('staff:staff_detail', pk=staff.pk)
+    else:
+        from .forms import StaffQualificationForm
+        form = StaffQualificationForm()
+    
+    return render(request, 'staff/staff_qualification_create.html', {
+        'form': form,
+        'staff': staff
+    })
+
+
+# スタッフ技能登録
+@login_required
+@permission_required('staff.add_staffskill', raise_exception=True)
+def staff_skill_create(request, staff_pk):
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    if request.method == 'POST':
+        from .forms import StaffSkillForm
+        form = StaffSkillForm(request.POST)
+        if form.is_valid():
+            skill = form.save(commit=False)
+            skill.staff = staff
+            skill.save()
+            return redirect('staff:staff_detail', pk=staff.pk)
+    else:
+        from .forms import StaffSkillForm
+        form = StaffSkillForm()
+    
+    return render(request, 'staff/staff_skill_create.html', {
+        'form': form,
+        'staff': staff
+    })
+
+
+# スタッフ資格一覧
+@login_required
+@permission_required('staff.view_staffqualification', raise_exception=True)
+def staff_qualification_list(request, staff_pk):
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    qualifications = staff.qualifications.select_related('qualification').order_by('-acquired_date')
+    
+    return render(request, 'staff/staff_qualification_list.html', {
+        'staff': staff,
+        'qualifications': qualifications
+    })
+
+
+# スタッフ技能一覧
+@login_required
+@permission_required('staff.view_staffskill', raise_exception=True)
+def staff_skill_list(request, staff_pk):
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    skills = staff.skills.select_related('skill').order_by('-acquired_date')
+    
+    return render(request, 'staff/staff_skill_list.html', {
+        'staff': staff,
+        'skills': skills
+    })

@@ -1,0 +1,71 @@
+{% extends 'common/_base.html' %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        {{ staff.name_last }} {{ staff.name_first }} - 資格登録
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.qualification.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">資格</label>
+                <div class="col-sm-6">
+                    {{ form.qualification }}
+                    {% if form.qualification.errors %}
+                        <div class="text-danger">{{ form.qualification.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.acquired_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">取得日</label>
+                <div class="col-sm-3">
+                    {{ form.acquired_date }}
+                    {% if form.acquired_date.errors %}
+                        <div class="text-danger">{{ form.acquired_date.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.expiry_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">有効期限</label>
+                <div class="col-sm-3">
+                    {{ form.expiry_date }}
+                    {% if form.expiry_date.errors %}
+                        <div class="text-danger">{{ form.expiry_date.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.certificate_number.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">証明書番号</label>
+                <div class="col-sm-4">
+                    {{ form.certificate_number }}
+                    {% if form.certificate_number.errors %}
+                        <div class="text-danger">{{ form.certificate_number.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-top">
+                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">メモ</label>
+                <div class="col-sm-8">
+                    {{ form.memo }}
+                    {% if form.memo.errors %}
+                        <div class="text-danger">{{ form.memo.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-sm-10 offset-sm-2">
+                    <button type="submit" class="btn btn-sm btn-primary me-2">登録</button>
+                    <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

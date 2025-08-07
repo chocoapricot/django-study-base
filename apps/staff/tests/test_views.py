@@ -114,7 +114,7 @@ class StaffViewsTest(TestCase):
             )
 
     def test_staff_list_view(self):
-        response = self.client.get(reverse('staff_list'))
+        response = self.client.get(reverse('staff:staff_list'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_list.html')
         self.assertContains(response, 'テスト')
@@ -122,7 +122,7 @@ class StaffViewsTest(TestCase):
     def test_staff_list_regist_form_filter(self):
         """登録区分での絞り込み機能をテスト"""
         # 1. 正社員のみを絞り込み
-        response = self.client.get(reverse('staff_list'), {'regist_form': '1'})
+        response = self.client.get(reverse('staff:staff_list'), {'regist_form': '1'})
         self.assertEqual(response.status_code, 200)
         
         # 正社員のスタッフが表示されることを確認
@@ -131,7 +131,7 @@ class StaffViewsTest(TestCase):
         self.assertNotContains(response, '鈴木')  # staff3 (派遣社員)
         
         # 2. 契約社員のみを絞り込み
-        response = self.client.get(reverse('staff_list'), {'regist_form': '2'})
+        response = self.client.get(reverse('staff:staff_list'), {'regist_form': '2'})
         self.assertEqual(response.status_code, 200)
         
         # 契約社員のスタッフが表示されることを確認
@@ -140,7 +140,7 @@ class StaffViewsTest(TestCase):
         self.assertNotContains(response, '鈴木')  # staff3 (派遣社員)
         
         # 3. 派遣社員のみを絞り込み
-        response = self.client.get(reverse('staff_list'), {'regist_form': '10'})
+        response = self.client.get(reverse('staff:staff_list'), {'regist_form': '10'})
         self.assertEqual(response.status_code, 200)
         
         # 派遣社員のスタッフが表示されることを確認
@@ -149,7 +149,7 @@ class StaffViewsTest(TestCase):
         self.assertContains(response, '鈴木')  # staff3 (派遣社員)
         
         # 4. フィルターなし（全て表示）
-        response = self.client.get(reverse('staff_list'))
+        response = self.client.get(reverse('staff:staff_list'))
         self.assertEqual(response.status_code, 200)
         
         # 全てのスタッフが表示されることを確認
@@ -160,7 +160,7 @@ class StaffViewsTest(TestCase):
     def test_staff_list_combined_search_and_filter(self):
         """検索キーワードと登録区分フィルターの組み合わせテスト"""
         # 1. 「田中」で検索 + 正社員フィルター
-        response = self.client.get(reverse('staff_list'), {
+        response = self.client.get(reverse('staff:staff_list'), {
             'q': '田中',
             'regist_form': '1'
         })
@@ -172,7 +172,7 @@ class StaffViewsTest(TestCase):
         self.assertNotContains(response, '鈴木')
         
         # 2. 「田中」で検索 + 契約社員フィルター（該当なし）
-        response = self.client.get(reverse('staff_list'), {
+        response = self.client.get(reverse('staff:staff_list'), {
             'q': '田中',
             'regist_form': '2'
         })
@@ -195,7 +195,7 @@ class StaffViewsTest(TestCase):
 
     def test_staff_list_regist_form_options(self):
         """登録区分の選択肢が正しく表示されることをテスト"""
-        response = self.client.get(reverse('staff_list'))
+        response = self.client.get(reverse('staff:staff_list'))
         self.assertEqual(response.status_code, 200)
         
         # 登録区分の選択肢が含まれていることを確認
@@ -210,7 +210,7 @@ class StaffViewsTest(TestCase):
 
     def test_regist_form_filter_ui_elements(self):
         """登録区分フィルターのUI要素が正しく表示されることをテスト"""
-        response = self.client.get(reverse('staff_list'))
+        response = self.client.get(reverse('staff:staff_list'))
         self.assertEqual(response.status_code, 200)
         
         # 検索フォームの要素が存在することを確認
@@ -232,7 +232,7 @@ class StaffViewsTest(TestCase):
         self.assertContains(response, 'onclick="resetForm()"')
 
     def test_staff_create_view_get(self):
-        response = self.client.get(reverse('staff_create'))
+        response = self.client.get(reverse('staff:staff_create'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_form.html')
 
@@ -248,19 +248,19 @@ class StaffViewsTest(TestCase):
             'employee_no': 'EMP002',
             'email': 'newstaff@example.com'
         }
-        response = self.client.post(reverse('staff_create'), data)
+        response = self.client.post(reverse('staff:staff_create'), data)
         self.assertEqual(response.status_code, 302)  # Redirects to staff_list
         self.assertTrue(Staff.objects.filter(name_last='新規', name_first='スタッフ').exists())
 
     def test_staff_detail_view(self):
-        response = self.client.get(reverse('staff_detail', args=[self.staff_obj.pk]))
+        response = self.client.get(reverse('staff:staff_detail', args=[self.staff_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_detail.html')
         self.assertContains(response, 'テスト')
         self.assertContains(response, 'スタッフ')
 
     def test_staff_update_view_get(self):
-        response = self.client.get(reverse('staff_update', args=[self.staff_obj.pk]))
+        response = self.client.get(reverse('staff:staff_update', args=[self.staff_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_form.html')
         self.assertContains(response, 'テスト')
@@ -278,25 +278,25 @@ class StaffViewsTest(TestCase):
             'employee_no': 'EMP001',
             'email': 'test@example.com'
         }
-        response = self.client.post(reverse('staff_update', args=[self.staff_obj.pk]), data)
+        response = self.client.post(reverse('staff:staff_update', args=[self.staff_obj.pk]), data)
         self.assertEqual(response.status_code, 302)  # Redirects to staff_detail
         self.staff_obj.refresh_from_db()
         self.assertEqual(self.staff_obj.name_last, '更新')
 
     def test_staff_delete_view_get(self):
-        response = self.client.get(reverse('staff_delete', args=[self.staff_obj.pk]))
+        response = self.client.get(reverse('staff:staff_delete', args=[self.staff_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_confirm_delete.html')
         self.assertContains(response, 'テスト')
         self.assertContains(response, 'スタッフ')
 
     def test_staff_delete_view_post(self):
-        response = self.client.post(reverse('staff_delete', args=[self.staff_obj.pk]))
+        response = self.client.post(reverse('staff:staff_delete', args=[self.staff_obj.pk]))
         self.assertEqual(response.status_code, 302)  # Redirects to staff_list
         self.assertFalse(Staff.objects.filter(pk=self.staff_obj.pk).exists())
 
     def test_staff_contacted_create_view_get(self):
-        response = self.client.get(reverse('staff_contacted_create', args=[self.staff_obj.pk]))
+        response = self.client.get(reverse('staff:staff_contacted_create', args=[self.staff_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_contacted_form.html')
 
@@ -306,14 +306,14 @@ class StaffViewsTest(TestCase):
             'detail': 'これはテスト連絡の詳細です。',
             'contact_type': 1,
         }
-        response = self.client.post(reverse('staff_contacted_create', args=[self.staff_obj.pk]), data)
+        response = self.client.post(reverse('staff:staff_contacted_create', args=[self.staff_obj.pk]), data)
         self.assertEqual(response.status_code, 302)  # Redirects to staff_detail
         self.assertTrue(StaffContacted.objects.filter(staff=self.staff_obj, content='テスト連絡').exists())
 
     def test_staff_contacted_list_view(self):
         StaffContacted.objects.create(staff=self.staff_obj, content='連絡1')
         StaffContacted.objects.create(staff=self.staff_obj, content='連絡2')
-        response = self.client.get(reverse('staff_contacted_list', args=[self.staff_obj.pk]))
+        response = self.client.get(reverse('staff:staff_contacted_list', args=[self.staff_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_contacted_list.html')
         self.assertContains(response, '連絡1')
@@ -321,14 +321,14 @@ class StaffViewsTest(TestCase):
 
     def test_staff_contacted_detail_view(self):
         contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='詳細テスト連絡', detail='詳細')
-        response = self.client.get(reverse('staff_contacted_detail', args=[contacted_obj.pk]))
+        response = self.client.get(reverse('staff:staff_contacted_detail', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_contacted_detail.html')
         self.assertContains(response, '詳細')
 
     def test_staff_contacted_update_view_get(self):
         contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='元の連絡')
-        response = self.client.get(reverse('staff_contacted_update', args=[contacted_obj.pk]))
+        response = self.client.get(reverse('staff:staff_contacted_update', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_contacted_form.html')
         self.assertContains(response, '元の連絡')
@@ -340,26 +340,26 @@ class StaffViewsTest(TestCase):
             'detail': '更新された連絡の詳細です。',
             'contact_type': 2,
         }
-        response = self.client.post(reverse('staff_contacted_update', args=[contacted_obj.pk]), data)
+        response = self.client.post(reverse('staff:staff_contacted_update', args=[contacted_obj.pk]), data)
         self.assertEqual(response.status_code, 302)  # Redirects to staff_detail
         contacted_obj.refresh_from_db()
         self.assertEqual(contacted_obj.content, '更新された連絡')
 
     def test_staff_contacted_delete_view_get(self):
         contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='削除テスト連絡')
-        response = self.client.get(reverse('staff_contacted_delete', args=[contacted_obj.pk]))
+        response = self.client.get(reverse('staff:staff_contacted_delete', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_contacted_confirm_delete.html')
         self.assertContains(response, '削除テスト連絡')
 
     def test_staff_contacted_delete_view_post(self):
         contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='削除テスト連絡')
-        response = self.client.post(reverse('staff_contacted_delete', args=[contacted_obj.pk]))
+        response = self.client.post(reverse('staff:staff_contacted_delete', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 302)  # Redirects to staff_detail
         self.assertFalse(StaffContacted.objects.filter(pk=contacted_obj.pk).exists())
 
     def test_staff_change_history_list_view(self):
-        response = self.client.get(reverse('staff_change_history_list', args=[self.staff_obj.pk]))
+        response = self.client.get(reverse('staff:staff_change_history_list', args=[self.staff_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_change_history_list.html')
         self.assertContains(response, 'テスト')
