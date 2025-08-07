@@ -15,9 +15,7 @@
                     <tr>
                         <th>マスタ名</th>
                         <th>説明</th>
-                        <th>カテゴリ数</th>
                         <th>データ数</th>
-                        <th>総件数</th>
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -26,18 +24,16 @@
                     <tr>
                         <td>{{ master.name }}</td>
                         <td>{{ master.description }}</td>
-                        <td>{{ master.category_count }}件</td>
                         <td>{{ master.data_count }}件</td>
-                        <td>{{ master.total_count }}件</td>
                         <td>
-                            <a href="{{ master.url }}" class="btn btn-sm btn-primary">
-                                <i class="{{ master.icon }}"></i> 管理
+                            <a href="{{ master.url }}" class="btn btn-sm btn-dark" title="編集">
+                                <i class="bi bi-pencil"></i>
                             </a>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center">利用可能なマスタがありません。</td>
+                        <td colspan="4" class="text-center">利用可能なマスタがありません。</td>
                     </tr>
                     {% endfor %}
                 </tbody>

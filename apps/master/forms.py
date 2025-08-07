@@ -42,7 +42,7 @@ class QualificationForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'parent': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-            'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'description': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
         }
@@ -111,7 +111,7 @@ class SkillForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'parent': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-            'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'description': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
         }

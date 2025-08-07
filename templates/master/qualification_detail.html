@@ -70,19 +70,7 @@
             </div>
         </div>
         
-        <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">作成日時</label>
-            <div class="col-sm-6">
-                <p class="form-control-plaintext">{{ qualification.created_at|date:"Y年m月d日 H:i" }}</p>
-            </div>
-        </div>
         
-        <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">更新日時</label>
-            <div class="col-sm-6">
-                <p class="form-control-plaintext">{{ qualification.updated_at|date:"Y年m月d日 H:i" }}</p>
-            </div>
-        </div>
         
         {% if qualification.is_category %}
         <!-- カテゴリの場合、子資格を表示 -->
