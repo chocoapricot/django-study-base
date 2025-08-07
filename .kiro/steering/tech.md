@@ -72,6 +72,18 @@ python manage.py runserver
 python manage.py test apps.api.tests
 ```
 
+## 環境制約
+- **Django Shell制約**: この環境では `python manage.py shell` による対話的実行は利用できません
+  - データベース操作やモデルのテストが必要な場合は、テストファイルやビューを通じて実行してください
+- **Webインターフェース制約**: Kiroはブラウザ操作ができないため、Webインターフェースでの動作確認はできません
+  - `python manage.py runserver` でテストサーバを起動しても、Kiroは画面を確認できません
+  - 動作確認は以下の方法で行ってください：
+    - **テストケース実行**: `python manage.py test apps.master.tests`
+    - **管理コマンド作成**: カスタム管理コマンドでデータ操作・確認
+    - **ログ出力**: print文やloggingでデバッグ情報を出力
+    - **データベース直接確認**: `python manage.py dbshell` でSQL実行
+    - **データダンプ**: `python manage.py dumpdata` でデータ確認
+
 ## 設定メモ
 - 設定モジュール: `config.settings.settings`
 - 日本語ローカライゼーション（ja-JP、Asia/Tokyo）

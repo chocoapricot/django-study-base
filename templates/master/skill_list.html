@@ -7,26 +7,38 @@
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         技能一覧
-        <a href="{% url 'master:skill_create' %}" class="btn btn-sm btn-primary">
-            新規作成
-        </a>
+        <div>
+            <a href="{% url 'master:skill_category_create' %}" class="btn btn-sm btn-success">
+                カテゴリ作成
+            </a>
+            <a href="{% url 'master:skill_create' %}" class="btn btn-sm btn-primary">
+                技能作成
+            </a>
+        </div>
     </div>
     <div class="card-body mb-0">
         <!-- 検索・フィルタフォーム -->
         <form method="get" class="mb-3">
             <div class="row">
-                <div class="col-md-4">
-                    <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-sm" placeholder="技能名・カテゴリで検索">
+                <div class="col-md-3">
+                    <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-sm" placeholder="名称で検索">
+                </div>
+                <div class="col-md-2">
+                    <select name="level" class="form-control form-control-sm">
+                        <option value="">全レベル</option>
+                        {% for value, label in level_choices %}
+                            <option value="{{ value }}" {% if level_filter == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="col-md-2">
                     <select name="category" class="form-control form-control-sm">
                         <option value="">全カテゴリ</option>
                         {% for category in categories %}
-                            <option value="{{ category }}" {% if category_filter == category %}selected{% endif %}>{{ category }}</option>
+                            <option value="{{ category.pk }}" {% if category_filter == category.pk|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
-
                 <div class="col-md-2">
                     <select name="is_active" class="form-control form-control-sm">
                         <option value="">全て</option>
@@ -34,88 +46,100 @@
                         <option value="false" {% if is_active_filter == 'false' %}selected{% endif %}>無効</option>
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <button type="submit" class="btn btn-sm btn-secondary">検索</button>
                     <a href="{% url 'master:skill_list' %}" class="btn btn-sm btn-outline-secondary">クリア</a>
                 </div>
             </div>
         </form>
         
-        <!-- 技能一覧テーブル -->
-        <div class="table-responsive">
-            <table class="table table-sm table-striped">
-                <thead>
-                    <tr>
-                        <th>技能名</th>
-                        <th>カテゴリ</th>
-                        <th>状態</th>
-                        <th>表示順</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for skill in page_obj %}
-                    <tr>
-                        <td>
-                            <a href="{% url 'master:skill_detail' skill.pk %}">{{ skill.name }}</a>
-                        </td>
-                        <td>{{ skill.category|default:"-" }}</td>
-                        <td>
-                            {% if skill.is_active %}
-                                <span class="badge bg-success">有効</span>
-                            {% else %}
-                                <span class="badge bg-secondary">無効</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ skill.display_order }}</td>
-                        <td>
-                            <a href="{% url 'master:skill_update' skill.pk %}" class="btn btn-dark btn-sm" title="編集">
+        <!-- 技能階層一覧 -->
+        {% if hierarchical_data %}
+            {% for category_data in hierarchical_data %}
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="bi bi-folder"></i>
+                            <strong>{{ category_data.category.name }}</strong>
+                            <span class="badge bg-light text-dark ms-2">{{ category_data.skills|length }}件</span>
+                        </div>
+                        <div>
+                            <a href="{% url 'master:skill_detail' category_data.category.pk %}" class="btn btn-sm btn-outline-light" title="詳細">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{% url 'master:skill_update' category_data.category.pk %}" class="btn btn-sm btn-outline-light" title="編集">
                                 <i class="bi bi-pencil"></i>
                             </a>
-                            <a href="{% url 'master:skill_delete' skill.pk %}" class="btn btn-dark btn-sm" title="削除">
+                            <a href="{% url 'master:skill_delete' category_data.category.pk %}" class="btn btn-sm btn-outline-light" title="削除">
                                 <i class="bi bi-x"></i>
                             </a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center">技能が登録されていません。</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- ページネーション -->
-        {% if page_obj.has_other_pages %}
-        <nav aria-label="ページネーション">
-            <ul class="pagination pagination-sm justify-content-center">
-                {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if is_active_filter %}&is_active={{ is_active_filter }}{% endif %}">前へ</a>
-                    </li>
-                {% endif %}
-                
-                {% for num in page_obj.paginator.page_range %}
-                    {% if page_obj.number == num %}
-                        <li class="page-item active">
-                            <span class="page-link">{{ num }}</span>
-                        </li>
-                    {% else %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if is_active_filter %}&is_active={{ is_active_filter }}{% endif %}">{{ num }}</a>
-                        </li>
+                        </div>
+                    </div>
+                    
+                    {% if category_data.category.description %}
+                    <div class="card-body py-2">
+                        <small class="text-muted">{{ category_data.category.description }}</small>
+                    </div>
                     {% endif %}
-                {% endfor %}
-                
-                {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}{% if is_active_filter %}&is_active={{ is_active_filter }}{% endif %}">次へ</a>
-                    </li>
-                {% endif %}
-            </ul>
-        </nav>
+                    
+                    {% if category_data.skills %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th width="40%">技能名</th>
+                                    <th width="30%">説明</th>
+                                    <th width="10%">状態</th>
+                                    <th width="10%">表示順</th>
+                                    <th width="10%">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for skill in category_data.skills %}
+                                <tr>
+                                    <td>
+                                        <i class="bi bi-file-text text-muted me-1"></i>
+                                        <a href="{% url 'master:skill_detail' skill.pk %}">{{ skill.name }}</a>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ skill.description|truncatechars:50 }}</small>
+                                    </td>
+                                    <td>
+                                        {% if skill.is_active %}
+                                            <span class="badge bg-success">有効</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">無効</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ skill.display_order }}</td>
+                                    <td>
+                                        <a href="{% url 'master:skill_update' skill.pk %}" class="btn btn-dark btn-sm" title="編集">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="{% url 'master:skill_delete' skill.pk %}" class="btn btn-dark btn-sm" title="削除">
+                                            <i class="bi bi-x"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="card-body text-center text-muted">
+                        <i class="bi bi-inbox"></i>
+                        このカテゴリには技能が登録されていません。
+                    </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle"></i>
+                条件に一致する技能・カテゴリが見つかりませんでした。
+            </div>
         {% endif %}
+
     </div>
 </div>
 {% endblock %}

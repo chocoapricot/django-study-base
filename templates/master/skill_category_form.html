@@ -13,7 +13,7 @@
             {% csrf_token %}
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">技能名 <span class="text-danger">*</span></label>
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">カテゴリ名 <span class="text-danger">*</span></label>
                 <div class="col-sm-6">
                     {{ form.name }}
                     {% if form.name.errors %}
@@ -21,17 +21,6 @@
                     {% endif %}
                 </div>
             </div>
-            
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.parent.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">カテゴリ <span class="text-danger">*</span></label>
-                <div class="col-sm-4">
-                    {{ form.parent }}
-                    {% if form.parent.errors %}
-                        <div class="text-danger small">{{ form.parent.errors.0 }}</div>
-                    {% endif %}
-                </div>
-            </div>
-            
             
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.description.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">説明</label>

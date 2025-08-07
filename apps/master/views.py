@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
 from .models import Qualification, Skill
-from .forms import QualificationForm, SkillForm
+from .forms import QualificationForm, SkillForm, SkillCategoryForm
 
 
 # 資格管理ビュー
@@ -128,44 +128,75 @@ def qualification_delete(request, pk):
 @login_required
 @permission_required('master.view_skill', raise_exception=True)
 def skill_list(request):
-    """技能一覧"""
-    skills = Skill.objects.all()
-    
+    """技能一覧（階層表示）"""
     # 検索機能
     search_query = request.GET.get('q', '')
-    if search_query:
-        skills = skills.filter(
-            Q(name__icontains=search_query) |
-            Q(category__icontains=search_query) |
-            Q(description__icontains=search_query)
-        )
     
-    # カテゴリフィルタ
+    # レベルフィルタ
+    level_filter = request.GET.get('level', '')
+    
+    # カテゴリフィルタ（親カテゴリ）
     category_filter = request.GET.get('category', '')
-    if category_filter:
-        skills = skills.filter(category=category_filter)
-    
-
     
     # アクティブフィルタ
     is_active_filter = request.GET.get('is_active', '')
+    
+    # フィルタ条件に基づいてカテゴリと技能を取得
+    categories_query = Skill.objects.filter(level=1)
+    skills_query = Skill.objects.filter(level=2).select_related('parent')
+    
+    # 検索条件を適用
+    if search_query:
+        categories_query = categories_query.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+        skills_query = skills_query.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(parent__name__icontains=search_query)
+        )
+    
+    # アクティブフィルタを適用
     if is_active_filter:
-        skills = skills.filter(is_active=is_active_filter == 'true')
+        is_active = is_active_filter == 'true'
+        categories_query = categories_query.filter(is_active=is_active)
+        skills_query = skills_query.filter(is_active=is_active)
     
-    # ページネーション
-    paginator = Paginator(skills, 20)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    # カテゴリフィルタを適用
+    if category_filter:
+        categories_query = categories_query.filter(pk=category_filter)
+        skills_query = skills_query.filter(parent_id=category_filter)
     
-    # カテゴリ一覧を取得（フィルタ用）
-    categories = Skill.objects.values_list('category', flat=True).distinct().exclude(category__isnull=True).exclude(category='')
+    # レベルフィルタを適用
+    if level_filter == '1':
+        # カテゴリのみ表示
+        skills_query = Skill.objects.none()
+    elif level_filter == '2':
+        # 技能のみ表示
+        categories_query = Skill.objects.none()
+    
+    # 階層構造でデータを整理
+    hierarchical_data = []
+    
+    for category in categories_query.filter(is_active=True).order_by('display_order', 'name'):
+        category_skills = skills_query.filter(parent=category, is_active=True).order_by('display_order', 'name')
+        hierarchical_data.append({
+            'category': category,
+            'skills': list(category_skills)
+        })
+    
+    # フィルタ用のカテゴリ一覧
+    all_categories = Skill.get_categories()
     
     context = {
-        'page_obj': page_obj,
+        'hierarchical_data': hierarchical_data,
         'search_query': search_query,
+        'level_filter': level_filter,
         'category_filter': category_filter,
         'is_active_filter': is_active_filter,
-        'categories': categories,
+        'categories': all_categories,
+        'level_choices': Skill.LEVEL_CHOICES,
     }
     return render(request, 'master/skill_list.html', context)
 
@@ -179,6 +210,29 @@ def skill_detail(request, pk):
         'skill': skill,
     }
     return render(request, 'master/skill_detail.html', context)
+
+
+@login_required
+@permission_required('master.add_skill', raise_exception=True)
+def skill_category_create(request):
+    """技能カテゴリ作成"""
+    if request.method == 'POST':
+        form = SkillCategoryForm(request.POST)
+        if form.is_valid():
+            category = form.save(commit=False)
+            category.created_by = request.user
+            category.updated_by = request.user
+            category.save()
+            messages.success(request, f'カテゴリ「{category.name}」を作成しました。')
+            return redirect('master:skill_detail', pk=category.pk)
+    else:
+        form = SkillCategoryForm()
+    
+    context = {
+        'form': form,
+        'title': 'カテゴリ作成',
+    }
+    return render(request, 'master/skill_category_form.html', context)
 
 
 @login_required
@@ -210,23 +264,33 @@ def skill_update(request, pk):
     """技能更新"""
     skill = get_object_or_404(Skill, pk=pk)
     
+    # カテゴリか技能かによってフォームを切り替え
+    if skill.is_category:
+        form_class = SkillCategoryForm
+        template_name = 'master/skill_category_form.html'
+        title = 'カテゴリ編集'
+    else:
+        form_class = SkillForm
+        template_name = 'master/skill_form.html'
+        title = '技能編集'
+    
     if request.method == 'POST':
-        form = SkillForm(request.POST, instance=skill)
+        form = form_class(request.POST, instance=skill)
         if form.is_valid():
             skill = form.save(commit=False)
             skill.updated_by = request.user
             skill.save()
-            messages.success(request, f'技能「{skill.name}」を更新しました。')
+            messages.success(request, f'「{skill.name}」を更新しました。')
             return redirect('master:skill_detail', pk=skill.pk)
     else:
-        form = SkillForm(instance=skill)
+        form = form_class(instance=skill)
     
     context = {
         'form': form,
         'skill': skill,
-        'title': '技能編集',
+        'title': title,
     }
-    return render(request, 'master/skill_form.html', context)
+    return render(request, template_name, context)
 
 
 @login_required

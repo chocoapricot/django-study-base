@@ -13,6 +13,7 @@ urlpatterns = [
     
     # 技能管理
     path('skill/', views.skill_list, name='skill_list'),
+    path('skill/category/create/', views.skill_category_create, name='skill_category_create'),
     path('skill/create/', views.skill_create, name='skill_create'),
     path('skill/<int:pk>/', views.skill_detail, name='skill_detail'),
     path('skill/<int:pk>/update/', views.skill_update, name='skill_update'),

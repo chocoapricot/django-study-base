@@ -6,22 +6,39 @@
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        技能詳細
+        {% if skill.is_category %}カテゴリ詳細{% else %}技能詳細{% endif %}
     </div>
     <div class="card-body">
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">技能名</label>
+            <label class="col-sm-2 col-form-label" style="text-align:right">名称</label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ skill.name }}</p>
             </div>
         </div>
         
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">カテゴリ</label>
+            <label class="col-sm-2 col-form-label" style="text-align:right">レベル</label>
             <div class="col-sm-10">
-                <p class="form-control-plaintext">{{ skill.category|default:"-" }}</p>
+                <p class="form-control-plaintext">
+                    {% if skill.is_category %}
+                        <span class="badge bg-info">{{ skill.level_display_name }}</span>
+                    {% else %}
+                        <span class="badge bg-primary">{{ skill.level_display_name }}</span>
+                    {% endif %}
+                </p>
             </div>
         </div>
+        
+        {% if skill.parent %}
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" style="text-align:right">親カテゴリ</label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">
+                    <a href="{% url 'master:skill_detail' skill.parent.pk %}">{{ skill.parent.name }}</a>
+                </p>
+            </div>
+        </div>
+        {% endif %}
         
         
         {% if skill.description %}
@@ -66,6 +83,33 @@
                 <p class="form-control-plaintext">{{ skill.updated_at|date:"Y/m/d H:i:s" }}</p>
             </div>
         </div>
+        
+        {% if skill.is_category %}
+        <!-- カテゴリの場合、子技能を表示 -->
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" style="text-align:right">子技能</label>
+            <div class="col-sm-10">
+                {% with children=skill.get_children %}
+                    {% if children %}
+                        <ul class="list-unstyled">
+                            {% for child in children %}
+                                <li class="mb-1">
+                                    <a href="{% url 'master:skill_detail' child.pk %}">{{ child.name }}</a>
+                                    {% if child.is_active %}
+                                        <span class="badge bg-success ms-2">有効</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary ms-2">無効</span>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="form-control-plaintext text-muted">子技能はありません</p>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+        {% endif %}
         
         <div class="d-flex justify-content-start">
             <a href="{% url 'master:skill_update' skill.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
