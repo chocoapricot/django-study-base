@@ -1,7 +1,8 @@
 # forms.py
+import os
 from django import forms
 from django.forms import TextInput
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile
 # スタッフ連絡履歴フォーム
 class StaffContactedForm(forms.ModelForm):
     contact_type = forms.ChoiceField(
@@ -177,10 +178,9 @@ class StaffSkillForm(forms.ModelForm):
     
     class Meta:
         model = StaffSkill
-        fields = ['skill', 'level', 'acquired_date', 'years_of_experience', 'memo']
+        fields = ['skill', 'acquired_date', 'years_of_experience', 'memo']
         widgets = {
             'skill': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-            'level': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'acquired_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'years_of_experience': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
@@ -195,3 +195,44 @@ class StaffSkillForm(forms.ModelForm):
             (s.pk, f"{s.parent.name} > {s.name}" if s.parent else s.name)
             for s in skills
         ]
+
+
+class StaffFileForm(forms.ModelForm):
+    """スタッフファイル添付フォーム"""
+    
+    class Meta:
+        model = StaffFile
+        fields = ['file', 'description']
+        widgets = {
+            'file': forms.ClearableFileInput(attrs={
+                'class': 'form-control form-control-sm',
+                'accept': '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.jpg,.jpeg,.png,.gif,.bmp,.webp',
+                'multiple': False
+            }),
+            'description': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'placeholder': 'ファイルの説明（任意）'
+            }),
+        }
+    
+    def clean_file(self):
+        file = self.cleaned_data.get('file')
+        if file:
+            # ファイルサイズチェック（10MB制限）
+            if file.size > 10 * 1024 * 1024:
+                raise forms.ValidationError('ファイルサイズは10MB以下にしてください。')
+            
+            # ファイル拡張子チェック
+            allowed_extensions = [
+                '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt',
+                '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'
+            ]
+            file_extension = os.path.splitext(file.name)[1].lower()
+            if file_extension not in allowed_extensions:
+                raise forms.ValidationError(
+                    f'許可されていないファイル形式です。許可されている形式: {", ".join(allowed_extensions)}'
+                )
+        
+        return file
+
+

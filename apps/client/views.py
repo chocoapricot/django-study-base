@@ -19,8 +19,8 @@ from django.db.models import Q
 from django.db import models
 from django.http import JsonResponse
 # クライアント連絡履歴用インポート
-from .models import Client, ClientContacted, ClientDepartment, ClientUser
-from .forms import ClientForm, ClientContactedForm, ClientDepartmentForm, ClientUserForm
+from .models import Client, ClientContacted, ClientDepartment, ClientUser, ClientFile
+from .forms import ClientForm, ClientContactedForm, ClientDepartmentForm, ClientUserForm, ClientFileForm
 # from apps.api.helpers import fetch_company_info  # API呼び出し関数をインポート
 
 # ロガーの作成
@@ -100,21 +100,25 @@ def client_detail(request, pk):
     # 担当者一覧（最新5件）
     users = client.users.all()[:5]
     users_count = client.users.count()
+    # ファイル情報（最新5件）
+    files = client.files.order_by('-uploaded_at')[:5]
     # AppLogに詳細画面アクセスを記録
     from apps.system.logs.utils import log_view_detail
     from apps.system.logs.models import AppLog
     log_view_detail(request.user, client)
-    # 変更履歴（AppLogから取得、最新5件）- クライアント、組織、担当者の変更を含む
+    # 変更履歴（AppLogから取得、最新5件）- クライアント、組織、担当者、ファイルの変更を含む
     change_logs = AppLog.objects.filter(
         models.Q(model_name='Client', object_id=str(client.pk)) |
         models.Q(model_name='ClientDepartment', object_repr__startswith=f'{client.name} - ') |
-        models.Q(model_name='ClientUser', object_repr__startswith=f'{client.name} - '),
+        models.Q(model_name='ClientUser', object_repr__startswith=f'{client.name} - ') |
+        models.Q(model_name='ClientFile', object_repr__startswith=f'{client.name} - '),
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')[:5]
     change_logs_count = AppLog.objects.filter(
         models.Q(model_name='Client', object_id=str(client.pk)) |
         models.Q(model_name='ClientDepartment', object_repr__startswith=f'{client.name} - ') |
-        models.Q(model_name='ClientUser', object_repr__startswith=f'{client.name} - '),
+        models.Q(model_name='ClientUser', object_repr__startswith=f'{client.name} - ') |
+        models.Q(model_name='ClientFile', object_repr__startswith=f'{client.name} - '),
         action__in=['create', 'update', 'delete']
     ).count()
     return render(request, 'client/client_detail.html', {
@@ -125,6 +129,7 @@ def client_detail(request, pk):
         'departments_count': departments_count,
         'users': users,
         'users_count': users_count,
+        'files': files,
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
     })
@@ -135,11 +140,12 @@ def client_detail(request, pk):
 def client_change_history_list(request, pk):
     client = get_object_or_404(Client, pk=pk)
     from apps.system.logs.models import AppLog
-    # クライアント、組織、担当者の変更履歴を含む
+    # クライアント、組織、担当者、ファイルの変更履歴を含む
     logs = AppLog.objects.filter(
         models.Q(model_name='Client', object_id=str(client.pk)) |
         models.Q(model_name='ClientDepartment', object_repr__startswith=f'{client.name} - ') |
-        models.Q(model_name='ClientUser', object_repr__startswith=f'{client.name} - '),
+        models.Q(model_name='ClientUser', object_repr__startswith=f'{client.name} - ') |
+        models.Q(model_name='ClientFile', object_repr__startswith=f'{client.name} - '),
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')
     paginator = Paginator(logs, 20)
@@ -335,3 +341,120 @@ def client_user_delete(request, pk):
         user.delete()
         return redirect('client:client_detail', pk=client.pk)
     return render(request, 'client/client_user_confirm_delete.html', {'user': user, 'client': client, 'show_client_info': True})
+
+# ===== クライアントファイル関連ビュー =====
+
+# クライアントファイル一覧
+@login_required
+@permission_required('client.view_clientfile', raise_exception=True)
+def client_file_list(request, client_pk):
+    client = get_object_or_404(Client, pk=client_pk)
+    files = client.files.order_by('-uploaded_at')
+    
+    paginator = Paginator(files, 20)
+    page = request.GET.get('page')
+    files_page = paginator.get_page(page)
+    
+    return render(request, 'client/client_file_list.html', {
+        'client': client,
+        'files': files_page
+    })
+
+# クライアントファイル単体アップロード
+@login_required
+@permission_required('client.add_clientfile', raise_exception=True)
+def client_file_create(request, client_pk):
+    client = get_object_or_404(Client, pk=client_pk)
+    if request.method == 'POST':
+        form = ClientFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            client_file = form.save(commit=False)
+            client_file.client = client
+            client_file.save()
+            from django.contrib import messages
+            messages.success(request, 'ファイルをアップロードしました。')
+            return redirect('client:client_detail', pk=client.pk)
+    else:
+        form = ClientFileForm()
+    
+    return render(request, 'client/client_file_form.html', {
+        'form': form,
+        'client': client
+    })
+
+# クライアントファイル詳細
+@login_required
+@permission_required('client.view_clientfile', raise_exception=True)
+def client_file_detail(request, pk):
+    client_file = get_object_or_404(ClientFile, pk=pk)
+    client = client_file.client
+    
+    # AppLogに詳細画面アクセスを記録
+    from apps.system.logs.utils import log_view_detail
+    log_view_detail(request.user, client_file)
+    
+    return render(request, 'client/client_file_detail.html', {
+        'client_file': client_file,
+        'client': client
+    })
+
+# クライアントファイル編集
+@login_required
+@permission_required('client.change_clientfile', raise_exception=True)
+def client_file_update(request, pk):
+    client_file = get_object_or_404(ClientFile, pk=pk)
+    client = client_file.client
+    
+    if request.method == 'POST':
+        form = ClientFileForm(request.POST, request.FILES, instance=client_file)
+        if form.is_valid():
+            form.save()
+            from django.contrib import messages
+            messages.success(request, 'ファイル情報を更新しました。')
+            return redirect('client:client_file_detail', pk=client_file.pk)
+    else:
+        form = ClientFileForm(instance=client_file)
+    
+    return render(request, 'client/client_file_form.html', {
+        'form': form,
+        'client': client,
+        'client_file': client_file
+    })
+
+# クライアントファイル削除
+@login_required
+@permission_required('client.delete_clientfile', raise_exception=True)
+def client_file_delete(request, pk):
+    client_file = get_object_or_404(ClientFile, pk=pk)
+    client = client_file.client
+    
+    if request.method == 'POST':
+        # ファイルも物理削除
+        if client_file.file:
+            client_file.file.delete(save=False)
+        client_file.delete()
+        from django.contrib import messages
+        messages.success(request, 'ファイルを削除しました。')
+        return redirect('client:client_file_list', client_pk=client.pk)
+    
+    return render(request, 'client/client_file_confirm_delete.html', {
+        'client_file': client_file,
+        'client': client
+    })
+
+# クライアントファイルダウンロード
+@login_required
+@permission_required('client.view_clientfile', raise_exception=True)
+def client_file_download(request, pk):
+    from django.http import FileResponse, Http404
+    client_file = get_object_or_404(ClientFile, pk=pk)
+    
+    try:
+        response = FileResponse(
+            client_file.file.open('rb'),
+            as_attachment=True,
+            filename=client_file.original_filename
+        )
+        return response
+    except FileNotFoundError:
+        raise Http404("ファイルが見つかりません。")

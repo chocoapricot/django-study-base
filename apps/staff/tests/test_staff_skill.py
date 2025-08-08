@@ -43,7 +43,6 @@ class StaffSkillModelTest(TestCase):
         staff_skill = StaffSkill.objects.create(
             staff=self.staff,
             skill=self.skill,
-            level='advanced',
             acquired_date=date(2024, 1, 15),
             years_of_experience=3,
             memo='実務経験3年',
@@ -53,17 +52,15 @@ class StaffSkillModelTest(TestCase):
         
         self.assertEqual(staff_skill.staff, self.staff)
         self.assertEqual(staff_skill.skill, self.skill)
-        self.assertEqual(staff_skill.level, 'advanced')
         self.assertEqual(staff_skill.acquired_date, date(2024, 1, 15))
         self.assertEqual(staff_skill.years_of_experience, 3)
-        self.assertEqual(str(staff_skill), '田中 太郎 - プログラミング言語 > Java (上級)')
+        self.assertEqual(str(staff_skill), '田中 太郎 - プログラミング言語 > Java')
 
     def test_staff_skill_unique_constraint(self):
         """スタッフ技能の一意制約テスト"""
         StaffSkill.objects.create(
             staff=self.staff,
             skill=self.skill,
-            level='intermediate',
             created_by=self.user,
             updated_by=self.user
         )
@@ -73,22 +70,21 @@ class StaffSkillModelTest(TestCase):
             StaffSkill.objects.create(
                 staff=self.staff,
                 skill=self.skill,
-                level='advanced',
                 created_by=self.user,
                 updated_by=self.user
             )
 
-    def test_level_display_name_property(self):
-        """レベル表示名のテスト"""
+    def test_staff_skill_str_method(self):
+        """文字列表現のテスト"""
         staff_skill = StaffSkill.objects.create(
             staff=self.staff,
             skill=self.skill,
-            level='expert',
             created_by=self.user,
             updated_by=self.user
         )
         
-        self.assertEqual(staff_skill.level_display_name, 'エキスパート')
+        expected_str = f"{self.staff} - {self.skill}"
+        self.assertEqual(str(staff_skill), expected_str)
 
     
 
@@ -118,7 +114,6 @@ class StaffSkillFormTest(TestCase):
         """有効なフォームデータのテスト"""
         form_data = {
             'skill': self.skill.pk,
-            'level': 'advanced',
             'acquired_date': '2024-01-15',
             'years_of_experience': 2,
             'memo': 'テスト習得'
@@ -195,7 +190,6 @@ class StaffSkillViewTest(TestCase):
         self.staff_skill = StaffSkill.objects.create(
             staff=self.staff,
             skill=self.skill,
-            level='advanced',
             acquired_date=date(2024, 1, 15),
             created_by=self.user,
             updated_by=self.user

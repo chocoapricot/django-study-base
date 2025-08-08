@@ -1,13 +1,37 @@
-
-from django.contrib.auth.decorators import login_required, permission_required
+import os
+import logging
+from PIL import Image, ImageDraw, ImageFont
+from django.conf import settings
+from django.http import HttpResponse, FileResponse, Http404
 from django.core.paginator import Paginator
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import Q
+from django.contrib import messages
+
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile
+from .forms import StaffForm, StaffContactedForm, StaffFileForm
+from apps.system.settings.utils import my_parameter
+from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
+from apps.common.utils import fill_excel_from_template, fill_pdf_from_template
+
+# ロガーの作成
+logger = logging.getLogger('staff')
 
 @login_required
 @permission_required('staff.view_staff', raise_exception=True)
 def staff_change_history_list(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
-    logs = AppLog.objects.filter(model_name='Staff', object_id=str(staff.pk), action__in=['create', 'update']).order_by('-timestamp')
+    # スタッフ、資格、技能、ファイルの変更履歴を含む
+    from django.db import models as django_models
+    logs = AppLog.objects.filter(
+        django_models.Q(model_name='Staff', object_id=str(staff.pk)) |
+        django_models.Q(model_name='StaffQualification', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - '),
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')
     paginator = Paginator(logs, 20)
     page = request.GET.get('page')
     logs_page = paginator.get_page(page)
@@ -22,20 +46,6 @@ def staff_contacted_detail(request, pk):
     from apps.system.logs.utils import log_view_detail
     log_view_detail(request.user, contacted)
     return render(request, 'staff/staff_contacted_detail.html', {'contacted': contacted, 'staff': staff})
-import os
-import logging
-from PIL import Image, ImageDraw, ImageFont
-from django.conf import settings
-from django.http import HttpResponse, FileResponse
-from django.core.paginator import Paginator
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill
-from .forms import StaffForm, StaffContactedForm
-from apps.system.settings.utils import my_parameter
-from django.db.models import Q
-from apps.system.settings.models import Dropdowns
-from apps.common.utils import fill_excel_from_template, fill_pdf_from_template
-from django.contrib.auth.decorators import login_required, permission_required
 
 # 連絡履歴 削除
 @login_required
@@ -47,23 +57,6 @@ def staff_contacted_delete(request, pk):
         contacted.delete()
         return redirect('staff:staff_detail', pk=staff.pk)
     return render(request, 'staff/staff_contacted_confirm_delete.html', {'contacted': contacted, 'staff': staff})
-import os
-import logging
-from PIL import Image, ImageDraw, ImageFont
-from django.conf import settings
-from django.http import HttpResponse, FileResponse
-from django.core.paginator import Paginator
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill
-from .forms import StaffForm, StaffContactedForm
-from apps.system.settings.utils import my_parameter
-from django.db.models import Q
-from apps.system.settings.models import Dropdowns
-from apps.common.utils import fill_excel_from_template, fill_pdf_from_template
-from django.contrib.auth.decorators import login_required
-
-# ロガーの作成
-logger = logging.getLogger('staff')
 
 @login_required
 @permission_required('staff.view_staff', raise_exception=True)
@@ -150,8 +143,6 @@ def staff_list(request):
         'department_options': department_options,
     })
 
-from django.contrib.auth.decorators import permission_required
-
 @login_required
 @permission_required('staff.add_staff', raise_exception=True)
 def staff_create(request):
@@ -174,21 +165,36 @@ def staff_detail(request, pk):
     qualifications = staff.qualifications.select_related('qualification').order_by('-acquired_date')[:5]
     # 技能情報（最新5件）
     skills = staff.skills.select_related('skill').order_by('-acquired_date')[:5]
+    # ファイル情報（最新5件）
+    files = staff.files.order_by('-uploaded_at')[:5]
     # AppLogに詳細画面アクセスを記録
     from apps.system.logs.utils import log_view_detail
     log_view_detail(request.user, staff)
-    # 変更履歴（AppLogから取得、最新5件）
-    change_logs = AppLog.objects.filter(model_name='Staff', object_id=str(staff.pk), action__in=['create', 'update']).order_by('-timestamp')[:5]
-    change_logs_count = AppLog.objects.filter(model_name='Staff', object_id=str(staff.pk), action__in=['create', 'update']).count()
+    # 変更履歴（AppLogから取得、最新5件）- スタッフ、資格、技能、ファイルの変更を含む
+    from django.db import models as django_models
+    change_logs = AppLog.objects.filter(
+        django_models.Q(model_name='Staff', object_id=str(staff.pk)) |
+        django_models.Q(model_name='StaffQualification', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - '),
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')[:5]
+    change_logs_count = AppLog.objects.filter(
+        django_models.Q(model_name='Staff', object_id=str(staff.pk)) |
+        django_models.Q(model_name='StaffQualification', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - '),
+        action__in=['create', 'update', 'delete']
+    ).count()
     return render(request, 'staff/staff_detail.html', {
         'staff': staff,
         'contacted_list': contacted_list,
         'qualifications': qualifications,
         'skills': skills,
+        'files': files,
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
     })
-
 
 # 連絡履歴 登録
 @login_required
@@ -365,6 +371,7 @@ def staff_fuyokojo(request, pk):
     response = HttpResponse(output_pdf.read(), content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="staff_fuyokojo_'+str(pk)+'.pdf"'
     return response
+
 # スタッフ資格登録
 @login_required
 @permission_required('staff.add_staffqualification', raise_exception=True)
@@ -423,7 +430,6 @@ def staff_qualification_delete(request, pk):
         'qualification': qualification,
         'staff': staff
     })
-
 
 # スタッフ技能登録
 @login_required
@@ -484,8 +490,6 @@ def staff_skill_delete(request, pk):
         'staff': staff
     })
 
-
-
 # スタッフ資格一覧
 @login_required
 @permission_required('staff.view_staffqualification', raise_exception=True)
@@ -498,7 +502,6 @@ def staff_qualification_list(request, staff_pk):
         'qualifications': qualifications
     })
 
-
 # スタッフ技能一覧
 @login_required
 @permission_required('staff.view_staffskill', raise_exception=True)
@@ -510,3 +513,117 @@ def staff_skill_list(request, staff_pk):
         'staff': staff,
         'skills': skills
     })
+
+# ===== スタッフファイル関連ビュー =====
+
+# スタッフファイル一覧
+@login_required
+@permission_required('staff.view_stafffile', raise_exception=True)
+def staff_file_list(request, staff_pk):
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    files = staff.files.order_by('-uploaded_at')
+    
+    paginator = Paginator(files, 20)
+    page = request.GET.get('page')
+    files_page = paginator.get_page(page)
+    
+    return render(request, 'staff/staff_file_list.html', {
+        'staff': staff,
+        'files': files_page
+    })
+
+# スタッフファイル単体アップロード
+@login_required
+@permission_required('staff.add_stafffile', raise_exception=True)
+def staff_file_create(request, staff_pk):
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    if request.method == 'POST':
+        form = StaffFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            staff_file = form.save(commit=False)
+            staff_file.staff = staff
+            staff_file.save()
+            messages.success(request, 'ファイルをアップロードしました。')
+            return redirect('staff:staff_detail', pk=staff.pk)
+    else:
+        form = StaffFileForm()
+    
+    return render(request, 'staff/staff_file_form.html', {
+        'form': form,
+        'staff': staff
+    })
+
+
+# スタッフファイル詳細
+@login_required
+@permission_required('staff.view_stafffile', raise_exception=True)
+def staff_file_detail(request, pk):
+    staff_file = get_object_or_404(StaffFile, pk=pk)
+    staff = staff_file.staff
+    
+    # AppLogに詳細画面アクセスを記録
+    from apps.system.logs.utils import log_view_detail
+    log_view_detail(request.user, staff_file)
+    
+    return render(request, 'staff/staff_file_detail.html', {
+        'staff_file': staff_file,
+        'staff': staff
+    })
+
+# スタッフファイル編集
+@login_required
+@permission_required('staff.change_stafffile', raise_exception=True)
+def staff_file_update(request, pk):
+    staff_file = get_object_or_404(StaffFile, pk=pk)
+    staff = staff_file.staff
+    
+    if request.method == 'POST':
+        form = StaffFileForm(request.POST, request.FILES, instance=staff_file)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'ファイル情報を更新しました。')
+            return redirect('staff:staff_file_detail', pk=staff_file.pk)
+    else:
+        form = StaffFileForm(instance=staff_file)
+    
+    return render(request, 'staff/staff_file_form.html', {
+        'form': form,
+        'staff': staff,
+        'staff_file': staff_file
+    })
+
+# スタッフファイル削除
+@login_required
+@permission_required('staff.delete_stafffile', raise_exception=True)
+def staff_file_delete(request, pk):
+    staff_file = get_object_or_404(StaffFile, pk=pk)
+    staff = staff_file.staff
+    
+    if request.method == 'POST':
+        # ファイルも物理削除
+        if staff_file.file:
+            staff_file.file.delete(save=False)
+        staff_file.delete()
+        messages.success(request, 'ファイルを削除しました。')
+        return redirect('staff:staff_file_list', staff_pk=staff.pk)
+    
+    return render(request, 'staff/staff_file_confirm_delete.html', {
+        'staff_file': staff_file,
+        'staff': staff
+    })
+
+# スタッフファイルダウンロード
+@login_required
+@permission_required('staff.view_stafffile', raise_exception=True)
+def staff_file_download(request, pk):
+    staff_file = get_object_or_404(StaffFile, pk=pk)
+    
+    try:
+        response = FileResponse(
+            staff_file.file.open('rb'),
+            as_attachment=True,
+            filename=staff_file.original_filename
+        )
+        return response
+    except FileNotFoundError:
+        raise Http404("ファイルが見つかりません。")

@@ -114,6 +114,95 @@ class Staff(MyModel):
 
 
 from apps.common.models import MyModel
+import uuid
+import os
+
+def staff_file_upload_path(instance, filename):
+    """スタッフファイルのアップロードパスを生成"""
+    # ファイル拡張子を取得
+    ext = filename.split('.')[-1]
+    # UUIDを使ってユニークなファイル名を生成
+    filename = f"{uuid.uuid4()}.{ext}"
+    # staff_files/staff_id/filename の形式で保存
+    return f'staff_files/{instance.staff.pk}/{filename}'
+
+# スタッフファイル添付モデル
+class StaffFile(MyModel):
+    """スタッフファイル添付"""
+    
+    staff = models.ForeignKey(
+        Staff, 
+        on_delete=models.CASCADE, 
+        related_name='files',
+        verbose_name='スタッフ'
+    )
+    file = models.FileField(
+        'ファイル',
+        upload_to=staff_file_upload_path,
+        help_text='添付ファイル（最大10MB）'
+    )
+    original_filename = models.CharField(
+        '元ファイル名',
+        max_length=255,
+        help_text='アップロード時の元のファイル名'
+    )
+    file_size = models.PositiveIntegerField(
+        'ファイルサイズ',
+        help_text='バイト単位'
+    )
+    description = models.CharField(
+        '説明',
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text='ファイルの説明（任意）'
+    )
+    uploaded_at = models.DateTimeField(
+        'アップロード日時',
+        auto_now_add=True
+    )
+    
+    class Meta:
+        db_table = 'apps_staff_file'
+        verbose_name = 'スタッフファイル'
+        verbose_name_plural = 'スタッフファイル'
+        ordering = ['-uploaded_at']
+        indexes = [
+            models.Index(fields=['staff']),
+            models.Index(fields=['uploaded_at']),
+        ]
+    
+    def save(self, *args, **kwargs):
+        # 元ファイル名とファイルサイズを自動設定
+        if self.file:
+            self.original_filename = self.file.name
+            self.file_size = self.file.size
+        super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f"{self.staff} - {self.original_filename}"
+    
+    @property
+    def file_extension(self):
+        """ファイル拡張子を取得"""
+        return os.path.splitext(self.original_filename)[1].lower()
+    
+    @property
+    def is_image(self):
+        """画像ファイルかどうか判定"""
+        image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp']
+        return self.file_extension in image_extensions
+    
+    @property
+    def is_document(self):
+        """ドキュメントファイルかどうか判定"""
+        doc_extensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt']
+        return self.file_extension in doc_extensions
+    
+    @property
+    def file_size_mb(self):
+        """ファイルサイズをMB単位で取得"""
+        return round(self.file_size / (1024 * 1024), 2)
 
 # スタッフ連絡履歴モデル
 
@@ -193,13 +282,6 @@ class StaffQualification(MyModel):
 class StaffSkill(MyModel):
     """スタッフ技能"""
     
-    LEVEL_CHOICES = [
-        ('beginner', '初級'),
-        ('intermediate', '中級'),
-        ('advanced', '上級'),
-        ('expert', 'エキスパート'),
-    ]
-    
     staff = models.ForeignKey(
         Staff, 
         on_delete=models.CASCADE, 
@@ -210,12 +292,6 @@ class StaffSkill(MyModel):
         'master.Skill',
         on_delete=models.CASCADE,
         verbose_name='技能'
-    )
-    level = models.CharField(
-        'レベル',
-        max_length=20,
-        choices=LEVEL_CHOICES,
-        default='beginner'
     )
     acquired_date = models.DateField('習得日', blank=True, null=True)
     years_of_experience = models.IntegerField('経験年数', blank=True, null=True)
@@ -230,22 +306,8 @@ class StaffSkill(MyModel):
         indexes = [
             models.Index(fields=['staff']),
             models.Index(fields=['skill']),
-            models.Index(fields=['level']),
             models.Index(fields=['acquired_date']),
         ]
     
     def __str__(self):
-        return f"{self.staff} - {self.skill} ({self.get_level_display()})"
-    
-    @property
-    def level_display_name(self):
-        """レベルの表示名"""
-        return dict(self.LEVEL_CHOICES).get(self.level, self.level)
-    
-    @property
-    def meets_required_level(self):
-        """必要レベルを満たしているかどうか"""
-        level_order = ['beginner', 'intermediate', 'advanced', 'expert']
-        current_level_index = level_order.index(self.level) if self.level in level_order else 0
-        required_level_index = level_order.index(self.skill.required_level) if self.skill.required_level in level_order else 0
-        return current_level_index >= required_level_index
+        return f"{self.staff} - {self.skill}"

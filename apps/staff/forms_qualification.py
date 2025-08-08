@@ -38,12 +38,11 @@ class StaffSkillForm(forms.ModelForm):
     class Meta:
         model = StaffSkill
         fields = [
-            'skill', 'level', 'acquired_date',
+            'skill', 'acquired_date',
             'years_of_experience', 'memo'
         ]
         widgets = {
             'skill': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-            'level': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'acquired_date': forms.DateInput(attrs={
                 'class': 'form-control form-control-sm',
                 'type': 'date'

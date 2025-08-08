@@ -5,7 +5,9 @@ from .views import (
     staff_contacted_create, staff_contacted_list, staff_contacted_update, staff_contacted_delete, staff_contacted_detail,
     staff_change_history_list, 
     staff_qualification_list, staff_qualification_create, staff_qualification_update, staff_qualification_delete,
-    staff_skill_list, staff_skill_create, staff_skill_update, staff_skill_delete
+    staff_skill_list, staff_skill_create, staff_skill_update, staff_skill_delete,
+    staff_file_list, staff_file_create, staff_file_detail, 
+    staff_file_update, staff_file_delete, staff_file_download
 )
 
 app_name = 'staff'
@@ -42,4 +44,12 @@ urlpatterns = [
     path('staff/<int:staff_pk>/skill/create/', staff_skill_create, name='staff_skill_create'),
     path('staff/skill/<int:pk>/update/', staff_skill_update, name='staff_skill_update'),
     path('staff/skill/<int:pk>/delete/', staff_skill_delete, name='staff_skill_delete'),
+    
+    # ファイル管理
+    path('staff/<int:staff_pk>/file/', staff_file_list, name='staff_file_list'),
+    path('staff/<int:staff_pk>/file/create/', staff_file_create, name='staff_file_create'),
+    path('staff/file/<int:pk>/detail/', staff_file_detail, name='staff_file_detail'),
+    path('staff/file/<int:pk>/update/', staff_file_update, name='staff_file_update'),
+    path('staff/file/<int:pk>/delete/', staff_file_delete, name='staff_file_delete'),
+    path('staff/file/<int:pk>/download/', staff_file_download, name='staff_file_download'),
 ]

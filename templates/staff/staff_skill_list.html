@@ -15,11 +15,10 @@
             <table class="table table-sm table-hover">
                 <thead>
                     <tr>
-                        <th width="30%">技能名</th>
-                        <th width="15%">レベル</th>
-                        <th width="15%">習得日</th>
+                        <th width="35%">技能名</th>
+                        <th width="20%">習得日</th>
                         <th width="15%">経験年数</th>
-                        <th width="15%">メモ</th>
+                        <th width="20%">メモ</th>
                         <th width="10%"></th>
                     </tr>
                 </thead>
@@ -31,19 +30,6 @@
                                 <small class="text-muted">{{ s.skill.parent.name }} > </small>
                             {% endif %}
                             {{ s.skill.name }}
-                        </td>
-                        <td>
-                            {% if s.level == 'beginner' %}
-                                <span class="badge bg-secondary">初級</span>
-                            {% elif s.level == 'intermediate' %}
-                                <span class="badge bg-primary">中級</span>
-                            {% elif s.level == 'advanced' %}
-                                <span class="badge bg-success">上級</span>
-                            {% elif s.level == 'expert' %}
-                                <span class="badge bg-warning">エキスパート</span>
-                            {% else %}
-                                {{ s.get_level_display }}
-                            {% endif %}
                         </td>
                         <td>{{ s.acquired_date|date:"Y/m/d"|default:"-" }}</td>
                         <td>{{ s.years_of_experience|default:"-" }}年</td>
@@ -59,7 +45,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center">登録されている技能はありません</td>
+                        <td colspan="5" class="text-center">登録されている技能はありません</td>
                     </tr>
                     {% endfor %}
                 </tbody>

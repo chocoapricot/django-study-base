@@ -4,7 +4,9 @@ from .views import (
     client_contacted_create, client_contacted_list, client_contacted_update, client_contacted_delete, client_contacted_detail,
     client_change_history_list,
     client_department_create, client_department_list, client_department_update, client_department_delete,
-    client_user_create, client_user_list, client_user_update, client_user_delete
+    client_user_create, client_user_list, client_user_update, client_user_delete,
+    client_file_list, client_file_create, client_file_detail, 
+    client_file_update, client_file_delete, client_file_download
 )
 
 app_name = 'client'
@@ -33,5 +35,13 @@ urlpatterns = [
     path('client/<int:client_pk>/user/list/', client_user_list, name='client_user_list'),
     path('client/user/<int:pk>/update/', client_user_update, name='client_user_update'),
     path('client/user/<int:pk>/delete/', client_user_delete, name='client_user_delete'),
+    
+    # ファイル管理
+    path('client/<int:client_pk>/file/', client_file_list, name='client_file_list'),
+    path('client/<int:client_pk>/file/create/', client_file_create, name='client_file_create'),
+    path('client/file/<int:pk>/detail/', client_file_detail, name='client_file_detail'),
+    path('client/file/<int:pk>/update/', client_file_update, name='client_file_update'),
+    path('client/file/<int:pk>/delete/', client_file_delete, name='client_file_delete'),
+    path('client/file/<int:pk>/download/', client_file_download, name='client_file_download'),
 ]
 

@@ -1,7 +1,18 @@
 from django.db import models
+import uuid
+import os
 
 from ..common.models import MyModel
 from concurrency.fields import IntegerVersionField
+
+def client_file_upload_path(instance, filename):
+    """クライアントファイルのアップロードパスを生成"""
+    # ファイル拡張子を取得
+    ext = filename.split('.')[-1]
+    # UUIDを使ってユニークなファイル名を生成
+    filename = f"{uuid.uuid4()}.{ext}"
+    # client_files/client_id/filename の形式で保存
+    return f'client_files/{instance.client.pk}/{filename}'
 
 class Client(MyModel):
     corporate_number=models.CharField('法人番号',max_length=13, unique=True, blank=True, null=True)
@@ -123,3 +134,82 @@ class ClientContacted(MyModel):
 
     def __str__(self):
         return f"{self.client} {self.contacted_at:%Y-%m-%d %H:%M} {self.content[:20]}"
+
+
+# クライアントファイル添付モデル
+class ClientFile(MyModel):
+    """クライアントファイル添付"""
+    
+    client = models.ForeignKey(
+        Client, 
+        on_delete=models.CASCADE, 
+        related_name='files',
+        verbose_name='クライアント'
+    )
+    file = models.FileField(
+        'ファイル',
+        upload_to=client_file_upload_path,
+        help_text='添付ファイル（最大10MB）'
+    )
+    original_filename = models.CharField(
+        '元ファイル名',
+        max_length=255,
+        help_text='アップロード時の元のファイル名'
+    )
+    file_size = models.PositiveIntegerField(
+        'ファイルサイズ',
+        help_text='バイト単位'
+    )
+    description = models.CharField(
+        '説明',
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text='ファイルの説明（任意）'
+    )
+    uploaded_at = models.DateTimeField(
+        'アップロード日時',
+        auto_now_add=True
+    )
+    
+    class Meta:
+        db_table = 'apps_client_file'
+        verbose_name = 'クライアントファイル'
+        verbose_name_plural = 'クライアントファイル'
+        ordering = ['-uploaded_at']
+        indexes = [
+            models.Index(fields=['client']),
+            models.Index(fields=['uploaded_at']),
+        ]
+    
+    def save(self, *args, **kwargs):
+        # 元ファイル名とファイルサイズを自動設定
+        if self.file:
+            self.original_filename = self.file.name
+            self.file_size = self.file.size
+        super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f"{self.client} - {self.original_filename}"
+    
+    @property
+    def file_extension(self):
+        """ファイル拡張子を取得"""
+        return os.path.splitext(self.original_filename)[1].lower()
+    
+    @property
+    def is_image(self):
+        """画像ファイルかどうか判定"""
+        image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp']
+        return self.file_extension in image_extensions
+    
+    @property
+    def is_document(self):
+        """ドキュメントファイルかどうか判定"""
+        doc_extensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt']
+        return self.file_extension in doc_extensions
+    
+    @property
+    def file_size_mb(self):
+        """ファイルサイズをMB単位で取得"""
+        return round(self.file_size / (1024 * 1024), 2)

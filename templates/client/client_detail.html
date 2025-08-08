@@ -80,6 +80,31 @@
                 </div>
             </div>
 
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-2" style="text-align:right">
+                    <strong>ファイル</strong>
+                </div>
+                <div class="col-sm">
+                    {% if files %}
+                        {% for f in files %}
+                            <span class="badge bg-secondary">
+                                {% if f.is_image %}
+                                    <i class="bi bi-image"></i>
+                                {% elif f.is_document %}
+                                    <i class="bi bi-file-text"></i>
+                                {% else %}
+                                    <i class="bi bi-file"></i>
+                                {% endif %}
+                                {{ f.original_filename|truncatechars:20 }}
+                            </span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-muted">無し</span>
+                    {% endif %}
+                    <a href="{% url 'client:client_file_list' client_pk=client.pk %}" class="btn btn-sm btn-outline-secondary ms-2">一覧</a>
+                </div>
+            </div>
+
             <div class="d-flex justify-content-start">
                 {% if perms.client.change_client %}
                 <a href="{% url 'client:client_update' client.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
@@ -229,6 +254,8 @@
     {% endif %}
 </div>
 
+
+
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         連絡履歴
@@ -316,6 +343,8 @@
                             <span class="badge bg-info">組織</span>
                         {% elif log.model_name == 'ClientUser' %}
                             <span class="badge bg-success">担当者</span>
+                        {% elif log.model_name == 'ClientFile' %}
+                            <span class="badge bg-secondary">ファイル</span>
                         {% else %}
                             {{ log.model_name }}
                         {% endif %}

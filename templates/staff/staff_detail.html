@@ -165,6 +165,31 @@
                         </div>
                     </div>
 
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-sm-4" style="text-align:right">
+                            <strong>ファイル</strong>
+                        </div>
+                        <div class="col-sm">
+                            {% if files %}
+                                {% for f in files %}
+                                    <span class="badge bg-secondary">
+                                        {% if f.is_image %}
+                                            <i class="bi bi-image"></i>
+                                        {% elif f.is_document %}
+                                            <i class="bi bi-file-text"></i>
+                                        {% else %}
+                                            <i class="bi bi-file"></i>
+                                        {% endif %}
+                                        {{ f.original_filename|truncatechars:20 }}
+                                    </span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-muted">無し</span>
+                            {% endif %}
+                            <a href="{% url 'staff:staff_file_list' staff_pk=staff.pk %}" class="btn btn-sm btn-outline-secondary ms-2">一覧</a>
+                        </div>
+                    </div>
+
                     <div class="d-flex justify-content-start">
                         {% if perms.staff.change_staff %}
                         <a href="{% url 'staff:staff_update' staff.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
@@ -341,6 +366,7 @@
         <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
             <thead>
                 <tr>
+                    <th>対象</th>
                     <th>操作</th>
                     <th>変更内容</th>
                     <th>変更者</th>
@@ -351,9 +377,28 @@
                 {% for log in change_logs %}
                 <tr>
                     <td>
-                        {% if log.action == 'create' %}作成
-                        {% elif log.action == 'update' %}編集
-                        {% else %}{{ log.action|title }}{% endif %}
+                        {% if log.model_name == 'Staff' %}
+                            <span class="badge bg-primary">基本情報</span>
+                        {% elif log.model_name == 'StaffQualification' %}
+                            <span class="badge bg-info">資格</span>
+                        {% elif log.model_name == 'StaffSkill' %}
+                            <span class="badge bg-success">技能</span>
+                        {% elif log.model_name == 'StaffFile' %}
+                            <span class="badge bg-secondary">ファイル</span>
+                        {% else %}
+                            <span class="badge bg-light">{{ log.model_name }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.action == 'create' %}
+                            <span class="badge bg-success">作成</span>
+                        {% elif log.action == 'update' %}
+                            <span class="badge bg-warning">編集</span>
+                        {% elif log.action == 'delete' %}
+                            <span class="badge bg-danger">削除</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ log.action|title }}</span>
+                        {% endif %}
                     </td>
                     <td>{{ log.object_repr|truncatechars:40 }}</td>
                     <td>
@@ -364,7 +409,7 @@
                     <td>{{ log.timestamp|date:'Y/m/d H:i:s' }}</td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="4">履歴がありません</td></tr>
+                <tr><td colspan="5">履歴がありません</td></tr>
                 {% endfor %}
             </tbody>
         </table>

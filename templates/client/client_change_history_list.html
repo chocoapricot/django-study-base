@@ -11,6 +11,7 @@
         <table class="table table-hover me-2 mt-2" style="border-top: 1px solid #ddd;">
             <thead>
                 <tr>
+                    <th>対象</th>
                     <th>操作</th>
                     <th>内容</th>
                     <th>変更者</th>
@@ -21,9 +22,28 @@
                 {% for log in logs %}
                 <tr>
                     <td>
-                        {% if log.action == 'create' %}作成
-                        {% elif log.action == 'update' %}編集
-                        {% else %}{{ log.action|title }}{% endif %}
+                        {% if log.model_name == 'Client' %}
+                            <span class="badge bg-primary">基本情報</span>
+                        {% elif log.model_name == 'ClientDepartment' %}
+                            <span class="badge bg-info">組織</span>
+                        {% elif log.model_name == 'ClientUser' %}
+                            <span class="badge bg-success">担当者</span>
+                        {% elif log.model_name == 'ClientFile' %}
+                            <span class="badge bg-secondary">ファイル</span>
+                        {% else %}
+                            <span class="badge bg-light">{{ log.model_name }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.action == 'create' %}
+                            <span class="badge bg-success">作成</span>
+                        {% elif log.action == 'update' %}
+                            <span class="badge bg-warning">編集</span>
+                        {% elif log.action == 'delete' %}
+                            <span class="badge bg-danger">削除</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ log.action|title }}</span>
+                        {% endif %}
                     </td>
                     <td style="max-width: 480px; word-break: break-all; white-space: pre-line;">{{ log.object_repr }}</td>
                     <td>
@@ -34,7 +54,7 @@
                     <td>{{ log.timestamp|date:'Y/m/d H:i:s' }}</td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="4">履歴なし</td></tr>
+                <tr><td colspan="5">履歴なし</td></tr>
                 {% endfor %}
             </tbody>
         </table>
