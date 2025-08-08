@@ -22,4 +22,8 @@ urlpatterns = [
     path('skill/<int:pk>/', views.skill_detail, name='skill_detail'),
     path('skill/<int:pk>/update/', views.skill_update, name='skill_update'),
     path('skill/<int:pk>/delete/', views.skill_delete, name='skill_delete'),
+    
+    # 変更履歴
+    path('qualification/history/', views.qualification_change_history_list, name='qualification_change_history_list'),
+    path('skill/history/', views.skill_change_history_list, name='skill_change_history_list'),
 ]

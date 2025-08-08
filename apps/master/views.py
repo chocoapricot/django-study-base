@@ -100,6 +100,8 @@ def master_index_list(request):
 @permission_required('master.view_qualification', raise_exception=True)
 def qualification_list(request):
     """資格一覧（階層表示）"""
+    from apps.system.logs.models import AppLog
+    
     # 検索機能
     search_query = request.GET.get('q', '')
     
@@ -166,6 +168,18 @@ def qualification_list(request):
     # フィルタ用のカテゴリ一覧
     all_categories = Qualification.get_categories()
     
+    # 変更履歴（最新5件）
+    change_logs = AppLog.objects.filter(
+        model_name='Qualification',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')[:5]
+    
+    # 変更履歴の総件数
+    change_logs_count = AppLog.objects.filter(
+        model_name='Qualification',
+        action__in=['create', 'update', 'delete']
+    ).count()
+    
     context = {
         'items': items,
         'search_query': search_query,
@@ -174,6 +188,8 @@ def qualification_list(request):
         'is_active_filter': is_active_filter,
         'categories': all_categories,
         'level_choices': Qualification.LEVEL_CHOICES,
+        'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
     }
     return render(request, 'master/qualification_list.html', context)
 
@@ -293,6 +309,8 @@ def qualification_delete(request, pk):
 @permission_required('master.view_skill', raise_exception=True)
 def skill_list(request):
     """技能一覧（階層表示）"""
+    from apps.system.logs.models import AppLog
+    
     # 検索機能
     search_query = request.GET.get('q', '')
     
@@ -343,16 +361,33 @@ def skill_list(request):
     # シンプルな一覧用データを整理
     items = []
     
-    for category in categories_query.filter(is_active=True).order_by('display_order', 'name'):
-        # カテゴリを追加
-        items.append(category)
-        
-        # カテゴリに属する技能を追加
-        category_skills = skills_query.filter(parent=category, is_active=True).order_by('display_order', 'name')
-        items.extend(category_skills)
+    if level_filter == '2':
+        # 技能のみ表示の場合は、技能を直接追加
+        items.extend(skills_query.filter(is_active=True).order_by('display_order', 'name'))
+    else:
+        # 通常の表示（カテゴリと技能、またはカテゴリのみ）
+        for category in categories_query.filter(is_active=True).order_by('display_order', 'name'):
+            # カテゴリを追加
+            items.append(category)
+            
+            # カテゴリに属する技能を追加
+            category_skills = skills_query.filter(parent=category, is_active=True).order_by('display_order', 'name')
+            items.extend(category_skills)
     
     # フィルタ用のカテゴリ一覧
     all_categories = Skill.get_categories()
+    
+    # 変更履歴（最新5件）
+    change_logs = AppLog.objects.filter(
+        model_name='Skill',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')[:5]
+    
+    # 変更履歴の総件数
+    change_logs_count = AppLog.objects.filter(
+        model_name='Skill',
+        action__in=['create', 'update', 'delete']
+    ).count()
     
     context = {
         'items': items,
@@ -362,6 +397,8 @@ def skill_list(request):
         'is_active_filter': is_active_filter,
         'categories': all_categories,
         'level_choices': Skill.LEVEL_CHOICES,
+        'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
     }
     return render(request, 'master/skill_list.html', context)
 
@@ -474,3 +511,51 @@ def skill_delete(request, pk):
         'skill': skill,
     }
     return render(request, 'master/skill_delete.html', context)
+
+# 変更履歴ビュー
+@login_required
+@permission_required('master.view_qualification', raise_exception=True)
+def qualification_change_history_list(request):
+    """資格マスタ変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    from django.core.paginator import Paginator
+    
+    # 資格マスタの変更履歴を取得
+    logs = AppLog.objects.filter(
+        model_name='Qualification',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')
+    
+    # ページネーション
+    paginator = Paginator(logs, 20)
+    page = request.GET.get('page')
+    logs_page = paginator.get_page(page)
+    
+    return render(request, 'master/qualification_change_history_list.html', {
+        'logs': logs_page,
+        'title': '資格マスタ変更履歴'
+    })
+
+
+@login_required
+@permission_required('master.view_skill', raise_exception=True)
+def skill_change_history_list(request):
+    """技能マスタ変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    from django.core.paginator import Paginator
+    
+    # 技能マスタの変更履歴を取得
+    logs = AppLog.objects.filter(
+        model_name='Skill',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')
+    
+    # ページネーション
+    paginator = Paginator(logs, 20)
+    page = request.GET.get('page')
+    logs_page = paginator.get_page(page)
+    
+    return render(request, 'master/skill_change_history_list.html', {
+        'logs': logs_page,
+        'title': '技能マスタ変更履歴'
+    })
