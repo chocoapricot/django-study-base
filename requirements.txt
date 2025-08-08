@@ -12,3 +12,6 @@ PyMuPDF==1.25.5
 pytest==8.4.1
 requests==2.32.3
 python-stdnum==2.1
+pytest
+pytest-django
+pytest-html
