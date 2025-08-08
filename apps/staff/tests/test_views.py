@@ -5,7 +5,8 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from apps.staff.models import Staff, StaffContacted
 from apps.system.settings.models import Dropdowns
-from datetime import date
+from datetime import date, datetime 
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -305,14 +306,15 @@ class StaffViewsTest(TestCase):
             'content': 'テスト連絡',
             'detail': 'これはテスト連絡の詳細です。',
             'contact_type': 1,
+            'contacted_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')  # 現在の日時を設定
         }
         response = self.client.post(reverse('staff:staff_contacted_create', args=[self.staff_obj.pk]), data)
         self.assertEqual(response.status_code, 302)  # Redirects to staff_detail
         self.assertTrue(StaffContacted.objects.filter(staff=self.staff_obj, content='テスト連絡').exists())
 
     def test_staff_contacted_list_view(self):
-        StaffContacted.objects.create(staff=self.staff_obj, content='連絡1')
-        StaffContacted.objects.create(staff=self.staff_obj, content='連絡2')
+        StaffContacted.objects.create(staff=self.staff_obj, content='連絡1',contacted_at=timezone.now())
+        StaffContacted.objects.create(staff=self.staff_obj, content='連絡2',contacted_at=timezone.now())
         response = self.client.get(reverse('staff:staff_contacted_list', args=[self.staff_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_contacted_list.html')
@@ -320,25 +322,26 @@ class StaffViewsTest(TestCase):
         self.assertContains(response, '連絡2')
 
     def test_staff_contacted_detail_view(self):
-        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='詳細テスト連絡', detail='詳細')
+        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='詳細テスト連絡', detail='詳細',contacted_at=timezone.now())
         response = self.client.get(reverse('staff:staff_contacted_detail', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_contacted_detail.html')
         self.assertContains(response, '詳細')
 
     def test_staff_contacted_update_view_get(self):
-        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='元の連絡')
+        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='元の連絡',contacted_at=timezone.now())
         response = self.client.get(reverse('staff:staff_contacted_update', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_contacted_form.html')
         self.assertContains(response, '元の連絡')
 
     def test_staff_contacted_update_view_post(self):
-        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='元の連絡')
+        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='元の連絡',contacted_at=timezone.now())
         data = {
             'content': '更新された連絡',
             'detail': '更新された連絡の詳細です。',
             'contact_type': 2,
+            'contacted_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')  # 現在の日時を設定
         }
         response = self.client.post(reverse('staff:staff_contacted_update', args=[contacted_obj.pk]), data)
         self.assertEqual(response.status_code, 302)  # Redirects to staff_detail
@@ -346,14 +349,14 @@ class StaffViewsTest(TestCase):
         self.assertEqual(contacted_obj.content, '更新された連絡')
 
     def test_staff_contacted_delete_view_get(self):
-        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='削除テスト連絡')
+        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='削除テスト連絡',contacted_at=timezone.now())
         response = self.client.get(reverse('staff:staff_contacted_delete', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_contacted_confirm_delete.html')
         self.assertContains(response, '削除テスト連絡')
 
     def test_staff_contacted_delete_view_post(self):
-        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='削除テスト連絡')
+        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='削除テスト連絡',contacted_at=timezone.now())
         response = self.client.post(reverse('staff:staff_contacted_delete', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 302)  # Redirects to staff_detail
         self.assertFalse(StaffContacted.objects.filter(pk=contacted_obj.pk).exists())

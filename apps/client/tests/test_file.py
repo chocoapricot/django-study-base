@@ -180,7 +180,7 @@ class ClientFileTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'test.txt')
         # 基本契約締結日の表示もテスト
-        self.assertContains(response, '2024年1月15日')
+        self.assertContains(response, '2024年01月15日')
     
     def tearDown(self):
         """テスト後のクリーンアップ"""

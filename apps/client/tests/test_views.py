@@ -4,6 +4,8 @@ from django.contrib.auth.models import Permission
 from apps.client.models import Client, ClientContacted
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
+from datetime import date, datetime 
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -312,14 +314,15 @@ class ClientViewsTest(TestCase):
             'content': 'Test Contact',
             'detail': 'This is a test contact detail.',
             'contact_type': 1,
+            'contacted_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')  # 現在の日時を設定
         }
         response = self.client.post(reverse('client:client_contacted_create', args=[self.client_obj.pk]), data)
         self.assertEqual(response.status_code, 302)  # Redirects to client_detail
         self.assertTrue(ClientContacted.objects.filter(client=self.client_obj, content='Test Contact').exists())
 
     def test_client_contacted_list_view(self):
-        ClientContacted.objects.create(client=self.client_obj, content='Contact 1')
-        ClientContacted.objects.create(client=self.client_obj, content='Contact 2')
+        ClientContacted.objects.create(client=self.client_obj, content='Contact 1',contacted_at=timezone.now())
+        ClientContacted.objects.create(client=self.client_obj, content='Contact 2',contacted_at=timezone.now())
         response = self.client.get(reverse('client:client_contacted_list', args=[self.client_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'client/client_contacted_list.html')
@@ -327,25 +330,26 @@ class ClientViewsTest(TestCase):
         self.assertContains(response, 'Contact 2')
 
     def test_client_contacted_detail_view(self):
-        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Detail Test Contact')
+        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Detail Test Contact',contacted_at=timezone.now())
         response = self.client.get(reverse('client:client_contacted_detail', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'client/client_contacted_detail.html')
         self.assertContains(response, 'Detail Test Contact')
 
     def test_client_contacted_update_view_get(self):
-        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Original Contact')
+        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Original Contact',contacted_at=timezone.now())
         response = self.client.get(reverse('client:client_contacted_update', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'client/client_contacted_form.html')
         self.assertContains(response, 'Original Contact')
 
     def test_client_contacted_update_view_post(self):
-        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Original Contact')
+        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Original Contact',contacted_at=timezone.now())
         data = {
             'content': 'Updated Contact',
             'detail': 'Updated detail.',
             'contact_type': 2,
+            'contacted_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')  # 現在の日時を設定
         }
         response = self.client.post(reverse('client:client_contacted_update', args=[contacted_obj.pk]), data)
         self.assertEqual(response.status_code, 302)  # Redirects to client_detail
@@ -353,14 +357,14 @@ class ClientViewsTest(TestCase):
         self.assertEqual(contacted_obj.content, 'Updated Contact')
 
     def test_client_contacted_delete_view_get(self):
-        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Delete Test Contact')
+        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Delete Test Contact',contacted_at=timezone.now())
         response = self.client.get(reverse('client:client_contacted_delete', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'client/client_contacted_confirm_delete.html')
         self.assertContains(response, 'Delete Test Contact')
 
     def test_client_contacted_delete_view_post(self):
-        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Delete Test Contact')
+        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Delete Test Contact',contacted_at=timezone.now())
         response = self.client.post(reverse('client:client_contacted_delete', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 302)  # Redirects to client_detail
         self.assertFalse(ClientContacted.objects.filter(pk=contacted_obj.pk).exists())
