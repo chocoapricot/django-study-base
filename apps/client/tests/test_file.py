@@ -1,15 +1,15 @@
-from django.test import TestCase, Client
+from django.test import TestCase, Client as TestClient
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
-from apps.staff.models import Staff, StaffFile
+from apps.client.models import Client, ClientFile
 from apps.system.settings.models import Dropdowns
-import tempfile
-import os
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 
 User = get_user_model()
 
-class StaffFileTestCase(TestCase):
+class ClientFileTestCase(TestCase):
     def setUp(self):
         """テスト用データの準備"""
         # テスト用ユーザー作成
@@ -20,48 +20,37 @@ class StaffFileTestCase(TestCase):
         )
         
         # 必要な権限を付与
-        from django.contrib.auth.models import Permission
+        client_content_type = ContentType.objects.get_for_model(Client)
+        file_content_type = ContentType.objects.get_for_model(ClientFile)
+        
         permissions = Permission.objects.filter(
-            codename__in=[
-                'view_staff', 'add_staff', 'change_staff', 'delete_staff',
-                'view_stafffile', 'add_stafffile', 'change_stafffile', 'delete_stafffile'
-            ]
+            content_type__in=[client_content_type, file_content_type]
         )
         self.user.user_permissions.set(permissions)
         
         # テスト用ドロップダウン作成
         Dropdowns.objects.create(
-            category='sex',
-            value='1',
-            name='男性',
-            active=True,
-            disp_seq=1
-        )
-        
-        Dropdowns.objects.create(
-            category='regist_form',
+            category='regist_form_client',
             value='1',
             name='正社員',
             active=True,
             disp_seq=1
         )
         
-        # テスト用スタッフ作成
-        self.staff = Staff.objects.create(
-            name_last='テスト',
-            name_first='太郎',
-            name_kana_last='テスト',
-            name_kana_first='タロウ',
-            sex=1,
-            regist_form_code=1,
-            email='staff@example.com'
+        # テスト用クライアント作成
+        self.client_obj = Client.objects.create(
+            corporate_number='1234567890123',
+            name='テストクライアント',
+            name_furigana='テストクライアント',
+            regist_form_client=1,
+            basic_contract_date='2024-01-15'
         )
         
-        self.client = Client()
+        self.client = TestClient()
         self.client.login(email='test@example.com', password='testpass123')
     
-    def test_staff_file_model(self):
-        """StaffFileモデルのテスト"""
+    def test_client_file_model(self):
+        """ClientFileモデルのテスト"""
         # テスト用ファイル作成
         test_file = SimpleUploadedFile(
             "test.txt",
@@ -69,37 +58,37 @@ class StaffFileTestCase(TestCase):
             content_type="text/plain"
         )
         
-        staff_file = StaffFile.objects.create(
-            staff=self.staff,
+        client_file = ClientFile.objects.create(
+            client=self.client_obj,
             file=test_file,
             description="テストファイル"
         )
         
-        self.assertEqual(staff_file.staff, self.staff)
-        self.assertEqual(staff_file.original_filename, "test.txt")
-        self.assertEqual(staff_file.description, "テストファイル")
-        self.assertTrue(staff_file.file_size > 0)
-        self.assertEqual(staff_file.file_extension, '.txt')
-        self.assertFalse(staff_file.is_image)
-        self.assertTrue(staff_file.is_document)
+        self.assertEqual(client_file.client, self.client_obj)
+        self.assertEqual(client_file.original_filename, "test.txt")
+        self.assertEqual(client_file.description, "テストファイル")
+        self.assertTrue(client_file.file_size > 0)
+        self.assertEqual(client_file.file_extension, '.txt')
+        self.assertFalse(client_file.is_image)
+        self.assertTrue(client_file.is_document)
     
-    def test_staff_file_list_view(self):
+    def test_client_file_list_view(self):
         """ファイル一覧ビューのテスト"""
         response = self.client.get(
-            reverse('staff:staff_file_list', kwargs={'staff_pk': self.staff.pk})
+            reverse('client:client_file_list', kwargs={'client_pk': self.client_obj.pk})
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'ファイル一覧')
     
-    def test_staff_file_create_view(self):
+    def test_client_file_create_view(self):
         """ファイル作成ビューのテスト"""
         response = self.client.get(
-            reverse('staff:staff_file_create', kwargs={'staff_pk': self.staff.pk})
+            reverse('client:client_file_create', kwargs={'client_pk': self.client_obj.pk})
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'ファイルアップロード')
     
-    def test_staff_file_create_post(self):
+    def test_client_file_create_post(self):
         """ファイル作成POSTのテスト"""
         test_file = SimpleUploadedFile(
             "test_upload.txt",
@@ -108,18 +97,18 @@ class StaffFileTestCase(TestCase):
         )
         
         response = self.client.post(
-            reverse('staff:staff_file_create', kwargs={'staff_pk': self.staff.pk}),
+            reverse('client:client_file_create', kwargs={'client_pk': self.client_obj.pk}),
             {
                 'file': test_file,
                 'description': 'アップロードテスト'
             }
         )
         
-        # 作成後はスタッフ詳細画面にリダイレクト
+        # 作成後はクライアント詳細画面にリダイレクト
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(StaffFile.objects.filter(staff=self.staff, description='アップロードテスト').exists())
+        self.assertTrue(ClientFile.objects.filter(client=self.client_obj, description='アップロードテスト').exists())
     
-    def test_staff_file_delete_view(self):
+    def test_client_file_delete_view(self):
         """ファイル削除ビューのテスト"""
         # テスト用ファイル作成
         test_file = SimpleUploadedFile(
@@ -128,15 +117,15 @@ class StaffFileTestCase(TestCase):
             content_type="text/plain"
         )
         
-        staff_file = StaffFile.objects.create(
-            staff=self.staff,
+        client_file = ClientFile.objects.create(
+            client=self.client_obj,
             file=test_file,
             description="削除テストファイル"
         )
         
         # 削除確認画面のテスト
         response = self.client.get(
-            reverse('staff:staff_file_delete', kwargs={'pk': staff_file.pk})
+            reverse('client:client_file_delete', kwargs={'pk': client_file.pk})
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'delete_test.txt')
@@ -144,12 +133,12 @@ class StaffFileTestCase(TestCase):
         
         # 削除実行のテスト
         response = self.client.post(
-            reverse('staff:staff_file_delete', kwargs={'pk': staff_file.pk})
+            reverse('client:client_file_delete', kwargs={'pk': client_file.pk})
         )
         self.assertEqual(response.status_code, 302)
-        self.assertFalse(StaffFile.objects.filter(pk=staff_file.pk).exists())
+        self.assertFalse(ClientFile.objects.filter(pk=client_file.pk).exists())
     
-    def test_staff_file_download_view(self):
+    def test_client_file_download_view(self):
         """ファイルダウンロードビューのテスト"""
         # テスト用ファイル作成
         test_file = SimpleUploadedFile(
@@ -158,20 +147,20 @@ class StaffFileTestCase(TestCase):
             content_type="text/plain"
         )
         
-        staff_file = StaffFile.objects.create(
-            staff=self.staff,
+        client_file = ClientFile.objects.create(
+            client=self.client_obj,
             file=test_file,
             description="ダウンロードテストファイル"
         )
         
         response = self.client.get(
-            reverse('staff:staff_file_download', kwargs={'pk': staff_file.pk})
+            reverse('client:client_file_download', kwargs={'pk': client_file.pk})
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'text/plain')
     
-    def test_staff_detail_with_files(self):
-        """ファイル付きスタッフ詳細のテスト"""
+    def test_client_detail_with_files(self):
+        """ファイル付きクライアント詳細のテスト"""
         # テスト用ファイル作成
         test_file = SimpleUploadedFile(
             "test.txt",
@@ -179,24 +168,26 @@ class StaffFileTestCase(TestCase):
             content_type="text/plain"
         )
         
-        StaffFile.objects.create(
-            staff=self.staff,
+        ClientFile.objects.create(
+            client=self.client_obj,
             file=test_file,
             description="テストファイル"
         )
         
         response = self.client.get(
-            reverse('staff:staff_detail', kwargs={'pk': self.staff.pk})
+            reverse('client:client_detail', kwargs={'pk': self.client_obj.pk})
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'test.txt')
+        # 基本契約締結日の表示もテスト
+        self.assertContains(response, '2024年1月15日')
     
     def tearDown(self):
         """テスト後のクリーンアップ"""
         # アップロードされたファイルを削除
-        for staff_file in StaffFile.objects.all():
-            if staff_file.file:
+        for client_file in ClientFile.objects.all():
+            if client_file.file:
                 try:
-                    staff_file.file.delete()
+                    client_file.file.delete()
                 except:
                     pass

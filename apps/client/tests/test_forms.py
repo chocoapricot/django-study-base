@@ -42,3 +42,39 @@ class ClientFormTest(TestCase):
         form_data = {'corporate_number': '', 'name': 'テスト株式会社', 'name_furigana': 'テストカブシキガイシャ', 'regist_form_client': '1'}
         form = ClientForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
+    
+    def test_basic_contract_date_field(self):
+        """基本契約締結日フィールドのテスト"""
+        # 正しい日付形式
+        form_data = {
+            'corporate_number': '5835678256246',
+            'name': 'テスト株式会社',
+            'name_furigana': 'テストカブシキガイシャ',
+            'regist_form_client': '1',
+            'basic_contract_date': '2024-01-15'
+        }
+        form = ClientForm(data=form_data)
+        self.assertTrue(form.is_valid(), form.errors)
+        
+        # 空の場合は許容
+        form_data = {
+            'corporate_number': '5835678256246',
+            'name': 'テスト株式会社',
+            'name_furigana': 'テストカブシキガイシャ',
+            'regist_form_client': '1',
+            'basic_contract_date': ''
+        }
+        form = ClientForm(data=form_data)
+        self.assertTrue(form.is_valid(), form.errors)
+        
+        # 不正な日付形式
+        form_data = {
+            'corporate_number': '5835678256246',
+            'name': 'テスト株式会社',
+            'name_furigana': 'テストカブシキガイシャ',
+            'regist_form_client': '1',
+            'basic_contract_date': '2024/01/15'  # スラッシュ区切りは不正
+        }
+        form = ClientForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('basic_contract_date', form.errors)

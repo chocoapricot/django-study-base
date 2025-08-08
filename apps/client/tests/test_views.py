@@ -256,11 +256,14 @@ class ClientViewsTest(TestCase):
             'corporate_number': '5835678256246', # stdnumが有効と判断する法人番号
             'name': 'New Client',
             'name_furigana': 'ニュークライアントカキクケコ',
-            'regist_form_client': 1
+            'regist_form_client': 1,
+            'basic_contract_date': '2024-01-15'
         }
         response = self.client.post(reverse('client:client_create'), data)
         self.assertEqual(response.status_code, 302)  # Redirects to client_list
+        client = Client.objects.get(name='New Client')
         self.assertTrue(Client.objects.filter(name='New Client').exists())
+        self.assertEqual(str(client.basic_contract_date), '2024-01-15')
 
     def test_client_detail_view(self):
         response = self.client.get(reverse('client:client_detail', args=[self.client_obj.pk]))
@@ -279,12 +282,14 @@ class ClientViewsTest(TestCase):
             'corporate_number': self.client_obj.corporate_number, # corporate_numberはuniqueなので既存のものを利用
             'name': 'Updated Client',
             'name_furigana': 'アップデートクライアントサシスセソ',
-            'regist_form_client': 1
+            'regist_form_client': 1,
+            'basic_contract_date': '2024-02-20'
         }
         response = self.client.post(reverse('client:client_update', args=[self.client_obj.pk]), data)
         self.assertEqual(response.status_code, 302)  # Redirects to client_detail
         self.client_obj.refresh_from_db()
         self.assertEqual(self.client_obj.name, 'Updated Client')
+        self.assertEqual(str(self.client_obj.basic_contract_date), '2024-02-20')
 
     def test_client_delete_view_get(self):
         response = self.client.get(reverse('client:client_delete', args=[self.client_obj.pk]))
@@ -365,3 +370,149 @@ class ClientViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'client/client_change_history_list.html')
         self.assertContains(response, 'Test Client')
+    
+    def test_client_file_list_view(self):
+        """クライアントファイル一覧ビューのテスト"""
+        # ファイル権限を追加
+        from django.contrib.contenttypes.models import ContentType
+        from apps.client.models import ClientFile
+        content_type = ContentType.objects.get_for_model(ClientFile)
+        file_permissions = Permission.objects.filter(content_type=content_type)
+        self.user.user_permissions.add(*file_permissions)
+        
+        response = self.client.get(reverse('client:client_file_list', kwargs={'client_pk': self.client_obj.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'ファイル一覧')
+    
+    def test_client_file_create_view(self):
+        """クライアントファイル作成ビューのテスト"""
+        # ファイル権限を追加
+        from django.contrib.contenttypes.models import ContentType
+        from apps.client.models import ClientFile
+        content_type = ContentType.objects.get_for_model(ClientFile)
+        file_permissions = Permission.objects.filter(content_type=content_type)
+        self.user.user_permissions.add(*file_permissions)
+        
+        response = self.client.get(reverse('client:client_file_create', kwargs={'client_pk': self.client_obj.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'ファイルアップロード')
+    
+    def test_client_file_create_post(self):
+        """クライアントファイル作成POSTのテスト"""
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from django.contrib.contenttypes.models import ContentType
+        from apps.client.models import ClientFile
+        
+        # ファイル権限を追加
+        content_type = ContentType.objects.get_for_model(ClientFile)
+        file_permissions = Permission.objects.filter(content_type=content_type)
+        self.user.user_permissions.add(*file_permissions)
+        
+        test_file = SimpleUploadedFile(
+            "test_client_upload.txt",
+            b"test client upload content",
+            content_type="text/plain"
+        )
+        
+        response = self.client.post(
+            reverse('client:client_file_create', kwargs={'client_pk': self.client_obj.pk}),
+            {
+                'file': test_file,
+                'description': 'クライアントアップロードテスト'
+            }
+        )
+        
+        # 作成後はクライアント詳細画面にリダイレクト
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(ClientFile.objects.filter(client=self.client_obj, description='クライアントアップロードテスト').exists())
+    
+    def test_client_file_delete_view(self):
+        """クライアントファイル削除ビューのテスト"""
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from django.contrib.contenttypes.models import ContentType
+        from apps.client.models import ClientFile
+        
+        # ファイル権限を追加
+        content_type = ContentType.objects.get_for_model(ClientFile)
+        file_permissions = Permission.objects.filter(content_type=content_type)
+        self.user.user_permissions.add(*file_permissions)
+        
+        # テスト用ファイル作成
+        test_file = SimpleUploadedFile(
+            "client_delete_test.txt",
+            b"client delete test content",
+            content_type="text/plain"
+        )
+        
+        client_file = ClientFile.objects.create(
+            client=self.client_obj,
+            file=test_file,
+            description="クライアント削除テストファイル"
+        )
+        
+        # 削除確認画面のテスト
+        response = self.client.get(reverse('client:client_file_delete', kwargs={'pk': client_file.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'client_delete_test.txt')
+        self.assertContains(response, '削除しますか？')
+        
+        # 削除実行のテスト
+        response = self.client.post(reverse('client:client_file_delete', kwargs={'pk': client_file.pk}))
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(ClientFile.objects.filter(pk=client_file.pk).exists())
+    
+    def test_client_file_download_view(self):
+        """クライアントファイルダウンロードビューのテスト"""
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from django.contrib.contenttypes.models import ContentType
+        from apps.client.models import ClientFile
+        
+        # ファイル権限を追加
+        content_type = ContentType.objects.get_for_model(ClientFile)
+        file_permissions = Permission.objects.filter(content_type=content_type)
+        self.user.user_permissions.add(*file_permissions)
+        
+        # テスト用ファイル作成
+        test_file = SimpleUploadedFile(
+            "client_download_test.txt",
+            b"client download test content",
+            content_type="text/plain"
+        )
+        
+        client_file = ClientFile.objects.create(
+            client=self.client_obj,
+            file=test_file,
+            description="クライアントダウンロードテストファイル"
+        )
+        
+        response = self.client.get(reverse('client:client_file_download', kwargs={'pk': client_file.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/plain')
+    
+    def test_client_detail_with_files(self):
+        """ファイル付きクライアント詳細のテスト"""
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from django.contrib.contenttypes.models import ContentType
+        from apps.client.models import ClientFile
+        
+        # ファイル権限を追加
+        content_type = ContentType.objects.get_for_model(ClientFile)
+        file_permissions = Permission.objects.filter(content_type=content_type)
+        self.user.user_permissions.add(*file_permissions)
+        
+        # テスト用ファイル作成
+        test_file = SimpleUploadedFile(
+            "client_detail_test.txt",
+            b"client detail test content",
+            content_type="text/plain"
+        )
+        
+        ClientFile.objects.create(
+            client=self.client_obj,
+            file=test_file,
+            description="クライアント詳細テストファイル"
+        )
+        
+        response = self.client.get(reverse('client:client_detail', args=[self.client_obj.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'client_detail_test.txt')

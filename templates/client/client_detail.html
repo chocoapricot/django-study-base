@@ -82,6 +82,19 @@
 
             <div class="row mb-3 align-items-center">
                 <div class="col-sm-2" style="text-align:right">
+                    <strong>基本契約締結日</strong>
+                </div>
+                <div class="col-sm-4">
+                    {% if client.basic_contract_date %}
+                        {{ client.basic_contract_date|date:'Y年m月d日' }}
+                    {% else %}
+                        <span class="text-muted">未設定</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-2" style="text-align:right">
                     <strong>ファイル</strong>
                 </div>
                 <div class="col-sm">
@@ -95,7 +108,7 @@
                                 {% else %}
                                     <i class="bi bi-file"></i>
                                 {% endif %}
-                                {{ f.original_filename|truncatechars:20 }}
+                                <a href="{% url 'client:client_file_download' pk=f.pk %}" class="text-white text-decoration-none">{{ f.original_filename|truncatechars:20 }}</a>
                             </span>
                         {% endfor %}
                     {% else %}

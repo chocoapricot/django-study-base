@@ -26,6 +26,7 @@ class Client(MyModel):
     url = models.TextField('URL',blank=True, null=True)
     memo = models.TextField('メモ',blank=True, null=True)
     regist_form_client = models.IntegerField('登録区分',blank=True, null=True)
+    basic_contract_date = models.DateField('基本契約締結日', blank=True, null=True)
 
     class Meta:
         db_table = 'apps_client'  # 既存のテーブル名を指定

@@ -45,7 +45,7 @@
                                 <button type="submit" class="btn btn-sm btn-dark">
                                     <i class="bi bi-trash"></i> 削除する
                                 </button>
-                                <a href="{% url 'client:client_file_detail' pk=client_file.pk %}" class="btn btn-sm btn-secondary ms-2">
+                                <a href="{% url 'client:client_file_list' client_pk=client.pk %}" class="btn btn-sm btn-secondary ms-2">
                                     <i class="bi bi-x-circle"></i> キャンセル
                                 </a>
                             </div>
@@ -59,7 +59,7 @@
 <!-- 戻るボタン -->
 <div class="row mt-3">
     <div class="col text-left">
-        <a href="{% url 'client:client_file_detail' pk=client_file.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+        <a href="{% url 'client:client_file_list' client_pk=client.pk %}" class="btn btn-sm btn-secondary">戻る</a>
     </div>
 </div>
 {% endblock %}

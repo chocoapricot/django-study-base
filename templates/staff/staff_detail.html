@@ -180,7 +180,7 @@
                                         {% else %}
                                             <i class="bi bi-file"></i>
                                         {% endif %}
-                                        {{ f.original_filename|truncatechars:20 }}
+                                        <a href="{% url 'staff:staff_file_download' pk=f.pk %}" class="text-white text-decoration-none">{{ f.original_filename|truncatechars:20 }}</a>
                                     </span>
                                 {% endfor %}
                             {% else %}

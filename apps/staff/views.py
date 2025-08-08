@@ -554,43 +554,6 @@ def staff_file_create(request, staff_pk):
     })
 
 
-# スタッフファイル詳細
-@login_required
-@permission_required('staff.view_stafffile', raise_exception=True)
-def staff_file_detail(request, pk):
-    staff_file = get_object_or_404(StaffFile, pk=pk)
-    staff = staff_file.staff
-    
-    # AppLogに詳細画面アクセスを記録
-    from apps.system.logs.utils import log_view_detail
-    log_view_detail(request.user, staff_file)
-    
-    return render(request, 'staff/staff_file_detail.html', {
-        'staff_file': staff_file,
-        'staff': staff
-    })
-
-# スタッフファイル編集
-@login_required
-@permission_required('staff.change_stafffile', raise_exception=True)
-def staff_file_update(request, pk):
-    staff_file = get_object_or_404(StaffFile, pk=pk)
-    staff = staff_file.staff
-    
-    if request.method == 'POST':
-        form = StaffFileForm(request.POST, request.FILES, instance=staff_file)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'ファイル情報を更新しました。')
-            return redirect('staff:staff_file_detail', pk=staff_file.pk)
-    else:
-        form = StaffFileForm(instance=staff_file)
-    
-    return render(request, 'staff/staff_file_form.html', {
-        'form': form,
-        'staff': staff,
-        'staff_file': staff_file
-    })
 
 # スタッフファイル削除
 @login_required

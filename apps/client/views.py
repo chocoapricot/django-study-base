@@ -382,44 +382,7 @@ def client_file_create(request, client_pk):
         'client': client
     })
 
-# クライアントファイル詳細
-@login_required
-@permission_required('client.view_clientfile', raise_exception=True)
-def client_file_detail(request, pk):
-    client_file = get_object_or_404(ClientFile, pk=pk)
-    client = client_file.client
-    
-    # AppLogに詳細画面アクセスを記録
-    from apps.system.logs.utils import log_view_detail
-    log_view_detail(request.user, client_file)
-    
-    return render(request, 'client/client_file_detail.html', {
-        'client_file': client_file,
-        'client': client
-    })
 
-# クライアントファイル編集
-@login_required
-@permission_required('client.change_clientfile', raise_exception=True)
-def client_file_update(request, pk):
-    client_file = get_object_or_404(ClientFile, pk=pk)
-    client = client_file.client
-    
-    if request.method == 'POST':
-        form = ClientFileForm(request.POST, request.FILES, instance=client_file)
-        if form.is_valid():
-            form.save()
-            from django.contrib import messages
-            messages.success(request, 'ファイル情報を更新しました。')
-            return redirect('client:client_file_detail', pk=client_file.pk)
-    else:
-        form = ClientFileForm(instance=client_file)
-    
-    return render(request, 'client/client_file_form.html', {
-        'form': form,
-        'client': client,
-        'client_file': client_file
-    })
 
 # クライアントファイル削除
 @login_required
