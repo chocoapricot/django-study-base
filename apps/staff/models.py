@@ -153,6 +153,7 @@ class StaffQualification(MyModel):
     expiry_date = models.DateField('有効期限', blank=True, null=True)
     certificate_number = models.CharField('証明書番号', max_length=100, blank=True, null=True)
     memo = models.TextField('メモ', blank=True, null=True)
+    score = models.IntegerField('点数', blank=True, null=True, help_text='TOEICの点数など')
     
     class Meta:
         db_table = 'apps_staff_qualification'

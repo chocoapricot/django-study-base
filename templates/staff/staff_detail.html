@@ -140,7 +140,7 @@
                         <div class="col-sm">
                             {% if qualifications %}
                                 {% for q in qualifications %}
-                                    <span class="badge bg-info">{{ q.qualification.name }}</span>
+                                    <span class="badge bg-info">{{ q.qualification.name }}{% if q.score %} {{ q.score }}{% endif %}</span>
                                 {% endfor %}
                             {% else %}
                                 <span class="text-muted">無し</span>

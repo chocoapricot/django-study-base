@@ -15,10 +15,11 @@
             <table class="table table-sm table-hover">
                 <thead>
                     <tr>
-                        <th width="30%">資格名</th>
+                        <th width="25%">資格名</th>
                         <th width="15%">取得日</th>
-                        <th width="15%">有効期限</th>
+                        <th width="10%">有効期限</th>
                         <th width="20%">証明書番号</th>
+                        <th width="10%">点数</th>
                         <th width="10%">メモ</th>
                         <th width="10%"></th>
                     </tr>
@@ -28,7 +29,7 @@
                     <tr>
                         <td>
                             {% if q.qualification.parent %}
-                                <small class="text-muted">{{ q.qualification.parent.name }}</small><br>
+                                <small class="text-muted">{{ q.qualification.parent.name }} > </small> 
                             {% endif %}
                             {{ q.qualification.name }}
                         </td>
@@ -46,6 +47,7 @@
                             {% endif %}
                         </td>
                         <td>{{ q.certificate_number|default:"-" }}</td>
+                        <td>{{ q.score|default:"-" }}</td>
                         <td>{{ q.memo|truncatechars:30|default:"-" }}</td>
                         <td>
                             {% if perms.staff.change_staffqualification %}
@@ -58,18 +60,16 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center">登録されている資格はありません</td>
+                        <td colspan="7" class="text-center">登録されている資格はありません</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            <div class="col text-left">
+                <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="row mt-3">
-    <div class="col text-left">
-        <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
-    </div>
-</div>
 {% endblock %}
