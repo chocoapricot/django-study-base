@@ -5,7 +5,7 @@
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        {{ staff.name_last }} {{ staff.name_first }} - 保有資格一覧
+        保有資格一覧
         {% if perms.staff.add_staffqualification %}
         <a href="{% url 'staff:staff_qualification_create' staff.pk %}" class="btn btn-sm btn-primary">資格登録</a>
         {% endif %}

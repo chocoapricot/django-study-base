@@ -7,7 +7,7 @@
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        担当者一覧 - {{ client.name }}
+        担当者一覧
         {% if perms.client.add_clientuser %}
         <a href="{% url 'client:client_user_create' client.id %}" class="btn btn-sm btn-primary">担当者追加</a>
         {% endif %}

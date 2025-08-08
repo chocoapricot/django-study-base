@@ -3,7 +3,7 @@
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        組織一覧 - {{ client.name }}
+        組織一覧
         {% if perms.client.add_clientdepartment %}
         <a href="{% url 'client:client_department_create' client.id %}" class="btn btn-sm btn-primary">組織追加</a>
         {% endif %}

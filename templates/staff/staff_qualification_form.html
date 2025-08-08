@@ -5,7 +5,7 @@
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        {{ staff.name_last }} {{ staff.name_first }} - {% if qualification %}資格編集{% else %}資格登録{% endif %}
+        {% if qualification %}資格編集{% else %}資格登録{% endif %}
     </div>
     <div class="card-body">
         <form method="post">
