@@ -200,6 +200,7 @@ def staff_detail(request, pk):
 @login_required
 @permission_required('staff.add_staffcontacted', raise_exception=True)
 def staff_contacted_create(request, staff_pk):
+    from django.utils import timezone
     staff = get_object_or_404(Staff, pk=staff_pk)
     if request.method == 'POST':
         form = StaffContactedForm(request.POST)
@@ -209,7 +210,8 @@ def staff_contacted_create(request, staff_pk):
             contacted.save()
             return redirect('staff:staff_detail', pk=staff.pk)
     else:
-        form = StaffContactedForm()
+        # デフォルトで現在時刻を設定
+        form = StaffContactedForm(initial={'contacted_at': timezone.now()})
     return render(request, 'staff/staff_contacted_form.html', {'form': form, 'staff': staff})
 
 # 連絡履歴 一覧

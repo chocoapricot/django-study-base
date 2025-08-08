@@ -134,8 +134,9 @@ class ClientContactedForm(forms.ModelForm):
 
     class Meta:
         model = ClientContacted
-        fields = ['department', 'user', 'contact_type', 'content', 'detail']
+        fields = ['contacted_at', 'department', 'user', 'contact_type', 'content', 'detail']
         widgets = {
+            'contacted_at': forms.DateTimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'datetime-local'}),
             'department': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'user': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'content': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),

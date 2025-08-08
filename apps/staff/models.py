@@ -208,7 +208,7 @@ class StaffFile(MyModel):
 
 class StaffContacted(MyModel):
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='contacted_histories', verbose_name='スタッフ')
-    contacted_at = models.DateTimeField('連絡日時', auto_now_add=True)
+    contacted_at = models.DateTimeField('連絡日時')
     content = models.CharField('対応内容', max_length=255, blank=False, null=False)
     detail = models.TextField('対応詳細', blank=True, null=True)
     contact_type = models.IntegerField('連絡種別', blank=True, null=True)

@@ -122,7 +122,7 @@ class ClientContacted(MyModel):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='contacted_histories', verbose_name='クライアント')
     department = models.ForeignKey(ClientDepartment, on_delete=models.SET_NULL, blank=True, null=True, related_name='contacted_histories', verbose_name='組織')
     user = models.ForeignKey(ClientUser, on_delete=models.SET_NULL, blank=True, null=True, related_name='contacted_histories', verbose_name='担当者')
-    contacted_at = models.DateTimeField('連絡日時', auto_now_add=True)
+    contacted_at = models.DateTimeField('連絡日時')
     content = models.CharField('対応内容', max_length=255, blank=False, null=False)
     detail = models.TextField('対応詳細', blank=True, null=True)
     contact_type = models.IntegerField('連絡種別', blank=True, null=True)

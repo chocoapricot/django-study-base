@@ -16,6 +16,16 @@
             {% endif %}
 
             <div class="row mb-3 align-items-center">
+                <label for="{{ form.contacted_at.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.contacted_at.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.contacted_at }}
+                    {% if form.contacted_at.errors %}
+                        <div class="text-danger">{{ form.contacted_at.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row align-items-center">
                 <label for="{{ form.department.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.department.label }}</label>
                 <div class="col-sm-6">
                     {{ form.department }}
@@ -35,7 +45,7 @@
                 </div>
             </div>
             
-            <div class="row mb-3 align-items-center">
+            <div class="row align-items-center">
                 <label for="{{ form.contact_type.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.contact_type.label }}</label>
                 <div class="col-sm-6">
                     {{ form.contact_type }}
@@ -44,13 +54,13 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="row mb-3 align-items-center">
+            <div class="row align-items-center">
                 <label for="{{ form.content.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.content.label }}</label>
                 <div class="col-sm-8">
                     {{ form.content }}
                 </div>
             </div>
-            <div class="row mb-3 align-items-center">
+            <div class="row align-items-center">
                 <label for="{{ form.detail.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.detail.label }}</label>
                 <div class="col-sm-8">
                     {{ form.detail }}

@@ -16,6 +16,12 @@
             {% endif %}
 
             <div class="row mb-3 align-items-center">
+                <label for="{{ form.contacted_at.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.contacted_at.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.contacted_at }}
+                </div>
+            </div>
+            <div class="row mb-3 align-items-center">
                 <label for="{{ form.contact_type.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.contact_type.label }}</label>
                 <div class="col-sm-8">
                     {{ form.contact_type }}

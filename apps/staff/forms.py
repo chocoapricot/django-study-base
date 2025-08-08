@@ -22,10 +22,11 @@ class StaffContactedForm(forms.ModelForm):
 
     class Meta:
         model = StaffContacted
-        fields = ['contact_type', 'content', 'detail']
+        fields = ['contacted_at', 'contact_type', 'content', 'detail']
         widgets = {
-            'content': forms.TextInput(attrs={'class': 'form-control'}),
-            'detail': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'contacted_at': forms.DateTimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'datetime-local'}),
+            'content': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'detail': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
 
 

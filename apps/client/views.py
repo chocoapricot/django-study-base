@@ -157,6 +157,7 @@ def client_change_history_list(request, pk):
 @login_required
 @permission_required('client.add_clientcontacted', raise_exception=True)
 def client_contacted_create(request, client_pk):
+    from django.utils import timezone
     client = get_object_or_404(Client, pk=client_pk)
     if request.method == 'POST':
         form = ClientContactedForm(request.POST, client=client)
@@ -166,7 +167,8 @@ def client_contacted_create(request, client_pk):
             contacted.save()
             return redirect('client:client_detail', pk=client.pk)
     else:
-        form = ClientContactedForm(client=client)
+        # デフォルトで現在時刻を設定
+        form = ClientContactedForm(client=client, initial={'contacted_at': timezone.now()})
     return render(request, 'client/client_contacted_form.html', {'form': form, 'client': client})
 
 # クライアント連絡履歴 一覧
