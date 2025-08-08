@@ -39,20 +39,12 @@
             </div>
         </div>
         {% endif %}
-        
-
                     
         <form method="post">
             {% csrf_token %}
-            <div class="row">
-                <div class="col-sm-2"></div>
-                <div class="col-sm-6">
-                    <button type="submit" class="btn btn-sm btn-dark">削除する</button>
-                    <a href="{% url 'master:qualification_detail' qualification.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
-                </div>
-            </div>
+            <button type="submit" class="btn btn-sm btn-dark">削除</button>
+            <a href="{% url 'master:qualification_detail' qualification.pk %}" class="btn btn-sm btn-secondary">戻る</a>
         </form>
-        <a href="{% url 'master:qualification_detail' qualification.pk %}" class="btn btn-sm btn-secondary">戻る</a>
     </div>
 </div>
 {% endblock %}

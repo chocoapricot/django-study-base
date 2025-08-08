@@ -54,9 +54,6 @@
         </form>
         
         <!-- 技能一覧テーブル -->
-        <div class="mb-3">
-            <a href="{% url 'master:master_index_list' %}" class="btn btn-secondary">戻る</a>
-        </div>
         <div class="table-responsive">
             <table class="table table-sm table-hover">
                 <thead>
@@ -113,6 +110,9 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+        <div class="d-flex justify-content-start">
+            <a href="{% url 'master:master_index_list' %}" class="btn btn-sm btn-secondary me-2">戻る</a>
         </div>
 
     </div>
