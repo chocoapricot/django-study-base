@@ -93,8 +93,8 @@
             "created_by": 1,
             "updated_at": "2025-08-06T12:12:24.013Z",
             "updated_by": 1,
-            "name": "資格マスタ管理",
-            "url": "/master/qualification/",
+            "name": "マスタ管理",
+            "url": "/master/",
             "icon": "bi-database",
             "icon_style": "color:#6f42c1;",
             "disp_seq": 6,
@@ -115,7 +115,7 @@
             "icon": "bi-database",
             "icon_style": "color:#6f42c1;",
             "disp_seq": 7,
-            "active": true
+            "active": false
         }
     },
     {
