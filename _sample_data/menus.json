@@ -12,6 +12,9 @@
         "url": "/",
         "icon": "bi-house-door",
         "icon_style": "color:#007bff;",
+        "parent": null,
+        "level": 0,
+        "exact_match": false,
         "disp_seq": 1,
         "active": false
     }
@@ -20,15 +23,18 @@
     "model": "settings.menu",
     "pk": 2,
     "fields": {
-        "version": 1754745849048278,
+        "version": 1754748239517393,
         "created_at": "2024-10-25T07:19:42.113Z",
         "created_by": 1,
-        "updated_at": "2025-08-09T13:39:55.700Z",
+        "updated_at": "2025-08-09T14:19:46.169Z",
         "updated_by": 1,
         "name": "スタッフ",
         "url": "/staff/",
         "icon": "bi-people",
         "icon_style": "color:#28a745;",
+        "parent": null,
+        "level": 0,
+        "exact_match": true,
         "disp_seq": 20,
         "active": true
     }
@@ -37,15 +43,18 @@
     "model": "settings.menu",
     "pk": 3,
     "fields": {
-        "version": 1754745853461094,
+        "version": 1754748786078462,
         "created_at": "2024-10-25T07:20:18.686Z",
         "created_by": 1,
-        "updated_at": "2025-08-09T13:40:00.113Z",
+        "updated_at": "2025-08-09T14:28:52.730Z",
         "updated_by": 1,
         "name": "クライアント",
         "url": "/client/",
         "icon": "bi-building",
         "icon_style": "color:#ff5722;",
+        "parent": null,
+        "level": 0,
+        "exact_match": true,
         "disp_seq": 30,
         "active": true
     }
@@ -54,15 +63,18 @@
     "model": "settings.menu",
     "pk": 4,
     "fields": {
-        "version": 1754745860436018,
+        "version": 1754748786104311,
         "created_at": "2024-10-25T07:20:18.686Z",
         "created_by": 1,
-        "updated_at": "2025-08-09T13:40:07.088Z",
+        "updated_at": "2025-08-09T14:28:52.756Z",
         "updated_by": 1,
         "name": "会社情報",
         "url": "/company/",
         "icon": "bi-building",
         "icon_style": "color:blue;",
+        "parent": null,
+        "level": 0,
+        "exact_match": true,
         "disp_seq": 40,
         "active": true
     }
@@ -71,15 +83,18 @@
     "model": "settings.menu",
     "pk": 5,
     "fields": {
-        "version": 1754745956928529,
+        "version": 1754748786206142,
         "created_at": "2024-10-25T07:21:23.405Z",
         "created_by": 1,
-        "updated_at": "2025-08-09T13:41:43.580Z",
+        "updated_at": "2025-08-09T14:28:52.858Z",
         "updated_by": 1,
         "name": "（CSSテスト）",
         "url": "/csstest/",
         "icon": "bi-palette",
         "icon_style": "color:#ffc107;",
+        "parent": null,
+        "level": 0,
+        "exact_match": true,
         "disp_seq": 1000,
         "active": true
     }
@@ -88,15 +103,18 @@
     "model": "settings.menu",
     "pk": 6,
     "fields": {
-        "version": 1754745883858629,
+        "version": 1754748786123689,
         "created_at": "2025-08-06T12:12:24.013Z",
         "created_by": 1,
-        "updated_at": "2025-08-09T13:40:30.511Z",
+        "updated_at": "2025-08-09T14:28:52.776Z",
         "updated_by": 1,
         "name": "マスタ管理",
         "url": "/master/",
         "icon": "bi-database",
         "icon_style": "color:#6f42c1;",
+        "parent": null,
+        "level": 0,
+        "exact_match": true,
         "disp_seq": 60,
         "active": true
     }
@@ -105,15 +123,18 @@
     "model": "settings.menu",
     "pk": 8,
     "fields": {
-        "version": 1754745920429653,
+        "version": 1754748786141766,
         "created_at": "2025-07-19T15:46:59.051Z",
         "created_by": 1,
-        "updated_at": "2025-08-09T13:41:07.082Z",
+        "updated_at": "2025-08-09T14:28:52.794Z",
         "updated_by": 1,
         "name": "アプリケーションログ",
         "url": "/logs/app/",
         "icon": "bi-list-check",
         "icon_style": "color:#28a745;",
+        "parent": null,
+        "level": 0,
+        "exact_match": true,
         "disp_seq": 100,
         "active": true
     }
@@ -122,15 +143,18 @@
     "model": "settings.menu",
     "pk": 9,
     "fields": {
-        "version": 1754745926146881,
+        "version": 1754748786160883,
         "created_at": "2025-07-19T15:46:59.051Z",
         "created_by": 1,
-        "updated_at": "2025-08-09T13:41:12.799Z",
+        "updated_at": "2025-08-09T14:28:52.813Z",
         "updated_by": 1,
         "name": "メール送信ログ",
         "url": "/logs/mail/",
         "icon": "bi-list-check",
         "icon_style": "color:#28a745;",
+        "parent": null,
+        "level": 0,
+        "exact_match": true,
         "disp_seq": 110,
         "active": true
     }
@@ -139,15 +163,18 @@
     "model": "settings.menu",
     "pk": 10,
     "fields": {
-        "version": 1754745932121156,
+        "version": 1754748786187616,
         "created_at": "2025-07-19T15:46:59.051Z",
         "created_by": 1,
-        "updated_at": "2025-08-09T13:41:18.773Z",
+        "updated_at": "2025-08-09T14:28:52.839Z",
         "updated_by": 1,
         "name": "管理サイト",
         "url": "/admin/",
         "icon": "bi-gear",
         "icon_style": "color:#dc3545;",
+        "parent": null,
+        "level": 0,
+        "exact_match": true,
         "disp_seq": 500,
         "active": true
     }
@@ -156,16 +183,59 @@
     "model": "settings.menu",
     "pk": 11,
     "fields": {
-        "version": 1754745867819037,
+        "version": 1754748239558771,
         "created_at": "2025-08-09T13:20:50.317Z",
         "created_by": 1,
-        "updated_at": "2025-08-09T13:40:14.471Z",
+        "updated_at": "2025-08-09T14:19:46.211Z",
         "updated_by": 1,
         "name": "契約管理",
         "url": "/contract/",
         "icon": "bi-file-earmark-text",
         "icon_style": "color:#ffc107;",
+        "parent": null,
+        "level": 0,
+        "exact_match": true,
         "disp_seq": 50,
+        "active": true
+    }
+},
+{
+    "model": "settings.menu",
+    "pk": 12,
+    "fields": {
+        "version": 1754748270446903,
+        "created_at": "2025-08-09T14:20:17.099Z",
+        "created_by": null,
+        "updated_at": "2025-08-09T14:20:17.099Z",
+        "updated_by": null,
+        "name": "クライアント契約",
+        "url": "/contract/client/",
+        "icon": "bi-building",
+        "icon_style": "color:#007bff;",
+        "parent": 11,
+        "level": 1,
+        "exact_match": true,
+        "disp_seq": 10,
+        "active": true
+    }
+},
+{
+    "model": "settings.menu",
+    "pk": 13,
+    "fields": {
+        "version": 1754748270463351,
+        "created_at": "2025-08-09T14:20:17.115Z",
+        "created_by": null,
+        "updated_at": "2025-08-09T14:20:17.115Z",
+        "updated_by": null,
+        "name": "スタッフ契約",
+        "url": "/contract/staff/",
+        "icon": "bi-people",
+        "icon_style": "color:#28a745;",
+        "parent": 11,
+        "level": 1,
+        "exact_match": true,
+        "disp_seq": 20,
         "active": true
     }
 }
