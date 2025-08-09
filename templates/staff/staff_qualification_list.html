@@ -54,7 +54,7 @@
                             <a href="{% url 'staff:staff_qualification_update' q.pk %}" class="btn btn-sm btn-primary">編集</a>
                             {% endif %}
                             {% if perms.staff.delete_staffqualification %}
-                            <a href="{% url 'staff:staff_qualification_delete' q.pk %}" class="btn btn-sm btn-danger">削除</a>
+                            <a href="{% url 'staff:staff_qualification_delete' q.pk %}" class="btn btn-sm btn-dark">削除</a>
                             {% endif %}
                         </td>
                     </tr>

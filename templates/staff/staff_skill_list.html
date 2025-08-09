@@ -39,7 +39,7 @@
                             <a href="{% url 'staff:staff_skill_update' s.pk %}" class="btn btn-sm btn-primary">編集</a>
                             {% endif %}
                             {% if perms.staff.delete_staffskill %}
-                            <a href="{% url 'staff:staff_skill_delete' s.pk %}" class="btn btn-sm btn-danger">削除</a>
+                            <a href="{% url 'staff:staff_skill_delete' s.pk %}" class="btn btn-sm btn-dark">削除</a>
                             {% endif %}
                         </td>
                     </tr>
