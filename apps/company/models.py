@@ -128,7 +128,7 @@ class Company(MyModel):
     postal_code = models.CharField('郵便番号', max_length=7, blank=True, null=True)
     address = models.CharField('住所', max_length=500, blank=True, null=True)
     phone_number = models.CharField('電話番号', max_length=20, blank=True, null=True)
-    url = models.URLField('URL', blank=True, null=True)
+    
     
     class Meta:
         db_table = 'apps_company'

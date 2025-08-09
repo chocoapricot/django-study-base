@@ -72,12 +72,7 @@
                 </div>
             </div>
     
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.url.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.url.label }}</label>
-                <div class="col-sm-8">
-                    {{ form.url }}
-                </div>
-            </div>
+            
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.memo.label }}</label>
@@ -122,7 +117,6 @@
                     $('#id_name_furigana').val(data.kana);
                     $('#id_postal_code').val(data.postal_code);
                     $('#id_address').val(data.location);
-                    $('#id_url').val(data.company_url);
                     $('#id_memo').val(data.business_summary);
                     // 他のフィールドも同様にデータをセット
                     // Bootstrap alert-dismissibleでメッセージ表示

@@ -1,13 +1,12 @@
 from django import forms
 from .models import Company, CompanyDepartment
-from stdnum.util import get_cc_module
-
-jp_corporate_number = get_cc_module('jp', 'corporate_number')
+from stdnum.jp import cn as koujin
+from django.core.exceptions import ValidationError
 
 class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company
-        fields = ['name', 'corporate_number', 'representative', 'postal_code', 'address', 'phone_number', 'url']
+        fields = ['name', 'corporate_number', 'representative', 'postal_code', 'address', 'phone_number']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'corporate_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
@@ -15,13 +14,16 @@ class CompanyForm(forms.ModelForm):
             'postal_code': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'address': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'url': forms.URLInput(attrs={'class': 'form-control form-control-sm'}),
         }
     
     def clean_corporate_number(self):
         corporate_number = self.cleaned_data.get('corporate_number')
-        if corporate_number and jp_corporate_number and not jp_corporate_number.is_valid(corporate_number):
-            raise forms.ValidationError("有効な法人番号ではありません。")
+        if not corporate_number:
+            return corporate_number
+        try:
+            koujin.validate(corporate_number)
+        except Exception as e:
+            raise forms.ValidationError(f'法人番号が正しくありません: {e}')
         return corporate_number
 
     def __init__(self, *args, **kwargs):

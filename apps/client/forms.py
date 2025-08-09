@@ -44,7 +44,7 @@ class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
         fields = ['corporate_number','name','name_furigana',
-                  'postal_code','address',  'url', 'memo', 'regist_form_client', 'basic_contract_date']
+                  'postal_code','address',  'memo', 'regist_form_client', 'basic_contract_date']
         widgets = {
             'corporate_number': forms.TextInput(attrs={'class': 'form-control form-control-sm',
                 'pattern': '[0-9]{13}', 'inputmode': 'numeric', 'maxlength': '13', 'style': 'ime-mode:disabled;', 'autocomplete': 'off'}),
@@ -55,7 +55,6 @@ class ClientForm(forms.ModelForm):
             'address': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             # 'phone': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             # 'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
-            'url': forms.URLInput(attrs={'class': 'form-control form-control-sm'}),
             'memo': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'basic_contract_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             # 'regist_form_code': forms.Select(attrs={'class': 'form-control form-control-sm form-select-sm'}),

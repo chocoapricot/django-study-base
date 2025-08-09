@@ -23,7 +23,6 @@
         </div>
         {% endif %}
 
-        {% if company.representative %}
         <div class="row mb-3 align-items-center">
             <div class="col-sm-2" style="text-align:right">
                 <strong>代表者</strong>
@@ -32,7 +31,6 @@
                 {{ company.representative }}
             </div>
         </div>
-        {% endif %}
 
         {% if company.postal_code or company.address %}
         <div class="row mb-3 align-items-top">
@@ -64,19 +62,7 @@
         </div>
         {% endif %}
 
-        {% if company.url %}
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2" style="text-align:right">
-                <strong>URL</strong>
-            </div>
-            <div class="col-sm-10">
-                {{ company.url }}
-                <a href="{{ company.url }}" target="_blank" class="text-decoration-none" style="color:green;margin-left: 5px;" aria-label="別ウィンドウで開く">
-                    <i class="bi bi-box-arrow-up-right"></i>
-                </a>
-            </div>
-        </div>
-        {% endif %}
+        
 
         <div class="d-flex justify-content-start">
             <a href="{% url 'company:company_edit' %}" class="btn btn-sm btn-primary me-2">編集</a>

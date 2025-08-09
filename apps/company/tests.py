@@ -11,12 +11,6 @@ class CompanyFormTest(TestCase):
 
     def test_corporate_number_validation(self):
         """法人番号のバリデーションテスト"""
-        from stdnum.util import get_cc_module
-        jp_corporate_number = get_cc_module('jp', 'corporate_number')
-        
-        if jp_corporate_number is None:
-            self.skipTest("stdnum jp corporate_number module not available")
-        
         # 無効な法人番号
         form_data = {'name': 'テスト会社', 'corporate_number': '123456789012'}
         form = CompanyForm(data=form_data)
@@ -24,8 +18,9 @@ class CompanyFormTest(TestCase):
         self.assertIn('corporate_number', form.errors)
 
         # 有効な法人番号
-        form_data = {'name': 'テスト会社', 'corporate_number': '1010001052596'}
+        form_data = {'name': 'テスト会社', 'corporate_number': '5000012010001'}
         form = CompanyForm(data=form_data)
+        print(form.errors)
         self.assertTrue(form.is_valid())
 
 class CompanyModelTest(TestCase):
@@ -37,8 +32,7 @@ class CompanyModelTest(TestCase):
             corporate_number="1234567890123",
             postal_code="1000001",
             address="東京都千代田区千代田1-1",
-            phone_number="03-1234-5678",
-            url="https://example.com"
+            phone_number="03-1234-5678"
         )
     
     def test_company_creation(self):
@@ -143,7 +137,10 @@ class CompanyViewTest(TestCase):
         self.user.save()
         self.company = Company.objects.create(
             name="テスト会社",
-            corporate_number="1234567890123"
+            corporate_number="1234567890123",
+            postal_code="1000001",
+            address="東京都千代田区千代田1-1",
+            phone_number="03-1234-5678"
         )
     
     def test_company_detail_view_requires_login(self):
@@ -171,11 +168,10 @@ class CompanyViewTest(TestCase):
         # 既存のデータと同じ内容でPOST
         response = self.client.post(reverse('company:company_edit'), {
             'name': self.company.name,
-            'corporate_number': self.company.corporate_number or '',
-            'postal_code': '',
-            'address': '',
-            'phone_number': '',
-            'url': ''
+            'corporate_number': getattr(self.company, 'corporate_number', ''),
+            'postal_code': getattr(self.company, 'postal_code', ''),
+            'address': getattr(self.company, 'address', ''),
+            'phone_number': getattr(self.company, 'phone_number', ''),
         })
         self.assertEqual(response.status_code, 302)  # リダイレクト
 

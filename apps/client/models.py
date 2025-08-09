@@ -23,7 +23,7 @@ class Client(MyModel):
     address = models.TextField('住所',blank=True, null=True)
     # phone = models.TextField('電話番号',blank=True, null=True)
     # email = models.CharField('E-MAIL',max_length=255, blank=True, null=True)
-    url = models.TextField('URL',blank=True, null=True)
+    
     memo = models.TextField('メモ',blank=True, null=True)
     regist_form_client = models.IntegerField('登録区分',blank=True, null=True)
     basic_contract_date = models.DateField('基本契約締結日', blank=True, null=True)
