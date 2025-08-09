@@ -43,6 +43,9 @@ python manage.py makemigrations settings
 python manage.py makemigrations useradmin
 python manage.py makemigrations staff
 python manage.py makemigrations client
+python manage.py makemigrations contract
+python manage.py makemigrations company
+python manage.py makemigrations master
 python manage.py makemigrations common
 python manage.py makemigrations
 python manage.py migrate
@@ -69,6 +72,9 @@ python manage.py loaddata _sample_data/<app>.json
 python manage.py runserver
 
 # テスト実行
+python manage.py test apps.staff.tests
+python manage.py test apps.client.tests
+python manage.py test apps.contract.tests
 python manage.py test apps.api.tests
 ```
 
@@ -78,7 +84,7 @@ python manage.py test apps.api.tests
 - **Webインターフェース制約**: Kiroはブラウザ操作ができないため、Webインターフェースでの動作確認はできません
   - `python manage.py runserver` でテストサーバを起動しても、Kiroは画面を確認できません
   - 動作確認は以下の方法で行ってください：
-    - **テストケース実行**: `python manage.py test apps.master.tests`
+    - **テストケース実行**: `python manage.py test apps.contract.tests`
     - **管理コマンド作成**: カスタム管理コマンドでデータ操作・確認
     - **ログ出力**: print文やloggingでデバッグ情報を出力
     - **データベース直接確認**: `python manage.py dbshell` でSQL実行

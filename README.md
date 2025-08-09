@@ -9,6 +9,7 @@ Django学習用のプロジェクトです。スタッフ管理とクライア�
 ### 📊 管理機能
 - **スタッフ管理**: 従業員データの管理と追跡、資格・スキルとの紐付け
 - **クライアント管理**: 顧客関係管理機能、部署・担当者との紐付け
+- **契約管理**: クライアント契約・スタッフ契約の管理、契約状況の追跡
 - **会社・部署管理**: 会社情報と部署の体系的管理
 - **連絡履歴管理**: スタッフ・クライアントとの連絡記録
 - **マスター管理**: 資格、スキルなどのマスターデータ管理
@@ -36,14 +37,14 @@ Django学習用のプロジェクトです。スタッフ管理とクライア�
 - **SQLite**: デフォルトデータベース（MySQL対応可能）
 
 ### 主要な依存関係
-- `django-allauth==65.10.0`: 認証システム
-- `django-import-export==4.3.7`: データインポート/エクスポート
-- `django-currentuser==0.9.0`: 現在のユーザー追跡
-- `pillow==11.2.1`: 画像処理
-- `openpyxl==3.1.5`: Excelファイル処理
-- `PyMuPDF==1.25.5`: PDF処理
-- `requests==2.32.3`: HTTP通信
-- `python-stdnum==2.1`: 各種標準番号の検証
+- `django-allauth`: 認証システム
+- `django-import-export`: データインポート/エクスポート
+- `django-currentuser`: 現在のユーザー追跡
+- `pillow`: 画像処理
+- `openpyxl`: Excelファイル処理
+- `PyMuPDF`: PDF処理
+- `requests`: HTTP通信
+- `python-stdnum`: 各種標準番号の検証
 
 ### フロントエンド
 - **Bootstrap 5**: UIフレームワーク
@@ -61,6 +62,7 @@ django-study-base/
 │   ├── master/             # マスター管理
 │   ├── staff/              # スタッフ管理
 │   ├── client/             # クライアント管理
+│   ├── contract/           # 契約管理
 │   ├── company/            # 会社・部署管理
 │   ├── accounts/           # 認証システム
 │   ├── common/             # 共通機能
@@ -86,6 +88,8 @@ django-study-base/
 | `apps_staff_qualification` | スタッフ保有資格 |
 | `apps_staff_skill` | スタッフ保有スキル |
 | `apps_staff_file` | スタッフファイル |
+| `apps_contract_client` | クライアント契約 |
+| `apps_contract_staff` | スタッフ契約 |
 | `apps_company` | 会社 |
 | `apps_company_department` | 部署 |
 | `apps_system_dropdowns` | ドロップダウン設定 |
@@ -167,6 +171,7 @@ python manage.py test
 # 特定のアプリのテスト
 python manage.py test apps.staff
 python manage.py test apps.client
+python manage.py test apps.contract
 
 # 詳細出力でのテスト実行
 python manage.py test --verbosity=2
@@ -176,6 +181,7 @@ python manage.py test --verbosity=2
 - 認証システム: ✅ 完全対応
 - スタッフ管理: ✅ CRUD操作テスト
 - クライアント管理: ✅ CRUD操作テスト
+- 契約管理: ✅ CRUD操作テスト
 - API エンドポイント: ✅ 基本テスト
 
 ## 📊 データ管理
@@ -184,6 +190,7 @@ python manage.py test --verbosity=2
 ```bash
 python manage.py dumpdata staff --format=json --indent=4 > _sample_data/staff.json
 python manage.py dumpdata client --format=json --indent=4 > _sample_data/client.json
+python manage.py dumpdata contract --format=json --indent=4 > _sample_data/contract.json
 python manage.py dumpdata company --format=json --indent=4 > _sample_data/company.json
 ```
 
@@ -191,6 +198,7 @@ python manage.py dumpdata company --format=json --indent=4 > _sample_data/compan
 ```bash
 python manage.py loaddata _sample_data/staff.json
 python manage.py loaddata _sample_data/client.json
+python manage.py loaddata _sample_data/contract.json
 python manage.py loaddata _sample_data/company.json
 ```
 
@@ -221,6 +229,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ### REST APIエンドポイント
 - `/api/staff/` - スタッフ管理API
 - `/api/client/` - クライアント管理API
+- `/api/contract/` - 契約管理API
 - `/api/company/` - 会社・部署管理API
 
 ### 認証
