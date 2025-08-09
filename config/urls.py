@@ -35,6 +35,7 @@ urlpatterns = [
     path('logs/', include('apps.system.logs.urls')),
     path('company/', include('apps.company.urls')),
     path('master/', include('apps.master.urls')),
+    path('contract/', include('apps.contract.urls')),
 ]
 
 # 開発環境でのメディアファイル配信

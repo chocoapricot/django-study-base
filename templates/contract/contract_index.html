@@ -1,0 +1,120 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block title %}契約管理{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- クライアント契約 -->
+    <div class="col-md-6 mb-4">
+        <div class="content-box card bg-light">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>
+                    <i class="bi bi-building text-primary"></i>
+                    クライアント契約
+                </span>
+                <a href="{% url 'contract:client_contract_create' %}" class="btn btn-sm btn-primary">新規作成</a>
+            </div>
+            <div class="card-body">
+                <div class="row text-center mb-3">
+                    <div class="col-6">
+                        <h4 class="text-primary">{{ current_client_contracts }}</h4>
+                        <small class="text-muted">現在有効</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-secondary">{{ client_contract_count }}</h4>
+                        <small class="text-muted">総契約数</small>
+                    </div>
+                </div>
+                
+                <h6>最新の契約</h6>
+                {% if recent_client_contracts %}
+                    <div class="list-group list-group-flush">
+                        {% for contract in recent_client_contracts %}
+                        <a href="{% url 'contract:client_contract_detail' contract.pk %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ contract.contract_name }}</h6>
+                                <small>{{ contract.start_date|date:'Y/m/d' }}</small>
+                            </div>
+                            <p class="mb-1">{{ contract.client.name }}</p>
+                            <small>
+                                {% if contract.status == '有効' %}
+                                    <span class="badge bg-success">{{ contract.status }}</span>
+                                {% elif contract.status == '開始前' %}
+                                    <span class="badge bg-warning">{{ contract.status }}</span>
+                                {% elif contract.status == '終了' %}
+                                    <span class="badge bg-secondary">{{ contract.status }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{{ contract.status }}</span>
+                                {% endif %}
+                            </small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">契約がありません</p>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'contract:client_contract_list' %}" class="btn btn-sm btn-outline-primary">全て表示</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- スタッフ契約 -->
+    <div class="col-md-6 mb-4">
+        <div class="content-box card bg-light">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>
+                    <i class="bi bi-people text-success"></i>
+                    スタッフ契約
+                </span>
+                <a href="{% url 'contract:staff_contract_create' %}" class="btn btn-sm btn-success">新規作成</a>
+            </div>
+            <div class="card-body">
+                <div class="row text-center mb-3">
+                    <div class="col-6">
+                        <h4 class="text-success">{{ current_staff_contracts }}</h4>
+                        <small class="text-muted">現在有効</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-secondary">{{ staff_contract_count }}</h4>
+                        <small class="text-muted">総契約数</small>
+                    </div>
+                </div>
+                
+                <h6>最新の契約</h6>
+                {% if recent_staff_contracts %}
+                    <div class="list-group list-group-flush">
+                        {% for contract in recent_staff_contracts %}
+                        <a href="{% url 'contract:staff_contract_detail' contract.pk %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ contract.contract_name }}</h6>
+                                <small>{{ contract.start_date|date:'Y/m/d' }}</small>
+                            </div>
+                            <p class="mb-1">{{ contract.staff.name_last }} {{ contract.staff.name_first }}</p>
+                            <small>
+                                {% if contract.status == '有効' %}
+                                    <span class="badge bg-success">{{ contract.status }}</span>
+                                {% elif contract.status == '開始前' %}
+                                    <span class="badge bg-warning">{{ contract.status }}</span>
+                                {% elif contract.status == '終了' %}
+                                    <span class="badge bg-secondary">{{ contract.status }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{{ contract.status }}</span>
+                                {% endif %}
+                            </small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">契約がありません</p>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'contract:staff_contract_list' %}" class="btn btn-sm btn-outline-success">全て表示</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
