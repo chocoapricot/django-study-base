@@ -16,20 +16,16 @@
                         <th>マスタ名</th>
                         <th>説明</th>
                         <th>データ数</th>
-                        <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for master in masters %}
                     <tr>
-                        <td>{{ master.name }}</td>
+                        <td>
+                            <a href="{{ master.url }}" >{{ master.name }}</a>
+                        </td>
                         <td>{{ master.description }}</td>
                         <td>{{ master.data_count }}件</td>
-                        <td>
-                            <a href="{{ master.url }}" class="btn btn-sm btn-dark" title="編集">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                        </td>
                     </tr>
                     {% empty %}
                     <tr>

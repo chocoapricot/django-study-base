@@ -3,10 +3,10 @@
     "model": "settings.menu",
     "pk": 1,
     "fields": {
-        "version": 1754745894328767,
+        "version": 1754752281908877,
         "created_at": "2024-10-25T07:19:05.997Z",
         "created_by": 1,
-        "updated_at": "2025-08-09T13:40:40.981Z",
+        "updated_at": "2025-08-09T15:27:08.561Z",
         "updated_by": 1,
         "name": "ホーム",
         "url": "/",
@@ -16,7 +16,7 @@
         "level": 0,
         "exact_match": false,
         "disp_seq": 1,
-        "active": false
+        "active": true
     }
 },
 {
@@ -203,11 +203,11 @@
     "model": "settings.menu",
     "pk": 12,
     "fields": {
-        "version": 1754748270446903,
+        "version": 1754752049782212,
         "created_at": "2025-08-09T14:20:17.099Z",
-        "created_by": null,
-        "updated_at": "2025-08-09T14:20:17.099Z",
-        "updated_by": null,
+        "created_by": 1,
+        "updated_at": "2025-08-09T15:23:16.434Z",
+        "updated_by": 1,
         "name": "クライアント契約",
         "url": "/contract/client/",
         "icon": "bi-building",
@@ -215,7 +215,7 @@
         "parent": 11,
         "level": 1,
         "exact_match": true,
-        "disp_seq": 10,
+        "disp_seq": 51,
         "active": true
     }
 },
@@ -223,11 +223,11 @@
     "model": "settings.menu",
     "pk": 13,
     "fields": {
-        "version": 1754748270463351,
+        "version": 1754752056166307,
         "created_at": "2025-08-09T14:20:17.115Z",
-        "created_by": null,
-        "updated_at": "2025-08-09T14:20:17.115Z",
-        "updated_by": null,
+        "created_by": 1,
+        "updated_at": "2025-08-09T15:23:22.818Z",
+        "updated_by": 1,
         "name": "スタッフ契約",
         "url": "/contract/staff/",
         "icon": "bi-people",
@@ -235,7 +235,7 @@
         "parent": 11,
         "level": 1,
         "exact_match": true,
-        "disp_seq": 20,
+        "disp_seq": 52,
         "active": true
     }
 }

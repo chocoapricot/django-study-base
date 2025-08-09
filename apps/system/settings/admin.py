@@ -34,5 +34,5 @@ class MenuResource(resources.ModelResource):
 
 @admin.register(Menu)
 class MenuAdmin(ImportExportModelAdmin):
-    list_display = ('name', 'url', 'disp_seq', 'active')
+    list_display = ('name', 'url' ,'level', 'disp_seq','exact_match', 'active')
     resource_class = MenuResource

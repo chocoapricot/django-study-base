@@ -111,10 +111,8 @@ class Qualification(MyModel):
     @property
     def usage_count(self):
         """この資格を持つスタッフの数"""
-        if self.level == 1:  # カテゴリの場合は子資格の合計
-            from apps.staff.models import StaffQualification
-            child_qualifications = self.children.filter(is_active=True)
-            return StaffQualification.objects.filter(qualification__in=child_qualifications).count()
+        if self.level == 1:  # カテゴリの場合は0
+            return 0
         else:  # 資格の場合は直接カウント
             return self.staffqualification_set.count()
     
@@ -237,10 +235,8 @@ class Skill(MyModel):
     @property
     def usage_count(self):
         """この技能を持つスタッフの数"""
-        if self.level == 1:  # カテゴリの場合は子技能の合計
-            from apps.staff.models import StaffSkill
-            child_skills = self.children.filter(is_active=True)
-            return StaffSkill.objects.filter(skill__in=child_skills).count()
+        if self.level == 1:  # カテゴリの場合は0
+            return 0
         else:  # 技能の場合は直接カウント
             return self.staffskill_set.count()
     
