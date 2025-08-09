@@ -71,9 +71,9 @@ django-study-base/
 ├── config/                 # プロジェクト設定
 ├── templates/              # HTMLテンプレート
 ├── statics/                # 静的ファイル
+├── _sample_data/           # サンプルデータ
 ├── _scripts/               # 管理・運用スクリプト
-├── docs/                   # ドキュメント
-├── _sample_data/          # サンプルデータ
+├── _docs/                  # ドキュメント
 └── requirements.txt        # 依存関係
 ```
 
