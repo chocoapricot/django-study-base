@@ -50,14 +50,64 @@ class Menu(MyModel):
     url  = models.CharField('URL',max_length=100)  # 実際の設定値
     icon = models.CharField('アイコン',max_length=100)  # 実際の設定値
     icon_style = models.CharField('アイコンスタイル',max_length=100)  # 実際の設定値
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, verbose_name='親メニュー')  # 階層構造
+    level = models.PositiveIntegerField('階層レベル', default=0)  # 階層レベル（0=トップレベル）
+    exact_match = models.BooleanField('完全一致', default=False, help_text='URLの完全一致判定を行う')  # URL判定方法
     disp_seq = models.PositiveIntegerField('表示順',default=0)  # 表示順
     active = models.BooleanField('有効',default=True)  # 表示非表示
 
     class Meta:
-        ordering = ['disp_seq']  # 表示順に並べる
+        ordering = ['level', 'disp_seq']  # 階層レベル、表示順に並べる
         db_table = 'apps_system_menu'  # 既存のテーブル名を指定
         verbose_name = 'メニュー'
         verbose_name_plural = 'メニュー'
 
     def __str__(self):
+        if self.parent:
+            return f"{self.parent.name} > {self.name}"
         return self.name
+    
+    def is_active_for_path(self, request_path):
+        """指定されたパスでこのメニューがアクティブかどうかを判定"""
+        # ホームメニュー（/）の特別処理
+        if self.url == '/':
+            return request_path == '/' or request_path == ''
+        
+        if self.exact_match:
+            # 完全一致の場合でも、そのメニュー配下のページではアクティブにする
+            # 例: /client/ メニューは /client/client/detail/11/ でもアクティブ
+            menu_url = self.url.rstrip('/')
+            request_url = request_path.rstrip('/')
+            
+            # 完全一致
+            if request_url == menu_url:
+                return True
+            
+            # メニュー配下のページかチェック（より具体的なメニューが存在しない場合のみ）
+            if request_path.startswith(self.url):
+                # より具体的なメニューが存在するかチェック
+                from django.db import models
+                more_specific_menus = Menu.objects.filter(
+                    models.Q(url__startswith=self.url) & ~models.Q(url=self.url),
+                    active=True
+                )
+                
+                for specific_menu in more_specific_menus:
+                    if specific_menu.is_active_for_path(request_path):
+                        return False  # より具体的なメニューがアクティブなので、このメニューは非アクティブ
+                
+                return True  # より具体的なメニューがないので、このメニューをアクティブにする
+            
+            return False
+        else:
+            # 部分一致の場合（従来の動作）
+            return self.url in request_path
+    
+    def get_children(self):
+        """子メニューを取得"""
+        return Menu.objects.filter(parent=self, active=True).order_by('disp_seq')
+    
+    @property
+    def has_children(self):
+        """子メニューがあるかどうか"""
+        return self.get_children().exists()

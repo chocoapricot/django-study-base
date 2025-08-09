@@ -1,6 +1,7 @@
 <!-- templates/common/base.html -->
 {% load static %}
 {% load parameters %}
+{% load menus %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -245,7 +246,7 @@
       </button>
             <div class="logo"><a href="{% url 'home:home' %}" class="no-link-style">{% parameter 'SYSTEM_NAME' %}</a></div>
             {% for menu in menus %}
-            {% if menu.url in request.path  %}
+            {% if menu|my_menu_active:request.path %}
             <div class="current-menu">
                 <i class="bi {{ menu.icon }}" style="{{ menu.icon_style }}"></i>
                 {{ menu.name }}
@@ -275,11 +276,24 @@
   <div class="position-sticky">
     <ul class="nav flex-column">
       {% for menu in menus %}
+          {% if menu.level == 0 %}
           <li class="nav-item">
-            <a href="{{ menu.url }}" class="nav-link {% if menu.url in request.path  %}active{% endif %}">
+            <a href="{{ menu.url }}" class="nav-link {% if menu|my_menu_active:request.path %}active{% endif %}">
                 <i class="bi {{ menu.icon }}" style="font-size: 20px;{{ menu.icon_style }}"></i><span class="menu-name">{{ menu.name }}</span>
             </a>
+            {% if menu.has_children %}
+            <ul class="nav flex-column ms-3">
+              {% for child in menu.get_children %}
+              <li class="nav-item">
+                <a href="{{ child.url }}" class="nav-link {% if child|my_menu_active:request.path %}active{% endif %}" style="font-size: 14px;">
+                    <i class="bi {{ child.icon }}" style="font-size: 16px;{{ child.icon_style }}"></i><span class="menu-name">{{ child.name }}</span>
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+            {% endif %}
           </li>
+          {% endif %}
       {% endfor %}
       <!--
       <li class="nav-item">
@@ -323,11 +337,24 @@
   <div class="offcanvas-body">
     <ul class="nav flex-column">
       {% for menu in menus %}
+          {% if menu.level == 0 %}
           <li class="nav-item">
-            <a href="{{ menu.url }}" class="nav-link {% if menu.url in request.path %}active{% endif %}">
+            <a href="{{ menu.url }}" class="nav-link {% if menu|my_menu_active:request.path %}active{% endif %}">
                 <i class="bi {{ menu.icon }}" style="font-size: 20px;{{ menu.icon_style }}"></i><span class="menu-name">{{ menu.name }}</span>
             </a>
+            {% if menu.has_children %}
+            <ul class="nav flex-column ms-3">
+              {% for child in menu.get_children %}
+              <li class="nav-item">
+                <a href="{{ child.url }}" class="nav-link {% if child|my_menu_active:request.path %}active{% endif %}" style="font-size: 14px;">
+                    <i class="bi {{ child.icon }}" style="font-size: 16px;{{ child.icon_style }}"></i><span class="menu-name">{{ child.name }}</span>
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+            {% endif %}
           </li>
+          {% endif %}
       {% endfor %}
       <!--
       <li class="nav-item">
