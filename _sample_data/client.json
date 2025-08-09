@@ -13,7 +13,6 @@
         "postal_code": "4710826",
         "address_kana": null,
         "address": "愛知県豊田市トヨタ町１番地",
-        "url": "http://www.toyota.co.jp/",
         "memo": "自動車事業および金融その他の事業",
         "regist_form_client": 20
     }
@@ -32,7 +31,6 @@
         "postal_code": "1030023",
         "address_kana": null,
         "address": "東京都中央区日本橋本町２丁目５番１号",
-        "url": "http://www.astellas.com/jp/",
         "memo": "医薬品の製造・販売および輸出入",
         "regist_form_client": 20
     }
@@ -51,7 +49,6 @@
         "postal_code": "1000013",
         "address_kana": null,
         "address": "東京都千代田区霞が関２丁目１－２中央合同庁舎第２号館",
-        "url": "",
         "memo": "",
         "regist_form_client": 20
     }
@@ -70,7 +67,6 @@
         "postal_code": "6018116",
         "address_kana": null,
         "address": "京都府京都市南区上鳥羽鉾立町１１番地１",
-        "url": "http://www.nintendo.co.jp/",
         "memo": "家庭用レジャー機器の製造・販売",
         "regist_form_client": 20
     }
@@ -89,7 +85,6 @@
         "postal_code": "1530064",
         "address_kana": null,
         "address": "東京都目黒区下目黒１丁目８番１号",
-        "url": "https://www.aboutamazon.jp/workplace/diversity-inclusion",
         "memo": "",
         "regist_form_client": 2
     }
@@ -108,7 +103,6 @@
         "postal_code": "1410021",
         "address_kana": null,
         "address": "東京都品川区上大崎３丁目１番１号",
-        "url": "",
         "memo": "",
         "regist_form_client": 1
     }
@@ -127,7 +121,6 @@
         "postal_code": "1760012",
         "address_kana": null,
         "address": "東京都練馬区豊玉北６丁目１２－１",
-        "url": "",
         "memo": "",
         "regist_form_client": 10
     }
@@ -146,7 +139,6 @@
         "postal_code": "1240012",
         "address_kana": null,
         "address": "東京都葛飾区立石５丁目１３－１",
-        "url": "",
         "memo": "",
         "regist_form_client": 1
     }
@@ -165,7 +157,6 @@
         "postal_code": "1600023",
         "address_kana": null,
         "address": "東京都新宿区西新宿２丁目８－１",
-        "url": "",
         "memo": "",
         "regist_form_client": 20
     }
@@ -184,7 +175,6 @@
         "postal_code": "2210023",
         "address_kana": null,
         "address": "神奈川県横浜市神奈川区宝町２番地",
-        "url": "http://www.nissan-global.com/JP/COMPANY/DIVERSITY/",
         "memo": "輸送用機器製造",
         "regist_form_client": 1
     }
@@ -203,7 +193,6 @@
         "postal_code": "1020084",
         "address_kana": null,
         "address": "東京都千代田区二番町８番地８",
-        "url": "http://www.sej.co.jp/",
         "memo": "コンビニエンスストアのフランチャイズチェーン本部",
         "regist_form_client": 1
     }
@@ -222,7 +211,6 @@
         "postal_code": "1410032",
         "address_kana": null,
         "address": "東京都品川区大崎１丁目１１番２号",
-        "url": "http://www.lawson.co.jp",
         "memo": "コンビニエンスストア「ローソン」のフランチャイズチェーン展開",
         "regist_form_client": 1
     }
@@ -241,7 +229,6 @@
         "postal_code": "1000013",
         "address_kana": null,
         "address": "東京都千代田区霞が関１丁目２－２",
-        "url": "",
         "memo": "",
         "regist_form_client": 1
     }
@@ -260,7 +247,6 @@
         "postal_code": "2310021",
         "address_kana": null,
         "address": "神奈川県横浜市中区日本大通１",
-        "url": "",
         "memo": "",
         "regist_form_client": 1
     }
@@ -279,7 +265,6 @@
         "postal_code": "5710050",
         "address_kana": null,
         "address": "大阪府門真市大字門真１００６番地",
-        "url": "",
         "memo": "",
         "regist_form_client": 1
     }
@@ -298,7 +283,6 @@
         "postal_code": "2110053",
         "address_kana": null,
         "address": "神奈川県川崎市中原区上小田中４丁目１番１号",
-        "url": "https://www.fujitsu.com/jp/",
         "memo": "通信システム、情報処理システムおよび電子デバイスの製造・販売ならびにこれらに関するサービスの提供",
         "regist_form_client": 1
     }
@@ -317,7 +301,6 @@
         "postal_code": "6710218",
         "address_kana": null,
         "address": "兵庫県姫路市飾東町庄２６６番地の１",
-        "url": "http://www.24028.jp",
         "memo": "ベビー・子ども用品の専門店チェーン",
         "regist_form_client": 1
     }
@@ -336,7 +319,6 @@
         "postal_code": "1080075",
         "address_kana": null,
         "address": "東京都港区港南１丁目７番１号",
-        "url": "",
         "memo": "",
         "regist_form_client": 1
     }
@@ -355,7 +337,6 @@
         "postal_code": "5320004",
         "address_kana": null,
         "address": "大阪府大阪市淀川区西宮原２丁目２番２２号",
-        "url": "http://www.lifecorp.jp/",
         "memo": "スーパーマーケット",
         "regist_form_client": 10
     }
@@ -374,7 +355,6 @@
         "postal_code": "1710033",
         "address_kana": null,
         "address": "東京都豊島区高田３丁目２３番２３号",
-        "url": "",
         "memo": "",
         "regist_form_client": 10
     }
@@ -393,7 +373,6 @@
         "postal_code": "1600022",
         "address_kana": null,
         "address": "東京都新宿区新宿５丁目３番１号",
-        "url": "",
         "memo": "",
         "regist_form_client": 1
     }
@@ -412,7 +391,6 @@
         "postal_code": "1120014",
         "address_kana": null,
         "address": "東京都文京区関口２丁目１０番８号",
-        "url": "https://www.fujita-kanko.co.jp/",
         "memo": "ホテル・旅館・飲食店業他",
         "regist_form_client": 1
     }
