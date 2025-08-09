@@ -36,10 +36,14 @@
                         <td>{{ s.memo|truncatechars:30|default:"-" }}</td>
                         <td>
                             {% if perms.staff.change_staffskill %}
-                            <a href="{% url 'staff:staff_skill_update' s.pk %}" class="btn btn-sm btn-primary">編集</a>
+                            <a href="{% url 'staff:staff_skill_update' s.pk %}" class="btn btn-sm btn-dark">
+                                <i class="bi bi-pencil"></i>
+                            </a>
                             {% endif %}
                             {% if perms.staff.delete_staffskill %}
-                            <a href="{% url 'staff:staff_skill_delete' s.pk %}" class="btn btn-sm btn-dark">削除</a>
+                            <a href="{% url 'staff:staff_skill_delete' s.pk %}" class="btn btn-sm btn-dark">
+                                <i class="bi bi-x"></i>
+                            </a>
                             {% endif %}
                         </td>
                     </tr>
