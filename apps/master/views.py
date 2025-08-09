@@ -105,14 +105,8 @@ def qualification_list(request):
     # 検索機能
     search_query = request.GET.get('q', '')
     
-    # レベルフィルタ
-    level_filter = request.GET.get('level', '')
-    
     # カテゴリフィルタ（親カテゴリ）
     category_filter = request.GET.get('category', '')
-    
-    # アクティブフィルタ
-    is_active_filter = request.GET.get('is_active', '')
     
     # フィルタ条件に基づいてカテゴリと資格を取得
     categories_query = Qualification.objects.filter(level=1)
@@ -130,40 +124,62 @@ def qualification_list(request):
             Q(parent__name__icontains=search_query)
         )
     
-    # アクティブフィルタを適用
-    if is_active_filter:
-        is_active = is_active_filter == 'true'
-        categories_query = categories_query.filter(is_active=is_active)
-        qualifications_query = qualifications_query.filter(is_active=is_active)
+    # カテゴリフィルタを適用
+    if category_filter:
+        categories_query = categories_query.filter(pk=category_filter)
+        qualifications_query = qualifications_query.filter(parent_id=category_filter)
+    
+    # シンプルな一覧用データを整理
+    items = []
+    
+    for category in categories_query.filter(is_active=True).order_by('display_order', 'name'):
+        # カテゴリを追加
+        items.append(category)
+        
+        # カテゴリに属する資格を追加
+        category_qualifications = qualifications_query.filter(parent=category, is_active=True).order_by('display_order', 'name')
+        items.extend(category_qualifications)
+    
+    # フィルタ用のカテゴリ一覧
+    all_categories = Qualification.get_categories()
+    
+    # 検索機能
+    search_query = request.GET.get('q', '')
+    
+    # カテゴリフィルタ（親カテゴリ）
+    category_filter = request.GET.get('category', '')
+    
+    # フィルタ条件に基づいてカテゴリと資格を取得
+    categories_query = Qualification.objects.filter(level=1)
+    qualifications_query = Qualification.objects.filter(level=2).select_related('parent')
+    
+    # 検索条件を適用
+    if search_query:
+        categories_query = categories_query.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+        qualifications_query = qualifications_query.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(parent__name__icontains=search_query)
+        )
     
     # カテゴリフィルタを適用
     if category_filter:
         categories_query = categories_query.filter(pk=category_filter)
         qualifications_query = qualifications_query.filter(parent_id=category_filter)
     
-    # レベルフィルタを適用
-    if level_filter == '1':
-        # カテゴリのみ表示
-        qualifications_query = Qualification.objects.none()
-    elif level_filter == '2':
-        # 資格のみ表示 - カテゴリは表示しないが、資格は表示する
-        categories_query = Qualification.objects.none()
-    
     # シンプルな一覧用データを整理
     items = []
     
-    if level_filter == '2':
-        # 資格のみ表示の場合は、資格を直接追加
-        items.extend(qualifications_query.filter(is_active=True).order_by('display_order', 'name'))
-    else:
-        # 通常の表示（カテゴリと資格、またはカテゴリのみ）
-        for category in categories_query.filter(is_active=True).order_by('display_order', 'name'):
-            # カテゴリを追加
-            items.append(category)
-            
-            # カテゴリに属する資格を追加
-            category_qualifications = qualifications_query.filter(parent=category, is_active=True).order_by('display_order', 'name')
-            items.extend(category_qualifications)
+    for category in categories_query.filter(is_active=True).order_by('display_order', 'name'):
+        # カテゴリを追加
+        items.append(category)
+        
+        # カテゴリに属する資格を追加
+        category_qualifications = qualifications_query.filter(parent=category, is_active=True).order_by('display_order', 'name')
+        items.extend(category_qualifications)
     
     # フィルタ用のカテゴリ一覧
     all_categories = Qualification.get_categories()
@@ -183,11 +199,23 @@ def qualification_list(request):
     context = {
         'items': items,
         'search_query': search_query,
-        'level_filter': level_filter,
         'category_filter': category_filter,
-        'is_active_filter': is_active_filter,
         'categories': all_categories,
-        'level_choices': Qualification.LEVEL_CHOICES,
+        'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
+    }
+    
+    # 変更履歴の総件数
+    change_logs_count = AppLog.objects.filter(
+        model_name='Qualification',
+        action__in=['create', 'update', 'delete']
+    ).count()
+    
+    context = {
+        'items': items,
+        'search_query': search_query,
+        'category_filter': category_filter,
+        'categories': all_categories,
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
     }
@@ -314,14 +342,8 @@ def skill_list(request):
     # 検索機能
     search_query = request.GET.get('q', '')
     
-    # レベルフィルタ
-    level_filter = request.GET.get('level', '')
-    
     # カテゴリフィルタ（親カテゴリ）
     category_filter = request.GET.get('category', '')
-    
-    # アクティブフィルタ
-    is_active_filter = request.GET.get('is_active', '')
     
     # フィルタ条件に基づいてカテゴリと技能を取得
     categories_query = Skill.objects.filter(level=1)
@@ -339,40 +361,21 @@ def skill_list(request):
             Q(parent__name__icontains=search_query)
         )
     
-    # アクティブフィルタを適用
-    if is_active_filter:
-        is_active = is_active_filter == 'true'
-        categories_query = categories_query.filter(is_active=is_active)
-        skills_query = skills_query.filter(is_active=is_active)
-    
     # カテゴリフィルタを適用
     if category_filter:
         categories_query = categories_query.filter(pk=category_filter)
         skills_query = skills_query.filter(parent_id=category_filter)
     
-    # レベルフィルタを適用
-    if level_filter == '1':
-        # カテゴリのみ表示
-        skills_query = Skill.objects.none()
-    elif level_filter == '2':
-        # 技能のみ表示
-        categories_query = Skill.objects.none()
-    
     # シンプルな一覧用データを整理
     items = []
     
-    if level_filter == '2':
-        # 技能のみ表示の場合は、技能を直接追加
-        items.extend(skills_query.filter(is_active=True).order_by('display_order', 'name'))
-    else:
-        # 通常の表示（カテゴリと技能、またはカテゴリのみ）
-        for category in categories_query.filter(is_active=True).order_by('display_order', 'name'):
-            # カテゴリを追加
-            items.append(category)
-            
-            # カテゴリに属する技能を追加
-            category_skills = skills_query.filter(parent=category, is_active=True).order_by('display_order', 'name')
-            items.extend(category_skills)
+    for category in categories_query.filter(is_active=True).order_by('display_order', 'name'):
+        # カテゴリを追加
+        items.append(category)
+        
+        # カテゴリに属する技能を追加
+        category_skills = skills_query.filter(parent=category, is_active=True).order_by('display_order', 'name')
+        items.extend(category_skills)
     
     # フィルタ用のカテゴリ一覧
     all_categories = Skill.get_categories()
@@ -392,11 +395,8 @@ def skill_list(request):
     context = {
         'items': items,
         'search_query': search_query,
-        'level_filter': level_filter,
         'category_filter': category_filter,
-        'is_active_filter': is_active_filter,
         'categories': all_categories,
-        'level_choices': Skill.LEVEL_CHOICES,
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
     }
