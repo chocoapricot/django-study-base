@@ -5,6 +5,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from .models import ClientContract, StaffContract
 from .forms import ClientContractForm, StaffContractForm
+from apps.system.logs.models import AppLog
 
 
 # 契約管理トップページ
@@ -93,8 +94,16 @@ def client_contract_detail(request, pk):
     """クライアント契約詳細"""
     contract = get_object_or_404(ClientContract, pk=pk)
     
+    # AppLogから履歴を取得
+    change_logs = AppLog.objects.filter(
+        model_name='ClientContract',
+        object_id=str(contract.pk),
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')[:10]  # 最新10件
+    
     context = {
         'contract': contract,
+        'change_logs': change_logs,
     }
     return render(request, 'contract/client_contract_detail.html', context)
 
@@ -223,8 +232,16 @@ def staff_contract_detail(request, pk):
     """スタッフ契約詳細"""
     contract = get_object_or_404(StaffContract, pk=pk)
     
+    # AppLogから履歴を取得
+    change_logs = AppLog.objects.filter(
+        model_name='StaffContract',
+        object_id=str(contract.pk),
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')[:10]  # 最新10件
+    
     context = {
         'contract': contract,
+        'change_logs': change_logs,
     }
     return render(request, 'contract/staff_contract_detail.html', context)
 

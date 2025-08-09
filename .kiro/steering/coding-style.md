@@ -151,3 +151,29 @@
 - 既存のフォーマットを維持
 - コメントを保持
 - プロパティの順序を変更しない
+##
+ 変更履歴表示の統一ルール
+- **配置**: 詳細画面の最下部に配置する
+- **タイトル**: 「変更履歴」で統一
+- **テーブル構造**: 対象・操作・変更内容・変更者・日時の5列構成
+- **バッジスタイル**: 
+  - 対象: モデル別に色分け（基本情報=primary、資格=info、技能=success、契約情報=primary/success）
+  - 操作: 作成=success、編集=warning、削除=danger
+- **日時フォーマット**: `Y/m/d H:i:s` 形式で統一
+- **データソース**: `AppLog`モデルを使用し、`create`・`update`・`delete`操作のみ表示
+- **件数制限**: 最新10件まで表示
+- **空状態**: 「変更履歴がありません」メッセージを表示
+- **推奨実装**:
+  ```html
+  <!-- 変更履歴 -->
+  <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+      <div class="card-header d-flex justify-content-between align-items-center">
+          変更履歴
+      </div>
+      <div class="card-body mb-0">
+          <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+              <!-- テーブル内容 -->
+          </table>
+      </div>
+  </div>
+  ```

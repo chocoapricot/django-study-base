@@ -8,12 +8,19 @@
 ## 主要な依存関係
 - `django-import-export`: データインポート/エクスポート機能
 - `django-currentuser`: モデル内で現在のユーザーを追跡
+- `django-concurrency`: 楽観的ロック機能（バージョン管理）
 - `pillow`: 画像処理（プロフィール写真）
 - `requests`: API呼び出し用HTTPクライアント
 - `python-stdnum`: 各種標準番号の検証
 - `openpyxl`: Excelファイル処理
 - `pymupdf`: PDF処理（pdfrwの代替）
 - `mysqlclient`: MySQLデータベースコネクタ（オプション）
+
+## 変更履歴管理システム
+- **AppLogモデル**: `apps.system.logs.models.AppLog`で全モデルの変更を統一管理
+- **自動記録**: 作成・更新・削除操作を自動的に記録
+- **統一表示**: 全ての詳細画面で同じ形式で履歴を表示
+- **権限連携**: ユーザー権限と連携した履歴アクセス制御
 
 ### ドキュメントと表示
 - `home.html`の「Middleware」欄に、利用している主要なコンポーネント（ライブラリ、APIなど）を記載する。**新しいライブラリを追加した場合は、必ずこの欄に追記すること。**
