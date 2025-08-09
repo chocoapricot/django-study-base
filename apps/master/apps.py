@@ -5,6 +5,3 @@ class MasterConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'apps.master'
     verbose_name = 'マスターデータ'
-    
-    def ready(self):
-        import apps.master.signals
