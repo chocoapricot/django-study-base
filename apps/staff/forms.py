@@ -122,7 +122,7 @@ class StaffForm(forms.ModelForm):
             'birth_date','sex',
             # 'age', ← ここは除外
             'hire_date', 'resignation_date', 'department_code',  # 新しいフィールドを追加
-            'postal_code','address1','address2','address3', 'phone', 'email'
+            'postal_code','address1','address2','address3', 'phone', 'email', 'memo'
         ]
         widgets = {
             'employee_no': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '10'}),
@@ -144,6 +144,7 @@ class StaffForm(forms.ModelForm):
             'address3': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'phone': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
+            'memo': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             # 'regist_form_code': forms.Select(attrs={'class': 'form-control form-control-sm form-select-sm'}),
         }
 
