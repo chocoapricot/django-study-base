@@ -207,10 +207,10 @@ python manage.py test --verbosity=2
 
 ### データのエクスポート
 ```bash
-python manage.py dumpdata staff --format=json --indent=4 > _sample_data/staff.json
-python manage.py dumpdata client --format=json --indent=4 > _sample_data/client.json
+python manage.py dumpdata staff    --format=json --indent=4 > _sample_data/staff.json
+python manage.py dumpdata client   --format=json --indent=4 > _sample_data/client.json
 python manage.py dumpdata contract --format=json --indent=4 > _sample_data/contract.json
-python manage.py dumpdata company --format=json --indent=4 > _sample_data/company.json
+python manage.py dumpdata company  --format=json --indent=4 > _sample_data/company.json
 ```
 
 ### データのインポート
