@@ -178,7 +178,6 @@
                     <td>{{ department.name }}</td>
                     <td>{{ department.department_code|default:"-" }}</td>
                     <td>{{ department.phone_number|default:"-" }}</td>
-                    <td>{{ department.email|default:"-" }}</td>
                     <td>
                         {% if perms.client.change_clientdepartment %}
                         <a href="{% url 'client:client_department_update' department.pk %}" class="btn btn-dark btn-sm" title="編集">

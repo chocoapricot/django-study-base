@@ -22,20 +22,20 @@
         </div>
         
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">カテゴリ</label>
+            <label class="col-sm-2 col-form-label" style="text-align:right">種別</label>
             <div class="col-sm-10">
-                <p class="form-control-plaintext">{{ skill.category|default:"-" }}</p>
+                <p class="form-control-plaintext">{{ skill.get_level_display }}</p>
             </div>
         </div>
         
+        {% if skill.parent %}
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">必要レベル</label>
+            <label class="col-sm-2 col-form-label" style="text-align:right">親カテゴリ</label>
             <div class="col-sm-10">
-                <p class="form-control-plaintext">
-                    <span class="badge bg-primary">{{ skill.get_required_level_display }}</span>
-                </p>
+                <p class="form-control-plaintext">{{ skill.parent.name }}</p>
             </div>
         </div>
+        {% endif %}
         
         {% if skill.description %}
         <div class="row mb-3">
@@ -45,6 +45,26 @@
             </div>
         </div>
         {% endif %}
+        
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" style="text-align:right">表示順</label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ skill.display_order }}</p>
+            </div>
+        </div>
+        
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" style="text-align:right">状態</label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">
+                    {% if skill.is_active %}
+                        <span class="badge bg-success">有効</span>
+                    {% else %}
+                        <span class="badge bg-secondary">無効</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
         
         <form method="post">
             {% csrf_token %}

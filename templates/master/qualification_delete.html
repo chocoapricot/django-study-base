@@ -25,20 +25,49 @@
         </div>
         
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">カテゴリ</label>
+            <label class="col-sm-2 col-form-label" style="text-align:right">種別</label>
             <div class="col-sm-6">
-                <p class="form-control-plaintext">{{ qualification.get_category_display }}</p>
+                <p class="form-control-plaintext">{{ qualification.get_level_display }}</p>
             </div>
         </div>
         
-        {% if qualification.issuing_organization %}
+        {% if qualification.parent %}
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">発行機関</label>
+            <label class="col-sm-2 col-form-label" style="text-align:right">親カテゴリ</label>
             <div class="col-sm-6">
-                <p class="form-control-plaintext">{{ qualification.issuing_organization }}</p>
+                <p class="form-control-plaintext">{{ qualification.parent.name }}</p>
             </div>
         </div>
         {% endif %}
+        
+        {% if qualification.description %}
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" style="text-align:right">説明</label>
+            <div class="col-sm-6">
+                <p class="form-control-plaintext">{{ qualification.description }}</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" style="text-align:right">表示順</label>
+            <div class="col-sm-6">
+                <p class="form-control-plaintext">{{ qualification.display_order }}</p>
+            </div>
+        </div>
+        
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" style="text-align:right">状態</label>
+            <div class="col-sm-6">
+                <p class="form-control-plaintext">
+                    {% if qualification.is_active %}
+                        <span class="badge bg-success">有効</span>
+                    {% else %}
+                        <span class="badge bg-secondary">無効</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
                     
         <form method="post">
             {% csrf_token %}

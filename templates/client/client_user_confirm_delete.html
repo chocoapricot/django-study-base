@@ -72,8 +72,8 @@
             {% csrf_token %}
             <div class="row mt-3">
                 <div class="col text-left">
-                    <button type="submit" class="btn btn-sm btn-dark me-2">削除する</button>
-                    <a href="{% url 'client:client_detail' client.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
+                    <button type="submit" class="btn btn-sm btn-dark me-2">削除</button>
+                    <a href="{% url 'client:client_detail' client.pk %}" class="btn btn-sm btn-secondary">戻る</a>
                 </div>
             </div>
         </form>
