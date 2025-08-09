@@ -381,7 +381,7 @@ def staff_qualification_create(request, staff_pk):
     staff = get_object_or_404(Staff, pk=staff_pk)
     if request.method == 'POST':
         from .forms import StaffQualificationForm
-        form = StaffQualificationForm(request.POST)
+        form = StaffQualificationForm(request.POST, staff=staff)
         if form.is_valid():
             qualification = form.save(commit=False)
             qualification.staff = staff
@@ -389,7 +389,7 @@ def staff_qualification_create(request, staff_pk):
             return redirect('staff:staff_detail', pk=staff.pk)
     else:
         from .forms import StaffQualificationForm
-        form = StaffQualificationForm()
+        form = StaffQualificationForm(staff=staff)
     
     return render(request, 'staff/staff_qualification_form.html', {
         'form': form,
@@ -404,13 +404,13 @@ def staff_qualification_update(request, pk):
     staff = qualification.staff
     if request.method == 'POST':
         from .forms import StaffQualificationForm
-        form = StaffQualificationForm(request.POST, instance=qualification)
+        form = StaffQualificationForm(request.POST, instance=qualification, staff=staff)
         if form.is_valid():
             form.save()
             return redirect('staff:staff_qualification_list', staff_pk=staff.pk)
     else:
         from .forms import StaffQualificationForm
-        form = StaffQualificationForm(instance=qualification)
+        form = StaffQualificationForm(instance=qualification, staff=staff)
     
     return render(request, 'staff/staff_qualification_form.html', {
         'form': form,
@@ -440,7 +440,7 @@ def staff_skill_create(request, staff_pk):
     staff = get_object_or_404(Staff, pk=staff_pk)
     if request.method == 'POST':
         from .forms import StaffSkillForm
-        form = StaffSkillForm(request.POST)
+        form = StaffSkillForm(request.POST, staff=staff)
         if form.is_valid():
             skill = form.save(commit=False)
             skill.staff = staff
@@ -448,7 +448,7 @@ def staff_skill_create(request, staff_pk):
             return redirect('staff:staff_detail', pk=staff.pk)
     else:
         from .forms import StaffSkillForm
-        form = StaffSkillForm()
+        form = StaffSkillForm(staff=staff)
     
     return render(request, 'staff/staff_skill_form.html', {
         'form': form,
@@ -463,13 +463,13 @@ def staff_skill_update(request, pk):
     staff = skill.staff
     if request.method == 'POST':
         from .forms import StaffSkillForm
-        form = StaffSkillForm(request.POST, instance=skill)
+        form = StaffSkillForm(request.POST, instance=skill, staff=staff)
         if form.is_valid():
             form.save()
             return redirect('staff:staff_skill_list', staff_pk=staff.pk)
     else:
         from .forms import StaffSkillForm
-        form = StaffSkillForm(instance=skill)
+        form = StaffSkillForm(instance=skill, staff=staff)
     
     return render(request, 'staff/staff_skill_form.html', {
         'form': form,

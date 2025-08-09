@@ -10,6 +10,12 @@
     <div class="card-body">
         <form method="post">
             {% csrf_token %}
+            {% if form.errors %}
+            <div class="alert alert-dismissible alert-primary">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                {{ form.errors }}
+            </div>
+            {% endif %}
             
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.qualification.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">資格</label>

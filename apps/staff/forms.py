@@ -165,6 +165,7 @@ class StaffQualificationForm(forms.ModelForm):
         }
     
     def __init__(self, *args, **kwargs):
+        self.staff = kwargs.pop('staff', None)  # スタッフインスタンスを受け取る
         super().__init__(*args, **kwargs)
         # 資格のみ（レベル2）を選択肢として設定
         from apps.master.models import Qualification
@@ -173,6 +174,27 @@ class StaffQualificationForm(forms.ModelForm):
             (q.pk, f"{q.parent.name} > {q.name}" if q.parent else q.name)
             for q in qualifications
         ]
+    
+    def clean(self):
+        """重複チェック"""
+        cleaned_data = super().clean()
+        qualification = cleaned_data.get('qualification')
+        
+        if qualification and self.staff:
+            # 編集時は自分自身を除外
+            existing_query = StaffQualification.objects.filter(
+                staff=self.staff,
+                qualification=qualification
+            )
+            if self.instance.pk:
+                existing_query = existing_query.exclude(pk=self.instance.pk)
+            
+            if existing_query.exists():
+                raise forms.ValidationError(
+                    f'この資格「{qualification.name}」は既に登録されています。'
+                )
+        
+        return cleaned_data
 
 
 class StaffSkillForm(forms.ModelForm):
@@ -189,6 +211,7 @@ class StaffSkillForm(forms.ModelForm):
         }
     
     def __init__(self, *args, **kwargs):
+        self.staff = kwargs.pop('staff', None)  # スタッフインスタンスを受け取る
         super().__init__(*args, **kwargs)
         # 技能のみ（レベル2）を選択肢として設定
         from apps.master.models import Skill
@@ -197,6 +220,27 @@ class StaffSkillForm(forms.ModelForm):
             (s.pk, f"{s.parent.name} > {s.name}" if s.parent else s.name)
             for s in skills
         ]
+    
+    def clean(self):
+        """重複チェック"""
+        cleaned_data = super().clean()
+        skill = cleaned_data.get('skill')
+        
+        if skill and self.staff:
+            # 編集時は自分自身を除外
+            existing_query = StaffSkill.objects.filter(
+                staff=self.staff,
+                skill=skill
+            )
+            if self.instance.pk:
+                existing_query = existing_query.exclude(pk=self.instance.pk)
+            
+            if existing_query.exists():
+                raise forms.ValidationError(
+                    f'この技能「{skill.name}」は既に登録されています。'
+                )
+        
+        return cleaned_data
 
 
 class StaffFileForm(forms.ModelForm):

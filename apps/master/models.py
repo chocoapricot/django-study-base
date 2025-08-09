@@ -107,6 +107,25 @@ class Qualification(MyModel):
         if not kwargs.pop('skip_validation', False):
             self.clean()
         super().save(*args, **kwargs)
+    
+    @property
+    def usage_count(self):
+        """この資格を持つスタッフの数"""
+        if self.level == 1:  # カテゴリの場合は子資格の合計
+            from apps.staff.models import StaffQualification
+            child_qualifications = self.children.filter(is_active=True)
+            return StaffQualification.objects.filter(qualification__in=child_qualifications).count()
+        else:  # 資格の場合は直接カウント
+            return self.staffqualification_set.count()
+    
+    def get_usage_details(self):
+        """利用詳細を取得"""
+        if self.level == 1:  # カテゴリの場合
+            from apps.staff.models import StaffQualification
+            child_qualifications = self.children.filter(is_active=True)
+            return StaffQualification.objects.filter(qualification__in=child_qualifications).select_related('staff')
+        else:  # 資格の場合
+            return self.staffqualification_set.select_related('staff')
 
 
 class Skill(MyModel):
@@ -214,3 +233,22 @@ class Skill(MyModel):
         if not kwargs.pop('skip_validation', False):
             self.clean()
         super().save(*args, **kwargs)
+    
+    @property
+    def usage_count(self):
+        """この技能を持つスタッフの数"""
+        if self.level == 1:  # カテゴリの場合は子技能の合計
+            from apps.staff.models import StaffSkill
+            child_skills = self.children.filter(is_active=True)
+            return StaffSkill.objects.filter(skill__in=child_skills).count()
+        else:  # 技能の場合は直接カウント
+            return self.staffskill_set.count()
+    
+    def get_usage_details(self):
+        """利用詳細を取得"""
+        if self.level == 1:  # カテゴリの場合
+            from apps.staff.models import StaffSkill
+            child_skills = self.children.filter(is_active=True)
+            return StaffSkill.objects.filter(skill__in=child_skills).select_related('staff')
+        else:  # 技能の場合
+            return self.staffskill_set.select_related('staff')
