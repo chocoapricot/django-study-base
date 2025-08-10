@@ -36,10 +36,10 @@
                 </div>
                 <div class="col-sm-4">
                     <a href="{% url 'contract:staff_select' %}?return_url={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-secondary">
-                        <i class="bi bi-search"></i> 選択
+                        選択
                     </a>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearStaff()">
-                        <i class="bi bi-x"></i> クリア
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="clearStaff()">
+                        クリア
                     </button>
                 </div>
             </div>
