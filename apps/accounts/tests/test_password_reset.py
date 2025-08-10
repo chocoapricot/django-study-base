@@ -51,7 +51,7 @@ class PasswordResetTest(TestCase):
         uid = user_pk_to_url_str(self.user)
         url = reverse('account_reset_password_from_key', kwargs={'uidb36': uid, 'key': token})
         
-        response = self.client.get(url)
+        response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '新しいパスワード')
 
@@ -69,7 +69,10 @@ class PasswordResetTest(TestCase):
         uid = user_pk_to_url_str(self.user)
         url = reverse('account_reset_password_from_key', kwargs={'uidb36': uid, 'key': token})
         
-        new_password = 'new_password_!@#'
+        # POSTの前にGETリクエストでセッションを確立
+        self.client.get(url, follow=True)
+
+        new_password = '1qazxsw2#'
         response = self.client.post(url, {
             'password1': new_password,
             'password2': new_password,
@@ -87,9 +90,12 @@ class PasswordResetTest(TestCase):
         uid = user_pk_to_url_str(self.user)
         url = reverse('account_reset_password_from_key', kwargs={'uidb36': uid, 'key': token})
         
+        # POSTの前にGETリクエストでセッションを確立
+        self.client.get(url, follow=True)
+
         response = self.client.post(url, {
-            'password1': 'new_password_!@#',
-            'password2': 'another_password_!@#',
+            'password1': '1qazxsw2#',
+            'password2': 'another_1qazxsw2#',
         })
         
         self.assertEqual(response.status_code, 200)
