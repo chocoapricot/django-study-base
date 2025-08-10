@@ -55,17 +55,12 @@
                         {% csrf_token %}
                         <div class="row">
                             <div class="col-12">
-                                <button type="submit" class="btn btn-sm btn-dark me-2">削除する</button>
-                                <a href="{% url 'contract:client_contract_detail' contract.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
+                                <button type="submit" class="btn btn-sm btn-dark me-2">削除</button>
+                                <a href="{% url 'contract:client_contract_detail' contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
                             </div>
                         </div>
                     </form>
 
-        <div class="row mt-3">
-            <div class="col text-left">
-                <a href="{% url 'contract:client_contract_detail' contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
-            </div>
-        </div>
     </div>
 </div>
 {% endblock %}
