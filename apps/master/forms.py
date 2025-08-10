@@ -85,6 +85,13 @@ class SkillCategoryForm(forms.ModelForm):
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
         }
     
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # カテゴリフォームの場合、インスタンスにlevelを設定
+        if self.instance:
+            self.instance.level = 1
+            self.instance.parent = None
+    
     def save(self, commit=True):
         """カテゴリとして保存"""
         instance = super().save(commit=False)
