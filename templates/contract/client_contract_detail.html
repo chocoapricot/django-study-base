@@ -124,29 +124,6 @@
                     </div>
                     {% endif %}
 
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <h6 class="text-muted mb-3">システム情報</h6>
-                            <table class="table table-sm">
-                                <tr>
-                                    <th class="w-25">作成日時</th>
-                                    <td>{{ contract.created_at|date:"Y年m月d日 H:i" }}</td>
-                                </tr>
-                                <tr>
-                                    <th>作成者</th>
-                                    <td>{{ contract.created_by.get_full_name|default:contract.created_by.username }}</td>
-                                </tr>
-                                <tr>
-                                    <th>更新日時</th>
-                                    <td>{{ contract.updated_at|date:"Y年m月d日 H:i" }}</td>
-                                </tr>
-                                <tr>
-                                    <th>更新者</th>
-                                    <td>{{ contract.updated_by.get_full_name|default:contract.updated_by.username }}</td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
 
         <div class="row mt-3">
             <div class="col text-left">
