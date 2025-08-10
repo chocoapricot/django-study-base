@@ -65,6 +65,26 @@ class StaffForm(forms.ModelForm):
         if hire_date and resignation_date and hire_date > resignation_date:
             raise forms.ValidationError('入社日は退職日より前の日付を入力してください。')
         
+        # 退職日とスタッフ契約の契約終了日の整合性チェック
+        if resignation_date and self.instance and self.instance.pk:
+            from apps.contract.models import StaffContract
+            
+            # このスタッフの有効な契約で、退職日より後に終了する契約があるかチェック
+            future_contracts = StaffContract.objects.filter(
+                staff=self.instance,
+                is_active=True,
+                end_date__isnull=False,
+                end_date__gt=resignation_date
+            ).order_by('end_date')
+            
+            if future_contracts.exists():
+                # 最も早い契約終了日を取得
+                earliest_contract = future_contracts.first()
+                raise forms.ValidationError(
+                    f'契約終了日以降に退職日を設定してください。'
+                    f'契約「{earliest_contract.contract_name}」の終了日: {earliest_contract.end_date.strftime("%Y/%m/%d")}'
+                )
+        
         return cleaned_data
 
     sex = forms.ChoiceField(
