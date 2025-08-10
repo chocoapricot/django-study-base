@@ -6,5 +6,5 @@ def my_parameter(key, default=None):
         param = Parameter.objects.get(key=key, active=True)
         return param.value
     except Parameter.DoesNotExist:
-        print('Parameter.DoesNotExist -> {}'.format(default))
+        #print('Parameter.DoesNotExist -> {}'.format(default))
         return default
