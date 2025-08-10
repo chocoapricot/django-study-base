@@ -84,16 +84,6 @@
                                     <th>支払条件</th>
                                     <td>{{ contract.payment_terms|default:"-" }}</td>
                                 </tr>
-                                <tr>
-                                    <th>自動更新</th>
-                                    <td>
-                                        {% if contract.auto_renewal %}
-                                            <span class="badge bg-success">有効</span>
-                                        {% else %}
-                                            <span class="badge bg-secondary">無効</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
                             </table>
                         </div>
                     </div>

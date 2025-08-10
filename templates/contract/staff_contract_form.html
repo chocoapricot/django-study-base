@@ -25,7 +25,7 @@
                     スタッフ
                     <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
                        data-bs-toggle="tooltip" data-bs-placement="top" 
-                       title="社員番号・入社日が登録されているスタッフのみ選択可能です"></i>
+                       title="社員番号・入社日が登録されているスタッフのみ選択可能"></i>
                 </label>
                 <div class="col-sm-6">
                     {{ form.staff }}
@@ -69,7 +69,7 @@
                     契約開始日
                     <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
                        data-bs-toggle="tooltip" data-bs-placement="top" 
-                       title="入社日以降の日付を入力してください"></i>
+                       title="契約期間は入社日～退職日内の必要あり"></i>
                 </label>
                 <div class="col-sm-3">
                     {{ form.start_date }}
@@ -77,23 +77,15 @@
                         <div class="text-danger small">{{ form.start_date.errors.0 }}</div>
                     {% endif %}
                 </div>
-            </div>
 
-            <div class="row mb-3 align-items-center">
                 <label for="{{ form.end_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
                     契約終了日
-                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
-                       data-bs-toggle="tooltip" data-bs-placement="top" 
-                       title="退職日がある場合は退職日以前の日付を入力してください"></i>
                 </label>
                 <div class="col-sm-3">
                     {{ form.end_date }}
                     {% if form.end_date.errors %}
                         <div class="text-danger small">{{ form.end_date.errors.0 }}</div>
                     {% endif %}
-                </div>
-                <div class="col-sm-7">
-                    <small class="text-muted">未設定の場合は無期限契約となります</small>
                 </div>
             </div>
 
@@ -106,11 +98,11 @@
                     {% endif %}
                 </div>
                 <div class="col-sm-6">
-                    <small class="text-muted">円（税込）</small>
+                    <small class="text-muted">円</small>
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center">
+            <div class="row mb-1 align-items-center">
                 <label for="{{ form.payment_terms.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">支払条件</label>
                 <div class="col-sm-8">
                     {{ form.payment_terms }}
@@ -120,7 +112,7 @@
                 </div>
             </div>
 
-            <div class="row mb-3">
+            <div class="row mb-1 align-items-center">
                 <label for="{{ form.description.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">契約内容</label>
                 <div class="col-sm-10">
                     {{ form.description }}
@@ -130,7 +122,7 @@
                 </div>
             </div>
 
-            <div class="row mb-3">
+            <div class="row mb-3 align-items-center">
                 <label for="{{ form.notes.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">備考</label>
                 <div class="col-sm-10">
                     {{ form.notes }}
@@ -155,20 +147,13 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-sm-2"></div>
-                <div class="col-sm-10">
+            <div class="row mt-3">
+                <div class="col text-left">
                     <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
-                    <a href="{% if contract %}{% url 'contract:staff_contract_detail' contract.pk %}{% else %}{% url 'contract:staff_contract_list' %}{% endif %}" class="btn btn-sm btn-secondary">キャンセル</a>
+                    <a href="{% if contract %}{% url 'contract:staff_contract_detail' contract.pk %}{% else %}{% url 'contract:staff_contract_list' %}{% endif %}" class="btn btn-sm btn-secondary">戻る</a>
                 </div>
             </div>
         </form>
-
-        <div class="row mt-3">
-            <div class="col text-left">
-                <a href="{% url 'contract:staff_contract_list' %}" class="btn btn-sm btn-secondary">戻る</a>
-            </div>
-        </div>
     </div>
 </div>
 
