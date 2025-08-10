@@ -87,13 +87,16 @@ class ContractViewTest(TestCase):
         )
         
         # 契約関連の権限を追加
-        content_type = ContentType.objects.get_for_model(ClientContract)
-        permissions = Permission.objects.filter(content_type=content_type)
-        self.user.user_permissions.set(permissions)
+        all_permissions = []
+        content_type_client = ContentType.objects.get_for_model(ClientContract)
+        client_permissions = Permission.objects.filter(content_type=content_type_client)
+        all_permissions.extend(client_permissions)
         
-        content_type = ContentType.objects.get_for_model(StaffContract)
-        permissions = Permission.objects.filter(content_type=content_type)
-        self.user.user_permissions.set(permissions)
+        content_type_staff = ContentType.objects.get_for_model(StaffContract)
+        staff_permissions = Permission.objects.filter(content_type=content_type_staff)
+        all_permissions.extend(staff_permissions)
+        
+        self.user.user_permissions.set(all_permissions)
         
         self.client = Client()
         self.client.login(username='testuser', password='testpass123')

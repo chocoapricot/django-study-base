@@ -51,33 +51,33 @@ class ClientContract(MyModel):
     @property
     def is_current(self):
         """現在有効な契約かどうか"""
-        from django.utils import timezone
-        today = timezone.now().date()
+        from datetime import date
+        today = date.today()
         if not self.is_active:
             return False
         if not self.end_date:  # 無期限契約
             return today >= self.start_date
         return self.start_date <= today <= self.end_date
-    
+
     @property
     def is_future(self):
         """開始前の契約かどうか"""
-        from django.utils import timezone
-        today = timezone.now().date()
+        from datetime import date
+        today = date.today()
         return today < self.start_date and self.is_active
-    
+
     @property
     def is_expired(self):
         """期限切れの契約かどうか"""
-        from django.utils import timezone
-        today = timezone.now().date()
+        from datetime import date
+        today = date.today()
         return self.end_date and today > self.end_date
-    
+
     @property
     def status(self):
         """契約状況"""
-        from django.utils import timezone
-        today = timezone.now().date()
+        from datetime import date
+        today = date.today()
         
         if not self.is_active:
             return "無効"
@@ -144,33 +144,33 @@ class StaffContract(MyModel):
     @property
     def is_current(self):
         """現在有効な契約かどうか"""
-        from django.utils import timezone
-        today = timezone.now().date()
+        from datetime import date
+        today = date.today()
         if not self.is_active:
             return False
         if not self.end_date:  # 無期限契約
             return today >= self.start_date
         return self.start_date <= today <= self.end_date
-    
+
     @property
     def is_future(self):
         """開始前の契約かどうか"""
-        from django.utils import timezone
-        today = timezone.now().date()
+        from datetime import date
+        today = date.today()
         return today < self.start_date and self.is_active
-    
+
     @property
     def is_expired(self):
         """期限切れの契約かどうか"""
-        from django.utils import timezone
-        today = timezone.now().date()
+        from datetime import date
+        today = date.today()
         return self.end_date and today > self.end_date
-    
+
     @property
     def status(self):
         """契約状況"""
-        from django.utils import timezone
-        today = timezone.now().date()
+        from datetime import date
+        today = date.today()
         
         if not self.is_active:
             return "無効"
