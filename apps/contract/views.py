@@ -322,7 +322,8 @@ def client_select(request):
     search_query = request.GET.get('q', '')
     return_url = request.GET.get('return_url', '')
     
-    clients = Client.objects.all()
+    # 基本契約締結日が入っているクライアントのみを対象とする
+    clients = Client.objects.filter(basic_contract_date__isnull=False)
     
     if search_query:
         clients = clients.filter(
@@ -352,7 +353,11 @@ def staff_select(request):
     search_query = request.GET.get('q', '')
     return_url = request.GET.get('return_url', '')
     
-    staff_list = Staff.objects.all()
+    # 社員番号と入社日が入っているスタッフのみを対象とする
+    staff_list = Staff.objects.filter(
+        employee_no__isnull=False,
+        hire_date__isnull=False
+    ).exclude(employee_no='')
     
     if search_query:
         staff_list = staff_list.filter(

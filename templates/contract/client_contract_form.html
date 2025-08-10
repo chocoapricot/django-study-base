@@ -21,7 +21,12 @@
                         </div>
 
                         <div class="row mb-3 align-items-center">
-                            <label for="{{ form.client_display.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">クライアント</label>
+                            <label for="{{ form.client_display.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
+                                クライアント
+                                <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
+                                   data-bs-toggle="tooltip" data-bs-placement="top" 
+                                   title="基本契約締結日が登録されているクライアントのみ選択可能です"></i>
+                            </label>
                             <div class="col-sm-6">
                                 {{ form.client }}
                                 {{ form.client_display }}
@@ -60,7 +65,12 @@
                         </div>
 
                         <div class="row mb-3 align-items-center">
-                            <label for="{{ form.start_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">契約開始日</label>
+                            <label for="{{ form.start_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
+                                契約開始日
+                                <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
+                                   data-bs-toggle="tooltip" data-bs-placement="top" 
+                                   title="基本契約締結日以降の日付を入力してください"></i>
+                            </label>
                             <div class="col-sm-3">
                                 {{ form.start_date }}
                                 {% if form.start_date.errors %}
@@ -70,7 +80,9 @@
                         </div>
 
                         <div class="row mb-3 align-items-center">
-                            <label for="{{ form.end_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">契約終了日</label>
+                            <label for="{{ form.end_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
+                                契約終了日 <span class="text-danger">*</span>
+                            </label>
                             <div class="col-sm-3">
                                 {{ form.end_date }}
                                 {% if form.end_date.errors %}
@@ -78,7 +90,7 @@
                                 {% endif %}
                             </div>
                             <div class="col-sm-7">
-                                <small class="text-muted">未設定の場合は無期限契約となります</small>
+                                <small class="text-muted">必須項目です</small>
                             </div>
                         </div>
 
@@ -125,20 +137,7 @@
                             </div>
                         </div>
 
-                        <div class="row mb-3 align-items-center">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-10">
-                                <div class="form-check">
-                                    {{ form.auto_renewal }}
-                                    <label class="form-check-label" for="{{ form.auto_renewal.id_for_label }}">
-                                        自動更新を有効にする
-                                    </label>
-                                    {% if form.auto_renewal.errors %}
-                                        <div class="text-danger small">{{ form.auto_renewal.errors.0 }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
+
 
                         <div class="row mb-3 align-items-center">
                             <div class="col-sm-2"></div>
@@ -175,6 +174,12 @@
 <script>
 // ページ読み込み時に選択されたクライアント情報を処理
 document.addEventListener('DOMContentLoaded', function() {
+    // ツールチップを有効化
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
     const urlParams = new URLSearchParams(window.location.search);
     const selectedClientId = urlParams.get('selected_client_id');
     const selectedClientName = urlParams.get('selected_client_name');

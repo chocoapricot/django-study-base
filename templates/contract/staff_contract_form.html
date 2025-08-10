@@ -8,159 +8,159 @@
     <div class="card-header">{{ title }}</div>
     <div class="card-body">
         <form method="post">
-                        {% csrf_token %}
-                        
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.contract_name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">契約名</label>
-                            <div class="col-sm-6">
-                                {{ form.contract_name }}
-                                {% if form.contract_name.errors %}
-                                    <div class="text-danger small">{{ form.contract_name.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+            {% csrf_token %}
+            
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.contract_name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">契約名</label>
+                <div class="col-sm-6">
+                    {{ form.contract_name }}
+                    {% if form.contract_name.errors %}
+                        <div class="text-danger small">{{ form.contract_name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
 
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.staff_display.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">スタッフ</label>
-                            <div class="col-sm-6">
-                                {{ form.staff }}
-                                {{ form.staff_display }}
-                                {% if form.staff.errors %}
-                                    <div class="text-danger small">{{ form.staff.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-sm-4">
-                                <a href="{% url 'contract:staff_select' %}?return_url={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-secondary">
-                                    <i class="bi bi-search"></i> 選択
-                                </a>
-                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearStaff()">
-                                    <i class="bi bi-x"></i> クリア
-                                </button>
-                            </div>
-                        </div>
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.staff_display.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
+                    スタッフ
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
+                       data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="社員番号・入社日が登録されているスタッフのみ選択可能です"></i>
+                </label>
+                <div class="col-sm-6">
+                    {{ form.staff }}
+                    {{ form.staff_display }}
+                    {% if form.staff.errors %}
+                        <div class="text-danger small">{{ form.staff.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm-4">
+                    <a href="{% url 'contract:staff_select' %}?return_url={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-secondary">
+                        <i class="bi bi-search"></i> 選択
+                    </a>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearStaff()">
+                        <i class="bi bi-x"></i> クリア
+                    </button>
+                </div>
+            </div>
 
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.contract_number.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">契約番号</label>
-                            <div class="col-sm-4">
-                                {{ form.contract_number }}
-                                {% if form.contract_number.errors %}
-                                    <div class="text-danger small">{{ form.contract_number.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.contract_number.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">契約番号</label>
+                <div class="col-sm-4">
+                    {{ form.contract_number }}
+                    {% if form.contract_number.errors %}
+                        <div class="text-danger small">{{ form.contract_number.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
 
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.contract_type.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">契約種別</label>
-                            <div class="col-sm-4">
-                                {{ form.contract_type }}
-                                {% if form.contract_type.errors %}
-                                    <div class="text-danger small">{{ form.contract_type.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.contract_type.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">契約種別</label>
+                <div class="col-sm-4">
+                    {{ form.contract_type }}
+                    {% if form.contract_type.errors %}
+                        <div class="text-danger small">{{ form.contract_type.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
 
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.start_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">契約開始日</label>
-                            <div class="col-sm-3">
-                                {{ form.start_date }}
-                                {% if form.start_date.errors %}
-                                    <div class="text-danger small">{{ form.start_date.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.start_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
+                    契約開始日
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
+                       data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="入社日以降の日付を入力してください"></i>
+                </label>
+                <div class="col-sm-3">
+                    {{ form.start_date }}
+                    {% if form.start_date.errors %}
+                        <div class="text-danger small">{{ form.start_date.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
 
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.end_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">契約終了日</label>
-                            <div class="col-sm-3">
-                                {{ form.end_date }}
-                                {% if form.end_date.errors %}
-                                    <div class="text-danger small">{{ form.end_date.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-sm-7">
-                                <small class="text-muted">未設定の場合は無期限契約となります</small>
-                            </div>
-                        </div>
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.end_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
+                    契約終了日
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
+                       data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="退職日がある場合は退職日以前の日付を入力してください"></i>
+                </label>
+                <div class="col-sm-3">
+                    {{ form.end_date }}
+                    {% if form.end_date.errors %}
+                        <div class="text-danger small">{{ form.end_date.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm-7">
+                    <small class="text-muted">未設定の場合は無期限契約となります</small>
+                </div>
+            </div>
 
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.contract_amount.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">契約金額</label>
-                            <div class="col-sm-4">
-                                {{ form.contract_amount }}
-                                {% if form.contract_amount.errors %}
-                                    <div class="text-danger small">{{ form.contract_amount.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="col-sm-6">
-                                <small class="text-muted">円（税込）</small>
-                            </div>
-                        </div>
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.contract_amount.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">契約金額</label>
+                <div class="col-sm-4">
+                    {{ form.contract_amount }}
+                    {% if form.contract_amount.errors %}
+                        <div class="text-danger small">{{ form.contract_amount.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm-6">
+                    <small class="text-muted">円（税込）</small>
+                </div>
+            </div>
 
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.payment_terms.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">支払条件</label>
-                            <div class="col-sm-8">
-                                {{ form.payment_terms }}
-                                {% if form.payment_terms.errors %}
-                                    <div class="text-danger small">{{ form.payment_terms.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.payment_terms.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">支払条件</label>
+                <div class="col-sm-8">
+                    {{ form.payment_terms }}
+                    {% if form.payment_terms.errors %}
+                        <div class="text-danger small">{{ form.payment_terms.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
 
-                        <div class="row mb-3">
-                            <label for="{{ form.description.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">契約内容</label>
-                            <div class="col-sm-10">
-                                {{ form.description }}
-                                {% if form.description.errors %}
-                                    <div class="text-danger small">{{ form.description.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+            <div class="row mb-3">
+                <label for="{{ form.description.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">契約内容</label>
+                <div class="col-sm-10">
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
 
-                        <div class="row mb-3">
-                            <label for="{{ form.notes.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">備考</label>
-                            <div class="col-sm-10">
-                                {{ form.notes }}
-                                {% if form.notes.errors %}
-                                    <div class="text-danger small">{{ form.notes.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+            <div class="row mb-3">
+                <label for="{{ form.notes.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">備考</label>
+                <div class="col-sm-10">
+                    {{ form.notes }}
+                    {% if form.notes.errors %}
+                        <div class="text-danger small">{{ form.notes.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
 
-                        <div class="row mb-3 align-items-center">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-10">
-                                <div class="form-check">
-                                    {{ form.auto_renewal }}
-                                    <label class="form-check-label" for="{{ form.auto_renewal.id_for_label }}">
-                                        自動更新を有効にする
-                                    </label>
-                                    {% if form.auto_renewal.errors %}
-                                        <div class="text-danger small">{{ form.auto_renewal.errors.0 }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    <div class="form-check">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                            有効な契約
+                        </label>
+                        {% if form.is_active.errors %}
+                            <div class="text-danger small">{{ form.is_active.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
 
-                        <div class="row mb-3 align-items-center">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-10">
-                                <div class="form-check">
-                                    {{ form.is_active }}
-                                    <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
-                                        有効な契約
-                                    </label>
-                                    {% if form.is_active.errors %}
-                                        <div class="text-danger small">{{ form.is_active.errors.0 }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-10">
-                                <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
-                                <a href="{% if contract %}{% url 'contract:staff_contract_detail' contract.pk %}{% else %}{% url 'contract:staff_contract_list' %}{% endif %}" class="btn btn-sm btn-secondary">キャンセル</a>
-                            </div>
+            <div class="row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
+                    <a href="{% if contract %}{% url 'contract:staff_contract_detail' contract.pk %}{% else %}{% url 'contract:staff_contract_list' %}{% endif %}" class="btn btn-sm btn-secondary">キャンセル</a>
+                </div>
             </div>
         </form>
 
@@ -175,6 +175,12 @@
 <script>
 // ページ読み込み時に選択されたスタッフ情報を処理
 document.addEventListener('DOMContentLoaded', function() {
+    // ツールチップを有効化
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
     const urlParams = new URLSearchParams(window.location.search);
     const selectedStaffId = urlParams.get('selected_staff_id');
     const selectedStaffName = urlParams.get('selected_staff_name');
