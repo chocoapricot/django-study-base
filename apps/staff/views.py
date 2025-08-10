@@ -590,12 +590,27 @@ def staff_file_download(request, pk):
     staff_file = get_object_or_404(StaffFile, pk=pk)
     
     try:
+        # ファイルの存在確認
+        if not staff_file.file or not staff_file.file.name:
+            messages.error(request, f'ファイル「{staff_file.original_filename}」の情報が見つかりません。')
+            return redirect('staff:staff_detail', pk=staff_file.staff.pk)
+        
+        # 物理ファイルの存在確認
+        import os
+        if not os.path.exists(staff_file.file.path):
+            messages.error(request, f'ファイル「{staff_file.original_filename}」が見つかりません。ファイルが削除されている可能性があります。')
+            return redirect('staff:staff_detail', pk=staff_file.staff.pk)
+        
         response = FileResponse(
             staff_file.file.open('rb'),
             as_attachment=True,
             filename=staff_file.original_filename
         )
         return response
-    except FileNotFoundError:
-        raise Http404("ファイルが見つかりません。")
+    except (FileNotFoundError, OSError, ValueError) as e:
+        messages.error(request, f'ファイル「{staff_file.original_filename}」のダウンロードに失敗しました。ファイルが削除されている可能性があります。')
+        return redirect('staff:staff_detail', pk=staff_file.staff.pk)
+    except Exception as e:
+        messages.error(request, f'ファイルのダウンロード中にエラーが発生しました: {str(e)}')
+        return redirect('staff:staff_detail', pk=staff_file.staff.pk)
 

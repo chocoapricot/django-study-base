@@ -1,22 +1,12 @@
 # 連絡履歴 詳細
 from django.contrib.auth.decorators import permission_required
-
-@permission_required('client.view_clientcontacted', raise_exception=True)
-def client_contacted_detail(request, pk):
-    from .models import ClientContacted
-    contacted = get_object_or_404(ClientContacted, pk=pk)
-    client = contacted.client
-    return render(request, 'client/client_contacted_detail.html', {'contacted': contacted, 'client': client})
 from django.contrib.auth.decorators import login_required, permission_required
-def client_contacted_detail(request, pk):
-    contacted = get_object_or_404(ClientContacted, pk=pk)
-    client = contacted.client
-    return render(request, 'client/client_contacted_detail.html', {'contacted': contacted, 'client': client})
 import logging
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.db import models
+from django.contrib import messages
 from django.http import JsonResponse
 # クライアント連絡履歴用インポート
 from .models import Client, ClientContacted, ClientDepartment, ClientUser, ClientFile
@@ -25,6 +15,14 @@ from .forms import ClientForm, ClientContactedForm, ClientDepartmentForm, Client
 
 # ロガーの作成
 logger = logging.getLogger('client')
+
+@login_required
+@permission_required('client.view_clientcontacted', raise_exception=True)
+def client_contacted_detail(request, pk):
+    contacted = get_object_or_404(ClientContacted, pk=pk)
+    client = contacted.client
+    return render(request, 'client/client_contacted_detail.html', {'contacted': contacted, 'client': client})
+
 
 @login_required
 @permission_required('client.view_client', raise_exception=True)
@@ -421,11 +419,27 @@ def client_file_download(request, pk):
     client_file = get_object_or_404(ClientFile, pk=pk)
     
     try:
+        # ファイルの存在確認
+        if not client_file.file or not client_file.file.name:
+            messages.error(request, f'ファイル「{client_file.original_filename}」の情報が見つかりません。')
+            return redirect('client:client_detail', pk=client_file.client.pk)
+        
+        # 物理ファイルの存在確認
+        import os
+        if not os.path.exists(client_file.file.path):
+            messages.error(request, f'ファイル「{client_file.original_filename}」が見つかりません。ファイルが削除されている可能性があります。')
+            return redirect('client:client_detail', pk=client_file.client.pk)
+        
         response = FileResponse(
             client_file.file.open('rb'),
             as_attachment=True,
             filename=client_file.original_filename
         )
         return response
-    except FileNotFoundError:
-        raise Http404("ファイルが見つかりません。")
+    except (FileNotFoundError, OSError, ValueError) as e:
+        messages.error(request, f'ファイル「{client_file.original_filename}」のダウンロードに失敗しました。ファイルが削除されている可能性があります。')
+        return redirect('client:client_detail', pk=client_file.staff.pk)
+    except Exception as e:
+        messages.error(request, f'ファイルのダウンロード中にエラーが発生しました: {str(e)}')
+        return redirect('client:client_detail', pk=client_file.staff.pk)
+
