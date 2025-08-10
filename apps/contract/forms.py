@@ -7,6 +7,17 @@ from apps.staff.models import Staff
 class ClientContractForm(forms.ModelForm):
     """クライアント契約フォーム"""
     
+    # 選択されたクライアント名を表示するための読み取り専用フィールド
+    client_display = forms.CharField(
+        label='クライアント',
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-sm',
+            'readonly': True,
+            'placeholder': 'クライアントを選択してください'
+        })
+    )
+    
     class Meta:
         model = ClientContract
         fields = [
@@ -15,7 +26,7 @@ class ClientContractForm(forms.ModelForm):
             'description', 'notes', 'auto_renewal', 'is_active'
         ]
         widgets = {
-            'client': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'client': forms.HiddenInput(),  # 隠しフィールドに変更
             'contract_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
@@ -31,9 +42,9 @@ class ClientContractForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # クライアントの選択肢を設定
-        self.fields['client'].queryset = Client.objects.all().order_by('name')
-        self.fields['client'].empty_label = '選択してください'
+        # 編集時に選択されたクライアント名を表示
+        if self.instance and self.instance.pk and hasattr(self.instance, 'client') and self.instance.client:
+            self.fields['client_display'].initial = self.instance.client.name
     
     def clean(self):
         cleaned_data = super().clean()
@@ -49,6 +60,17 @@ class ClientContractForm(forms.ModelForm):
 class StaffContractForm(forms.ModelForm):
     """スタッフ契約フォーム"""
     
+    # 選択されたスタッフ名を表示するための読み取り専用フィールド
+    staff_display = forms.CharField(
+        label='スタッフ',
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-sm',
+            'readonly': True,
+            'placeholder': 'スタッフを選択してください'
+        })
+    )
+    
     class Meta:
         model = StaffContract
         fields = [
@@ -57,7 +79,7 @@ class StaffContractForm(forms.ModelForm):
             'description', 'notes', 'auto_renewal', 'is_active'
         ]
         widgets = {
-            'staff': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'staff': forms.HiddenInput(),  # 隠しフィールドに変更
             'contract_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
@@ -73,9 +95,9 @@ class StaffContractForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # スタッフの選択肢を設定
-        self.fields['staff'].queryset = Staff.objects.all().order_by('name_last', 'name_first')
-        self.fields['staff'].empty_label = '選択してください'
+        # 編集時に選択されたスタッフ名を表示
+        if self.instance and self.instance.pk and hasattr(self.instance, 'staff') and self.instance.staff:
+            self.fields['staff_display'].initial = f"{self.instance.staff.name_last} {self.instance.staff.name_first}"
     
     def clean(self):
         cleaned_data = super().clean()

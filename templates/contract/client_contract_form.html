@@ -21,12 +21,21 @@
                         </div>
 
                         <div class="row mb-3 align-items-center">
-                            <label for="{{ form.client.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">クライアント</label>
+                            <label for="{{ form.client_display.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">クライアント</label>
                             <div class="col-sm-6">
                                 {{ form.client }}
+                                {{ form.client_display }}
                                 {% if form.client.errors %}
                                     <div class="text-danger small">{{ form.client.errors.0 }}</div>
                                 {% endif %}
+                            </div>
+                            <div class="col-sm-4">
+                                <a href="{% url 'contract:client_select' %}?return_url={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-secondary">
+                                    <i class="bi bi-search"></i> 選択
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearClient()">
+                                    <i class="bi bi-x"></i> クリア
+                                </button>
                             </div>
                         </div>
 
@@ -162,4 +171,27 @@
         </div>
     </div>
 </div>
+
+<script>
+// ページ読み込み時に選択されたクライアント情報を処理
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedClientId = urlParams.get('selected_client_id');
+    const selectedClientName = urlParams.get('selected_client_name');
+    
+    if (selectedClientId && selectedClientName) {
+        document.getElementById('{{ form.client.id_for_label }}').value = selectedClientId;
+        document.getElementById('{{ form.client_display.id_for_label }}').value = selectedClientName;
+        
+        // URLからパラメータを削除
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+    }
+});
+
+function clearClient() {
+    document.getElementById('{{ form.client.id_for_label }}').value = '';
+    document.getElementById('{{ form.client_display.id_for_label }}').value = '';
+}
+</script>
 {% endblock %}

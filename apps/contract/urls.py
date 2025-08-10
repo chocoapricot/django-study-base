@@ -20,4 +20,8 @@ urlpatterns = [
     path('staff/<int:pk>/', views.staff_contract_detail, name='staff_contract_detail'),
     path('staff/<int:pk>/update/', views.staff_contract_update, name='staff_contract_update'),
     path('staff/<int:pk>/delete/', views.staff_contract_delete, name='staff_contract_delete'),
+    
+    # 選択用画面
+    path('client-select/', views.client_select, name='client_select'),
+    path('staff-select/', views.staff_select, name='staff_select'),
 ]

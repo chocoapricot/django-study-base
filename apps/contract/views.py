@@ -3,9 +3,12 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.http import JsonResponse
 from .models import ClientContract, StaffContract
 from .forms import ClientContractForm, StaffContractForm
 from apps.system.logs.models import AppLog
+from apps.client.models import Client
+from apps.staff.models import Staff
 
 
 # 契約管理トップページ
@@ -310,3 +313,64 @@ def staff_contract_delete(request, pk):
         'contract': contract,
     }
     return render(request, 'contract/staff_contract_delete.html', context)
+
+
+# 選択用ビュー
+@login_required
+def client_select(request):
+    """クライアント選択画面"""
+    search_query = request.GET.get('q', '')
+    return_url = request.GET.get('return_url', '')
+    
+    clients = Client.objects.all()
+    
+    if search_query:
+        clients = clients.filter(
+            Q(name__icontains=search_query) |
+            Q(corporate_number__icontains=search_query) |
+            Q(address__icontains=search_query)
+        )
+    
+    clients = clients.order_by('name')
+    
+    # ページネーション
+    paginator = Paginator(clients, 20)
+    page = request.GET.get('page')
+    clients_page = paginator.get_page(page)
+    
+    context = {
+        'clients': clients_page,
+        'search_query': search_query,
+        'return_url': return_url,
+    }
+    return render(request, 'contract/client_select.html', context)
+
+
+@login_required
+def staff_select(request):
+    """スタッフ選択画面"""
+    search_query = request.GET.get('q', '')
+    return_url = request.GET.get('return_url', '')
+    
+    staff_list = Staff.objects.all()
+    
+    if search_query:
+        staff_list = staff_list.filter(
+            Q(name_last__icontains=search_query) |
+            Q(name_first__icontains=search_query) |
+            Q(employee_no__icontains=search_query)
+        )
+    
+    staff_list = staff_list.order_by('name_last', 'name_first')
+    
+    # ページネーション
+    paginator = Paginator(staff_list, 20)
+    page = request.GET.get('page')
+    staff_page = paginator.get_page(page)
+    
+    context = {
+        'staff_list': staff_page,
+        'search_query': search_query,
+        'return_url': return_url,
+    }
+    return render(request, 'contract/staff_select.html', context)

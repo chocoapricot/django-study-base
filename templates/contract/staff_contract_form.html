@@ -21,12 +21,21 @@
                         </div>
 
                         <div class="row mb-3 align-items-center">
-                            <label for="{{ form.staff.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">スタッフ</label>
+                            <label for="{{ form.staff_display.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">スタッフ</label>
                             <div class="col-sm-6">
                                 {{ form.staff }}
+                                {{ form.staff_display }}
                                 {% if form.staff.errors %}
                                     <div class="text-danger small">{{ form.staff.errors.0 }}</div>
                                 {% endif %}
+                            </div>
+                            <div class="col-sm-4">
+                                <a href="{% url 'contract:staff_select' %}?return_url={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-secondary">
+                                    <i class="bi bi-search"></i> 選択
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearStaff()">
+                                    <i class="bi bi-x"></i> クリア
+                                </button>
                             </div>
                         </div>
 
@@ -162,4 +171,27 @@
         </div>
     </div>
 </div>
+
+<script>
+// ページ読み込み時に選択されたスタッフ情報を処理
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedStaffId = urlParams.get('selected_staff_id');
+    const selectedStaffName = urlParams.get('selected_staff_name');
+    
+    if (selectedStaffId && selectedStaffName) {
+        document.getElementById('{{ form.staff.id_for_label }}').value = selectedStaffId;
+        document.getElementById('{{ form.staff_display.id_for_label }}').value = selectedStaffName;
+        
+        // URLからパラメータを削除
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+    }
+});
+
+function clearStaff() {
+    document.getElementById('{{ form.staff.id_for_label }}').value = '';
+    document.getElementById('{{ form.staff_display.id_for_label }}').value = '';
+}
+</script>
 {% endblock %}
