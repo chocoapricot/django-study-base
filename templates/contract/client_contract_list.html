@@ -6,12 +6,33 @@
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        クライアント契約一覧
-        <a href="{% url 'contract:client_contract_create' %}" class="btn btn-sm btn-primary me-2">新規作成</a>
+        {% if filtered_client %}
+            {{ filtered_client.name }} のクライアント契約一覧
+        {% else %}
+            クライアント契約一覧
+        {% endif %}
+        {% if not client_filter %}
+            <a href="{% url 'contract:client_contract_create' %}" class="btn btn-sm btn-primary me-2">新規作成</a>
+        {% endif %}
     </div>
     <div class="card-body">
+        <!-- クライアントフィルタ時のパンくずリスト -->
+        {% if filtered_client %}
+        <div class="mb-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'client:client_detail' filtered_client.pk %}">{{ filtered_client.name }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">クライアント契約一覧</li>
+                </ol>
+            </nav>
+        </div>
+        {% endif %}
+
         <!-- 検索・フィルタフォーム -->
         <form method="get" action="{% url 'contract:client_contract_list' %}" class="form-inline d-flex flex-wrap mb-3">
+            {% if client_filter %}
+                <input type="hidden" name="client" value="{{ client_filter }}">
+            {% endif %}
             <div class="input-group me-2 mb-2" style="width: 25em;">
                 <span class="input-group-text">
                     <i class="bi bi-search"></i>
@@ -38,7 +59,11 @@
         function resetForm() {
             document.querySelector('input[name=q]').value = '';
             document.querySelector('select[name=status]').value = '';
-            window.location.href = '{% url "contract:client_contract_list" %}';
+            {% if client_filter %}
+                window.location.href = '{% url "contract:client_contract_list" %}?client={{ client_filter }}';
+            {% else %}
+                window.location.href = '{% url "contract:client_contract_list" %}';
+            {% endif %}
         }
         </script>
 
@@ -60,7 +85,7 @@
                                 {% for contract in contracts %}
                                 <tr>
                                     <td>
-                                        <a href="{% url 'contract:client_contract_detail' contract.pk %}" class="text-decoration-none">
+                                        <a href="{% url 'contract:client_contract_detail' contract.pk %}{% if client_filter %}?client={{ client_filter }}{% endif %}" class="text-decoration-none">
                                             {{ contract.contract_name }}
                                         </a>
                                     </td>
@@ -95,12 +120,16 @@
                                         {% endif %}
                                     </td>
                                     <td>
+                                        {% if not client_filter %}
                                         <a href="{% url 'contract:client_contract_update' contract.pk %}" class="btn btn-dark btn-sm me-1" title="編集">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         <a href="{% url 'contract:client_contract_delete' contract.pk %}" class="btn btn-dark btn-sm" title="削除">
                                             <i class="bi bi-x"></i>
                                         </a>
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -113,7 +142,7 @@
                         <ul class="pagination pagination-sm justify-content-center">
                             {% if contracts.has_previous %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ contracts.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">前へ</a>
+                                    <a class="page-link" href="?page={{ contracts.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if client_filter %}&client={{ client_filter }}{% endif %}">前へ</a>
                                 </li>
                             {% endif %}
                             
@@ -124,25 +153,38 @@
                                     </li>
                                 {% else %}
                                     <li class="page-item">
-                                        <a class="page-link" href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">{{ num }}</a>
+                                        <a class="page-link" href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if client_filter %}&client={{ client_filter }}{% endif %}">{{ num }}</a>
                                     </li>
                                 {% endif %}
                             {% endfor %}
                             
                             {% if contracts.has_next %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ contracts.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">次へ</a>
+                                    <a class="page-link" href="?page={{ contracts.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if client_filter %}&client={{ client_filter }}{% endif %}">次へ</a>
                                 </li>
                             {% endif %}
             </ul>
         </nav>
+
         {% endif %}
+        {% if filtered_client %}
+        <div class="row mt-3">
+            <div class="col text-left">
+                <a href="{% url 'client:client_detail' filtered_client.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </div>
+        {% endif %}
+
         {% else %}
         <div class="text-center py-4">
             <p class="text-muted">契約が見つかりませんでした。</p>
-            <a href="{% url 'contract:client_contract_create' %}" class="btn btn-sm btn-primary">新規作成</a>
+            {% if not client_filter %}
+                <a href="{% url 'contract:client_contract_create' %}" class="btn btn-sm btn-primary">新規作成</a>
+            {% endif %}
         </div>
         {% endif %}
     </div>
 </div>
+
+
 {% endblock %}

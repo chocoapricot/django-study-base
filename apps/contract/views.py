@@ -47,8 +47,13 @@ def client_contract_list(request):
     """クライアント契約一覧"""
     search_query = request.GET.get('q', '')
     status_filter = request.GET.get('status', '')
+    client_filter = request.GET.get('client', '')  # クライアントフィルタを追加
     
     contracts = ClientContract.objects.select_related('client').all()
+    
+    # クライアントフィルタを適用
+    if client_filter:
+        contracts = contracts.filter(client_id=client_filter)
     
     # 検索条件を適用
     if search_query:
@@ -83,10 +88,21 @@ def client_contract_list(request):
     page = request.GET.get('page')
     contracts_page = paginator.get_page(page)
     
+    # フィルタ対象のクライアント情報を取得（パンくずリスト用）
+    filtered_client = None
+    if client_filter:
+        from apps.client.models import Client
+        try:
+            filtered_client = Client.objects.get(pk=client_filter)
+        except Client.DoesNotExist:
+            pass
+    
     context = {
         'contracts': contracts_page,
         'search_query': search_query,
         'status_filter': status_filter,
+        'client_filter': client_filter,
+        'filtered_client': filtered_client,
     }
     return render(request, 'contract/client_contract_list.html', context)
 
@@ -96,6 +112,18 @@ def client_contract_list(request):
 def client_contract_detail(request, pk):
     """クライアント契約詳細"""
     contract = get_object_or_404(ClientContract, pk=pk)
+    
+    # クライアントフィルタ情報を取得
+    client_filter = request.GET.get('client', '')
+    from_client_detail = bool(client_filter)
+    
+    # 遷移元を判定（リファラーから）
+    referer = request.META.get('HTTP_REFERER', '')
+    from_client_detail_direct = False
+    if client_filter and referer:
+        # クライアント詳細画面から直接遷移した場合
+        if f'/client/client/detail/{client_filter}/' in referer:
+            from_client_detail_direct = True
     
     # AppLogから履歴を取得
     change_logs = AppLog.objects.filter(
@@ -107,6 +135,9 @@ def client_contract_detail(request, pk):
     context = {
         'contract': contract,
         'change_logs': change_logs,
+        'client_filter': client_filter,
+        'from_client_detail': from_client_detail,
+        'from_client_detail_direct': from_client_detail_direct,
     }
     return render(request, 'contract/client_contract_detail.html', context)
 
@@ -184,8 +215,13 @@ def staff_contract_list(request):
     """スタッフ契約一覧"""
     search_query = request.GET.get('q', '')
     status_filter = request.GET.get('status', '')
+    staff_filter = request.GET.get('staff', '')  # スタッフフィルタを追加
     
     contracts = StaffContract.objects.select_related('staff').all()
+    
+    # スタッフフィルタを適用
+    if staff_filter:
+        contracts = contracts.filter(staff_id=staff_filter)
     
     # 検索条件を適用
     if search_query:
@@ -221,10 +257,21 @@ def staff_contract_list(request):
     page = request.GET.get('page')
     contracts_page = paginator.get_page(page)
     
+    # フィルタ対象のスタッフ情報を取得（パンくずリスト用）
+    filtered_staff = None
+    if staff_filter:
+        from apps.staff.models import Staff
+        try:
+            filtered_staff = Staff.objects.get(pk=staff_filter)
+        except Staff.DoesNotExist:
+            pass
+    
     context = {
         'contracts': contracts_page,
         'search_query': search_query,
         'status_filter': status_filter,
+        'staff_filter': staff_filter,
+        'filtered_staff': filtered_staff,
     }
     return render(request, 'contract/staff_contract_list.html', context)
 
@@ -234,6 +281,18 @@ def staff_contract_list(request):
 def staff_contract_detail(request, pk):
     """スタッフ契約詳細"""
     contract = get_object_or_404(StaffContract, pk=pk)
+    
+    # スタッフフィルタ情報を取得
+    staff_filter = request.GET.get('staff', '')
+    from_staff_detail = bool(staff_filter)
+    
+    # 遷移元を判定（リファラーから）
+    referer = request.META.get('HTTP_REFERER', '')
+    from_staff_detail_direct = False
+    if staff_filter and referer:
+        # スタッフ詳細画面から直接遷移した場合
+        if f'/staff/staff/detail/{staff_filter}/' in referer:
+            from_staff_detail_direct = True
     
     # AppLogから履歴を取得
     change_logs = AppLog.objects.filter(
@@ -245,6 +304,9 @@ def staff_contract_detail(request, pk):
     context = {
         'contract': contract,
         'change_logs': change_logs,
+        'staff_filter': staff_filter,
+        'from_staff_detail': from_staff_detail,
+        'from_staff_detail_direct': from_staff_detail_direct,
     }
     return render(request, 'contract/staff_contract_detail.html', context)
 

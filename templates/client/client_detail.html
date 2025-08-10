@@ -323,6 +323,82 @@
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
+        クライアント契約
+    </div>
+    <div class="card-body mb-0">
+        <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>契約名</th>
+                    <th>契約種別</th>
+                    <th>契約期間</th>
+                    <th>状況</th>
+                    <th>作成者</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contract in client_contracts %}
+                <tr>
+                    <td>
+                        <a href="{% url 'contract:client_contract_detail' contract.pk %}?client={{ client.pk }}" class="text-decoration-none">
+                            {{ contract.contract_name|truncatechars:30 }}
+                        </a>
+                    </td>
+                    <td>
+                        {% if contract.contract_type == 'service' %}
+                            <span class="badge bg-primary">サービス契約</span>
+                        {% elif contract.contract_type == 'maintenance' %}
+                            <span class="badge bg-success">保守契約</span>
+                        {% elif contract.contract_type == 'development' %}
+                            <span class="badge bg-info">開発契約</span>
+                        {% elif contract.contract_type == 'consulting' %}
+                            <span class="badge bg-warning">コンサルティング契約</span>
+                        {% else %}
+                            <span class="badge bg-light">その他</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ contract.start_date|date:'Y/m/d' }}
+                        {% if contract.end_date %}
+                            ～ {{ contract.end_date|date:'Y/m/d' }}
+                        {% else %}
+                            ～ 無期限
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if contract.status == '有効' %}
+                            <span class="badge bg-success">{{ contract.status }}</span>
+                        {% elif contract.status == '開始前' %}
+                            <span class="badge bg-warning">{{ contract.status }}</span>
+                        {% elif contract.status == '終了' %}
+                            <span class="badge bg-secondary">{{ contract.status }}</span>
+                        {% elif contract.status == '無効' %}
+                            <span class="badge bg-danger">{{ contract.status }}</span>
+                        {% else %}
+                            <span class="badge bg-light">{{ contract.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if contract.created_by.last_name or contract.created_by.first_name %}
+                            {{ contract.created_by.last_name }} {{ contract.created_by.first_name }}
+                        {% else %}
+                            {{ contract.created_by.username }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5">契約がありません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer d-flex justify-content-center align-items-center">
+        <a href="{% url 'contract:client_contract_list' %}?client={{ client.pk }}">全て表示 (全{{ client_contracts_count }}件)</a>
+    </div>
+</div>
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
         変更履歴
     </div>
     <div class="card-body mb-0">

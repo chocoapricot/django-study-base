@@ -161,6 +161,10 @@ def staff_detail(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
     # 連絡履歴（最新5件）
     contacted_list = staff.contacted_histories.all()[:5]
+    # スタッフ契約（最新5件）
+    from apps.contract.models import StaffContract
+    staff_contracts = StaffContract.objects.filter(staff=staff).order_by('-start_date')[:5]
+    staff_contracts_count = StaffContract.objects.filter(staff=staff).count()
     # 資格情報（最新5件）
     qualifications = staff.qualifications.select_related('qualification').order_by('-acquired_date')[:5]
     # 技能情報（最新5件）
@@ -189,6 +193,8 @@ def staff_detail(request, pk):
     return render(request, 'staff/staff_detail.html', {
         'staff': staff,
         'contacted_list': contacted_list,
+        'staff_contracts': staff_contracts,
+        'staff_contracts_count': staff_contracts_count,
         'qualifications': qualifications,
         'skills': skills,
         'files': files,
@@ -592,3 +598,4 @@ def staff_file_download(request, pk):
         return response
     except FileNotFoundError:
         raise Http404("ファイルが見つかりません。")
+

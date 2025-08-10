@@ -369,6 +369,84 @@
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
+        スタッフ契約
+    </div>
+    <div class="card-body mb-0">
+        <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>契約名</th>
+                    <th>契約種別</th>
+                    <th>契約期間</th>
+                    <th>状況</th>
+                    <th>作成者</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contract in staff_contracts %}
+                <tr>
+                    <td>
+                        <a href="{% url 'contract:staff_contract_detail' contract.pk %}?staff={{ staff.pk }}" class="text-decoration-none">
+                            {{ contract.contract_name|truncatechars:30 }}
+                        </a>
+                    </td>
+                    <td>
+                        {% if contract.contract_type == 'full_time' %}
+                            <span class="badge bg-primary">正社員</span>
+                        {% elif contract.contract_type == 'part_time' %}
+                            <span class="badge bg-success">パートタイム</span>
+                        {% elif contract.contract_type == 'contract' %}
+                            <span class="badge bg-info">契約社員</span>
+                        {% elif contract.contract_type == 'freelance' %}
+                            <span class="badge bg-warning">フリーランス</span>
+                        {% elif contract.contract_type == 'intern' %}
+                            <span class="badge bg-secondary">インターン</span>
+                        {% else %}
+                            <span class="badge bg-light">その他</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ contract.start_date|date:'Y/m/d' }}
+                        {% if contract.end_date %}
+                            ～ {{ contract.end_date|date:'Y/m/d' }}
+                        {% else %}
+                            ～ 無期限
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if contract.status == '有効' %}
+                            <span class="badge bg-success">{{ contract.status }}</span>
+                        {% elif contract.status == '開始前' %}
+                            <span class="badge bg-warning">{{ contract.status }}</span>
+                        {% elif contract.status == '終了' %}
+                            <span class="badge bg-secondary">{{ contract.status }}</span>
+                        {% elif contract.status == '無効' %}
+                            <span class="badge bg-danger">{{ contract.status }}</span>
+                        {% else %}
+                            <span class="badge bg-light">{{ contract.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if contract.created_by.last_name or contract.created_by.first_name %}
+                            {{ contract.created_by.last_name }} {{ contract.created_by.first_name }}
+                        {% else %}
+                            {{ contract.created_by.username }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5">契約がありません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer d-flex justify-content-center align-items-center">
+        <a href="{% url 'contract:staff_contract_list' %}?staff={{ staff.pk }}">全て表示 (全{{ staff_contracts_count }}件)</a>
+    </div>
+</div>
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
         変更履歴
     </div>
     <div class="card-body mb-0">

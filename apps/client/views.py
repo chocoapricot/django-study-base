@@ -94,6 +94,10 @@ def client_detail(request, pk):
     form = ClientForm(instance=client)
     # 連絡履歴（最新5件）
     contacted_list = client.contacted_histories.all()[:5]
+    # クライアント契約（最新5件）
+    from apps.contract.models import ClientContract
+    client_contracts = ClientContract.objects.filter(client=client).order_by('-start_date')[:5]
+    client_contracts_count = ClientContract.objects.filter(client=client).count()
     # 組織一覧（最新5件）
     departments = client.departments.all()[:5]
     departments_count = client.departments.count()
@@ -125,6 +129,8 @@ def client_detail(request, pk):
         'client': client,
         'form': form,
         'contacted_list': contacted_list,
+        'client_contracts': client_contracts,
+        'client_contracts_count': client_contracts_count,
         'departments': departments,
         'departments_count': departments_count,
         'users': users,
