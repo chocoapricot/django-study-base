@@ -4,7 +4,8 @@ from django.urls import reverse
 from apps.client.models import Client as ClientModel
 from apps.staff.models import Staff
 from .models import ClientContract, StaffContract
-from datetime import date, timedelta
+from django.utils import timezone
+from datetime import timedelta
 
 User = get_user_model()
 
@@ -41,8 +42,8 @@ class ContractModelTest(TestCase):
             client=self.client_obj,
             contract_name='テスト契約',
             contract_type='service',
-            start_date=date.today(),
-            end_date=date.today() + timedelta(days=365),
+            start_date=timezone.now().date(),
+            end_date=timezone.now().date() + timedelta(days=365),
             contract_amount=1000000,
             created_by=self.user,
             updated_by=self.user
@@ -59,8 +60,8 @@ class ContractModelTest(TestCase):
             staff=self.staff,
             contract_name='雇用契約',
             contract_type='full_time',
-            start_date=date.today(),
-            end_date=date.today() + timedelta(days=365),
+            start_date=timezone.now().date(),
+            end_date=timezone.now().date() + timedelta(days=365),
             contract_amount=300000,
             created_by=self.user,
             updated_by=self.user
