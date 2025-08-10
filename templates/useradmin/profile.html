@@ -14,7 +14,7 @@
         <form method="post">
             {% csrf_token %}
             {% if form.errors %}
-            <div class="alert alert-danger">{{ form.errors }}</div>
+            <div class="alert alert-warning">{{ form.errors }}</div>
             {% endif %}
             <div class="row mb-3 align-items-center">
                 <label for="id_username" class="col-sm-2 col-form-label" style="text-align:right">ユーザー名</label>

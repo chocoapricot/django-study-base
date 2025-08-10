@@ -17,11 +17,18 @@
                     {% csrf_token %}
                     
                     {% if form.errors %}
-                        <div class="alert alert-danger">
-                            {% for field, errors in form.errors.items %}
-                                {% for error in errors %}
+                        <div class="alert alert-warning">
+                            {% if form.non_field_errors %}
+                                {% for error in form.non_field_errors %}
                                     <div>{{ error }}</div>
                                 {% endfor %}
+                            {% endif %}
+                            {% for field, errors in form.errors.items %}
+                                {% if field != '__all__' %}
+                                    {% for error in errors %}
+                                        <div><strong>{{ field }}:</strong> {{ error }}</div>
+                                    {% endfor %}
+                                {% endif %}
                             {% endfor %}
                         </div>
                     {% endif %}

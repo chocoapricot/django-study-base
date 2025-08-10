@@ -190,9 +190,8 @@ class StaffQualificationForm(forms.ModelForm):
                 existing_query = existing_query.exclude(pk=self.instance.pk)
             
             if existing_query.exists():
-                raise forms.ValidationError(
-                    f'この資格「{qualification.name}」は既に登録されています。'
-                )
+                # 特定のフィールドにエラーを関連付ける
+                self.add_error('qualification', f'この資格「{qualification.name}」は既に登録されています。')
         
         return cleaned_data
 
@@ -236,9 +235,8 @@ class StaffSkillForm(forms.ModelForm):
                 existing_query = existing_query.exclude(pk=self.instance.pk)
             
             if existing_query.exists():
-                raise forms.ValidationError(
-                    f'この技能「{skill.name}」は既に登録されています。'
-                )
+                # 特定のフィールドにエラーを関連付ける
+                self.add_error('skill', f'この技能「{skill.name}」は既に登録されています。')
         
         return cleaned_data
 

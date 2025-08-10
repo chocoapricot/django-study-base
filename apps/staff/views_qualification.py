@@ -41,7 +41,7 @@ def staff_qualification_create(request, staff_pk):
     staff = get_object_or_404(Staff, pk=staff_pk)
     
     if request.method == 'POST':
-        form = StaffQualificationForm(request.POST)
+        form = StaffQualificationForm(request.POST, staff=staff)
         if form.is_valid():
             staff_qualification = form.save(commit=False)
             staff_qualification.staff = staff
@@ -51,7 +51,7 @@ def staff_qualification_create(request, staff_pk):
             messages.success(request, f'資格「{staff_qualification.qualification.name}」を追加しました。')
             return redirect('staff:staff_qualification_list', staff_pk=staff.pk)
     else:
-        form = StaffQualificationForm()
+        form = StaffQualificationForm(staff=staff)
     
     context = {
         'form': form,
@@ -68,7 +68,7 @@ def staff_qualification_update(request, pk):
     staff_qualification = get_object_or_404(StaffQualification, pk=pk)
     
     if request.method == 'POST':
-        form = StaffQualificationForm(request.POST, instance=staff_qualification)
+        form = StaffQualificationForm(request.POST, instance=staff_qualification, staff=staff_qualification.staff)
         if form.is_valid():
             staff_qualification = form.save(commit=False)
             staff_qualification.updated_by = request.user
@@ -76,7 +76,7 @@ def staff_qualification_update(request, pk):
             messages.success(request, f'資格「{staff_qualification.qualification.name}」を更新しました。')
             return redirect('staff:staff_qualification_detail', pk=staff_qualification.pk)
     else:
-        form = StaffQualificationForm(instance=staff_qualification)
+        form = StaffQualificationForm(instance=staff_qualification, staff=staff_qualification.staff)
     
     context = {
         'form': form,
@@ -141,7 +141,7 @@ def staff_skill_create(request, staff_pk):
     staff = get_object_or_404(Staff, pk=staff_pk)
     
     if request.method == 'POST':
-        form = StaffSkillForm(request.POST)
+        form = StaffSkillForm(request.POST, staff=staff)
         if form.is_valid():
             staff_skill = form.save(commit=False)
             staff_skill.staff = staff
@@ -151,7 +151,7 @@ def staff_skill_create(request, staff_pk):
             messages.success(request, f'技能「{staff_skill.skill.name}」を追加しました。')
             return redirect('staff:staff_skill_list', staff_pk=staff.pk)
     else:
-        form = StaffSkillForm()
+        form = StaffSkillForm(staff=staff)
     
     context = {
         'form': form,
@@ -168,7 +168,7 @@ def staff_skill_update(request, pk):
     staff_skill = get_object_or_404(StaffSkill, pk=pk)
     
     if request.method == 'POST':
-        form = StaffSkillForm(request.POST, instance=staff_skill)
+        form = StaffSkillForm(request.POST, instance=staff_skill, staff=staff_skill.staff)
         if form.is_valid():
             staff_skill = form.save(commit=False)
             staff_skill.updated_by = request.user
@@ -176,7 +176,7 @@ def staff_skill_update(request, pk):
             messages.success(request, f'技能「{staff_skill.skill.name}」を更新しました。')
             return redirect('staff:staff_skill_detail', pk=staff_skill.pk)
     else:
-        form = StaffSkillForm(instance=staff_skill)
+        form = StaffSkillForm(instance=staff_skill, staff=staff_skill.staff)
     
     context = {
         'form': form,

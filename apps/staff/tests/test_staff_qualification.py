@@ -141,6 +141,15 @@ class StaffQualificationFormTest(TestCase):
             username='testuser',
             password='testpass123'
         )
+        self.staff = Staff.objects.create(
+            name_last='田中',
+            name_first='太郎',
+            birth_date=date(1990, 1, 1),
+            sex=1,
+            regist_form_code=20,
+            created_by=self.user,
+            updated_by=self.user
+        )
         self.category = Qualification.objects.create(
             name='民間資格',
             level=1,
@@ -191,6 +200,50 @@ class StaffQualificationFormTest(TestCase):
         
         self.assertIn(self.qualification, qualification_choices)
         self.assertNotIn(inactive_qual, qualification_choices)
+
+    def test_duplicate_qualification_validation(self):
+        """重複資格のバリデーションテスト"""
+        # 既存の資格を作成
+        existing_qual = StaffQualification.objects.create(
+            staff=self.staff,
+            qualification=self.qualification,
+            acquired_date=date(2024, 1, 15),
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        # 同じ資格を再度登録しようとする
+        form_data = {
+            'qualification': self.qualification.pk,
+            'acquired_date': '2024-02-01',
+        }
+        form = StaffQualificationForm(data=form_data, staff=self.staff)
+        self.assertFalse(form.is_valid())
+        self.assertIn('qualification', form.errors)
+        self.assertIn('既に登録されています', str(form.errors['qualification']))
+
+    def test_duplicate_qualification_validation_edit_mode(self):
+        """編集時の重複資格バリデーションテスト（自分自身は除外）"""
+        # 既存の資格を作成
+        existing_qual = StaffQualification.objects.create(
+            staff=self.staff,
+            qualification=self.qualification,
+            acquired_date=date(2024, 1, 15),
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        # 同じ資格を編集（自分自身なので有効）
+        form_data = {
+            'qualification': self.qualification.pk,
+            'acquired_date': '2024-02-01',
+        }
+        form = StaffQualificationForm(
+            data=form_data, 
+            staff=self.staff, 
+            instance=existing_qual
+        )
+        self.assertTrue(form.is_valid())
 
 
 class StaffQualificationViewTest(TestCase):

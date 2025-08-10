@@ -95,6 +95,15 @@ class StaffSkillFormTest(TestCase):
             username='testuser',
             password='testpass123'
         )
+        self.staff = Staff.objects.create(
+            name_last='田中',
+            name_first='太郎',
+            birth_date=date(1990, 1, 1),
+            sex=1,
+            regist_form_code=20,
+            created_by=self.user,
+            updated_by=self.user
+        )
         self.category = Skill.objects.create(
             name='テストカテゴリ',
             level=1,
@@ -144,6 +153,50 @@ class StaffSkillFormTest(TestCase):
         
         self.assertIn(self.skill, skill_choices)
         self.assertNotIn(inactive_skill, skill_choices)
+
+    def test_duplicate_skill_validation(self):
+        """重複技能のバリデーションテスト"""
+        # 既存の技能を作成
+        existing_skill = StaffSkill.objects.create(
+            staff=self.staff,
+            skill=self.skill,
+            acquired_date=date(2024, 1, 15),
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        # 同じ技能を再度登録しようとする
+        form_data = {
+            'skill': self.skill.pk,
+            'acquired_date': '2024-02-01',
+        }
+        form = StaffSkillForm(data=form_data, staff=self.staff)
+        self.assertFalse(form.is_valid())
+        self.assertIn('skill', form.errors)
+        self.assertIn('既に登録されています', str(form.errors['skill']))
+
+    def test_duplicate_skill_validation_edit_mode(self):
+        """編集時の重複技能バリデーションテスト（自分自身は除外）"""
+        # 既存の技能を作成
+        existing_skill = StaffSkill.objects.create(
+            staff=self.staff,
+            skill=self.skill,
+            acquired_date=date(2024, 1, 15),
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        # 同じ技能を編集（自分自身なので有効）
+        form_data = {
+            'skill': self.skill.pk,
+            'acquired_date': '2024-02-01',
+        }
+        form = StaffSkillForm(
+            data=form_data, 
+            staff=self.staff, 
+            instance=existing_skill
+        )
+        self.assertTrue(form.is_valid())
 
 
 class StaffSkillViewTest(TestCase):

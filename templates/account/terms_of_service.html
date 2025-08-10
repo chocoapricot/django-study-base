@@ -27,7 +27,7 @@
                             <label class="form-check-label" for="agree_to_terms">{% trans "サービス利用規約に同意します" %}</label>
                         </div>
                         {% if error %}
-                            <div class="alert alert-danger">{{ error }}</div>
+                            <div class="alert alert-warning">{{ error }}</div>
                         {% endif %}
                         <button type="submit" class="btn btn-primary">{% trans "次へ" %}</button>
                     </form>
