@@ -20,9 +20,7 @@
                 </div>
                 <label for="{{ form.bank_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
                     銀行コード
-                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
-                       data-bs-toggle="tooltip" data-bs-placement="top" 
-                       title="4桁の数字で入力（任意）"></i>
+                    {% my_help_preset "bank_code" %}
                 </label>
                 <div class="col-sm-4">
                     {{ form.bank_code }}
@@ -42,9 +40,7 @@
                 </div>
                 <label for="{{ form.branch_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
                     支店コード
-                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
-                       data-bs-toggle="tooltip" data-bs-placement="top" 
-                       title="3桁の数字で入力（任意）"></i>
+                    {% my_help_preset "branch_code" %}
                 </label>
                 <div class="col-sm-4">
                     {{ form.branch_code }}
@@ -64,9 +60,7 @@
                 </div>
                 <label for="{{ form.account_number.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
                     口座番号
-                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
-                       data-bs-toggle="tooltip" data-bs-placement="top" 
-                       title="1-8桁の数字で入力"></i>
+                    {% my_help_preset "account_number" %}
                 </label>
                 <div class="col-sm-5">
                     {{ form.account_number }}

@@ -31,15 +31,11 @@
                         <th>スタッフ名</th>
                         <th>
                             社員番号
-                            <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
-                               data-bs-toggle="tooltip" data-bs-placement="top" 
-                               title="契約対象となるスタッフには社員番号が必要です"></i>
+                            {% my_help_preset "staff_employee_no" %}
                         </th>
                         <th>
                             入社日
-                            <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
-                               data-bs-toggle="tooltip" data-bs-placement="top" 
-                               title="契約開始日は入社日以降である必要があります"></i>
+                            {% my_help_preset "staff_hire_date" %}
                         </th>
                         <th>部署</th>
                         <th>操作</th>

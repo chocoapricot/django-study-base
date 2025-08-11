@@ -65,22 +65,33 @@
 - **参考**: クライアントフォームのレイアウトに準拠
 
 ## Tooltipの統一ルール
-- **アイコン**: Bootstrap Icons の `bi-question-circle` を使用
-- **スタイル**: `style="color: #66bbff; cursor: pointer;"`
-- **属性**: `data-bs-toggle="tooltip" data-bs-placement="top"`
-- **配置**: ラベルの直後、またはボタンの直後に配置
-- **推奨実装**:
+- **テンプレートタグ使用**: カスタムテンプレートタグ `{% load help_tags %}` を使用（_base.htmlで自動読み込み済み）
+- **基本使用方法**:
   ```html
-  <label>ラベル名
-      <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
-         data-bs-toggle="tooltip" data-bs-placement="top" title="説明文"></i>
-  </label>
+  <!-- プリセットヘルプテキスト使用 -->
+  <label>ラベル名 {% my_help_preset "corporate_number" %}</label>
+  
+  <!-- カスタムヘルプテキスト使用 -->
+  <label>ラベル名 {% my_help_icon "カスタム説明文" %}</label>
+  
+  <!-- 配置指定（デフォルトはtop） -->
+  {% my_help_preset "postal_code" "right" %}
   ```
-- **共通メッセージ**:
-  - 法人番号: "半角数字13桁ハイフンなし"
-  - 郵便番号: "半角数字7桁ハイフンなし"
-  - 法人情報取得: "経産省のgBizINFO-APIで取得"
-  - 住所検索: "フリーの郵便番号APIで取得"
+- **利用可能なプリセット**:
+  - `corporate_number`: 半角数字13桁ハイフンなし
+  - `postal_code`: 半角数字7桁ハイフンなし
+  - `gbiz_api`: 経産省のgBizINFO-APIで取得
+  - `postal_api`: フリーの郵便番号APIで取得
+  - `staff_selection`: 社員番号・入社日が登録されているスタッフのみ選択可能
+  - `client_selection`: 基本契約締結日が登録されているクライアントのみ選択可能
+  - `hire_date`: 入社日登録しないと契約登録不可
+  - `employee_no`: 半角英数字10文字まで（空欄可）、社員番号登録しないと契約登録不可
+  - `bank_code`: 4桁の数字で入力（任意）
+  - `branch_code`: 3桁の数字で入力（任意）
+  - `account_number`: 1-8桁の数字で入力
+  - その他多数（`apps/common/templatetags/help_tags.py`のHELP_TEXTSを参照）
+- **新しいプリセット追加**: `apps/common/templatetags/help_tags.py`のHELP_TEXTS辞書に追加
+- **従来の直接記述は非推奨**: 新しいテンプレートタグを使用してください
 
 ## 削除ボタンの統一ルール
 - **すべての削除ボタン**: `btn-dark` を使用して統一

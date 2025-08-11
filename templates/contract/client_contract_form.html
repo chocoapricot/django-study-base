@@ -23,9 +23,7 @@
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.client_display.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
                     クライアント
-                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
-                        data-bs-toggle="tooltip" data-bs-placement="top" 
-                        title="基本契約締結日が登録されているクライアントのみ選択可能"></i>
+                    {% my_help_preset "client_selection" %}
                 </label>
                 <div class="col-sm-6">
                     {{ form.client }}
@@ -67,9 +65,7 @@
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.start_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
                     契約開始日
-                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
-                        data-bs-toggle="tooltip" data-bs-placement="top" 
-                        title="基本契約締結日以降である必要あり"></i>
+                    {% my_help_preset "contract_start_date_client" %}
                 </label>
                 <div class="col-sm-3">
                     {{ form.start_date }}

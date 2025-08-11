@@ -23,9 +23,7 @@
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.closing_day.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
                     締め日
-                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
-                       data-bs-toggle="tooltip" data-bs-placement="top" 
-                       title="月末締めの場合は31を入力"></i>
+                    {% my_help_preset "closing_day" %}
                 </label>
                 <div class="col-sm-3">
                     {{ form.closing_day }}
@@ -41,9 +39,7 @@
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.invoice_months_after.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
                     請求書提出
-                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
-                       data-bs-toggle="tooltip" data-bs-placement="top" 
-                       title="締め日から何か月後の何日まで請求書必着"></i>
+                    {% my_help_preset "invoice_schedule" %}
                 </label>
                 <div class="col-sm-2">
                     {{ form.invoice_months_after }}
@@ -68,9 +64,7 @@
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.payment_months_after.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
                     支払い
-                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
-                       data-bs-toggle="tooltip" data-bs-placement="top" 
-                       title="締め日から何か月後の何日払い"></i>
+                    {% my_help_preset "payment_schedule" %}
                 </label>
                 <div class="col-sm-2">
                     {{ form.payment_months_after }}

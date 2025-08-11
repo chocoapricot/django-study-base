@@ -9,7 +9,7 @@
             {% csrf_token %}
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.corporate_number.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.corporate_number.label }}
-                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="半角数字13桁ハイフンなし"></i>
+                    {% my_help_preset "corporate_number" %}
                 </label>
                 <div class="col-sm-4">
                     {{ form.corporate_number }}
@@ -19,7 +19,7 @@
                 </div>
                 <div class="col-sm">
                     <button type="button" class="btn btn-sm btn-secondary me-2" onclick="searchCorporateInfo()">gBiz</button>
-                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="経産省のgBizINFO-APIで取得"></i>
+                    {% my_help_preset "gbiz_api" %}
                 </div>
             </div>
             
@@ -45,7 +45,7 @@
             
             <div class="row align-items-center">
                 <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.postal_code.label }}
-                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="半角数字7桁ハイフンなし"></i>
+                    {% my_help_preset "postal_code" %}
                 </label>
                 <div class="col-sm-3">
                     {{ form.postal_code }}
@@ -55,7 +55,7 @@
                 </div>
                 <div class="col-sm">
                     <button type="button" class="btn btn-sm btn-secondary me-2" onclick="searchAddress()">住所</button>
-                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="フリーの郵便番号APIで取得"></i>
+                    {% my_help_preset "postal_api" %}
                 </div>
             </div>
             

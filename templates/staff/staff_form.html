@@ -40,18 +40,14 @@
             <div class="row align-items-center">
                 <label for="{{ form.hire_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
                     {{ form.hire_date.label }}
-                   <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
-                       data-bs-toggle="tooltip" data-bs-placement="top" 
-                       title="入社日登録しないと契約登録不可"></i>
+                    {% my_help_preset "hire_date" %}
                 </label>
                 <div class="col-sm-4">
                     {{ form.hire_date }}
                 </div>
                 <label for="{{ form.resignation_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
                     {{ form.resignation_date.label }}
-                   <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
-                       data-bs-toggle="tooltip" data-bs-placement="top" 
-                       title="契約期間終了日は退職日まで"></i>
+                    {% my_help_preset "resignation_date" %}
                 </label>
                 <div class="col-sm-4">
                     {{ form.resignation_date }}
@@ -61,7 +57,7 @@
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.employee_no.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
                     社員番号
-                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="半角英数字10文字まで（空欄可）、社員番号登録しないと契約登録不可"></i>
+                    {% my_help_preset "employee_no" %}
                 </label>
                 <div class="col-sm-4">
                     {{ form.employee_no }}
@@ -110,7 +106,7 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.department_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.department_code.label }}
-                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" data-bs-toggle="tooltip" data-bs-placement="top" title="現在有効な部署のみ表示"></i>
+                    {% my_help_preset "department_code" %}
                 </label>
                 <div class="col-sm-6">
                     {{ form.department_code }}
@@ -119,7 +115,7 @@
 
             <div class="row align-items-center">
                 <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.postal_code.label }}
-                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;"data-bs-toggle="tooltip" data-bs-placement="top" title="半角数字7桁ハイフンなし"></i>
+                    {% my_help_preset "postal_code" %}
                 </label>
                 <div class="col-sm-3">
                     {{ form.postal_code }}
