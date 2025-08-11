@@ -5,13 +5,14 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.urls import reverse
 from django.apps import apps
-from .models import Qualification, Skill
-from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm
+from .models import Qualification, Skill, BillPayment, BillBank
+from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm, BillPaymentForm, BillBankForm
 
 
 # マスタ設定データ
 MASTER_CONFIGS = [
     {
+        'category': 'スタッフ',
         'name': '資格管理',
         'description': '資格・免許・認定等の管理',
         'model': 'master.Qualification',
@@ -20,12 +21,31 @@ MASTER_CONFIGS = [
         'permission': 'master.view_qualification'
     },
     {
+        'category': 'スタッフ',
         'name': '技能管理', 
         'description': 'スキル・技術・能力等の管理',
         'model': 'master.Skill',
         'url_name': 'master:skill_list',
         'icon': 'bi-tools',
         'permission': 'master.view_skill'
+    },
+    {
+        'category': '請求',
+        'name': '支払いサイト管理',
+        'description': '請求・支払いサイクルの管理',
+        'model': 'master.BillPayment',
+        'url_name': 'master:bill_payment_list',
+        'icon': 'bi-calendar-check',
+        'permission': 'master.view_billpayment'
+    },
+    {
+        'category': '請求',
+        'name': '振込先銀行管理',
+        'description': '振込先銀行口座の管理',
+        'model': 'master.BillBank',
+        'url_name': 'master:bill_bank_list',
+        'icon': 'bi-bank',
+        'permission': 'master.view_billbank'
     }
 ]
 
@@ -50,7 +70,7 @@ def get_data_count(model_class):
 @permission_required('master.view_qualification', raise_exception=True)
 def master_index_list(request):
     """マスタ一覧画面を表示"""
-    masters = []
+    masters_by_category = {}
     
     for config in MASTER_CONFIGS:
         # 権限チェック
@@ -83,14 +103,18 @@ def master_index_list(request):
                 'icon': config['icon']
             }
             
-            masters.append(master_info)
+            # 分類別に整理
+            category = config['category']
+            if category not in masters_by_category:
+                masters_by_category[category] = []
+            masters_by_category[category].append(master_info)
             
         except Exception:
             # モデルクラスが存在しない場合などのエラーハンドリング
             continue
     
     context = {
-        'masters': masters,
+        'masters_by_category': masters_by_category,
     }
     return render(request, 'master/master_index_list.html', context)
 
@@ -559,3 +583,220 @@ def skill_change_history_list(request):
         'logs': logs_page,
         'title': '技能マスタ変更履歴'
     })
+
+
+# 支払いサイトマスタ
+@login_required
+@permission_required('master.view_billpayment', raise_exception=True)
+def bill_payment_list(request):
+    """支払いサイト一覧"""
+    search_query = request.GET.get('search', '')
+    
+    bill_payments = BillPayment.objects.all()
+    
+    if search_query:
+        bill_payments = bill_payments.filter(
+            Q(name__icontains=search_query)
+        )
+    
+    bill_payments = bill_payments.order_by('display_order', 'name')
+    
+    # ページネーション
+    paginator = Paginator(bill_payments, 20)
+    page = request.GET.get('page')
+    bill_payments_page = paginator.get_page(page)
+    
+    # 変更履歴を取得（最新5件）
+    from apps.system.logs.models import AppLog
+    change_logs = AppLog.objects.filter(
+        model_name='BillPayment',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')[:5]
+    
+    change_logs_count = AppLog.objects.filter(
+        model_name='BillPayment',
+        action__in=['create', 'update', 'delete']
+    ).count()
+    
+    context = {
+        'bill_payments': bill_payments_page,
+        'search_query': search_query,
+        'title': '支払いサイト管理',
+        'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
+    }
+    return render(request, 'master/bill_payment_list.html', context)
+
+
+
+
+
+@login_required
+@permission_required('master.add_billpayment', raise_exception=True)
+def bill_payment_create(request):
+    """支払いサイト作成"""
+    if request.method == 'POST':
+        form = BillPaymentForm(request.POST)
+        if form.is_valid():
+            bill_payment = form.save()
+            messages.success(request, f'支払いサイト「{bill_payment.name}」を作成しました。')
+            return redirect('master:bill_payment_list')
+    else:
+        form = BillPaymentForm()
+    
+    context = {
+        'form': form,
+        'title': '支払いサイト作成',
+    }
+    return render(request, 'master/bill_payment_form.html', context)
+
+
+@login_required
+@permission_required('master.change_billpayment', raise_exception=True)
+def bill_payment_update(request, pk):
+    """支払いサイト編集"""
+    bill_payment = get_object_or_404(BillPayment, pk=pk)
+    
+    if request.method == 'POST':
+        form = BillPaymentForm(request.POST, instance=bill_payment)
+        if form.is_valid():
+            bill_payment = form.save()
+            messages.success(request, f'支払いサイト「{bill_payment.name}」を更新しました。')
+            return redirect('master:bill_payment_list')
+    else:
+        form = BillPaymentForm(instance=bill_payment)
+    
+    context = {
+        'form': form,
+        'bill_payment': bill_payment,
+        'title': f'支払いサイト編集 - {bill_payment.name}',
+    }
+    return render(request, 'master/bill_payment_form.html', context)
+
+
+@login_required
+@permission_required('master.delete_billpayment', raise_exception=True)
+def bill_payment_delete(request, pk):
+    """支払いサイト削除"""
+    bill_payment = get_object_or_404(BillPayment, pk=pk)
+    
+    if request.method == 'POST':
+        bill_payment_name = bill_payment.name
+        bill_payment.delete()
+        messages.success(request, f'支払いサイト「{bill_payment_name}」を削除しました。')
+        return redirect('master:bill_payment_list')
+    
+    context = {
+        'bill_payment': bill_payment,
+        'title': f'支払いサイト削除 - {bill_payment.name}',
+    }
+    return render(request, 'master/bill_payment_delete.html', context)
+
+
+# 振込先銀行マスタ
+@login_required
+@permission_required('master.view_billbank', raise_exception=True)
+def bill_bank_list(request):
+    """振込先銀行一覧"""
+    search_query = request.GET.get('search', '')
+    
+    bill_banks = BillBank.objects.all()
+    
+    if search_query:
+        bill_banks = bill_banks.filter(
+            Q(name__icontains=search_query) |
+            Q(branch_name__icontains=search_query) |
+            Q(account_holder__icontains=search_query) |
+            Q(account_holder_kana__icontains=search_query)
+        )
+    
+    bill_banks = bill_banks.order_by('display_order', 'name', 'branch_name')
+    
+    # ページネーション
+    paginator = Paginator(bill_banks, 20)
+    page = request.GET.get('page')
+    bill_banks_page = paginator.get_page(page)
+    
+    # 変更履歴を取得（最新5件）
+    from apps.system.logs.models import AppLog
+    change_logs = AppLog.objects.filter(
+        model_name='BillBank',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')[:5]
+    
+    change_logs_count = AppLog.objects.filter(
+        model_name='BillBank',
+        action__in=['create', 'update', 'delete']
+    ).count()
+    
+    context = {
+        'bill_banks': bill_banks_page,
+        'search_query': search_query,
+        'title': '振込先銀行管理',
+        'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
+    }
+    return render(request, 'master/bill_bank_list.html', context)
+
+
+
+@login_required
+@permission_required('master.add_billbank', raise_exception=True)
+def bill_bank_create(request):
+    """振込先銀行作成"""
+    if request.method == 'POST':
+        form = BillBankForm(request.POST)
+        if form.is_valid():
+            bill_bank = form.save()
+            messages.success(request, f'振込先銀行「{bill_bank.name} {bill_bank.branch_name}」を作成しました。')
+            return redirect('master:bill_bank_list')
+    else:
+        form = BillBankForm()
+    
+    context = {
+        'form': form,
+        'title': '振込先銀行作成',
+    }
+    return render(request, 'master/bill_bank_form.html', context)
+
+
+@login_required
+@permission_required('master.change_billbank', raise_exception=True)
+def bill_bank_update(request, pk):
+    """振込先銀行編集"""
+    bill_bank = get_object_or_404(BillBank, pk=pk)
+    
+    if request.method == 'POST':
+        form = BillBankForm(request.POST, instance=bill_bank)
+        if form.is_valid():
+            bill_bank = form.save()
+            messages.success(request, f'振込先銀行「{bill_bank.name} {bill_bank.branch_name}」を更新しました。')
+            return redirect('master:bill_bank_list')
+    else:
+        form = BillBankForm(instance=bill_bank)
+    
+    context = {
+        'form': form,
+        'bill_bank': bill_bank,
+        'title': f'振込先銀行編集 - {bill_bank.name} {bill_bank.branch_name}',
+    }
+    return render(request, 'master/bill_bank_form.html', context)
+
+
+@login_required
+@permission_required('master.delete_billbank', raise_exception=True)
+def bill_bank_delete(request, pk):
+    """振込先銀行削除"""
+    bill_bank = get_object_or_404(BillBank, pk=pk)
+    
+    if request.method == 'POST':
+        bill_bank_name = f"{bill_bank.name} {bill_bank.branch_name}"
+        bill_bank.delete()
+        messages.success(request, f'振込先銀行「{bill_bank_name}」を削除しました。')
+        return redirect('master:bill_bank_list')
+    
+    context = {
+        'bill_bank': bill_bank,
+        'title': f'振込先銀行削除 - {bill_bank.name} {bill_bank.branch_name}',
+    }
+    return render(request, 'master/bill_bank_delete.html', context)

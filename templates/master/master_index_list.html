@@ -9,32 +9,40 @@
         <h5>マスタ管理</h5>
     </div>
     <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-sm table-hover">
-                <thead>
-                    <tr>
-                        <th>マスタ名</th>
-                        <th>説明</th>
-                        <th>データ数</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for master in masters %}
-                    <tr>
-                        <td>
-                            <a href="{{ master.url }}" >{{ master.name }}</a>
-                        </td>
-                        <td>{{ master.description }}</td>
-                        <td>{{ master.data_count }}件</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="text-center">利用可能なマスタがありません。</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        {% for category, masters in masters_by_category.items %}
+        <div class="mb-4">
+            <h6 class="text-primary border-bottom pb-2">
+                <i class="bi bi-folder me-2"></i>{{ category }}
+            </h6>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th width="30%">マスタ名</th>
+                            <th width="50%">説明</th>
+                            <th width="20%">データ数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for master in masters %}
+                        <tr>
+                            <td>
+                                <i class="bi {{ master.icon }} me-2"></i>
+                                <a href="{{ master.url }}">{{ master.name }}</a>
+                            </td>
+                            <td>{{ master.description }}</td>
+                            <td>{{ master.data_count }}件</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
+        {% empty %}
+        <div class="text-center">
+            <p>利用可能なマスタがありません。</p>
+        </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

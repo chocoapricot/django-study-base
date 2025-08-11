@@ -248,3 +248,177 @@ class Skill(MyModel):
             return StaffSkill.objects.filter(skill__in=child_skills).select_related('staff')
         else:  # 技能の場合
             return self.staffskill_set.select_related('staff')
+
+
+class BillPayment(MyModel):
+    """支払いサイトマスター"""
+    
+    name = models.CharField('支払いサイト名', max_length=100)
+    closing_day = models.IntegerField('締め日', help_text='月末締めの場合は31を入力')
+    invoice_months_after = models.IntegerField('請求書提出月数', default=0, help_text='締め日から何か月後')
+    invoice_day = models.IntegerField('請求書必着日', help_text='請求書が必着する日')
+    payment_months_after = models.IntegerField('支払い月数', default=1, help_text='締め日から何か月後')
+    payment_day = models.IntegerField('支払い日', help_text='支払いが行われる日')
+    is_active = models.BooleanField('有効', default=True)
+    display_order = models.IntegerField('表示順', default=0)
+    
+    class Meta:
+        db_table = 'apps_master_bill_payment'
+        verbose_name = '支払いサイト'
+        verbose_name_plural = '支払いサイト'
+        ordering = ['display_order', 'name']
+        indexes = [
+            models.Index(fields=['is_active']),
+            models.Index(fields=['display_order']),
+        ]
+    
+    def __str__(self):
+        return self.name
+    
+    @property
+    def closing_day_display(self):
+        """締め日の表示用文字列"""
+        if self.closing_day == 31:
+            return "月末"
+        else:
+            return f"{self.closing_day}日"
+    
+    @property
+    def invoice_schedule_display(self):
+        """請求書スケジュールの表示用文字列"""
+        if self.invoice_months_after == 0:
+            return f"当月{self.invoice_day}日まで"
+        else:
+            return f"{self.invoice_months_after}か月後{self.invoice_day}日まで"
+    
+    @property
+    def payment_schedule_display(self):
+        """支払いスケジュールの表示用文字列"""
+        if self.payment_months_after == 0:
+            return f"当月{self.payment_day}日"
+        else:
+            return f"{self.payment_months_after}か月後{self.payment_day}日"
+    
+    @property
+    def full_schedule_display(self):
+        """完全なスケジュール表示"""
+        return f"{self.closing_day_display}締め → {self.invoice_schedule_display}請求書必着 → {self.payment_schedule_display}支払い"
+    
+    def clean(self):
+        """バリデーション"""
+        from django.core.exceptions import ValidationError
+        
+        # 締め日のバリデーション
+        if not (1 <= self.closing_day <= 31):
+            raise ValidationError('締め日は1-31の範囲で入力してください。')
+        
+        # 請求書必着日のバリデーション
+        if not (1 <= self.invoice_day <= 31):
+            raise ValidationError('請求書必着日は1-31の範囲で入力してください。')
+        
+        # 支払い日のバリデーション
+        if not (1 <= self.payment_day <= 31):
+            raise ValidationError('支払い日は1-31の範囲で入力してください。')
+        
+        # 月数のバリデーション
+        if self.invoice_months_after < 0:
+            raise ValidationError('請求書提出月数は0以上で入力してください。')
+        
+        if self.payment_months_after < 0:
+            raise ValidationError('支払い月数は0以上で入力してください。')
+    
+    @classmethod
+    def get_active_list(cls):
+        """有効な支払いサイト一覧を取得"""
+        return cls.objects.filter(is_active=True).order_by('display_order', 'name')
+
+
+class BillBank(MyModel):
+    """振込先銀行マスター"""
+    
+    name = models.CharField('銀行名', max_length=100)
+    bank_code = models.CharField('銀行コード', max_length=4, blank=True, null=True)
+    branch_name = models.CharField('支店名', max_length=100)
+    branch_code = models.CharField('支店コード', max_length=3, blank=True, null=True)
+    account_type = models.CharField(
+        '口座種別', 
+        max_length=10, 
+        choices=[
+            ('ordinary', '普通'),
+            ('current', '当座'),
+        ],
+        default='ordinary'
+    )
+    account_number = models.CharField('口座番号', max_length=8)
+    account_holder = models.CharField('口座名義', max_length=100)
+    account_holder_kana = models.CharField('口座名義（カナ）', max_length=100, blank=True, null=True)
+    is_active = models.BooleanField('有効', default=True)
+    display_order = models.IntegerField('表示順', default=0)
+    
+    class Meta:
+        db_table = 'apps_master_bill_bank'
+        verbose_name = '振込先銀行'
+        verbose_name_plural = '振込先銀行'
+        ordering = ['display_order', 'name', 'branch_name']
+        indexes = [
+            models.Index(fields=['is_active']),
+            models.Index(fields=['display_order']),
+            models.Index(fields=['bank_code']),
+            models.Index(fields=['branch_code']),
+        ]
+    
+    def __str__(self):
+        return f"{self.name} {self.branch_name} {self.account_type_display} {self.account_number}"
+    
+    @property
+    def account_type_display(self):
+        """口座種別の表示名"""
+        return dict(self._meta.get_field('account_type').choices).get(self.account_type, self.account_type)
+    
+    @property
+    def full_bank_info(self):
+        """完全な銀行情報"""
+        bank_info = f"{self.name}"
+        if self.bank_code:
+            bank_info += f"（{self.bank_code}）"
+        
+        branch_info = f" {self.branch_name}"
+        if self.branch_code:
+            branch_info += f"（{self.branch_code}）"
+        
+        return f"{bank_info}{branch_info} {self.account_type_display} {self.account_number}"
+    
+    @property
+    def account_info(self):
+        """口座情報"""
+        return f"{self.account_type_display} {self.account_number} {self.account_holder}"
+    
+    def clean(self):
+        """バリデーション"""
+        from django.core.exceptions import ValidationError
+        
+        # 銀行コードのバリデーション
+        if self.bank_code and not self.bank_code.isdigit():
+            raise ValidationError('銀行コードは数字で入力してください。')
+        
+        if self.bank_code and len(self.bank_code) != 4:
+            raise ValidationError('銀行コードは4桁で入力してください。')
+        
+        # 支店コードのバリデーション
+        if self.branch_code and not self.branch_code.isdigit():
+            raise ValidationError('支店コードは数字で入力してください。')
+        
+        if self.branch_code and len(self.branch_code) != 3:
+            raise ValidationError('支店コードは3桁で入力してください。')
+        
+        # 口座番号のバリデーション
+        if not self.account_number.isdigit():
+            raise ValidationError('口座番号は数字で入力してください。')
+        
+        if not (1 <= len(self.account_number) <= 8):
+            raise ValidationError('口座番号は1-8桁で入力してください。')
+    
+    @classmethod
+    def get_active_list(cls):
+        """有効な振込先銀行一覧を取得"""
+        return cls.objects.filter(is_active=True).order_by('display_order', 'name', 'branch_name')

@@ -12,7 +12,7 @@ Django学習用のプロジェクトです。スタッフ管理とクライア�
 - **契約管理**: クライアント契約・スタッフ契約の管理、契約状況の追跡
 - **会社・部署管理**: 会社情報と部署の体系的管理
 - **連絡履歴管理**: スタッフ・クライアントとの連絡記録
-- **マスター管理**: 資格、スキルなどのマスターデータ管理
+- **マスター管理**: 資格、スキル、支払いサイト、振込先銀行などのマスターデータ管理
 
 ### 🔐 認証・セキュリティ
 - **カスタムユーザー認証**: django-allauthベースの認証システム
@@ -95,6 +95,8 @@ django-study-base/
 | `apps_company_department` | 部署 |
 | `apps_master_qualification` | 資格マスター（カテゴリと資格） |
 | `apps_master_skill` | 技能マスター（カテゴリと技能） |
+| `apps_master_bill_payment` | 支払いサイトマスター |
+| `apps_master_bill_bank` | 振込先銀行マスター |
 | `apps_system_dropdowns` | ドロップダウン設定 |
 | `apps_system_parameter` | パラメータ設定 |
 | `apps_system_menu` | メニュー設定 |
@@ -211,6 +213,7 @@ python manage.py dumpdata staff    --format=json --indent=4 > _sample_data/staff
 python manage.py dumpdata client   --format=json --indent=4 > _sample_data/client.json
 python manage.py dumpdata contract --format=json --indent=4 > _sample_data/contract.json
 python manage.py dumpdata company  --format=json --indent=4 > _sample_data/company.json
+python manage.py dumpdata master   --format=json --indent=4 > _sample_data/master.json
 ```
 
 ### データのインポート
@@ -219,6 +222,7 @@ python manage.py loaddata _sample_data/staff.json
 python manage.py loaddata _sample_data/client.json
 python manage.py loaddata _sample_data/contract.json
 python manage.py loaddata _sample_data/company.json
+python manage.py loaddata _sample_data/master.json
 ```
 
 ## 🔧 設定

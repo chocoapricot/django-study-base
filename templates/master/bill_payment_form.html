@@ -1,0 +1,141 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">{{ title }}</div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">支払いサイト名</label>
+                <div class="col-sm-6">
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.closing_day.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
+                    締め日
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
+                       data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="月末締めの場合は31を入力"></i>
+                </label>
+                <div class="col-sm-3">
+                    {{ form.closing_day }}
+                    {% if form.closing_day.errors %}
+                        <div class="text-danger small">{{ form.closing_day.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm-7">
+                    <small class="text-muted">日（月末締めの場合は31）</small>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.invoice_months_after.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
+                    請求書提出
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
+                       data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="締め日から何か月後の何日まで請求書必着"></i>
+                </label>
+                <div class="col-sm-2">
+                    {{ form.invoice_months_after }}
+                    {% if form.invoice_months_after.errors %}
+                        <div class="text-danger small">{{ form.invoice_months_after.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm-1 text-center">
+                    <small class="text-muted">か月後</small>
+                </div>
+                <div class="col-sm-2">
+                    {{ form.invoice_day }}
+                    {% if form.invoice_day.errors %}
+                        <div class="text-danger small">{{ form.invoice_day.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm-5">
+                    <small class="text-muted">日まで請求書必着</small>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.payment_months_after.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
+                    支払い
+                    <i class="bi bi-question-circle" style="color: #66bbff; cursor: pointer;" 
+                       data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="締め日から何か月後の何日払い"></i>
+                </label>
+                <div class="col-sm-2">
+                    {{ form.payment_months_after }}
+                    {% if form.payment_months_after.errors %}
+                        <div class="text-danger small">{{ form.payment_months_after.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm-1 text-center">
+                    <small class="text-muted">か月後</small>
+                </div>
+                <div class="col-sm-2">
+                    {{ form.payment_day }}
+                    {% if form.payment_day.errors %}
+                        <div class="text-danger small">{{ form.payment_day.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm-5">
+                    <small class="text-muted">日払い</small>
+                </div>
+            </div>
+
+
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">表示順</label>
+                <div class="col-sm-3">
+                    {{ form.display_order }}
+                    {% if form.display_order.errors %}
+                        <div class="text-danger small">{{ form.display_order.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    <div class="form-check">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                            有効
+                        </label>
+                        {% if form.is_active.errors %}
+                            <div class="text-danger small">{{ form.is_active.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
+                    <a href="{% url 'master:bill_payment_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // ツールチップを有効化
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}
