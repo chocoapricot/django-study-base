@@ -83,6 +83,11 @@
                         <div class="text-danger small">{{ form.end_date.errors.0 }}</div>
                     {% endif %}
                 </div>
+                <div class="col-sm-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary me-1" onclick="setEndDate(1)">1ヶ月</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary me-1" onclick="setEndDate(3)">3ヶ月</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setEndDate(6)">6ヶ月</button>
+                </div>
             </div>
 
             <div class="row mb-3 align-items-center">
@@ -179,6 +184,33 @@ document.addEventListener('DOMContentLoaded', function() {
 function clearStaff() {
     document.getElementById('{{ form.staff.id_for_label }}').value = '';
     document.getElementById('{{ form.staff_display.id_for_label }}').value = '';
+}
+
+function setEndDate(months) {
+    const startDateInput = document.getElementById('{{ form.start_date.id_for_label }}');
+    const endDateInput = document.getElementById('{{ form.end_date.id_for_label }}');
+    
+    if (!startDateInput.value) {
+        alert('契約開始日を先に入力してください。');
+        return;
+    }
+    
+    const startDate = new Date(startDateInput.value);
+    if (isNaN(startDate.getTime())) {
+        alert('契約開始日が正しい形式ではありません。');
+        return;
+    }
+    
+    // 指定された月数を加算
+    const endDate = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + months);
+    
+    // YYYY-MM-DD形式で設定
+    const year = endDate.getFullYear();
+    const month = String(endDate.getMonth() + 1).padStart(2, '0');
+    const day = String(endDate.getDate()).padStart(2, '0');
+    
+    endDateInput.value = `${year}-${month}-${day}`;
 }
 </script>
 {% endblock %}
