@@ -17,7 +17,6 @@ MASTER_CONFIGS = [
         'description': '資格・免許・認定等の管理',
         'model': 'master.Qualification',
         'url_name': 'master:qualification_list',
-        'icon': 'bi-award',
         'permission': 'master.view_qualification'
     },
     {
@@ -26,7 +25,6 @@ MASTER_CONFIGS = [
         'description': 'スキル・技術・能力等の管理',
         'model': 'master.Skill',
         'url_name': 'master:skill_list',
-        'icon': 'bi-tools',
         'permission': 'master.view_skill'
     },
     {
@@ -35,7 +33,6 @@ MASTER_CONFIGS = [
         'description': '請求・支払いサイクルの管理',
         'model': 'master.BillPayment',
         'url_name': 'master:bill_payment_list',
-        'icon': 'bi-calendar-check',
         'permission': 'master.view_billpayment'
     },
     {
@@ -44,24 +41,27 @@ MASTER_CONFIGS = [
         'description': '振込先銀行口座の管理',
         'model': 'master.BillBank',
         'url_name': 'master:bill_bank_list',
-        'icon': 'bi-bank',
         'permission': 'master.view_billbank'
     }
 ]
 
 
 def get_category_count(model_class):
-    """レベル1（カテゴリ）のデータ数を取得"""
+    """カテゴリ数を取得"""
     try:
-        return model_class.objects.filter(level=1, is_active=True).count()
+        if hasattr(model_class, 'level'):
+            return model_class.objects.filter(level=1, is_active=True).count()
+        return 0
     except Exception:
         return 0
 
 
 def get_data_count(model_class):
-    """レベル2（データ）のデータ数を取得"""
+    """データ数を取得"""
     try:
-        return model_class.objects.filter(level=2, is_active=True).count()
+        if hasattr(model_class, 'level'):
+            return model_class.objects.filter(level=2, is_active=True).count()
+        return model_class.objects.filter(is_active=True).count()
     except Exception:
         return 0
 
@@ -100,7 +100,6 @@ def master_index_list(request):
                 'data_count': data_count,
                 'total_count': total_count,
                 'url': url,
-                'icon': config['icon']
             }
             
             # 分類別に整理
