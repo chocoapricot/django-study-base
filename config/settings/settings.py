@@ -218,3 +218,13 @@ DEFAULT_FILE_STORAGE = 'storages.backends.filesystem.FileSystemStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TEST_RUNNER = 'config.test_runner.CustomTestRunner'
+
+# メッセージタグをBootstrapのアラートクラスにマッピング
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.DEBUG: 'secondary',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}

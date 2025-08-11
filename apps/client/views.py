@@ -438,8 +438,8 @@ def client_file_download(request, pk):
         return response
     except (FileNotFoundError, OSError, ValueError) as e:
         messages.error(request, f'ファイル「{client_file.original_filename}」のダウンロードに失敗しました。ファイルが削除されている可能性があります。')
-        return redirect('client:client_detail', pk=client_file.staff.pk)
+        return redirect('client:client_detail', pk=client_file.client.pk)
     except Exception as e:
         messages.error(request, f'ファイルのダウンロード中にエラーが発生しました: {str(e)}')
-        return redirect('client:client_detail', pk=client_file.staff.pk)
+        return redirect('client:client_detail', pk=client_file.client.pk)
 
