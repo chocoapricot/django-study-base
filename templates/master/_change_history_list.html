@@ -1,0 +1,53 @@
+<!-- 変更履歴一覧（インクルード用） -->
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        変更履歴
+    </div>
+    <div class="card-body mb-0">
+        <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>操作</th>
+                    <th>変更内容</th>
+                    <th>変更者</th>
+                    <th>日時</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in change_logs %}
+                <tr>
+                    <td>
+                        {% if log.action == 'create' %}
+                            <span class="badge bg-success">作成</span>
+                        {% elif log.action == 'update' %}
+                            <span class="badge bg-warning">編集</span>
+                        {% elif log.action == 'delete' %}
+                            <span class="badge bg-danger">削除</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ log.action|title }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ log.object_repr|truncatechars:40 }}</td>
+                    <td>
+                        {% if log.user %}
+                            {{ log.user.last_name }} {{ log.user.first_name }}
+                        {% else %}-{% endif %}
+                    </td>
+                    <td>{{ log.timestamp|date:'Y/m/d H:i:s' }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4">履歴がありません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if change_logs_count > 5 %}
+    <div class="card-footer d-flex justify-content-center align-items-center">
+        <a href="{% url history_url %}">全て表示 (全{{ change_logs_count }}件)</a>
+    </div>
+    {% elif change_logs_count > 0 %}
+    <div class="card-footer d-flex justify-content-center align-items-center">
+        <a href="{% url history_url %}">全て表示 (全{{ change_logs_count }}件)</a>
+    </div>
+    {% endif %}
+</div>

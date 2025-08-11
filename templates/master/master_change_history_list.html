@@ -1,0 +1,83 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">{{ title }}</div>
+    <div class="card-body mb-0">
+        <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>操作</th>
+                    <th>変更内容</th>
+                    <th>変更者</th>
+                    <th>日時</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>
+                        {% if log.action == 'create' %}
+                            <span class="badge bg-success">作成</span>
+                        {% elif log.action == 'update' %}
+                            <span class="badge bg-warning">編集</span>
+                        {% elif log.action == 'delete' %}
+                            <span class="badge bg-danger">削除</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ log.action|title }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ log.object_repr|truncatechars:60 }}</td>
+                    <td>
+                        {% if log.user %}
+                            {{ log.user.last_name }} {{ log.user.first_name }}
+                        {% else %}-{% endif %}
+                    </td>
+                    <td>{{ log.timestamp|date:'Y/m/d H:i:s' }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4">履歴がありません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <!-- ページネーション -->
+        {% if logs.has_other_pages %}
+        <nav aria-label="ページネーション" class="mt-3">
+            <ul class="pagination pagination-sm justify-content-center">
+                {% if logs.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ logs.previous_page_number }}&model={{ model_name }}">前へ</a>
+                    </li>
+                {% endif %}
+                
+                {% for num in logs.paginator.page_range %}
+                    {% if logs.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > logs.number|add:'-3' and num < logs.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}&model={{ model_name }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if logs.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ logs.next_page_number }}&model={{ model_name }}">次へ</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+        <div class="d-flex justify-content-start mt-3">
+            <a href="{% url list_url %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

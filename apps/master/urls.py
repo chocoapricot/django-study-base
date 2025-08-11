@@ -32,10 +32,12 @@ urlpatterns = [
     path('bill-payment/create/', views.bill_payment_create, name='bill_payment_create'),
     path('bill-payment/<int:pk>/update/', views.bill_payment_update, name='bill_payment_update'),
     path('bill-payment/<int:pk>/delete/', views.bill_payment_delete, name='bill_payment_delete'),
+    path('bill-payment/history/', views.bill_payment_change_history_list, name='bill_payment_change_history_list'),
     
     # 振込先銀行管理
     path('bill-bank/', views.bill_bank_list, name='bill_bank_list'),
     path('bill-bank/create/', views.bill_bank_create, name='bill_bank_create'),
     path('bill-bank/<int:pk>/update/', views.bill_bank_update, name='bill_bank_update'),
     path('bill-bank/<int:pk>/delete/', views.bill_bank_delete, name='bill_bank_delete'),
+    path('bill-bank/history/', views.bill_bank_change_history_list, name='bill_bank_change_history_list'),
 ]

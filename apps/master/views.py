@@ -555,9 +555,11 @@ def qualification_change_history_list(request):
     page = request.GET.get('page')
     logs_page = paginator.get_page(page)
     
-    return render(request, 'master/qualification_change_history_list.html', {
+    return render(request, 'master/master_change_history_list.html', {
         'logs': logs_page,
-        'title': '資格マスタ変更履歴'
+        'title': '資格マスタ変更履歴',
+        'list_url': 'master:qualification_list',
+        'model_name': 'Qualification'
     })
 
 
@@ -579,9 +581,11 @@ def skill_change_history_list(request):
     page = request.GET.get('page')
     logs_page = paginator.get_page(page)
     
-    return render(request, 'master/skill_change_history_list.html', {
+    return render(request, 'master/master_change_history_list.html', {
         'logs': logs_page,
-        'title': '技能マスタ変更履歴'
+        'title': '技能マスタ変更履歴',
+        'list_url': 'master:skill_list',
+        'model_name': 'Skill'
     })
 
 
@@ -800,3 +804,58 @@ def bill_bank_delete(request, pk):
         'title': f'振込先銀行削除 - {bill_bank.name} {bill_bank.branch_name}',
     }
     return render(request, 'master/bill_bank_delete.html', context)
+
+
+
+# 支払いサイト変更履歴
+@login_required
+@permission_required('master.view_billpayment', raise_exception=True)
+def bill_payment_change_history_list(request):
+    """支払いサイト変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    from django.core.paginator import Paginator
+    
+    # 支払いサイトの変更履歴を取得
+    logs = AppLog.objects.filter(
+        model_name='BillPayment',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')
+    
+    # ページネーション
+    paginator = Paginator(logs, 20)
+    page = request.GET.get('page')
+    logs_page = paginator.get_page(page)
+    
+    return render(request, 'master/master_change_history_list.html', {
+        'logs': logs_page,
+        'title': '支払いサイト変更履歴',
+        'list_url': 'master:bill_payment_list',
+        'model_name': 'BillPayment'
+    })
+
+
+# 振込先銀行変更履歴
+@login_required
+@permission_required('master.view_billbank', raise_exception=True)
+def bill_bank_change_history_list(request):
+    """振込先銀行変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    from django.core.paginator import Paginator
+    
+    # 振込先銀行の変更履歴を取得
+    logs = AppLog.objects.filter(
+        model_name='BillBank',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')
+    
+    # ページネーション
+    paginator = Paginator(logs, 20)
+    page = request.GET.get('page')
+    logs_page = paginator.get_page(page)
+    
+    return render(request, 'master/master_change_history_list.html', {
+        'logs': logs_page,
+        'title': '振込先銀行変更履歴',
+        'list_url': 'master:bill_bank_list',
+        'model_name': 'BillBank'
+    })
