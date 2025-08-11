@@ -202,9 +202,16 @@ function setEndDate(months) {
         return;
     }
     
-    // 指定された月数を加算
     const endDate = new Date(startDate);
     endDate.setMonth(endDate.getMonth() + months);
+
+    // 応答日が存在しない場合（月が変わってしまった場合）、その月の末日に設定
+    if (startDate.getDate() !== endDate.getDate()) {
+        endDate.setDate(0);
+    } else {
+        // 応答日が存在する場合 -> その前日を設定
+        endDate.setDate(endDate.getDate() - 1);
+    }
     
     // YYYY-MM-DD形式で設定
     const year = endDate.getFullYear();
