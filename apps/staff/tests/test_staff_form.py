@@ -280,3 +280,164 @@ class StaffFormTest(TestCase):
         
         form = StaffForm(data=form_data)  # instanceなし（新規作成）
         self.assertTrue(form.is_valid())  # 新規作成時は契約チェックなしでOK
+    
+    def test_hire_date_employee_no_validation_both_required(self):
+        """入社日と社員番号のセット入力バリデーションテスト"""
+        # 入社日のみ入力、社員番号なし
+        form_data = {
+            'regist_form_code': '1',
+            'employee_no': '',  # 社員番号なし
+            'name_last': '田中',
+            'name_first': '太郎',
+            'name_kana_last': 'タナカ',
+            'name_kana_first': 'タロウ',
+            'birth_date': date(1990, 1, 1),
+            'sex': '1',
+            'hire_date': date(2020, 4, 1),  # 入社日あり
+            'postal_code': '1000001',
+            'address1': '東京都千代田区千代田',
+            'phone': '03-1234-5678',
+            'email': 'tanaka@example.com'
+        }
+        
+        form = StaffForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('入社日を入力する場合は、社員番号も入力してください', str(form.errors))
+    
+    def test_employee_no_hire_date_validation_both_required(self):
+        """社員番号のみ入力、入社日なしのバリデーションテスト"""
+        form_data = {
+            'regist_form_code': '1',
+            'employee_no': 'EMP001',  # 社員番号あり
+            'name_last': '田中',
+            'name_first': '太郎',
+            'name_kana_last': 'タナカ',
+            'name_kana_first': 'タロウ',
+            'birth_date': date(1990, 1, 1),
+            'sex': '1',
+            'hire_date': '',  # 入社日なし
+            'postal_code': '1000001',
+            'address1': '東京都千代田区千代田',
+            'phone': '03-1234-5678',
+            'email': 'tanaka@example.com'
+        }
+        
+        form = StaffForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('社員番号を入力する場合は、入社日も入力してください', str(form.errors))
+    
+    def test_resignation_date_without_hire_date_validation(self):
+        """入社日なしに退職日入力のバリデーションテスト"""
+        form_data = {
+            'regist_form_code': '1',
+            'employee_no': '',
+            'name_last': '田中',
+            'name_first': '太郎',
+            'name_kana_last': 'タナカ',
+            'name_kana_first': 'タロウ',
+            'birth_date': date(1990, 1, 1),
+            'sex': '1',
+            'hire_date': '',  # 入社日なし
+            'resignation_date': date(2024, 12, 31),  # 退職日あり
+            'postal_code': '1000001',
+            'address1': '東京都千代田区千代田',
+            'phone': '03-1234-5678',
+            'email': 'tanaka@example.com'
+        }
+        
+        form = StaffForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('退職日を入力する場合は、入社日も入力してください', str(form.errors))
+    
+    def test_valid_both_empty_hire_date_employee_no(self):
+        """入社日・社員番号ともに空白の場合は有効（契約なしスタッフ）"""
+        form_data = {
+            'regist_form_code': '1',
+            'employee_no': '',  # 社員番号なし
+            'name_last': '佐藤',
+            'name_first': '花子',
+            'name_kana_last': 'サトウ',
+            'name_kana_first': 'ハナコ',
+            'birth_date': date(1992, 5, 15),
+            'sex': '2',
+            'hire_date': '',  # 入社日なし
+            'postal_code': '1000002',
+            'address1': '東京都千代田区丸の内',
+            'phone': '03-9876-5432',
+            'email': 'sato1@example.com'  # 異なるメールアドレス
+        }
+        
+        form = StaffForm(data=form_data)
+        if not form.is_valid():
+            print(f"Form errors: {form.errors}")
+        self.assertTrue(form.is_valid())
+    
+    def test_valid_both_filled_hire_date_employee_no(self):
+        """入社日・社員番号ともに入力済みの場合は有効（正社員スタッフ）"""
+        form_data = {
+            'regist_form_code': '1',
+            'employee_no': 'EMP002',  # 異なる社員番号
+            'name_last': '鈴木',
+            'name_first': '一郎',
+            'name_kana_last': 'スズキ',
+            'name_kana_first': 'イチロウ',
+            'birth_date': date(1988, 3, 10),
+            'sex': '1',
+            'hire_date': date(2021, 4, 1),  # 入社日あり
+            'postal_code': '1000003',
+            'address1': '東京都千代田区有楽町',
+            'phone': '03-1111-2222',
+            'email': 'suzuki@example.com'  # 異なるメールアドレス
+        }
+        
+        form = StaffForm(data=form_data)
+        if not form.is_valid():
+            print(f"Form errors: {form.errors}")
+        self.assertTrue(form.is_valid())
+    
+    def test_valid_resignation_date_with_hire_date(self):
+        """入社日入力後の退職日入力は有効"""
+        form_data = {
+            'regist_form_code': '1',
+            'employee_no': 'EMP003',
+            'name_last': '高橋',
+            'name_first': '美咲',
+            'name_kana_last': 'タカハシ',
+            'name_kana_first': 'ミサキ',
+            'birth_date': date(1995, 7, 20),
+            'sex': '2',
+            'hire_date': date(2022, 4, 1),  # 入社日あり
+            'resignation_date': date(2024, 12, 31),  # 退職日あり
+            'postal_code': '1000004',
+            'address1': '東京都千代田区神田',
+            'phone': '03-3333-4444',
+            'email': 'takahashi@example.com'  # 異なるメールアドレス
+        }
+        
+        form = StaffForm(data=form_data)
+        if not form.is_valid():
+            print(f"Form errors: {form.errors}")
+        self.assertTrue(form.is_valid())
+    
+    def test_hire_date_after_resignation_date_validation(self):
+        """入社日が退職日より後の場合のバリデーションテスト（既存テスト）"""
+        form_data = {
+            'regist_form_code': '1',
+            'employee_no': 'EMP004',
+            'name_last': '山田',
+            'name_first': '次郎',
+            'name_kana_last': 'ヤマダ',
+            'name_kana_first': 'ジロウ',
+            'birth_date': date(1985, 12, 5),
+            'sex': '1',
+            'hire_date': date(2024, 12, 31),  # 入社日が後
+            'resignation_date': date(2020, 4, 1),  # 退職日が前
+            'postal_code': '1000005',
+            'address1': '東京都千代田区内幸町',
+            'phone': '03-5555-6666',
+            'email': 'yamada@example.com'  # 異なるメールアドレス
+        }
+        
+        form = StaffForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('入社日は退職日より前の日付を入力してください', str(form.errors))
