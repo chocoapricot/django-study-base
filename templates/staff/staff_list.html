@@ -133,9 +133,15 @@
                         {% endif %}
                     </td>
                     <td>
+                        <!-- メールアイコン -->
+                        {% if staff.email %}
+                        <a href="{% url 'staff:staff_mail_send' staff.pk %}" class="btn btn-dark btn-sm me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="メール送信">
+                          <i class="bi bi-envelope"></i>
+                        </a>
+                        {% endif %}
                         <!-- 編集アイコン -->
                         {% if perms.staff.change_staff %}
-                        <a href="{% url 'staff:staff_update' staff.pk %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="編集">
+                        <a href="{% url 'staff:staff_update' staff.pk %}" class="btn btn-dark btn-sm me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="編集">
                           <i class="bi bi-pencil"></i>
                         </a>
                         {% endif %}

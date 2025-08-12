@@ -614,3 +614,36 @@ def staff_file_download(request, pk):
         messages.error(request, f'ファイルのダウンロード中にエラーが発生しました: {str(e)}')
         return redirect('staff:staff_detail', pk=staff_file.staff.pk)
 
+
+
+@login_required
+@permission_required('staff.view_staff', raise_exception=True)
+def staff_mail_send(request, pk):
+    """スタッフメール送信"""
+    staff = get_object_or_404(Staff, pk=pk)
+    
+    # メールアドレスが設定されていない場合はエラー
+    if not staff.email:
+        messages.error(request, 'このスタッフにはメールアドレスが設定されていません。')
+        return redirect('staff:staff_detail', pk=pk)
+    
+    from .forms_mail import StaffMailForm
+    
+    if request.method == 'POST':
+        form = StaffMailForm(staff=staff, user=request.user, data=request.POST)
+        if form.is_valid():
+            success, message = form.send_mail()
+            if success:
+                messages.success(request, message)
+                return redirect('staff:staff_detail', pk=pk)
+            else:
+                messages.error(request, message)
+    else:
+        form = StaffMailForm(staff=staff, user=request.user)
+    
+    context = {
+        'form': form,
+        'staff': staff,
+        'title': f'{staff.name_last} {staff.name_first} へのメール送信',
+    }
+    return render(request, 'staff/staff_mail_send.html', context)

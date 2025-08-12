@@ -1,0 +1,116 @@
+{% extends 'common/_base.html' %}
+{% load help_tags %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">{{ title }}</div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- スタッフ情報表示 -->
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-2" style="text-align:right">
+                    <strong>送信先スタッフ</strong>
+                </div>
+                <div class="col-sm-10">
+                    <div class="d-flex align-items-center">
+                        <img src="{% url 'staff:staff_face' staff.pk %}" class="rounded-circle img-fluid me-2" width="40" height="40" style="object-fit: cover;">
+                        <div>
+                            <strong>{{ staff.name_last }} {{ staff.name_first }}</strong>
+                            <br>
+                            <small class="text-muted">{{ staff.email }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <!-- メール送信フォーム -->
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.to_email.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">宛先</label>
+                <div class="col-sm-6">
+                    {{ form.to_email }}
+                    {% if form.to_email.errors %}
+                        <div class="text-danger small">{{ form.to_email.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.subject.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">件名</label>
+                <div class="col-sm-8">
+                    {{ form.subject }}
+                    {% if form.subject.errors %}
+                        <div class="text-danger small">{{ form.subject.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="{{ form.body.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">本文</label>
+                <div class="col-sm-10">
+                    {{ form.body }}
+                    {% if form.body.errors %}
+                        <div class="text-danger small">{{ form.body.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.contact_type.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">連絡種別</label>
+                <div class="col-sm-4">
+                    {{ form.contact_type }}
+                    {% if form.contact_type.errors %}
+                        <div class="text-danger small">{{ form.contact_type.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    <div class="form-check">
+                        {{ form.save_to_contact_history }}
+                        <label class="form-check-label" for="{{ form.save_to_contact_history.id_for_label }}">
+                            連絡履歴に保存する
+                        </label>
+                        {% if form.save_to_contact_history.errors %}
+                            <div class="text-danger small">{{ form.save_to_contact_history.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <small class="text-muted">チェックすると、送信したメールの内容がスタッフの連絡履歴に記録されます。</small>
+                </div>
+            </div>
+
+            <!-- 送信確認アラート -->
+            <div class="alert alert-info" role="alert">
+                <i class="bi bi-info-circle-fill"></i>
+                メールを送信すると、送信ログに記録され、連絡履歴にも保存されます（チェックした場合）。
+            </div>
+
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <button type="submit" class="btn btn-sm btn-primary me-2">
+                        <i class="bi bi-envelope"></i> メール送信
+                    </button>
+                    <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // ツールチップを有効化
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}
