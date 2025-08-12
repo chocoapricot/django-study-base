@@ -95,6 +95,20 @@
 
             <div class="row mb-3 align-items-center">
                 <div class="col-sm-2" style="text-align:right">
+                    <strong>支払いサイト</strong>
+                </div>
+                <div class="col-sm-6">
+                    {% if client.payment_site %}
+                        {{ client.payment_site.name }}
+                        <small class="text-muted">（{{ client.payment_site.full_schedule_display }}）</small>
+                    {% else %}
+                        <span class="text-muted">未設定</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-2" style="text-align:right">
                     <strong>ファイル</strong>
                 </div>
                 <div class="col-sm">

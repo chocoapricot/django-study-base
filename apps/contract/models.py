@@ -30,6 +30,13 @@ class ClientContract(MyModel):
     payment_terms = models.CharField('支払条件', max_length=200, blank=True, null=True)
     description = models.TextField('契約内容', blank=True, null=True)
     notes = models.TextField('備考', blank=True, null=True)
+    payment_site = models.ForeignKey(
+        'master.BillPayment',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name='支払いサイト'
+    )
     auto_renewal = models.BooleanField('自動更新', default=False)
     is_active = models.BooleanField('有効', default=True)
     

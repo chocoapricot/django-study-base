@@ -32,19 +32,24 @@ class ClientForm(forms.ModelForm):
         widget=forms.Select(attrs={'class':'form-select form-select-sm'}) ,
         required=True,
     )
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # ここでのみDropdownsをimport.そうしないとmigrateでエラーになる
         from apps.system.settings.models import Dropdowns
+        from apps.master.models import BillPayment
+        
         self.fields['regist_form_client'].choices = [
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='regist_form_client').order_by('disp_seq')
         ]
+        
+        # 支払いサイトの選択肢を設定
+        self.fields['payment_site'].queryset = BillPayment.get_active_list()
+
     class Meta:
         model = Client
         fields = ['corporate_number','name','name_furigana',
-                  'postal_code','address',  'memo', 'regist_form_client', 'basic_contract_date']
+                  'postal_code','address',  'memo', 'regist_form_client', 'basic_contract_date', 'payment_site']
         widgets = {
             'corporate_number': forms.TextInput(attrs={'class': 'form-control form-control-sm',
                 'pattern': '[0-9]{13}', 'inputmode': 'numeric', 'maxlength': '13', 'style': 'ime-mode:disabled;', 'autocomplete': 'off'}),
@@ -57,6 +62,7 @@ class ClientForm(forms.ModelForm):
             # 'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
             'memo': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'basic_contract_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'payment_site': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             # 'regist_form_code': forms.Select(attrs={'class': 'form-control form-control-sm form-select-sm'}),
         }
 

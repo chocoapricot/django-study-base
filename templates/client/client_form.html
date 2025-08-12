@@ -92,6 +92,13 @@
                 </div>
             </div>
 
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.payment_site.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.payment_site.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.payment_site }}
+                </div>
+            </div>
+
             <div class="d-flex justify-content-start">
                 <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
                 <a href="{% url 'client:client_list' %}" class="btn btn-sm btn-secondary me-2">戻る</a>

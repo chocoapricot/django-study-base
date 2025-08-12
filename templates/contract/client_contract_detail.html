@@ -84,6 +84,17 @@
                                     <th>支払条件</th>
                                     <td>{{ contract.payment_terms|default:"-" }}</td>
                                 </tr>
+                                <tr>
+                                    <th>支払いサイト</th>
+                                    <td>
+                                        {% if contract.payment_site %}
+                                            {{ contract.payment_site.name }}
+                                            <br><small class="text-muted">{{ contract.payment_site.full_schedule_display }}</small>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
                             </table>
                         </div>
                     </div>

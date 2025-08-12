@@ -23,7 +23,7 @@ class ClientContractForm(forms.ModelForm):
         fields = [
             'client', 'contract_name', 'contract_number', 'contract_type',
             'start_date', 'end_date', 'contract_amount', 'payment_terms',
-            'description', 'notes', 'is_active'
+            'description', 'notes', 'payment_site', 'is_active'
         ]
         widgets = {
             'client': forms.HiddenInput(),  # 隠しフィールドに変更
@@ -36,22 +36,55 @@ class ClientContractForm(forms.ModelForm):
             'payment_terms': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 4}),
             'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'payment_site': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        from apps.master.models import BillPayment
+        
         # 終了日を必須にする
         self.fields['end_date'].required = True
-        # 編集時に選択されたクライアント名を表示
+        
+        # 支払いサイトの選択肢を設定（デフォルト）
+        self.fields['payment_site'].queryset = BillPayment.get_active_list()
+        
+        # クライアントを取得
+        client = None
         if self.instance and self.instance.pk and hasattr(self.instance, 'client') and self.instance.client:
-            self.fields['client_display'].initial = self.instance.client.name
+            # 編集時
+            client = self.instance.client
+            self.fields['client_display'].initial = client.name
+        elif hasattr(self, 'initial') and 'client' in self.initial:
+            # 新規作成時にクライアントが指定されている場合
+            try:
+                client = Client.objects.get(pk=self.initial['client'])
+                # クライアント表示名も設定
+                self.fields['client_display'].initial = client.name
+            except Client.DoesNotExist:
+                pass
+        
+        # クライアントに支払いサイトが設定されている場合の処理
+        if client and client.payment_site:
+            # 選択肢を制限し、必須にする
+            self.fields['payment_site'].queryset = BillPayment.objects.filter(id=client.payment_site.id)
+            self.fields['payment_site'].initial = client.payment_site
+            self.fields['payment_site'].required = True
+            self.fields['payment_site'].widget.attrs.update({
+                'style': 'pointer-events: none; background-color: #e9ecef;',
+                'data-client-locked': 'true'
+            })
+            self.fields['payment_site'].help_text = 'クライアントで設定された支払いサイトが適用されます'
+            # 空の選択肢を削除
+            self.fields['payment_site'].empty_label = None
     
     def clean(self):
         cleaned_data = super().clean()
         start_date = cleaned_data.get('start_date')
         end_date = cleaned_data.get('end_date')
         client = cleaned_data.get('client')
+        payment_site = cleaned_data.get('payment_site')
         
         # 終了日を必須にする
         if not end_date:
@@ -67,7 +100,27 @@ class ClientContractForm(forms.ModelForm):
             if client.basic_contract_date and start_date < client.basic_contract_date:
                 self.add_error('start_date', f'契約開始日は基本契約締結日（{client.basic_contract_date}）以降の日付を入力してください。')
         
+        # 支払いサイトのバリデーション
+        if client:
+            if client.payment_site:
+                # クライアントに支払いサイトが設定されている場合は必須
+                if not payment_site:
+                    self.add_error('payment_site', 'クライアントに支払いサイトが設定されているため、支払いサイトは必須です。')
+                elif payment_site != client.payment_site:
+                    self.add_error('payment_site', 'クライアントで設定された支払いサイトと異なる支払いサイトは選択できません。')
+        
         return cleaned_data
+    
+    def clean_payment_site(self):
+        """支払いサイトのクリーニング"""
+        payment_site = self.cleaned_data.get('payment_site')
+        client = self.cleaned_data.get('client') or (self.instance.client if self.instance and self.instance.pk else None)
+        
+        # クライアントに支払いサイトが設定されている場合は強制的にそれを使用
+        if client and client.payment_site:
+            return client.payment_site
+        
+        return payment_site
 
 
 class StaffContractForm(forms.ModelForm):
