@@ -74,7 +74,7 @@ statics/
 
 ## 命名規則
 - **アプリ**: 小文字、説明的な名前（例：`staff`、`client`、`contract`、`company`）
-- **モデル**: パスカルケース（例：`CustomUser`、`Company`、`ClientContract`、`StaffContract`）
+- **モデル**: パスカルケース（例：`MyUser`、`Company`、`ClientContract`、`StaffContract`）
 - **URL**: 小文字でハイフン区切り（例：`/staff/contact-list/`、`/contract/client/`、`/company/department-list/`）
 - **テンプレート**: 小文字でアンダースコア区切り（例：`staff_list.html`、`client_contract_detail.html`、`company_detail.html`）
 - **静的ファイル**: タイプ別にそれぞれのサブディレクトリで整理
@@ -82,4 +82,4 @@ statics/
 ## インポートパターン
 - アプリ内では相対インポートを使用：`from .models import MyModel`
 - アプリ間参照では絶対インポートを使用：`from apps.common.utils import helper_function`
-- システムアプリの参照：`apps.system.useradmin.models.CustomUser`
+- システムアプリの参照：`apps.system.useradmin.models.MyUser`

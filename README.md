@@ -245,7 +245,7 @@ LANGUAGE_CODE = 'ja-JP'
 TIME_ZONE = 'Asia/Tokyo'
 
 # 認証設定
-AUTH_USER_MODEL = 'useradmin.CustomUser'
+AUTH_USER_MODEL = 'useradmin.MyUser'
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 

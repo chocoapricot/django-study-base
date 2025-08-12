@@ -2,16 +2,16 @@ from django.test import TestCase, Client as TestClient
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from apps.system.useradmin.models import CustomUser
-from apps.system.useradmin.forms import CustomUserCreationForm, CustomUserChangeForm
+from apps.system.useradmin.models import MyUser
+from apps.system.useradmin.forms import MyUserCreationForm, MyUserChangeForm
 
 User = get_user_model()
 
 
-class CustomUserModelTest(TestCase):
+class MyUserModelTest(TestCase):
     def test_custom_user_creation(self):
-        """CustomUserモデルの作成テスト"""
-        user = CustomUser.objects.create_user(
+        """MyUserモデルの作成テスト"""
+        user = MyUser.objects.create_user(
             username='testuser',
             email='test@example.com',
             password='testpass123',
@@ -29,8 +29,8 @@ class CustomUserModelTest(TestCase):
         self.assertFalse(user.is_superuser)
 
     def test_custom_user_str_representation(self):
-        """CustomUserの文字列表現テスト"""
-        user = CustomUser.objects.create_user(
+        """MyUserの文字列表現テスト"""
+        user = MyUser.objects.create_user(
             username='testuser',
             email='test@example.com',
             first_name='太郎',
@@ -42,7 +42,7 @@ class CustomUserModelTest(TestCase):
         self.assertEqual(str(user), expected_str)
         
         # フルネームがない場合
-        user_no_name = CustomUser.objects.create_user(
+        user_no_name = MyUser.objects.create_user(
             username='noname',
             email='noname@example.com'
         )
@@ -50,7 +50,7 @@ class CustomUserModelTest(TestCase):
 
     def test_custom_user_superuser_creation(self):
         """スーパーユーザーの作成テスト"""
-        superuser = CustomUser.objects.create_superuser(
+        superuser = MyUser.objects.create_superuser(
             username='admin',
             email='admin@example.com',
             password='adminpass123'
@@ -63,7 +63,7 @@ class CustomUserModelTest(TestCase):
 
     def test_custom_user_email_unique(self):
         """メールアドレスの一意性テスト"""
-        CustomUser.objects.create_user(
+        MyUser.objects.create_user(
             username='user1',
             email='unique@example.com',
             password='testpass123'
@@ -71,7 +71,7 @@ class CustomUserModelTest(TestCase):
         
         # 同じメールアドレスのユーザーは作成できない
         with self.assertRaises(Exception):
-            CustomUser.objects.create_user(
+            MyUser.objects.create_user(
                 username='user2',
                 email='unique@example.com',
                 password='testpass123'
@@ -79,7 +79,7 @@ class CustomUserModelTest(TestCase):
 
     def test_custom_user_get_full_name(self):
         """フルネーム取得のテスト"""
-        user = CustomUser.objects.create_user(
+        user = MyUser.objects.create_user(
             username='testuser',
             first_name='太郎',
             last_name='田中'
@@ -88,12 +88,12 @@ class CustomUserModelTest(TestCase):
         self.assertEqual(user.get_full_name(), '田中 太郎')
         
         # 名前が設定されていない場合
-        user_no_name = CustomUser.objects.create_user(username='noname')
+        user_no_name = MyUser.objects.create_user(username='noname')
         self.assertEqual(user_no_name.get_full_name(), '')
 
     def test_custom_user_get_short_name(self):
         """ショートネーム取得のテスト"""
-        user = CustomUser.objects.create_user(
+        user = MyUser.objects.create_user(
             username='testuser',
             first_name='太郎'
         )
@@ -101,9 +101,9 @@ class CustomUserModelTest(TestCase):
         self.assertEqual(user.get_short_name(), '太郎')
 
 
-class CustomUserFormTest(TestCase):
+class MyUserFormTest(TestCase):
     def test_custom_user_creation_form_valid(self):
-        """CustomUserCreationFormの有効なデータテスト"""
+        """MyUserCreationFormの有効なデータテスト"""
         form_data = {
             'username': 'testuser',
             'email': 'test@example.com',
@@ -112,32 +112,32 @@ class CustomUserFormTest(TestCase):
             'password1': 'testpass123!',
             'password2': 'testpass123!'
         }
-        form = CustomUserCreationForm(data=form_data)
+        form = MyUserCreationForm(data=form_data)
         self.assertTrue(form.is_valid())
 
     def test_custom_user_creation_form_password_mismatch(self):
-        """CustomUserCreationFormのパスワード不一致テスト"""
+        """MyUserCreationFormのパスワード不一致テスト"""
         form_data = {
             'username': 'testuser',
             'email': 'test@example.com',
             'password1': 'testpass123!',
             'password2': 'differentpass123!'
         }
-        form = CustomUserCreationForm(data=form_data)
+        form = MyUserCreationForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn('password2', form.errors)
 
     def test_custom_user_creation_form_required_fields(self):
-        """CustomUserCreationFormの必須フィールドテスト"""
-        form = CustomUserCreationForm(data={})
+        """MyUserCreationFormの必須フィールドテスト"""
+        form = MyUserCreationForm(data={})
         self.assertFalse(form.is_valid())
         self.assertIn('username', form.errors)
         self.assertIn('password1', form.errors)
         self.assertIn('password2', form.errors)
 
     def test_custom_user_change_form_valid(self):
-        """CustomUserChangeFormの有効なデータテスト"""
-        user = CustomUser.objects.create_user(
+        """MyUserChangeFormの有効なデータテスト"""
+        user = MyUser.objects.create_user(
             username='testuser',
             email='test@example.com'
         )
@@ -149,18 +149,18 @@ class CustomUserFormTest(TestCase):
             'last_name': '佐藤',
             'is_active': True
         }
-        form = CustomUserChangeForm(data=form_data, instance=user)
+        form = MyUserChangeForm(data=form_data, instance=user)
         self.assertTrue(form.is_valid())
 
 
-class CustomUserViewTest(TestCase):
+class MyUserViewTest(TestCase):
     def setUp(self):
-        self.superuser = CustomUser.objects.create_superuser(
+        self.superuser = MyUser.objects.create_superuser(
             username='admin',
             email='admin@example.com',
             password='adminpass123'
         )
-        self.user = CustomUser.objects.create_user(
+        self.user = MyUser.objects.create_user(
             username='testuser',
             email='test@example.com',
             password='testpass123',
@@ -233,7 +233,7 @@ class CustomUserViewTest(TestCase):
         
         self.assertEqual(response.status_code, 302)  # リダイレクト
         self.assertTrue(
-            CustomUser.objects.filter(username='newuser').exists()
+            MyUser.objects.filter(username='newuser').exists()
         )
 
     def test_user_update_post(self):

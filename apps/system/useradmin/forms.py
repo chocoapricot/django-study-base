@@ -1,5 +1,5 @@
 from django import forms
-from .models import CustomUser
+from .models import MyUser
 
 class UserProfileForm(forms.ModelForm):
     password = forms.CharField(
@@ -14,7 +14,7 @@ class UserProfileForm(forms.ModelForm):
     )
 
     class Meta:
-        model = CustomUser
+        model = MyUser
         fields = ['email', 'first_name', 'last_name', 'phone_number']  # usernameを除外
         widgets = {
             'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
@@ -38,7 +38,7 @@ class UserProfileForm(forms.ModelForm):
         email = self.cleaned_data.get('email')
         if email:
             # 他のユーザーが同じメールアドレスを使用していないかチェック
-            existing_user = CustomUser.objects.filter(email=email).exclude(pk=self.instance.pk).first()
+            existing_user = MyUser.objects.filter(email=email).exclude(pk=self.instance.pk).first()
             if existing_user:
                 raise forms.ValidationError('このメールアドレスは既に他のユーザーによって使用されています。')
         return email

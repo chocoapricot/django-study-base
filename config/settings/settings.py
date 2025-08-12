@@ -146,7 +146,7 @@ DATABASES = {
 }
 
 
-AUTH_USER_MODEL = 'useradmin.CustomUser'
+AUTH_USER_MODEL = 'useradmin.MyUser'
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',

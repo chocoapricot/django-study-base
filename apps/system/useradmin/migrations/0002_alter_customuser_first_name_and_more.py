@@ -11,12 +11,12 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='customuser',
+            model_name='myuser',
             name='first_name',
             field=models.CharField(blank=True, max_length=30, verbose_name='名'),
         ),
         migrations.AlterField(
-            model_name='customuser',
+            model_name='myuser',
             name='last_name',
             field=models.CharField(blank=True, max_length=30, verbose_name='姓'),
         ),
