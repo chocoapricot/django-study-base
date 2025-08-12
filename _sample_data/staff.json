@@ -443,7 +443,7 @@
             "phone": "090-4321-0987",
             "email": "akechi-mitsuhide@staff",
             "regist_form_code": 90,
-            "employee_no": "",
+            "employee_no": "EMP015",
             "hire_date": "2018-10-01",
             "resignation_date": "2023-06-30",
             "department_code": "DEV"
@@ -533,7 +533,7 @@
             "phone": "080-1098-7654",
             "email": "matsunaga-hisahide@staff",
             "regist_form_code": 90,
-            "employee_no": "",
+            "employee_no": "EMP018",
             "hire_date": "2019-09-01",
             "resignation_date": "2024-01-31",
             "department_code": "DEV"
