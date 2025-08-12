@@ -26,15 +26,17 @@
                     スタッフ
                     {% my_help_preset "staff_selection" %}
                 </label>
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                     {{ form.staff }}
-                    {{ form.staff_display }}
+                    <div id="staff-display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057;">
+                        <span id="staff-display-text">未選択</span>
+                    </div>
                     {% if form.staff.errors %}
                         <div class="text-danger small">{{ form.staff.errors.0 }}</div>
                     {% endif %}
                 </div>
-                <div class="col-sm-4">
-                    <a href="{% url 'contract:staff_select' %}?return_url={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-secondary">
+                <div class="col-sm-6">
+                    <a href="{% url 'contract:staff_select' %}?return_url={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-secondary me-2">
                         選択
                     </a>
                     <button type="button" class="btn btn-sm btn-secondary" onclick="clearStaff()">
@@ -168,13 +170,25 @@ document.addEventListener('DOMContentLoaded', function() {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
     
+    // 編集時の既存データ表示
+    const staffField = document.getElementById('{{ form.staff.id_for_label }}');
+    const staffDisplayText = document.getElementById('staff-display-text');
+    
+    if (staffField.value) {
+        // 既存のスタッフが選択されている場合（編集時）
+        {% if contract and contract.staff %}
+            staffDisplayText.textContent = '{{ contract.staff.name_last|escapejs }} {{ contract.staff.name_first|escapejs }}';
+        {% endif %}
+    }
+    
+    // URL パラメータからの選択処理（新規作成時の選択画面からの戻り）
     const urlParams = new URLSearchParams(window.location.search);
     const selectedStaffId = urlParams.get('selected_staff_id');
     const selectedStaffName = urlParams.get('selected_staff_name');
     
     if (selectedStaffId && selectedStaffName) {
-        document.getElementById('{{ form.staff.id_for_label }}').value = selectedStaffId;
-        document.getElementById('{{ form.staff_display.id_for_label }}').value = selectedStaffName;
+        staffField.value = selectedStaffId;
+        staffDisplayText.textContent = selectedStaffName;
         
         // URLからパラメータを削除
         const newUrl = window.location.pathname;
@@ -184,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function clearStaff() {
     document.getElementById('{{ form.staff.id_for_label }}').value = '';
-    document.getElementById('{{ form.staff_display.id_for_label }}').value = '';
+    document.getElementById('staff-display-text').textContent = '未選択';
 }
 
 function setEndDate(months) {

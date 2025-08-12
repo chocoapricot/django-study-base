@@ -40,6 +40,7 @@ class StaffSortingTest(TestCase):
             sex=1,
             regist_form_code=1,
             employee_no='ZEMP000', # ソート順で最後にくるように変更
+            hire_date=date(2019, 4, 1),  # 入社日を追加
             email='test@example.com',
             address1='テスト住所' # address1を追加
         )
@@ -54,6 +55,7 @@ class StaffSortingTest(TestCase):
                 sex=1,
                 regist_form_code=1,
                 employee_no=f'EMP{i:03d}',
+                hire_date=date(2020, 4, i),  # 入社日を追加（日付を変える）
                 email=f'staff{i:02d}@example.com',
                 address1=f'住所{i:02d}'
             )

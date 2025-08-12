@@ -39,7 +39,8 @@ class RegistFormFilterTest(TestCase):
             birth_date=date(1990, 1, 1),
             sex=1,
             regist_form_code=1,  # 正社員
-            employee_no='EMP001'
+            employee_no='EMP001',
+            hire_date=date(2020, 4, 1)  # 入社日を追加
         )
         
         self.staff_keiyaku = Staff.objects.create(
@@ -50,7 +51,8 @@ class RegistFormFilterTest(TestCase):
             birth_date=date(1985, 5, 15),
             sex=2,
             regist_form_code=2,  # 契約社員
-            employee_no='EMP002'
+            employee_no='EMP002',
+            hire_date=date(2021, 4, 1)  # 入社日を追加
         )
         
         self.staff_haken = Staff.objects.create(
@@ -61,7 +63,8 @@ class RegistFormFilterTest(TestCase):
             birth_date=date(1992, 8, 20),
             sex=1,
             regist_form_code=10,  # 派遣社員
-            employee_no='EMP003'
+            employee_no='EMP003',
+            hire_date=date(2022, 4, 1)  # 入社日を追加
         )
         
         self.staff_baito = Staff.objects.create(
@@ -72,7 +75,8 @@ class RegistFormFilterTest(TestCase):
             birth_date=date(1995, 3, 10),
             sex=1,
             regist_form_code=20,  # アルバイト
-            employee_no='EMP004'
+            employee_no='EMP004',
+            hire_date=date(2023, 4, 1)  # 入社日を追加
         )
         
         self.staff_taishoku = Staff.objects.create(
@@ -83,7 +87,9 @@ class RegistFormFilterTest(TestCase):
             birth_date=date(1980, 12, 25),
             sex=1,
             regist_form_code=90,  # 退職者
-            employee_no='EMP005'
+            employee_no='EMP005',
+            hire_date=date(2018, 4, 1),  # 入社日を追加
+            resignation_date=date(2024, 3, 31)  # 退職日も追加
         )
 
     def test_regist_form_filter_seishain(self):
@@ -263,7 +269,8 @@ class RegistFormFilterTest(TestCase):
                 birth_date=date(1990, 1, 1),
                 sex=1,
                 regist_form_code=1,  # 正社員
-                employee_no=f'TEST{i:03d}'
+                employee_no=f'TEST{i:03d}',
+                hire_date=date(2020, 4, (i % 28) + 1)  # 入社日を追加（月内の日付でループ）
             )
         
         response = self.client.get(reverse('staff:staff_list'), {'regist_form': '1'})

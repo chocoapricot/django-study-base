@@ -26,15 +26,17 @@
                     クライアント
                     {% my_help_preset "client_selection" %}
                 </label>
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                     {{ form.client }}
-                    {{ form.client_display }}
+                    <div id="client-display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057;">
+                        <span id="client-display-text">未選択</span>
+                    </div>
                     {% if form.client.errors %}
                         <div class="text-danger small">{{ form.client.errors.0 }}</div>
                     {% endif %}
                 </div>
-                <div class="col-sm-4">
-                    <a href="{% url 'contract:client_select' %}?return_url={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-secondary">
+                <div class="col-sm-6">
+                    <a href="{% url 'contract:client_select' %}?return_url={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-secondary me-2">
                         選択
                     </a>
                     <button type="button" class="btn btn-sm btn-secondary" onclick="clearClient()">
@@ -168,13 +170,25 @@ document.addEventListener('DOMContentLoaded', function() {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
     
+    // 編集時の既存データ表示
+    const clientField = document.getElementById('{{ form.client.id_for_label }}');
+    const clientDisplayText = document.getElementById('client-display-text');
+    
+    if (clientField.value) {
+        // 既存のクライアントが選択されている場合（編集時）
+        {% if contract and contract.client %}
+            clientDisplayText.textContent = '{{ contract.client.name|escapejs }}';
+        {% endif %}
+    }
+    
+    // URL パラメータからの選択処理（新規作成時の選択画面からの戻り）
     const urlParams = new URLSearchParams(window.location.search);
     const selectedClientId = urlParams.get('selected_client_id');
     const selectedClientName = urlParams.get('selected_client_name');
     
     if (selectedClientId && selectedClientName) {
-        document.getElementById('{{ form.client.id_for_label }}').value = selectedClientId;
-        document.getElementById('{{ form.client_display.id_for_label }}').value = selectedClientName;
+        clientField.value = selectedClientId;
+        clientDisplayText.textContent = selectedClientName;
         
         // URLからパラメータを削除
         const newUrl = window.location.pathname;
@@ -184,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function clearClient() {
     document.getElementById('{{ form.client.id_for_label }}').value = '';
-    document.getElementById('{{ form.client_display.id_for_label }}').value = '';
+    document.getElementById('client-display-text').textContent = '未選択';
 }
 
 function setEndDate(months) {

@@ -60,7 +60,8 @@ class StaffViewsTest(TestCase):
             birth_date=date(1990, 1, 1),
             sex=1,
             regist_form_code=1,  # 正社員
-            employee_no='EMP001'
+            employee_no='EMP001',
+            hire_date=date(2020, 4, 1)  # 入社日を追加
         )
         
         self.staff2 = Staff.objects.create(
@@ -71,7 +72,8 @@ class StaffViewsTest(TestCase):
             birth_date=date(1985, 5, 15),
             sex=2,
             regist_form_code=2,  # 契約社員
-            employee_no='EMP002'
+            employee_no='EMP002',
+            hire_date=date(2021, 4, 1)  # 入社日を追加
         )
         
         self.staff3 = Staff.objects.create(
@@ -82,7 +84,8 @@ class StaffViewsTest(TestCase):
             birth_date=date(1992, 8, 20),
             sex=1,
             regist_form_code=10,  # 派遣社員
-            employee_no='EMP003'
+            employee_no='EMP003',
+            hire_date=date(2022, 4, 1)  # 入社日を追加
         )
 
         self.staff_obj = Staff.objects.create(
@@ -94,6 +97,7 @@ class StaffViewsTest(TestCase):
             sex=1,
             regist_form_code=1,
             employee_no='ZEMP000', # ソート順で最後にくるように変更
+            hire_date=date(2019, 4, 1),  # 入社日を追加
             email='test@example.com',
             address1='テスト住所', # address1を追加
             age=10 # ageを10に変更
@@ -109,6 +113,7 @@ class StaffViewsTest(TestCase):
                 sex=1,
                 regist_form_code=1,
                 employee_no=f'EMP{i:03d}',
+                hire_date=date(2020, 4, i),  # 入社日を追加（日付を変える）
                 email=f'staff{i:02d}@example.com',
                 address1=f'住所{i:02d}',
                 age=20 + i
@@ -247,6 +252,7 @@ class StaffViewsTest(TestCase):
             'sex': 2,
             'regist_form_code': 2,
             'employee_no': 'EMP002',
+            'hire_date': '2024-04-01',  # 社員番号と入社日をセットで設定
             'email': 'newstaff@example.com'
         }
         response = self.client.post(reverse('staff:staff_create'), data)
@@ -277,6 +283,7 @@ class StaffViewsTest(TestCase):
             'sex': 1,
             'regist_form_code': 1,
             'employee_no': 'EMP001',
+            'hire_date': '2020-04-01',  # 社員番号と入社日をセットで設定
             'email': 'test@example.com'
         }
         response = self.client.post(reverse('staff:staff_update', args=[self.staff_obj.pk]), data)
