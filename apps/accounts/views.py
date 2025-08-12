@@ -1,13 +1,13 @@
 from allauth.account.views import SignupView, PasswordResetView
 from django.shortcuts import render
-from .forms import CustomSignupForm, CustomResetPasswordForm
+from .forms import MySignupForm, MyResetPasswordForm
 
-class CustomSignupView(SignupView):
-    form_class = CustomSignupForm
+class MySignupView(SignupView):
+    form_class = MySignupForm
 
-class CustomPasswordResetView(PasswordResetView):
+class MyPasswordResetView(PasswordResetView):
     """カスタムパスワードリセットビュー"""
-    form_class = CustomResetPasswordForm
+    form_class = MyResetPasswordForm
     template_name = 'account/password_reset.html'
 
 def terms_of_service(request):

@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-class CustomSignupForm(SignupForm):
+class MySignupForm(SignupForm):
     last_name = forms.CharField(max_length=30, label='姓', required=True)
     first_name = forms.CharField(max_length=30, label='名', required=True)
 
@@ -30,13 +30,13 @@ class CustomSignupForm(SignupForm):
         return cleaned_data
 
     def save(self, request):
-        user = super(CustomSignupForm, self).save(request)
+        user = super(MySignupForm, self).save(request)
         user.last_name = self.cleaned_data['last_name']
         user.first_name = self.cleaned_data['first_name']
         user.save()
         return user
 
-class CustomResetPasswordForm(ResetPasswordForm):
+class MyResetPasswordForm(ResetPasswordForm):
     """カスタムパスワードリセットフォーム"""
     
     def clean_email(self):

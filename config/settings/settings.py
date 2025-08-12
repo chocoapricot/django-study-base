@@ -81,8 +81,8 @@ ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 
 ACCOUNT_FORMS = {
-    'signup': 'apps.accounts.forms.CustomSignupForm',
-    'reset_password': 'apps.accounts.forms.CustomResetPasswordForm',  # 有効化
+    'signup': 'apps.accounts.forms.MySignupForm',
+    'reset_password': 'apps.accounts.forms.MyResetPasswordForm',  # 有効化
 }
 
 
@@ -94,7 +94,7 @@ ACCOUNT_PASSWORD_RESET_FROM_KEY_DONE_URL = '/accounts/login/'  # リセット完
 ACCOUNT_PASSWORD_RESET_TIMEOUT = 600  # パスワードリセットトークンの有効期限（秒）
 ACCOUNT_PASSWORD_RESET_SERIALIZER = None  # デフォルトのシリアライザーを使用
 
-ACCOUNT_ADAPTER = 'apps.accounts.adapters.CustomAccountAdapter'
+ACCOUNT_ADAPTER = 'apps.accounts.adapters.MyAccountAdapter'
 SITE_ID = 1
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # 一時的に標準バックエンドに変更
 

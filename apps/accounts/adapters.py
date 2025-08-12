@@ -2,7 +2,7 @@ from allauth.account.adapter import DefaultAccountAdapter
 from django.conf import settings
 from apps.system.logs.utils import log_mail
 from allauth.account.models import EmailAddress
-class CustomAccountAdapter(DefaultAccountAdapter):
+class MyAccountAdapter(DefaultAccountAdapter):
     def save_user(self, request, user, form, commit=True):
         # まずallauthのデフォルトの保存処理を実行
         user = super().save_user(request, user, form, commit=False)
