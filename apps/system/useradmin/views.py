@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from .forms import UserProfileForm
+from apps.system.logs.models import AppLog
 
 @login_required
 def profile(request):
@@ -22,4 +23,14 @@ def profile(request):
             return redirect('useradmin:profile')
     else:
         form = UserProfileForm(instance=user)
-    return render(request, 'useradmin/profile.html', {'form': form})
+    
+    # AppLogからログイン履歴を取得（直近10件まで）
+    login_history = AppLog.objects.filter(
+        user=user,
+        action='login'
+    ).order_by('-timestamp')[:10]
+    
+    return render(request, 'account/profile.html', {
+        'form': form,
+        'login_history': login_history
+    })

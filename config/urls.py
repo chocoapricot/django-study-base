@@ -22,15 +22,15 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('allauth.urls')),  # allauthの標準URLのみを使用
-    path('custom/', include('apps.accounts.urls')), # カスタムURLは別パスに移動
+    path('accounts/', include('apps.accounts.urls')), # カスタムURLを先に配置
+    path('accounts/', include('apps.system.useradmin.urls')), # プロフィール用URL
+    path('accounts/', include('allauth.urls')),  # allauthの標準URL
     # path('accounts/', include('django.contrib.auth.urls')),
     path('', include('apps.home.urls')),
     path('api/', include('apps.api.urls')),
     path('staff/', include('apps.staff.urls')),
     path('client/', include('apps.client.urls')),
     path('csstest/', include('apps.csstest.urls')),
-    path('useradmin/', include('apps.system.useradmin.urls')),
     path('common/', include('apps.common.urls')),
     path('logs/', include('apps.system.logs.urls')),
     path('company/', include('apps.company.urls')),

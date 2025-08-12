@@ -19,18 +19,6 @@
                         <li>禁止事項について</li>
                     </ul>
                     <p>詳細な規約は、別途リンクまたは全文をここに記載してください。</p>
-
-                    <form method="post" action="{% url 'terms_of_service' %}">
-                        {% csrf_token %}
-                        <div class="form-check mb-3">
-                            <input type="checkbox" class="form-check-input" id="agree_to_terms" name="agree_to_terms">
-                            <label class="form-check-label" for="agree_to_terms">{% trans "サービス利用規約に同意します" %}</label>
-                        </div>
-                        {% if error %}
-                            <div class="alert alert-warning">{{ error }}</div>
-                        {% endif %}
-                        <button type="submit" class="btn btn-primary">{% trans "次へ" %}</button>
-                    </form>
                 </div>
             </div>
         </div>

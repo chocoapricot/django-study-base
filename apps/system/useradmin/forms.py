@@ -4,25 +4,44 @@ from .models import CustomUser
 class UserProfileForm(forms.ModelForm):
     password = forms.CharField(
         label='新しいパスワード',
-        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm'}),
         required=False
     )
     password_confirm = forms.CharField(
         label='新しいパスワード（確認）',
-        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm'}),
         required=False
     )
 
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'first_name', 'last_name', 'phone_number']
+        fields = ['email', 'first_name', 'last_name', 'phone_number']  # usernameを除外
         widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # メールアドレス、姓と名を必須にする
+        self.fields['email'].required = True
+        self.fields['first_name'].required = True
+        self.fields['last_name'].required = True
+        self.fields['email'].label = 'メールアドレス'
+        self.fields['first_name'].label = '名'
+        self.fields['last_name'].label = '姓'
+
+    def clean_email(self):
+        """メールアドレスの重複チェック"""
+        email = self.cleaned_data.get('email')
+        if email:
+            # 他のユーザーが同じメールアドレスを使用していないかチェック
+            existing_user = CustomUser.objects.filter(email=email).exclude(pk=self.instance.pk).first()
+            if existing_user:
+                raise forms.ValidationError('このメールアドレスは既に他のユーザーによって使用されています。')
+        return email
 
     def clean(self):
         cleaned_data = super().clean()
