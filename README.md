@@ -56,9 +56,14 @@ Django学習用のプロジェクトです。スタッフ管理とクライア�
 
 ```
 django-study-base/
-├── apps/                    # Djangoアプリケーション
+├── _docs/                  # ドキュメント
+├── _sample_data/           # サンプルデータ
+├── _scripts/               # 管理・運用スクリプト
+│
+├── apps/                   # Djangoアプリケーション
 │   ├── system/             # システム管理
-│   │   ├── settings/       # 設定管理 (ドロップダウン、メニュー、パラメータ、ログを統合)
+│   │   ├── settings/       # 設定管理 (ドロップダウン、メニュー、パラメータ)
+│   │   ├── logs/           # ログ管理 (アプリログ、メールログ)
 │   │   └── useradmin/      # ユーザー管理
 │   ├── master/             # マスター管理
 │   ├── staff/              # スタッフ管理
@@ -71,9 +76,6 @@ django-study-base/
 ├── config/                 # プロジェクト設定
 ├── templates/              # HTMLテンプレート
 ├── statics/                # 静的ファイル
-├── _sample_data/           # サンプルデータ
-├── _scripts/               # 管理・運用スクリプト
-├── _docs/                  # ドキュメント
 └── requirements.txt        # 依存関係
 ```
 
