@@ -190,19 +190,25 @@ http://127.0.0.1:8000/
 python manage.py test
 
 # 特定のアプリのテスト
-python manage.py test apps.staff
-python manage.py test apps.client
-python manage.py test apps.contract
+python manage.py test apps.staff.tests
+python manage.py test apps.client.tests
+python manage.py test apps.contract.tests
+
+# 特定のテストファイル実行
+python manage.py test apps.staff.tests.test_staff_form
 
 # 詳細出力でのテスト実行
 python manage.py test --verbosity=2
 ```
 
+### テストガイドライン
+プロジェクトのテスト構成とルールについては、[テストガイドライン](docs/testing-guidelines.md)を参照してください。
+
 ### テストカバレッジ
 - 認証システム: ✅ 完全対応
-- スタッフ管理: ✅ CRUD操作テスト
+- スタッフ管理: ✅ CRUD操作テスト、フォームバリデーション
 - クライアント管理: ✅ CRUD操作テスト
-- 契約管理: ✅ CRUD操作テスト
+- 契約管理: ✅ CRUD操作テスト、フォーム表示機能
 - API エンドポイント: ✅ 基本テスト
 
 ## 📊 データ管理

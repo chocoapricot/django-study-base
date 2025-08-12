@@ -168,7 +168,7 @@
 <!-- 組織一覧と担当者一覧を左右に配置 -->
 <div class="row mt-2 mb-4">
     <!-- 組織一覧（左側） -->
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="content-box card bg-light" style="max-width: 100%;">
             <div class="card-header d-flex justify-content-between align-items-center">
                 組織一覧
@@ -181,8 +181,6 @@
                     <thead>
                         <tr>
                             <th>組織名</th>
-                            <th>組織コード</th>
-                            <th>電話番号</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -190,8 +188,6 @@
                         {% for department in departments %}
                         <tr>
                             <td>{{ department.name }}</td>
-                            <td>{{ department.department_code|default:"-" }}</td>
-                            <td>{{ department.phone_number|default:"-" }}</td>
                             <td>
                                 {% if perms.client.change_clientdepartment %}
                                 <a href="{% url 'client:client_department_update' department.pk %}" class="btn btn-dark btn-sm" title="編集">
@@ -220,7 +216,7 @@
     </div>
 
     <!-- 担当者一覧（右側） -->
-    <div class="col-md-6">
+    <div class="col-md-8">
         <div class="content-box card bg-light" style="max-width: 100%;">
             <div class="card-header d-flex justify-content-between align-items-center">
                 担当者一覧
