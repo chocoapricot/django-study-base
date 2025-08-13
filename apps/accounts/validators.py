@@ -1,4 +1,3 @@
-
 import re
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
@@ -38,8 +37,8 @@ class MyPasswordValidator:
 
         # 記号必須チェック
         if symbol_required == 'true':
-            # 記号の正規表現（シングルクォート・括弧を含める）
-            if not re.search(r"[!\"@#$%\^&\*\-_=\+\?\(\)\{\}\|\[\]]", password):
+            # 記号の正規表現（シングルクォート・括弧・バックスラッシュを含める）
+            if not re.search(r"[!\"@#$%\^&\*\-_=\+\?\(\)\{\}\|\[\]\\:;<>,./']", password):
                 raise ValidationError(
                     _("パスワードには少なくとも1つの記号（!@#$%^&* など）が必要です。"),
                     code='password_no_symbol',

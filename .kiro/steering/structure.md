@@ -27,7 +27,7 @@ django-study-base/
 - **`apps/system/`**: コアシステム機能
   - `logs/`: ログ管理（AppLogモデルによる統一変更履歴管理）
   - `settings/`: 設定/選択オプション管理 (ドロップダウン、メニュー、パラメータを統合)
-  - `useradmin/`: カスタムユーザー管理と認証
+- **`apps/accounts/`**: カスタムユーザー管理と認証
 - **`apps/staff/`**: 従業員管理
 - **`apps/client/`**: 顧客関係管理
 - **`apps/contract/`**: 契約管理 (クライアント契約・スタッフ契約)
@@ -61,7 +61,7 @@ templates/
 ├── client/                 # クライアント管理テンプレート
 ├── contract/               # 契約管理テンプレート
 ├── company/                # 会社・部署管理テンプレート
-└── useradmin/             # ユーザー管理テンプレート
+└── accounts/              # ユーザー管理テンプレート
 ```
 
 ## 静的アセット
@@ -82,4 +82,4 @@ statics/
 ## インポートパターン
 - アプリ内では相対インポートを使用：`from .models import MyModel`
 - アプリ間参照では絶対インポートを使用：`from apps.common.utils import helper_function`
-- システムアプリの参照：`apps.system.useradmin.models.MyUser`
+- システムアプリの参照：`apps.accounts.models.MyUser`

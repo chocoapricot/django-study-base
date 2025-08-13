@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'config',
     'apps.system.settings',
     'apps.system.settings.templatetags',
-    'apps.system.useradmin',
+
     'apps.system.logs',
     'apps.api',
     'apps.staff',
@@ -146,7 +146,7 @@ DATABASES = {
 }
 
 
-AUTH_USER_MODEL = 'useradmin.MyUser'
+AUTH_USER_MODEL = 'accounts.MyUser'
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -176,7 +176,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
     {
-        'NAME': 'apps.system.useradmin.validators.MyPasswordValidator',
+        'NAME': 'apps.accounts.validators.MyPasswordValidator',
     },
 ]
 

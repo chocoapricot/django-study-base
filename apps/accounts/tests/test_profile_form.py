@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from apps.system.useradmin.forms import UserProfileForm
+from apps.accounts.forms import UserProfileForm
 
 User = get_user_model()
 

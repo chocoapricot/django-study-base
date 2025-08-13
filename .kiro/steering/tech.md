@@ -28,7 +28,7 @@
 ## プロジェクト構造
 - **アプリベースアーキテクチャ**: `apps/`ディレクトリ内のモジュラーDjangoアプリ
 - **環境固有設定**: 開発/本番用の個別設定ファイル
-- **カスタムユーザーモデル**: `apps.system.useradmin.MyUser`による拡張認証
+- **カスタムユーザーモデル**: `apps.accounts.MyUser`による拡張認証
 
 ## よく使うコマンド
 
@@ -47,7 +47,7 @@ pip install --upgrade <package>
 ```bash
 # 全アプリのマイグレーション作成
 python manage.py makemigrations settings
-python manage.py makemigrations useradmin
+python manage.py makemigrations accounts
 python manage.py makemigrations staff
 python manage.py makemigrations client
 python manage.py makemigrations contract

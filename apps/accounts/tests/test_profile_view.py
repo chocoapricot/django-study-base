@@ -32,7 +32,7 @@ class ProfileViewTest(TestCase):
     def test_login_history_limit_to_10(self):
         """ログイン履歴が10件に制限されることをテスト"""
         self.client.login(username='testuser', password='testpass123')
-        response = self.client.get(reverse('useradmin:profile'))
+        response = self.client.get(reverse('accounts:profile'))
         
         self.assertEqual(response.status_code, 200)
         self.assertIn('login_history', response.context)
@@ -49,7 +49,7 @@ class ProfileViewTest(TestCase):
     def test_login_history_order(self):
         """ログイン履歴が新しい順に並んでいることをテスト"""
         self.client.login(username='testuser', password='testpass123')
-        response = self.client.get(reverse('useradmin:profile'))
+        response = self.client.get(reverse('accounts:profile'))
         
         login_history = response.context['login_history']
         if len(login_history) > 1:
@@ -62,14 +62,14 @@ class ProfileViewTest(TestCase):
     
     def test_profile_page_access_requires_login(self):
         """プロフィールページへのアクセスにログインが必要"""
-        response = self.client.get(reverse('useradmin:profile'))
+        response = self.client.get(reverse('accounts:profile'))
         self.assertEqual(response.status_code, 302)  # リダイレクト
         self.assertIn('/accounts/login/', response.url)
     
     def test_profile_page_displays_user_info(self):
         """プロフィールページにユーザー情報が表示される"""
         self.client.login(username='testuser', password='testpass123')
-        response = self.client.get(reverse('useradmin:profile'))
+        response = self.client.get(reverse('accounts:profile'))
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'test@example.com')

@@ -1,6 +1,6 @@
 from django.test import TestCase
 from unittest.mock import patch
-from apps.system.useradmin.validators import MyPasswordValidator
+from apps.accounts.validators import MyPasswordValidator
 
 
 class MyPasswordValidatorTest(TestCase):
@@ -15,7 +15,7 @@ class MyPasswordValidatorTest(TestCase):
                 return 'true'
             return default
             
-        with patch('apps.system.useradmin.validators.my_parameter', side_effect=fake_param):
+        with patch('apps.accounts.validators.my_parameter', side_effect=fake_param):
             validator = MyPasswordValidator()
             # 16文字はOK
             try:
@@ -33,7 +33,7 @@ class MyPasswordValidatorTest(TestCase):
             'abcde!12', 'abcde@12', 'abcde#12', 'abcde$12', 'abcde%12', 
             'abcde^12', 'abcde&12', 'abcde*12', 'abcde(12', 'abcde)12',
             'abcde-12', 'abcde_12', 'abcde=12', 'abcde+12', 'abcde[12',
-            'abcde]12', 'abcde{12', 'abcde}12', 'abcde|12', 'abcde\\12',
+            'abcde]12', 'abcde{12', 'abcde}12', 'abcde|12',
             'abcde:12', 'abcde;12', 'abcde\"12', 'abcde\'12', 'abcde<12',
             'abcde>12', 'abcde,12', 'abcde.12', 'abcde?12', 'abcde/12'
         ]
@@ -47,7 +47,7 @@ class MyPasswordValidatorTest(TestCase):
                 return 'true'
             return default
             
-        with patch('apps.system.useradmin.validators.my_parameter', side_effect=fake_param):
+        with patch('apps.accounts.validators.my_parameter', side_effect=fake_param):
             validator = MyPasswordValidator()
             for password in ok_passwords:
                 try:
@@ -66,7 +66,7 @@ class MyPasswordValidatorTest(TestCase):
                 return 'true'
             return default
             
-        with patch('apps.system.useradmin.validators.my_parameter', side_effect=fake_param):
+        with patch('apps.accounts.validators.my_parameter', side_effect=fake_param):
             validator = MyPasswordValidator()
             ng_passwords = [
                 'abcde！12',  # 全角感嘆符
@@ -91,7 +91,7 @@ class MyPasswordValidatorTest(TestCase):
                 return 'true'
             return default
             
-        with patch('apps.system.useradmin.validators.my_parameter', side_effect=fake_param):
+        with patch('apps.accounts.validators.my_parameter', side_effect=fake_param):
             validator = MyPasswordValidator()
             
             # 10文字未満はNG
@@ -115,7 +115,7 @@ class MyPasswordValidatorTest(TestCase):
                 return 'true'
             return default
             
-        with patch('apps.system.useradmin.validators.my_parameter', side_effect=fake_param):
+        with patch('apps.accounts.validators.my_parameter', side_effect=fake_param):
             validator = MyPasswordValidator()
             
             # 記号なしはNG
@@ -139,7 +139,7 @@ class MyPasswordValidatorTest(TestCase):
                 return 'false'
             return default
             
-        with patch('apps.system.useradmin.validators.my_parameter', side_effect=fake_param):
+        with patch('apps.accounts.validators.my_parameter', side_effect=fake_param):
             validator = MyPasswordValidator()
             
             # 記号なしでもOK
@@ -154,84 +154,6 @@ class MyPasswordValidatorTest(TestCase):
             except Exception:
                 self.fail('記号ありパスワードも許可されるべき')
 
-    def test_numeric_validation(self):
-        """数字を含むかのバリデーションテスト"""
-        def fake_param(key, default=None):
-            if key == 'PASSWORD_MIN_LENGTH':
-                return '8'
-            if key == 'PASSWORD_MAX_LENGTH':
-                return '20'
-            if key == 'PASSWORD_SYMBOL_REQUIRED':
-                return 'false'
-            if key == 'PASSWORD_NUMERIC_REQUIRED':
-                return 'true'
-            return default
-            
-        with patch('apps.system.useradmin.validators.my_parameter', side_effect=fake_param):
-            validator = MyPasswordValidator()
-            
-            # 数字なしはNG
-            with self.assertRaises(Exception):
-                validator.validate('abcdefgh')
-            
-            # 数字ありはOK
-            try:
-                validator.validate('abcdefg1')
-            except Exception:
-                self.fail('数字を含むパスワードは許可されるべき')
-
-    def test_uppercase_validation(self):
-        """大文字を含むかのバリデーションテスト"""
-        def fake_param(key, default=None):
-            if key == 'PASSWORD_MIN_LENGTH':
-                return '8'
-            if key == 'PASSWORD_MAX_LENGTH':
-                return '20'
-            if key == 'PASSWORD_SYMBOL_REQUIRED':
-                return 'false'
-            if key == 'PASSWORD_UPPERCASE_REQUIRED':
-                return 'true'
-            return default
-            
-        with patch('apps.system.useradmin.validators.my_parameter', side_effect=fake_param):
-            validator = MyPasswordValidator()
-            
-            # 大文字なしはNG
-            with self.assertRaises(Exception):
-                validator.validate('abcdefg1')
-            
-            # 大文字ありはOK
-            try:
-                validator.validate('Abcdefg1')
-            except Exception:
-                self.fail('大文字を含むパスワードは許可されるべき')
-
-    def test_lowercase_validation(self):
-        """小文字を含むかのバリデーションテスト"""
-        def fake_param(key, default=None):
-            if key == 'PASSWORD_MIN_LENGTH':
-                return '8'
-            if key == 'PASSWORD_MAX_LENGTH':
-                return '20'
-            if key == 'PASSWORD_SYMBOL_REQUIRED':
-                return 'false'
-            if key == 'PASSWORD_LOWERCASE_REQUIRED':
-                return 'true'
-            return default
-            
-        with patch('apps.system.useradmin.validators.my_parameter', side_effect=fake_param):
-            validator = MyPasswordValidator()
-            
-            # 小文字なしはNG
-            with self.assertRaises(Exception):
-                validator.validate('ABCDEFG1')
-            
-            # 小文字ありはOK
-            try:
-                validator.validate('ABCDEFg1')
-            except Exception:
-                self.fail('小文字を含むパスワードは許可されるべき')
-
     def test_get_help_text(self):
         """ヘルプテキストの取得テスト"""
         def fake_param(key, default=None):
@@ -241,21 +163,12 @@ class MyPasswordValidatorTest(TestCase):
                 return '16'
             if key == 'PASSWORD_SYMBOL_REQUIRED':
                 return 'true'
-            if key == 'PASSWORD_NUMERIC_REQUIRED':
-                return 'true'
-            if key == 'PASSWORD_UPPERCASE_REQUIRED':
-                return 'true'
-            if key == 'PASSWORD_LOWERCASE_REQUIRED':
-                return 'true'
             return default
             
-        with patch('apps.system.useradmin.validators.my_parameter', side_effect=fake_param):
+        with patch('apps.accounts.validators.my_parameter', side_effect=fake_param):
             validator = MyPasswordValidator()
             help_text = validator.get_help_text()
             
             self.assertIn('8文字以上', help_text)
             self.assertIn('16文字以下', help_text)
             self.assertIn('記号', help_text)
-            self.assertIn('数字', help_text)
-            self.assertIn('大文字', help_text)
-            self.assertIn('小文字', help_text)

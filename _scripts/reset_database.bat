@@ -18,7 +18,7 @@ python manage.py makemigrations settings
 if errorlevel 1 goto error
 
 echo ユーザー管理アプリのマイグレーション作成中...
-python manage.py makemigrations useradmin
+python manage.py makemigrations accounts
 if errorlevel 1 goto error
 
 echo スタッフアプリのマイグレーション作成中...

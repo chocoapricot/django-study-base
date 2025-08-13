@@ -1,1 +1,1 @@
-# テストパッケージ
+# Accounts app tests

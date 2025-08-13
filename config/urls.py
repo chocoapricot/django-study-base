@@ -23,7 +23,6 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('apps.accounts.urls')), # カスタムURLを先に配置
-    path('accounts/', include('apps.system.useradmin.urls')), # プロフィール用URL
     path('accounts/', include('allauth.urls')),  # allauthの標準URL
     # path('accounts/', include('django.contrib.auth.urls')),
     path('', include('apps.home.urls')),

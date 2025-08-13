@@ -64,7 +64,7 @@ django-study-base/
 │   ├── system/             # システム管理
 │   │   ├── settings/       # 設定管理 (ドロップダウン、メニュー、パラメータ)
 │   │   ├── logs/           # ログ管理 (アプリログ、メールログ)
-│   │   └── useradmin/      # ユーザー管理
+│   └── accounts/           # ユーザー管理・認証
 │   ├── master/             # マスター管理
 │   ├── staff/              # スタッフ管理
 │   ├── client/             # クライアント管理
@@ -247,7 +247,7 @@ LANGUAGE_CODE = 'ja-JP'
 TIME_ZONE = 'Asia/Tokyo'
 
 # 認証設定
-AUTH_USER_MODEL = 'useradmin.MyUser'
+AUTH_USER_MODEL = 'accounts.MyUser'
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 
