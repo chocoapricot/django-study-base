@@ -4,14 +4,40 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<!-- スタッフ共通カード -->
-{% include 'staff/_staff_info_card.html' %}
+<!-- クライアント共通カード -->
+{% if show_client_info %}
+    {% include 'client/_client_info_card.html' %}
+{% endif %}
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">{{ title }}</div>
     <div class="card-body">
         <form method="post">
             {% csrf_token %}
+
+            <!-- 担当者情報表示 -->
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-2" style="text-align:right">
+                    <strong>送信先担当者</strong>
+                </div>
+                <div class="col-sm-10">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <strong>{{ client_user.name }}</strong>
+                            {% if client_user.position %}
+                                <span class="badge bg-secondary">{{ client_user.position }}</span>
+                            {% endif %}
+                            <br>
+                            <small class="text-muted">{{ client_user.email }}</small>
+                            {% if client_user.department %}
+                                <br><small class="text-muted">{{ client_user.department.name }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
 
             <!-- メール送信フォーム -->
             <div class="row mb-3 align-items-center">
@@ -44,12 +70,10 @@
                 </div>
             </div>
 
-
-
             <!-- 送信確認アラート -->
             <div class="alert alert-info" role="alert">
                 <i class="bi bi-info-circle-fill"></i>
-                メールを送信すると、送信ログに記録され、連絡履歴にも保存されます。
+                メールを送信すると、送信ログに記録され、クライアントの連絡履歴にも保存されます。
             </div>
 
             <div class="row mt-3">
@@ -57,7 +81,7 @@
                     <button type="submit" class="btn btn-sm btn-primary me-2">
                         <i class="bi bi-envelope"></i> メール送信
                     </button>
-                    <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                    <a href="{% url 'client:client_user_list' client.pk %}" class="btn btn-sm btn-secondary">戻る</a>
                 </div>
             </div>
         </form>

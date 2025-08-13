@@ -103,18 +103,10 @@
                 </div>
             </div>
 
-            <div class="row align-items-center">
-                <label for="{{ form.payment_terms.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">支払条件</label>
-                <div class="col-sm-8">
-                    {{ form.payment_terms }}
-                    {% if form.payment_terms.errors %}
-                        <div class="text-danger small">{{ form.payment_terms.errors.0 }}</div>
-                    {% endif %}
-                </div>
-            </div>
+
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.payment_site.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">支払いサイト</label>
+                <label for="{{ form.payment_site.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">支払条件</label>
                 <div class="col-sm-6">
                     {{ form.payment_site }}
                     {% if form.payment_site.help_text %}
@@ -211,7 +203,7 @@ function clearClient() {
     document.getElementById('{{ form.client.id_for_label }}').value = '';
     document.getElementById('client-display-text').textContent = '未選択';
     
-    // ページをリロードして支払いサイトの選択肢をリセット
+    // ページをリロードして支払条件の選択肢をリセット
     window.location.reload();
 }
 

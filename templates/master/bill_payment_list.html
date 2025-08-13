@@ -1,15 +1,15 @@
 {% extends 'common/_base.html' %}
 {% load static %}
 
-{% block title %}支払いサイト一覧{% endblock %}
+{% block title %}支払条件一覧{% endblock %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        支払いサイト一覧
+        支払条件一覧
         <div>
             <a href="{% url 'master:bill_payment_create' %}" class="btn btn-sm btn-primary">
-                支払いサイト作成
+                支払条件作成
             </a>
         </div>
     </div>
@@ -27,13 +27,14 @@
             </div>
         </form>
         
-        <!-- 支払いサイト一覧テーブル -->
+        <!-- 支払条件一覧テーブル -->
         <div class="table-responsive">
             <table class="table table-sm table-hover">
                 <thead>
                     <tr>
-                        <th width="25%">名称</th>
-                        <th width="45%">スケジュール</th>
+                        <th width="20%">名称</th>
+                        <th width="40%">スケジュール</th>
+                        <th width="10%">利用件数</th>
                         <th width="10%">状態</th>
                         <th width="20%">操作</th>
                     </tr>
@@ -46,6 +47,15 @@
                         </td>
                         <td>
                             <small class="text-muted">{{ bill_payment.full_schedule_display }}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">{{ bill_payment.usage_count }}件</span>
+                            {% if bill_payment.usage_count > 0 %}
+                                <br><small class="text-muted">
+                                    クライアント: {{ bill_payment.client_usage_count }}件<br>
+                                    契約: {{ bill_payment.contract_usage_count }}件
+                                </small>
+                            {% endif %}
                         </td>
                         <td>
                             {% if bill_payment.is_active %}
@@ -65,7 +75,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="4" class="text-center">支払いサイトが登録されていません。</td>
+                        <td colspan="5" class="text-center">支払条件が登録されていません。</td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -141,6 +141,11 @@
                             <span class="copy-target">{{ staff.email }}</span>
                             <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
                             <span class="copy-message">コピーしました!</span>
+                            {% if staff.email %}
+                                <a href="{% url 'staff:staff_mail_send' staff.pk %}" class="btn btn-sm btn-outline-primary ms-2" title="メール送信">
+                                    <i class="bi bi-envelope"></i>
+                                </a>
+                            {% endif %}
                         </div>
                     </div>
 

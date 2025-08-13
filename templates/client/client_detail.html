@@ -95,7 +95,7 @@
 
             <div class="row mb-3 align-items-center">
                 <div class="col-sm-2" style="text-align:right">
-                    <strong>支払いサイト</strong>
+                    <strong>支払条件</strong>
                 </div>
                 <div class="col-sm-6">
                     {% if client.payment_site %}
@@ -259,8 +259,13 @@
                             <td>{{ user.phone_number|default:"-" }}</td>
                             <td>{{ user.email|default:"-" }}</td>
                             <td>
+                                {% if user.email %}
+                                <a href="{% url 'client:client_user_mail_send' user.pk %}" class="btn btn-outline-primary btn-sm me-1" title="メール送信">
+                                    <i class="bi bi-envelope"></i>
+                                </a>
+                                {% endif %}
                                 {% if perms.client.change_clientuser %}
-                                <a href="{% url 'client:client_user_update' user.pk %}" class="btn btn-dark btn-sm" title="編集">
+                                <a href="{% url 'client:client_user_update' user.pk %}" class="btn btn-dark btn-sm me-1" title="編集">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 {% endif %}

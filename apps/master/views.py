@@ -29,8 +29,8 @@ MASTER_CONFIGS = [
     },
     {
         'category': '請求',
-        'name': '支払いサイト管理',
-        'description': '請求・支払いサイクルの管理',
+        'name': '支払条件管理',
+        'description': '請求・支払条件の管理',
         'model': 'master.BillPayment',
         'url_name': 'master:bill_payment_list',
         'permission': 'master.view_billpayment'
@@ -588,11 +588,11 @@ def skill_change_history_list(request):
     })
 
 
-# 支払いサイトマスタ
+# 支払条件マスタ
 @login_required
 @permission_required('master.view_billpayment', raise_exception=True)
 def bill_payment_list(request):
-    """支払いサイト一覧"""
+    """支払条件一覧"""
     search_query = request.GET.get('search', '')
     
     bill_payments = BillPayment.objects.all()
@@ -603,6 +603,16 @@ def bill_payment_list(request):
         )
     
     bill_payments = bill_payments.order_by('display_order', 'name')
+    
+    # 利用件数を事前に計算してアノテーション
+    from django.db.models import Count, Q as DjangoQ
+    from apps.client.models import Client
+    from apps.contract.models import ClientContract
+    
+    bill_payments = bill_payments.annotate(
+        client_usage_count=Count('client', distinct=True),
+        contract_usage_count=Count('clientcontract', distinct=True)
+    )
     
     # ページネーション
     paginator = Paginator(bill_payments, 20)
@@ -624,7 +634,7 @@ def bill_payment_list(request):
     context = {
         'bill_payments': bill_payments_page,
         'search_query': search_query,
-        'title': '支払いサイト管理',
+        'title': '支払条件管理',
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
     }
@@ -637,19 +647,19 @@ def bill_payment_list(request):
 @login_required
 @permission_required('master.add_billpayment', raise_exception=True)
 def bill_payment_create(request):
-    """支払いサイト作成"""
+    """支払条件作成"""
     if request.method == 'POST':
         form = BillPaymentForm(request.POST)
         if form.is_valid():
             bill_payment = form.save()
-            messages.success(request, f'支払いサイト「{bill_payment.name}」を作成しました。')
+            messages.success(request, f'支払条件「{bill_payment.name}」を作成しました。')
             return redirect('master:bill_payment_list')
     else:
         form = BillPaymentForm()
     
     context = {
         'form': form,
-        'title': '支払いサイト作成',
+        'title': '支払条件作成',
     }
     return render(request, 'master/bill_payment_form.html', context)
 
@@ -657,14 +667,14 @@ def bill_payment_create(request):
 @login_required
 @permission_required('master.change_billpayment', raise_exception=True)
 def bill_payment_update(request, pk):
-    """支払いサイト編集"""
+    """支払条件編集"""
     bill_payment = get_object_or_404(BillPayment, pk=pk)
     
     if request.method == 'POST':
         form = BillPaymentForm(request.POST, instance=bill_payment)
         if form.is_valid():
             bill_payment = form.save()
-            messages.success(request, f'支払いサイト「{bill_payment.name}」を更新しました。')
+            messages.success(request, f'支払条件「{bill_payment.name}」を更新しました。')
             return redirect('master:bill_payment_list')
     else:
         form = BillPaymentForm(instance=bill_payment)
@@ -672,7 +682,7 @@ def bill_payment_update(request, pk):
     context = {
         'form': form,
         'bill_payment': bill_payment,
-        'title': f'支払いサイト編集 - {bill_payment.name}',
+        'title': f'支払条件編集 - {bill_payment.name}',
     }
     return render(request, 'master/bill_payment_form.html', context)
 
@@ -680,18 +690,18 @@ def bill_payment_update(request, pk):
 @login_required
 @permission_required('master.delete_billpayment', raise_exception=True)
 def bill_payment_delete(request, pk):
-    """支払いサイト削除"""
+    """支払条件削除"""
     bill_payment = get_object_or_404(BillPayment, pk=pk)
     
     if request.method == 'POST':
         bill_payment_name = bill_payment.name
         bill_payment.delete()
-        messages.success(request, f'支払いサイト「{bill_payment_name}」を削除しました。')
+        messages.success(request, f'支払条件「{bill_payment_name}」を削除しました。')
         return redirect('master:bill_payment_list')
     
     context = {
         'bill_payment': bill_payment,
-        'title': f'支払いサイト削除 - {bill_payment.name}',
+        'title': f'支払条件削除 - {bill_payment.name}',
     }
     return render(request, 'master/bill_payment_delete.html', context)
 
@@ -806,15 +816,15 @@ def bill_bank_delete(request, pk):
 
 
 
-# 支払いサイト変更履歴
+# 支払条件変更履歴
 @login_required
 @permission_required('master.view_billpayment', raise_exception=True)
 def bill_payment_change_history_list(request):
-    """支払いサイト変更履歴一覧"""
+    """支払条件変更履歴一覧"""
     from apps.system.logs.models import AppLog
     from django.core.paginator import Paginator
     
-    # 支払いサイトの変更履歴を取得
+    # 支払条件の変更履歴を取得
     logs = AppLog.objects.filter(
         model_name='BillPayment',
         action__in=['create', 'update', 'delete']
@@ -827,7 +837,7 @@ def bill_payment_change_history_list(request):
     
     return render(request, 'master/master_change_history_list.html', {
         'logs': logs_page,
-        'title': '支払いサイト変更履歴',
+        'title': '支払条件変更履歴',
         'list_url': 'master:bill_payment_list',
         'model_name': 'BillPayment'
     })

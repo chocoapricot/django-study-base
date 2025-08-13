@@ -4,7 +4,7 @@ from .views import (
     client_contacted_create, client_contacted_list, client_contacted_update, client_contacted_delete, client_contacted_detail,
     client_change_history_list,
     client_department_create, client_department_list, client_department_update, client_department_delete,
-    client_user_create, client_user_list, client_user_update, client_user_delete,
+    client_user_create, client_user_list, client_user_update, client_user_delete, client_user_mail_send,
     client_file_list, client_file_create, 
     client_file_delete, client_file_download
 )
@@ -35,6 +35,7 @@ urlpatterns = [
     path('client/<int:client_pk>/user/list/', client_user_list, name='client_user_list'),
     path('client/user/<int:pk>/update/', client_user_update, name='client_user_update'),
     path('client/user/<int:pk>/delete/', client_user_delete, name='client_user_delete'),
+    path('client/user/<int:pk>/mail_send/', client_user_mail_send, name='client_user_mail_send'),
     
     # ファイル管理
     path('client/<int:client_pk>/file/', client_file_list, name='client_file_list'),

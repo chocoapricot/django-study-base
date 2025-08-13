@@ -251,9 +251,9 @@ class Skill(MyModel):
 
 
 class BillPayment(MyModel):
-    """支払いサイトマスター"""
+    """支払条件マスター"""
     
-    name = models.CharField('支払いサイト名', max_length=100)
+    name = models.CharField('支払条件名', max_length=100)
     closing_day = models.IntegerField('締め日', help_text='月末締めの場合は31を入力')
     invoice_months_after = models.IntegerField('請求書提出月数', default=0, help_text='締め日から何か月後')
     invoice_day = models.IntegerField('請求書必着日', help_text='請求書が必着する日')
@@ -264,8 +264,8 @@ class BillPayment(MyModel):
     
     class Meta:
         db_table = 'apps_master_bill_payment'
-        verbose_name = '支払いサイト'
-        verbose_name_plural = '支払いサイト'
+        verbose_name = '支払条件'
+        verbose_name_plural = '支払条件'
         ordering = ['display_order', 'name']
         indexes = [
             models.Index(fields=['is_active']),
@@ -327,9 +327,41 @@ class BillPayment(MyModel):
         if self.payment_months_after < 0:
             raise ValidationError('支払い月数は0以上で入力してください。')
     
+    @property
+    def usage_count(self):
+        """この支払条件の利用件数（クライアント + クライアント契約）"""
+        # クライアントでの利用件数
+        from apps.client.models import Client
+        client_count = Client.objects.filter(payment_site=self).count()
+        
+        # クライアント契約での利用件数
+        from apps.contract.models import ClientContract
+        contract_count = ClientContract.objects.filter(payment_site=self).count()
+        
+        return client_count + contract_count
+    
+    def get_usage_details(self):
+        """利用詳細を取得"""
+        from apps.client.models import Client
+        from apps.contract.models import ClientContract
+        
+        # クライアントでの利用
+        clients = Client.objects.filter(payment_site=self).select_related()
+        
+        # クライアント契約での利用
+        contracts = ClientContract.objects.filter(payment_site=self).select_related('client')
+        
+        return {
+            'clients': clients,
+            'contracts': contracts,
+            'client_count': clients.count(),
+            'contract_count': contracts.count(),
+            'total_count': clients.count() + contracts.count()
+        }
+    
     @classmethod
     def get_active_list(cls):
-        """有効な支払いサイト一覧を取得"""
+        """有効な支払条件一覧を取得"""
         return cls.objects.filter(is_active=True).order_by('display_order', 'name')
 
 

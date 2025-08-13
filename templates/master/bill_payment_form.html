@@ -12,7 +12,7 @@
             {% csrf_token %}
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">支払いサイト名</label>
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">支払条件名</label>
                 <div class="col-sm-6">
                     {{ form.name }}
                     {% if form.name.errors %}

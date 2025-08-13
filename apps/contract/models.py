@@ -27,7 +27,6 @@ class ClientContract(MyModel):
     start_date = models.DateField('契約開始日')
     end_date = models.DateField('契約終了日', blank=True, null=True)
     contract_amount = models.DecimalField('契約金額', max_digits=12, decimal_places=0, blank=True, null=True)
-    payment_terms = models.CharField('支払条件', max_length=200, blank=True, null=True)
     description = models.TextField('契約内容', blank=True, null=True)
     notes = models.TextField('備考', blank=True, null=True)
     payment_site = models.ForeignKey(
@@ -127,7 +126,6 @@ class StaffContract(MyModel):
     start_date = models.DateField('契約開始日')
     end_date = models.DateField('契約終了日', blank=True, null=True)
     contract_amount = models.DecimalField('契約金額', max_digits=10, decimal_places=0, blank=True, null=True)
-    payment_terms = models.CharField('支払条件', max_length=200, blank=True, null=True)
     description = models.TextField('契約内容', blank=True, null=True)
     notes = models.TextField('備考', blank=True, null=True)
     auto_renewal = models.BooleanField('自動更新', default=False)

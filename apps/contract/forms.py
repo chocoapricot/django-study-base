@@ -22,7 +22,7 @@ class ClientContractForm(forms.ModelForm):
         model = ClientContract
         fields = [
             'client', 'contract_name', 'contract_number', 'contract_type',
-            'start_date', 'end_date', 'contract_amount', 'payment_terms',
+            'start_date', 'end_date', 'contract_amount',
             'description', 'notes', 'payment_site', 'is_active'
         ]
         widgets = {
@@ -33,7 +33,6 @@ class ClientContractForm(forms.ModelForm):
             'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'contract_amount': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
-            'payment_terms': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 4}),
             'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'payment_site': forms.Select(attrs={'class': 'form-select form-select-sm'}),
@@ -47,7 +46,7 @@ class ClientContractForm(forms.ModelForm):
         # 終了日を必須にする
         self.fields['end_date'].required = True
         
-        # 支払いサイトの選択肢を設定（デフォルト）
+        # 支払条件の選択肢を設定（デフォルト）
         self.fields['payment_site'].queryset = BillPayment.get_active_list()
         
         # クライアントを取得
@@ -65,7 +64,7 @@ class ClientContractForm(forms.ModelForm):
             except Client.DoesNotExist:
                 pass
         
-        # クライアントに支払いサイトが設定されている場合の処理
+        # クライアントに支払条件が設定されている場合の処理
         if client and client.payment_site:
             # 選択肢を制限し、必須にする
             self.fields['payment_site'].queryset = BillPayment.objects.filter(id=client.payment_site.id)
@@ -75,7 +74,7 @@ class ClientContractForm(forms.ModelForm):
                 'style': 'pointer-events: none; background-color: #e9ecef;',
                 'data-client-locked': 'true'
             })
-            self.fields['payment_site'].help_text = 'クライアントで設定された支払いサイトが適用されます'
+            self.fields['payment_site'].help_text = 'クライアントで設定された支払条件が適用されます'
             # 空の選択肢を削除
             self.fields['payment_site'].empty_label = None
     
@@ -100,23 +99,23 @@ class ClientContractForm(forms.ModelForm):
             if client.basic_contract_date and start_date < client.basic_contract_date:
                 self.add_error('start_date', f'契約開始日は基本契約締結日（{client.basic_contract_date}）以降の日付を入力してください。')
         
-        # 支払いサイトのバリデーション
+        # 支払条件のバリデーション
         if client:
             if client.payment_site:
-                # クライアントに支払いサイトが設定されている場合は必須
+                # クライアントに支払条件が設定されている場合は必須
                 if not payment_site:
-                    self.add_error('payment_site', 'クライアントに支払いサイトが設定されているため、支払いサイトは必須です。')
+                    self.add_error('payment_site', 'クライアントに支払条件が設定されているため、支払条件は必須です。')
                 elif payment_site != client.payment_site:
-                    self.add_error('payment_site', 'クライアントで設定された支払いサイトと異なる支払いサイトは選択できません。')
+                    self.add_error('payment_site', 'クライアントで設定された支払条件と異なる支払条件は選択できません。')
         
         return cleaned_data
     
     def clean_payment_site(self):
-        """支払いサイトのクリーニング"""
+        """支払条件のクリーニング"""
         payment_site = self.cleaned_data.get('payment_site')
         client = self.cleaned_data.get('client') or (self.instance.client if self.instance and self.instance.pk else None)
         
-        # クライアントに支払いサイトが設定されている場合は強制的にそれを使用
+        # クライアントに支払条件が設定されている場合は強制的にそれを使用
         if client and client.payment_site:
             return client.payment_site
         
@@ -141,7 +140,7 @@ class StaffContractForm(forms.ModelForm):
         model = StaffContract
         fields = [
             'staff', 'contract_name', 'contract_number', 'contract_type',
-            'start_date', 'end_date', 'contract_amount', 'payment_terms',
+            'start_date', 'end_date', 'contract_amount',
             'description', 'notes', 'is_active'
         ]
         widgets = {
@@ -152,7 +151,6 @@ class StaffContractForm(forms.ModelForm):
             'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'contract_amount': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
-            'payment_terms': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 4}),
             'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),

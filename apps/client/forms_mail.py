@@ -2,19 +2,12 @@ from django import forms
 from django.core.mail import send_mail
 from django.conf import settings
 from apps.system.logs.models import MailLog
-from apps.staff.models import StaffContacted
+from apps.client.models import ClientContacted
 from django.utils import timezone
 
 
-class StaffMailForm(forms.Form):
-    """スタッフメール送信フォーム"""
-    
-    CONTACT_TYPE_CHOICES = [
-        ('email', 'メール'),
-        ('notification', '通知'),
-        ('reminder', 'リマインダー'),
-        ('general', '一般連絡'),
-    ]
+class ClientUserMailForm(forms.Form):
+    """クライアント担当者メール送信フォーム"""
     
     to_email = forms.EmailField(
         label='宛先',
@@ -42,20 +35,18 @@ class StaffMailForm(forms.Form):
         })
     )
     
-
-    
-    def __init__(self, staff=None, user=None, *args, **kwargs):
-        self.staff = staff
+    def __init__(self, client_user=None, user=None, *args, **kwargs):
+        self.client_user = client_user
         self.user = user
         super().__init__(*args, **kwargs)
         
-        if staff and staff.email:
-            self.fields['to_email'].initial = staff.email
+        if client_user and client_user.email:
+            self.fields['to_email'].initial = client_user.email
     
     def clean_to_email(self):
         """宛先メールアドレスのバリデーション"""
         to_email = self.cleaned_data.get('to_email')
-        if self.staff and to_email != self.staff.email:
+        if self.client_user and to_email != self.client_user.email:
             raise forms.ValidationError('宛先メールアドレスが正しくありません。')
         return to_email
     
@@ -95,12 +86,12 @@ class StaffMailForm(forms.Form):
             mail_log.sent_at = timezone.now()
             mail_log.save()
             
-            # 連絡履歴に保存（常に保存）
-            if self.staff:
-                StaffContacted.objects.create(
-                    staff=self.staff,
+            # クライアント連絡履歴に保存（常に保存）
+            if self.client_user and self.client_user.client:
+                ClientContacted.objects.create(
+                    client=self.client_user.client,
                     contacted_at=timezone.now(),
-                    content=f"メール送信: {subject}",
+                    content=f"メール送信（{self.client_user.name}宛）: {subject}",
                     detail=body,
                     contact_type=self._get_contact_type_value('email'),
                     created_by=self.user,

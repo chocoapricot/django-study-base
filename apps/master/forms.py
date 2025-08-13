@@ -149,7 +149,7 @@ class SkillForm(forms.ModelForm):
 
 
 class BillPaymentForm(forms.ModelForm):
-    """支払いサイトフォーム"""
+    """支払条件フォーム"""
     
     class Meta:
         model = BillPayment

@@ -71,8 +71,6 @@ class StaffMailTest(TestCase):
             'to_email': 'tanaka@example.com',
             'subject': 'テストメール',
             'body': 'これはテストメールです。',
-            'contact_type': 'email',
-            'save_to_contact_history': True,
         }
         
         form = StaffMailForm(staff=self.staff, user=self.user, data=form_data)
@@ -84,8 +82,6 @@ class StaffMailTest(TestCase):
             'to_email': 'wrong@example.com',  # スタッフのメールアドレスと異なる
             'subject': 'テストメール',
             'body': 'これはテストメールです。',
-            'contact_type': 'email',
-            'save_to_contact_history': True,
         }
         
         form = StaffMailForm(staff=self.staff, user=self.user, data=form_data)
@@ -98,8 +94,6 @@ class StaffMailTest(TestCase):
             'to_email': 'tanaka@example.com',
             'subject': 'テストメール',
             'body': 'これはテストメールです。',
-            'contact_type': 'email',
-            'save_to_contact_history': True,
         }
         
         form = StaffMailForm(staff=self.staff, user=self.user, data=form_data)
@@ -127,13 +121,11 @@ class StaffMailTest(TestCase):
         self.assertIn('メール送信: テストメール', contact_history.content)
     
     def test_mail_send_without_contact_history(self):
-        """連絡履歴保存なしのメール送信テスト"""
+        """連絡履歴保存なしのメール送信テスト（現在は常に保存されるため、保存されることを確認）"""
         form_data = {
             'to_email': 'tanaka@example.com',
             'subject': 'テストメール',
             'body': 'これはテストメールです。',
-            'contact_type': 'email',
-            'save_to_contact_history': False,  # 連絡履歴に保存しない
         }
         
         form = StaffMailForm(staff=self.staff, user=self.user, data=form_data)
@@ -146,9 +138,9 @@ class StaffMailTest(TestCase):
         mail_log = MailLog.objects.filter(to_email='tanaka@example.com').first()
         self.assertIsNotNone(mail_log)
         
-        # 連絡履歴は作成されない
+        # 連絡履歴は常に作成される（仕様変更）
         contact_history = StaffContacted.objects.filter(staff=self.staff).first()
-        self.assertIsNone(contact_history)
+        self.assertIsNotNone(contact_history)
     
     def test_staff_mail_send_post(self):
         """メール送信POSTリクエストテスト"""
@@ -158,8 +150,6 @@ class StaffMailTest(TestCase):
             'to_email': 'tanaka@example.com',
             'subject': 'テストメール',
             'body': 'これはテストメールです。',
-            'contact_type': 'email',
-            'save_to_contact_history': True,
         }
         
         response = self.client.post(url, post_data)

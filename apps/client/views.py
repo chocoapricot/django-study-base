@@ -348,6 +348,45 @@ def client_user_delete(request, pk):
         return redirect('client:client_detail', pk=client.pk)
     return render(request, 'client/client_user_confirm_delete.html', {'user': user, 'client': client, 'show_client_info': True})
 
+# クライアント担当者メール送信
+@login_required
+@permission_required('client.view_clientuser', raise_exception=True)
+def client_user_mail_send(request, pk):
+    """クライアント担当者メール送信"""
+    from .models import ClientUser
+    user = get_object_or_404(ClientUser, pk=pk)
+    client = user.client
+    
+    # メールアドレスが設定されていない場合はエラー
+    if not user.email:
+        from django.contrib import messages
+        messages.error(request, 'この担当者にはメールアドレスが設定されていません。')
+        return redirect('client:client_user_list', client_pk=client.pk)
+    
+    from .forms_mail import ClientUserMailForm
+    
+    if request.method == 'POST':
+        form = ClientUserMailForm(client_user=user, user=request.user, data=request.POST)
+        if form.is_valid():
+            success, message = form.send_mail()
+            from django.contrib import messages
+            if success:
+                messages.success(request, message)
+                return redirect('client:client_user_list', client_pk=client.pk)
+            else:
+                messages.error(request, message)
+    else:
+        form = ClientUserMailForm(client_user=user, user=request.user)
+    
+    context = {
+        'form': form,
+        'client_user': user,
+        'client': client,
+        'title': f'{user.name} へのメール送信',
+        'show_client_info': True,
+    }
+    return render(request, 'client/client_user_mail_send.html', context)
+
 # ===== クライアントファイル関連ビュー =====
 
 # クライアントファイル一覧
