@@ -70,16 +70,10 @@
                 </div>
             </div>
 
-            <!-- 送信確認アラート -->
-            <div class="alert alert-info" role="alert">
-                <i class="bi bi-info-circle-fill"></i>
-                メールを送信すると、送信ログに記録され、クライアントの連絡履歴にも保存されます。
-            </div>
-
             <div class="row mt-3">
                 <div class="col text-left">
                     <button type="submit" class="btn btn-sm btn-primary me-2">
-                        <i class="bi bi-envelope"></i> メール送信
+                        送信
                     </button>
                     <a href="{% url 'client:client_user_list' client.pk %}" class="btn btn-sm btn-secondary">戻る</a>
                 </div>
