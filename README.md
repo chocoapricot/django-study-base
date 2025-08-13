@@ -204,7 +204,7 @@ python manage.py test --verbosity=2
 ```
 
 ### テストガイドライン
-プロジェクトのテスト構成とルールについては、[テストガイドライン](docs/testing-guidelines.md)を参照してください。
+プロジェクトのテスト構成とルールについては、[テストガイドライン](_docs/testing-guidelines.md)を参照してください。
 
 ### テストカバレッジ
 - 認証システム: ✅ 完全対応
