@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block title %}スタッフ契約一覧{% endblock %}
 
@@ -99,7 +100,7 @@
                                     </td>
                                     <td>
                                         {% if contract.contract_amount %}
-                                            ¥{{ contract.contract_amount|floatformat:0 }}
+                                            ¥{{ contract.contract_amount|floatformat:0|intcomma }}
                                         {% else %}
                                             -
                                         {% endif %}

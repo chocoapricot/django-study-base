@@ -1,0 +1,149 @@
+[
+  {
+    "model": "contract.staffcontract",
+    "pk": 1,
+    "fields": {
+      "created_at": "2020-04-01T09:00:00Z",
+      "created_by": 1,
+      "updated_at": "2020-04-01T09:00:00Z",
+      "updated_by": 1,
+      "staff": 1,
+      "contract_name": "正社員雇用契約",
+      "contract_number": "SC-2020-001",
+      "contract_type": "full_time",
+      "start_date": "2020-04-01",
+      "end_date": null,
+      "contract_amount": 6000000,
+      "description": "システム開発部門での正社員としての雇用契約。プロジェクトマネージャーとしての業務を担当。",
+      "notes": "年俸制。賞与年2回支給。有給休暇20日/年。",
+      "auto_renewal": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "contract.staffcontract",
+    "pk": 2,
+    "fields": {
+      "created_at": "2021-07-01T10:30:00Z",
+      "created_by": 1,
+      "updated_at": "2021-07-01T10:30:00Z",
+      "updated_by": 1,
+      "staff": 2,
+      "contract_name": "正社員雇用契約",
+      "contract_number": "SC-2021-003",
+      "contract_type": "full_time",
+      "start_date": "2021-07-01",
+      "end_date": null,
+      "contract_amount": 5400000,
+      "description": "営業部門での正社員としての雇用契約。新規顧客開拓および既存顧客フォローを担当。",
+      "notes": "月給制。営業成績に応じたインセンティブあり。",
+      "auto_renewal": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "contract.staffcontract",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-01-15T14:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-01-15T14:00:00Z",
+      "updated_by": 1,
+      "staff": 1,
+      "contract_name": "AI開発プロジェクト専任契約",
+      "contract_number": "SC-2024-001",
+      "contract_type": "contract",
+      "start_date": "2024-01-15",
+      "end_date": "2024-12-31",
+      "contract_amount": 2400000,
+      "description": "トヨタ自動車向けAI導入プロジェクトの専任契約。機械学習エンジニアとしての業務。",
+      "notes": "既存の正社員契約に追加する形での専任契約。プロジェクト完了まで。",
+      "auto_renewal": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "contract.staffcontract",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-03-01T09:15:00Z",
+      "created_by": 1,
+      "updated_at": "2024-03-01T09:15:00Z",
+      "updated_by": 1,
+      "staff": 3,
+      "contract_name": "フリーランス開発契約",
+      "contract_number": "SC-2024-002",
+      "contract_type": "freelance",
+      "start_date": "2024-03-01",
+      "end_date": "2024-08-31",
+      "contract_amount": 3600000,
+      "description": "Webアプリケーション開発のフリーランス契約。React/Node.jsでのフロントエンド開発を担当。",
+      "notes": "リモートワーク中心。週2回のオフィス出社。成果物ベースでの評価。",
+      "auto_renewal": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "contract.staffcontract",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-04-01T08:30:00Z",
+      "created_by": 1,
+      "updated_at": "2024-04-01T08:30:00Z",
+      "updated_by": 1,
+      "staff": 4,
+      "contract_name": "パートタイム契約",
+      "contract_number": "SC-2024-003",
+      "contract_type": "part_time",
+      "start_date": "2024-04-01",
+      "end_date": "2025-03-31",
+      "contract_amount": 1800000,
+      "description": "事務業務のパートタイム契約。週3日勤務、1日6時間。データ入力・資料作成を担当。",
+      "notes": "時給2500円。交通費支給。有給休暇は労働日数に応じて付与。",
+      "auto_renewal": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "contract.staffcontract",
+    "pk": 6,
+    "fields": {
+      "created_at": "2024-06-01T13:45:00Z",
+      "created_by": 1,
+      "updated_at": "2024-06-01T13:45:00Z",
+      "updated_by": 1,
+      "staff": 5,
+      "contract_name": "インターンシップ契約",
+      "contract_number": "SC-2024-004",
+      "contract_type": "intern",
+      "start_date": "2024-06-01",
+      "end_date": "2024-08-31",
+      "contract_amount": 300000,
+      "description": "夏季インターンシップ契約。システム開発の実務経験を積む。メンター制度あり。",
+      "notes": "大学3年生。将来的な正社員採用を前提とした育成プログラム。",
+      "auto_renewal": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "contract.staffcontract",
+    "pk": 7,
+    "fields": {
+      "created_at": "2023-10-01T11:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-02-29T11:00:00Z",
+      "updated_by": 1,
+      "staff": 2,
+      "contract_name": "短期プロジェクト契約",
+      "contract_number": "SC-2023-008",
+      "contract_type": "contract",
+      "start_date": "2023-10-01",
+      "end_date": "2024-02-29",
+      "contract_amount": 2000000,
+      "description": "総務省向けシステム要件定義プロジェクトの短期契約。業務分析・要件整理を担当。",
+      "notes": "プロジェクト完了により契約終了。成果物は高評価を獲得。",
+      "auto_renewal": false,
+      "is_active": false
+    }
+  }
+]

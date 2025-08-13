@@ -1,0 +1,134 @@
+[
+  {
+    "model": "contract.clientcontract",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-01-15T09:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-01-15T09:00:00Z",
+      "updated_by": 1,
+      "client": 3,
+      "contract_name": "システム開発・保守契約",
+      "contract_number": "CC-2024-001",
+      "contract_type": "development",
+      "start_date": "2024-01-15",
+      "end_date": "2025-01-14",
+      "contract_amount": 12000000,
+      "description": "自動車販売管理システムの開発および年間保守サービス。機能追加・改修作業を含む。",
+      "notes": "月次定例会議を実施。緊急対応は24時間以内に対応。",
+      "payment_site": 1,
+      "auto_renewal": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "contract.clientcontract",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-02-01T10:30:00Z",
+      "created_by": 1,
+      "updated_at": "2024-02-01T10:30:00Z",
+      "updated_by": 1,
+      "client": 4,
+      "contract_name": "医薬品管理システム保守契約",
+      "contract_number": "CC-2024-002",
+      "contract_type": "maintenance",
+      "start_date": "2024-02-01",
+      "end_date": "2025-01-31",
+      "contract_amount": 8400000,
+      "description": "医薬品在庫管理システムの保守・運用サポート。月次バックアップ、セキュリティ更新を含む。",
+      "notes": "薬事法対応のため、システム変更時は事前承認が必要。",
+      "payment_site": 2,
+      "auto_renewal": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "contract.clientcontract",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-03-10T14:15:00Z",
+      "created_by": 1,
+      "updated_at": "2024-03-10T14:15:00Z",
+      "updated_by": 1,
+      "client": 5,
+      "contract_name": "行政システムコンサルティング契約",
+      "contract_number": "CC-2024-003",
+      "contract_type": "consulting",
+      "start_date": "2024-03-10",
+      "end_date": "2024-09-30",
+      "contract_amount": 6000000,
+      "description": "デジタル庁連携システムの要件定義・設計支援。セキュリティ要件の策定を含む。",
+      "notes": "政府調達ガイドラインに準拠。成果物は全て日本語で作成。",
+      "payment_site": 4,
+      "auto_renewal": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "contract.clientcontract",
+    "pk": 4,
+    "fields": {
+      "created_at": "2024-04-01T08:00:00Z",
+      "created_by": 1,
+      "updated_at": "2024-04-01T08:00:00Z",
+      "updated_by": 1,
+      "client": 3,
+      "contract_name": "AI導入支援サービス契約",
+      "contract_number": "CC-2024-004",
+      "contract_type": "service",
+      "start_date": "2024-04-01",
+      "end_date": "2024-12-31",
+      "contract_amount": 15000000,
+      "description": "製造ライン効率化のためのAI導入コンサルティング。機械学習モデルの構築・運用支援。",
+      "notes": "POC期間3ヶ月、本格導入6ヶ月の予定。成果に応じて契約延長の可能性あり。",
+      "payment_site": 1,
+      "auto_renewal": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "contract.clientcontract",
+    "pk": 5,
+    "fields": {
+      "created_at": "2024-05-15T11:45:00Z",
+      "created_by": 1,
+      "updated_at": "2024-05-15T11:45:00Z",
+      "updated_by": 1,
+      "client": 4,
+      "contract_name": "クラウド移行プロジェクト",
+      "contract_number": "CC-2024-005",
+      "contract_type": "development",
+      "start_date": "2024-05-15",
+      "end_date": "2025-03-31",
+      "contract_amount": 25000000,
+      "description": "オンプレミス基幹システムのクラウド移行。AWS環境での再構築とデータ移行作業。",
+      "notes": "段階的移行により業務停止時間を最小化。移行後3ヶ月間の運用サポート含む。",
+      "payment_site": 2,
+      "auto_renewal": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "contract.clientcontract",
+    "pk": 6,
+    "fields": {
+      "created_at": "2023-12-01T16:20:00Z",
+      "created_by": 1,
+      "updated_at": "2024-01-31T16:20:00Z",
+      "updated_by": 1,
+      "client": 5,
+      "contract_name": "セキュリティ監査サービス",
+      "contract_number": "CC-2023-015",
+      "contract_type": "service",
+      "start_date": "2023-12-01",
+      "end_date": "2024-01-31",
+      "contract_amount": 3500000,
+      "description": "情報セキュリティ監査および脆弱性診断。NISC準拠のセキュリティ評価。",
+      "notes": "契約期間終了により完了。最終報告書提出済み。",
+      "payment_site": 3,
+      "auto_renewal": false,
+      "is_active": false
+    }
+  }
+]
