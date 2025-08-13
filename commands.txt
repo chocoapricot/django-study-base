@@ -50,11 +50,11 @@ python manage.py createsuperuser
 python _scripts/load_sample_data.py
 
 # エクスポート
-python manage.py dumpdata settings.dropdowns --format=json --indent=4 > _sample_data/dropdowns.json
-python manage.py dumpdata settings.menu --format=json --indent=4 > _sample_data/menus.json
+python manage.py dumpdata settings.dropdowns  --format=json --indent=4 > _sample_data/dropdowns.json
+python manage.py dumpdata settings.menu       --format=json --indent=4 > _sample_data/menus.json
 python manage.py dumpdata settings.parameters --format=json --indent=4 > _sample_data/parameters.json
-python manage.py dumpdata staff --format=json --indent=4 > _sample_data/staff.json
-python manage.py dumpdata client --format=json --indent=4 > _sample_data/client.json
+python manage.py dumpdata staff               --format=json --indent=4 > _sample_data/staff.json
+python manage.py dumpdata client              --format=json --indent=4 > _sample_data/client.json
 #   UTF16からUTF8に変更してから取り込む必要あり
 
 # データベースアクセス
