@@ -79,8 +79,9 @@ def client_create(request):
     if request.method == 'POST':
         form = ClientForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('client:client_list')
+            client = form.save()
+            messages.success(request, f'クライアント「{client.name}」を作成しました。')
+            return redirect('client:client_detail', pk=client.pk)
     else:
         form = ClientForm()
     return render(request, 'client/client_form.html', {'form': form})
@@ -218,7 +219,8 @@ def client_update(request, pk):
     if request.method == 'POST':
         form = ClientForm(request.POST, instance=client)
         if form.is_valid():
-            form.save()
+            client = form.save()
+            messages.success(request, f'クライアント「{client.name}」を更新しました。')
             return redirect('client:client_detail', pk=client.pk)
     else:
         form = ClientForm(instance=client)
@@ -229,7 +231,9 @@ def client_update(request, pk):
 def client_delete(request, pk):
     client = get_object_or_404(Client, pk=pk)
     if request.method == 'POST':
+        client_name = client.name
         client.delete()
+        messages.success(request, f'クライアント「{client_name}」を削除しました。')
         return redirect('client:client_list')
     return render(request, 'client/client_confirm_delete.html', {'client': client})
 # views.py

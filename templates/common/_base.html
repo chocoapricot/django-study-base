@@ -392,6 +392,16 @@
   <div class="row">
     <!-- Add id to main content area -->
     <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <!-- メッセージ表示 -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
             {% block content %}
             <!-- 各ページごとのコンテンツがここに挿入される -->
             {% endblock %}
