@@ -81,20 +81,27 @@ django-study-base/
 
 ## データベーステーブル一覧
 
+### 本アプリケーション独自テーブル
+
 | テーブル名 | 説明 |
 | --- | --- |
-| `apps_client` | クライアント |
+| `accounts_myuser` | カスタムユーザー（メインテーブル） |
+| `accounts_myuser_groups` | ユーザーとグループの関連 |
+| `accounts_myuser_user_permissions` | ユーザーと権限の関連 |
+| `apps_client` | クライアント基本情報 |
 | `apps_client_contacted` | クライアント連絡履歴 |
+| `apps_client_department` | クライアント部署情報 |
 | `apps_client_file` | クライアントファイル |
-| `apps_staff` | スタッフ |
+| `apps_client_user` | クライアントユーザー |
+| `apps_staff` | スタッフ基本情報 |
 | `apps_staff_contacted` | スタッフ連絡履歴 |
 | `apps_staff_qualification` | スタッフ保有資格 |
 | `apps_staff_skill` | スタッフ保有スキル |
 | `apps_staff_file` | スタッフファイル |
 | `apps_contract_client` | クライアント契約 |
 | `apps_contract_staff` | スタッフ契約 |
-| `apps_company` | 会社 |
-| `apps_company_department` | 部署 |
+| `apps_company` | 会社情報 |
+| `apps_company_department` | 部署情報 |
 | `apps_master_qualification` | 資格マスター（カテゴリと資格） |
 | `apps_master_skill` | 技能マスター（カテゴリと技能） |
 | `apps_master_bill_payment` | 支払いサイトマスター |
@@ -104,7 +111,29 @@ django-study-base/
 | `apps_system_menu` | メニュー設定 |
 | `apps_system_mail_log` | メール送信ログ |
 | `apps_system_app_log` | アプリケーション操作ログ |
-| `auth_user` | カスタムユーザー |
+
+### Django標準テーブル
+
+| テーブル名 | 説明 |
+| --- | --- |
+| `auth_group` | グループ |
+| `auth_group_permissions` | グループと権限の関連 |
+| `auth_permission` | 権限 |
+| `django_admin_log` | 管理画面操作ログ |
+| `django_content_type` | コンテンツタイプ |
+| `django_migrations` | マイグレーション履歴 |
+| `django_session` | セッション |
+
+### django-allauth関連テーブル
+
+| テーブル名 | 説明 |
+| --- | --- |
+| `account_emailaddress` | メールアドレス管理 |
+| `account_emailconfirmation` | メールアドレス確認 |
+| `socialaccount_socialaccount` | ソーシャルアカウント |
+| `socialaccount_socialapp` | ソーシャルアプリ設定 |
+| `socialaccount_socialapp_sites` | ソーシャルアプリとサイトの関連 |
+| `socialaccount_socialtoken` | ソーシャルアカウントトークン |
 
 ## 🚀 セットアップ
 
