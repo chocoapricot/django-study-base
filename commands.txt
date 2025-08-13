@@ -44,7 +44,9 @@ python _scripts/reset_database.py
 python manage.py migrate
 
 # 最初のユーザ作成
-python manage.py createsuperuser
+# python manage.py createsuperuser
+$env:DJANGO_SUPERUSER_PASSWORD="admin"
+python manage.py createsuperuser --noinput --username admin --email admin@test.com
 
 # DBデータ読み込み
 python _scripts/load_sample_data.py
