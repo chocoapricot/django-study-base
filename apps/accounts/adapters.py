@@ -14,6 +14,11 @@ class MyAccountAdapter(DefaultAccountAdapter):
 
         if commit:
             user.save()
+            
+            # アカウント作成時に接続申請があるかチェックして権限を付与
+            from apps.connect.utils import check_and_grant_permissions_for_email
+            check_and_grant_permissions_for_email(user.email)
+            
         return user
     
     def send_mail(self, template_prefix, email, context):

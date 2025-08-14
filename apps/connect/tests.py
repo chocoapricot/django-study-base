@@ -184,3 +184,45 @@ class ConnectViewTest(TestCase):
             email=self.staff.email
         )
         self.assertEqual(connections.count(), 1)
+    
+    def test_permission_grant_on_connection_request(self):
+        """接続依頼時の権限付与テスト"""
+        from apps.connect.utils import grant_permissions_on_connection_request
+        from django.contrib.auth.models import Permission
+        
+        # 既存ユーザーに権限を付与
+        result = grant_permissions_on_connection_request(self.user.email)
+        self.assertTrue(result)
+        
+        # 権限が付与されたかチェック
+        permission = Permission.objects.get(codename='view_connectstaff')
+        self.assertTrue(self.user.has_perm(f'connect.{permission.codename}'))
+    
+    def test_permission_grant_on_account_creation(self):
+        """アカウント作成時の権限付与テスト"""
+        from apps.connect.utils import check_and_grant_permissions_for_email
+        
+        # 接続申請を作成
+        ConnectStaff.objects.create(
+            corporate_number=self.company.corporate_number,
+            email='newuser@example.com',
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        # 新しいユーザーを作成
+        new_user = User.objects.create_user(
+            username='newuser',
+            email='newuser@example.com',
+            password='TestPass123!'
+        )
+        
+        # 権限チェックと付与
+        result = check_and_grant_permissions_for_email(new_user.email)
+        self.assertTrue(result)
+        
+        # 権限が付与されたかチェック
+        from django.contrib.auth.models import Permission
+        permission = Permission.objects.get(codename='view_connectstaff')
+        new_user.refresh_from_db()
+        self.assertTrue(new_user.has_perm(f'connect.{permission.codename}'))

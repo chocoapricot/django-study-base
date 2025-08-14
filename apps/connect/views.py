@@ -59,6 +59,11 @@ def connect_staff_approve(request, pk):
     if connection.status == 'pending':
         connection.approve(request.user)
         log_model_action(request.user, 'update', connection)
+        
+        # 承認時に権限を付与
+        from .utils import grant_permissions_on_connection_request
+        grant_permissions_on_connection_request(connection.email)
+        
         messages.success(request, '接続申請を承認しました。')
     else:
         messages.info(request, 'この申請は既に承認済みです。')
@@ -127,6 +132,11 @@ def create_staff_connection(request):
         )
         
         log_model_action(request.user, 'create', connection)
+        
+        # 既存ユーザーがいる場合は権限を付与
+        from .utils import grant_permissions_on_connection_request
+        grant_permissions_on_connection_request(staff.email)
+        
         messages.success(request, f'スタッフ「{staff.name}」への接続申請を送信しました。')
         
         return redirect('staff:staff_detail', pk=staff_id)
