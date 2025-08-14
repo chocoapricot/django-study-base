@@ -30,7 +30,8 @@ def staff_change_history_list(request, pk):
         django_models.Q(model_name='Staff', object_id=str(staff.pk)) |
         django_models.Q(model_name='StaffQualification', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - '),
+        django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')
     paginator = Paginator(logs, 20)
@@ -161,6 +162,62 @@ def staff_create(request):
 @permission_required('staff.view_staff', raise_exception=True)
 def staff_detail(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
+    
+    # 接続依頼の切り替え処理
+    if request.method == 'POST' and 'toggle_connect_request' in request.POST:
+        if staff.email:
+            from apps.connect.models import ConnectStaff
+            from apps.company.models import Company
+            try:
+                # 現在のユーザーの会社の法人番号を取得
+                company = Company.objects.first()  # 仮の実装、実際は適切な会社を取得
+                if company and company.corporate_number:
+                    connect_request, created = ConnectStaff.objects.get_or_create(
+                        corporate_number=company.corporate_number,
+                        email=staff.email,
+                        defaults={'status': 'pending'}
+                    )
+                    if not created:
+                        # 既存のレコードがある場合は削除（スイッチOFF）
+                        connect_request.delete()
+                        messages.success(request, f'{staff}への接続依頼を取り消しました。')
+                        # 変更履歴に記録
+                        AppLog.objects.create(
+                            user=request.user,
+                            model_name='ConnectStaff',
+                            object_id=str(staff.pk),
+                            object_repr=f'{staff} - 接続依頼取り消し',
+                            action='delete'
+                        )
+                    else:
+                        # 新規作成された場合（スイッチON）
+                        messages.success(request, f'{staff}に接続依頼を送信しました。')
+                        # 変更履歴に記録
+                        AppLog.objects.create(
+                            user=request.user,
+                            model_name='ConnectStaff',
+                            object_id=str(staff.pk),
+                            object_repr=f'{staff} - 接続依頼送信',
+                            action='create'
+                        )
+                        # 既存ユーザーがいる場合は権限付与
+                        from django.contrib.auth import get_user_model
+                        from django.contrib.auth.models import Permission
+                        User = get_user_model()
+                        try:
+                            user = User.objects.get(email=staff.email)
+                            # 接続権限を付与
+                            connect_permissions = Permission.objects.filter(
+                                content_type__app_label='connect',
+                                codename__in=['view_connectstaff', 'change_connectstaff']
+                            )
+                            user.user_permissions.add(*connect_permissions)
+                            logger.info(f"接続依頼時に権限付与: {user.email}")
+                        except User.DoesNotExist:
+                            logger.info(f"接続依頼送信（未登録ユーザー）: {staff.email}")
+            except Exception as e:
+                messages.error(request, f'接続依頼の処理中にエラーが発生しました: {str(e)}')
+        return redirect('staff:staff_detail', pk=pk)
     # 連絡履歴（最新5件）
     contacted_list = staff.contacted_histories.all()[:5]
     # スタッフ契約（最新5件）
@@ -182,16 +239,35 @@ def staff_detail(request, pk):
         django_models.Q(model_name='Staff', object_id=str(staff.pk)) |
         django_models.Q(model_name='StaffQualification', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - '),
+        django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')[:5]
     change_logs_count = AppLog.objects.filter(
         django_models.Q(model_name='Staff', object_id=str(staff.pk)) |
         django_models.Q(model_name='StaffQualification', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - '),
+        django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
     ).count()
+    
+    # 接続関連情報を取得
+    connect_request = None
+    if staff.email:
+        from apps.connect.models import ConnectStaff
+        from apps.company.models import Company
+        try:
+            # 現在のユーザーの会社の法人番号を取得
+            company = Company.objects.first()  # 仮の実装、実際は適切な会社を取得
+            if company and company.corporate_number:
+                connect_request = ConnectStaff.objects.filter(
+                    corporate_number=company.corporate_number,
+                    email=staff.email
+                ).first()
+        except Exception:
+            pass
+    
     return render(request, 'staff/staff_detail.html', {
         'staff': staff,
         'contacted_list': contacted_list,
@@ -202,6 +278,7 @@ def staff_detail(request, pk):
         'files': files,
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
+        'connect_request': connect_request,
     })
 
 # 連絡履歴 登録

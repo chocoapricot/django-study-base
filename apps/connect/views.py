@@ -5,6 +5,7 @@ from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 from django.db.models import Q
 from apps.system.logs.utils import log_model_action
+from apps.system.logs.models import AppLog
 from .models import ConnectStaff, ConnectClient
 
 
@@ -58,7 +59,22 @@ def connect_staff_approve(request, pk):
     
     if connection.status == 'pending':
         connection.approve(request.user)
-        log_model_action(request.user, 'update', connection)
+        
+        # スタッフの変更履歴に記録するため、スタッフIDを取得
+        from apps.staff.models import Staff
+        try:
+            staff = Staff.objects.get(email=connection.email)
+            # スタッフの変更履歴として記録
+            AppLog.objects.create(
+                user=request.user,
+                model_name='ConnectStaff',
+                object_id=str(staff.pk),
+                object_repr=f'{staff} - 接続承認',
+                action='update'
+            )
+        except Staff.DoesNotExist:
+            # スタッフが見つからない場合は通常のログ記録
+            log_model_action(request.user, 'update', connection)
         
         # 承認時に権限を付与
         from .utils import grant_permissions_on_connection_request
@@ -79,7 +95,23 @@ def connect_staff_unapprove(request, pk):
     
     if connection.status == 'approved':
         connection.unapprove()
-        log_model_action(request.user, 'update', connection)
+        
+        # スタッフの変更履歴に記録するため、スタッフIDを取得
+        from apps.staff.models import Staff
+        try:
+            staff = Staff.objects.get(email=connection.email)
+            # スタッフの変更履歴として記録
+            AppLog.objects.create(
+                user=request.user,
+                model_name='ConnectStaff',
+                object_id=str(staff.pk),
+                object_repr=f'{staff} - 接続承認取り消し',
+                action='update'
+            )
+        except Staff.DoesNotExist:
+            # スタッフが見つからない場合は通常のログ記録
+            log_model_action(request.user, 'update', connection)
+        
         messages.success(request, '接続申請を未承認に戻しました。')
     else:
         messages.info(request, 'この申請は未承認です。')

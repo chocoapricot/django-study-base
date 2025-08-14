@@ -30,6 +30,8 @@
                             <span class="badge bg-success">技能</span>
                         {% elif log.model_name == 'StaffFile' %}
                             <span class="badge bg-secondary">ファイル</span>
+                        {% elif log.model_name == 'ConnectStaff' %}
+                            <span class="badge bg-warning">接続</span>
                         {% else %}
                             <span class="badge bg-light">{{ log.model_name }}</span>
                         {% endif %}

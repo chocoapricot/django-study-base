@@ -212,15 +212,6 @@
                         {% if perms.staff.delete_staff %}
                         <a href="{% url 'staff:staff_delete' staff.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
                         {% endif %}
-                        {% if staff.email %}
-                        <form method="post" action="{% url 'connect:create_staff_connection' %}" style="display: inline;">
-                            {% csrf_token %}
-                            <input type="hidden" name="staff_id" value="{{ staff.pk }}">
-                            <button type="submit" class="btn btn-sm btn-info me-2" onclick="return confirm('このスタッフに接続依頼を送信しますか？')">
-                                <i class="bi bi-link"></i> 接続依頼
-                            </button>
-                        </form>
-                        {% endif %}
                         <a href="{% url 'staff:staff_list' %}" class="btn btn-sm btn-secondary me-2">戻る</a>
                     </div>
             </div>
@@ -228,8 +219,58 @@
     </div>
     <!-- 左上 -->
 
-    <!--右上-->
     <div class="col">
+        <!--右上1-->
+        <div class="content-box card bg-light mt-2 mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                状況
+            </div>
+            <div class="card-body">
+                {% if staff.email %}
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-sm-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="connectRequestSwitch" 
+                                       {% if connect_request %}checked{% endif %}
+                                       onchange="this.form.submit()">
+                                <input type="hidden" name="toggle_connect_request" value="1">
+                                <label class="form-check-label" for="connectRequestSwitch">
+                                    {% if connect_request %}
+                                        スタッフに接続依頼（{{ connect_request.created_at|date:"Y/m/d H:i:s" }}）
+                                    {% else %}
+                                        スタッフに接続依頼
+                                    {% endif %}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-8">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="connectApprovalSwitch" 
+                                   {% if connect_request and connect_request.is_approved %}checked{% endif %} disabled>
+                            <label class="form-check-label" for="connectApprovalSwitch">
+                                {% if connect_request and connect_request.is_approved %}
+                                    スタッフが接続承認（{{ connect_request.approved_at|date:"Y/m/d H:i:s" }}）
+                                {% else %}
+                                    スタッフが接続承認
+                                {% endif %}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-muted">メールアドレスが登録されていないため、接続機能は利用できません。</div>
+                {% endif %}
+            </div>
+        </div>
+        <!--右上1-->
+
+        <!--右上2-->
         <div class="content-box card bg-light mt-2 mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
                 評価（※未実装のサンプルです）
@@ -278,8 +319,8 @@
                 </div>
             </div>
         </div>
+        <!--右上2-->
     </div>
-    <!--右上-->
 
         
 </div><!-- row -->
@@ -487,6 +528,8 @@
                             <span class="badge bg-success">技能</span>
                         {% elif log.model_name == 'StaffFile' %}
                             <span class="badge bg-secondary">ファイル</span>
+                        {% elif log.model_name == 'ConnectStaff' %}
+                            <span class="badge bg-warning">接続</span>
                         {% else %}
                             <span class="badge bg-light">{{ log.model_name }}</span>
                         {% endif %}
