@@ -7,7 +7,7 @@ from django import forms
 from django.forms import TextInput
 from .models import Client, ClientFile
 from django.core.exceptions import ValidationError
-from stdnum.jp import cn as koujin
+from stdnum.jp import cn as houjin
 
 class ClientForm(forms.ModelForm):
     def clean_name_furigana(self):
@@ -21,7 +21,7 @@ class ClientForm(forms.ModelForm):
         if not corporate_number:
             return corporate_number
         try:
-            koujin.validate(corporate_number)
+            houjin.validate(corporate_number)
         except Exception as e:
             raise ValidationError(f'法人番号が正しくありません: {e}')
         return corporate_number

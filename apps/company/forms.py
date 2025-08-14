@@ -1,6 +1,6 @@
 from django import forms
 from .models import Company, CompanyDepartment
-from stdnum.jp import cn as koujin
+from stdnum.jp import cn as houjin
 from django.core.exceptions import ValidationError
 
 class CompanyForm(forms.ModelForm):
@@ -21,7 +21,7 @@ class CompanyForm(forms.ModelForm):
         if not corporate_number:
             return corporate_number
         try:
-            koujin.validate(corporate_number)
+            houjin.validate(corporate_number)
         except Exception as e:
             raise forms.ValidationError(f'法人番号が正しくありません: {e}')
         return corporate_number
