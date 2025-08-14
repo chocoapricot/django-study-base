@@ -53,6 +53,7 @@ class Menu(MyModel):
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, verbose_name='親メニュー')  # 階層構造
     level = models.PositiveIntegerField('階層レベル', default=0)  # 階層レベル（0=トップレベル）
     exact_match = models.BooleanField('完全一致', default=False, help_text='URLの完全一致判定を行う')  # URL判定方法
+    required_permission = models.CharField('必要な権限', max_length=100, blank=True, null=True, help_text='例: staff.view_staff (空欄の場合は全員アクセス可能)')  # 必要な権限
     disp_seq = models.PositiveIntegerField('表示順',default=0)  # 表示順
     active = models.BooleanField('有効',default=True)  # 表示非表示
 
@@ -111,3 +112,19 @@ class Menu(MyModel):
     def has_children(self):
         """子メニューがあるかどうか"""
         return self.get_children().exists()
+    
+    def has_permission(self, user):
+        """ユーザーがこのメニューにアクセスする権限があるかチェック"""
+        if not user.is_authenticated:
+            return False
+        
+        # スーパーユーザーは全てのメニューにアクセス可能
+        if user.is_superuser:
+            return True
+        
+        # 権限が設定されていない場合は全員アクセス可能
+        if not self.required_permission:
+            return True
+        
+        # 権限をチェック
+        return user.has_perm(self.required_permission)

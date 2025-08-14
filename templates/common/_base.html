@@ -186,7 +186,7 @@
       .header .system-title {
           display: none;
       }
-    }
+        }
         @media (max-width: 576px) {
             .header .current-menu {
                 display: none;
@@ -231,7 +231,7 @@
     cursor: pointer;
 }
 
-</style>
+    </style>
 </head>
 <body>
 
@@ -246,7 +246,7 @@
       </button>
             <div class="logo"><a href="{% url 'home:home' %}" class="no-link-style">{% parameter 'SYSTEM_NAME' %}</a></div>
             {% for menu in menus %}
-            {% if menu|my_menu_active:request.path %}
+            {% if menu|my_menu_active:request.path and menu|has_menu_permission:user %}
             <div class="current-menu">
                 <i class="bi {{ menu.icon }}" style="{{ menu.icon_style }}"></i>
                 {{ menu.name }}
@@ -276,7 +276,7 @@
   <div class="position-sticky">
     <ul class="nav flex-column">
       {% for menu in menus %}
-          {% if menu.level == 0 %}
+          {% if menu.level == 0 and menu|has_menu_permission:user %}
           <li class="nav-item">
             <a href="{{ menu.url }}" class="nav-link {% if menu|my_menu_active:request.path %}active{% endif %}">
                 <i class="bi {{ menu.icon }}" style="font-size: 20px;{{ menu.icon_style }}"></i><span class="menu-name">{{ menu.name }}</span>
@@ -284,11 +284,13 @@
             {% if menu.has_children %}
             <ul class="nav flex-column ms-3">
               {% for child in menu.get_children %}
+              {% if child|has_menu_permission:user %}
               <li class="nav-item">
                 <a href="{{ child.url }}" class="nav-link {% if child|my_menu_active:request.path %}active{% endif %}" style="font-size: 14px;">
                     <i class="bi {{ child.icon }}" style="font-size: 16px;{{ child.icon_style }}"></i><span class="menu-name">{{ child.name }}</span>
                 </a>
               </li>
+              {% endif %}
               {% endfor %}
             </ul>
             {% endif %}
@@ -337,7 +339,7 @@
   <div class="offcanvas-body">
     <ul class="nav flex-column">
       {% for menu in menus %}
-          {% if menu.level == 0 %}
+          {% if menu.level == 0 and menu|has_menu_permission:user %}
           <li class="nav-item">
             <a href="{{ menu.url }}" class="nav-link {% if menu|my_menu_active:request.path %}active{% endif %}">
                 <i class="bi {{ menu.icon }}" style="font-size: 20px;{{ menu.icon_style }}"></i><span class="menu-name">{{ menu.name }}</span>
@@ -345,11 +347,13 @@
             {% if menu.has_children %}
             <ul class="nav flex-column ms-3">
               {% for child in menu.get_children %}
+              {% if child|has_menu_permission:user %}
               <li class="nav-item">
                 <a href="{{ child.url }}" class="nav-link {% if child|my_menu_active:request.path %}active{% endif %}" style="font-size: 14px;">
                     <i class="bi {{ child.icon }}" style="font-size: 16px;{{ child.icon_style }}"></i><span class="menu-name">{{ child.name }}</span>
                 </a>
               </li>
+              {% endif %}
               {% endfor %}
             </ul>
             {% endif %}
@@ -393,32 +397,32 @@
     <!-- Add id to main content area -->
     <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <!-- メッセージ表示 -->
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
             
-            {% block content %}
+        {% block content %}
             <!-- 各ページごとのコンテンツがここに挿入される -->
-            {% endblock %}
+        {% endblock %}
     </main>
   </div>
-</div>
+    </div>
 
-<!-- Bootstrap JS -->
+    <!-- Bootstrap JS -->
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 
-<script>
-document.getElementById('toggleSidebar').addEventListener('click', function() {
+    <script>
+        document.getElementById('toggleSidebar').addEventListener('click', function() {
   var sidebar = document.getElementById('sidebar');
   var mainContent = document.getElementById('mainContent');
-
+            
   // Toggle sidebar closed class and main content class simultaneously
-  sidebar.classList.toggle('sidebar-closed');
+            sidebar.classList.toggle('sidebar-closed');
   
   // Adjust main content column size
   if (sidebar.classList.contains('sidebar-closed')) {
@@ -430,8 +434,8 @@ document.getElementById('toggleSidebar').addEventListener('click', function() {
     mainContent.classList.remove('col-md-12', 'content-expanded');
     mainContent.classList.add('col-md-9', 'col-lg-10');
   }
-});
-</script>
+        });
+    </script>
 <script>
   //ツールチップを上に出す
   var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
