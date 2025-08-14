@@ -64,8 +64,8 @@ class UserProfileFormTest(TestCase):
             'first_name': '太郎',
             'last_name': '田中',
             'phone_number': '090-1234-5678',
-            'password': 'newpassword123',
-            'password_confirm': 'differentpassword'
+            'password': 'ValidPass123!',  # 有効なパスワード
+            'password_confirm': 'DifferentPass123!'  # 異なるパスワード
         }
         form = UserProfileForm(data=form_data, instance=self.user1)
         self.assertFalse(form.is_valid())
@@ -79,11 +79,11 @@ class UserProfileFormTest(TestCase):
             'first_name': '太郎',
             'last_name': '田中',
             'phone_number': '090-1234-5678',
-            'password': 'newpassword123',
-            'password_confirm': 'newpassword123'
+            'password': 'NewPassword123!',  # 記号を含む有効なパスワード
+            'password_confirm': 'NewPassword123!'
         }
         form = UserProfileForm(data=form_data, instance=self.user1)
-        self.assertTrue(form.is_valid())
+        self.assertTrue(form.is_valid(), f"フォームエラー: {form.errors}")
     
     def test_required_fields_validation(self):
         """必須フィールドのバリデーション"""
