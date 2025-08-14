@@ -12,19 +12,33 @@
             <label for="id_login" class="col-sm-4 col-form-label" style="text-align:right">メールアドレス</label>
             <div class="col-sm-8">
               <div style="height: 38px;">
-                <input type="text" name="login" class="form-control" id="id_login" autocomplete="username" value="{{ form.login.value|default:'' }}" style="height: 100%;">
+                <input type="text" name="login" class="form-control {% if form.login.errors %}is-invalid{% endif %}" id="id_login" autocomplete="username" value="{{ form.login.value|default:'' }}" style="height: 100%;">
               </div>
+              {% if form.login.errors %}
+                <div class="text-danger small mt-1">
+                  {% for error in form.login.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
             </div>
           </div>
           <div class="row mb-3 align-items-center">
             <label for="id_password" class="col-sm-4 col-form-label" style="text-align:right">パスワード</label>
             <div class="col-sm-8">
               <div class="input-group align-items-center" style="height: 38px;">
-                <input type="password" name="password" class="form-control" id="id_password" autocomplete="current-password">
+                <input type="password" name="password" class="form-control {% if form.password.errors %}is-invalid{% endif %}" id="id_password" autocomplete="current-password">
                 <span class="input-group-text d-flex align-items-center" style="background: #fff; cursor:pointer; height: 38px; padding: 0 0.75rem;" id="togglePassword" tabindex="-1">
                   <i class="bi bi-eye" id="togglePasswordIcon" style="font-size: 1.2rem;"></i>
                 </span>
               </div>
+              {% if form.password.errors %}
+                <div class="text-danger small mt-1">
+                  {% for error in form.password.errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
             </div>
           </div>
           <button type="submit" class="btn btn-primary w-100">ログイン</button>

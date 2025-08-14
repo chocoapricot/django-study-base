@@ -1,6 +1,8 @@
 from django import forms
 from allauth.account.forms import SignupForm, ResetPasswordForm
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from .models import MyUser
 
 User = get_user_model()
@@ -100,6 +102,17 @@ class UserProfileForm(forms.ModelForm):
             if existing_user:
                 raise forms.ValidationError('このメールアドレスは既に他のユーザーによって使用されています。')
         return email
+
+    def clean_password(self):
+        """パスワードのバリデーション"""
+        password = self.cleaned_data.get('password')
+        if password:
+            try:
+                # Djangoのパスワードバリデーターを使用
+                validate_password(password, self.instance)
+            except ValidationError as error:
+                raise forms.ValidationError(error)
+        return password
 
     def clean(self):
         cleaned_data = super().clean()
