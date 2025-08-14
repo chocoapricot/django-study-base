@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'apps.api',
     'apps.staff',
     'apps.client',
+    'apps.connect',
     'apps.csstest',
     'apps.common',
     'apps.accounts',

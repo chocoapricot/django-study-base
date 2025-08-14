@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/', include('apps.api.urls')),
     path('staff/', include('apps.staff.urls')),
     path('client/', include('apps.client.urls')),
+    path('connect/', include('apps.connect.urls')),
     path('csstest/', include('apps.csstest.urls')),
     path('common/', include('apps.common.urls')),
     path('logs/', include('apps.system.logs.urls')),
