@@ -8,6 +8,7 @@ from django.db.models import Q
 from django.db import models
 from django.contrib import messages
 from django.http import JsonResponse
+from apps.system.logs.utils import log_model_action
 # クライアント連絡履歴用インポート
 from .models import Client, ClientContacted, ClientDepartment, ClientUser, ClientFile
 from .forms import ClientForm, ClientContactedForm, ClientDepartmentForm, ClientUserForm, ClientFileForm
@@ -197,6 +198,8 @@ def client_contacted_update(request, pk):
         form = ClientContactedForm(request.POST, instance=contacted, client=client)
         if form.is_valid():
             form.save()
+            log_model_action(request.user, 'update', contacted)
+            messages.success(request, '連絡履歴を更新しました。')
             return redirect('client:client_detail', pk=client.pk)
     else:
         form = ClientContactedForm(instance=contacted, client=client)
@@ -219,8 +222,13 @@ def client_update(request, pk):
     if request.method == 'POST':
         form = ClientForm(request.POST, instance=client)
         if form.is_valid():
-            client = form.save()
-            messages.success(request, f'クライアント「{client.name}」を更新しました。')
+            # 変更があったかどうかをチェック
+            if form.has_changed():
+                client = form.save()
+                log_model_action(request.user, 'update', client)
+                messages.success(request, f'クライアント「{client.name}」を更新しました。')
+            else:
+                messages.info(request, '変更はありませんでした。')
             return redirect('client:client_detail', pk=client.pk)
     else:
         form = ClientForm(instance=client)

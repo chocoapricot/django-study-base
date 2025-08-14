@@ -77,7 +77,7 @@
                                     <th>スタッフ</th>
                                     <th>契約番号</th>
                                     <th>契約期間</th>
-                                    <th>契約金額</th>
+                                    <th class="text-end">契約金額</th>
                                     <th>ステータス</th>
                                     <th>操作</th>
                                 </tr>
@@ -98,7 +98,7 @@
                                             ～ {{ contract.end_date|date:"Y/m/d" }}
                                         {% endif %}
                                     </td>
-                                    <td>
+                                    <td class="text-end">
                                         {% if contract.contract_amount %}
                                             ¥{{ contract.contract_amount|floatformat:0|intcomma }}
                                         {% else %}

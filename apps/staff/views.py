@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Q
 from django.contrib import messages
+from apps.system.logs.utils import log_model_action
 
 from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile
 from .forms import StaffForm, StaffContactedForm, StaffFileForm
@@ -242,6 +243,8 @@ def staff_contacted_update(request, pk):
         form = StaffContactedForm(request.POST, instance=contacted)
         if form.is_valid():
             form.save()
+            log_model_action(request.user, 'update', contacted)
+            messages.success(request, '連絡履歴を更新しました。')
             return redirect('staff:staff_detail', pk=staff.pk)
     else:
         form = StaffContactedForm(instance=contacted)
@@ -254,7 +257,13 @@ def staff_update(request, pk):
     if request.method == 'POST':
         form = StaffForm(request.POST, instance=staff)
         if form.is_valid():
-            form.save()
+            # 変更があったかどうかをチェック
+            if form.has_changed():
+                form.save()
+                log_model_action(request.user, 'update', staff)
+                messages.success(request, f'スタッフ「{staff.name}」を更新しました。')
+            else:
+                messages.info(request, '変更はありませんでした。')
             return redirect('staff:staff_detail', pk=staff.pk)
     else:
         form = StaffForm(instance=staff)
@@ -265,7 +274,9 @@ def staff_update(request, pk):
 def staff_delete(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
     if request.method == 'POST':
+        staff_name = staff.name
         staff.delete()
+        messages.success(request, f'スタッフ「{staff_name}」を削除しました。')
         return redirect('staff:staff_list')
     return render(request, 'staff/staff_confirm_delete.html', {'staff': staff})
 

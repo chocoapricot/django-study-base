@@ -3,6 +3,7 @@ import os
 from django import forms
 from django.forms import TextInput
 from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile
+
 # スタッフ連絡履歴フォーム
 class StaffContactedForm(forms.ModelForm):
     contact_type = forms.ChoiceField(
@@ -30,7 +31,6 @@ class StaffContactedForm(forms.ModelForm):
         }
 
 
-
 # 共通カナバリデーション/正規化
 from apps.common.forms.fields import to_fullwidth_katakana, validate_kana
 
@@ -52,7 +52,7 @@ class StaffForm(forms.ModelForm):
         value = self.cleaned_data.get('employee_no', '')
         if value:
             import re
-            if not re.fullmatch(r'^[A-Za-z0-9]{1,10}$', value):
+            if not re.fullmatch(r'^[A-Za-z0-9]{1,10}', value):
                 raise forms.ValidationError('社員番号は半角英数字10文字以内で入力してください。')
         return value
     
@@ -145,6 +145,30 @@ class StaffForm(forms.ModelForm):
             (dept.department_code, f"{dept.name} ({dept.department_code})")
             for dept in valid_departments
         ]
+        
+        # 初期値を保存して変更検知に使用
+        if self.instance and self.instance.pk:
+            self.initial_data = {
+                field: getattr(self.instance, field) for field in self.fields
+            }
+        else:
+            self.initial_data = {}
+    
+    def has_changed(self):
+        """実際にデータが変更されたかどうかをチェック"""
+        if not self.instance or not self.instance.pk:
+            return True  # 新規作成の場合は常に変更ありとする
+        
+        for field_name in self.fields:
+            initial_value = self.initial_data.get(field_name)
+            current_value = self.cleaned_data.get(field_name)
+            
+            # 空文字列とNoneを同じものとして扱う
+            if (initial_value or '') != (current_value or ''):
+                return True
+        
+        return False
+
     class Meta:
         model = Staff
         fields = [
@@ -310,5 +334,3 @@ class StaffFileForm(forms.ModelForm):
                 )
         
         return file
-
-
