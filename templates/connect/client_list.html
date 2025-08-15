@@ -1,0 +1,119 @@
+{% extends 'common/_base.html' %}
+
+{% block title %}クライアント接続一覧{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        クライアント接続一覧
+        <a href="{% url 'connect:index' %}" class="btn btn-sm btn-secondary">戻る</a>
+    </div>
+    <div class="card-body">
+        <p>あなた宛のクライアント接続申請一覧です。承認・未承認を切り替えることができます。</p>
+        
+        <!-- 検索・フィルター -->
+        <form method="get" class="mb-3">
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="text" name="q" class="form-control form-control-sm" placeholder="法人番号で検索" value="{{ search_query }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="status" class="form-control form-control-sm">
+                        <option value="">全てのステータス</option>
+                        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>未承認</option>
+                        <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>承認済み</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-sm btn-primary">検索</button>
+                </div>
+            </div>
+        </form>
+        
+        <!-- 接続申請一覧 -->
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>会社名</th>
+                    <th>法人番号</th>
+                    <th>申請日時</th>
+                    <th>ステータス</th>
+                    <th>承認日時</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for connection in connections %}
+                <tr>
+                    <td>
+                        {% for corp_num, company in companies.items %}
+                            {% if corp_num == connection.corporate_number and company %}
+                                {{ company.name }}
+                            {% endif %}
+                        {% empty %}
+                            <span class="text-muted">会社情報なし</span>
+                        {% endfor %}
+                    </td>
+                    <td>{{ connection.corporate_number }}</td>
+                    <td>{{ connection.created_at|date:'Y/m/d H:i:s' }}</td>
+                    <td>
+                        {% if connection.status == 'pending' %}
+                            <span class="badge bg-warning">未承認</span>
+                        {% elif connection.status == 'approved' %}
+                            <span class="badge bg-success">承認済み</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if connection.approved_at %}
+                            {{ connection.approved_at|date:'Y/m/d H:i:s' }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if connection.status == 'pending' %}
+                            <form method="post" action="{% url 'connect:client_approve' connection.pk %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('この申請を承認しますか？')">承認</button>
+                            </form>
+                        {% elif connection.status == 'approved' %}
+                            <form method="post" action="{% url 'connect:client_unapprove' connection.pk %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('この申請を未承認に戻しますか？')">未承認に戻す</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">接続申請がありません</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <!-- ページネーション -->
+        {% if connections.has_other_pages %}
+        <nav aria-label="ページネーション">
+            <ul class="pagination justify-content-center">
+                {% if connections.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ connections.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">前へ</a>
+                    </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">{{ connections.number }} / {{ connections.paginator.num_pages }}</span>
+                </li>
+                
+                {% if connections.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ connections.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">次へ</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

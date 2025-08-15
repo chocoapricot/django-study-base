@@ -182,13 +182,124 @@ def create_staff_connection(request):
 
 
 @login_required
+def connect_client_list(request):
+    """クライアント接続一覧（ログインユーザー宛の申請）"""
+    # ログインユーザーのメールアドレス宛の申請を取得
+    connections = ConnectClient.objects.filter(email=request.user.email)
+    
+    # 検索機能
+    search_query = request.GET.get('q', '')
+    if search_query:
+        connections = connections.filter(
+            Q(corporate_number__icontains=search_query)
+        )
+    
+    # ステータスフィルター
+    status_filter = request.GET.get('status', '')
+    if status_filter:
+        connections = connections.filter(status=status_filter)
+    
+    # ページネーション
+    paginator = Paginator(connections, 20)
+    page_number = request.GET.get('page')
+    connections = paginator.get_page(page_number)
+    
+    # 会社情報を取得（法人番号から）
+    from apps.company.models import Company
+    companies = {}
+    for conn in connections:
+        if conn.corporate_number not in companies:
+            try:
+                company = Company.objects.get(corporate_number=conn.corporate_number)
+                companies[conn.corporate_number] = company
+            except Company.DoesNotExist:
+                companies[conn.corporate_number] = None
+    
+    return render(request, 'connect/client_list.html', {
+        'connections': connections,
+        'companies': companies,
+        'search_query': search_query,
+        'status_filter': status_filter,
+    })
+
+
+@login_required
+@require_POST
+def connect_client_approve(request, pk):
+    """クライアント接続を承認"""
+    connection = get_object_or_404(ConnectClient, pk=pk, email=request.user.email)
+    
+    if connection.status == 'pending':
+        connection.approve(request.user)
+        
+        # クライアント担当者の変更履歴に記録するため、担当者IDを取得
+        from apps.client.models import ClientUser
+        try:
+            client_user = ClientUser.objects.get(email=connection.email)
+            # クライアント担当者の変更履歴として記録
+            AppLog.objects.create(
+                user=request.user,
+                model_name='ConnectClient',
+                object_id=str(client_user.pk),
+                object_repr=f'{client_user} - 接続承認',
+                action='update'
+            )
+        except ClientUser.DoesNotExist:
+            # クライアント担当者が見つからない場合は通常のログ記録
+            log_model_action(request.user, 'update', connection)
+        
+        messages.success(request, 'クライアント接続申請を承認しました。')
+    else:
+        messages.info(request, 'この申請は既に承認済みです。')
+    
+    return redirect('connect:client_list')
+
+
+@login_required
+@require_POST
+def connect_client_unapprove(request, pk):
+    """クライアント接続を未承認に戻す"""
+    connection = get_object_or_404(ConnectClient, pk=pk, email=request.user.email)
+    
+    if connection.status == 'approved':
+        connection.unapprove()
+        
+        # クライアント担当者の変更履歴に記録するため、担当者IDを取得
+        from apps.client.models import ClientUser
+        try:
+            client_user = ClientUser.objects.get(email=connection.email)
+            # クライアント担当者の変更履歴として記録
+            AppLog.objects.create(
+                user=request.user,
+                model_name='ConnectClient',
+                object_id=str(client_user.pk),
+                object_repr=f'{client_user} - 接続承認取り消し',
+                action='update'
+            )
+        except ClientUser.DoesNotExist:
+            # クライアント担当者が見つからない場合は通常のログ記録
+            log_model_action(request.user, 'update', connection)
+        
+        messages.success(request, 'クライアント接続申請を未承認に戻しました。')
+    else:
+        messages.info(request, 'この申請は未承認です。')
+    
+    return redirect('connect:client_list')
+
+
+@login_required
 def connect_index(request):
     """接続管理のトップページ"""
     # ログインユーザー宛の申請数を取得
-    pending_count = ConnectStaff.objects.filter(email=request.user.email, status='pending').count()
-    approved_count = ConnectStaff.objects.filter(email=request.user.email, status='approved').count()
+    staff_pending_count = ConnectStaff.objects.filter(email=request.user.email, status='pending').count()
+    staff_approved_count = ConnectStaff.objects.filter(email=request.user.email, status='approved').count()
+    
+    client_pending_count = ConnectClient.objects.filter(email=request.user.email, status='pending').count()
+    client_approved_count = ConnectClient.objects.filter(email=request.user.email, status='approved').count()
     
     return render(request, 'connect/index.html', {
-        'pending_count': pending_count,
-        'approved_count': approved_count,
+        'staff_pending_count': staff_pending_count,
+        'staff_approved_count': staff_approved_count,
+        'client_pending_count': client_pending_count,
+        'client_approved_count': client_approved_count,
     })

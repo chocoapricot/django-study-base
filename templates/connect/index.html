@@ -8,14 +8,15 @@
     <div class="card-body">
         <p>あなた宛の接続申請を管理できます。</p>
         
-        <div class="row">
+        <h5 class="mb-3">スタッフ接続</h5>
+        <div class="row mb-4">
             <div class="col-md-6 mb-3">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">
+                        <h6 class="card-title">
                             <i class="bi bi-clock text-warning"></i> 未承認の申請
-                        </h5>
-                        <p class="card-text display-6">{{ pending_count }}件</p>
+                        </h6>
+                        <p class="card-text display-6">{{ staff_pending_count }}件</p>
                         <a href="{% url 'connect:staff_list' %}?status=pending" class="btn btn-sm btn-warning">確認する</a>
                     </div>
                 </div>
@@ -24,18 +25,46 @@
             <div class="col-md-6 mb-3">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">
+                        <h6 class="card-title">
                             <i class="bi bi-check-circle text-success"></i> 承認済みの申請
-                        </h5>
-                        <p class="card-text display-6">{{ approved_count }}件</p>
+                        </h6>
+                        <p class="card-text display-6">{{ staff_approved_count }}件</p>
                         <a href="{% url 'connect:staff_list' %}?status=approved" class="btn btn-sm btn-success">確認する</a>
                     </div>
                 </div>
             </div>
         </div>
         
+        <h5 class="mb-3">クライアント接続</h5>
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="bi bi-clock text-warning"></i> 未承認の申請
+                        </h6>
+                        <p class="card-text display-6">{{ client_pending_count }}件</p>
+                        <a href="{% url 'connect:client_list' %}?status=pending" class="btn btn-sm btn-warning">確認する</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="bi bi-check-circle text-success"></i> 承認済みの申請
+                        </h6>
+                        <p class="card-text display-6">{{ client_approved_count }}件</p>
+                        <a href="{% url 'connect:client_list' %}?status=approved" class="btn btn-sm btn-success">確認する</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div class="mt-4">
-            <a href="{% url 'connect:staff_list' %}" class="btn btn-sm btn-primary">全ての申請を確認</a>
+            <a href="{% url 'connect:staff_list' %}" class="btn btn-sm btn-primary me-2">スタッフ接続一覧</a>
+            <a href="{% url 'connect:client_list' %}" class="btn btn-sm btn-info">クライアント接続一覧</a>
         </div>
     </div>
 </div>

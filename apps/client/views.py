@@ -360,6 +360,78 @@ def client_user_delete(request, pk):
         return redirect('client:client_detail', pk=client.pk)
     return render(request, 'client/client_user_confirm_delete.html', {'user': user, 'client': client, 'show_client_info': True})
 
+# クライアント担当者詳細
+@login_required
+@permission_required('client.view_clientuser', raise_exception=True)
+def client_user_detail(request, pk):
+    """クライアント担当者詳細"""
+    user = get_object_or_404(ClientUser, pk=pk)
+    client = user.client
+    
+    # 接続申請の状況を確認
+    connect_request = None
+    if user.email:
+        from apps.connect.models import ConnectClient
+        connect_request = ConnectClient.objects.filter(
+            corporate_number=client.corporate_number,
+            email=user.email
+        ).first()
+    
+    # 接続申請の切り替え処理
+    if request.method == 'POST' and 'toggle_connect_request' in request.POST:
+        if user.email and client.corporate_number:
+            from apps.connect.models import ConnectClient
+            from apps.system.logs.utils import log_model_action
+            
+            existing_request = ConnectClient.objects.filter(
+                corporate_number=client.corporate_number,
+                email=user.email
+            ).first()
+            
+            if existing_request:
+                # 既存の申請を削除
+                existing_request.delete()
+                messages.success(request, 'クライアント接続申請を取り消しました。')
+                connect_request = None
+            else:
+                # 新しい申請を作成
+                connect_request = ConnectClient.objects.create(
+                    corporate_number=client.corporate_number,
+                    email=user.email,
+                    created_by=request.user,
+                    updated_by=request.user
+                )
+                log_model_action(request.user, 'create', connect_request)
+                
+                # 既存ユーザーがいる場合は権限を付与
+                from apps.connect.utils import grant_client_permissions_on_connection_request
+                grant_client_permissions_on_connection_request(user.email)
+                
+                messages.success(request, f'クライアント担当者「{user.name}」への接続申請を送信しました。')
+        else:
+            messages.error(request, 'メールアドレスまたは法人番号が設定されていません。')
+        
+        return redirect('client:client_user_detail', pk=pk)
+    
+    # AppLogに詳細画面アクセスを記録
+    from apps.system.logs.utils import log_view_detail
+    from apps.system.logs.models import AppLog
+    log_view_detail(request.user, user)
+    
+    # 変更履歴（AppLogから取得、最新10件）
+    change_logs = AppLog.objects.filter(
+        model_name='ClientUser',
+        object_id=str(user.pk),
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')[:10]
+    
+    return render(request, 'client/client_user_detail.html', {
+        'user': user,
+        'client': client,
+        'connect_request': connect_request,
+        'change_logs': change_logs,
+    })
+
 # クライアント担当者メール送信
 @login_required
 @permission_required('client.view_clientuser', raise_exception=True)

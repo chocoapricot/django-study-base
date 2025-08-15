@@ -1,0 +1,247 @@
+{% extends 'common/_base.html' %}
+{% load dropdowns %}
+{% load help_tags %}
+{% block content %}
+
+<div class="row" style="max-width: 100%;">
+
+    <!-- 左上 -->
+    <div class="col-8">
+        <div class="content-box card bg-light mt-2 mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                クライアント担当者基本情報
+            </div>
+            <div class="card-body">
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4" style="text-align:right">
+                        <strong>所属クライアント</strong>
+                    </div>
+                    <div class="col-sm">
+                        <a href="{% url 'client:client_detail' client.pk %}" class="text-decoration-none">{{ client.name }}</a>
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4" style="text-align:right">
+                        <strong>氏名</strong>
+                    </div>
+                    <div class="col-sm">
+                        <h4>
+                            <ruby>
+                                {{ user.name_last }}<rt>{{ user.name_kana_last|default:"" }}</rt>
+                            </ruby>
+                            <ruby>
+                                {{ user.name_first }}<rt>{{ user.name_kana_first|default:"" }}</rt>
+                            </ruby>
+                        </h4>
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4" style="text-align:right">
+                        <strong>所属組織</strong>
+                    </div>
+                    <div class="col-sm">
+                        {% if user.department %}
+                            {{ user.department.name }}
+                        {% else %}
+                            <span class="text-muted">未設定</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4" style="text-align:right">
+                        <strong>役職</strong>
+                    </div>
+                    <div class="col-sm">
+                        {{ user.position|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4" style="text-align:right">
+                        <strong>電話番号</strong>
+                    </div>
+                    <div class="col-sm">
+                        {{ user.phone_number|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4" style="text-align:right">
+                        <strong>メールアドレス</strong>
+                    </div>
+                    <div class="col-sm">
+                        <span class="copy-target">{{ user.email|default:"-" }}</span>
+                        {% if user.email %}
+                            <a href="{% url 'client:client_user_mail_send' user.pk %}" class="btn btn-sm btn-outline-primary ms-2" title="メール送信">
+                                <i class="bi bi-envelope"></i>
+                            </a>
+                            <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
+                            <span class="copy-message">コピーしました!</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4" style="text-align:right">
+                        <strong>メモ</strong>
+                    </div>
+                    <div class="col-sm">
+                        {{ user.memo|default:"-" }}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-start">
+                    {% if perms.client.change_clientuser %}
+                    <a href="{% url 'client:client_user_update' user.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
+                    {% endif %}
+                    {% if perms.client.delete_clientuser %}
+                    <a href="{% url 'client:client_user_delete' user.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+                    {% endif %}
+                    <a href="{% url 'client:client_detail' client.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 左上 -->
+
+    <div class="col">
+        <!--右上1-->
+        <div class="content-box card bg-light mt-2 mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                状況
+            </div>
+            <div class="card-body">
+                {% if user.email %}
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-sm-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="connectRequestSwitch" 
+                                       {% if connect_request %}checked{% endif %}
+                                       onchange="this.form.submit()">
+                                <input type="hidden" name="toggle_connect_request" value="1">
+                                <label class="form-check-label" for="connectRequestSwitch">
+                                    {% if connect_request %}
+                                        クライアントに接続依頼（{{ connect_request.created_at|date:"Y/m/d H:i:s" }}）
+                                    {% else %}
+                                        クライアントに接続依頼
+                                    {% endif %}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="connectApprovalSwitch" 
+                                   {% if connect_request and connect_request.is_approved %}checked{% endif %} disabled>
+                            <label class="form-check-label" for="connectApprovalSwitch">
+                                {% if connect_request and connect_request.is_approved %}
+                                    クライアントが接続承認（{{ connect_request.approved_at|date:"Y/m/d H:i:s" }}）
+                                {% else %}
+                                    クライアントが接続承認
+                                {% endif %}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-muted">メールアドレスが登録されていないため、接続機能は利用できません。</div>
+                {% endif %}
+            </div>
+        </div>
+        <!--右上1-->
+    </div>
+</div><!-- row -->
+
+<style>
+    .copy-message {
+        display: none;
+        color: green;
+        font-size: 0.8em;
+        margin-left: 5px;
+    }
+    .copy-icon {
+        color: green;
+        font-size: 0.8em;
+        cursor: pointer;
+        margin-left: 5px;
+    }
+</style>
+<script>
+    function copyToClipboard(button) {
+        // ボタンの前の .copy-target を探してテキストを取得
+        const targetText = button.previousElementSibling.innerText;
+        navigator.clipboard.writeText(targetText).then(() => {
+            // コピーが成功したらメッセージを表示
+            const copyMessage = button.nextElementSibling;
+            copyMessage.style.display = "inline";
+    
+            // 2秒後にメッセージを非表示にする
+            setTimeout(() => {
+                copyMessage.style.display = "none";
+            }, 1000);
+        }).catch(err => {
+            console.error("コピーに失敗しました: ", err);
+        });
+    }
+</script>
+
+<!-- 変更履歴 -->
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        変更履歴
+    </div>
+    <div class="card-body mb-0">
+        <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>対象</th>
+                    <th>操作</th>
+                    <th>変更内容</th>
+                    <th>変更者</th>
+                    <th>日時</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in change_logs %}
+                <tr>
+                    <td>
+                        <span class="badge bg-primary">担当者情報</span>
+                    </td>
+                    <td>
+                        {% if log.action == 'create' %}
+                            <span class="badge bg-success">作成</span>
+                        {% elif log.action == 'update' %}
+                            <span class="badge bg-warning">編集</span>
+                        {% elif log.action == 'delete' %}
+                            <span class="badge bg-danger">削除</span>
+                        {% else %}
+                            <span class="badge bg-light">{{ log.action }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ log.object_repr|truncatechars:50 }}</td>
+                    <td>
+                        {% if log.user.last_name or log.user.first_name %}
+                            {{ log.user.last_name }} {{ log.user.first_name }}
+                        {% else %}
+                            {{ log.user.username }}
+                        {% endif %}
+                    </td>
+                    <td>{{ log.timestamp|date:'Y/m/d H:i:s' }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5">変更履歴がありません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

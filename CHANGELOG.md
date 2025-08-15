@@ -23,6 +23,11 @@
 - クライアント契約およびスタッフ契約の変更履歴を詳細に表示する機能を追加しました。
 - これに伴い、`client_contract_change_history_list` および `staff_contract_change_history_list` ビューと、共通テンプレート `templates/contract/contract_change_history_list.html` を追加しました。
 - 会社関連の変更履歴表示を `templates/company/company_change_history_list.html` に移行しました。
+- クライアント担当者に対するアカウント接続招待機能を追加しました。
+- クライアント担当者の詳細画面 (`client_user_detail`) を追加し、そこから接続リクエストの管理（作成、削除）と変更履歴の表示ができるようにしました。
+- クライアント接続リクエストのリスト表示、承認、非承認を行うためのビュー (`connect_client_list`, `connect_client_approve`, `connect_client_unapprove`) を追加しました。
+- クライアント接続に関連する権限を付与するためのユーティリティ関数 (`grant_client_connect_permissions` など) を追加しました。
+- アカウント作成/更新時に権限を付与するためのシグナル (`apps/accounts/signals.py`) を追加しました。
 
 ### Changed
 - 銀行および銀行支店の個別のリスト、詳細画面を廃止し、すべての管理操作を統合された `bank_management` 画面から行えるようにしました。
@@ -49,6 +54,9 @@
 - クライアント契約およびスタッフ契約の詳細画面から、変更履歴の詳細ページへのリンクが正しく生成されるように変更しました。
 - 変更履歴リストにおいて、詳細画面では `object_repr` を切り詰めて表示し、変更履歴リスト画面ではすべて表示するように、表示内容を切り替えられるようにしました。
 - 共通の変更履歴リスト (`common/_change_history_list.html`) のページネーションロジックを改善し、より使いやすくしました。
+- 接続機能のトップページ (`connect/index.html`) で、スタッフとクライアントそれぞれの接続リクエストの統計情報とリストへのリンクを表示するようにUIを改善しました。
+- クライアント担当者一覧で、担当者名が詳細ページへのリンクになるように変更しました。
+- 銀行管理画面 (`bank_management.html`) の更新ボタンと削除ボタンのHTML構造を修正しました。
 
 ### Refactored
 - 銀行および銀行支店に関するURL、ビュー、テンプレートを大幅に整理・統合しました。
