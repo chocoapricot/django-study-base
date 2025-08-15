@@ -1,0 +1,234 @@
+{% extends 'common/_base.html' %}
+{% load help_tags %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="content-box card bg-light" style="max-width: 100%;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>{{ title }}</span>
+                    <div>
+                        <a href="{% url 'master:bank_create' %}?from=management" class="btn btn-sm btn-primary">銀行新規作成</a>
+                        {% if selected_bank %}
+                            <a href="{% url 'master:bank_branch_create' %}?bank={{ selected_bank.pk }}&from=management" class="btn btn-sm btn-success">支店新規作成</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- 検索フォーム -->
+                    <form method="get" class="mb-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <input type="text" name="search" class="form-control form-control-sm" placeholder="銀行名、銀行コードで検索" value="{{ search_query }}">
+                                    <button class="btn btn-sm btn-outline-secondary" type="submit">検索</button>
+                                    {% if search_query %}
+                                        <a href="{% url 'master:bank_management' %}" class="btn btn-sm btn-outline-secondary">クリア</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% if selected_bank %}
+                            <input type="hidden" name="bank_id" value="{{ selected_bank.pk }}">
+                        {% endif %}
+                    </form>
+
+                    <div class="row">
+                        <!-- 左側：銀行一覧 -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">銀行一覧</h6>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+                                        <table class="table table-hover table-sm mb-0">
+                                            <thead class="table-light sticky-top">
+                                                <tr>
+                                                    <th>銀行名</th>
+                                                    <th>銀行コード</th>
+                                                    <th>状態</th>
+                                                    <th>操作</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for bank in banks %}
+                                                <tr {% if selected_bank and bank.pk == selected_bank.pk %}class="table-primary"{% endif %}>
+                                                    <td>
+                                                        <a href="?bank_id={{ bank.pk }}{% if search_query %}&search={{ search_query }}{% endif %}" class="text-decoration-none">
+                                                            {{ bank.name }}
+                                                        </a>
+                                                    </td>
+                                                    <td>{{ bank.bank_code|default:"-" }}</td>
+                                                    <td>
+                                                        {% if bank.is_active %}
+                                                            <span class="badge bg-success">有効</span>
+                                                        {% else %}
+                                                            <span class="badge bg-secondary">無効</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <div class="btn-group" role="group">
+                                                            <a href="{% url 'master:bank_update' bank.pk %}" class="btn btn-outline-secondary btn-sm" title="編集">
+                                                                <i class="bi bi-pencil"></i>
+                                                            </a>
+                                                            <a href="{% url 'master:bank_delete' bank.pk %}" class="btn btn-dark btn-sm" title="削除">
+                                                                <i class="bi bi-x"></i>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                {% empty %}
+                                                <tr>
+                                                    <td colspan="4" class="text-center text-muted">
+                                                        {% if search_query %}
+                                                            検索条件に一致する銀行が見つかりませんでした。
+                                                        {% else %}
+                                                            銀行が登録されていません。
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 右側：銀行支店一覧 -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        {% if selected_bank %}
+                                            {{ selected_bank.name }} の支店一覧
+                                        {% else %}
+                                            銀行支店一覧
+                                        {% endif %}
+                                    </h6>
+                                </div>
+                                <div class="card-body p-0">
+                                    {% if selected_bank %}
+                                        <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+                                            <table class="table table-hover table-sm mb-0">
+                                                <thead class="table-light sticky-top">
+                                                    <tr>
+                                                        <th>支店名</th>
+                                                        <th>支店コード</th>
+                                                        <th>状態</th>
+                                                        <th>操作</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for branch in bank_branches %}
+                                                    <tr>
+                                                        <td>{{ branch.name }}</td>
+                                                        <td>{{ branch.branch_code|default:"-" }}</td>
+                                                        <td>
+                                                            {% if branch.is_active %}
+                                                                <span class="badge bg-success">有効</span>
+                                                            {% else %}
+                                                                <span class="badge bg-secondary">無効</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group" role="group">
+                                                                <a href="{% url 'master:bank_branch_update' branch.pk %}" class="btn btn-outline-secondary btn-sm" title="編集">
+                                                                    <i class="bi bi-pencil"></i>
+                                                                </a>
+                                                                <a href="{% url 'master:bank_branch_delete' branch.pk %}" class="btn btn-dark btn-sm" title="削除">
+                                                                    <i class="bi bi-x"></i>
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    {% empty %}
+                                                    <tr>
+                                                        <td colspan="4" class="text-center text-muted">
+                                                            この銀行には支店が登録されていません。
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    {% else %}
+                                        <div class="text-center text-muted p-4">
+                                            <i class="bi bi-arrow-left"></i>
+                                            左側の銀行を選択すると、その銀行の支店一覧が表示されます。
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 変更履歴 -->
+            {% if change_logs %}
+            <div class="content-box card bg-light mt-3">
+                <div class="card-header">
+                    変更履歴（最新10件）
+                </div>
+                <div class="card-body mb-0">
+                    <table class="table table-hover table-sm me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+                        <thead>
+                            <tr>
+                                <th>対象</th>
+                                <th>操作</th>
+                                <th>変更内容</th>
+                                <th>変更者</th>
+                                <th>日時</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in change_logs %}
+                            <tr>
+                                <td>
+                                    {% if log.model_name == 'Bank' %}
+                                        <span class="badge bg-primary">銀行</span>
+                                    {% elif log.model_name == 'BankBranch' %}
+                                        <span class="badge bg-info">銀行支店</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if log.action == 'create' %}
+                                        <span class="badge bg-success">作成</span>
+                                    {% elif log.action == 'update' %}
+                                        <span class="badge bg-warning">編集</span>
+                                    {% elif log.action == 'delete' %}
+                                        <span class="badge bg-danger">削除</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ log.description|default:"-"|truncatechars:40 }}</td>
+                                <td>
+                                    {% if log.user %}
+                                        {{ log.user.get_full_name|default:log.user.username }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>{{ log.timestamp|date:"m/d H:i" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- 戻るボタン -->
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <a href="{% url 'master:master_index_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

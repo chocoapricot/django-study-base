@@ -7,6 +7,17 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
+            <!-- 銀行情報表示 -->
+            {% if bank_branch.bank %}
+                {% include 'master/_bank_info_simple.html' with bank=bank_branch.bank %}
+            {% elif form.bank.value %}
+                {% for bank in form.bank.field.queryset %}
+                    {% if bank.pk == form.bank.value %}
+                        {% include 'master/_bank_info_simple.html' with bank=bank %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            
             <div class="content-box card bg-light" style="max-width: 100%;">
                 <div class="card-header">
                     {{ title }}
@@ -81,7 +92,7 @@
                         <div class="row">
                             <div class="col-sm-10 offset-sm-2">
                                 <button type="submit" class="btn btn-sm btn-primary">保存</button>
-                                <a href="{% if bank_branch %}{% url 'master:bank_branch_detail' bank_branch.pk %}{% else %}{% url 'master:bank_branch_list' %}{% endif %}" class="btn btn-sm btn-secondary ms-2">キャンセル</a>
+                                <a href="{% url 'master:bank_management' %}" class="btn btn-sm btn-secondary ms-2">キャンセル</a>
                             </div>
                         </div>
                     </form>
@@ -91,7 +102,7 @@
             <!-- 戻るボタン -->
             <div class="row mt-3">
                 <div class="col text-left">
-                    <a href="{% if bank_branch %}{% url 'master:bank_branch_detail' bank_branch.pk %}{% else %}{% url 'master:bank_branch_list' %}{% endif %}" class="btn btn-sm btn-secondary">戻る</a>
+                    <a href="{% url 'master:bank_management' %}" class="btn btn-sm btn-secondary">戻る</a>
                 </div>
             </div>
         </div>

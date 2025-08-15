@@ -45,19 +45,11 @@ MASTER_CONFIGS = [
     },
     {
         'category': 'その他',
-        'name': '銀行管理',
-        'description': '銀行マスターの管理',
+        'name': '銀行・銀行支店管理',
+        'description': '銀行と銀行支店の統合管理',
         'model': 'master.Bank',
-        'url_name': 'master:bank_list',
+        'url_name': 'master:bank_management',
         'permission': 'master.view_bank'
-    },
-    {
-        'category': 'その他',
-        'name': '銀行支店管理',
-        'description': '銀行支店マスターの管理',
-        'model': 'master.BankBranch',
-        'url_name': 'master:bank_branch_list',
-        'permission': 'master.view_bankbranch'
     }
 ]
 
@@ -931,26 +923,6 @@ def bank_list(request):
     return render(request, 'master/bank_list.html', context)
 
 
-@login_required
-@permission_required('master.view_bank', raise_exception=True)
-def bank_detail(request, pk):
-    """銀行詳細"""
-    bank = get_object_or_404(Bank, pk=pk)
-    
-    # 変更履歴を取得（最新10件）
-    from apps.system.logs.models import AppLog
-    change_logs = AppLog.objects.filter(
-        model_name='Bank',
-        object_id=str(pk),
-        action__in=['create', 'update', 'delete']
-    ).order_by('-timestamp')[:10]
-    
-    context = {
-        'bank': bank,
-        'change_logs': change_logs,
-    }
-    return render(request, 'master/bank_detail.html', context)
-
 
 @login_required
 @permission_required('master.add_bank', raise_exception=True)
@@ -961,7 +933,8 @@ def bank_create(request):
         if form.is_valid():
             bank = form.save()
             messages.success(request, f'銀行「{bank.name}」を作成しました。')
-            return redirect('master:bank_detail', pk=bank.pk)
+            # 銀行管理画面に戻る
+            return redirect('master:bank_management')
     else:
         form = BankForm()
     
@@ -983,7 +956,7 @@ def bank_update(request, pk):
         if form.is_valid():
             bank = form.save()
             messages.success(request, f'銀行「{bank.name}」を更新しました。')
-            return redirect('master:bank_detail', pk=bank.pk)
+            return redirect('master:bank_management')
     else:
         form = BankForm(instance=bank)
     
@@ -1005,7 +978,7 @@ def bank_delete(request, pk):
         bank_name = bank.name
         bank.delete()
         messages.success(request, f'銀行「{bank_name}」を削除しました。')
-        return redirect('master:bank_list')
+        return redirect('master:bank_management')
     
     context = {
         'bank': bank,
@@ -1036,7 +1009,7 @@ def bank_change_history_list(request):
     return render(request, 'master/master_change_history_list.html', {
         'logs': logs_page,
         'title': '銀行変更履歴',
-        'list_url': 'master:bank_list',
+        'list_url': 'master:bank_management',
         'model_name': 'Bank'
     })
 
@@ -1095,42 +1068,35 @@ def bank_branch_list(request):
     return render(request, 'master/bank_branch_list.html', context)
 
 
-@login_required
-@permission_required('master.view_bankbranch', raise_exception=True)
-def bank_branch_detail(request, pk):
-    """銀行支店詳細"""
-    bank_branch = get_object_or_404(BankBranch.objects.select_related('bank'), pk=pk)
-    
-    # 変更履歴を取得（最新10件）
-    from apps.system.logs.models import AppLog
-    change_logs = AppLog.objects.filter(
-        model_name='BankBranch',
-        object_id=str(pk),
-        action__in=['create', 'update', 'delete']
-    ).order_by('-timestamp')[:10]
-    
-    context = {
-        'bank_branch': bank_branch,
-        'change_logs': change_logs,
-    }
-    return render(request, 'master/bank_branch_detail.html', context)
-
 
 @login_required
 @permission_required('master.add_bankbranch', raise_exception=True)
 def bank_branch_create(request):
     """銀行支店作成"""
+    bank_id = request.GET.get('bank') or request.GET.get('bank_id')
+    bank = None
+    initial_data = {}
+    
+    if bank_id:
+        try:
+            bank = Bank.objects.get(pk=bank_id)
+            initial_data['bank'] = bank
+        except Bank.DoesNotExist:
+            pass
+    
     if request.method == 'POST':
         form = BankBranchForm(request.POST)
         if form.is_valid():
             bank_branch = form.save()
             messages.success(request, f'銀行支店「{bank_branch.bank.name} {bank_branch.name}」を作成しました。')
-            return redirect('master:bank_branch_detail', pk=bank_branch.pk)
+            # 銀行管理画面に戻る
+            return redirect('master:bank_management')
     else:
-        form = BankBranchForm()
+        form = BankBranchForm(initial=initial_data)
     
     context = {
         'form': form,
+        'bank': bank,
         'title': '銀行支店作成',
     }
     return render(request, 'master/bank_branch_form.html', context)
@@ -1140,20 +1106,21 @@ def bank_branch_create(request):
 @permission_required('master.change_bankbranch', raise_exception=True)
 def bank_branch_update(request, pk):
     """銀行支店編集"""
-    bank_branch = get_object_or_404(BankBranch, pk=pk)
+    bank_branch = get_object_or_404(BankBranch.objects.select_related('bank'), pk=pk)
     
     if request.method == 'POST':
         form = BankBranchForm(request.POST, instance=bank_branch)
         if form.is_valid():
             bank_branch = form.save()
             messages.success(request, f'銀行支店「{bank_branch.bank.name} {bank_branch.name}」を更新しました。')
-            return redirect('master:bank_branch_detail', pk=bank_branch.pk)
+            return redirect('master:bank_management')
     else:
         form = BankBranchForm(instance=bank_branch)
     
     context = {
         'form': form,
         'bank_branch': bank_branch,
+        'bank': bank_branch.bank,
         'title': f'銀行支店編集 - {bank_branch.bank.name} {bank_branch.name}',
     }
     return render(request, 'master/bank_branch_form.html', context)
@@ -1169,7 +1136,7 @@ def bank_branch_delete(request, pk):
         bank_branch_name = f"{bank_branch.bank.name} {bank_branch.name}"
         bank_branch.delete()
         messages.success(request, f'銀行支店「{bank_branch_name}」を削除しました。')
-        return redirect('master:bank_branch_list')
+        return redirect('master:bank_management')
     
     context = {
         'bank_branch': bank_branch,
@@ -1200,6 +1167,49 @@ def bank_branch_change_history_list(request):
     return render(request, 'master/master_change_history_list.html', {
         'logs': logs_page,
         'title': '銀行支店変更履歴',
-        'list_url': 'master:bank_branch_list',
+        'list_url': 'master:bank_management',
         'model_name': 'BankBranch'
     })
+
+
+# 銀行・銀行支店統合管理
+@login_required
+@permission_required('master.view_bank', raise_exception=True)
+def bank_management(request):
+    """銀行・銀行支店統合管理画面"""
+    selected_bank_id = request.GET.get('bank_id')
+    search_query = request.GET.get('search', '')
+    
+    # 銀行一覧を取得
+    banks = Bank.objects.all()
+    if search_query:
+        banks = banks.filter(Q(name__icontains=search_query) | Q(bank_code__icontains=search_query))
+    banks = banks.order_by('name')
+    
+    # 選択された銀行の支店一覧を取得
+    selected_bank = None
+    bank_branches = BankBranch.objects.none()
+    
+    if selected_bank_id:
+        try:
+            selected_bank = Bank.objects.get(pk=selected_bank_id)
+            bank_branches = BankBranch.objects.filter(bank=selected_bank).order_by('name')
+        except Bank.DoesNotExist:
+            pass
+    
+    # 変更履歴を取得（最新10件、銀行と銀行支店を統合）
+    from apps.system.logs.models import AppLog
+    change_logs = AppLog.objects.filter(
+        model_name__in=['Bank', 'BankBranch'],
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')[:10]
+    
+    context = {
+        'banks': banks,
+        'selected_bank': selected_bank,
+        'bank_branches': bank_branches,
+        'search_query': search_query,
+        'change_logs': change_logs,
+        'title': '銀行・銀行支店管理',
+    }
+    return render(request, 'master/bank_management.html', context)

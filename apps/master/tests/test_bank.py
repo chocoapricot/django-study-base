@@ -158,7 +158,7 @@ class BankViewTest(TestCase):
         # 必要な権限を付与
         from django.contrib.auth.models import Permission
         permissions = Permission.objects.filter(
-            codename__in=['view_bank', 'add_bank', 'change_bank', 'delete_bank']
+            codename__in=['view_bank', 'add_bank', 'change_bank', 'delete_bank', 'view_bankbranch']
         )
         self.user.user_permissions.set(permissions)
         
@@ -171,17 +171,13 @@ class BankViewTest(TestCase):
             updated_by=self.user
         )
     
-    def test_bank_list_view(self):
-        """銀行一覧ビューのテスト"""
-        response = self.client.get(reverse('master:bank_list'))
+    def test_bank_management_view(self):
+        """銀行統合管理ビューのテスト"""
+        response = self.client.get(reverse('master:bank_management'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'テスト銀行')
     
-    def test_bank_detail_view(self):
-        """銀行詳細ビューのテスト"""
-        response = self.client.get(reverse('master:bank_detail', kwargs={'pk': self.bank.pk}))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'テスト銀行')
+
     
     def test_bank_create_view_get(self):
         """銀行作成ビュー（GET）のテスト"""

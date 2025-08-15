@@ -1,0 +1,23 @@
+<!-- 銀行情報（1行表示） -->
+<div class="card bg-light mb-3">
+    <div class="card-body py-2">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <strong>{{ bank.name }}</strong>
+                {% if bank.bank_code %}
+                    <span class="text-muted">（{{ bank.bank_code }}）</span>
+                {% endif %}
+                {% if bank.is_active %}
+                    <span class="badge bg-success ms-2">有効</span>
+                {% else %}
+                    <span class="badge bg-secondary ms-2">無効</span>
+                {% endif %}
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="{% url 'master:bank_management' %}?bank_id={{ bank.pk }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> 銀行管理に戻る
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
