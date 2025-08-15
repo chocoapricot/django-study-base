@@ -11,9 +11,12 @@ from .models import ConnectStaff, ConnectClient
 
 @login_required
 def connect_staff_list(request):
-    """スタッフ接続一覧（ログインユーザー宛の申請）"""
-    # ログインユーザーのメールアドレス宛の申請を取得
-    connections = ConnectStaff.objects.filter(email=request.user.email)
+    """スタッフ接続一覧"""
+    # 管理者の場合は全ての接続、そうでない場合は自分宛の接続を表示
+    if request.user.is_staff:
+        connections = ConnectStaff.objects.all()
+    else:
+        connections = ConnectStaff.objects.filter(email=request.user.email)
     
     # 検索機能
     search_query = request.GET.get('q', '')
@@ -183,9 +186,12 @@ def create_staff_connection(request):
 
 @login_required
 def connect_client_list(request):
-    """クライアント接続一覧（ログインユーザー宛の申請）"""
-    # ログインユーザーのメールアドレス宛の申請を取得
-    connections = ConnectClient.objects.filter(email=request.user.email)
+    """クライアント接続一覧"""
+    # 管理者の場合は全ての接続、そうでない場合は自分宛の接続を表示
+    if request.user.is_staff:
+        connections = ConnectClient.objects.all()
+    else:
+        connections = ConnectClient.objects.filter(email=request.user.email)
     
     # 検索機能
     search_query = request.GET.get('q', '')

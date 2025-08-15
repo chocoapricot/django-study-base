@@ -47,6 +47,7 @@
                 <tr>
                     <th>会社名</th>
                     <th>法人番号</th>
+                    <th>メールアドレス</th>
                     <th>申請日時</th>
                     <th>ステータス</th>
                     <th>承認日時</th>
@@ -66,6 +67,7 @@
                         {% endwith %}
                     </td>
                     <td>{{ connection.corporate_number }}</td>
+                    <td>{{ connection.email }}</td>
                     <td>{{ connection.created_at|date:"Y/m/d H:i" }}</td>
                     <td>
                         {% if connection.is_approved %}
