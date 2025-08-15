@@ -13,6 +13,7 @@ urlpatterns = [
     path('client/<int:pk>/', views.client_contract_detail, name='client_contract_detail'),
     path('client/<int:pk>/update/', views.client_contract_update, name='client_contract_update'),
     path('client/<int:pk>/delete/', views.client_contract_delete, name='client_contract_delete'),
+    path('client/<int:pk>/change_history/', views.client_contract_change_history_list, name='client_contract_change_history_list'),
     
     # スタッフ契約
     path('staff/', views.staff_contract_list, name='staff_contract_list'),
@@ -20,6 +21,7 @@ urlpatterns = [
     path('staff/<int:pk>/', views.staff_contract_detail, name='staff_contract_detail'),
     path('staff/<int:pk>/update/', views.staff_contract_update, name='staff_contract_update'),
     path('staff/<int:pk>/delete/', views.staff_contract_delete, name='staff_contract_delete'),
+    path('staff/<int:pk>/change_history/', views.staff_contract_change_history_list, name='staff_contract_change_history_list'),
     
     # 選択用画面
     path('client-select/', views.client_select, name='client_select'),

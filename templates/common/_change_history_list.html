@@ -33,14 +33,22 @@
                             <span class="badge bg-primary">資格</span>
                         {% elif log.model_name == 'Skill' %}
                             <span class="badge bg-primary">技能</span>
-                        {% if log.model_name == 'Client' %}
-                            <span class="badge bg-primary">基本情報</span>
+                        {% elif log.model_name == 'Client' %}
+                            <span class="badge bg-primary">クライアント</span>
                         {% elif log.model_name == 'ClientDepartment' %}
                             <span class="badge bg-info">組織</span>
                         {% elif log.model_name == 'ClientUser' %}
                             <span class="badge bg-success">担当者</span>
                         {% elif log.model_name == 'ClientFile' %}
                             <span class="badge bg-secondary">ファイル</span>
+                        {% elif log.model_name == 'Company' %}
+                            <span class="badge bg-primary">会社情報</span>
+                        {% elif log.model_name == 'CompanyDepartment' %}
+                            <span class="badge bg-info">部署</span>
+                        {% elif log.model_name == 'ClientContract' %}
+                            <span class="badge bg-primary">契約情報</span>
+                        {% elif log.model_name == 'StaffContract' %}
+                            <span class="badge bg-success">契約情報</span>
                         {% elif log.model_name == 'BillPayment' %}
                             <span class="badge bg-primary">支払条件</span>
                         {% elif log.model_name == 'BillBank' %}

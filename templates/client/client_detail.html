@@ -421,68 +421,11 @@
 </div>
 {% endif %}
 
-<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        変更履歴
-    </div>
-    <div class="card-body mb-0">
-        <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
-            <thead>
-                <tr>
-                    <th>対象</th>
-                    <th>操作</th>
-                    <th>内容</th>
-                    <th>変更者</th>
-                    <th>日時</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for log in change_logs %}
-                <tr>
-                    <td>
-                        {% if log.model_name == 'Client' %}
-                            <span class="badge bg-primary">クライアント</span>
-                        {% elif log.model_name == 'ClientDepartment' %}
-                            <span class="badge bg-info">組織</span>
-                        {% elif log.model_name == 'ClientUser' %}
-                            <span class="badge bg-success">担当者</span>
-                        {% elif log.model_name == 'ClientFile' %}
-                            <span class="badge bg-secondary">ファイル</span>
-                        {% else %}
-                            {{ log.model_name }}
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if log.action == 'create' %}
-                            <span class="badge bg-success">作成</span>
-                        {% elif log.action == 'update' %}
-                            <span class="badge bg-warning">編集</span>
-                        {% elif log.action == 'delete' %}
-                            <span class="badge bg-danger">削除</span>
-                        {% else %}
-                            <span class="badge bg-secondary">{{ log.action|title }}</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ log.object_repr|truncatechars:40 }}</td>
-                    <td>
-                        {% if log.user %}
-                            {{ log.user.last_name }} {{ log.user.first_name }}
-                        {% else %}-{% endif %}
-                    </td>
-                    <td>{{ log.timestamp|date:'Y/m/d H:i:s' }}</td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="5">履歴がありません</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% if change_logs_count > 0 %}
-    <div class="card-footer d-flex justify-content-center align-items-center">
-        <a href="{% url 'client:client_change_history_list' client.pk %}">全て表示 (全{{ change_logs_count }}件)</a>
-    </div>
-    {% endif %}
-</div>
+<!-- 変更履歴（共通テンプレート使用） -->
+{% url 'client:client_change_history_list' client.pk as client_history_url %}
+{% with change_logs=change_logs change_logs_count=change_logs_count history_url=client_history_url %}
+    {% include 'common/_change_history_list.html' %}
+{% endwith %}
 {% endblock %}
 
 

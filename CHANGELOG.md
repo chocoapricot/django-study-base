@@ -19,6 +19,7 @@
 - 変更がない場合は、その旨をメッセージで表示するようにしました。
 - スタッフ削除時に成功メッセージを表示するようにしました。
 - 銀行および銀行支店の統合管理画面のすべての変更履歴を表示するページ (`bank_management/history/`) を追加しました。
+- 共通の変更履歴リストにページネーション機能を追加しました。
 
 ### Changed
 - 銀行および銀行支店の個別のリスト、詳細画面を廃止し、すべての管理操作を統合された `bank_management` 画面から行えるようにしました。
@@ -49,6 +50,7 @@
 - 変更履歴表示用のテンプレートを `templates/common/_change_history_list.html` に共通化しました。
 - すべての変更履歴表示を `templates/common/_change_history_list.html` に完全に共通化しました。
 - 各テンプレートから変更履歴表示のロジックを削除し、共通テンプレートにコンテキスト変数を渡すように変更しました。
+- クライアント、会社、契約関連の変更履歴表示を `common/_change_history_list.html` に共通化しました。
 
 ### Removed
 - 銀行および銀行支店の個別のリスト、詳細画面のテンプレート (`bank_list.html`, `bank_detail.html`, `bank_branch_list.html`, `bank_branch_detail.html`) を削除しました。
