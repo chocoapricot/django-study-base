@@ -170,14 +170,10 @@
             </div>
 
             <!-- 変更履歴 -->
-            {% include 'common/_change_history_list.html' %}
-
-            <!-- 戻るボタン -->
-            <div class="row mt-3">
-                <div class="col text-left">
-                    <a href="{% url 'master:master_index_list' %}" class="btn btn-sm btn-secondary">戻る</a>
-                </div>
-            </div>
+            {% url 'master:bank_management_change_history_list' as bank_history_url %}
+            {% with change_logs=change_logs change_logs_count=change_logs_count history_url=bank_history_url back_url=back_url %}
+                {% include 'common/_change_history_list.html' %}
+            {% endwith %}
         </div>
     </div>
 </div>

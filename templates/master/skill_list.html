@@ -119,5 +119,8 @@
 </div>
 
 <!-- 変更履歴一覧 -->
-{% include 'common/_change_history_list.html' with history_url='master:skill_change_history_list' %}
+{% url 'master:skill_change_history_list' as skill_history_url %}
+{% with change_logs=change_logs change_logs_count=change_logs_count history_url=skill_history_url %}
+    {% include 'common/_change_history_list.html' %}
+{% endwith %}
 {% endblock %}
