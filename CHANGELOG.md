@@ -22,6 +22,7 @@
 - 共通の変更履歴リストにページネーション機能を追加しました。
 - クライアント契約およびスタッフ契約の変更履歴を詳細に表示する機能を追加しました。
 - これに伴い、`client_contract_change_history_list` および `staff_contract_change_history_list` ビューと、共通テンプレート `templates/contract/contract_change_history_list.html` を追加しました。
+- 会社関連の変更履歴表示を `templates/company/company_change_history_list.html` に移行しました。
 
 ### Changed
 - 銀行および銀行支店の個別のリスト、詳細画面を廃止し、すべての管理操作を統合された `bank_management` 画面から行えるようにしました。
@@ -46,6 +47,8 @@
 - 変更履歴リストのフッターにある「すべて表示」リンクの表示条件を、`change_logs_count` が0より大きく、かつ `history_url` が存在する場合に限定しました。
 - 変更履歴リストに「戻る」ボタンを追加し、`back_url` が渡された場合に表示されるようにしました。
 - クライアント契約およびスタッフ契約の詳細画面から、変更履歴の詳細ページへのリンクが正しく生成されるように変更しました。
+- 変更履歴リストにおいて、詳細画面では `object_repr` を切り詰めて表示し、変更履歴リスト画面ではすべて表示するように、表示内容を切り替えられるようにしました。
+- 共通の変更履歴リスト (`common/_change_history_list.html`) のページネーションロジックを改善し、より使いやすくしました。
 
 ### Refactored
 - 銀行および銀行支店に関するURL、ビュー、テンプレートを大幅に整理・統合しました。
@@ -54,10 +57,12 @@
 - すべての変更履歴表示を `templates/common/_change_history_list.html` に完全に共通化しました。
 - 各テンプレートから変更履歴表示のロジックを削除し、共通テンプレートにコンテキスト変数を渡すように変更しました。
 - クライアント、会社、契約関連の変更履歴表示を `common/_change_history_list.html` に共通化しました。
+- 会社関連の変更履歴表示を共通テンプレート (`common/_change_history_list.html`) に移行しました。
 
 ### Removed
 - 銀行および銀行支店の個別のリスト、詳細画面のテンプレート (`bank_list.html`, `bank_detail.html`, `bank_branch_list.html`, `bank_branch_detail.html`) を削除しました。
 - `templates/master/_bank_change_history_list.html` および `templates/master/_change_history_list.html` を削除しました。
+- `templates/company/change_history_list.html` を削除しました。
 
 ## 2025-08-13
 

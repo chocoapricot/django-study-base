@@ -5,7 +5,7 @@
 
 <!-- 共通テンプレートを使用して変更履歴を表示（ページネーション・戻るボタン込み） -->
 {% url 'staff:staff_detail' staff.pk as staff_detail_url %}
-{% with change_logs=logs change_logs_count=logs.paginator.count history_url='' title='スタッフ変更履歴一覧' back_url=staff_detail_url %}
+{% with change_logs=logs change_logs_count=logs.paginator.count history_url='' title='スタッフ変更履歴一覧' back_url=staff_detail_url show_full_content=True %}
     {% include 'common/_change_history_list.html' %}
 {% endwith %}
 

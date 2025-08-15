@@ -128,7 +128,7 @@
 
 <!-- 変更履歴一覧 -->
 {% url 'master:bill_bank_change_history_list' as bill_bank_history_url %}
-{% with change_logs=change_logs change_logs_count=change_logs_count history_url=bill_bank_history_url %}
+{% with change_logs=change_logs change_logs_count=change_logs_count history_url=bill_bank_history_url show_full_content=False %}
     {% include 'common/_change_history_list.html' %}
 {% endwith %}
 {% endblock %}

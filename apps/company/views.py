@@ -175,7 +175,7 @@ def change_history_list(request):
     # 両方のログを統合してタイムスタンプ順にソート
     change_logs = (company_logs | department_logs).order_by('-timestamp')
     
-    return render(request, 'company/change_history_list.html', {
+    return render(request, 'company/company_change_history_list.html', {
         'change_logs': change_logs,
         'company': company
     })

@@ -171,7 +171,7 @@
 
             <!-- 変更履歴 -->
             {% url 'master:bank_management_change_history_list' as bank_history_url %}
-            {% with change_logs=change_logs change_logs_count=change_logs_count history_url=bank_history_url back_url=back_url %}
+            {% with change_logs=change_logs change_logs_count=change_logs_count history_url=bank_history_url back_url=back_url show_full_content=False %}
                 {% include 'common/_change_history_list.html' %}
             {% endwith %}
         </div>

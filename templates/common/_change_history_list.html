@@ -74,7 +74,13 @@
                             <span class="badge bg-secondary">{{ log.action|title }}</span>
                         {% endif %}
                     </td>
-                    <td>{{ log.object_repr|truncatechars:60 }}</td>
+                    <td>
+                        {% if show_full_content %}
+                            {{ log.object_repr }}
+                        {% else %}
+                            {{ log.object_repr|truncatechars:60 }}
+                        {% endif %}
+                    </td>
                     <td>
                         {% if log.user %}
                             {{ log.user.last_name }} {{ log.user.first_name }}

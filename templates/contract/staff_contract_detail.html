@@ -129,7 +129,7 @@
 
 <!-- 変更履歴（共通テンプレート使用） -->
 {% url 'contract:staff_contract_change_history_list' contract.pk as staff_contract_history_url %}
-{% with change_logs=change_logs change_logs_count=change_logs_count history_url=staff_contract_history_url %}
+{% with change_logs=change_logs change_logs_count=change_logs_count history_url=staff_contract_history_url show_full_content=False %}
     {% include 'common/_change_history_list.html' %}
 {% endwith %}
 {% endblock %}

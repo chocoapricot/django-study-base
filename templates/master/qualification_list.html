@@ -113,7 +113,7 @@
 
 <!-- 変更履歴一覧 -->
 {% url 'master:qualification_change_history_list' as qualification_history_url %}
-{% with change_logs=change_logs change_logs_count=change_logs_count history_url=qualification_history_url %}
+{% with change_logs=change_logs change_logs_count=change_logs_count history_url=qualification_history_url show_full_content=False %}
     {% include 'common/_change_history_list.html' %}
 {% endwith %}
 {% endblock %}

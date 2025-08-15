@@ -423,7 +423,7 @@
 
 <!-- 変更履歴（共通テンプレート使用） -->
 {% url 'client:client_change_history_list' client.pk as client_history_url %}
-{% with change_logs=change_logs change_logs_count=change_logs_count history_url=client_history_url %}
+{% with change_logs=change_logs change_logs_count=change_logs_count history_url=client_history_url show_full_content=False %}
     {% include 'common/_change_history_list.html' %}
 {% endwith %}
 {% endblock %}
