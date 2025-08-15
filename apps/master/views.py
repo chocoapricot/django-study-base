@@ -1197,12 +1197,18 @@ def bank_management(request):
         except Bank.DoesNotExist:
             pass
     
-    # 変更履歴を取得（最新10件、銀行と銀行支店を統合）
+    # 変更履歴を取得（最新5件、銀行と銀行支店を統合）
     from apps.system.logs.models import AppLog
     change_logs = AppLog.objects.filter(
         model_name__in=['Bank', 'BankBranch'],
         action__in=['create', 'update', 'delete']
-    ).order_by('-timestamp')[:10]
+    ).order_by('-timestamp')[:5]
+    
+    # 変更履歴の総件数
+    change_logs_count = AppLog.objects.filter(
+        model_name__in=['Bank', 'BankBranch'],
+        action__in=['create', 'update', 'delete']
+    ).count()
     
     context = {
         'banks': banks,
@@ -1210,6 +1216,35 @@ def bank_management(request):
         'bank_branches': bank_branches,
         'search_query': search_query,
         'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
+        'history_url': 'master:bank_management_change_history_list',
         'title': '銀行・銀行支店管理',
     }
     return render(request, 'master/bank_management.html', context)
+
+
+# 銀行・銀行支店統合変更履歴
+@login_required
+@permission_required('master.view_bank', raise_exception=True)
+def bank_management_change_history_list(request):
+    """銀行・銀行支店統合変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    from django.core.paginator import Paginator
+    
+    # 銀行・銀行支店の変更履歴を取得
+    logs = AppLog.objects.filter(
+        model_name__in=['Bank', 'BankBranch'],
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')
+    
+    # ページネーション
+    paginator = Paginator(logs, 20)
+    page = request.GET.get('page')
+    logs_page = paginator.get_page(page)
+    
+    return render(request, 'master/master_change_history_list.html', {
+        'logs': logs_page,
+        'title': '銀行・銀行支店変更履歴',
+        'list_url': 'master:bank_management',
+        'model_name': 'Bank/BankBranch'
+    })
