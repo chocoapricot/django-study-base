@@ -368,23 +368,26 @@ def client_user_detail(request, pk):
     user = get_object_or_404(ClientUser, pk=pk)
     client = user.client
     
+    from apps.company.models import Company
+    company = Company.objects.first()
+
     # 接続申請の状況を確認
     connect_request = None
-    if user.email:
+    if user.email and company and company.corporate_number:
         from apps.connect.models import ConnectClient
         connect_request = ConnectClient.objects.filter(
-            corporate_number=client.corporate_number,
+            corporate_number=company.corporate_number,
             email=user.email
         ).first()
     
     # 接続申請の切り替え処理
     if request.method == 'POST' and 'toggle_connect_request' in request.POST:
-        if user.email and client.corporate_number:
+        if user.email and company and company.corporate_number:
             from apps.connect.models import ConnectClient
             from apps.system.logs.utils import log_model_action
             
             existing_request = ConnectClient.objects.filter(
-                corporate_number=client.corporate_number,
+                corporate_number=company.corporate_number,
                 email=user.email
             ).first()
             
@@ -396,7 +399,7 @@ def client_user_detail(request, pk):
             else:
                 # 新しい申請を作成
                 connect_request = ConnectClient.objects.create(
-                    corporate_number=client.corporate_number,
+                    corporate_number=company.corporate_number,
                     email=user.email,
                     created_by=request.user,
                     updated_by=request.user
