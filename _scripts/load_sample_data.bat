@@ -22,6 +22,30 @@ echo メニューデータをインポート中...
 python manage.py loaddata _sample_data/menus.json
 if errorlevel 1 goto error
 
+echo 資格マスタデータをインポート中...
+python manage.py loaddata _sample_data/master_qualifications.json
+if errorlevel 1 goto error
+
+echo 技能マスタデータをインポート中...
+python manage.py loaddata _sample_data/master_skills.json
+if errorlevel 1 goto error
+
+echo 支払いサイトマスタデータをインポート中...
+python manage.py loaddata _sample_data/master_bill_payment.json
+if errorlevel 1 goto error
+
+echo 振込先銀行マスタデータをインポート中...
+python manage.py loaddata _sample_data/master_bill_bank.json
+if errorlevel 1 goto error
+
+echo 銀行マスタデータをインポート中...
+python manage.py loaddata _sample_data/master_bank.json
+if errorlevel 1 goto error
+
+echo 銀行支店マスタデータをインポート中...
+python manage.py loaddata _sample_data/master_bank_branch.json
+if errorlevel 1 goto error
+
 echo 会社データをインポート中...
 python manage.py loaddata _sample_data/company.json
 if errorlevel 1 goto error
@@ -69,6 +93,12 @@ echo 📈 インポートされたデータ:
 echo - ドロップダウン選択肢
 echo - システムパラメータ
 echo - メニュー設定
+echo - 資格マスタ
+echo - 技能マスタ
+echo - 支払いサイトマスタ
+echo - 振込先銀行マスタ
+echo - 銀行マスタ
+echo - 銀行支店マスタ
 echo - 会社データ
 echo - 部署データ
 echo - スタッフデータ
