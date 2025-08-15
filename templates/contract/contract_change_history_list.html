@@ -1,0 +1,12 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!-- 共通テンプレートを使用して変更履歴を表示（ページネーション・戻るボタン込み） -->
+{% url list_url list_url_pk as back_url_resolved %}
+{% with change_logs=logs change_logs_count=logs.paginator.count history_url='' model_name=model_name title=title back_url=back_url_resolved %}
+    {% include 'common/_change_history_list.html' %}
+{% endwith %}
+{% endblock %}

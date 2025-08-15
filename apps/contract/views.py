@@ -448,3 +448,64 @@ def staff_select(request):
         'return_url': return_url,
     }
     return render(request, 'contract/staff_select.html', context)
+
+
+# 変更履歴ビュー
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def client_contract_change_history_list(request, pk):
+    """クライアント契約変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    from django.core.paginator import Paginator
+    
+    contract = get_object_or_404(ClientContract, pk=pk)
+    
+    # 該当契約の変更履歴を取得
+    logs = AppLog.objects.filter(
+        model_name='ClientContract',
+        object_id=str(pk),
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')
+    
+    # ページネーション
+    paginator = Paginator(logs, 20)
+    page = request.GET.get('page')
+    logs_page = paginator.get_page(page)
+    
+    return render(request, 'contract/contract_change_history_list.html', {
+        'logs': logs_page,
+        'title': f'クライアント契約変更履歴 - {contract.contract_name}',
+        'list_url': 'contract:client_contract_detail',
+        'list_url_pk': pk,
+        'model_name': 'ClientContract'
+    })
+
+
+@login_required
+@permission_required('contract.view_staffcontract', raise_exception=True)
+def staff_contract_change_history_list(request, pk):
+    """スタッフ契約変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    from django.core.paginator import Paginator
+    
+    contract = get_object_or_404(StaffContract, pk=pk)
+    
+    # 該当契約の変更履歴を取得
+    logs = AppLog.objects.filter(
+        model_name='StaffContract',
+        object_id=str(pk),
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')
+    
+    # ページネーション
+    paginator = Paginator(logs, 20)
+    page = request.GET.get('page')
+    logs_page = paginator.get_page(page)
+    
+    return render(request, 'contract/contract_change_history_list.html', {
+        'logs': logs_page,
+        'title': f'スタッフ契約変更履歴 - {contract.contract_name}',
+        'list_url': 'contract:staff_contract_detail',
+        'list_url_pk': pk,
+        'model_name': 'StaffContract'
+    })
