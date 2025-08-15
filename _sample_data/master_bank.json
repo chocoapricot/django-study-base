@@ -1,0 +1,112 @@
+[
+  {
+    "model": "master.bank",
+    "pk": 1,
+    "fields": {
+      "name": "みずほ銀行",
+      "bank_code": "0001",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "master.bank",
+    "pk": 2,
+    "fields": {
+      "name": "三菱UFJ銀行",
+      "bank_code": "0005",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "master.bank",
+    "pk": 3,
+    "fields": {
+      "name": "三井住友銀行",
+      "bank_code": "0009",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "master.bank",
+    "pk": 4,
+    "fields": {
+      "name": "りそな銀行",
+      "bank_code": "0010",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "master.bank",
+    "pk": 5,
+    "fields": {
+      "name": "ゆうちょ銀行",
+      "bank_code": "9900",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "master.bank",
+    "pk": 6,
+    "fields": {
+      "name": "楽天銀行",
+      "bank_code": "0036",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "master.bank",
+    "pk": 7,
+    "fields": {
+      "name": "住信SBIネット銀行",
+      "bank_code": "0038",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "master.bank",
+    "pk": 8,
+    "fields": {
+      "name": "イオン銀行",
+      "bank_code": "0040",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "master.bank",
+    "pk": 9,
+    "fields": {
+      "name": "セブン銀行",
+      "bank_code": "0034",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "master.bank",
+    "pk": 10,
+    "fields": {
+      "name": "PayPay銀行",
+      "bank_code": "0033",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  }
+]

@@ -454,3 +454,150 @@ class BillBank(MyModel):
     def get_active_list(cls):
         """有効な振込先銀行一覧を取得"""
         return cls.objects.filter(is_active=True).order_by('display_order', 'name', 'branch_name')
+
+
+class Bank(MyModel):
+    """銀行マスター"""
+    
+    name = models.CharField('銀行名', max_length=100)
+    bank_code = models.CharField('銀行コード', max_length=4, blank=True, null=True)
+    is_active = models.BooleanField('有効', default=True)
+    
+    class Meta:
+        db_table = 'apps_master_bank'
+        verbose_name = '銀行'
+        verbose_name_plural = '銀行'
+        ordering = ['name']
+        indexes = [
+            models.Index(fields=['is_active']),
+            models.Index(fields=['bank_code']),
+        ]
+    
+    def __str__(self):
+        if self.bank_code:
+            return f"{self.name}（{self.bank_code}）"
+        return self.name
+    
+    @property
+    def full_name(self):
+        """完全な銀行名"""
+        if self.bank_code:
+            return f"{self.name}（{self.bank_code}）"
+        return self.name
+    
+    def clean(self):
+        """バリデーション"""
+        from django.core.exceptions import ValidationError
+        
+        # 銀行コードのバリデーション
+        if self.bank_code:
+            if not self.bank_code.isdigit():
+                raise ValidationError('銀行コードは数字で入力してください。')
+            
+            if len(self.bank_code) != 4:
+                raise ValidationError('銀行コードは4桁で入力してください。')
+    
+    @classmethod
+    def get_active_list(cls):
+        """有効な銀行一覧を取得"""
+        return cls.objects.filter(is_active=True).order_by('name')
+    
+    @property
+    def usage_count(self):
+        """この銀行の利用件数"""
+        # 将来的に他のモデルで銀行が参照される場合のために準備
+        return 0
+    
+    def get_usage_details(self):
+        """利用詳細を取得"""
+        # 将来的に他のモデルで銀行が参照される場合のために準備
+        return {
+            'total_count': 0
+        }
+
+
+class BankBranch(MyModel):
+    """銀行支店マスター"""
+    
+    bank = models.ForeignKey(
+        Bank,
+        on_delete=models.CASCADE,
+        verbose_name='銀行',
+        related_name='branches'
+    )
+    name = models.CharField('支店名', max_length=100)
+    branch_code = models.CharField('支店コード', max_length=3, blank=True, null=True)
+    is_active = models.BooleanField('有効', default=True)
+    
+    class Meta:
+        db_table = 'apps_master_bank_branch'
+        verbose_name = '銀行支店'
+        verbose_name_plural = '銀行支店'
+        ordering = ['bank__name', 'name']
+        indexes = [
+            models.Index(fields=['bank']),
+            models.Index(fields=['is_active']),
+            models.Index(fields=['branch_code']),
+        ]
+        unique_together = [
+            ['bank', 'branch_code'],  # 同一銀行内で支店コードは重複不可
+        ]
+    
+    def __str__(self):
+        if self.branch_code:
+            return f"{self.bank.name} {self.name}（{self.branch_code}）"
+        return f"{self.bank.name} {self.name}"
+    
+    @property
+    def full_name(self):
+        """完全な支店名"""
+        if self.branch_code:
+            return f"{self.bank.name} {self.name}（{self.branch_code}）"
+        return f"{self.bank.name} {self.name}"
+    
+    @property
+    def bank_branch_info(self):
+        """銀行支店情報"""
+        bank_info = self.bank.full_name
+        branch_info = self.name
+        if self.branch_code:
+            branch_info += f"（{self.branch_code}）"
+        return f"{bank_info} {branch_info}"
+    
+    def clean(self):
+        """バリデーション"""
+        from django.core.exceptions import ValidationError
+        
+        # 支店コードのバリデーション
+        if self.branch_code:
+            if not self.branch_code.isdigit():
+                raise ValidationError('支店コードは数字で入力してください。')
+            
+            if len(self.branch_code) != 3:
+                raise ValidationError('支店コードは3桁で入力してください。')
+    
+    @classmethod
+    def get_active_list(cls, bank=None):
+        """有効な銀行支店一覧を取得"""
+        branches = cls.objects.filter(is_active=True).select_related('bank')
+        if bank:
+            branches = branches.filter(bank=bank)
+        return branches.order_by('bank__name', 'name')
+    
+    @classmethod
+    def get_by_bank(cls, bank):
+        """指定銀行の支店一覧を取得"""
+        return cls.objects.filter(bank=bank, is_active=True).order_by('name')
+    
+    @property
+    def usage_count(self):
+        """この銀行支店の利用件数"""
+        # 将来的に他のモデルで銀行支店が参照される場合のために準備
+        return 0
+    
+    def get_usage_details(self):
+        """利用詳細を取得"""
+        # 将来的に他のモデルで銀行支店が参照される場合のために準備
+        return {
+            'total_count': 0
+        }

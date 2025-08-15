@@ -1,5 +1,5 @@
 from django import forms
-from .models import Qualification, Skill, BillPayment, BillBank
+from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch
 
 
 class QualificationCategoryForm(forms.ModelForm):
@@ -206,3 +206,48 @@ class BillBankForm(forms.ModelForm):
             'branch_code': '3桁の数字で入力してください（任意）',
             'account_number': '1-8桁の数字で入力してください',
         }
+
+
+class BankForm(forms.ModelForm):
+    """銀行フォーム"""
+    
+    class Meta:
+        model = Bank
+        fields = ['name', 'bank_code', 'is_active']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'bank_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '4', 'pattern': '[0-9]{4}'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+        labels = {
+            'bank_code': '銀行コード（4桁）',
+        }
+        help_texts = {
+            'bank_code': '4桁の数字で入力してください（任意）',
+        }
+
+
+class BankBranchForm(forms.ModelForm):
+    """銀行支店フォーム"""
+    
+    class Meta:
+        model = BankBranch
+        fields = ['bank', 'name', 'branch_code', 'is_active']
+        widgets = {
+            'bank': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'branch_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '3', 'pattern': '[0-9]{3}'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+        labels = {
+            'branch_code': '支店コード（3桁）',
+        }
+        help_texts = {
+            'branch_code': '3桁の数字で入力してください（任意）',
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # 有効な銀行のみを選択肢に表示
+        self.fields['bank'].queryset = Bank.objects.filter(is_active=True).order_by('name')
+        self.fields['bank'].empty_label = "銀行を選択してください"

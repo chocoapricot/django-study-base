@@ -1,0 +1,144 @@
+{% extends 'common/_base.html' %}
+{% load help_tags %}
+
+{% block title %}銀行支店詳細 - {{ bank_branch.bank.name }} {{ bank_branch.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="content-box card bg-light" style="max-width: 100%;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    銀行支店詳細 - {{ bank_branch.bank.name }} {{ bank_branch.name }}
+                    <div>
+                        <a href="{% url 'master:bank_branch_update' bank_branch.pk %}" class="btn btn-sm btn-secondary">編集</a>
+                        <a href="{% url 'master:bank_branch_delete' bank_branch.pk %}" class="btn btn-sm btn-dark">削除</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th class="col-4">銀行名</th>
+                                    <td>
+                                        <a href="{% url 'master:bank_detail' bank_branch.bank.pk %}" class="text-decoration-none">
+                                            {{ bank_branch.bank.name }}
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>支店名</th>
+                                    <td>{{ bank_branch.name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>支店コード</th>
+                                    <td>{{ bank_branch.branch_code|default:"-" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>状態</th>
+                                    <td>
+                                        {% if bank_branch.is_active %}
+                                            <span class="badge bg-success">有効</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">無効</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th class="col-4">作成日時</th>
+                                    <td>{{ bank_branch.created_at|date:"Y/m/d H:i:s" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>作成者</th>
+                                    <td>
+                                        {% if bank_branch.created_by %}
+                                            {{ bank_branch.created_by.get_full_name|default:bank_branch.created_by.username }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>更新日時</th>
+                                    <td>{{ bank_branch.updated_at|date:"Y/m/d H:i:s" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>更新者</th>
+                                    <td>
+                                        {% if bank_branch.updated_by %}
+                                            {{ bank_branch.updated_by.get_full_name|default:bank_branch.updated_by.username }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 変更履歴 -->
+            <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    変更履歴
+                </div>
+                <div class="card-body mb-0">
+                    {% if change_logs %}
+                        <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+                            <thead>
+                                <tr>
+                                    <th>対象</th>
+                                    <th>操作</th>
+                                    <th>変更内容</th>
+                                    <th>変更者</th>
+                                    <th>日時</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in change_logs %}
+                                <tr>
+                                    <td><span class="badge bg-info">銀行支店</span></td>
+                                    <td>
+                                        {% if log.action == 'create' %}
+                                            <span class="badge bg-success">作成</span>
+                                        {% elif log.action == 'update' %}
+                                            <span class="badge bg-warning">編集</span>
+                                        {% elif log.action == 'delete' %}
+                                            <span class="badge bg-danger">削除</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ log.description|default:"-" }}</td>
+                                    <td>
+                                        {% if log.user %}
+                                            {{ log.user.get_full_name|default:log.user.username }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ log.timestamp|date:"Y/m/d H:i:s" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p class="text-muted mb-0">変更履歴がありません</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 戻るボタン -->
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <a href="{% url 'master:bank_branch_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

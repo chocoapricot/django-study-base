@@ -40,4 +40,20 @@ urlpatterns = [
     path('bill-bank/<int:pk>/update/', views.bill_bank_update, name='bill_bank_update'),
     path('bill-bank/<int:pk>/delete/', views.bill_bank_delete, name='bill_bank_delete'),
     path('bill-bank/history/', views.bill_bank_change_history_list, name='bill_bank_change_history_list'),
+    
+    # 銀行管理
+    path('bank/', views.bank_list, name='bank_list'),
+    path('bank/create/', views.bank_create, name='bank_create'),
+    path('bank/<int:pk>/', views.bank_detail, name='bank_detail'),
+    path('bank/<int:pk>/update/', views.bank_update, name='bank_update'),
+    path('bank/<int:pk>/delete/', views.bank_delete, name='bank_delete'),
+    path('bank/history/', views.bank_change_history_list, name='bank_change_history_list'),
+    
+    # 銀行支店管理
+    path('bank-branch/', views.bank_branch_list, name='bank_branch_list'),
+    path('bank-branch/create/', views.bank_branch_create, name='bank_branch_create'),
+    path('bank-branch/<int:pk>/', views.bank_branch_detail, name='bank_branch_detail'),
+    path('bank-branch/<int:pk>/update/', views.bank_branch_update, name='bank_branch_update'),
+    path('bank-branch/<int:pk>/delete/', views.bank_branch_delete, name='bank_branch_delete'),
+    path('bank-branch/history/', views.bank_branch_change_history_list, name='bank_branch_change_history_list'),
 ]

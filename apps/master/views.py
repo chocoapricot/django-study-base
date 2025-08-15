@@ -5,8 +5,8 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.urls import reverse
 from django.apps import apps
-from .models import Qualification, Skill, BillPayment, BillBank
-from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm, BillPaymentForm, BillBankForm
+from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch
+from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm, BillPaymentForm, BillBankForm, BankForm, BankBranchForm
 
 
 # マスタ設定データ
@@ -42,6 +42,22 @@ MASTER_CONFIGS = [
         'model': 'master.BillBank',
         'url_name': 'master:bill_bank_list',
         'permission': 'master.view_billbank'
+    },
+    {
+        'category': 'その他',
+        'name': '銀行管理',
+        'description': '銀行マスターの管理',
+        'model': 'master.Bank',
+        'url_name': 'master:bank_list',
+        'permission': 'master.view_bank'
+    },
+    {
+        'category': 'その他',
+        'name': '銀行支店管理',
+        'description': '銀行支店マスターの管理',
+        'model': 'master.BankBranch',
+        'url_name': 'master:bank_branch_list',
+        'permission': 'master.view_bankbranch'
     }
 ]
 
@@ -867,4 +883,323 @@ def bill_bank_change_history_list(request):
         'title': '振込先銀行変更履歴',
         'list_url': 'master:bill_bank_list',
         'model_name': 'BillBank'
+    })
+
+
+# 銀行マスタ
+@login_required
+@permission_required('master.view_bank', raise_exception=True)
+def bank_list(request):
+    """銀行一覧"""
+    search_query = request.GET.get('search', '')
+    
+    banks = Bank.objects.all()
+    
+    if search_query:
+        banks = banks.filter(
+            Q(name__icontains=search_query) |
+            Q(bank_code__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+    
+    banks = banks.order_by('name')
+    
+    # ページネーション
+    paginator = Paginator(banks, 20)
+    page = request.GET.get('page')
+    banks_page = paginator.get_page(page)
+    
+    # 変更履歴を取得（最新5件）
+    from apps.system.logs.models import AppLog
+    change_logs = AppLog.objects.filter(
+        model_name='Bank',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')[:5]
+    
+    change_logs_count = AppLog.objects.filter(
+        model_name='Bank',
+        action__in=['create', 'update', 'delete']
+    ).count()
+    
+    context = {
+        'banks': banks_page,
+        'search_query': search_query,
+        'title': '銀行管理',
+        'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
+    }
+    return render(request, 'master/bank_list.html', context)
+
+
+@login_required
+@permission_required('master.view_bank', raise_exception=True)
+def bank_detail(request, pk):
+    """銀行詳細"""
+    bank = get_object_or_404(Bank, pk=pk)
+    
+    # 変更履歴を取得（最新10件）
+    from apps.system.logs.models import AppLog
+    change_logs = AppLog.objects.filter(
+        model_name='Bank',
+        object_id=str(pk),
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')[:10]
+    
+    context = {
+        'bank': bank,
+        'change_logs': change_logs,
+    }
+    return render(request, 'master/bank_detail.html', context)
+
+
+@login_required
+@permission_required('master.add_bank', raise_exception=True)
+def bank_create(request):
+    """銀行作成"""
+    if request.method == 'POST':
+        form = BankForm(request.POST)
+        if form.is_valid():
+            bank = form.save()
+            messages.success(request, f'銀行「{bank.name}」を作成しました。')
+            return redirect('master:bank_detail', pk=bank.pk)
+    else:
+        form = BankForm()
+    
+    context = {
+        'form': form,
+        'title': '銀行作成',
+    }
+    return render(request, 'master/bank_form.html', context)
+
+
+@login_required
+@permission_required('master.change_bank', raise_exception=True)
+def bank_update(request, pk):
+    """銀行編集"""
+    bank = get_object_or_404(Bank, pk=pk)
+    
+    if request.method == 'POST':
+        form = BankForm(request.POST, instance=bank)
+        if form.is_valid():
+            bank = form.save()
+            messages.success(request, f'銀行「{bank.name}」を更新しました。')
+            return redirect('master:bank_detail', pk=bank.pk)
+    else:
+        form = BankForm(instance=bank)
+    
+    context = {
+        'form': form,
+        'bank': bank,
+        'title': f'銀行編集 - {bank.name}',
+    }
+    return render(request, 'master/bank_form.html', context)
+
+
+@login_required
+@permission_required('master.delete_bank', raise_exception=True)
+def bank_delete(request, pk):
+    """銀行削除"""
+    bank = get_object_or_404(Bank, pk=pk)
+    
+    if request.method == 'POST':
+        bank_name = bank.name
+        bank.delete()
+        messages.success(request, f'銀行「{bank_name}」を削除しました。')
+        return redirect('master:bank_list')
+    
+    context = {
+        'bank': bank,
+        'title': f'銀行削除 - {bank.name}',
+    }
+    return render(request, 'master/bank_delete.html', context)
+
+
+# 銀行変更履歴
+@login_required
+@permission_required('master.view_bank', raise_exception=True)
+def bank_change_history_list(request):
+    """銀行変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    from django.core.paginator import Paginator
+    
+    # 銀行の変更履歴を取得
+    logs = AppLog.objects.filter(
+        model_name='Bank',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')
+    
+    # ページネーション
+    paginator = Paginator(logs, 20)
+    page = request.GET.get('page')
+    logs_page = paginator.get_page(page)
+    
+    return render(request, 'master/master_change_history_list.html', {
+        'logs': logs_page,
+        'title': '銀行変更履歴',
+        'list_url': 'master:bank_list',
+        'model_name': 'Bank'
+    })
+
+
+# 銀行支店マスタ
+@login_required
+@permission_required('master.view_bankbranch', raise_exception=True)
+def bank_branch_list(request):
+    """銀行支店一覧"""
+    search_query = request.GET.get('search', '')
+    bank_filter = request.GET.get('bank', '')
+    
+    bank_branches = BankBranch.objects.select_related('bank')
+    
+    if search_query:
+        bank_branches = bank_branches.filter(
+            Q(name__icontains=search_query) |
+            Q(branch_code__icontains=search_query) |
+            Q(bank__name__icontains=search_query)
+        )
+    
+    if bank_filter:
+        bank_branches = bank_branches.filter(bank_id=bank_filter)
+    
+    bank_branches = bank_branches.order_by('bank__name', 'name')
+    
+    # ページネーション
+    paginator = Paginator(bank_branches, 20)
+    page = request.GET.get('page')
+    bank_branches_page = paginator.get_page(page)
+    
+    # フィルタ用の銀行一覧
+    banks = Bank.objects.filter(is_active=True).order_by('name')
+    
+    # 変更履歴を取得（最新5件）
+    from apps.system.logs.models import AppLog
+    change_logs = AppLog.objects.filter(
+        model_name='BankBranch',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')[:5]
+    
+    change_logs_count = AppLog.objects.filter(
+        model_name='BankBranch',
+        action__in=['create', 'update', 'delete']
+    ).count()
+    
+    context = {
+        'bank_branches': bank_branches_page,
+        'search_query': search_query,
+        'bank_filter': bank_filter,
+        'banks': banks,
+        'title': '銀行支店管理',
+        'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
+    }
+    return render(request, 'master/bank_branch_list.html', context)
+
+
+@login_required
+@permission_required('master.view_bankbranch', raise_exception=True)
+def bank_branch_detail(request, pk):
+    """銀行支店詳細"""
+    bank_branch = get_object_or_404(BankBranch.objects.select_related('bank'), pk=pk)
+    
+    # 変更履歴を取得（最新10件）
+    from apps.system.logs.models import AppLog
+    change_logs = AppLog.objects.filter(
+        model_name='BankBranch',
+        object_id=str(pk),
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')[:10]
+    
+    context = {
+        'bank_branch': bank_branch,
+        'change_logs': change_logs,
+    }
+    return render(request, 'master/bank_branch_detail.html', context)
+
+
+@login_required
+@permission_required('master.add_bankbranch', raise_exception=True)
+def bank_branch_create(request):
+    """銀行支店作成"""
+    if request.method == 'POST':
+        form = BankBranchForm(request.POST)
+        if form.is_valid():
+            bank_branch = form.save()
+            messages.success(request, f'銀行支店「{bank_branch.bank.name} {bank_branch.name}」を作成しました。')
+            return redirect('master:bank_branch_detail', pk=bank_branch.pk)
+    else:
+        form = BankBranchForm()
+    
+    context = {
+        'form': form,
+        'title': '銀行支店作成',
+    }
+    return render(request, 'master/bank_branch_form.html', context)
+
+
+@login_required
+@permission_required('master.change_bankbranch', raise_exception=True)
+def bank_branch_update(request, pk):
+    """銀行支店編集"""
+    bank_branch = get_object_or_404(BankBranch, pk=pk)
+    
+    if request.method == 'POST':
+        form = BankBranchForm(request.POST, instance=bank_branch)
+        if form.is_valid():
+            bank_branch = form.save()
+            messages.success(request, f'銀行支店「{bank_branch.bank.name} {bank_branch.name}」を更新しました。')
+            return redirect('master:bank_branch_detail', pk=bank_branch.pk)
+    else:
+        form = BankBranchForm(instance=bank_branch)
+    
+    context = {
+        'form': form,
+        'bank_branch': bank_branch,
+        'title': f'銀行支店編集 - {bank_branch.bank.name} {bank_branch.name}',
+    }
+    return render(request, 'master/bank_branch_form.html', context)
+
+
+@login_required
+@permission_required('master.delete_bankbranch', raise_exception=True)
+def bank_branch_delete(request, pk):
+    """銀行支店削除"""
+    bank_branch = get_object_or_404(BankBranch.objects.select_related('bank'), pk=pk)
+    
+    if request.method == 'POST':
+        bank_branch_name = f"{bank_branch.bank.name} {bank_branch.name}"
+        bank_branch.delete()
+        messages.success(request, f'銀行支店「{bank_branch_name}」を削除しました。')
+        return redirect('master:bank_branch_list')
+    
+    context = {
+        'bank_branch': bank_branch,
+        'title': f'銀行支店削除 - {bank_branch.bank.name} {bank_branch.name}',
+    }
+    return render(request, 'master/bank_branch_delete.html', context)
+
+
+# 銀行支店変更履歴
+@login_required
+@permission_required('master.view_bankbranch', raise_exception=True)
+def bank_branch_change_history_list(request):
+    """銀行支店変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    from django.core.paginator import Paginator
+    
+    # 銀行支店の変更履歴を取得
+    logs = AppLog.objects.filter(
+        model_name='BankBranch',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')
+    
+    # ページネーション
+    paginator = Paginator(logs, 20)
+    page = request.GET.get('page')
+    logs_page = paginator.get_page(page)
+    
+    return render(request, 'master/master_change_history_list.html', {
+        'logs': logs_page,
+        'title': '銀行支店変更履歴',
+        'list_url': 'master:bank_branch_list',
+        'model_name': 'BankBranch'
     })
