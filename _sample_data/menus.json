@@ -176,7 +176,7 @@
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.761Z",
         "updated_by": 1,
-        "name": "管理サイト",
+        "name": "管理サイト(django-admin)",
         "url": "/admin/",
         "icon": "bi-gear",
         "icon_style": "color:#dc3545;",

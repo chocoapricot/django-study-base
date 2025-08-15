@@ -48,8 +48,8 @@
                                         <table class="table table-hover table-sm mb-0">
                                             <thead class="table-light sticky-top">
                                                 <tr>
-                                                    <th>銀行名</th>
                                                     <th>銀行コード</th>
+                                                    <th>銀行名</th>
                                                     <th>状態</th>
                                                     <th>操作</th>
                                                 </tr>
@@ -57,12 +57,12 @@
                                             <tbody>
                                                 {% for bank in banks %}
                                                 <tr {% if selected_bank and bank.pk == selected_bank.pk %}class="table-primary"{% endif %}>
+                                                    <td>{{ bank.bank_code|default:"-" }}</td>
                                                     <td>
                                                         <a href="?bank_id={{ bank.pk }}{% if search_query %}&search={{ search_query }}{% endif %}" class="text-decoration-none">
                                                             {{ bank.name }}
                                                         </a>
                                                     </td>
-                                                    <td>{{ bank.bank_code|default:"-" }}</td>
                                                     <td>
                                                         {% if bank.is_active %}
                                                             <span class="badge bg-success">有効</span>
@@ -72,7 +72,7 @@
                                                     </td>
                                                     <td>
                                                         <div class="btn-group" role="group">
-                                                            <a href="{% url 'master:bank_update' bank.pk %}" class="btn btn-outline-secondary btn-sm" title="編集">
+                                                            <a href="{% url 'master:bank_update' bank.pk %}" class="btn btn-dark btn-sm" title="編集">
                                                                 <i class="bi bi-pencil"></i>
                                                             </a>
                                                             <a href="{% url 'master:bank_delete' bank.pk %}" class="btn btn-dark btn-sm" title="削除">
@@ -117,8 +117,8 @@
                                             <table class="table table-hover table-sm mb-0">
                                                 <thead class="table-light sticky-top">
                                                     <tr>
-                                                        <th>支店名</th>
                                                         <th>支店コード</th>
+                                                        <th>支店名</th>
                                                         <th>状態</th>
                                                         <th>操作</th>
                                                     </tr>
@@ -126,8 +126,8 @@
                                                 <tbody>
                                                     {% for branch in bank_branches %}
                                                     <tr>
-                                                        <td>{{ branch.name }}</td>
                                                         <td>{{ branch.branch_code|default:"-" }}</td>
+                                                        <td>{{ branch.name }}</td>
                                                         <td>
                                                             {% if branch.is_active %}
                                                                 <span class="badge bg-success">有効</span>
@@ -137,7 +137,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="btn-group" role="group">
-                                                                <a href="{% url 'master:bank_branch_update' branch.pk %}" class="btn btn-outline-secondary btn-sm" title="編集">
+                                                                <a href="{% url 'master:bank_branch_update' branch.pk %}" class="btn btn-dark btn-sm" title="編集">
                                                                     <i class="bi bi-pencil"></i>
                                                                 </a>
                                                                 <a href="{% url 'master:bank_branch_delete' branch.pk %}" class="btn btn-dark btn-sm" title="削除">
@@ -170,57 +170,7 @@
             </div>
 
             <!-- 変更履歴 -->
-            {% if change_logs %}
-            <div class="content-box card bg-light mt-3">
-                <div class="card-header">
-                    変更履歴（最新10件）
-                </div>
-                <div class="card-body mb-0">
-                    <table class="table table-hover table-sm me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
-                        <thead>
-                            <tr>
-                                <th>対象</th>
-                                <th>操作</th>
-                                <th>変更内容</th>
-                                <th>変更者</th>
-                                <th>日時</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for log in change_logs %}
-                            <tr>
-                                <td>
-                                    {% if log.model_name == 'Bank' %}
-                                        <span class="badge bg-primary">銀行</span>
-                                    {% elif log.model_name == 'BankBranch' %}
-                                        <span class="badge bg-info">銀行支店</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if log.action == 'create' %}
-                                        <span class="badge bg-success">作成</span>
-                                    {% elif log.action == 'update' %}
-                                        <span class="badge bg-warning">編集</span>
-                                    {% elif log.action == 'delete' %}
-                                        <span class="badge bg-danger">削除</span>
-                                    {% endif %}
-                                </td>
-                                <td>{{ log.description|default:"-"|truncatechars:40 }}</td>
-                                <td>
-                                    {% if log.user %}
-                                        {{ log.user.get_full_name|default:log.user.username }}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                                <td>{{ log.timestamp|date:"m/d H:i" }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            {% endif %}
+            {% include 'master/_bank_change_history_list.html' %}
 
             <!-- 戻るボタン -->
             <div class="row mt-3">

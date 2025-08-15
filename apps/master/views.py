@@ -1034,7 +1034,7 @@ def bank_branch_list(request):
     if bank_filter:
         bank_branches = bank_branches.filter(bank_id=bank_filter)
     
-    bank_branches = bank_branches.order_by('bank__name', 'name')
+    bank_branches = bank_branches.order_by('bank__bank_code', 'bank__name', 'branch_code', 'name')
     
     # ページネーション
     paginator = Paginator(bank_branches, 20)
@@ -1042,7 +1042,7 @@ def bank_branch_list(request):
     bank_branches_page = paginator.get_page(page)
     
     # フィルタ用の銀行一覧
-    banks = Bank.objects.filter(is_active=True).order_by('name')
+    banks = Bank.objects.filter(is_active=True).order_by('bank_code', 'name')
     
     # 変更履歴を取得（最新5件）
     from apps.system.logs.models import AppLog
@@ -1184,7 +1184,7 @@ def bank_management(request):
     banks = Bank.objects.all()
     if search_query:
         banks = banks.filter(Q(name__icontains=search_query) | Q(bank_code__icontains=search_query))
-    banks = banks.order_by('name')
+    banks = banks.order_by('bank_code', 'name')
     
     # 選択された銀行の支店一覧を取得
     selected_bank = None
@@ -1193,7 +1193,7 @@ def bank_management(request):
     if selected_bank_id:
         try:
             selected_bank = Bank.objects.get(pk=selected_bank_id)
-            bank_branches = BankBranch.objects.filter(bank=selected_bank).order_by('name')
+            bank_branches = BankBranch.objects.filter(bank=selected_bank).order_by('branch_code', 'name')
         except Bank.DoesNotExist:
             pass
     

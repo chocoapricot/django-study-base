@@ -249,5 +249,5 @@ class BankBranchForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # 有効な銀行のみを選択肢に表示
-        self.fields['bank'].queryset = Bank.objects.filter(is_active=True).order_by('name')
+        self.fields['bank'].queryset = Bank.objects.filter(is_active=True).order_by('bank_code', 'name')
         self.fields['bank'].empty_label = "銀行を選択してください"

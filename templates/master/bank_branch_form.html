@@ -27,15 +27,24 @@
                         {% csrf_token %}
                         
                         <!-- 銀行 -->
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.bank.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.bank.label }}</label>
-                            <div class="col-sm-6">
-                                {{ form.bank }}
-                                {% if form.bank.errors %}
-                                    <div class="text-danger small">{{ form.bank.errors.0 }}</div>
-                                {% endif %}
+                        {% if bank_branch.bank or bank %}
+                            <!-- 銀行が指定されている場合は隠しフィールドで送信 -->
+                            {% if bank_branch.bank %}
+                                <input type="hidden" name="bank" value="{{ bank_branch.bank.pk }}">
+                            {% else %}
+                                <input type="hidden" name="bank" value="{{ bank.pk }}">
+                            {% endif %}
+                        {% else %}
+                            <div class="row mb-3 align-items-center">
+                                <label for="{{ form.bank.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.bank.label }}</label>
+                                <div class="col-sm-6">
+                                    {{ form.bank }}
+                                    {% if form.bank.errors %}
+                                        <div class="text-danger small">{{ form.bank.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
+                        {% endif %}
 
                         <!-- 支店名 -->
                         <div class="row mb-3 align-items-center">
