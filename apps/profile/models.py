@@ -1,9 +1,28 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 from apps.common.models import MyModel
 
 User = get_user_model()
+
+
+def validate_mynumber(value):
+    """マイナンバーのバリデーション関数"""
+    if not value:
+        return
+    
+    try:
+        from stdnum.jp import in_
+        if not in_.is_valid(value):
+            raise ValidationError('正しいマイナンバーを入力してください。')
+    except ImportError:
+        # python-stdnumがインストールされていない場合は基本的なチェックのみ
+        import re
+        if not re.match(r'^\d{12}$', value):
+            raise ValidationError('マイナンバーは12桁の数字で入力してください。')
+    except Exception:
+        raise ValidationError('正しいマイナンバーを入力してください。')
 
 
 class StaffProfile(MyModel):
@@ -145,6 +164,47 @@ class StaffProfile(MyModel):
             return dropdown.name
         except Dropdowns.DoesNotExist:
             return self.sex
+    
+    def save(self, *args, **kwargs):
+        # ユーザーのメールアドレスと同期
+        if self.user:
+            self.email = self.user.email
+        super().save(*args, **kwargs)
+
+
+class StaffMynumber(MyModel):
+    """スタッフマイナンバーモデル"""
+    
+    user = models.OneToOneField(
+        User, 
+        on_delete=models.CASCADE, 
+        verbose_name='ユーザー',
+        related_name='staff_mynumber'
+    )
+    email = models.EmailField(
+        verbose_name='メールアドレス',
+        help_text='メールアドレス（ログインユーザーと同じ）'
+    )
+    mynumber = models.CharField(
+        max_length=12,
+        verbose_name='マイナンバー',
+        validators=[
+            validate_mynumber,
+            RegexValidator(
+                regex=r'^\d{12}$',
+                message='マイナンバーは12桁の数字で入力してください'
+            )
+        ],
+        help_text='マイナンバーを12桁の数字で入力してください'
+    )
+    
+    class Meta:
+        verbose_name = 'スタッフマイナンバー'
+        verbose_name_plural = 'スタッフマイナンバー'
+        db_table = 'apps_profile_staff_mynumber'
+    
+    def __str__(self):
+        return f"{self.user.username} - マイナンバー"
     
     def save(self, *args, **kwargs):
         # ユーザーのメールアドレスと同期

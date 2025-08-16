@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
-from .models import StaffProfile
-from .forms import StaffProfileForm
+from .models import StaffProfile, StaffMynumber
+from .forms import StaffProfileForm, StaffMynumberForm
 
 
 @login_required
@@ -70,3 +70,69 @@ def profile_delete(request):
         'profile': profile,
     }
     return render(request, 'profile/profile_delete.html', context)
+
+
+@login_required
+def mynumber_detail(request):
+    """マイナンバー詳細表示"""
+    try:
+        mynumber = StaffMynumber.objects.get(user=request.user)
+    except StaffMynumber.DoesNotExist:
+        mynumber = None
+    
+    context = {
+        'mynumber': mynumber,
+    }
+    return render(request, 'profile/mynumber_detail.html', context)
+
+
+@login_required
+def mynumber_edit(request):
+    """マイナンバー編集"""
+    try:
+        mynumber = StaffMynumber.objects.get(user=request.user)
+        is_new = False
+    except StaffMynumber.DoesNotExist:
+        mynumber = None
+        is_new = True
+    
+    if request.method == 'POST':
+        form = StaffMynumberForm(request.POST, instance=mynumber)
+        if form.is_valid():
+            mynumber = form.save(commit=False)
+            mynumber.user = request.user
+            mynumber.email = request.user.email  # ユーザーのメールアドレスを設定
+            mynumber.save()
+            
+            if is_new:
+                messages.success(request, 'マイナンバーを登録しました。')
+            else:
+                messages.success(request, 'マイナンバーを更新しました。')
+            
+            return redirect('profile:mynumber_detail')
+    else:
+        form = StaffMynumberForm(instance=mynumber)
+    
+    context = {
+        'form': form,
+        'mynumber': mynumber,
+        'is_new': is_new,
+        'user_email': request.user.email,
+    }
+    return render(request, 'profile/mynumber_form.html', context)
+
+
+@login_required
+def mynumber_delete(request):
+    """マイナンバー削除確認"""
+    mynumber = get_object_or_404(StaffMynumber, user=request.user)
+    
+    if request.method == 'POST':
+        mynumber.delete()
+        messages.success(request, 'マイナンバーを削除しました。')
+        return redirect('profile:mynumber_detail')
+    
+    context = {
+        'mynumber': mynumber,
+    }
+    return render(request, 'profile/mynumber_delete.html', context)
