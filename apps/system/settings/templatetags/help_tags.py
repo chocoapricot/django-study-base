@@ -80,3 +80,20 @@ def my_help_preset(key, placement='top'):
                data-bs-toggle="tooltip" data-bs-placement="{placement}" 
                title="{text}"></i>'''
     return mark_safe(html)
+
+
+@register.filter
+def lookup(choices, key):
+    """
+    選択肢から値に対応するラベルを取得するフィルター
+    
+    使用例:
+    {{ form.sex.field.choices|lookup:form.sex.value }}
+    """
+    if not choices or not key:
+        return ''
+    
+    for choice_key, choice_label in choices:
+        if str(choice_key) == str(key):
+            return choice_label
+    return ''

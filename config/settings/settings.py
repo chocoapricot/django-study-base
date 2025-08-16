@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'apps.company',
     'apps.master',
     'apps.contract',
+    'apps.profile',
 ]
 
 # allauth設定

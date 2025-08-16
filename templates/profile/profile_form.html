@@ -1,0 +1,202 @@
+{% extends 'common/_base.html' %}
+{% load help_tags %}
+
+{% block title %}{% if is_new %}プロフィール作成{% else %}プロフィール編集{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+                <div class="card-header">
+                    {% if is_new %}プロフィール作成{% else %}プロフィール編集{% endif %}
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- 氏名 -->
+                        <div class="row mb-3 align-items-center">
+                            <label for="{{ form.name_last.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">姓 <span class="text-danger">*</span></label>
+                            <div class="col-sm-4">
+                                {{ form.name_last }}
+                                {% if form.name_last.errors %}
+                                    <div class="text-danger small">{{ form.name_last.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <label for="{{ form.name_first.id_for_label }}" class="col-sm-1 col-form-label" style="text-align:right">名 <span class="text-danger">*</span></label>
+                            <div class="col-sm-4">
+                                {{ form.name_first }}
+                                {% if form.name_first.errors %}
+                                    <div class="text-danger small">{{ form.name_first.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- 氏名（カナ） -->
+                        <div class="row mb-3 align-items-center">
+                            <label for="{{ form.name_kana_last.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">姓（カナ） <span class="text-danger">*</span></label>
+                            <div class="col-sm-4">
+                                {{ form.name_kana_last }}
+                                {% if form.name_kana_last.errors %}
+                                    <div class="text-danger small">{{ form.name_kana_last.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <label for="{{ form.name_kana_first.id_for_label }}" class="col-sm-1 col-form-label" style="text-align:right">名（カナ） <span class="text-danger">*</span></label>
+                            <div class="col-sm-4">
+                                {{ form.name_kana_first }}
+                                {% if form.name_kana_first.errors %}
+                                    <div class="text-danger small">{{ form.name_kana_first.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- 生年月日 -->
+                        <div class="row mb-3 align-items-center">
+                            <label for="{{ form.birth_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">生年月日</label>
+                            <div class="col-sm-4">
+                                {{ form.birth_date }}
+                                {% if form.birth_date.errors %}
+                                    <div class="text-danger small">{{ form.birth_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- 性別 -->
+                        <div class="row mb-3 align-items-center">
+                            <label for="{{ form.sex.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">性別</label>
+                            <div class="col-sm-4">
+                                {{ form.sex }}
+                                {% if form.sex.errors %}
+                                    <div class="text-danger small">{{ form.sex.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- メールアドレス（表示のみ） -->
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-sm-2 col-form-label" style="text-align:right">メールアドレス</label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control form-control-sm" value="{{ user_email }}" readonly>
+                                <small class="text-muted">※ログインユーザーのメールアドレスが自動設定されます</small>
+                            </div>
+                        </div>
+
+                        <!-- 電話番号 -->
+                        <div class="row mb-3 align-items-center">
+                            <label for="{{ form.phone.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">電話番号</label>
+                            <div class="col-sm-4">
+                                {{ form.phone }}
+                                {% if form.phone.errors %}
+                                    <div class="text-danger small">{{ form.phone.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- 郵便番号 -->
+                        <div class="row mb-3 align-items-center">
+                            <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">郵便番号 {% my_help_preset "postal_code" %}</label>
+                            <div class="col-sm-3">
+                                {{ form.postal_code }}
+                                {% if form.postal_code.errors %}
+                                    <div class="text-danger small">{{ form.postal_code.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm">
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="searchAddress()">住所検索</button>
+                            </div>
+                        </div>
+
+                        <!-- 住所 -->
+                        <div class="row mb-3 align-items-center">
+                            <label for="{{ form.address1.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">都道府県</label>
+                            <div class="col-sm-4">
+                                {{ form.address1 }}
+                                {% if form.address1.errors %}
+                                    <div class="text-danger small">{{ form.address1.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 align-items-center">
+                            <label for="{{ form.address2.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">市区町村</label>
+                            <div class="col-sm-6">
+                                {{ form.address2 }}
+                                {% if form.address2.errors %}
+                                    <div class="text-danger small">{{ form.address2.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 align-items-center">
+                            <label for="{{ form.address3.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">番地・建物名</label>
+                            <div class="col-sm-8">
+                                {{ form.address3 }}
+                                {% if form.address3.errors %}
+                                    <div class="text-danger small">{{ form.address3.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- 住所（カナ） -->
+                        <div class="row mb-3 align-items-center">
+                            <label for="{{ form.address_kana.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">住所（カナ）</label>
+                            <div class="col-sm-8">
+                                {{ form.address_kana }}
+                                {% if form.address_kana.errors %}
+                                    <div class="text-danger small">{{ form.address_kana.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-sm-10 offset-sm-2">
+                                <button type="submit" class="btn btn-sm btn-primary">
+                                    {% if is_new %}作成{% else %}更新{% endif %}
+                                </button>
+                                <a href="{% url 'profile:detail' %}" class="btn btn-sm btn-secondary ms-2">キャンセル</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <a href="{% url 'profile:detail' %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function searchAddress() {
+    const postalCode = document.getElementById('{{ form.postal_code.id_for_label }}').value;
+    if (!postalCode || postalCode.length !== 7) {
+        alert('郵便番号を7桁で入力してください');
+        return;
+    }
+    
+    fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${postalCode}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.results && data.results.length > 0) {
+                const result = data.results[0];
+                document.getElementById('{{ form.address1.id_for_label }}').value = result.address1;
+                document.getElementById('{{ form.address2.id_for_label }}').value = result.address2;
+                document.getElementById('{{ form.address3.id_for_label }}').value = result.address3;
+                document.getElementById('{{ form.address_kana.id_for_label }}').value = result.kana1 + result.kana2 + result.kana3;
+            } else {
+                alert('住所が見つかりませんでした');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('住所検索でエラーが発生しました');
+        });
+}
+
+
+</script>
+{% endblock %}
