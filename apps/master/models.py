@@ -369,9 +369,9 @@ class BillBank(MyModel):
     """振込先銀行マスター"""
     
     name = models.CharField('銀行名', max_length=100)
-    bank_code = models.CharField('銀行コード', max_length=4, blank=True, null=True)
+    bank_code = models.CharField('銀行コード', max_length=4, help_text='4桁の数字で入力')
     branch_name = models.CharField('支店名', max_length=100)
-    branch_code = models.CharField('支店コード', max_length=3, blank=True, null=True)
+    branch_code = models.CharField('支店コード', max_length=3, help_text='3桁の数字で入力')
     account_type = models.CharField(
         '口座種別', 
         max_length=10, 
@@ -429,18 +429,24 @@ class BillBank(MyModel):
         """バリデーション"""
         from django.core.exceptions import ValidationError
         
-        # 銀行コードのバリデーション
-        if self.bank_code and not self.bank_code.isdigit():
+        # 銀行コードのバリデーション（必須）
+        if not self.bank_code:
+            raise ValidationError('銀行コードは必須です。')
+        
+        if not self.bank_code.isdigit():
             raise ValidationError('銀行コードは数字で入力してください。')
         
-        if self.bank_code and len(self.bank_code) != 4:
+        if len(self.bank_code) != 4:
             raise ValidationError('銀行コードは4桁で入力してください。')
         
-        # 支店コードのバリデーション
-        if self.branch_code and not self.branch_code.isdigit():
+        # 支店コードのバリデーション（必須）
+        if not self.branch_code:
+            raise ValidationError('支店コードは必須です。')
+        
+        if not self.branch_code.isdigit():
             raise ValidationError('支店コードは数字で入力してください。')
         
-        if self.branch_code and len(self.branch_code) != 3:
+        if len(self.branch_code) != 3:
             raise ValidationError('支店コードは3桁で入力してください。')
         
         # 口座番号のバリデーション

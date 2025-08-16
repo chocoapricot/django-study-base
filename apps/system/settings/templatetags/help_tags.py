@@ -54,8 +54,8 @@ HELP_TEXTS = {
     'client_basic_contract': '契約開始日は基本契約締結日以降である必要があります',
     
     # 銀行・支払い関連
-    'bank_code': '4桁の数字で入力（任意）',
-    'branch_code': '3桁の数字で入力（任意）',
+    'bank_code': '4桁の数字で入力（必須）',
+    'branch_code': '3桁の数字で入力（必須）',
     'account_number': '1-8桁の数字で入力',
     'closing_day': '月末締めの場合は31を入力',
     'invoice_schedule': '締め日から何か月後の何日まで請求書必着',
