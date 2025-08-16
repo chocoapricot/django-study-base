@@ -32,7 +32,8 @@ django-study-base/
 - **`apps/client/`**: 顧客関係管理
 - **`apps/contract/`**: 契約管理 (クライアント契約・スタッフ契約)
 - **`apps/company/`**: 会社・部署管理
-- **`apps/master/`**: マスター管理 (資格、スキルなど)
+- **`apps/connect/`**: 接続管理 (スタッフ・クライアント接続申請・承認)
+- **`apps/master/`**: マスター管理 (資格、スキル、銀行・支店、支払条件など)
 - **`apps/api/`**: REST APIエンドポイント
 - **`apps/common/`**: 共有ユーティリティと共通機能
 - **`apps/home/`**: ホームページとランディングページ
@@ -61,6 +62,8 @@ templates/
 ├── client/                 # クライアント管理テンプレート
 ├── contract/               # 契約管理テンプレート
 ├── company/                # 会社・部署管理テンプレート
+├── connect/                # 接続管理テンプレート
+├── master/                 # マスター管理テンプレート
 └── accounts/              # ユーザー管理テンプレート
 ```
 
@@ -73,10 +76,10 @@ statics/
 ```
 
 ## 命名規則
-- **アプリ**: 小文字、説明的な名前（例：`staff`、`client`、`contract`、`company`）
-- **モデル**: パスカルケース（例：`MyUser`、`Company`、`ClientContract`、`StaffContract`）
-- **URL**: 小文字でハイフン区切り（例：`/staff/contact-list/`、`/contract/client/`、`/company/department-list/`）
-- **テンプレート**: 小文字でアンダースコア区切り（例：`staff_list.html`、`client_contract_detail.html`、`company_detail.html`）
+- **アプリ**: 小文字、説明的な名前（例：`staff`、`client`、`contract`、`company`、`connect`、`master`）
+- **モデル**: パスカルケース（例：`MyUser`、`Company`、`ClientContract`、`StaffContract`、`ConnectStaff`、`ConnectClient`）
+- **URL**: 小文字でハイフン区切り（例：`/staff/contact-list/`、`/contract/client/`、`/company/department-list/`、`/connect/staff/`）
+- **テンプレート**: 小文字でアンダースコア区切り（例：`staff_list.html`、`client_contract_detail.html`、`company_detail.html`、`connect_staff_list.html`）
 - **静的ファイル**: タイプ別にそれぞれのサブディレクトリで整理
 
 ## インポートパターン

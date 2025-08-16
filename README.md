@@ -12,7 +12,8 @@ Django学習用のプロジェクトです。スタッフ管理とクライア�
 - **契約管理**: クライアント契約・スタッフ契約の管理、契約状況の追跡
 - **会社・部署管理**: 会社情報と部署の体系的管理
 - **連絡履歴管理**: スタッフ・クライアントとの連絡記録
-- **マスター管理**: 資格、スキル、支払いサイト、振込先銀行などのマスターデータ管理
+- **接続管理**: スタッフ・クライアント担当者との接続申請・承認機能
+- **マスター管理**: 資格、スキル、支払いサイト、振込先銀行、銀行・支店などのマスターデータ管理
 
 ### 🔐 認証・セキュリティ
 - **カスタムユーザー認証**: django-allauthベースの認証システム
@@ -63,15 +64,17 @@ django-study-base/
 ├── apps/                   # Djangoアプリケーション
 │   ├── system/             # システム管理
 │   │   ├── settings/       # 設定管理 (ドロップダウン、メニュー、パラメータ)
-│   │   ├── logs/           # ログ管理 (アプリログ、メールログ)
+│   │   └── logs/           # ログ管理 (アプリログ、メールログ)
 │   ├── accounts/           # ユーザー管理・認証
-│   ├── master/             # マスター管理
+│   ├── master/             # マスター管理 (資格、スキル、銀行、支払条件)
 │   ├── staff/              # スタッフ管理
 │   ├── client/             # クライアント管理
 │   ├── contract/           # 契約管理
 │   ├── company/            # 会社・部署管理
-│   ├── accounts/           # 認証システム
+│   ├── connect/            # 接続管理 (スタッフ・クライアント接続申請)
 │   ├── common/             # 共通機能
+│   ├── home/               # ホームページ
+│   ├── csstest/            # CSSテスト・開発
 │   └── api/                # REST API
 ├── config/                 # プロジェクト設定
 ├── templates/              # HTMLテンプレート
@@ -92,7 +95,7 @@ django-study-base/
 | `apps_client_contacted` | クライアント連絡履歴 |
 | `apps_client_department` | クライアント部署情報 |
 | `apps_client_file` | クライアントファイル |
-| `apps_client_user` | クライアントユーザー |
+| `apps_client_user` | クライアント担当者 |
 | `apps_staff` | スタッフ基本情報 |
 | `apps_staff_contacted` | スタッフ連絡履歴 |
 | `apps_staff_qualification` | スタッフ保有資格 |
@@ -102,27 +105,21 @@ django-study-base/
 | `apps_contract_staff` | スタッフ契約 |
 | `apps_company` | 会社情報 |
 | `apps_company_department` | 部署情報 |
+| `apps_connect_staff` | スタッフ接続申請 |
+| `apps_connect_client` | クライアント接続申請 |
 | `apps_master_qualification` | 資格マスター（カテゴリと資格） |
 | `apps_master_skill` | 技能マスター（カテゴリと技能） |
-| `apps_master_bill_payment` | 支払いサイトマスター |
+| `apps_master_bill_payment` | 支払条件マスター |
 | `apps_master_bill_bank` | 振込先銀行マスター |
+| `apps_master_bank` | 銀行マスター |
+| `apps_master_bank_branch` | 銀行支店マスター |
 | `apps_system_dropdowns` | ドロップダウン設定 |
 | `apps_system_parameter` | パラメータ設定 |
 | `apps_system_menu` | メニュー設定 |
 | `apps_system_mail_log` | メール送信ログ |
 | `apps_system_app_log` | アプリケーション操作ログ |
 
-### Django標準テーブル
 
-| テーブル名 | 説明 |
-| --- | --- |
-| `auth_group` | グループ |
-| `auth_group_permissions` | グループと権限の関連 |
-| `auth_permission` | 権限 |
-| `django_admin_log` | 管理画面操作ログ |
-| `django_content_type` | コンテンツタイプ |
-| `django_migrations` | マイグレーション履歴 |
-| `django_session` | セッション |
 
 ### django-allauth関連テーブル
 
@@ -134,6 +131,19 @@ django-study-base/
 | `socialaccount_socialapp` | ソーシャルアプリ設定 |
 | `socialaccount_socialapp_sites` | ソーシャルアプリとサイトの関連 |
 | `socialaccount_socialtoken` | ソーシャルアカウントトークン |
+
+### Django標準・その他テーブル
+
+| テーブル名 | 説明 |
+| --- | --- |
+| `auth_group` | グループ |
+| `auth_group_permissions` | グループと権限の関連 |
+| `auth_permission` | 権限 |
+| `django_admin_log` | 管理画面操作ログ |
+| `django_content_type` | コンテンツタイプ |
+| `django_migrations` | マイグレーション履歴 |
+| `django_session` | セッション |
+| `django_site` | サイト設定 |
 
 ## 🚀 セットアップ
 
@@ -194,6 +204,23 @@ python manage.py runserver
 ```
 http://127.0.0.1:8000/
 ```
+
+## � 接更続管理機能
+
+### スタッフ・クライアント接続システム
+このアプリケーションでは、スタッフとクライアント担当者との接続申請・承認機能を提供しています：
+
+- **接続申請**: スタッフ詳細・クライアント担当者詳細画面から接続依頼を送信
+- **メールベース認証**: メールアドレスを基準とした接続管理
+- **権限自動付与**: 接続申請時・アカウント作成時の自動権限付与
+- **承認管理**: 接続対象者による承認・未承認の切り替え
+- **統合管理画面**: スタッフ接続・クライアント接続の統合管理
+
+### 接続フロー
+1. **申請作成**: 管理者がスタッフ/クライアント担当者詳細画面で接続依頼を作成
+2. **権限付与**: 既存ユーザーがいる場合は自動で権限付与
+3. **承認処理**: 対象者がログイン後、接続管理画面で承認・未承認を選択
+4. **アカウント作成時**: 新規アカウント作成時に既存申請をチェックして権限付与
 
 ## 📋 変更履歴管理
 
@@ -291,6 +318,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 - `/api/client/` - クライアント管理API
 - `/api/contract/` - 契約管理API
 - `/api/company/` - 会社・部署管理API
+- `/api/master/` - マスター管理API
+- `/connect/` - 接続管理（スタッフ・クライアント接続申請）
 
 ### 認証
 - django-allauthベースの認証

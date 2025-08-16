@@ -84,20 +84,24 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if connection.is_approved %}
-                            <form method="post" action="{% url 'connect:staff_unapprove' connection.pk %}" style="display: inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('承認を取り消しますか？')">
-                                    未承認に戻す
-                                </button>
-                            </form>
+                        {% if user.is_staff or connection.email == user.email %}
+                            {% if connection.is_approved %}
+                                <form method="post" action="{% url 'connect:staff_unapprove' connection.pk %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('承認を取り消しますか？')">
+                                        未承認に戻す
+                                    </button>
+                                </form>
+                            {% else %}
+                                <form method="post" action="{% url 'connect:staff_approve' connection.pk %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('この申請を承認しますか？')">
+                                        承認する
+                                    </button>
+                                </form>
+                            {% endif %}
                         {% else %}
-                            <form method="post" action="{% url 'connect:staff_approve' connection.pk %}" style="display: inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('この申請を承認しますか？')">
-                                    承認する
-                                </button>
-                            </form>
+                            <span class="text-muted">権限なし</span>
                         {% endif %}
                     </td>
                 </tr>

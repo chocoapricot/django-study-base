@@ -115,6 +115,7 @@ class BankBranchModelTest(TestCase):
         inactive_branch = BankBranch.objects.create(
             bank=self.bank,
             name='無効支店',
+            branch_code='002',
             is_active=False,
             created_by=self.user,
             updated_by=self.user

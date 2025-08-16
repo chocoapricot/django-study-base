@@ -58,7 +58,12 @@ def connect_staff_list(request):
 @require_POST
 def connect_staff_approve(request, pk):
     """スタッフ接続を承認"""
-    connection = get_object_or_404(ConnectStaff, pk=pk, email=request.user.email)
+    connection = get_object_or_404(ConnectStaff, pk=pk)
+    
+    # 権限チェック：管理者または申請対象者本人のみ承認可能
+    if not (request.user.is_staff or connection.email == request.user.email):
+        messages.error(request, 'この申請を承認する権限がありません。')
+        return redirect('connect:staff_list')
     
     if connection.status == 'pending':
         connection.approve(request.user)
@@ -94,7 +99,12 @@ def connect_staff_approve(request, pk):
 @require_POST
 def connect_staff_unapprove(request, pk):
     """スタッフ接続を未承認に戻す"""
-    connection = get_object_or_404(ConnectStaff, pk=pk, email=request.user.email)
+    connection = get_object_or_404(ConnectStaff, pk=pk)
+    
+    # 権限チェック：管理者または申請対象者本人のみ未承認に戻すことが可能
+    if not (request.user.is_staff or connection.email == request.user.email):
+        messages.error(request, 'この申請を変更する権限がありません。')
+        return redirect('connect:staff_list')
     
     if connection.status == 'approved':
         connection.unapprove()
@@ -233,7 +243,12 @@ def connect_client_list(request):
 @require_POST
 def connect_client_approve(request, pk):
     """クライアント接続を承認"""
-    connection = get_object_or_404(ConnectClient, pk=pk, email=request.user.email)
+    connection = get_object_or_404(ConnectClient, pk=pk)
+    
+    # 権限チェック：管理者または申請対象者本人のみ承認可能
+    if not (request.user.is_staff or connection.email == request.user.email):
+        messages.error(request, 'この申請を承認する権限がありません。')
+        return redirect('connect:client_list')
     
     if connection.status == 'pending':
         connection.approve(request.user)
@@ -265,7 +280,12 @@ def connect_client_approve(request, pk):
 @require_POST
 def connect_client_unapprove(request, pk):
     """クライアント接続を未承認に戻す"""
-    connection = get_object_or_404(ConnectClient, pk=pk, email=request.user.email)
+    connection = get_object_or_404(ConnectClient, pk=pk)
+    
+    # 権限チェック：管理者または申請対象者本人のみ未承認に戻すことが可能
+    if not (request.user.is_staff or connection.email == request.user.email):
+        messages.error(request, 'この申請を変更する権限がありません。')
+        return redirect('connect:client_list')
     
     if connection.status == 'approved':
         connection.unapprove()

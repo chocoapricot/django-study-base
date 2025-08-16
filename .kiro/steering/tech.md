@@ -6,6 +6,7 @@
 - **SQLite**: デフォルトデータベース（MySQL設定可能）
 
 ## 主要な依存関係
+- `django-allauth`: 認証システム（ソーシャル認証対応）
 - `django-import-export`: データインポート/エクスポート機能
 - `django-currentuser`: モデル内で現在のユーザーを追跡
 - `django-concurrency`: 楽観的ロック機能（バージョン管理）
@@ -52,6 +53,7 @@ python manage.py makemigrations staff
 python manage.py makemigrations client
 python manage.py makemigrations contract
 python manage.py makemigrations company
+python manage.py makemigrations connect
 python manage.py makemigrations master
 python manage.py makemigrations common
 python manage.py makemigrations
@@ -82,6 +84,8 @@ python manage.py runserver
 python manage.py test apps.staff.tests
 python manage.py test apps.client.tests
 python manage.py test apps.contract.tests
+python manage.py test apps.connect.tests
+python manage.py test apps.master.tests
 python manage.py test apps.api.tests
 ```
 

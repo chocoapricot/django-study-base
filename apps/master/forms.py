@@ -223,7 +223,7 @@ class BankForm(forms.ModelForm):
             'bank_code': '銀行コード（4桁）',
         }
         help_texts = {
-            'bank_code': '4桁の数字で入力してください（任意）',
+            'bank_code': '4桁の数字で入力してください（必須）',
         }
 
 
@@ -243,7 +243,7 @@ class BankBranchForm(forms.ModelForm):
             'branch_code': '支店コード（3桁）',
         }
         help_texts = {
-            'branch_code': '3桁の数字で入力してください（任意）',
+            'branch_code': '3桁の数字で入力してください（必須）',
         }
     
     def __init__(self, *args, **kwargs):

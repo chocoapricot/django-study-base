@@ -1,4 +1,5 @@
 {% extends 'common/_base.html' %}
+{% load connect_tags %}
 
 {% block title %}クライアント接続一覧{% endblock %}
 
@@ -47,13 +48,13 @@
                 {% for connection in connections %}
                 <tr>
                     <td>
-                        {% for corp_num, company in companies.items %}
-                            {% if corp_num == connection.corporate_number and company %}
+                        {% with company=companies|get_item:connection.corporate_number %}
+                            {% if company %}
                                 {{ company.name }}
+                            {% else %}
+                                <span class="text-muted">会社情報なし</span>
                             {% endif %}
-                        {% empty %}
-                            <span class="text-muted">会社情報なし</span>
-                        {% endfor %}
+                        {% endwith %}
                     </td>
                     <td>{{ connection.corporate_number }}</td>
                     <td>{{ connection.email }}</td>
@@ -73,16 +74,20 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if connection.status == 'pending' %}
-                            <form method="post" action="{% url 'connect:client_approve' connection.pk %}" style="display: inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('この申請を承認しますか？')">承認</button>
-                            </form>
-                        {% elif connection.status == 'approved' %}
-                            <form method="post" action="{% url 'connect:client_unapprove' connection.pk %}" style="display: inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('この申請を未承認に戻しますか？')">未承認に戻す</button>
-                            </form>
+                        {% if user.is_staff or connection.email == user.email %}
+                            {% if connection.status == 'pending' %}
+                                <form method="post" action="{% url 'connect:client_approve' connection.pk %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('この申請を承認しますか？')">承認</button>
+                                </form>
+                            {% elif connection.status == 'approved' %}
+                                <form method="post" action="{% url 'connect:client_unapprove' connection.pk %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('この申請を未承認に戻しますか？')">未承認に戻す</button>
+                                </form>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">権限なし</span>
                         {% endif %}
                     </td>
                 </tr>

@@ -460,7 +460,7 @@ class Bank(MyModel):
     """銀行マスター"""
     
     name = models.CharField('銀行名', max_length=100)
-    bank_code = models.CharField('銀行コード', max_length=4, blank=True, null=True)
+    bank_code = models.CharField('銀行コード', max_length=4, unique=True, help_text='4桁の数字で入力')
     is_active = models.BooleanField('有効', default=True)
     
     class Meta:
@@ -489,13 +489,15 @@ class Bank(MyModel):
         """バリデーション"""
         from django.core.exceptions import ValidationError
         
-        # 銀行コードのバリデーション
-        if self.bank_code:
-            if not self.bank_code.isdigit():
-                raise ValidationError('銀行コードは数字で入力してください。')
-            
-            if len(self.bank_code) != 4:
-                raise ValidationError('銀行コードは4桁で入力してください。')
+        # 銀行コードのバリデーション（必須）
+        if not self.bank_code:
+            raise ValidationError('銀行コードは必須です。')
+        
+        if not self.bank_code.isdigit():
+            raise ValidationError('銀行コードは数字で入力してください。')
+        
+        if len(self.bank_code) != 4:
+            raise ValidationError('銀行コードは4桁で入力してください。')
     
     @classmethod
     def get_active_list(cls):
@@ -526,7 +528,7 @@ class BankBranch(MyModel):
         related_name='branches'
     )
     name = models.CharField('支店名', max_length=100)
-    branch_code = models.CharField('支店コード', max_length=3, blank=True, null=True)
+    branch_code = models.CharField('支店コード', max_length=3, help_text='3桁の数字で入力')
     is_active = models.BooleanField('有効', default=True)
     
     class Meta:
@@ -568,13 +570,15 @@ class BankBranch(MyModel):
         """バリデーション"""
         from django.core.exceptions import ValidationError
         
-        # 支店コードのバリデーション
-        if self.branch_code:
-            if not self.branch_code.isdigit():
-                raise ValidationError('支店コードは数字で入力してください。')
-            
-            if len(self.branch_code) != 3:
-                raise ValidationError('支店コードは3桁で入力してください。')
+        # 支店コードのバリデーション（必須）
+        if not self.branch_code:
+            raise ValidationError('支店コードは必須です。')
+        
+        if not self.branch_code.isdigit():
+            raise ValidationError('支店コードは数字で入力してください。')
+        
+        if len(self.branch_code) != 3:
+            raise ValidationError('支店コードは3桁で入力してください。')
     
     @classmethod
     def get_active_list(cls, bank=None):
