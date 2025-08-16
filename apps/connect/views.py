@@ -85,8 +85,18 @@ def connect_staff_approve(request, pk):
             log_model_action(request.user, 'update', connection)
         
         # 承認時に権限を付与
-        from .utils import grant_permissions_on_connection_request
+        from .utils import grant_permissions_on_connection_request, grant_profile_permissions
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+
         grant_permissions_on_connection_request(connection.email)
+        
+        try:
+            user = User.objects.get(email=connection.email)
+            grant_profile_permissions(user)
+        except User.DoesNotExist:
+            # ユーザーが存在しない場合はエラーメッセージをログに出力（将来的にはより良いハンドリングを検討）
+            print(f"[ERROR] 権限付与対象のユーザーが見つかりません: {connection.email}")
         
         messages.success(request, '接続申請を承認しました。')
     else:

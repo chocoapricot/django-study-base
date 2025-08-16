@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.urls import reverse
 from .models import StaffProfile, StaffMynumber
@@ -7,6 +7,7 @@ from .forms import StaffProfileForm, StaffMynumberForm
 
 
 @login_required
+@permission_required('profile.view_staffprofile', raise_exception=True)
 def profile_detail(request):
     """プロフィール詳細表示"""
     try:
@@ -21,6 +22,8 @@ def profile_detail(request):
 
 
 @login_required
+@permission_required('profile.add_staffprofile', raise_exception=True)
+@permission_required('profile.change_staffprofile', raise_exception=True)
 def profile_edit(request):
     """プロフィール編集"""
     try:
@@ -29,13 +32,13 @@ def profile_edit(request):
     except StaffProfile.DoesNotExist:
         profile = None
         is_new = True
-    
+
     if request.method == 'POST':
         form = StaffProfileForm(request.POST, instance=profile)
         if form.is_valid():
             profile = form.save(commit=False)
             profile.user = request.user
-            profile.email = request.user.email  # ユーザーのメールアドレスを設定
+            profile.email = request.user.email
             profile.save()
             
             if is_new:
@@ -57,6 +60,7 @@ def profile_edit(request):
 
 
 @login_required
+@permission_required('profile.delete_staffprofile', raise_exception=True)
 def profile_delete(request):
     """プロフィール削除確認"""
     profile = get_object_or_404(StaffProfile, user=request.user)
@@ -73,6 +77,7 @@ def profile_delete(request):
 
 
 @login_required
+@permission_required('profile.view_staffmynumber', raise_exception=True)
 def mynumber_detail(request):
     """マイナンバー詳細表示"""
     try:
@@ -87,6 +92,8 @@ def mynumber_detail(request):
 
 
 @login_required
+@permission_required('profile.add_staffmynumber', raise_exception=True)
+@permission_required('profile.change_staffmynumber', raise_exception=True)
 def mynumber_edit(request):
     """マイナンバー編集"""
     try:
@@ -95,13 +102,13 @@ def mynumber_edit(request):
     except StaffMynumber.DoesNotExist:
         mynumber = None
         is_new = True
-    
+
     if request.method == 'POST':
         form = StaffMynumberForm(request.POST, instance=mynumber)
         if form.is_valid():
             mynumber = form.save(commit=False)
             mynumber.user = request.user
-            mynumber.email = request.user.email  # ユーザーのメールアドレスを設定
+            mynumber.email = request.user.email
             mynumber.save()
             
             if is_new:
@@ -123,6 +130,7 @@ def mynumber_edit(request):
 
 
 @login_required
+@permission_required('profile.delete_staffmynumber', raise_exception=True)
 def mynumber_delete(request):
     """マイナンバー削除確認"""
     mynumber = get_object_or_404(StaffMynumber, user=request.user)

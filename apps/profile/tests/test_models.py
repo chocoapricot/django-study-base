@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from .models import StaffProfile, StaffMynumber
+from apps.profile.models import StaffProfile, StaffMynumber
 
 User = get_user_model()
 
@@ -60,6 +60,10 @@ class StaffProfileViewTest(TestCase):
             password='testpass123'
         )
         self.client.login(username='testuser', password='testpass123')
+        from django.contrib.auth.models import Permission
+        profile_perms = Permission.objects.filter(content_type__app_label='profile')
+        for perm in profile_perms:
+            self.user.user_permissions.add(perm)
     
     def test_profile_detail_view_no_profile(self):
         """プロフィール詳細ビュー（プロフィール未作成）のテスト"""
@@ -219,6 +223,10 @@ class StaffMynumberViewTest(TestCase):
             password='testpass123'
         )
         self.client.login(username='testuser', password='testpass123')
+        from django.contrib.auth.models import Permission
+        profile_perms = Permission.objects.filter(content_type__app_label='profile')
+        for perm in profile_perms:
+            self.user.user_permissions.add(perm)
     
     def test_mynumber_detail_view_no_mynumber(self):
         """マイナンバー詳細ビュー（マイナンバー未登録）のテスト"""

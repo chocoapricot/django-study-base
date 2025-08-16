@@ -2,8 +2,32 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from .models import ConnectStaff, ConnectClient
+from apps.profile.models import StaffProfile, StaffMynumber
 
 User = get_user_model()
+
+
+def grant_profile_permissions(user):
+    """ユーザーにプロファイル関連の権限を付与"""
+    try:
+        # StaffProfile
+        profile_content_type = ContentType.objects.get_for_model(StaffProfile)
+        profile_permissions = Permission.objects.filter(content_type=profile_content_type)
+        for permission in profile_permissions:
+            user.user_permissions.add(permission)
+
+        # StaffMynumber
+        mynumber_content_type = ContentType.objects.get_for_model(StaffMynumber)
+        mynumber_permissions = Permission.objects.filter(content_type=mynumber_content_type)
+        for permission in mynumber_permissions:
+            user.user_permissions.add(permission)
+
+        print(f"[INFO] ユーザー {user.email} にプロファイル権限を付与しました")
+        return True
+
+    except Exception as e:
+        print(f"[ERROR] プロファイル権限付与エラー: {e}")
+        return False
 
 
 def grant_connect_permissions(user):
