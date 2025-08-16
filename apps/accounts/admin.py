@@ -5,9 +5,7 @@ from .models import MyUser
 @admin.register(MyUser)
 class MyUserAdmin(UserAdmin):
     model = MyUser
-    list_display = ('username', 'last_name', 'first_name','phone_number', 'email', 'is_staff')
+    list_display = ('username', 'last_name', 'first_name', 'email', 'is_staff')
 
     # 一番下だけど追加
-    fieldsets = UserAdmin.fieldsets + (
-        (None, {'fields': ('phone_number',)}),
-    )
+    # phone_numberフィールド削除のためfieldsets追加なし

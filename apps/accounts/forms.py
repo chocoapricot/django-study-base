@@ -75,12 +75,11 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = MyUser
-        fields = ['email', 'first_name', 'last_name', 'phone_number']  # usernameを除外
+        fields = ['email', 'first_name', 'last_name']  # usernameを除外
         widgets = {
             'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
             'first_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'phone_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
         }
 
     def __init__(self, *args, **kwargs):

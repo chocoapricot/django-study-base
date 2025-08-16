@@ -27,8 +27,7 @@ class UserProfileFormTest(TestCase):
         form_data = {
             'email': 'newemail@test.com',
             'first_name': '太郎',
-            'last_name': '田中',
-            'phone_number': '090-1234-5678'
+            'last_name': '田中'
         }
         form = UserProfileForm(data=form_data, instance=self.user1)
         self.assertTrue(form.is_valid())
@@ -38,8 +37,7 @@ class UserProfileFormTest(TestCase):
         form_data = {
             'email': 'user2@test.com',  # user2が既に使用中
             'first_name': '太郎',
-            'last_name': '田中',
-            'phone_number': '090-1234-5678'
+            'last_name': '田中'
         }
         form = UserProfileForm(data=form_data, instance=self.user1)
         self.assertFalse(form.is_valid())
@@ -51,8 +49,7 @@ class UserProfileFormTest(TestCase):
         form_data = {
             'email': 'user1@test.com',  # 自分のメールアドレス
             'first_name': '太郎',
-            'last_name': '田中',
-            'phone_number': '090-1234-5678'
+            'last_name': '田中'
         }
         form = UserProfileForm(data=form_data, instance=self.user1)
         self.assertTrue(form.is_valid())
@@ -63,7 +60,6 @@ class UserProfileFormTest(TestCase):
             'email': 'user1@test.com',
             'first_name': '太郎',
             'last_name': '田中',
-            'phone_number': '090-1234-5678',
             'password': 'ValidPass123!',  # 有効なパスワード
             'password_confirm': 'DifferentPass123!'  # 異なるパスワード
         }
@@ -78,7 +74,6 @@ class UserProfileFormTest(TestCase):
             'email': 'user1@test.com',
             'first_name': '太郎',
             'last_name': '田中',
-            'phone_number': '090-1234-5678',
             'password': 'NewPassword123!',  # 記号を含む有効なパスワード
             'password_confirm': 'NewPassword123!'
         }
@@ -91,8 +86,7 @@ class UserProfileFormTest(TestCase):
         form_data = {
             'email': '',
             'first_name': '太郎',
-            'last_name': '田中',
-            'phone_number': '090-1234-5678'
+            'last_name': '田中'
         }
         form = UserProfileForm(data=form_data, instance=self.user1)
         self.assertFalse(form.is_valid())
@@ -102,8 +96,7 @@ class UserProfileFormTest(TestCase):
         form_data = {
             'email': 'user1@test.com',
             'first_name': '太郎',
-            'last_name': '',
-            'phone_number': '090-1234-5678'
+            'last_name': ''
         }
         form = UserProfileForm(data=form_data, instance=self.user1)
         self.assertFalse(form.is_valid())
@@ -113,8 +106,7 @@ class UserProfileFormTest(TestCase):
         form_data = {
             'email': 'user1@test.com',
             'first_name': '',
-            'last_name': '田中',
-            'phone_number': '090-1234-5678'
+            'last_name': '田中'
         }
         form = UserProfileForm(data=form_data, instance=self.user1)
         self.assertFalse(form.is_valid())

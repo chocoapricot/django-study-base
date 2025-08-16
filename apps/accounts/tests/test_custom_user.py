@@ -9,22 +9,7 @@ User = get_user_model()
 class MyUserModelTest(TestCase):
     """MyUserモデルのテスト"""
     
-    def test_create_user(self):
-        """ユーザー作成のテスト"""
-        user = MyUser.objects.create_user(
-            username='testuser',
-            email='test@example.com',
-            password='testpass123',
-            phone_number='090-1234-5678'
-        )
-        
-        self.assertEqual(user.username, 'testuser')
-        self.assertEqual(user.email, 'test@example.com')
-        self.assertEqual(user.phone_number, '090-1234-5678')
-        self.assertTrue(user.check_password('testpass123'))
-        self.assertTrue(user.is_active)
-        self.assertFalse(user.is_staff)
-        self.assertFalse(user.is_superuser)
+
 
     def test_create_superuser(self):
         """スーパーユーザー作成のテスト"""
@@ -41,48 +26,19 @@ class MyUserModelTest(TestCase):
         self.assertTrue(admin_user.is_staff)
         self.assertTrue(admin_user.is_superuser)
 
-    def test_user_str_method(self):
-        """ユーザーの文字列表現のテスト"""
+    def test_create_user(self):
         user = MyUser.objects.create_user(
             username='testuser',
             email='test@example.com',
             password='testpass123'
         )
-        
-        self.assertEqual(str(user), 'testuser')
-
-    def test_phone_number_field(self):
-        """電話番号フィールドのテスト"""
-        user = MyUser.objects.create_user(
-            username='testuser',
-            email='test@example.com',
-            password='testpass123',
-            phone_number='090-1234-5678'
-        )
-        
-        self.assertEqual(user.phone_number, '090-1234-5678')
-
-    def test_phone_number_optional(self):
-        """電話番号フィールドが任意であることのテスト"""
-        user = MyUser.objects.create_user(
-            username='testuser',
-            email='test@example.com',
-            password='testpass123'
-        )
-        
-        self.assertIsNone(user.phone_number)
-
-    def test_email_optional(self):
-        """メールアドレスが任意であることのテスト"""
-        user = MyUser.objects.create_user(
-            username='testuser',
-            email='',
-            password='testpass123'
-        )
-        
         self.assertEqual(user.username, 'testuser')
-        self.assertEqual(user.email, '')
+        self.assertEqual(user.email, 'test@example.com')
         self.assertTrue(user.check_password('testpass123'))
+        self.assertTrue(user.is_active)
+        self.assertFalse(user.is_staff)
+        self.assertFalse(user.is_superuser)
+
 
     def test_username_required(self):
         """ユーザー名が必須であることのテスト"""

@@ -63,7 +63,6 @@ class PasswordValidationTest(TestCase):
             'email': self.user.email,
             'first_name': self.user.first_name,
             'last_name': self.user.last_name,
-            'phone_number': '090-1234-5678',
             'password': 'NewValidPass123!',
             'password_confirm': 'NewValidPass123!'
         }
@@ -107,7 +106,6 @@ class PasswordValidationTest(TestCase):
             'email': self.user.email,
             'first_name': self.user.first_name,
             'last_name': self.user.last_name,
-            'phone_number': '090-1234-5678',
             'password': '',
             'password_confirm': ''
         }
