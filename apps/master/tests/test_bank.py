@@ -29,13 +29,14 @@ class BankModelTest(TestCase):
         )
         self.assertEqual(str(bank_with_code), 'テスト銀行（1234）')
         
-        # 銀行コードなしの場合
+        # 銀行コードありの場合（別パターン）
         bank_without_code = Bank.objects.create(
             name='サンプル銀行',
+            bank_code='5678',
             created_by=self.user,
             updated_by=self.user
         )
-        self.assertEqual(str(bank_without_code), 'サンプル銀行')
+        self.assertEqual(str(bank_without_code), 'サンプル銀行（5678）')
     
     def test_full_name(self):
         """完全な銀行名のテスト"""
@@ -48,13 +49,14 @@ class BankModelTest(TestCase):
         )
         self.assertEqual(bank_with_code.full_name, 'テスト銀行（1234）')
         
-        # 銀行コードなしの場合
+        # 銀行コードありの場合（別パターン）
         bank_without_code = Bank.objects.create(
             name='サンプル銀行',
+            bank_code='9999',
             created_by=self.user,
             updated_by=self.user
         )
-        self.assertEqual(bank_without_code.full_name, 'サンプル銀行')
+        self.assertEqual(bank_without_code.full_name, 'サンプル銀行（9999）')
     
     def test_validation_bank_code(self):
         """銀行コードバリデーションのテスト"""
@@ -83,6 +85,7 @@ class BankModelTest(TestCase):
         # 有効な銀行
         active_bank = Bank.objects.create(
             name='有効銀行',
+            bank_code='0098',
             is_active=True,
             created_by=self.user,
             updated_by=self.user
@@ -91,6 +94,7 @@ class BankModelTest(TestCase):
         # 無効な銀行
         inactive_bank = Bank.objects.create(
             name='無効銀行',
+            bank_code='0097',
             is_active=False,
             created_by=self.user,
             updated_by=self.user
@@ -104,6 +108,7 @@ class BankModelTest(TestCase):
         """利用件数のテスト"""
         bank = Bank.objects.create(
             name='テスト銀行',
+            bank_code='0096',
             created_by=self.user,
             updated_by=self.user
         )
@@ -114,6 +119,7 @@ class BankModelTest(TestCase):
         """利用詳細取得のテスト"""
         bank = Bank.objects.create(
             name='テスト銀行',
+            bank_code='0095',
             created_by=self.user,
             updated_by=self.user
         )

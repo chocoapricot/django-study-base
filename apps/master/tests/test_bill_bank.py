@@ -37,7 +37,9 @@ class BillBankModelTest(TestCase):
         # 当座口座の場合
         bill_bank = BillBank.objects.create(
             name='みずほ銀行',
+            bank_code='0001',
             branch_name='渋谷支店',
+            branch_code='140',
             account_type='current',
             account_number='9876543',
             account_holder='株式会社サンプル'
@@ -49,16 +51,18 @@ class BillBankModelTest(TestCase):
         expected = '三菱UFJ銀行（0005） 新宿支店（001） 普通 1234567'
         self.assertEqual(self.bill_bank.full_bank_info, expected)
         
-        # コードがない場合
+        # コードがある場合の別パターン
         bill_bank = BillBank.objects.create(
             name='地方銀行',
+            bank_code='0097',
             branch_name='本店',
+            branch_code='997',
             account_type='ordinary',
             account_number='1111111',
             account_holder='テスト会社'
         )
-        expected_no_code = '地方銀行 本店 普通 1111111'
-        self.assertEqual(bill_bank.full_bank_info, expected_no_code)
+        expected_with_code = '地方銀行（0097） 本店（997） 普通 1111111'
+        self.assertEqual(bill_bank.full_bank_info, expected_with_code)
     
     def test_account_info(self):
         """口座情報のテスト"""
@@ -67,15 +71,20 @@ class BillBankModelTest(TestCase):
     
     def test_validation_bank_code(self):
         """銀行コードバリデーションのテスト"""
-        # 無効な銀行コード（文字列）
+        # 銀行コードが未入力の場合（必須）
         bill_bank = BillBank(
             name='テスト銀行',
-            bank_code='abcd',  # 無効な値
             branch_name='テスト支店',
+            branch_code='001',
             account_type='ordinary',
             account_number='1234567',
             account_holder='テスト'
         )
+        with self.assertRaises(ValidationError):
+            bill_bank.clean()
+        
+        # 無効な銀行コード（文字列）
+        bill_bank.bank_code = 'abcd'  # 無効な値
         with self.assertRaises(ValidationError):
             bill_bank.clean()
         
@@ -86,14 +95,20 @@ class BillBankModelTest(TestCase):
     
     def test_validation_branch_code(self):
         """支店コードバリデーションのテスト"""
+        # 支店コードが未入力の場合（必須）
         bill_bank = BillBank(
             name='テスト銀行',
+            bank_code='0001',
             branch_name='テスト支店',
-            branch_code='ab',  # 無効な値
             account_type='ordinary',
             account_number='1234567',
             account_holder='テスト'
         )
+        with self.assertRaises(ValidationError):
+            bill_bank.clean()
+        
+        # 無効な支店コード（文字列）
+        bill_bank.branch_code = 'ab'  # 無効な値
         with self.assertRaises(ValidationError):
             bill_bank.clean()
     
@@ -102,7 +117,9 @@ class BillBankModelTest(TestCase):
         # 無効な口座番号（文字列）
         bill_bank = BillBank(
             name='テスト銀行',
+            bank_code='0001',
             branch_name='テスト支店',
+            branch_code='001',
             account_type='ordinary',
             account_number='abcdefg',  # 無効な値
             account_holder='テスト'
@@ -120,7 +137,9 @@ class BillBankModelTest(TestCase):
         # 無効な振込先銀行を作成
         BillBank.objects.create(
             name='無効銀行',
+            bank_code='0098',
             branch_name='無効支店',
+            branch_code='998',
             account_type='ordinary',
             account_number='9999999',
             account_holder='無効会社',
@@ -170,7 +189,9 @@ class BillBankFormTest(TestCase):
         """口座名義が未入力の場合のテスト"""
         form_data = {
             'name': 'りそな銀行',
+            'bank_code': '0010',
             'branch_name': '大阪支店',
+            'branch_code': '100',
             'account_type': 'ordinary',
             'account_number': '7777777',
             'is_active': True,
@@ -179,6 +200,38 @@ class BillBankFormTest(TestCase):
         form = BillBankForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn('account_holder', form.errors)
+    
+    def test_invalid_form_missing_bank_code(self):
+        """銀行コードが未入力の場合のテスト"""
+        form_data = {
+            'name': 'りそな銀行',
+            'branch_name': '大阪支店',
+            'branch_code': '100',
+            'account_type': 'ordinary',
+            'account_number': '7777777',
+            'account_holder': '株式会社フォームテスト',
+            'is_active': True,
+            'display_order': 1
+        }
+        form = BillBankForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('bank_code', form.errors)
+    
+    def test_invalid_form_missing_branch_code(self):
+        """支店コードが未入力の場合のテスト"""
+        form_data = {
+            'name': 'りそな銀行',
+            'bank_code': '0010',
+            'branch_name': '大阪支店',
+            'account_type': 'ordinary',
+            'account_number': '7777777',
+            'account_holder': '株式会社フォームテスト',
+            'is_active': True,
+            'display_order': 1
+        }
+        form = BillBankForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('branch_code', form.errors)
 
 
 class BillBankViewTest(TestCase):
@@ -195,7 +248,9 @@ class BillBankViewTest(TestCase):
         
         self.bill_bank = BillBank.objects.create(
             name='テスト銀行',
+            bank_code='0099',
             branch_name='テスト支店',
+            branch_code='999',
             account_type='ordinary',
             account_number='1111111',
             account_holder='テスト会社'
@@ -217,7 +272,9 @@ class BillBankViewTest(TestCase):
         """振込先銀行作成ビュー（POST）のテスト"""
         form_data = {
             'name': '新しい銀行',
+            'bank_code': '0020',
             'branch_name': '新しい支店',
+            'branch_code': '200',
             'account_type': 'current',
             'account_number': '2222222',
             'account_holder': '新しい会社',
