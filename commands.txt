@@ -70,4 +70,12 @@ python manage.py test apps.api.tests
 .\venv\Scripts\Activate 
 python manage.py runserver
 
+# まとめ
+.\venv\Scripts\Activate 
+python _scripts/reset_database.py
+$env:DJANGO_SUPERUSER_PASSWORD="admin"
+python manage.py createsuperuser --noinput --username admin --email admin@test.com
+python _scripts/load_sample_data.py
+python manage.py runserver
+
 # EOF
