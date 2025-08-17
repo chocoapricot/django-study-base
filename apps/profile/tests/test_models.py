@@ -1,3 +1,6 @@
+from django.urls import reverse
+from django.test import Client
+from django.contrib.auth.models import Permission
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
@@ -7,6 +10,38 @@ User = get_user_model()
 
 
 class StaffProfileModelTests(TestCase):
+
+    def test_profile_form_initial_name(self):
+        """新規作成画面でUserの姓・名が初期値になること"""
+        user = User.objects.create_user(
+            username='u3', email='u3@example.com', first_name='Hanako', last_name='Suzuki', password='pass'
+        )
+        # 権限付与
+        perms = Permission.objects.filter(codename__in=['add_staffprofile', 'change_staffprofile'])
+        user.user_permissions.add(*perms)
+        client = Client()
+        client.force_login(user)
+        # プロフィール未作成状態で新規作成画面へ
+        url = reverse('profile:edit')
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        form = response.context['form']
+        self.assertEqual(form.initial.get('name_first'), 'Hanako')
+        self.assertEqual(form.initial.get('name_last'), 'Suzuki')
+
+    def test_user_save_updates_profile(self):
+        """User保存時にStaffProfileの姓・名も同期されること"""
+        user = User.objects.create_user(
+            username='u4', email='u4@example.com', first_name='OldFirst', last_name='OldLast', password='pass'
+        )
+        profile = StaffProfile.objects.create(user=user, name_first='OldFirst', name_last='OldLast')
+        # Userの姓・名を変更して保存
+        user.first_name = 'NewFirst'
+        user.last_name = 'NewLast'
+        user.save()
+        profile.refresh_from_db()
+        self.assertEqual(profile.name_first, 'NewFirst')
+        self.assertEqual(profile.name_last, 'NewLast')
     def test_init_from_user(self):
         """新規インスタンス作成時にUserの姓・名で初期化されること"""
         user = User.objects.create_user(

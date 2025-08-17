@@ -48,7 +48,15 @@ def profile_edit(request):
             
             return redirect('profile:detail')
     else:
-        form = StaffProfileForm(instance=profile)
+        if profile is None:
+            # 新規作成時はUserの姓・名を初期値にセット
+            initial = {
+                'name_last': request.user.last_name,
+                'name_first': request.user.first_name,
+            }
+            form = StaffProfileForm(instance=profile, initial=initial)
+        else:
+            form = StaffProfileForm(instance=profile)
     
     context = {
         'form': form,
