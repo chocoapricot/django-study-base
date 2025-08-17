@@ -1,6 +1,6 @@
 # Django Study Base
 
-Django学習用のプロジェクトです。スタッフ管理とクライアント管理機能を持つビジネス管理システムを通じて、Djangoの基本的な機能から応用まで学習することを目的としています。Django 5.2.4をベースに構築され、日本語環境に最適化されています。
+Django学習用のプロジェクトです。スタッフ管理とクライアント管理機能を持つビジネス管理システムを通じて、Djangoの基本的な機能から応用まで学習することを目的としています。Django 5.2.5をベースに構築され、日本語環境に最適化されています。
 
 > **注意**: このプロジェクトは個人の学習目的で作成されており、実際のビジネス用途での使用は想定していません。
 
@@ -14,6 +14,7 @@ Django学習用のプロジェクトです。スタッフ管理とクライア�
 - **連絡履歴管理**: スタッフ・クライアントとの連絡記録
 - **接続管理**: スタッフ・クライアント担当者との接続申請・承認機能
 - **マスター管理**: 資格、スキル、支払いサイト、振込先銀行、銀行・支店などのマスターデータ管理
+- **プロフィール管理**: ユーザープロファイル、マイナンバー管理
 
 ### 🔐 認証・セキュリティ
 - **カスタムユーザー認証**: django-allauthベースの認証システム
@@ -34,7 +35,7 @@ Django学習用のプロジェクトです。スタッフ管理とクライア�
 ## 🛠️ 技術スタック
 
 ### フレームワーク & コア
-- **Django 5.2.4**: メインWebフレームワーク
+- **Django 5.2.5**: メインWebフレームワーク
 - **Python 3.12**: バックエンド言語
 - **SQLite**: デフォルトデータベース（MySQL対応可能）
 
@@ -66,6 +67,7 @@ django-study-base/
 │   │   ├── settings/       # 設定管理 (ドロップダウン、メニュー、パラメータ)
 │   │   └── logs/           # ログ管理 (アプリログ、メールログ)
 │   ├── accounts/           # ユーザー管理・認証
+│   ├── profile/            # プロフィール管理
 │   ├── master/             # マスター管理 (資格、スキル、銀行、支払条件)
 │   ├── staff/              # スタッフ管理
 │   ├── client/             # クライアント管理
@@ -96,30 +98,30 @@ django-study-base/
 | `apps_client_department` | クライアント部署情報 |
 | `apps_client_file` | クライアントファイル |
 | `apps_client_user` | クライアント担当者 |
-| `apps_staff` | スタッフ基本情報 |
-| `apps_staff_contacted` | スタッフ連絡履歴 |
-| `apps_staff_qualification` | スタッフ保有資格 |
-| `apps_staff_skill` | スタッフ保有スキル |
-| `apps_staff_file` | スタッフファイル |
-| `apps_contract_client` | クライアント契約 |
-| `apps_contract_staff` | スタッフ契約 |
 | `apps_company` | 会社情報 |
 | `apps_company_department` | 部署情報 |
-| `apps_connect_staff` | スタッフ接続申請 |
 | `apps_connect_client` | クライアント接続申請 |
-| `apps_master_qualification` | 資格マスター（カテゴリと資格） |
-| `apps_master_skill` | 技能マスター（カテゴリと技能） |
-| `apps_master_bill_payment` | 支払条件マスター |
-| `apps_master_bill_bank` | 振込先銀行マスター |
+| `apps_connect_staff` | スタッフ接続申請 |
+| `apps_contract_client` | クライアント契約 |
+| `apps_contract_staff` | スタッフ契約 |
 | `apps_master_bank` | 銀行マスター |
 | `apps_master_bank_branch` | 銀行支店マスター |
-| `apps_system_dropdowns` | ドロップダウン設定 |
-| `apps_system_parameter` | パラメータ設定 |
-| `apps_system_menu` | メニュー設定 |
-| `apps_system_mail_log` | メール送信ログ |
+| `apps_master_bill_bank` | 振込先銀行マスター |
+| `apps_master_bill_payment` | 支払条件マスター |
+| `apps_master_qualification` | 資格マスター（カテゴリと資格） |
+| `apps_master_skill` | 技能マスター（カテゴリと技能） |
+| `apps_profile_staff` | スタッフプロファイル |
+| `apps_profile_staff_mynumber` | スタッフマイナンバー |
+| `apps_staff` | スタッフ基本情報 |
+| `apps_staff_contacted` | スタッフ連絡履歴 |
+| `apps_staff_file` | スタッフファイル |
+| `apps_staff_qualification` | スタッフ保有資格 |
+| `apps_staff_skill` | スタッフ保有スキル |
 | `apps_system_app_log` | アプリケーション操作ログ |
-
-
+| `apps_system_dropdowns` | ドロップダウン設定 |
+| `apps_system_mail_log` | メール送信ログ |
+| `apps_system_menu` | メニュー設定 |
+| `apps_system_parameter` | パラメータ設定 |
 
 ### django-allauth関連テーブル
 
@@ -144,6 +146,7 @@ django-study-base/
 | `django_migrations` | マイグレーション履歴 |
 | `django_session` | セッション |
 | `django_site` | サイト設定 |
+| `sqlite_sequence`| シーケンス |
 
 ## 🚀 セットアップ
 
@@ -205,7 +208,7 @@ python manage.py runserver
 http://127.0.0.1:8000/
 ```
 
-## � 接更続管理機能
+## 接続管理機能
 
 ### スタッフ・クライアント接続システム
 このアプリケーションでは、スタッフとクライアント担当者との接続申請・承認機能を提供しています：

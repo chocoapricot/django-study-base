@@ -28,6 +28,7 @@ django-study-base/
   - `logs/`: ログ管理（AppLogモデルによる統一変更履歴管理）
   - `settings/`: 設定/選択オプション管理 (ドロップダウン、メニュー、パラメータを統合)
 - **`apps/accounts/`**: カスタムユーザー管理と認証
+- **`apps/profile/`**: プロフィール管理
 - **`apps/staff/`**: 従業員管理
 - **`apps/client/`**: 顧客関係管理
 - **`apps/contract/`**: 契約管理 (クライアント契約・スタッフ契約)
@@ -64,6 +65,7 @@ templates/
 ├── company/                # 会社・部署管理テンプレート
 ├── connect/                # 接続管理テンプレート
 ├── master/                 # マスター管理テンプレート
+├── profile/                # プロフィール管理テンプレート
 └── accounts/              # ユーザー管理テンプレート
 ```
 
@@ -76,8 +78,8 @@ statics/
 ```
 
 ## 命名規則
-- **アプリ**: 小文字、説明的な名前（例：`staff`、`client`、`contract`、`company`、`connect`、`master`）
-- **モデル**: パスカルケース（例：`MyUser`、`Company`、`ClientContract`、`StaffContract`、`ConnectStaff`、`ConnectClient`）
+- **アプリ**: 小文字、説明的な名前（例：`staff`、`client`、`contract`、`company`、`connect`、`master`、`profile`）
+- **モデル**: パスカルケース（例：`MyUser`、`Company`、`ClientContract`、`StaffContract`、`ConnectStaff`、`ConnectClient`、`StaffProfile`、`StaffMynumber`）
 - **URL**: 小文字でハイフン区切り（例：`/staff/contact-list/`、`/contract/client/`、`/company/department-list/`、`/connect/staff/`）
 - **テンプレート**: 小文字でアンダースコア区切り（例：`staff_list.html`、`client_contract_detail.html`、`company_detail.html`、`connect_staff_list.html`）
 - **静的ファイル**: タイプ別にそれぞれのサブディレクトリで整理
