@@ -72,10 +72,7 @@ python manage.py runserver
 
 # まとめ
 .\venv\Scripts\Activate 
-python _scripts/reset_database.py
-$env:DJANGO_SUPERUSER_PASSWORD="admin"
-python manage.py createsuperuser --noinput --username admin --email admin@test.com
-python _scripts/load_sample_data.py
+.\_scripts\setup.bat
 python manage.py runserver
 
 # EOF
