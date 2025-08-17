@@ -267,7 +267,7 @@
         "parent": null,
         "level": 0,
         "exact_match": true,
-        "required_permission": null,
+        "required_permission": "connect.view_connectstaff",
         "disp_seq": 35,
         "active": true
     }
@@ -288,7 +288,7 @@
         "parent": null,
         "level": 0,
         "exact_match": true,
-        "required_permission": null,
+        "required_permission": "profile.view_staffprofile",
         "disp_seq": 15,
         "active": true
     }
@@ -309,7 +309,7 @@
         "parent": null,
         "level": 0,
         "exact_match": true,
-        "required_permission": null,
+        "required_permission": "profile.view_staffmynumber",
         "disp_seq": 16,
         "active": true
     }
