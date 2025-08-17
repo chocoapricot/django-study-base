@@ -267,7 +267,7 @@
         "parent": null,
         "level": 0,
         "exact_match": true,
-        "required_permission": "connect.view_connectstaff",
+        "required_permission": null,
         "disp_seq": 35,
         "active": true
     }
