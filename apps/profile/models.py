@@ -164,11 +164,57 @@ class StaffProfile(MyModel):
             return dropdown.name
         except Dropdowns.DoesNotExist:
             return self.sex
-    
+
+    def __init__(self, *args, **kwargs):
+        """新規インスタンス作成時にユーザーの姓・名で初期化する"""
+        super().__init__(*args, **kwargs)
+        # 新規作成（DB上にまだ存在しない）かつ user が指定されている場合に初期化
+        try:
+            if not getattr(self, 'pk', None) and getattr(self, 'user', None):
+                user_obj = None
+                # user がモデルインスタンスか主キーかを判定
+                if isinstance(self.user, User):
+                    user_obj = self.user
+                else:
+                    # user に主キーが入っている場合は取得を試みる
+                    user_obj = User.objects.filter(pk=self.user).first()
+
+                if user_obj:
+                    if not self.name_last and getattr(user_obj, 'last_name', ''):
+                        self.name_last = user_obj.last_name
+                    if not self.name_first and getattr(user_obj, 'first_name', ''):
+                        self.name_first = user_obj.first_name
+        except Exception:
+            # 初期化で失敗しても落とさない
+            pass
+
     def save(self, *args, **kwargs):
         # ユーザーのメールアドレスと同期
         if self.user:
             self.email = self.user.email
+            # プロフィールの姓・名をDjangoのUserモデルに上書きして保存
+            try:
+                # self.user がインスタンスでない場合は取得
+                if not isinstance(self.user, User):
+                    user_obj = User.objects.filter(pk=self.user).first()
+                else:
+                    user_obj = self.user
+
+                if user_obj:
+                    updated = False
+                    if (user_obj.first_name or '') != (self.name_first or ''):
+                        user_obj.first_name = self.name_first or ''
+                        updated = True
+                    if (user_obj.last_name or '') != (self.name_last or ''):
+                        user_obj.last_name = self.name_last or ''
+                        updated = True
+                    if updated:
+                        # 名前のみ更新する
+                        user_obj.save(update_fields=['first_name', 'last_name'])
+            except Exception:
+                # 同期処理で失敗してもプロフィール保存は続ける
+                pass
+
         super().save(*args, **kwargs)
 
 

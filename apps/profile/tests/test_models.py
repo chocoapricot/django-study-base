@@ -1,3 +1,40 @@
+from django.test import TestCase
+from django.contrib.auth import get_user_model
+
+from apps.profile.models import StaffProfile
+
+User = get_user_model()
+
+
+class StaffProfileModelTests(TestCase):
+    def test_init_from_user(self):
+        """新規インスタンス作成時にUserの姓・名で初期化されること"""
+        user = User.objects.create_user(
+            username='u1', email='u1@example.com', first_name='Taro', last_name='Yamada', password='pass'
+        )
+
+        profile = StaffProfile(user=user)
+
+        self.assertEqual(profile.name_first, 'Taro')
+        self.assertEqual(profile.name_last, 'Yamada')
+
+    def test_save_updates_user(self):
+        """プロフィール保存時にUserの姓・名が上書きされること"""
+        user = User.objects.create_user(
+            username='u2', email='u2@example.com', first_name='OldFirst', last_name='OldLast', password='pass'
+        )
+
+        profile = StaffProfile(user=user)
+        profile.name_first = 'NewFirst'
+        profile.name_last = 'NewLast'
+        profile.save()
+
+        user.refresh_from_db()
+        self.assertEqual(user.first_name, 'NewFirst')
+        self.assertEqual(user.last_name, 'NewLast')
+
+        # プロフィールの email は常に user.email と同期されている
+        self.assertEqual(profile.email, user.email)
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
