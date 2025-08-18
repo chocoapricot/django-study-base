@@ -4,108 +4,99 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <!-- 銀行情報表示 -->
-            {% if bank_branch.bank %}
-                {% include 'master/_bank_info_simple.html' with bank=bank_branch.bank %}
-            {% elif form.bank.value %}
-                {% for bank in form.bank.field.queryset %}
-                    {% if bank.pk == form.bank.value %}
-                        {% include 'master/_bank_info_simple.html' with bank=bank %}
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
+<!-- 銀行情報表示 -->
+{% if bank_branch.bank %}
+    {% include 'master/_bank_info_simple.html' with bank=bank_branch.bank %}
+{% elif form.bank.value %}
+    {% for bank in form.bank.field.queryset %}
+        {% if bank.pk == form.bank.value %}
+            {% include 'master/_bank_info_simple.html' with bank=bank %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
             
-            <div class="content-box card bg-light" style="max-width: 100%;">
-                <div class="card-header">
-                    {{ title }}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        {{ title }}
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- 銀行 -->
+            {% if bank_branch.bank or bank %}
+                <!-- 銀行が指定されている場合は隠しフィールドで送信 -->
+                {% if bank_branch.bank %}
+                    <input type="hidden" name="bank" value="{{ bank_branch.bank.pk }}">
+                {% else %}
+                    <input type="hidden" name="bank" value="{{ bank.pk }}">
+                {% endif %}
+            {% else %}
+                <div class="row mb-3 align-items-center">
+                    <label for="{{ form.bank.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.bank.label }}</label>
+                    <div class="col-sm-6">
+                        {{ form.bank }}
+                        {% if form.bank.errors %}
+                            <div class="text-danger small">{{ form.bank.errors.0 }}</div>
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        
-                        <!-- 銀行 -->
-                        {% if bank_branch.bank or bank %}
-                            <!-- 銀行が指定されている場合は隠しフィールドで送信 -->
-                            {% if bank_branch.bank %}
-                                <input type="hidden" name="bank" value="{{ bank_branch.bank.pk }}">
-                            {% else %}
-                                <input type="hidden" name="bank" value="{{ bank.pk }}">
-                            {% endif %}
-                        {% else %}
-                            <div class="row mb-3 align-items-center">
-                                <label for="{{ form.bank.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.bank.label }}</label>
-                                <div class="col-sm-6">
-                                    {{ form.bank }}
-                                    {% if form.bank.errors %}
-                                        <div class="text-danger small">{{ form.bank.errors.0 }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% endif %}
+            {% endif %}
 
-                        <!-- 支店コード -->
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.branch_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.branch_code.label }} {% my_help_preset "branch_code" %}</label>
-                            <div class="col-sm-3">
-                                {{ form.branch_code }}
-                                {% if form.branch_code.errors %}
-                                    <div class="text-danger small">{{ form.branch_code.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <!-- 支店名 -->
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.name.label }}</label>
-                            <div class="col-sm-6">
-                                {{ form.name }}
-                                {% if form.name.errors %}
-                                    <div class="text-danger small">{{ form.name.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <!-- 有効フラグ -->
-                        <div class="row mb-3 align-items-center">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-6">
-                                <div class="form-check">
-                                    {{ form.is_active }}
-                                    <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
-                                        {{ form.is_active.label }}
-                                    </label>
-                                </div>
-                                {% if form.is_active.errors %}
-                                    <div class="text-danger small">{{ form.is_active.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <!-- フォームエラー -->
-                        {% if form.non_field_errors %}
-                            <div class="row mb-3">
-                                <div class="col-sm-10 offset-sm-2">
-                                    <div class="alert alert-danger">
-                                        {{ form.non_field_errors }}
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-
-                        <!-- ボタン -->
-                        <div class="row">
-                            <div class="col-sm-10 offset-sm-2">
-                                <button type="submit" class="btn btn-sm btn-primary">保存</button>
-                                <a href="{% url 'master:bank_management' %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
-                            </div>
-                        </div>
-                    </form>
+            <!-- 支店コード -->
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.branch_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.branch_code.label }} {% my_help_preset "branch_code" %}</label>
+                <div class="col-sm-3">
+                    {{ form.branch_code }}
+                    {% if form.branch_code.errors %}
+                        <div class="text-danger small">{{ form.branch_code.errors.0 }}</div>
+                    {% endif %}
                 </div>
             </div>
-        </div>
+
+            <!-- 支店名 -->
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.name.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 有効フラグ -->
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-6">
+                    <div class="form-check">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                            {{ form.is_active.label }}
+                        </label>
+                    </div>
+                    {% if form.is_active.errors %}
+                        <div class="text-danger small">{{ form.is_active.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- フォームエラー -->
+            {% if form.non_field_errors %}
+                <div class="row mb-3">
+                    <div class="col-sm-10 offset-sm-2">
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- ボタン -->
+            <div class="d-flex justify-content-start">                    <button type="submit" class="btn btn-sm btn-primary">保存</button>
+                <a href="{% url 'master:bank_management' %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}
