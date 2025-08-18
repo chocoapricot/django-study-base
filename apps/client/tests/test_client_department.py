@@ -113,6 +113,25 @@ class ClientDepartmentFormTest(TestCase):
         with self.assertRaises(ValidationError):
             department_invalid.full_clean()
 
+    def test_phone_number_invalid(self):
+        """
+        電話番号に英字が含まれる場合はバリデーションエラー
+        """
+        form_data = {
+            'name': '営業部',
+            'department_code': 'SALES',
+            'postal_code': '1000001',
+            'address': '東京都千代田区千代田1-1',
+            'phone_number': '03-1234-ABCD',
+            'display_order': 1,
+            'valid_from': '2024-01-01',
+            'valid_to': '2024-12-31'
+        }
+        form = ClientDepartmentForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('phone_number', form.errors)
+        self.assertIn('電話番号は数字とハイフンのみ入力してください。', form.errors['phone_number'])
+
 
 class ClientDepartmentViewTest(TestCase):
     def setUp(self):

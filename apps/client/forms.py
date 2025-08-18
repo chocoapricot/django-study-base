@@ -94,6 +94,12 @@ class ClientForm(forms.ModelForm):
 from .models import ClientContacted, ClientDepartment, ClientUser
 
 class ClientDepartmentForm(forms.ModelForm):
+    def clean_phone_number(self):
+        value = self.cleaned_data.get('phone_number', '')
+        import re
+        if value and not re.fullmatch(r'[0-9\-]+', value):
+            raise forms.ValidationError('電話番号は数字とハイフンのみ入力してください。')
+        return value
     class Meta:
         model = ClientDepartment
         fields = ['name', 'department_code', 'postal_code', 'address', 'phone_number', 'display_order', 'valid_from', 'valid_to']
@@ -111,6 +117,12 @@ class ClientDepartmentForm(forms.ModelForm):
 
 # クライアント担当者フォーム
 class ClientUserForm(forms.ModelForm):
+    def clean_phone_number(self):
+        value = self.cleaned_data.get('phone_number', '')
+        import re
+        if value and not re.fullmatch(r'[0-9\-]+', value):
+            raise forms.ValidationError('電話番号は数字とハイフンのみ入力してください。')
+        return value
     def __init__(self, *args, **kwargs):
         client = kwargs.pop('client', None)
         super().__init__(*args, **kwargs)

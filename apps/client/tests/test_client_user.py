@@ -127,6 +127,27 @@ class ClientUserFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('email', form.errors)
 
+    def test_phone_number_invalid(self):
+        """
+        電話番号に英字が含まれる場合はバリデーションエラー
+        """
+        form_data = {
+            'department': self.department.pk,
+            'name_last': '田中',
+            'name_first': '太郎',
+            'name_kana_last': 'タナカ',
+            'name_kana_first': 'タロウ',
+            'position': '課長',
+            'phone_number': '090-1234-ABCD',
+            'email': 'tanaka@test.com',
+            'memo': '営業担当',
+            'display_order': 1
+        }
+        form = ClientUserForm(data=form_data, client=self.client_obj)
+        self.assertFalse(form.is_valid())
+        self.assertIn('phone_number', form.errors)
+        self.assertIn('電話番号は数字とハイフンのみ入力してください。', form.errors['phone_number'])
+
     def test_department_queryset_filtering(self):
         """部署選択肢のフィルタリングテスト"""
         # 別のクライアントの部署を作成

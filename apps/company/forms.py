@@ -4,6 +4,12 @@ from stdnum.jp import cn as houjin
 from django.core.exceptions import ValidationError
 
 class CompanyForm(forms.ModelForm):
+    def clean_phone_number(self):
+        value = self.cleaned_data.get('phone_number', '')
+        import re
+        if value and not re.fullmatch(r'[0-9\-]+', value):
+            raise forms.ValidationError('電話番号は数字とハイフンのみ入力してください。')
+        return value
     class Meta:
         model = Company
         fields = ['name', 'corporate_number', 'representative', 'postal_code', 'address', 'phone_number']
@@ -52,6 +58,12 @@ class CompanyForm(forms.ModelForm):
         return False
 
 class CompanyDepartmentForm(forms.ModelForm):
+    def clean_phone_number(self):
+        value = self.cleaned_data.get('phone_number', '')
+        import re
+        if value and not re.fullmatch(r'[0-9\-]+', value):
+            raise forms.ValidationError('電話番号は数字とハイフンのみ入力してください。')
+        return value
     class Meta:
         model = CompanyDepartment
         fields = ['name', 'department_code', 'accounting_code', 'display_order', 'postal_code', 'address', 'phone_number', 'valid_from', 'valid_to']

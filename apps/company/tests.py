@@ -52,6 +52,23 @@ class CompanyFormTest(TestCase):
         form = CompanyForm(data=form_data)
         self.assertFalse(form.is_valid())
 
+    def test_phone_number_invalid(self):
+        """
+        電話番号に英字が含まれる場合はバリデーションエラー
+        """
+        form_data = {
+            'name': 'テスト会社',
+            'corporate_number': '2000012010019',
+            'representative': '代表者',
+            'postal_code': '1000001',
+            'address': '東京都千代田区千代田1-1',
+            'phone_number': '03-1234-ABCD',
+        }
+        form = CompanyForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('phone_number', form.errors)
+        self.assertIn('電話番号は数字とハイフンのみ入力してください。', form.errors['phone_number'])
+
 class CompanyModelTest(TestCase):
     """会社モデルのテスト"""
     

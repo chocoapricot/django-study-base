@@ -3,7 +3,20 @@ from django.core.exceptions import ValidationError
 from .models import StaffProfile, StaffMynumber
 
 
+from apps.common.forms.fields import to_fullwidth_katakana, validate_kana
+
 class StaffProfileForm(forms.ModelForm):
+    def clean_name_kana_last(self):
+        value = self.cleaned_data.get('name_kana_last', '')
+        validate_kana(value)
+        value = to_fullwidth_katakana(value)
+        return value
+
+    def clean_name_kana_first(self):
+        value = self.cleaned_data.get('name_kana_first', '')
+        validate_kana(value)
+        value = to_fullwidth_katakana(value)
+        return value
     """スタッフプロフィールフォーム"""
     
     sex = forms.ChoiceField(

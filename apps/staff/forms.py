@@ -36,6 +36,12 @@ from apps.common.forms.fields import to_fullwidth_katakana, validate_kana
 
 
 class StaffForm(forms.ModelForm):
+    def clean_phone(self):
+        value = self.cleaned_data.get('phone', '')
+        import re
+        if value and not re.fullmatch(r'^[\d\-]+$', value):
+            raise forms.ValidationError('電話番号は数字とハイフンのみ入力可能です')
+        return value
     def clean_name_kana_last(self):
         value = self.cleaned_data.get('name_kana_last', '')
         validate_kana(value)

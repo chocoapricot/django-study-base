@@ -81,7 +81,7 @@
 
             <!-- 電話番号 -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.phone.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">電話番号</label>
+                <label for="{{ form.phone.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">電話番号 {% my_help_preset "phone" %}</label>
                 <div class="col-sm-4">
                     {{ form.phone }}
                     {% if form.phone.errors %}

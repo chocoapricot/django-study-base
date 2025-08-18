@@ -25,6 +25,9 @@ def my_help_icon(text, placement='top'):
 
 # よく使用されるヘルプテキストの定数
 HELP_TEXTS = {
+    # 電話番号
+    'phone': '電話番号は数字とハイフンのみ入力してください',
+    'phone_number': '電話番号は数字とハイフンのみ入力してください',
     # 基本入力フォーマット
     'corporate_number': '半角数字13桁ハイフンなし',
     'postal_code': '半角数字7桁ハイフンなし',
