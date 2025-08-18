@@ -7,24 +7,25 @@ class StaffProfileFormTest(TestCase):
     def setUp(self):
         Dropdowns.objects.create(category='sex', value='1', name='男性', disp_seq=1, active=True)
     def test_kana_validation(self):
-        # カナがひらがな→エラー
+        # ひらがなも許可され、カタカナに変換される
         form = StaffProfileForm(data={
             'name_last': '山田',
             'name_first': '太郎',
             'name_kana_last': 'やまだ',
             'name_kana_first': 'たろう',
             'birth_date': '2000-01-01',
-            'sex': '',
+            'sex': '1',
             'postal_code': '1234567',
             'address_kana': '',
-            'address1': '',
-            'address2': '',
+            'address1': '東京都',
+            'address2': '千代田区',
             'address3': '',
             'phone': '090-1234-5678',
         })
-        self.assertFalse(form.is_valid())
-        self.assertIn('name_kana_last', form.errors)
-        self.assertIn('name_kana_first', form.errors)
+        valid = form.is_valid()
+        self.assertTrue(valid)
+        self.assertEqual(form.cleaned_data['name_kana_last'], 'ヤマダ')
+        self.assertEqual(form.cleaned_data['name_kana_first'], 'タロウ')
 
     def test_kana_fullwidth_conversion(self):
         # 半角カナ→全角カナに変換される
@@ -94,3 +95,26 @@ class StaffProfileFormTest(TestCase):
         self.assertIn('address1', form.errors)
         self.assertIn('address2', form.errors)
         self.assertIn('phone', form.errors)
+
+    def test_kana_hiragana_to_katakana(self):
+        """
+        ひらがな入力時にカタカナへ変換される
+        """
+        form = StaffProfileForm(data={
+            'name_last': '山田',
+            'name_first': '太郎',
+            'name_kana_last': 'やまだ',
+            'name_kana_first': 'たろう',
+            'birth_date': '2000-01-01',
+            'sex': '1',
+            'postal_code': '1234567',
+            'address_kana': '',
+            'address1': '東京都',
+            'address2': '千代田区',
+            'address3': '',
+            'phone': '090-1234-5678',
+        })
+        valid = form.is_valid()
+        self.assertTrue(valid)
+        self.assertEqual(form.cleaned_data['name_kana_last'], 'ヤマダ')
+        self.assertEqual(form.cleaned_data['name_kana_first'], 'タロウ')

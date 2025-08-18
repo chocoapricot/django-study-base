@@ -13,15 +13,15 @@
             {% csrf_token %}
             
             <!-- 氏名 -->
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.name_last.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">姓 <span class="text-danger">*</span></label>
+            <div class="row mb-1 align-items-center">
+                <label for="{{ form.name_last.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">名前(姓)<span class="text-danger">*</span></label>
                 <div class="col-sm-4">
                     {{ form.name_last }}
                     {% if form.name_last.errors %}
                         <div class="text-danger small">{{ form.name_last.errors.0 }}</div>
                     {% endif %}
                 </div>
-                <label for="{{ form.name_first.id_for_label }}" class="col-sm-1 col-form-label" style="text-align:right">名 <span class="text-danger">*</span></label>
+                <label for="{{ form.name_first.id_for_label }}" class="col-sm-1 col-form-label" style="text-align:right">名前(名)<span class="text-danger">*</span></label>
                 <div class="col-sm-4">
                     {{ form.name_first }}
                     {% if form.name_first.errors %}
@@ -32,14 +32,14 @@
 
             <!-- 氏名（カナ） -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name_kana_last.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">姓（カナ） <span class="text-danger">*</span></label>
+                <label for="{{ form.name_kana_last.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">カナ(姓)<span class="text-danger">*</span></label>
                 <div class="col-sm-4">
                     {{ form.name_kana_last }}
                     {% if form.name_kana_last.errors %}
                         <div class="text-danger small">{{ form.name_kana_last.errors.0 }}</div>
                     {% endif %}
                 </div>
-                <label for="{{ form.name_kana_first.id_for_label }}" class="col-sm-1 col-form-label" style="text-align:right">名（カナ） <span class="text-danger">*</span></label>
+                <label for="{{ form.name_kana_first.id_for_label }}" class="col-sm-1 col-form-label" style="text-align:right">カナ(名)<span class="text-danger">*</span></label>
                 <div class="col-sm-4">
                     {{ form.name_kana_first }}
                     {% if form.name_kana_first.errors %}

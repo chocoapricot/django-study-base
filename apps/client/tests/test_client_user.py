@@ -167,6 +167,27 @@ class ClientUserFormTest(TestCase):
         self.assertIn(self.department.pk, department_choices)
         self.assertNotIn(other_department.pk, department_choices)
 
+    def test_kana_hiragana_to_katakana(self):
+        """
+        ひらがな入力時にカタカナへ変換される
+        """
+        form_data = {
+            'department': self.department.pk,
+            'name_last': '田中',
+            'name_first': '太郎',
+            'name_kana_last': 'たなか',
+            'name_kana_first': 'たろう',
+            'position': '課長',
+            'phone_number': '090-1234-5678',
+            'email': 'tanaka@test.com',
+            'memo': '営業担当',
+            'display_order': 1
+        }
+        form = ClientUserForm(data=form_data, client=self.client_obj)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data['name_kana_last'], 'タナカ')
+        self.assertEqual(form.cleaned_data['name_kana_first'], 'タロウ')
+
 
 class ClientUserViewTest(TestCase):
     def setUp(self):

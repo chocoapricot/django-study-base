@@ -28,7 +28,7 @@ class StaffFormPhoneKanaTest(TestCase):
         self.assertIn('phone', form.errors)
 
     def test_kana_validation_and_conversion(self):
-        # ひらがな→エラー、半角カナ→全角カナに変換
+        # ひらがな・半角カナ→全角カナに変換される（エラーにならない）
         form = StaffForm(data={
             'regist_form_code': '1',
             'employee_no': 'EMP006',
@@ -44,5 +44,30 @@ class StaffFormPhoneKanaTest(TestCase):
             'phone': '03-1234-5678',
             'email': 'test@example.com',
         })
-        self.assertFalse(form.is_valid())
-        self.assertIn('name_kana_last', form.errors)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data['name_kana_last'], 'ヤマダ')
+        self.assertEqual(form.cleaned_data['name_kana_first'], 'タロウ')
+
+    def test_kana_hiragana_to_katakana(self):
+        """
+        ひらがな入力時にカタカナへ変換される
+        """
+        form_data = {
+            'regist_form_code': '1',
+            'employee_no': 'EMP007',
+            'name_last': '山田',
+            'name_first': '太郎',
+            'name_kana_last': 'やまだ',
+            'name_kana_first': 'たろう',
+            'birth_date': '2000-01-01',
+            'sex': '1',
+            'hire_date': '2020-04-01',
+            'postal_code': '1000001',
+            'address1': '東京都',
+            'phone': '090-1234-5678',
+            'email': 'test@example.com',
+        }
+        form = StaffForm(data=form_data)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data['name_kana_last'], 'ヤマダ')
+        self.assertEqual(form.cleaned_data['name_kana_first'], 'タロウ')

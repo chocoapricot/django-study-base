@@ -117,6 +117,21 @@ class ClientDepartmentForm(forms.ModelForm):
 
 # クライアント担当者フォーム
 class ClientUserForm(forms.ModelForm):
+    def clean_name_kana_last(self):
+        value = self.cleaned_data.get('name_kana_last', '')
+        if not value:
+            return value
+        validate_kana(value)
+        value = to_fullwidth_katakana(value)
+        return value
+
+    def clean_name_kana_first(self):
+        value = self.cleaned_data.get('name_kana_first', '')
+        if not value:
+            return value
+        validate_kana(value)
+        value = to_fullwidth_katakana(value)
+        return value
     def clean_phone_number(self):
         value = self.cleaned_data.get('phone_number', '')
         import re
