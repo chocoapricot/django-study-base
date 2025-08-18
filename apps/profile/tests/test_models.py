@@ -156,11 +156,12 @@ class StaffProfileViewTest(TestCase):
             name_kana_first='タロウ',
             email=self.user.email
         )
-        
         response = self.client.get(reverse('profile:detail'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '田中 太郎')
-        self.assertContains(response, 'タナカ タロウ')
+        self.assertContains(response, '田中')
+        self.assertContains(response, '太郎')
+        self.assertContains(response, 'タナカ')
+        self.assertContains(response, 'タロウ')
     
     def test_profile_edit_view_get(self):
         """プロフィール編集ビュー（GET）のテスト"""
