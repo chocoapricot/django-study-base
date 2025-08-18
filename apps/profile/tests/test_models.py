@@ -136,6 +136,9 @@ class StaffProfileViewTest(TestCase):
         profile_perms = Permission.objects.filter(content_type__app_label='profile')
         for perm in profile_perms:
             self.user.user_permissions.add(perm)
+        # sex選択肢を追加
+        from apps.system.settings.models import Dropdowns
+        Dropdowns.objects.create(category='sex', value='1', name='男性', disp_seq=1, active=True)
     
     def test_profile_detail_view_no_profile(self):
         """プロフィール詳細ビュー（プロフィール未作成）のテスト"""
@@ -172,9 +175,19 @@ class StaffProfileViewTest(TestCase):
             'name_first': '太郎',
             'name_kana_last': 'タナカ',
             'name_kana_first': 'タロウ',
+            'birth_date': '2000-01-01',
+            'sex': '1',
+            'postal_code': '1000001',
+            'address_kana': '',
+            'address1': '東京都',
+            'address2': '千代田区',
+            'address3': '',
+            'phone': '090-1234-5678',
         }
         
         response = self.client.post(reverse('profile:edit'), data)
+        if hasattr(response, 'context') and response.context and 'form' in response.context:
+            print('form.errors:', response.context['form'].errors)
         self.assertEqual(response.status_code, 302)  # リダイレクト
         
         # プロフィールが作成されたことを確認
@@ -200,6 +213,14 @@ class StaffProfileViewTest(TestCase):
             'name_first': '花子',
             'name_kana_last': 'サトウ',
             'name_kana_first': 'ハナコ',
+            'birth_date': '2000-01-01',
+            'sex': '1',
+            'postal_code': '1000001',
+            'address_kana': '',
+            'address1': '東京都',
+            'address2': '千代田区',
+            'address3': '',
+            'phone': '090-1234-5678',
         }
         
         response = self.client.post(reverse('profile:edit'), data)

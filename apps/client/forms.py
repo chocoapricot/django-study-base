@@ -99,7 +99,7 @@ class ClientDepartmentForm(forms.ModelForm):
         import re
         # 半角数字・ハイフンのみ許可（全角数字不可）
         if value and not re.fullmatch(r'^[0-9\-]+$', value):
-            raise forms.ValidationError('電話番号は半角数字とハイフンのみ入力してください。')
+            raise forms.ValidationError('電話番号は数字とハイフンのみ入力してください。')
         return value
     class Meta:
         model = ClientDepartment

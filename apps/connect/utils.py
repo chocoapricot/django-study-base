@@ -22,7 +22,6 @@ def grant_profile_permissions(user):
         for permission in mynumber_permissions:
             user.user_permissions.add(permission)
 
-        print(f"[INFO] ユーザー {user.email} にプロファイル権限を付与しました")
         return True
 
     except Exception as e:
@@ -46,7 +45,6 @@ def grant_connect_permissions(user):
         for permission in permissions:
             user.user_permissions.add(permission)
         
-        print(f"[INFO] ユーザー {user.email} に接続権限を付与しました")
         return True
         
     except Exception as e:
@@ -73,11 +71,9 @@ def check_and_grant_permissions_for_email(email):
             
             return True
         else:
-            print(f"[INFO] {email} に対する接続申請はありません")
             return False
             
     except User.DoesNotExist:
-        print(f"[INFO] ユーザー {email} は存在しません")
         return False
     except Exception as e:
         print(f"[ERROR] 権限チェックエラー: {e}")
@@ -89,10 +85,8 @@ def grant_permissions_on_connection_request(email):
     try:
         user = User.objects.get(email=email)
         grant_connect_permissions(user)
-        print(f"[INFO] 接続依頼時に権限を付与: {email}")
         return True
     except User.DoesNotExist:
-        print(f"[INFO] ユーザー {email} は未登録のため、権限付与をスキップ")
         return False
     except Exception as e:
         print(f"[ERROR] 接続依頼時の権限付与エラー: {e}")
@@ -115,7 +109,6 @@ def grant_client_connect_permissions(user):
         for permission in permissions:
             user.user_permissions.add(permission)
         
-        print(f"[INFO] ユーザー {user.email} にクライアント接続権限を付与しました")
         return True
         
     except Exception as e:
@@ -142,7 +135,6 @@ def check_and_grant_client_permissions_for_email(email):
             
             return True
         else:
-            print(f"[INFO] {email} に対するクライアント接続申請はありません")
             return False
             
     except User.DoesNotExist:
@@ -158,10 +150,8 @@ def grant_client_permissions_on_connection_request(email):
     try:
         user = User.objects.get(email=email)
         grant_client_connect_permissions(user)
-        print(f"[INFO] クライアント接続依頼時に権限を付与: {email}")
         return True
     except User.DoesNotExist:
-        print(f"[INFO] ユーザー {email} は未登録のため、権限付与をスキップ")
         return False
     except Exception as e:
         print(f"[ERROR] クライアント接続依頼時の権限付与エラー: {e}")

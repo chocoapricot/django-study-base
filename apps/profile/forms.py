@@ -6,6 +6,13 @@ from .models import StaffProfile, StaffMynumber
 from apps.common.forms.fields import to_fullwidth_katakana, validate_kana
 
 class StaffProfileForm(forms.ModelForm):
+    def save(self, commit=True, user=None):
+        instance = super().save(commit=False)
+        if user is not None:
+            instance.user = user
+        if commit:
+            instance.save()
+        return instance
     def clean_phone(self):
         value = self.cleaned_data.get('phone', '')
         import re

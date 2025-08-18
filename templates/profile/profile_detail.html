@@ -19,71 +19,43 @@
     <div class="card-body">
         {% if profile %}
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label" style="text-align:right">氏名</label>
+                <label class="col-sm-2 col-form-label" style="text-align:right"><strong>氏名</strong></label>
                 <div class="col-sm-10">
-                    <p class="form-control-plaintext">{{ profile.full_name }}</p>
+                    <ruby>
+                        {{ profile.name_last }}<rt>{{ profile.name_kana_last }}</rt>
+                    </ruby>
+                    <ruby>
+                        {{ profile.name_first }}<rt>{{ profile.name_kana_first }}</rt>
+                    </ruby>
                 </div>
             </div>
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label" style="text-align:right">氏名（カナ）</label>
-                <div class="col-sm-10">
-                    <p class="form-control-plaintext">{{ profile.full_name_kana }}</p>
-                </div>
-            </div>
-            {% if profile.birth_date %}
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label" style="text-align:right">生年月日</label>
-                <div class="col-sm-10">
-                    <p class="form-control-plaintext">{{ profile.birth_date|date:"Y年n月j日" }}</p>
-                </div>
-            </div>
-            {% endif %}
-            {% if profile.sex %}
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label" style="text-align:right">性別</label>
+                <label class="col-sm-2 col-form-label" style="text-align:right"><strong>性別</strong></label>
                 <div class="col-sm-10">
                     <p class="form-control-plaintext">{{ profile.sex_display }}</p>
                 </div>
             </div>
-            {% endif %}
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label" style="text-align:right">メールアドレス</label>
+                <label class="col-sm-2 col-form-label" style="text-align:right"><strong>メールアドレス</strong></label>
                 <div class="col-sm-10">
                     <p class="form-control-plaintext">{{ profile.email }}</p>
                 </div>
             </div>
-            {% if profile.phone %}
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label" style="text-align:right">電話番号</label>
+                <label class="col-sm-2 col-form-label" style="text-align:right"><strong>電話番号</strong></label>
                 <div class="col-sm-10">
                     <p class="form-control-plaintext">{{ profile.phone }}</p>
                 </div>
             </div>
-            {% endif %}
-            {% if profile.postal_code %}
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label" style="text-align:right">郵便番号</label>
-                <div class="col-sm-10">
+                <label class="col-sm-2 col-form-label" style="text-align:right"><strong>住所</strong></label>
+                <div class="col-sm-6">
                     <p class="form-control-plaintext">〒{{ profile.postal_code|slice:":3" }}-{{ profile.postal_code|slice:"3:" }}</p>
+                    <ruby>
+                        {{ profile.full_address }}<rt>{{ profile.address_kana }}</rt>
+                    </ruby>
                 </div>
             </div>
-            {% endif %}
-            {% if profile.full_address %}
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label" style="text-align:right">住所</label>
-                <div class="col-sm-10">
-                    <p class="form-control-plaintext">{{ profile.full_address }}</p>
-                </div>
-            </div>
-            {% endif %}
-            {% if profile.address_kana %}
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label" style="text-align:right">住所（カナ）</label>
-                <div class="col-sm-10">
-                    <p class="form-control-plaintext">{{ profile.address_kana }}</p>
-                </div>
-            </div>
-            {% endif %}
         {% else %}
             <div class="alert alert-info" role="alert">
                 <i class="bi bi-info-circle"></i>
