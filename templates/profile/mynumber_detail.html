@@ -3,50 +3,42 @@
 {% block title %}マイナンバー詳細{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    マイナンバー詳細
-                    <div>
-                        {% if mynumber %}
-                            <a href="{% url 'profile:mynumber_edit' %}" class="btn btn-sm btn-primary">編集</a>
-                            <a href="{% url 'profile:mynumber_delete' %}" class="btn btn-sm btn-dark">削除</a>
-                        {% else %}
-                            <a href="{% url 'profile:mynumber_edit' %}" class="btn btn-sm btn-primary">マイナンバー登録</a>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="card-body">
-                    {% if mynumber %}
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label" style="text-align:right">メールアドレス</label>
-                            <div class="col-sm-10">
-                                <p class="form-control-plaintext">{{ mynumber.email }}</p>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label" style="text-align:right">マイナンバー</label>
-                            <div class="col-sm-10">
-                                <p class="form-control-plaintext">{{ mynumber.mynumber }}</p>
-                            </div>
-                        </div>
-                    {% else %}
-                        <div class="alert alert-info" role="alert">
-                            <i class="bi bi-info-circle"></i>
-                            マイナンバーが登録されていません。「マイナンバー登録」ボタンから登録してください。
-                        </div>
-                    {% endif %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        マイナンバー詳細
+        <div>
+            {% if mynumber %}
+                <a href="{% url 'profile:mynumber_edit' %}" class="btn btn-sm btn-primary">編集</a>
+                <a href="{% url 'profile:mynumber_delete' %}" class="btn btn-sm btn-dark">削除</a>
+            {% else %}
+                <a href="{% url 'profile:mynumber_edit' %}" class="btn btn-sm btn-primary">マイナンバー登録</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card-body">
+        {% if mynumber %}
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label" style="text-align:right">メールアドレス</label>
+                <div class="col-sm-10">
+                    <p class="form-control-plaintext">{{ mynumber.email }}</p>
                 </div>
             </div>
-
-            <div class="row mt-3">
-                <div class="col text-left">
-                    <a href="/" class="btn btn-sm btn-secondary">戻る</a>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label" style="text-align:right">マイナンバー</label>
+                <div class="col-sm-10">
+                    <p class="form-control-plaintext">{{ mynumber.mynumber }}</p>
                 </div>
             </div>
+        {% else %}
+            <div class="alert alert-info" role="alert">
+                <i class="bi bi-info-circle"></i>
+                マイナンバーが登録されていません。「マイナンバー登録」ボタンから登録してください。
+            </div>
+        {% endif %}
+        <div class="d-flex justify-content-start">
+            <a href="/" class="btn btn-sm btn-secondary">戻る</a>
         </div>
     </div>
 </div>
+
 {% endblock %}
