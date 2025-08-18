@@ -1,0 +1,15 @@
+{% extends 'common/_base.html' %}
+{% block title %}技能登録・編集{% endblock %}
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header">技能登録・編集</div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">保存</button>
+            <a href="{% url 'profile:skill_list' %}" class="btn btn-secondary">戻る</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

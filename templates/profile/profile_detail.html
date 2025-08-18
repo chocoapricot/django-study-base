@@ -11,6 +11,11 @@
             {% if profile %}
                 <a href="{% url 'profile:edit' %}" class="btn btn-sm btn-primary">編集</a>
                 <a href="{% url 'profile:delete' %}" class="btn btn-sm btn-dark">削除</a>
+                {# 資格・技能一覧ボタン #}
+                {% if profile.user.staff_set.first %}
+                    <a href="{% url 'staff:staff_qualification_list' profile.user.staff_set.first.pk %}" class="btn btn-sm btn-success ms-2">資格一覧</a>
+                    <a href="{% url 'staff:staff_skill_list' profile.user.staff_set.first.pk %}" class="btn btn-sm btn-info ms-1">技能一覧</a>
+                {% endif %}
             {% else %}
                 <a href="{% url 'profile:edit' %}" class="btn btn-sm btn-primary">プロフィール作成</a>
             {% endif %}
@@ -29,6 +34,49 @@
                     </ruby>
                 </div>
             </div>
+
+                {# 資格一覧表示 #}
+                {% if profile.user.staff_set.first %}
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" style="text-align:right"><strong>資格</strong></label>
+                    <div class="col-sm-10">
+                        {% with staff=profile.user.staff_set.first %}
+                            {% if staff.qualifications.all %}
+                                <ul class="list-group">
+                                    {% for q in staff.qualifications.all %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            {{ q.qualification.name }}
+                                            <span class="badge bg-secondary">{{ q.acquired_date }}</span>
+                                        </li>
+                                    {% empty %}
+                                        <li class="list-group-item">資格は登録されていません</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+                {# 技能一覧表示 #}
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label" style="text-align:right"><strong>技能</strong></label>
+                    <div class="col-sm-10">
+                        {% with staff=profile.user.staff_set.first %}
+                            {% if staff.skills.all %}
+                                <ul class="list-group">
+                                    {% for s in staff.skills.all %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            {{ s.skill.name }}
+                                            <span class="badge bg-secondary">{{ s.acquired_date }}</span>
+                                        </li>
+                                    {% empty %}
+                                        <li class="list-group-item">技能は登録されていません</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+                {% endif %}
             <div class="row mb-3">
                 <label class="col-sm-2 col-form-label" style="text-align:right"><strong>性別</strong></label>
                 <div class="col-sm-10">

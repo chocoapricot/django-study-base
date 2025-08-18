@@ -1,0 +1,15 @@
+{% extends 'common/_base.html' %}
+{% block title %}資格削除確認{% endblock %}
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header">資格削除確認</div>
+    <div class="card-body">
+        <p>本当に「{{ qualification.qualification.name }}」を削除しますか？</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">削除</button>
+            <a href="{% url 'profile:qualification_list' %}" class="btn btn-secondary">キャンセル</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

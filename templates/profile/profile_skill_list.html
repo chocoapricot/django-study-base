@@ -1,0 +1,42 @@
+{% extends 'common/_base.html' %}
+{% block title %}技能一覧{% endblock %}
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        技能一覧
+        <a href="{% url 'profile:skill_create' %}" class="btn btn-sm btn-success">技能追加</a>
+    </div>
+    <div class="card-body">
+        {% if skills %}
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>技能名</th>
+                    <th>習得日</th>
+                    <th>経験年数</th>
+                    <th>メモ</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in skills %}
+                <tr>
+                    <td>{{ s.skill.name }}</td>
+                    <td>{{ s.acquired_date }}</td>
+                    <td>{{ s.years_of_experience }}</td>
+                    <td>{{ s.memo }}</td>
+                    <td>
+                        <a href="{% url 'profile:skill_update' s.pk %}" class="btn btn-sm btn-primary">編集</a>
+                        <a href="{% url 'profile:skill_delete' s.pk %}" class="btn btn-sm btn-danger">削除</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-info">登録された技能はありません。</div>
+        {% endif %}
+        <a href="{% url 'profile:detail' %}" class="btn btn-sm btn-secondary mt-2">プロフィールに戻る</a>
+    </div>
+</div>
+{% endblock %}

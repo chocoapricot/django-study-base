@@ -1,0 +1,44 @@
+{% extends 'common/_base.html' %}
+{% block title %}資格一覧{% endblock %}
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        資格一覧
+        <a href="{% url 'profile:qualification_create' %}" class="btn btn-sm btn-success">資格追加</a>
+    </div>
+    <div class="card-body">
+        {% if qualifications %}
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>資格名</th>
+                    <th>取得日</th>
+                    <th>有効期限</th>
+                    <th>証明書番号</th>
+                    <th>点数</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for q in qualifications %}
+                <tr>
+                    <td>{{ q.qualification.name }}</td>
+                    <td>{{ q.acquired_date }}</td>
+                    <td>{{ q.expiry_date }}</td>
+                    <td>{{ q.certificate_number }}</td>
+                    <td>{{ q.score }}</td>
+                    <td>
+                        <a href="{% url 'profile:qualification_update' q.pk %}" class="btn btn-sm btn-primary">編集</a>
+                        <a href="{% url 'profile:qualification_delete' q.pk %}" class="btn btn-sm btn-danger">削除</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-info">登録された資格はありません。</div>
+        {% endif %}
+        <a href="{% url 'profile:detail' %}" class="btn btn-sm btn-secondary mt-2">プロフィールに戻る</a>
+    </div>
+</div>
+{% endblock %}
