@@ -18,12 +18,11 @@ class StaffProfileForm(forms.ModelForm):
         value = to_fullwidth_katakana(value)
         return value
     """スタッフプロフィールフォーム"""
-    
     sex = forms.ChoiceField(
         choices=[],
         label='性別',
         widget=forms.Select(attrs={'class': 'form-control form-control-sm'}),
-        required=False,
+        required=False,  # __init__で必須化
     )
     
     class Meta:
@@ -55,12 +54,17 @@ class StaffProfileForm(forms.ModelForm):
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='sex').order_by('disp_seq')
         ]
-        
         # 必須フィールドの設定
         self.fields['name_last'].required = True
         self.fields['name_first'].required = True
         self.fields['name_kana_last'].required = True
         self.fields['name_kana_first'].required = True
+        self.fields['birth_date'].required = True
+        self.fields['sex'].required = True
+        self.fields['postal_code'].required = True
+        self.fields['address1'].required = True  # 都道府県
+        self.fields['address2'].required = True  # 市区町村
+        self.fields['phone'].required = True
 
 
 class StaffMynumberForm(forms.ModelForm):

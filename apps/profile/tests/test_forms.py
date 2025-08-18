@@ -34,11 +34,11 @@ class StaffProfileFormTest(TestCase):
             'name_kana_last': 'ﾔﾏﾀﾞ',
             'name_kana_first': 'ﾀﾛｳ',
             'birth_date': '2000-01-01',
-            'sex': '',
+            'sex': '1',  # 必須
             'postal_code': '1234567',
             'address_kana': '',
-            'address1': '',
-            'address2': '',
+            'address1': '東京都',  # 必須
+            'address2': '千代田区',  # 必須
             'address3': '',
             'phone': '090-1234-5678',
         })
@@ -67,4 +67,30 @@ class StaffProfileFormTest(TestCase):
             'phone': '090-1234-ABCD',
         })
         self.assertFalse(form.is_valid())
+        self.assertIn('phone', form.errors)
+
+    def test_required_fields(self):
+        """
+        必須項目が未入力の場合はバリデーションエラー
+        """
+        form = StaffProfileForm(data={
+            'name_last': '山田',
+            'name_first': '太郎',
+            'name_kana_last': 'ヤマダ',
+            'name_kana_first': 'タロウ',
+            # 'birth_date' 未入力
+            # 'sex' 未入力
+            # 'postal_code' 未入力
+            'address_kana': '',
+            # 'address1' 未入力
+            # 'address2' 未入力
+            'address3': '',
+            # 'phone' 未入力
+        })
+        self.assertFalse(form.is_valid())
+        self.assertIn('birth_date', form.errors)
+        self.assertIn('sex', form.errors)
+        self.assertIn('postal_code', form.errors)
+        self.assertIn('address1', form.errors)
+        self.assertIn('address2', form.errors)
         self.assertIn('phone', form.errors)
