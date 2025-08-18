@@ -91,7 +91,7 @@
             </div>
 
             <!-- 郵便番号 -->
-            <div class="row mb-3 align-items-center">
+            <div class="row align-items-center">
                 <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">郵便番号 {% my_help_preset "postal_code" %}</label>
                 <div class="col-sm-3">
                     {{ form.postal_code }}
@@ -105,8 +105,8 @@
             </div>
 
             <!-- 住所 -->
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.address1.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">都道府県</label>
+            <div class="row align-items-center">
+                <label for="{{ form.address1.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">住所1</label>
                 <div class="col-sm-4">
                     {{ form.address1 }}
                     {% if form.address1.errors %}
@@ -115,8 +115,8 @@
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.address2.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">市区町村</label>
+            <div class="row align-items-center">
+                <label for="{{ form.address2.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">住所2</label>
                 <div class="col-sm-6">
                     {{ form.address2 }}
                     {% if form.address2.errors %}
@@ -126,7 +126,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.address3.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">番地・建物名</label>
+                <label for="{{ form.address3.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">住所3</label>
                 <div class="col-sm-8">
                     {{ form.address3 }}
                     {% if form.address3.errors %}
@@ -137,7 +137,7 @@
 
             <!-- 住所（カナ） -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.address_kana.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">住所（カナ）</label>
+                <label for="{{ form.address_kana.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">住所(カナ)</label>
                 <div class="col-sm-8">
                     {{ form.address_kana }}
                     {% if form.address_kana.errors %}

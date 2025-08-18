@@ -39,8 +39,9 @@ class StaffForm(forms.ModelForm):
     def clean_phone(self):
         value = self.cleaned_data.get('phone', '')
         import re
-        if value and not re.fullmatch(r'^[\d\-]+$', value):
-            raise forms.ValidationError('電話番号は数字とハイフンのみ入力可能です')
+        # 半角数字・ハイフンのみ許可（全角数字不可）
+        if value and not re.fullmatch(r'^[0-9\-]+$', value):
+            raise forms.ValidationError('電話番号は半角数字とハイフンのみ入力してください。')
         return value
     def clean_name_kana_last(self):
         value = self.cleaned_data.get('name_kana_last', '')
@@ -208,7 +209,13 @@ class StaffForm(forms.ModelForm):
             'address1': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'address2': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'address3': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'phone': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'inputmode': 'numeric',
+                'pattern': '[0-9\-]*',
+                'style': 'ime-mode:disabled;',
+                'autocomplete': 'off',
+            }),
             'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
             'memo': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             # 'regist_form_code': forms.Select(attrs={'class': 'form-control form-control-sm form-select-sm'}),

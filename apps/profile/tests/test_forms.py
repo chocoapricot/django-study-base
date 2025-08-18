@@ -4,6 +4,25 @@ from apps.profile.forms import StaffProfileForm
 from apps.system.settings.models import Dropdowns
 
 class StaffProfileFormTest(TestCase):
+    def test_phone_zenkaku(self):
+        # 電話番号に全角数字が含まれる場合はバリデーションエラー
+        form = StaffProfileForm(data={
+            'name_last': '山田',
+            'name_first': '太郎',
+            'name_kana_last': 'ヤマダ',
+            'name_kana_first': 'タロウ',
+            'birth_date': '2000-01-01',
+            'sex': '1',
+            'postal_code': '1234567',
+            'address_kana': '',
+            'address1': '東京都',
+            'address2': '千代田区',
+            'address3': '',
+            'phone': '０９０-１２３４-５６７８',  # 全角数字
+        })
+        self.assertFalse(form.is_valid())
+        self.assertIn('phone', form.errors)
+        self.assertIn('電話番号は半角数字とハイフンのみ入力してください。', form.errors['phone'])
     def setUp(self):
         Dropdowns.objects.create(category='sex', value='1', name='男性', disp_seq=1, active=True)
     def test_kana_validation(self):

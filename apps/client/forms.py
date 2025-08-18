@@ -97,8 +97,9 @@ class ClientDepartmentForm(forms.ModelForm):
     def clean_phone_number(self):
         value = self.cleaned_data.get('phone_number', '')
         import re
-        if value and not re.fullmatch(r'[0-9\-]+', value):
-            raise forms.ValidationError('電話番号は数字とハイフンのみ入力してください。')
+        # 半角数字・ハイフンのみ許可（全角数字不可）
+        if value and not re.fullmatch(r'^[0-9\-]+$', value):
+            raise forms.ValidationError('電話番号は半角数字とハイフンのみ入力してください。')
         return value
     class Meta:
         model = ClientDepartment
@@ -108,7 +109,13 @@ class ClientDepartmentForm(forms.ModelForm):
             'department_code': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'postal_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'pattern': '[0-9]{7}', 'inputmode': 'numeric', 'maxlength': '7'}),
             'address': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'phone_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'phone_number': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'inputmode': 'numeric',
+                'pattern': '[0-9\-]*',
+                'style': 'ime-mode:disabled;',
+                'autocomplete': 'off',
+            }),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
             'valid_from': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'valid_to': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
@@ -135,8 +142,9 @@ class ClientUserForm(forms.ModelForm):
     def clean_phone_number(self):
         value = self.cleaned_data.get('phone_number', '')
         import re
-        if value and not re.fullmatch(r'[0-9\-]+', value):
-            raise forms.ValidationError('電話番号は数字とハイフンのみ入力してください。')
+        # 半角数字・ハイフンのみ許可（全角数字不可）
+        if value and not re.fullmatch(r'^[0-9\-]+$', value):
+            raise forms.ValidationError('電話番号は半角数字とハイフンのみ入力してください。')
         return value
     def __init__(self, *args, **kwargs):
         client = kwargs.pop('client', None)
@@ -154,7 +162,13 @@ class ClientUserForm(forms.ModelForm):
             'name_kana_last': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'name_kana_first': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'position': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'phone_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'phone_number': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'inputmode': 'numeric',
+                'pattern': '[0-9\-]*',
+                'style': 'ime-mode:disabled;',
+                'autocomplete': 'off',
+            }),
             'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),

@@ -81,6 +81,26 @@ class ClientUserModelTest(TestCase):
 
 
 class ClientUserFormTest(TestCase):
+    def test_phone_number_zenkaku(self):
+        """
+        電話番号に全角数字が含まれる場合はバリデーションエラー
+        """
+        form_data = {
+            'department': self.department.pk,
+            'name_last': '田中',
+            'name_first': '太郎',
+            'name_kana_last': 'タナカ',
+            'name_kana_first': 'タロウ',
+            'position': '課長',
+            'phone_number': '０９０-１２３４-５６７８',  # 全角数字
+            'email': 'tanaka@test.com',
+            'memo': '営業担当',
+            'display_order': 1
+        }
+        form = ClientUserForm(data=form_data, client=self.client_obj)
+        self.assertFalse(form.is_valid())
+        self.assertIn('phone_number', form.errors)
+        self.assertIn('電話番号は半角数字とハイフンのみ入力してください。', form.errors['phone_number'])
     def setUp(self):
         self.client_obj = Client.objects.create(
             name='テスト会社',
@@ -146,7 +166,7 @@ class ClientUserFormTest(TestCase):
         form = ClientUserForm(data=form_data, client=self.client_obj)
         self.assertFalse(form.is_valid())
         self.assertIn('phone_number', form.errors)
-        self.assertIn('電話番号は数字とハイフンのみ入力してください。', form.errors['phone_number'])
+        self.assertIn('電話番号は半角数字とハイフンのみ入力してください。', form.errors['phone_number'])
 
     def test_department_queryset_filtering(self):
         """部署選択肢のフィルタリングテスト"""
