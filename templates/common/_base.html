@@ -298,33 +298,6 @@
           </li>
           {% endif %}
       {% endfor %}
-      <!--
-      <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="bi bi-house-door" style="color:#007bff;"></i><span class="menu-name">ホーム※</span><span class="badge bg-primary">3</span>
-            </a>
-      </li>
-      <li class="nav-item">
-            <a href="#" class="nav-link active">
-                <i class="bi bi-people" style="color:#28a745;"></i><span class="menu-name">スタッフ※</span><span class="badge bg-primary">10</span>
-            </a>
-      </li>
-      <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="bi bi-person-bounding-box" style="color:#ff5722;"></i><span class="menu-name">クライアント※</span><span class="badge bg-primary">5</span>
-            </a>
-      </li>
-      <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="bi bi-file-earmark-text" style="color:#ffc107;"></i><span class="menu-name">契約※</span><span class="badge bg-primary">8</span>
-            </a>
-      </li>
-      <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="bi bi-bar-chart-line" style="color:#17a2b8;"></i><span class="menu-name">レポート※</span><span class="badge bg-primary">2</span>
-            </a>
-      </li>
-      -->
     </ul>
   </div>
 </div>
@@ -361,33 +334,6 @@
           </li>
           {% endif %}
       {% endfor %}
-      <!--
-      <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="bi bi-house-door" style="color:#007bff;"></i><span class="menu-name">ホーム※</span><span class="badge bg-primary">3</span>
-            </a>
-      </li>
-      <li class="nav-item">
-            <a href="#" class="nav-link active">
-                <i class="bi bi-people" style="color:#28a745;"></i><span class="menu-name">スタッフ※</span><span class="badge bg-primary">10</span>
-            </a>
-      </li>
-      <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="bi bi-person-bounding-box" style="color:#ff5722;"></i><span class="menu-name">クライアント※</span><span class="badge bg-primary">5</span>
-            </a>
-      </li>
-      <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="bi bi-file-earmark-text" style="color:#ffc107;"></i><span class="menu-name">契約※</span><span class="badge bg-primary">8</span>
-            </a>
-      </li>
-      <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="bi bi-bar-chart-line" style="color:#17a2b8;"></i><span class="menu-name">レポート※</span><span class="badge bg-primary">2</span>
-            </a>
-      </li>
-      -->
     </ul>
   </div>
 </div>
@@ -444,12 +390,12 @@
     function updateWindowBreakpoint() {
         var w = window.innerWidth;
         var bp = '';
-        if (w < 576) bp = 'xs <576px';
-        else if (w < 768) bp = 'sm ≥576px';
-        else if (w < 992) bp = 'md ≥768px';
-        else if (w < 1200) bp = 'lg ≥992px';
-        else if (w < 1400) bp = 'xl ≥1200px';
-        else bp = 'xxl ≥1400px';
+        if (w < 576) bp = 'xs ＜576px';
+        else if (w < 768) bp = 'sm ≧576px';
+        else if (w < 992) bp = 'md ≧768px';
+        else if (w < 1200) bp = 'lg ≧992px';
+        else if (w < 1400) bp = 'xl ≧1200px';
+        else bp = 'xxl ≧1400px';
         document.getElementById('window-breakpoint').textContent = bp;
     }
     function updateWindowInfo() {
