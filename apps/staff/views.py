@@ -70,6 +70,11 @@ def staff_list(request):
     
     # 基本のクエリセット
     staffs = Staff.objects.all()
+
+    # 会社の法人番号を取得（最初の会社を仮定）
+    from apps.company.models import Company
+    company = Company.objects.first()
+    corporate_number = company.corporate_number if company else None
     
     # キーワード検索
     if query:
@@ -134,6 +139,22 @@ def staff_list(request):
     paginator = Paginator(staffs, 10)  # 1ページあたり10件表示
     page_number = request.GET.get('page')  # URLからページ番号を取得
     staffs_pages = paginator.get_page(page_number)
+
+    # 各スタッフが接続承認済みかどうかを判定し、オブジェクトに属性を付与
+    from apps.connect.models import ConnectStaff
+    if corporate_number:
+        for staff in staffs_pages:
+            if staff.email:
+                staff.is_connected_approved = ConnectStaff.objects.filter(
+                    corporate_number=corporate_number,
+                    email=staff.email,
+                    status='approved'
+                ).exists()
+            else:
+                staff.is_connected_approved = False
+    else:
+        for staff in staffs_pages:
+            staff.is_connected_approved = False
 
     return render(request, 'staff/staff_list.html', {
         'staffs': staffs_pages, 

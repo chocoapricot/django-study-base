@@ -104,8 +104,11 @@
                     <td>
                         <a href="{% url 'staff:staff_detail' staff.pk %}">
                             <ruby>
-                            {{ staff.name_last }} {{ staff.name_first }}<!--rt>{{ staff.name_kana_last }} {{ staff.name_kana_first }}</rt-->
+                            {{ staff.name_last }} {{ staff.name_first }}
                             </ruby>
+                            {% if staff.is_connected_approved %}
+                                <i class="bi bi-link" style="color:#17a2b8;" title="接続承認済み"></i>
+                            {% endif %}
                         </a>
                     </td>
                     <td class="d-none d-lg-table-cell">{{ staff.address1 }}</td>

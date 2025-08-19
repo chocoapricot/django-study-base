@@ -243,7 +243,12 @@
                     <tbody>
                         {% for user in users %}
                         <tr>
-                            <td><a href="{% url 'client:client_user_detail' user.pk %}" class="text-decoration-none">{{ user.name }}</a></td>
+                            <td>
+                                <a href="{% url 'client:client_user_detail' user.pk %}" class="text-decoration-none">
+                                    {{ user.name }}
+                                    {% if user.is_connected_approved %} <i class="bi bi-link" style="color:#17a2b8;" title="接続承認済み"></i>{% endif %}
+                                </a>
+                            </td>
                             <td>{{ user.department.name|default:"-" }}</td>
                             <td>{{ user.position|default:"-" }}</td>
                             <td>{{ user.phone_number|default:"-" }}</td>

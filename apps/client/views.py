@@ -66,7 +66,25 @@ def client_list(request):
     paginator = Paginator(clients, 10)
     page_number = request.GET.get('page')
     clients_pages = paginator.get_page(page_number)
-    
+
+    # 各クライアントに「接続承認済み担当者がいるか」フラグを付与（Companyの法人番号で判定）
+    from apps.connect.models import ConnectClient
+    from apps.company.models import Company
+    company = Company.objects.first()
+    corporate_number = company.corporate_number if company else None
+    for client in clients_pages:
+        has_approved = False
+        if corporate_number:
+            for user in client.users.all():
+                if user.email and ConnectClient.objects.filter(
+                    corporate_number=corporate_number,
+                    email=user.email,
+                    status='approved'
+                ).exists():
+                    has_approved = True
+                    break
+        client.has_connected_approved_user = has_approved
+
     return render(request, 'client/client_list.html', {
         'clients': clients_pages, 
         'query': query,
@@ -103,6 +121,24 @@ def client_detail(request, pk):
     departments_count = client.departments.count()
     # 担当者一覧（最新5件）
     users = client.users.all()[:5]
+    # 各担当者が接続承認済みかどうかを付与
+    from apps.connect.models import ConnectClient
+    from apps.company.models import Company
+    company = Company.objects.first()
+    corporate_number = company.corporate_number if company else None
+    if corporate_number:
+        for user in users:
+            if user.email:
+                user.is_connected_approved = ConnectClient.objects.filter(
+                    corporate_number=corporate_number,
+                    email=user.email,
+                    status='approved'
+                ).exists()
+            else:
+                user.is_connected_approved = False
+    else:
+        for user in users:
+            user.is_connected_approved = False
     users_count = client.users.count()
     # ファイル情報（最新5件）
     files = client.files.order_by('-uploaded_at')[:5]
