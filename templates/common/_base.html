@@ -255,6 +255,7 @@
             {% endfor %}
         </div>
         <div class="icons">
+            <span id="window-breakpoint">-</span> (横幅：<span id="window-width">0</span> px)
             <i class="bi bi-search"></i> <!-- 検索アイコン -->
             <i class="bi bi-bell"></i> <!-- 通知アイコン -->
             <i class="bi bi-gear"></i>
@@ -435,7 +436,29 @@
     mainContent.classList.add('col-md-9', 'col-lg-10');
   }
         });
-    </script>
+        </script>
+<script>
+    function updateWindowWidth() {
+        document.getElementById('window-width').textContent = window.innerWidth;
+    }
+    function updateWindowBreakpoint() {
+        var w = window.innerWidth;
+        var bp = '';
+        if (w < 576) bp = 'xs <576px';
+        else if (w < 768) bp = 'sm ≥576px';
+        else if (w < 992) bp = 'md ≥768px';
+        else if (w < 1200) bp = 'lg ≥992px';
+        else if (w < 1400) bp = 'xl ≥1200px';
+        else bp = 'xxl ≥1400px';
+        document.getElementById('window-breakpoint').textContent = bp;
+    }
+    function updateWindowInfo() {
+        updateWindowWidth();
+        updateWindowBreakpoint();
+    }
+    window.addEventListener('resize', updateWindowInfo);
+    window.addEventListener('DOMContentLoaded', updateWindowInfo);
+</script>
 <script>
   //ツールチップを上に出す
   var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
