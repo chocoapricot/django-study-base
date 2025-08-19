@@ -72,7 +72,7 @@ class Menu(MyModel):
         """指定されたパスでこのメニューがアクティブかどうかを判定"""
         import re
         # IDやpkなどの数値部分を<pk>というプレースホルダーに置換
-        request_path = re.sub(r'/\d+', '/<pk>', request_path)
+        request_path = re.sub(r'(?<=/)\d+', '<pk>', request_path)
 
         # ホームメニュー（/）の特別処理
         if self.url == '/':
