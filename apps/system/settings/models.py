@@ -70,6 +70,10 @@ class Menu(MyModel):
     
     def is_active_for_path(self, request_path):
         """指定されたパスでこのメニューがアクティブかどうかを判定"""
+        import re
+        # IDやpkなどの数値部分を<pk>というプレースホルダーに置換
+        request_path = re.sub(r'/\d+', '/<pk>', request_path)
+
         # ホームメニュー（/）の特別処理
         if self.url == '/':
             return request_path == '/' or request_path == ''
