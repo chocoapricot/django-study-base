@@ -120,14 +120,14 @@ def client_detail(request, pk):
     departments = client.departments.all()[:5]
     departments_count = client.departments.count()
     # 担当者一覧（最新5件）
-    users = client.users.all()[:5]
+    client_users = client.users.all()[:5]
     # 各担当者が接続承認済みかどうかを付与
     from apps.connect.models import ConnectClient
     from apps.company.models import Company
     company = Company.objects.first()
     corporate_number = company.corporate_number if company else None
     if corporate_number:
-        for user in users:
+        for user in client_users:
             if user.email:
                 user.is_connected_approved = ConnectClient.objects.filter(
                     corporate_number=corporate_number,
@@ -137,7 +137,7 @@ def client_detail(request, pk):
             else:
                 user.is_connected_approved = False
     else:
-        for user in users:
+        for user in client_users:
             user.is_connected_approved = False
     users_count = client.users.count()
     # ファイル情報（最新5件）
@@ -169,7 +169,7 @@ def client_detail(request, pk):
         'client_contracts_count': client_contracts_count,
         'departments': departments,
         'departments_count': departments_count,
-        'users': users,
+        'client_users': client_users,
         'users_count': users_count,
         'files': files,
         'change_logs': change_logs,
@@ -363,14 +363,14 @@ def client_user_create(request, client_pk):
 @permission_required('client.view_clientuser', raise_exception=True)
 def client_user_list(request, client_pk):
     client = get_object_or_404(Client, pk=client_pk)
-    users = client.users.all()
+    client_users = client.users.all()
     # 各担当者が接続承認済みかどうかを付与
     from apps.connect.models import ConnectClient
     from apps.company.models import Company
     company = Company.objects.first()
     corporate_number = company.corporate_number if company else None
     if corporate_number:
-        for user in users:
+        for user in client_users:
             if user.email:
                 user.is_connected_approved = ConnectClient.objects.filter(
                     corporate_number=corporate_number,
@@ -380,69 +380,69 @@ def client_user_list(request, client_pk):
             else:
                 user.is_connected_approved = False
     else:
-        for user in users:
+        for user in client_users:
             user.is_connected_approved = False
-    return render(request, 'client/client_user_list.html', {'client': client, 'users': users, 'show_client_info': True})
+    return render(request, 'client/client_user_list.html', {'client': client, 'client_users': client_users, 'show_client_info': True})
 
 @login_required
 @permission_required('client.change_clientuser', raise_exception=True)
 def client_user_update(request, pk):
-    user = get_object_or_404(ClientUser, pk=pk)
-    client = user.client
+    client_user = get_object_or_404(ClientUser, pk=pk)
+    client = client_user.client
     if request.method == 'POST':
-        form = ClientUserForm(request.POST, instance=user, client=client)
+        form = ClientUserForm(request.POST, instance=client_user, client=client)
         if form.is_valid():
             form.save()
             # 変更履歴を記録
             from apps.system.logs.utils import log_model_action
-            log_model_action(request.user, 'update', user)
+            log_model_action(request.user, 'update', client_user)
             return redirect('client:client_detail', pk=client.pk)
     else:
-        form = ClientUserForm(instance=user, client=client)
-    return render(request, 'client/client_user_form.html', {'form': form, 'client': client, 'user': user, 'show_client_info': True})
+        form = ClientUserForm(instance=client_user, client=client)
+    return render(request, 'client/client_user_form.html', {'form': form, 'client': client, 'client_user': client_user, 'show_client_info': True})
 
 @login_required
 @permission_required('client.delete_clientuser', raise_exception=True)
 def client_user_delete(request, pk):
-    user = get_object_or_404(ClientUser, pk=pk)
-    client = user.client
+    client_user = get_object_or_404(ClientUser, pk=pk)
+    client = client_user.client
     if request.method == 'POST':
         # 変更履歴を記録（削除前に記録）
         from apps.system.logs.utils import log_model_action
-        log_model_action(request.user, 'delete', user)
-        user.delete()
+        log_model_action(request.user, 'delete', client_user)
+        client_user.delete()
         return redirect('client:client_detail', pk=client.pk)
-    return render(request, 'client/client_user_confirm_delete.html', {'user': user, 'client': client, 'show_client_info': True})
+    return render(request, 'client/client_user_confirm_delete.html', {'client_user': client_user, 'client': client, 'show_client_info': True})
 
 # クライアント担当者詳細
 @login_required
 @permission_required('client.view_clientuser', raise_exception=True)
 def client_user_detail(request, pk):
     """クライアント担当者詳細"""
-    user = get_object_or_404(ClientUser, pk=pk)
-    client = user.client
+    client_user = get_object_or_404(ClientUser, pk=pk)
+    client = client_user.client
     
     from apps.company.models import Company
     company = Company.objects.first()
 
     # 接続申請の状況を確認
     connect_request = None
-    if user.email and company and company.corporate_number:
+    if client_user.email and company and company.corporate_number:
         from apps.connect.models import ConnectClient
         connect_request = ConnectClient.objects.filter(
             corporate_number=company.corporate_number,
-            email=user.email
+            email=client_user.email
         ).first()
     
     # 接続申請の切り替え処理
     if request.method == 'POST' and 'toggle_connect_request' in request.POST:
-        if user.email and company and company.corporate_number:
+        if client_user.email and company and company.corporate_number:
             from apps.connect.models import ConnectClient
             from apps.system.logs.utils import log_model_action
             
             existing_request = ConnectClient.objects.filter(
                 corporate_number=company.corporate_number,
-                email=user.email
+                email=client_user.email
             ).first()
             
             if existing_request:
@@ -454,7 +454,7 @@ def client_user_detail(request, pk):
                 # 新しい申請を作成
                 connect_request = ConnectClient.objects.create(
                     corporate_number=company.corporate_number,
-                    email=user.email,
+                    email=client_user.email,
                     created_by=request.user,
                     updated_by=request.user
                 )
@@ -462,9 +462,9 @@ def client_user_detail(request, pk):
                 
                 # 既存ユーザーがいる場合は権限を付与
                 from apps.connect.utils import grant_client_permissions_on_connection_request
-                grant_client_permissions_on_connection_request(user.email)
+                grant_client_permissions_on_connection_request(client_user.email)
                 
-                messages.success(request, f'クライアント担当者「{user.name}」への接続申請を送信しました。')
+                messages.success(request, f'クライアント担当者「{client_user.name}」への接続申請を送信しました。')
         else:
             messages.error(request, 'メールアドレスまたは法人番号が設定されていません。')
         
@@ -473,17 +473,17 @@ def client_user_detail(request, pk):
     # AppLogに詳細画面アクセスを記録
     from apps.system.logs.utils import log_view_detail
     from apps.system.logs.models import AppLog
-    log_view_detail(request.user, user)
+    log_view_detail(request.user, client_user)
     
     # 変更履歴（AppLogから取得、最新10件）
     change_logs = AppLog.objects.filter(
         model_name='ClientUser',
-        object_id=str(user.pk),
+        object_id=str(client_user.pk),
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')[:10]
     
     return render(request, 'client/client_user_detail.html', {
-        'user': user,
+        'client_user': client_user,
         'client': client,
         'connect_request': connect_request,
         'change_logs': change_logs,
