@@ -1,7 +1,8 @@
 from django.test import TestCase, Client as TestClient
 from django.urls import reverse
 from django.contrib.auth.models import Permission
-from apps.client.models import Client, ClientContacted
+from apps.client.models import Client, ClientContacted, ClientUser
+from apps.system.settings.models import Menu
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from datetime import date, datetime 
@@ -40,12 +41,26 @@ class ClientViewsTest(TestCase):
         self.user.user_permissions.add(self.change_clientcontacted_permission)
         self.user.user_permissions.add(self.delete_clientcontacted_permission)
 
+        # ClientUserモデルのContentTypeを取得
+        client_user_content_type = ContentType.objects.get_for_model(ClientUser)
+        self.view_clientuser_permission = Permission.objects.get(codename='view_clientuser', content_type=client_user_content_type)
+        self.add_clientuser_permission = Permission.objects.get(codename='add_clientuser', content_type=client_user_content_type)
+        self.change_clientuser_permission = Permission.objects.get(codename='change_clientuser', content_type=client_user_content_type)
+        self.delete_clientuser_permission = Permission.objects.get(codename='delete_clientuser', content_type=client_user_content_type)
+
+        self.user.user_permissions.add(self.view_clientuser_permission)
+        self.user.user_permissions.add(self.add_clientuser_permission)
+        self.user.user_permissions.add(self.change_clientuser_permission)
+        self.user.user_permissions.add(self.delete_clientuser_permission)
+
         from apps.system.settings.models import Dropdowns
         # Create necessary Dropdowns for ClientForm
         Dropdowns.objects.create(category='regist_form_client', value='1', name='Test Regist Form', active=True, disp_seq=1)
         # Create necessary Dropdowns for ClientContactedForm
         Dropdowns.objects.create(category='contact_type', value='1', name='Test Contact Type 1', active=True, disp_seq=1)
         Dropdowns.objects.create(category='contact_type', value='2', name='Test Contact Type 2', active=True, disp_seq=2)
+
+        Menu.objects.create(name='クライアント', url='/client/', active=True, disp_seq=1)
 
         # self.client_obj = Client.objects.create(
         #     corporate_number='9999999999999', # より大きな値に設定
@@ -66,6 +81,12 @@ class ClientViewsTest(TestCase):
             name='Z_Test Client', # ソート順で最後にくるように変更
             name_furigana='ゼットテストクライアント',
             regist_form_client=1
+        )
+
+        self.client_user_obj = ClientUser.objects.create(
+            client=self.client_obj,
+            name_last='Test',
+            name_first='User',
         )
 
     def test_client_list_view(self):
