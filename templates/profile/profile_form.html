@@ -170,10 +170,8 @@ function searchAddress() {
         .then(data => {
             if (data.results && data.results.length > 0) {
                 const result = data.results[0];
-                document.getElementById('{{ form.address1.id_for_label }}').value = result.address1;
-                document.getElementById('{{ form.address2.id_for_label }}').value = result.address2;
-                document.getElementById('{{ form.address3.id_for_label }}').value = result.address3;
-                document.getElementById('{{ form.address_kana.id_for_label }}').value = result.kana1 + result.kana2 + result.kana3;
+                document.getElementById('{{ form.address1.id_for_label }}').value = result.address1 + result.address2;
+                document.getElementById('{{ form.address2.id_for_label }}').value = result.address3;
             } else {
                 alert('住所が見つかりませんでした');
             }
