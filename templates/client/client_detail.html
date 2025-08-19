@@ -234,7 +234,6 @@
                         <tr>
                             <th>氏名</th>
                             <th>所属組織</th>
-                            <th>役職</th>
                             <th>電話番号</th>
                             <th>メールアドレス</th>
                             <th>操作</th>
@@ -250,7 +249,6 @@
                                 </a>
                             </td>
                             <td>{{ user.department.name|default:"-" }}</td>
-                            <td>{{ user.position|default:"-" }}</td>
                             <td>{{ user.phone_number|default:"-" }}</td>
                             <td>{{ user.email|default:"-" }}</td>
                             <td>
@@ -277,11 +275,9 @@
                     </tbody>
                 </table>
             </div>
-            {% if users_count > 5 %}
             <div class="card-footer d-flex justify-content-center align-items-center">
                 <a href="{% url 'client:client_user_list' client.id %}" class="btn btn-link">全て表示 (全{{ users_count }}件)</a>
             </div>
-            {% endif %}
         </div>
     </div>
 </div>

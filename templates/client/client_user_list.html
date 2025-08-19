@@ -29,7 +29,15 @@
             <tbody>
                 {% for user in users %}
                 <tr>
-                    <td>{{ user.name }}</td>
+                    <td>
+                        <a href="{% url 'client:client_user_detail' user.pk %}" class="text-decoration-none">
+                        {% if user.is_connected_approved %}
+                            {{ user.name }} <i class="bi bi-link" style="color:#17a2b8;" title="接続承認済み"></i>
+                        {% else %}
+                            {{ user.name }}
+                        {% endif %}
+                        </a>
+                    </td>
                     <td>
                         {% if user.name_kana_last or user.name_kana_first %}
                             {{ user.name_kana_last }} {{ user.name_kana_first }}
@@ -44,12 +52,12 @@
                     <td>{{ user.display_order }}</td>
                     <td>
                         {% if user.email %}
-                        <a href="{% url 'client:client_user_mail_send' user.pk %}" class="btn btn-outline-primary btn-sm me-1" title="メール送信">
+                        <a href="{% url 'client:client_user_mail_send' user.pk %}" class="btn btn-dark btn-sm me-1" title="メール送信">
                             <i class="bi bi-envelope"></i>
                         </a>
                         {% endif %}
                         {% if perms.client.change_clientuser %}
-                        <a href="{% url 'client:client_user_update' user.pk %}" class="btn btn-primary btn-sm me-1" title="編集">
+                        <a href="{% url 'client:client_user_update' user.pk %}" class="btn btn-dark btn-sm me-1" title="編集">
                             <i class="bi bi-pencil"></i>
                         </a>
                         {% endif %}

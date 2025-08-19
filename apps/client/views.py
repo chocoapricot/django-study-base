@@ -364,6 +364,24 @@ def client_user_create(request, client_pk):
 def client_user_list(request, client_pk):
     client = get_object_or_404(Client, pk=client_pk)
     users = client.users.all()
+    # 各担当者が接続承認済みかどうかを付与
+    from apps.connect.models import ConnectClient
+    from apps.company.models import Company
+    company = Company.objects.first()
+    corporate_number = company.corporate_number if company else None
+    if corporate_number:
+        for user in users:
+            if user.email:
+                user.is_connected_approved = ConnectClient.objects.filter(
+                    corporate_number=corporate_number,
+                    email=user.email,
+                    status='approved'
+                ).exists()
+            else:
+                user.is_connected_approved = False
+    else:
+        for user in users:
+            user.is_connected_approved = False
     return render(request, 'client/client_user_list.html', {'client': client, 'users': users, 'show_client_info': True})
 
 @login_required
