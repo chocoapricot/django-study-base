@@ -1,15 +1,27 @@
-from django.test import TestCase, Client as TestClient
+from django.test import TestCase, Client as TestClient, override_settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.conf import settings
 from apps.client.models import Client, ClientFile
 from apps.system.settings.models import Dropdowns
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
+import tempfile
+import shutil
+import os
 
 User = get_user_model()
 
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
 class ClientFileTestCase(TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        # MEDIA_ROOT で使用した一時ディレクトリを削除
+        if os.path.exists(settings.MEDIA_ROOT):
+            shutil.rmtree(settings.MEDIA_ROOT)
+        super().tearDownClass()
+
     def setUp(self):
         """テスト用データの準備"""
         # テスト用ユーザー作成
@@ -48,6 +60,16 @@ class ClientFileTestCase(TestCase):
         
         self.client = TestClient()
         self.client.login(email='test@example.com', password='testpass123')
+
+        # テスト内で作成したオブジェクトを保存するリスト
+        self.created_files = []
+
+    def tearDown(self):
+        """テスト後のクリーンアップ"""
+        # アップロードされたファイルを削除
+        for client_file in self.created_files:
+            if client_file.file:
+                client_file.file.delete(save=False)
     
     def test_client_file_model(self):
         """ClientFileモデルのテスト"""
@@ -63,6 +85,7 @@ class ClientFileTestCase(TestCase):
             file=test_file,
             description="テストファイル"
         )
+        self.created_files.append(client_file)
         
         self.assertEqual(client_file.client, self.client_obj)
         self.assertEqual(client_file.original_filename, "test.txt")
@@ -107,7 +130,9 @@ class ClientFileTestCase(TestCase):
         # 作成後はクライアント詳細画面にリダイレクト
         self.assertEqual(response.status_code, 302)
         self.assertTrue(ClientFile.objects.filter(client=self.client_obj, description='アップロードテスト').exists())
-    
+        # 作成したファイルを後で削除するために保存
+        self.created_files.append(ClientFile.objects.get(description='アップロードテスト'))
+
     def test_client_file_delete_view(self):
         """ファイル削除ビューのテスト"""
         # テスト用ファイル作成
@@ -122,6 +147,7 @@ class ClientFileTestCase(TestCase):
             file=test_file,
             description="削除テストファイル"
         )
+        # このテストではファイルがDBから削除されるので、tearDownでの削除は不要
         
         # 削除確認画面のテスト
         response = self.client.get(
@@ -152,6 +178,7 @@ class ClientFileTestCase(TestCase):
             file=test_file,
             description="ダウンロードテストファイル"
         )
+        self.created_files.append(client_file)
         
         response = self.client.get(
             reverse('client:client_file_download', kwargs={'pk': client_file.pk})
@@ -168,11 +195,12 @@ class ClientFileTestCase(TestCase):
             content_type="text/plain"
         )
         
-        ClientFile.objects.create(
+        client_file = ClientFile.objects.create(
             client=self.client_obj,
             file=test_file,
             description="テストファイル"
         )
+        self.created_files.append(client_file)
         
         response = self.client.get(
             reverse('client:client_detail', kwargs={'pk': self.client_obj.pk})
@@ -181,13 +209,3 @@ class ClientFileTestCase(TestCase):
         self.assertContains(response, 'test.txt')
         # 基本契約締結日の表示もテスト
         self.assertContains(response, '2024年01月15日')
-    
-    def tearDown(self):
-        """テスト後のクリーンアップ"""
-        # アップロードされたファイルを削除
-        for client_file in ClientFile.objects.all():
-            if client_file.file:
-                try:
-                    client_file.file.delete()
-                except:
-                    pass

@@ -1,15 +1,25 @@
-from django.test import TestCase, Client
+from django.test import TestCase, Client, override_settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.conf import settings
 from apps.staff.models import Staff, StaffFile
 from apps.system.settings.models import Dropdowns
 import tempfile
+import shutil
 import os
 
 User = get_user_model()
 
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
 class StaffFileTestCase(TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        # MEDIA_ROOT で使用した一時ディレクトリを削除
+        if os.path.exists(settings.MEDIA_ROOT):
+            shutil.rmtree(settings.MEDIA_ROOT)
+        super().tearDownClass()
+
     def setUp(self):
         """テスト用データの準備"""
         # テスト用ユーザー作成
@@ -59,6 +69,16 @@ class StaffFileTestCase(TestCase):
         
         self.client = Client()
         self.client.login(email='test@example.com', password='testpass123')
+
+        # テスト内で作成したオブジェクトを保存するリスト
+        self.created_files = []
+
+    def tearDown(self):
+        """テスト後のクリーンアップ"""
+        # アップロードされたファイルを削除
+        for staff_file in self.created_files:
+            if staff_file.file:
+                staff_file.file.delete(save=False)
     
     def test_staff_file_model(self):
         """StaffFileモデルのテスト"""
@@ -74,6 +94,7 @@ class StaffFileTestCase(TestCase):
             file=test_file,
             description="テストファイル"
         )
+        self.created_files.append(staff_file)
         
         self.assertEqual(staff_file.staff, self.staff)
         self.assertEqual(staff_file.original_filename, "test.txt")
@@ -118,6 +139,7 @@ class StaffFileTestCase(TestCase):
         # 作成後はスタッフ詳細画面にリダイレクト
         self.assertEqual(response.status_code, 302)
         self.assertTrue(StaffFile.objects.filter(staff=self.staff, description='アップロードテスト').exists())
+        self.created_files.append(StaffFile.objects.get(description='アップロードテスト'))
     
     def test_staff_file_delete_view(self):
         """ファイル削除ビューのテスト"""
@@ -163,6 +185,7 @@ class StaffFileTestCase(TestCase):
             file=test_file,
             description="ダウンロードテストファイル"
         )
+        self.created_files.append(staff_file)
         
         response = self.client.get(
             reverse('staff:staff_file_download', kwargs={'pk': staff_file.pk})
@@ -179,24 +202,15 @@ class StaffFileTestCase(TestCase):
             content_type="text/plain"
         )
         
-        StaffFile.objects.create(
+        staff_file = StaffFile.objects.create(
             staff=self.staff,
             file=test_file,
             description="テストファイル"
         )
+        self.created_files.append(staff_file)
         
         response = self.client.get(
             reverse('staff:staff_detail', kwargs={'pk': self.staff.pk})
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'test.txt')
-    
-    def tearDown(self):
-        """テスト後のクリーンアップ"""
-        # アップロードされたファイルを削除
-        for staff_file in StaffFile.objects.all():
-            if staff_file.file:
-                try:
-                    staff_file.file.delete()
-                except:
-                    pass
