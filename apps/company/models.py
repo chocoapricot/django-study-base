@@ -4,6 +4,10 @@ from django.utils import timezone
 from apps.common.models import MyModel
 
 class CompanyDepartment(MyModel):
+    """
+    自社の部署情報を管理するモデル。
+    部署コードと有効期間に基づいた重複チェック機能を持つ。
+    """
     name = models.CharField('部署名', max_length=100)
     department_code = models.CharField('部署コード', max_length=20)
     accounting_code = models.CharField('会計コード', max_length=20, blank=True, null=True)
@@ -121,6 +125,11 @@ class CompanyDepartment(MyModel):
 
 
 class Company(MyModel):
+    """
+    自社の会社情報を管理するモデル。
+    このシステムは単一の会社で運用されることを想定しているため、
+    通常、このテーブルには1つのレコードのみが存在する。
+    """
     name = models.CharField('会社名', max_length=255, unique=True)
     # 会社情報として必要そうなフィールドを追加（例）
     corporate_number = models.CharField('法人番号', max_length=13, blank=True, null=True, unique=True)

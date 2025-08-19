@@ -26,7 +26,10 @@ def validate_mynumber(value):
 
 
 class StaffProfile(MyModel):
-    """スタッフプロフィールモデル"""
+    """
+    スタッフ（ユーザー）のプロフィール情報を管理するモデル。
+    Userモデルと1対1で連携し、詳細な個人情報（住所、連絡先など）を保持する。
+    """
     
     user = models.OneToOneField(
         User, 
@@ -212,7 +215,10 @@ class StaffProfile(MyModel):
 
 
 class StaffProfileQualification(MyModel):
-    """プロフィール用スタッフ資格"""
+    """
+    スタッフが保有する資格情報を管理するモデル。
+    StaffProfileとQualificationマスターを紐付ける。
+    """
     staff_profile = models.ForeignKey(
         'profile.StaffProfile',
         on_delete=models.CASCADE,
@@ -242,7 +248,10 @@ class StaffProfileQualification(MyModel):
 
 
 class StaffProfileSkill(MyModel):
-    """プロフィール用スタッフ技能"""
+    """
+    スタッフが保有する技能（スキル）情報を管理するモデル。
+    StaffProfileとSkillマスターを紐付ける。
+    """
     staff_profile = models.ForeignKey(
         'profile.StaffProfile',
         on_delete=models.CASCADE,
@@ -269,7 +278,10 @@ class StaffProfileSkill(MyModel):
         return f"{self.staff_profile} - {self.skill}"
 
 class StaffMynumber(MyModel):
-    """スタッフマイナンバーモデル"""
+    """
+    スタッフのマイナンバー情報を管理するモデル。
+    Userモデルと1対1で連携し、暗号化して保存することを想定（要追加実装）。
+    """
     
     user = models.OneToOneField(
         User, 

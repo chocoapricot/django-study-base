@@ -3,7 +3,10 @@ from apps.common.models import MyModel
 
 
 class Qualification(MyModel):
-    """資格マスター（階層構造対応）"""
+    """
+    資格情報を管理するマスターデータモデル。
+    カテゴリと資格の2階層構造を持つ。
+    """
     
     LEVEL_CHOICES = [
         (1, 'カテゴリ'),
@@ -127,7 +130,10 @@ class Qualification(MyModel):
 
 
 class Skill(MyModel):
-    """技能マスター（階層構造対応）"""
+    """
+    技能（スキル）情報を管理するマスターデータモデル。
+    カテゴリと技能の2階層構造を持つ。
+    """
     
     LEVEL_CHOICES = [
         (1, 'カテゴリ'),
@@ -251,7 +257,9 @@ class Skill(MyModel):
 
 
 class BillPayment(MyModel):
-    """支払条件マスター"""
+    """
+    支払条件（締め日・支払日など）を管理するマスターデータモデル。
+    """
     
     name = models.CharField('支払条件名', max_length=100)
     closing_day = models.IntegerField('締め日', help_text='月末締めの場合は31を入力')
@@ -366,7 +374,9 @@ class BillPayment(MyModel):
 
 
 class BillBank(MyModel):
-    """振込先銀行マスター"""
+    """
+    自社の振込先銀行口座情報を管理するマスターデータモデル。
+    """
     
     name = models.CharField('銀行名', max_length=100)
     bank_code = models.CharField('銀行コード', max_length=4, help_text='4桁の数字で入力')
@@ -463,7 +473,9 @@ class BillBank(MyModel):
 
 
 class Bank(MyModel):
-    """銀行マスター"""
+    """
+    銀行情報を管理するマスターデータモデル。
+    """
     
     name = models.CharField('銀行名', max_length=100)
     bank_code = models.CharField('銀行コード', max_length=4, unique=True, help_text='4桁の数字で入力')
@@ -525,7 +537,10 @@ class Bank(MyModel):
 
 
 class BankBranch(MyModel):
-    """銀行支店マスター"""
+    """
+    銀行の支店情報を管理するマスターデータモデル。
+    Bankモデルと連携する。
+    """
     
     bank = models.ForeignKey(
         Bank,

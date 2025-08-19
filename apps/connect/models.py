@@ -6,7 +6,10 @@ User = get_user_model()
 
 
 class ConnectStaff(MyModel):
-    """スタッフ接続モデル"""
+    """
+    外部のスタッフがシステムにアクセスするための接続申請を管理するモデル。
+    法人番号とメールアドレスをキーに、承認ステータスを管理する。
+    """
     
     STATUS_CHOICES = [
         ('pending', '未承認'),
@@ -52,7 +55,10 @@ class ConnectStaff(MyModel):
 
 
 class ConnectClient(MyModel):
-    """クライアント接続モデル（将来の拡張用）"""
+    """
+    外部のクライアント担当者がシステムにアクセスするための接続申請を管理するモデル。
+    現在は将来の拡張用として準備されている。
+    """
     
     STATUS_CHOICES = [
         ('pending', '未承認'),

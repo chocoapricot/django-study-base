@@ -3,6 +3,10 @@ from django.db import models
 
 # Create your models here.
 class MyUser(AbstractUser):
+	"""
+	標準のUserモデルを拡張したカスタムユーザーモデル。
+	StaffProfileとの連携で、姓・名の同期機能を持つ。
+	"""
 
 	def save(self, *args, **kwargs):
 		super().save(*args, **kwargs)

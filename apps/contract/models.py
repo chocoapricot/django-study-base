@@ -5,7 +5,10 @@ from apps.staff.models import Staff
 
 
 class ClientContract(MyModel):
-    """クライアント契約"""
+    """
+    クライアント（取引先企業）との契約情報を管理するモデル。
+    契約期間、金額、契約種別などを記録する。
+    """
     
     CONTRACT_TYPE_CHOICES = [
         ('service', 'サービス契約'),
@@ -103,7 +106,10 @@ class ClientContract(MyModel):
 
 
 class StaffContract(MyModel):
-    """スタッフ契約"""
+    """
+    スタッフ（従業員・フリーランス等）との契約情報を管理するモデル。
+    雇用形態、契約期間、金額などを記録する。
+    """
     
     CONTRACT_TYPE_CHOICES = [
         ('full_time', '正社員'),
