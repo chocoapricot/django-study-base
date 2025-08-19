@@ -15,6 +15,7 @@ def client_file_upload_path(instance, filename):
     return f'client_files/{instance.client.pk}/{filename}'
 
 class Client(MyModel):
+    """取引先企業（クライアント）の基本情報を管理するモデル。"""
     corporate_number=models.CharField('法人番号',max_length=13, unique=True, blank=True, null=True)
     name = models.TextField('会社名')
     name_furigana = models.TextField('会社名カナ')
@@ -43,8 +44,8 @@ class Client(MyModel):
         return self.name
 
 
-# クライアント組織モデル
 class ClientDepartment(MyModel):
+    """クライアント企業内の組織（部署）情報を管理するモデル。"""
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='departments', verbose_name='クライアント')
     name = models.CharField('組織名', max_length=100)
     department_code = models.CharField('組織コード', max_length=20, blank=True, null=True)
@@ -96,8 +97,8 @@ class ClientDepartment(MyModel):
         return f"{self.client.name} - {self.name}{period_str}"
 
 
-# クライアント担当者モデル
 class ClientUser(MyModel):
+    """クライアント企業の担当者情報を管理するモデル。"""
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='users', verbose_name='クライアント')
     department = models.ForeignKey(ClientDepartment, on_delete=models.SET_NULL, blank=True, null=True, related_name='users', verbose_name='所属組織')
     name_last = models.CharField('姓', max_length=50)
@@ -124,8 +125,8 @@ class ClientUser(MyModel):
         return f"{self.client.name} - {self.name}"
 
 
-# クライアント連絡履歴モデル
 class ClientContacted(MyModel):
+    """クライアント企業への連絡履歴を管理するモデル。"""
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='contacted_histories', verbose_name='クライアント')
     department = models.ForeignKey(ClientDepartment, on_delete=models.SET_NULL, blank=True, null=True, related_name='contacted_histories', verbose_name='組織')
     user = models.ForeignKey(ClientUser, on_delete=models.SET_NULL, blank=True, null=True, related_name='contacted_histories', verbose_name='担当者')
@@ -144,10 +145,8 @@ class ClientContacted(MyModel):
         return f"{self.client} {self.contacted_at:%Y-%m-%d %H:%M} {self.content[:20]}"
 
 
-# クライアントファイル添付モデル
 class ClientFile(MyModel):
-    """クライアントファイル添付"""
-    
+    """クライアントに関連する添付ファイルを管理するモデル。"""
     client = models.ForeignKey(
         Client, 
         on_delete=models.CASCADE, 

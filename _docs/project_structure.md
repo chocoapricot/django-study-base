@@ -8,7 +8,7 @@
 
 ### `accounts/`
 - **`models.py`**: ユーザー関連モデル。
-  - `MyUser`: `AbstractUser` を継承したカスタムユーザーモデル。
+  - `MyUser`: 標準のUserモデルを拡張したカスタムユーザーモデル。StaffProfileとの連携で、姓・名の同期機能を持つ。
 - **`signals.py`**: ユーザーモデルに関するシグナル。
   - `check_connection_requests_on_user_creation`: ユーザー作成時に接続申請をチェックし、権限を付与します。
 - **`validators.py`**: カスタムバリデーション。
@@ -27,7 +27,11 @@
 
 ### `client/`
 - **`models.py`**: クライアント関連モデル。
-  - `Client`, `ClientDepartment`, `ClientUser`, `ClientContacted`, `ClientFile`
+  - `Client`: 取引先企業（クライアント）の基本情報を管理するモデル。
+  - `ClientDepartment`: クライアント企業内の組織（部署）情報を管理するモデル。
+  - `ClientUser`: クライアント企業の担当者情報を管理するモデル。
+  - `ClientContacted`: クライアント企業への連絡履歴を管理するモデル。
+  - `ClientFile`: クライアントに関連する添付ファイルを管理するモデル。
 - **`signals.py`**: クライアント関連モデルのシグナル。
   - `log_client_file_save`: `ClientFile`の作成・更新をログに記録します。
   - `log_client_file_delete`: `ClientFile`の削除をログに記録します。
@@ -36,6 +40,8 @@
 - **`urls.py`**: clientアプリケーションのURLルーティング。
 
 ### `common/`
+- **`models.py`**: 共通モデル。
+  - `MyModel`: プロジェクト共通の抽象ベースモデル。バージョン管理、作成・更新日時、作成・更新者を自動で記録する。
 - **`authlog.py`**: 認証関連のログを記録します。
   - `get_client_ip`: リクエストからクライアントIPを取得します。
   - `log_user_login`: ユーザーのログインイベントをログに記録します。
@@ -52,14 +58,16 @@
 
 ### `company/`
 - **`models.py`**: 社内組織構造のモデル。
-  - `Company`, `CompanyDepartment`
+  - `CompanyDepartment`: 自社の部署情報を管理するモデル。部署コードと有効期間に基づいた重複チェック機能を持つ。
+  - `Company`: 自社の会社情報を管理するモデル。通常、このテーブルには1つのレコードのみが存在する。
 - **`views.py`**: 会社情報と部署を管理するためのビュー。
 - **`forms.py`**: 会社および部署データ用のフォーム。
 - **`urls.py`**: companyアプリケーションのURLルーティング。
 
 ### `connect/`
 - **`models.py`**: スタッフとクライアントを接続するためのモデル。
-  - `ConnectStaff`, `ConnectClient`
+  - `ConnectStaff`: 外部のスタッフがシステムにアクセスするための接続申請を管理するモデル。
+  - `ConnectClient`: 外部のクライアント担当者がシステムにアクセスするための接続申請を管理するモデル（将来拡張用）。
 - **`utils.py`**: 権限管理ユーティリティ。
   - `grant_profile_permissions`: プロフィール関連権限を付与します。
   - `grant_connect_permissions`: スタッフ接続関連権限を付与します。
@@ -73,23 +81,36 @@
 
 ### `contract/`
 - **`models.py`**: 契約関連モデル。
-  - `ClientContract`, `StaffContract`
+  - `ClientContract`: クライアント（取引先企業）との契約情報を管理するモデル。
+  - `StaffContract`: スタッフ（従業員・フリーランス等）との契約情報を管理するモデル。
 - **`views.py`**: クライアントおよびスタッフの契約を管理するためのビュー。
 - **`forms.py`**: 契約データ用のフォーム。
 - **`urls.py`**: contractアプリケーションのURLルーティング。
 
 ### `master/`
 - **`models.py`**: マスターデータモデル。
-  - `Qualification`, `Skill`, `BillPayment`, `BillBank`, `Bank`, `BankBranch`
+  - `Qualification`: 資格情報を管理するマスターデータモデル（階層構造対応）。
+  - `Skill`: 技能（スキル）情報を管理するマスターデータモデル（階層構造対応）。
+  - `BillPayment`: 支払条件（締め日・支払日など）を管理するマスターデータモデル。
+  - `BillBank`: 自社の振込先銀行口座情報を管理するマスターデータモデル。
+  - `Bank`: 銀行情報を管理するマスターデータモデル。
+  - `BankBranch`: 銀行の支店情報を管理するマスターデータモデル。
 - **`signals.py`**: (空) 共通シグナルを使用。
 
 ### `profile/`
 - **`models.py`**: スタッフプロフィール関連モデル。
-  - `StaffProfile`, `StaffProfileQualification`, `StaffProfileSkill`, `StaffMynumber`
+  - `StaffProfile`: スタッフ（ユーザー）のプロフィール情報を管理するモデル。
+  - `StaffProfileQualification`: スタッフが保有する資格情報を管理するモデル。
+  - `StaffProfileSkill`: スタッフが保有する技能（スキル）情報を管理するモデル。
+  - `StaffMynumber`: スタッフのマイナンバー情報を管理するモデル。
 
 ### `staff/`
 - **`models.py`**: スタッフメンバー関連モデル。
-  - `Staff`, `StaffFile`, `StaffContacted`, `StaffQualification`, `StaffSkill`
+  - `Staff`: スタッフ（従業員、契約社員など）の基本情報を管理するモデル。
+  - `StaffFile`: スタッフに関連する添付ファイルを管理するモデル。
+  - `StaffContacted`: スタッフへの連絡履歴を管理するモデル。
+  - `StaffQualification`: スタッフが保有する資格情報を管理するモデル（中間テーブル）。
+  - `StaffSkill`: スタッフが保有する技能（スキル）情報を管理するモデル（中間テーブル）。
 - **`signals.py`**: スタッフ関連モデルの変更ログ用シグナル。
   - `log_staff_qualification_save`, `log_staff_qualification_delete`
   - `log_staff_skill_save`, `log_staff_skill_delete`
@@ -97,7 +118,9 @@
 
 ### `system/`
 - **`logs/`**
-  - **`models.py`**: `MailLog`, `AppLog`
+  - **`models.py`**:
+    - `MailLog`: システムから送信されるメールのログを管理するモデル。
+    - `AppLog`: アプリケーション内での主要な操作のログを管理するモデル。
   - **`signals.py`**: ログ関連シグナル。
     - `log_signup_email`: ユーザー登録時のメール送信をログ記録します。
   - **`utils.py`**: ログ関連ユーティリティ。
@@ -105,7 +128,10 @@
     - `update_mail_log_status`: メールログのステータスを更新します。
     - `log_model_action`: モデル操作の汎用ログ記録関数。
 - **`settings/`**
-  - **`models.py`**: `Dropdowns`, `Parameter`, `Menu`
+  - **`models.py`**:
+    - `Dropdowns`: アプリケーション全体で使用されるドロップダウンリストの選択肢を管理するモデル。
+    - `Parameter`: アプリケーション全体で使用される設定値を管理するモデル。
+    - `Menu`: ナビゲーションメニューの項目を管理するモデル。
   - **`context_processors.py`**:
     - `menu_items`: メニュー項目をテンプレートコンテキストに追加します。
   - **`utils.py`**:

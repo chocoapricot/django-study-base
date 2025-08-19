@@ -6,8 +6,10 @@ from apps.common.models import MyModel
 
 # Create your models here.
 class Dropdowns(MyModel):
-#class Dropdowns(models.Model):
-
+    """
+    アプリケーション全体で使用されるドロップダウンリストの選択肢を管理するモデル。
+    カテゴリ別に選択肢をグループ化し、動的なプルダウンメニューを生成するために使用される。
+    """
     category = models.CharField('カテゴリ',max_length=50, default='')  # カテゴリーを文字列として管理
     name = models.CharField('表示名',max_length=100)  # 表示名
     value = models.CharField('設定値',max_length=100)  # 実際の設定値
@@ -25,7 +27,10 @@ class Dropdowns(MyModel):
 
 
 class Parameter(MyModel):
-
+    """
+    アプリケーション全体で使用される設定値を管理するモデル。
+    システム設定や定数などをデータベースで管理するために使用される。
+    """
     category = models.CharField('分類',max_length=50, default='')  # カテゴリー
     key = models.CharField('キー',max_length=100)  # 表示名
     value = models.CharField('設定値',max_length=100)  # 実際の設定値
@@ -45,7 +50,10 @@ class Parameter(MyModel):
 
 
 class Menu(MyModel):
-
+    """
+    ナビゲーションメニューの項目を管理するモデル。
+    階層構造を持ち、表示順やアクセス権限を設定できる。
+    """
     name = models.CharField('表示名',max_length=100)  # 表示名
     url  = models.CharField('URL',max_length=100)  # 実際の設定値
     icon = models.CharField('アイコン',max_length=100)  # 実際の設定値

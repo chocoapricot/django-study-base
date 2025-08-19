@@ -5,6 +5,10 @@ from ..common.models import MyModel
 from concurrency.fields import IntegerVersionField
 
 class Staff(MyModel):
+    """
+    スタッフ（従業員、契約社員など）の基本情報を管理するモデル。
+    個人情報、連絡先、社内情報（社員番号、所属部署など）を保持する。
+    """
     name_last = models.CharField('名前(姓)',max_length=30,help_text='')
     name_first = models.CharField('名前(名)',max_length=30,help_text='')
     name_kana_last = models.CharField('カナ(姓)',max_length=30,help_text='')
@@ -127,9 +131,11 @@ def staff_file_upload_path(instance, filename):
     # staff_files/staff_id/filename の形式で保存
     return f'staff_files/{instance.staff.pk}/{filename}'
 
-# スタッフファイル添付モデル
 class StaffFile(MyModel):
-    """スタッフファイル添付"""
+    """
+    スタッフに関連する添付ファイルを管理するモデル。
+    履歴書や職務経歴書などのドキュメントを想定。
+    """
     
     staff = models.ForeignKey(
         Staff, 
@@ -205,9 +211,11 @@ class StaffFile(MyModel):
         """ファイルサイズをMB単位で取得"""
         return round(self.file_size / (1024 * 1024), 2)
 
-# スタッフ連絡履歴モデル
-
 class StaffContacted(MyModel):
+    """
+    スタッフへの連絡履歴を管理するモデル。
+    面談や電話、メールなどのやり取りを記録する。
+    """
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='contacted_histories', verbose_name='スタッフ')
     contacted_at = models.DateTimeField('連絡日時')
     content = models.CharField('対応内容', max_length=255, blank=False, null=False)
@@ -224,9 +232,11 @@ class StaffContacted(MyModel):
         return f"{self.staff} {self.contacted_at:%Y-%m-%d %H:%M} {self.content[:20]}"
 
 
-# スタッフ資格関連モデル
 class StaffQualification(MyModel):
-    """スタッフ資格"""
+    """
+    スタッフが保有する資格情報を管理するモデル。
+    StaffモデルとQualificationマスターを紐付ける中間テーブル。
+    """
     
     staff = models.ForeignKey(
         Staff, 
@@ -279,9 +289,11 @@ class StaffQualification(MyModel):
         return self.expiry_date <= timezone.now().date() + timedelta(days=days)
 
 
-# スタッフ技能関連モデル
 class StaffSkill(MyModel):
-    """スタッフ技能"""
+    """
+    スタッフが保有する技能（スキル）情報を管理するモデル。
+    StaffモデルとSkillマスターを紐付ける中間テーブル。
+    """
     
     staff = models.ForeignKey(
         Staff, 

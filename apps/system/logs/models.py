@@ -5,7 +5,10 @@ from apps.common.models import MyModel
 User = get_user_model()
 
 class MailLog(MyModel):
-    """メール送信ログモデル"""
+    """
+    システムから送信されるメールのログを管理するモデル。
+    送信日時、宛先、件名、本文、送信ステータスなどを記録する。
+    """
     
     MAIL_TYPE_CHOICES = [
         ('signup', 'サインアップ確認'),
@@ -91,7 +94,10 @@ class MailLog(MyModel):
 
 # アプリケーション操作ログ
 class AppLog(models.Model):
-    """アプリケーション操作ログモデル"""
+    """
+    アプリケーション内での主要な操作（作成、更新、削除、ログインなど）のログを管理するモデル。
+    誰が、いつ、どのオブジェクトに対して何をしたかを記録する。
+    """
     
     ACTION_CHOICES = [
         ('create', '作成'),
@@ -136,5 +142,3 @@ class AppLog(models.Model):
     def action_display_name(self):
         """操作の表示名"""
         return dict(self.ACTION_CHOICES).get(self.action, self.action)
-
-
