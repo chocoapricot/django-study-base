@@ -12,7 +12,7 @@
             {% csrf_token %}
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">支払条件名</label>
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">支払条件名</label>
                 <div class="col-sm-6">
                     {{ form.name }}
                     {% if form.name.errors %}
@@ -22,7 +22,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.closing_day.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
+                <label for="{{ form.closing_day.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
                     締め日
                     {% my_help_preset "closing_day" %}
                 </label>
@@ -38,7 +38,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.invoice_months_after.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
+                <label for="{{ form.invoice_months_after.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
                     請求書提出
                     {% my_help_preset "invoice_schedule" %}
                 </label>
@@ -63,7 +63,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.payment_months_after.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
+                <label for="{{ form.payment_months_after.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
                     支払い
                     {% my_help_preset "payment_schedule" %}
                 </label>
@@ -90,7 +90,7 @@
 
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">表示順</label>
+                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">表示順</label>
                 <div class="col-sm-3">
                     {{ form.display_order }}
                     {% if form.display_order.errors %}

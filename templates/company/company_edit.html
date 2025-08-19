@@ -9,7 +9,7 @@
         <form method="post">
             {% csrf_token %}
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.corporate_number.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.corporate_number.label }}
+                <label for="{{ form.corporate_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.corporate_number.label }}
                     {% my_help_preset "corporate_number" %}
                 </label>
                 <div class="col-sm-4">
@@ -25,7 +25,7 @@
             </div>
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.name.label }}</label>
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.name.label }}</label>
                 <div class="col-sm-6">
                     {{ form.name }}
                     {% if form.name.errors %}
@@ -35,7 +35,7 @@
             </div>
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.representative.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.representative.label }}</label>
+                <label for="{{ form.representative.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.representative.label }}</label>
                 <div class="col-sm-6">
                     {{ form.representative }}
                     {% if form.representative.errors %}
@@ -45,7 +45,7 @@
             </div>
             
             <div class="row align-items-center">
-                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.postal_code.label }}
+                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.postal_code.label }}
                     {% my_help_preset "postal_code" %}
                 </label>
                 <div class="col-sm-3">
@@ -61,7 +61,7 @@
             </div>
             
             <div class="row align-items-top">
-                <label for="{{ form.address.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.address.label }}</label>
+                <label for="{{ form.address.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.address.label }}</label>
                 <div class="col-sm-10">
                     {{ form.address }}
                     {% if form.address.errors %}
@@ -71,7 +71,7 @@
             </div>
             
             <div class="row align-items-center">
-                <label for="{{ form.phone_number.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.phone_number.label }} {% my_help_preset "phone_number" %}</label>
+                <label for="{{ form.phone_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.phone_number.label }} {% my_help_preset "phone_number" %}</label>
                 <div class="col-sm-6">
                     {{ form.phone_number }}
                     {% if form.phone_number.errors %}

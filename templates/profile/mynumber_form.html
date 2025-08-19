@@ -13,7 +13,7 @@
             
             <!-- メールアドレス（表示のみ） -->
             <div class="row mb-3 align-items-center">
-                <label class="col-sm-2 col-form-label" style="text-align:right">メールアドレス</label>
+                <label class="col-sm-2 col-form-label text-start text-md-end">メールアドレス</label>
                 <div class="col-sm-6">
                     <input type="text" class="form-control form-control-sm" value="{{ user_email }}" readonly>
                     <small class="text-muted">※ログインユーザーのメールアドレスが自動設定されます</small>
@@ -22,7 +22,7 @@
 
             <!-- マイナンバー -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.mynumber.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">マイナンバー <span class="text-danger">*</span></label>
+                <label for="{{ form.mynumber.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >マイナンバー <span class="text-danger">*</span></label>
                 <div class="col-sm-4">
                     {{ form.mynumber }}
                     {% if form.mynumber.errors %}

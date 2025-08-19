@@ -29,7 +29,7 @@
             {% endif %}
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.skill.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">技能</label>
+                <label for="{{ form.skill.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">技能</label>
                 <div class="col-sm-6">
                     {{ form.skill }}
                     {% if form.skill.errors %}
@@ -39,7 +39,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.acquired_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">習得日</label>
+                <label for="{{ form.acquired_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">習得日</label>
                 <div class="col-sm-3">
                     {{ form.acquired_date }}
                     {% if form.acquired_date.errors %}
@@ -49,7 +49,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.years_of_experience.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">経験年数</label>
+                <label for="{{ form.years_of_experience.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">経験年数</label>
                 <div class="col-sm-2">
                     {{ form.years_of_experience }}
                     {% if form.years_of_experience.errors %}
@@ -60,7 +60,7 @@
             </div>
 
             <div class="row mb-3 align-items-top">
-                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">メモ</label>
+                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">メモ</label>
                 <div class="col-sm-8">
                     {{ form.memo }}
                     {% if form.memo.errors %}

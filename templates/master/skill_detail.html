@@ -10,14 +10,14 @@
     </div>
     <div class="card-body">
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">名称</label>
+            <label class="col-sm-2 col-form-label text-start text-md-end">名称</label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ skill.name }}</p>
             </div>
         </div>
         
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">レベル</label>
+            <label class="col-sm-2 col-form-label text-start text-md-end">レベル</label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">
                     {% if skill.is_category %}
@@ -31,7 +31,7 @@
         
         {% if skill.parent %}
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">親カテゴリ</label>
+            <label class="col-sm-2 col-form-label text-start text-md-end">親カテゴリ</label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">
                     <a href="{% url 'master:skill_detail' skill.parent.pk %}">{{ skill.parent.name }}</a>
@@ -43,7 +43,7 @@
         
         {% if skill.description %}
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">説明</label>
+            <label class="col-sm-2 col-form-label text-start text-md-end">説明</label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ skill.description|linebreaksbr }}</p>
             </div>
@@ -51,7 +51,7 @@
         {% endif %}
         
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">状態</label>
+            <label class="col-sm-2 col-form-label text-start text-md-end">状態</label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">
                     {% if skill.is_active %}
@@ -64,7 +64,7 @@
         </div>
         
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">表示順</label>
+            <label class="col-sm-2 col-form-label text-start text-md-end">表示順</label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ skill.display_order }}</p>
             </div>
@@ -75,7 +75,7 @@
         {% if skill.is_category %}
         <!-- カテゴリの場合、子技能を表示 -->
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">子技能</label>
+            <label class="col-sm-2 col-form-label text-start text-md-end">子技能</label>
             <div class="col-sm-10">
                 {% with children=skill.get_children %}
                     {% if children %}

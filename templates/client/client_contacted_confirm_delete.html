@@ -11,7 +11,7 @@
             本当にこの連絡履歴を削除しますか？この操作は取り消せません。
         </div>
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2" style="text-align:right"><strong>連絡種別</strong></div>
+            <div class="col-sm-2 text-start text-md-end"><strong>連絡種別</strong></div>
             <div class="col-sm-10">
                 {% if contacted.contact_type %}
                     {% if contacted.contact_type < 10 %}
@@ -33,15 +33,15 @@
             </div>
         </div>
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2" style="text-align:right"><strong>対応内容</strong></div>
+            <div class="col-sm-2 text-start text-md-end"><strong>対応内容</strong></div>
             <div class="col-sm-10">{{ contacted.content }}</div>
         </div>
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2" style="text-align:right"><strong>対応詳細</strong></div>
+            <div class="col-sm-2 text-start text-md-end"><strong>対応詳細</strong></div>
             <div class="col-sm-10">{{ contacted.detail|linebreaksbr }}</div>
         </div>
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2" style="text-align:right"><strong>対応者</strong></div>
+            <div class="col-sm-2 text-start text-md-end"><strong>対応者</strong></div>
             <div class="col-sm-10">
                 {% if contacted.created_by.last_name or contacted.created_by.first_name %}
                     {{ contacted.created_by.last_name }} {{ contacted.created_by.first_name }}
@@ -51,7 +51,7 @@
             </div>
         </div>
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2" style="text-align:right"><strong>日時</strong></div>
+            <div class="col-sm-2 text-start text-md-end"><strong>日時</strong></div>
             <div class="col-sm-10">{{ contacted.contacted_at|date:'Y/m/d H:i:s' }}</div>
         </div>
         <form method="post">

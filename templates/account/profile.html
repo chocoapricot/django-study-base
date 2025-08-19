@@ -10,7 +10,7 @@
             <div class="alert alert-warning">{{ form.errors }}</div>
             {% endif %}
             <div class="row mb-3 align-items-center">
-                <label for="id_email" class="col-sm-2 col-form-label" style="text-align:right">メールアドレス</label>
+                <label for="id_email" class="col-sm-2 col-form-label text-start text-md-end">メールアドレス</label>
                 <div class="col-sm-6">
                     {{ form.email }}
                     {% if form.email.help_text %}
@@ -26,11 +26,11 @@
                 </div>
             </div>
             <div class="row mb-1 align-items-center">
-                <label for="id_last_name" class="col-sm-2 col-form-label" style="text-align:right">姓</label>
+                <label for="id_last_name" class="col-sm-2 col-form-label text-start text-md-end">姓</label>
                 <div class="col-sm-3">
                     {{ form.last_name }}
                 </div>
-                <label for="id_first_name" class="col-sm-1 col-form-label" style="text-align:right">名</label>
+                <label for="id_first_name" class="col-sm-1 col-form-label text-start text-md-end">名</label>
                 <div class="col-sm-3">
                     {{ form.first_name }}
                 </div>
@@ -38,7 +38,7 @@
             <div class="row mb-3 align-items-center">
             </div>
             <div class="row align-items-center">
-                <label for="id_password" class="col-sm-2 col-form-label" style="text-align:right">新しいパスワード</label>
+                <label for="id_password" class="col-sm-2 col-form-label text-start text-md-end">新しいパスワード</label>
                 <div class="col-sm-4">
                     <div class="input-group">
                         {{ form.password }}
@@ -56,7 +56,7 @@
                 </div>
             </div>
             <div class="row mb-3 align-items-center">
-                <label for="id_password_confirm" class="col-sm-2 col-form-label" style="text-align:right">新しいパスワード（確認）</label>
+                <label for="id_password_confirm" class="col-sm-2 col-form-label text-start text-md-end">新しいパスワード（確認）</label>
                 <div class="col-sm-4">
                     <div class="input-group">
                         {{ form.password_confirm }}

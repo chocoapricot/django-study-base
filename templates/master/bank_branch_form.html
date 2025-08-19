@@ -33,7 +33,7 @@
                 {% endif %}
             {% else %}
                 <div class="row mb-3 align-items-center">
-                    <label for="{{ form.bank.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.bank.label }}</label>
+                    <label for="{{ form.bank.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.bank.label }}</label>
                     <div class="col-sm-6">
                         {{ form.bank }}
                         {% if form.bank.errors %}
@@ -45,7 +45,7 @@
 
             <!-- 支店コード -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.branch_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.branch_code.label }} {% my_help_preset "branch_code" %}</label>
+                <label for="{{ form.branch_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.branch_code.label }} {% my_help_preset "branch_code" %}</label>
                 <div class="col-sm-3">
                     {{ form.branch_code }}
                     {% if form.branch_code.errors %}
@@ -56,7 +56,7 @@
 
             <!-- 支店名 -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.name.label }}</label>
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.name.label }}</label>
                 <div class="col-sm-6">
                     {{ form.name }}
                     {% if form.name.errors %}

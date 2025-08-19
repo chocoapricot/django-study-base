@@ -18,14 +18,14 @@
         </div>
         
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">資格名</label>
+            <label class="col-sm-2 col-form-label text-start text-md-end">資格名</label>
             <div class="col-sm-6">
                 <p class="form-control-plaintext">{{ qualification.name }}</p>
             </div>
         </div>
         
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">種別</label>
+            <label class="col-sm-2 col-form-label text-start text-md-end">種別</label>
             <div class="col-sm-6">
                 <p class="form-control-plaintext">{{ qualification.get_level_display }}</p>
             </div>
@@ -33,7 +33,7 @@
         
         {% if qualification.parent %}
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">親カテゴリ</label>
+            <label class="col-sm-2 col-form-label text-start text-md-end">親カテゴリ</label>
             <div class="col-sm-6">
                 <p class="form-control-plaintext">{{ qualification.parent.name }}</p>
             </div>
@@ -42,7 +42,7 @@
         
         {% if qualification.description %}
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">説明</label>
+            <label class="col-sm-2 col-form-label text-start text-md-end">説明</label>
             <div class="col-sm-6">
                 <p class="form-control-plaintext">{{ qualification.description }}</p>
             </div>
@@ -50,14 +50,14 @@
         {% endif %}
         
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">表示順</label>
+            <label class="col-sm-2 col-form-label text-start text-md-end">表示順</label>
             <div class="col-sm-6">
                 <p class="form-control-plaintext">{{ qualification.display_order }}</p>
             </div>
         </div>
         
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label" style="text-align:right">状態</label>
+            <label class="col-sm-2 col-form-label text-start text-md-end">状態</label>
             <div class="col-sm-6">
                 <p class="form-control-plaintext">
                     {% if qualification.is_active %}
