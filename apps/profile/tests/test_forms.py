@@ -14,7 +14,6 @@ class StaffProfileFormTest(TestCase):
             'birth_date': '2000-01-01',
             'sex': '1',
             'postal_code': '1234567',
-            'address_kana': '',
             'address1': '東京都',
             'address2': '千代田区',
             'address3': '',
@@ -35,7 +34,6 @@ class StaffProfileFormTest(TestCase):
             'birth_date': '2000-01-01',
             'sex': '1',
             'postal_code': '1234567',
-            'address_kana': '',
             'address1': '東京都',
             'address2': '千代田区',
             'address3': '',
@@ -56,7 +54,6 @@ class StaffProfileFormTest(TestCase):
             'birth_date': '2000-01-01',
             'sex': '1',  # 必須
             'postal_code': '1234567',
-            'address_kana': '',
             'address1': '東京都',  # 必須
             'address2': '千代田区',  # 必須
             'address3': '',
@@ -80,7 +77,6 @@ class StaffProfileFormTest(TestCase):
             'birth_date': '2000-01-01',
             'sex': '',
             'postal_code': '1234567',
-            'address_kana': '',
             'address1': '',
             'address2': '',
             'address3': '',
@@ -101,7 +97,6 @@ class StaffProfileFormTest(TestCase):
             # 'birth_date' 未入力
             # 'sex' 未入力
             # 'postal_code' 未入力
-            'address_kana': '',
             # 'address1' 未入力
             # 'address2' 未入力
             'address3': '',
@@ -127,7 +122,6 @@ class StaffProfileFormTest(TestCase):
             'birth_date': '2000-01-01',
             'sex': '1',
             'postal_code': '1234567',
-            'address_kana': '',
             'address1': '東京都',
             'address2': '千代田区',
             'address3': '',

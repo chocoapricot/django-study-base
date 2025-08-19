@@ -43,7 +43,7 @@ class StaffProfileForm(forms.ModelForm):
         model = StaffProfile
         fields = [
             'name_last', 'name_first', 'name_kana_last', 'name_kana_first',
-            'birth_date', 'sex', 'postal_code', 'address_kana',
+            'birth_date', 'sex', 'postal_code',
             'address1', 'address2', 'address3', 'phone'
         ]
         widgets = {
@@ -53,7 +53,6 @@ class StaffProfileForm(forms.ModelForm):
             'name_kana_first': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'birth_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'postal_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '7'}),
-            'address_kana': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'address1': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'address2': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'address3': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),

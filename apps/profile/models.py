@@ -80,13 +80,6 @@ class StaffProfile(MyModel):
         ],
         help_text='郵便番号を7桁の数字で入力してください（ハイフンなし）'
     )
-    address_kana = models.CharField(
-        max_length=200,
-        verbose_name='住所（カナ）',
-        null=True,
-        blank=True,
-        help_text='住所をカタカナで入力してください'
-    )
     address1 = models.CharField(
         max_length=100,
         verbose_name='都道府県',

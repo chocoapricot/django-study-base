@@ -135,17 +135,6 @@
                 </div>
             </div>
 
-            <!-- 住所（カナ） -->
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.address_kana.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">住所(カナ)</label>
-                <div class="col-sm-8">
-                    {{ form.address_kana }}
-                    {% if form.address_kana.errors %}
-                        <div class="text-danger small">{{ form.address_kana.errors.0 }}</div>
-                    {% endif %}
-                </div>
-            </div>
-
             <div class="d-flex justify-content-start">
                 <button type="submit" class="btn btn-sm btn-primary">
                     {% if is_new %}作成{% else %}更新{% endif %}
