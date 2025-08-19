@@ -11,6 +11,41 @@
     </div>
 
     <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+        <div class="card-header">サマリー</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card text-center mb-3">
+                        <div class="card-header">スタッフ</div>
+                        <div class="card-body">
+                            <p class="card-text">登録数: {{ staff_count }}</p>
+                            <p class="card-text">うち接続承認済: {{ approved_staff_count }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center mb-3">
+                        <div class="card-header">クライアント</div>
+                        <div class="card-body">
+                            <p class="card-text">登録数: {{ client_count }}</p>
+                            <p class="card-text">うち接続承認済: {{ approved_client_count }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center mb-3">
+                        <div class="card-header">契約</div>
+                        <div class="card-body">
+                            <p class="card-text">契約数: {{ contract_count }}</p>
+                            <p class="card-text">&nbsp;</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
         <div class="card-header">利用技術</div>
         <div class="card-body">
             <div class="row">
