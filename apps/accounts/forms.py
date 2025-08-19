@@ -64,12 +64,12 @@ class MyResetPasswordForm(ResetPasswordForm):
 class UserProfileForm(forms.ModelForm):
     password = forms.CharField(
         label='新しいパスワード',
-        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm'}),
+        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm', 'autocomplete': 'new-password'}),
         required=False
     )
     password_confirm = forms.CharField(
         label='新しいパスワード（確認）',
-        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm'}),
+        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm', 'autocomplete': 'new-password'}),
         required=False
     )
 
