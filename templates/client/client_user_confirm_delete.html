@@ -12,7 +12,7 @@
     <div class="card-body">
         <div class="alert alert-warning" role="alert">
             <i class="bi bi-exclamation-triangle-fill"></i>
-            担当者「{{ user.name }}」を削除しますか？この操作は取り消せません。
+            担当者「{{ client_user.name }}」を削除しますか？この操作は取り消せません。
         </div>
 
         <div class="row mb-3">
@@ -20,50 +20,50 @@
                 <strong>氏名</strong>
             </div>
             <div class="col-sm-10">
-                {{ user.name }}
+                {{ client_user.name }}
             </div>
         </div>
 
-        {% if user.name_kana_last or user.name_kana_first %}
+        {% if client_user.name_kana_last or client_user.name_kana_first %}
         <div class="row mb-3">
             <div class="col-sm-2 text-start text-md-end">
                 <strong>氏名カナ</strong>
             </div>
             <div class="col-sm-10">
-                {{ user.name_kana_last }} {{ user.name_kana_first }}
+                {{ client_user.name_kana_last }} {{ client_user.name_kana_first }}
             </div>
         </div>
         {% endif %}
 
-        {% if user.department %}
+        {% if client_user.department %}
         <div class="row mb-3">
             <div class="col-sm-2 text-start text-md-end">
                 <strong>所属組織</strong>
             </div>
             <div class="col-sm-10">
-                {{ user.department.name }}
+                {{ client_user.department.name }}
             </div>
         </div>
         {% endif %}
 
-        {% if user.position %}
+        {% if client_user.position %}
         <div class="row mb-3">
             <div class="col-sm-2 text-start text-md-end">
                 <strong>役職</strong>
             </div>
             <div class="col-sm-10">
-                {{ user.position }}
+                {{ client_user.position }}
             </div>
         </div>
         {% endif %}
 
-        {% if user.email %}
+        {% if client_user.email %}
         <div class="row mb-3">
             <div class="col-sm-2 text-start text-md-end">
                 <strong>メールアドレス</strong>
             </div>
             <div class="col-sm-10">
-                {{ user.email }}
+                {{ client_user.email }}
             </div>
         </div>
         {% endif %}

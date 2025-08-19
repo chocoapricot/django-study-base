@@ -29,10 +29,10 @@
                     <div class="col-sm">
                         <h4>
                             <ruby>
-                                {{ user.name_last }}<rt>{{ user.name_kana_last|default:"" }}</rt>
+                                {{ client_user.name_last }}<rt>{{ client_user.name_kana_last|default:"" }}</rt>
                             </ruby>
                             <ruby>
-                                {{ user.name_first }}<rt>{{ user.name_kana_first|default:"" }}</rt>
+                                {{ client_user.name_first }}<rt>{{ client_user.name_kana_first|default:"" }}</rt>
                             </ruby>
                         </h4>
                     </div>
@@ -43,8 +43,8 @@
                         <strong>所属組織</strong>
                     </div>
                     <div class="col-sm">
-                        {% if user.department %}
-                            {{ user.department.name }}
+                        {% if client_user.department %}
+                            {{ client_user.department.name }}
                         {% else %}
                             <span class="text-muted">未設定</span>
                         {% endif %}
@@ -56,7 +56,7 @@
                         <strong>役職</strong>
                     </div>
                     <div class="col-sm">
-                        {{ user.position|default:"-" }}
+                        {{ client_user.position|default:"-" }}
                     </div>
                 </div>
 
@@ -65,7 +65,7 @@
                         <strong>電話番号</strong>
                     </div>
                     <div class="col-sm">
-                        {{ user.phone_number|default:"-" }}
+                        {{ client_user.phone_number|default:"-" }}
                     </div>
                 </div>
 
@@ -74,9 +74,9 @@
                         <strong>メールアドレス</strong>
                     </div>
                     <div class="col-sm">
-                        <span class="copy-target">{{ user.email|default:"-" }}</span>
-                        {% if user.email %}
-                            <a href="{% url 'client:client_user_mail_send' user.pk %}" class="btn btn-sm btn-outline-primary ms-2" title="メール送信">
+                        <span class="copy-target">{{ client_user.email|default:"-" }}</span>
+                        {% if client_user.email %}
+                            <a href="{% url 'client:client_user_mail_send' client_user.pk %}" class="btn btn-sm btn-outline-primary ms-2" title="メール送信">
                                 <i class="bi bi-envelope"></i>
                             </a>
                             <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
@@ -90,16 +90,16 @@
                         <strong>メモ</strong>
                     </div>
                     <div class="col-sm">
-                        {{ user.memo|default:"-" }}
+                        {{ client_user.memo|default:"-" }}
                     </div>
                 </div>
 
                 <div class="d-flex justify-content-start">
                     {% if perms.client.change_clientuser %}
-                    <a href="{% url 'client:client_user_update' user.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
+                    <a href="{% url 'client:client_user_update' client_user.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
                     {% endif %}
                     {% if perms.client.delete_clientuser %}
-                    <a href="{% url 'client:client_user_delete' user.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+                    <a href="{% url 'client:client_user_delete' client_user.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
                     {% endif %}
                     <a href="{% url 'client:client_detail' client.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
                 </div>
@@ -115,7 +115,7 @@
                 状況
             </div>
             <div class="card-body">
-                {% if user.email %}
+                {% if client_user.email %}
                 <form method="post">
                     {% csrf_token %}
                     <div class="row mb-3 align-items-center">

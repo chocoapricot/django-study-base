@@ -27,42 +27,42 @@
                 </tr>
             </thead>
             <tbody>
-                {% for user in users %}
+                {% for client_user in client_users %}
                 <tr>
                     <td>
-                        <a href="{% url 'client:client_user_detail' user.pk %}" class="text-decoration-none">
-                        {% if user.is_connected_approved %}
-                            {{ user.name }} <i class="bi bi-link" style="color:#17a2b8;" title="接続承認済み"></i>
+                        <a href="{% url 'client:client_user_detail' client_user.pk %}" class="text-decoration-none">
+                        {% if client_user.is_connected_approved %}
+                            {{ client_user.name }} <i class="bi bi-link" style="color:#17a2b8;" title="接続承認済み"></i>
                         {% else %}
-                            {{ user.name }}
+                            {{ client_user.name }}
                         {% endif %}
                         </a>
                     </td>
                     <td>
-                        {% if user.name_kana_last or user.name_kana_first %}
-                            {{ user.name_kana_last }} {{ user.name_kana_first }}
+                        {% if client_user.name_kana_last or client_user.name_kana_first %}
+                            {{ client_user.name_kana_last }} {{ client_user.name_kana_first }}
                         {% else %}
                             -
                         {% endif %}
                     </td>
-                    <td>{{ user.department.name|default:"-" }}</td>
-                    <td>{{ user.position|default:"-" }}</td>
-                    <td>{{ user.phone_number|default:"-" }}</td>
-                    <td>{{ user.email|default:"-" }}</td>
-                    <td>{{ user.display_order }}</td>
+                    <td>{{ client_user.department.name|default:"-" }}</td>
+                    <td>{{ client_user.position|default:"-" }}</td>
+                    <td>{{ client_user.phone_number|default:"-" }}</td>
+                    <td>{{ client_user.email|default:"-" }}</td>
+                    <td>{{ client_user.display_order }}</td>
                     <td>
-                        {% if user.email %}
-                        <a href="{% url 'client:client_user_mail_send' user.pk %}" class="btn btn-dark btn-sm me-1" title="メール送信">
+                        {% if client_user.email %}
+                        <a href="{% url 'client:client_user_mail_send' client_user.pk %}" class="btn btn-dark btn-sm me-1" title="メール送信">
                             <i class="bi bi-envelope"></i>
                         </a>
                         {% endif %}
                         {% if perms.client.change_clientuser %}
-                        <a href="{% url 'client:client_user_update' user.pk %}" class="btn btn-dark btn-sm me-1" title="編集">
+                        <a href="{% url 'client:client_user_update' client_user.pk %}" class="btn btn-dark btn-sm me-1" title="編集">
                             <i class="bi bi-pencil"></i>
                         </a>
                         {% endif %}
                         {% if perms.client.delete_clientuser %}
-                        <a href="{% url 'client:client_user_delete' user.pk %}" class="btn btn-dark btn-sm" title="削除">
+                        <a href="{% url 'client:client_user_delete' client_user.pk %}" class="btn btn-dark btn-sm" title="削除">
                             <i class="bi bi-x"></i>
                         </a>
                         {% endif %}
