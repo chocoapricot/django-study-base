@@ -126,10 +126,10 @@
                                        onchange="this.form.submit()">
                                 <input type="hidden" name="toggle_connect_request" value="1">
                                 <label class="form-check-label" for="connectRequestSwitch">
+                                    <i class="bi bi-link" style="font-size: 20px;color:#17a2b8;"></i>
+                                    クライアントに接続依頼
                                     {% if connect_request %}
-                                        クライアントに接続依頼（{{ connect_request.created_at|date:"Y/m/d H:i:s" }}）
-                                    {% else %}
-                                        クライアントに接続依頼
+                                        （{{ connect_request.created_at|date:"Y/m/d H:i:s" }}）
                                     {% endif %}
                                 </label>
                             </div>
@@ -143,10 +143,10 @@
                             <input class="form-check-input" type="checkbox" id="connectApprovalSwitch" 
                                    {% if connect_request and connect_request.is_approved %}checked{% endif %} disabled>
                             <label class="form-check-label" for="connectApprovalSwitch">
+                                <i class="bi bi-link" style="font-size: 20px;color:#17a2b8;"></i>
+                                クライアントが接続承認
                                 {% if connect_request and connect_request.is_approved %}
-                                    クライアントが接続承認（{{ connect_request.approved_at|date:"Y/m/d H:i:s" }}）
-                                {% else %}
-                                    クライアントが接続承認
+                                    （{{ connect_request.approved_at|date:"Y/m/d H:i:s" }}）
                                 {% endif %}
                             </label>
                         </div>
