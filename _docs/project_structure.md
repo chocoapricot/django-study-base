@@ -95,7 +95,6 @@
   - `BillBank`: 自社の振込先銀行口座情報を管理するマスターデータモデル。
   - `Bank`: 銀行情報を管理するマスターデータモデル。
   - `BankBranch`: 銀行の支店情報を管理するマスターデータモデル。
-- **`signals.py`**: (空) 共通シグナルを使用。
 
 ### `profile/`
 - **`models.py`**: スタッフプロフィール関連モデル。
@@ -228,7 +227,6 @@
 - `mail_log_list.html`: メール送信ログの一覧ページ。
 
 ### `master/`
-- `_bank_info.html`: 銀行情報の詳細表示コンポーネント。
 - `_bank_info_simple.html`: 銀行情報の簡易表示コンポーネント。
 - `bank_branch_delete.html`: 銀行支店削除の確認ページ。
 - `bank_branch_form.html`: 銀行支店の作成・編集フォームページ。
