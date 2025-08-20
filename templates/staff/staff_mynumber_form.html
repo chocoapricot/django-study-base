@@ -1,23 +1,18 @@
 {% extends 'common/_base.html' %}
-{% load sitetree %}
 
 {% block title %}{% if is_new %}スタッフマイナンバー登録{% else %}スタッフマイナンバー編集{% endif %}{% endblock %}
 
-{% block breadcrumbs %}
-    {% if is_new %}
-        {% sitetree_breadcrumbs from "main" for "staff_mynumber_create" %}
-    {% else %}
-        {% sitetree_breadcrumbs from "main" for "staff_mynumber_edit" %}
-    {% endif %}
-{% endblock %}
 
 {% block content %}
+
+{% include 'staff/_staff_info_card.html' with staff=staff %}
+
+
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">
         {% if is_new %}スタッフマイナンバー登録{% else %}スタッフマイナンバー編集{% endif %}
     </div>
     <div class="card-body">
-        {% include 'staff/_staff_info_card.html' with staff=staff %}
 
         <form method="post" class="mt-3">
             {% csrf_token %}

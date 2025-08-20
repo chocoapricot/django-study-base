@@ -74,6 +74,9 @@
                                         <span class="copy-target" style="font-size:18px">{{ staff.employee_no }}</span>
                                         <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
                                         <span class="copy-message">コピーしました!</span>
+                                        <a href="{% url 'staff:staff_mynumber_detail' staff.pk %}" class="btn btn-sm btn-outline-primary ms-2" title="マイナンバー">
+                                            <i class="bi bi-credit-card"></i>
+                                        </a>
                                     </span>
                                 {% endif %}
                             </h4>

@@ -1,19 +1,17 @@
 {% extends 'common/_base.html' %}
-{% load sitetree %}
 
 {% block title %}スタッフマイナンバー削除確認{% endblock %}
 
-{% block breadcrumbs %}
-    {% sitetree_breadcrumbs from "main" for "staff_mynumber_delete" %}
-{% endblock %}
-
 {% block content %}
+
+{% include 'staff/_staff_info_card.html' with staff=staff %}
+
+
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">
         スタッフマイナンバー削除確認
     </div>
     <div class="card-body">
-        {% include 'staff/_staff_info_card.html' with staff=staff %}
 
         <div class="alert alert-warning mt-3" role="alert">
             <i class="bi bi-exclamation-triangle-fill"></i>
