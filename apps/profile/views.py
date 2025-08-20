@@ -85,7 +85,7 @@ def profile_delete(request):
 
 
 @login_required
-@permission_required('profile.view_staffmynumber', raise_exception=True)
+@permission_required('profile.view_profilemynumber', raise_exception=True)
 def mynumber_detail(request):
     """マイナンバー詳細表示"""
     try:
@@ -100,8 +100,8 @@ def mynumber_detail(request):
 
 
 @login_required
-@permission_required('profile.add_staffmynumber', raise_exception=True)
-@permission_required('profile.change_staffmynumber', raise_exception=True)
+@permission_required('profile.add_profilemynumber', raise_exception=True)
+@permission_required('profile.change_profilemynumber', raise_exception=True)
 def mynumber_edit(request):
     """マイナンバー編集"""
     try:
@@ -138,7 +138,7 @@ def mynumber_edit(request):
 
 
 @login_required
-@permission_required('profile.delete_staffmynumber', raise_exception=True)
+@permission_required('profile.delete_profilemynumber', raise_exception=True)
 def mynumber_delete(request):
     """マイナンバー削除確認"""
     mynumber = get_object_or_404(ProfileMynumber, user=request.user)
