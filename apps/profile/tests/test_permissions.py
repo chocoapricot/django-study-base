@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.contrib.auth.models import Permission
-from apps.profile.models import StaffProfile, StaffMynumber
+from apps.profile.models import StaffProfile, ProfileMynumber
 
 User = get_user_model()
 
@@ -28,9 +28,9 @@ class ProfilePermissionTest(TestCase):
             self.user_with_perms.user_permissions.add(perm)
 
         self.profile = StaffProfile.objects.create(user=self.user_with_perms, name_last='test', name_first='user')
-        self.mynumber = StaffMynumber.objects.create(user=self.user_with_perms, mynumber='123456789012')
+        self.mynumber = ProfileMynumber.objects.create(user=self.user_with_perms, mynumber='123456789012')
         self.profile_no_perm = StaffProfile.objects.create(user=self.user_without_perms, name_last='no', name_first='perm')
-        self.mynumber_no_perm = StaffMynumber.objects.create(user=self.user_without_perms, mynumber='210987654321')
+        self.mynumber_no_perm = ProfileMynumber.objects.create(user=self.user_without_perms, mynumber='210987654321')
 
 
     def test_views_with_permission(self):

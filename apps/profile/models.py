@@ -277,7 +277,7 @@ class StaffProfileSkill(MyModel):
     def __str__(self):
         return f"{self.staff_profile} - {self.skill}"
 
-class StaffMynumber(MyModel):
+class ProfileMynumber(MyModel):
     """
     スタッフのマイナンバー情報を管理するモデル。
     Userモデルと1対1で連携し、暗号化して保存することを想定（要追加実装）。

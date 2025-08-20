@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.contrib.auth.models import Permission
 from apps.connect.models import ConnectStaff
-from apps.profile.models import StaffProfile, StaffMynumber
+from apps.profile.models import StaffProfile, ProfileMynumber
 
 User = get_user_model()
 

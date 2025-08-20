@@ -102,7 +102,7 @@
   - `StaffProfile`: スタッフ（ユーザー）のプロフィール情報を管理するモデル。
   - `StaffProfileQualification`: スタッフが保有する資格情報を管理するモデル。
   - `StaffProfileSkill`: スタッフが保有する技能（スキル）情報を管理するモデル。
-  - `StaffMynumber`: スタッフのマイナンバー情報を管理するモデル。
+  - `ProfileMynumber`: スタッフのマイナンバー情報を管理するモデル。
 
 ### `staff/`
 - **`models.py`**: スタッフメンバー関連モデル。

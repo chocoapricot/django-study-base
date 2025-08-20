@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.urls import reverse
-from .models import StaffProfile, StaffMynumber
-from .forms import StaffProfileForm, StaffMynumberForm
+from .models import StaffProfile, ProfileMynumber
+from .forms import StaffProfileForm, ProfileMynumberForm
 
 
 @login_required
@@ -89,8 +89,8 @@ def profile_delete(request):
 def mynumber_detail(request):
     """マイナンバー詳細表示"""
     try:
-        mynumber = StaffMynumber.objects.get(user=request.user)
-    except StaffMynumber.DoesNotExist:
+        mynumber = ProfileMynumber.objects.get(user=request.user)
+    except ProfileMynumber.DoesNotExist:
         mynumber = None
     
     context = {
@@ -105,14 +105,14 @@ def mynumber_detail(request):
 def mynumber_edit(request):
     """マイナンバー編集"""
     try:
-        mynumber = StaffMynumber.objects.get(user=request.user)
+        mynumber = ProfileMynumber.objects.get(user=request.user)
         is_new = False
-    except StaffMynumber.DoesNotExist:
+    except ProfileMynumber.DoesNotExist:
         mynumber = None
         is_new = True
 
     if request.method == 'POST':
-        form = StaffMynumberForm(request.POST, instance=mynumber)
+        form = ProfileMynumberForm(request.POST, instance=mynumber)
         if form.is_valid():
             mynumber = form.save(commit=False)
             mynumber.user = request.user
@@ -126,7 +126,7 @@ def mynumber_edit(request):
             
             return redirect('profile:mynumber_detail')
     else:
-        form = StaffMynumberForm(instance=mynumber)
+        form = ProfileMynumberForm(instance=mynumber)
     
     context = {
         'form': form,
@@ -141,7 +141,7 @@ def mynumber_edit(request):
 @permission_required('profile.delete_staffmynumber', raise_exception=True)
 def mynumber_delete(request):
     """マイナンバー削除確認"""
-    mynumber = get_object_or_404(StaffMynumber, user=request.user)
+    mynumber = get_object_or_404(ProfileMynumber, user=request.user)
     
     if request.method == 'POST':
         mynumber.delete()

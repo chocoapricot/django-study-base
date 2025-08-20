@@ -73,7 +73,7 @@ class StaffProfileModelTests(TestCase):
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from apps.profile.models import StaffProfile, StaffMynumber
+from apps.profile.models import StaffProfile, ProfileMynumber
 
 User = get_user_model()
 
@@ -279,7 +279,7 @@ class StaffProfileViewTest(TestCase):
             self.assertIn('/accounts/login/', response.url)
 
 
-class StaffMynumberModelTest(TestCase):
+class ProfileMynumberModelTest(TestCase):
     """スタッフマイナンバーモデルのテスト"""
     
     def setUp(self):
@@ -293,7 +293,7 @@ class StaffMynumberModelTest(TestCase):
         """スタッフマイナンバー作成テスト"""
         # 有効なマイナンバーの例（チェックデジット付き）
         valid_mynumber = '621498320257'  # これは有効なマイナンバーの例
-        mynumber = StaffMynumber.objects.create(
+        mynumber = ProfileMynumber.objects.create(
             user=self.user,
             email=self.user.email,
             mynumber=valid_mynumber
@@ -304,7 +304,7 @@ class StaffMynumberModelTest(TestCase):
         self.assertEqual(str(mynumber), 'testuser - マイナンバー')
 
 
-class StaffMynumberViewTest(TestCase):
+class ProfileMynumberViewTest(TestCase):
     """スタッフマイナンバービューのテスト"""
     
     def setUp(self):
@@ -329,7 +329,7 @@ class StaffMynumberViewTest(TestCase):
     def test_mynumber_detail_view_with_mynumber(self):
         """マイナンバー詳細ビュー（マイナンバー登録済み）のテスト"""
         valid_mynumber = '621498320257'
-        mynumber = StaffMynumber.objects.create(
+        mynumber = ProfileMynumber.objects.create(
             user=self.user,
             email=self.user.email,
             mynumber=valid_mynumber
@@ -351,14 +351,14 @@ class StaffMynumberViewTest(TestCase):
         self.assertEqual(response.status_code, 302)  # リダイレクト
         
         # マイナンバーが作成されたことを確認
-        mynumber = StaffMynumber.objects.get(user=self.user)
+        mynumber = ProfileMynumber.objects.get(user=self.user)
         self.assertEqual(mynumber.mynumber, valid_mynumber)
         self.assertEqual(mynumber.email, self.user.email)
     
     def test_mynumber_delete_view_post(self):
         """マイナンバー削除ビュー（POST）のテスト"""
         valid_mynumber = '621498320257'
-        mynumber = StaffMynumber.objects.create(
+        mynumber = ProfileMynumber.objects.create(
             user=self.user,
             email=self.user.email,
             mynumber=valid_mynumber
@@ -368,11 +368,11 @@ class StaffMynumberViewTest(TestCase):
         self.assertEqual(response.status_code, 302)  # リダイレクト
         
         # マイナンバーが削除されたことを確認
-        self.assertFalse(StaffMynumber.objects.filter(user=self.user).exists())
+        self.assertFalse(ProfileMynumber.objects.filter(user=self.user).exists())
     
     def test_mynumber_validation(self):
         """マイナンバーバリデーションのテスト"""
-        from apps.profile.forms import StaffMynumberForm
+        from apps.profile.forms import ProfileMynumberForm
         
         try:
             from stdnum.jp import in_
@@ -384,26 +384,26 @@ class StaffMynumberViewTest(TestCase):
             invalid_mynumber = '123456789012'
             
             # 有効なマイナンバーのテスト
-            form = StaffMynumberForm(data={'mynumber': valid_mynumber})
+            form = ProfileMynumberForm(data={'mynumber': valid_mynumber})
             self.assertTrue(form.is_valid())
             
             # 無効なマイナンバーのテスト
-            form = StaffMynumberForm(data={'mynumber': invalid_mynumber})
+            form = ProfileMynumberForm(data={'mynumber': invalid_mynumber})
             self.assertFalse(form.is_valid())
             self.assertIn('mynumber', form.errors)
             
         except ImportError:
             # python-stdnumがない場合は基本的なテストのみ
             # 有効な12桁の数字
-            form = StaffMynumberForm(data={'mynumber': '123456789012'})
+            form = ProfileMynumberForm(data={'mynumber': '123456789012'})
             self.assertTrue(form.is_valid())
         
         # 桁数が間違っている
-        form = StaffMynumberForm(data={'mynumber': '12345678901'})
+        form = ProfileMynumberForm(data={'mynumber': '12345678901'})
         self.assertFalse(form.is_valid())
         self.assertIn('mynumber', form.errors)
         
         # 数字以外が含まれている
-        form = StaffMynumberForm(data={'mynumber': '12345678901a'})
+        form = ProfileMynumberForm(data={'mynumber': '12345678901a'})
         self.assertFalse(form.is_valid())
         self.assertIn('mynumber', form.errors)
