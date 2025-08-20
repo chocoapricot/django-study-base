@@ -1,8 +1,27 @@
 from django.db import models
 from datetime import date
+from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 
 from ..common.models import MyModel
 from concurrency.fields import IntegerVersionField
+
+def validate_mynumber(value):
+    """マイナンバーのバリデーション関数"""
+    if not value:
+        return
+
+    try:
+        from stdnum.jp import in_
+        if not in_.is_valid(value):
+            raise ValidationError('正しいマイナンバーを入力してください。')
+    except ImportError:
+        # python-stdnumがインストールされていない場合は基本的なチェックのみ
+        import re
+        if not re.match(r'^\d{12}$', value):
+            raise ValidationError('マイナンバーは12桁の数字で入力してください。')
+    except Exception:
+        raise ValidationError('正しいマイナンバーを入力してください。')
 
 class Staff(MyModel):
     """
@@ -116,6 +135,11 @@ class Staff(MyModel):
 
     def __str__(self):
         return self.name_last + " " + self.name_first
+
+    @property
+    def has_mynumber(self):
+        """マイナンバーが登録されているかどうかを返す"""
+        return hasattr(self, 'mynumber')
 
 
 from apps.common.models import MyModel
@@ -324,3 +348,37 @@ class StaffSkill(MyModel):
     
     def __str__(self):
         return f"{self.staff} - {self.skill}"
+
+
+class StaffMyNumberRecord(MyModel):
+    """
+    スタッフのマイナンバー情報を管理するモデル。
+    Staffモデルと1対1で連携し、暗号化して保存することを想定（要追加実装）。
+    """
+
+    staff = models.OneToOneField(
+        Staff,
+        on_delete=models.CASCADE,
+        verbose_name='スタッフ',
+        related_name='mynumber'
+    )
+    mynumber = models.CharField(
+        max_length=12,
+        verbose_name='マイナンバー',
+        validators=[
+            validate_mynumber,
+            RegexValidator(
+                regex=r'^\d{12}$',
+                message='マイナンバーは12桁の数字で入力してください'
+            )
+        ],
+        help_text='マイナンバーを12桁の数字で入力してください'
+    )
+
+    class Meta:
+        verbose_name = 'スタッフマイナンバー'
+        verbose_name_plural = 'スタッフマイナンバー'
+        db_table = 'apps_staff_mynumber'
+
+    def __str__(self):
+        return f"{self.staff} - マイナンバー"

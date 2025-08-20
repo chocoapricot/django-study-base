@@ -7,7 +7,8 @@ from .views import (
     staff_qualification_list, staff_qualification_create, staff_qualification_update, staff_qualification_delete,
     staff_skill_list, staff_skill_create, staff_skill_update, staff_skill_delete,
     staff_file_list, staff_file_create, 
-    staff_file_delete, staff_file_download
+    staff_file_delete, staff_file_download,
+    staff_mynumber_detail, staff_mynumber_create, staff_mynumber_edit, staff_mynumber_delete,
 )
 
 app_name = 'staff'
@@ -53,4 +54,10 @@ urlpatterns = [
     path('staff/<int:staff_pk>/file/create/', staff_file_create, name='staff_file_create'),
     path('staff/file/<int:pk>/delete/', staff_file_delete, name='staff_file_delete'),
     path('staff/file/<int:pk>/download/', staff_file_download, name='staff_file_download'),
+
+    # マイナンバー管理
+    path('staff/<int:staff_id>/mynumber/', staff_mynumber_detail, name='staff_mynumber_detail'),
+    path('staff/<int:staff_id>/mynumber/create/', staff_mynumber_create, name='staff_mynumber_create'),
+    path('staff/<int:staff_id>/mynumber/edit/', staff_mynumber_edit, name='staff_mynumber_edit'),
+    path('staff/<int:staff_id>/mynumber/delete/', staff_mynumber_delete, name='staff_mynumber_delete'),
 ]
