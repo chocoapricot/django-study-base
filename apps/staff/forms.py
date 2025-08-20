@@ -37,6 +37,12 @@ from apps.common.forms.fields import to_fullwidth_katakana, validate_kana
 
 
 class StaffForm(forms.ModelForm):
+    employment_type = forms.ChoiceField(
+        choices=[],
+        label='雇用形態',
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
     def clean_phone(self):
         value = self.cleaned_data.get('phone', '')
         import re
@@ -149,6 +155,13 @@ class StaffForm(forms.ModelForm):
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='regist_form').order_by('disp_seq')
         ]
+
+        self.fields['employment_type'].choices = [
+            ('', '選択してください')
+        ] + [
+            (opt.value, opt.name)
+            for opt in Dropdowns.objects.filter(active=True, category='employment_type').order_by('disp_seq')
+        ]
         
         # 現在有効な部署の選択肢を設定
         current_date = timezone.now().date()
@@ -185,6 +198,7 @@ class StaffForm(forms.ModelForm):
         model = Staff
         fields = [
             'regist_form_code',
+            'employment_type',
             'employee_no',
             'name_last','name_first','name_kana_last','name_kana_first',
             'birth_date','sex',

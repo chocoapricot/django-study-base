@@ -68,6 +68,7 @@ def staff_list(request):
     query = request.GET.get('q', '').strip()
     regist_form_filter = request.GET.get('regist_form', '').strip()  # 登録区分フィルター
     department_filter = request.GET.get('department', '').strip()  # 所属部署フィルター
+    employment_type_filter = request.GET.get('employment_type', '').strip()  # 雇用形態フィルター
     
     # 基本のクエリセット
     staffs = Staff.objects.all()
@@ -96,10 +97,12 @@ def staff_list(request):
     # 登録区分での絞り込み
     if regist_form_filter:
         staffs = staffs.filter(regist_form_code=regist_form_filter)
-    
     # 所属部署での絞り込み
     if department_filter:
         staffs = staffs.filter(department_code=department_filter)
+    # 雇用形態での絞り込み
+    if employment_type_filter:
+        staffs = staffs.filter(employment_type=employment_type_filter)
 
     # ソート可能なフィールドを定義
     sortable_fields = [
@@ -122,10 +125,17 @@ def staff_list(request):
         category='regist_form', 
         active=True
     ).order_by('disp_seq')
-    
     # 各オプションに選択状態を追加
     for option in regist_form_options:
         option.is_selected = (regist_form_filter == option.value)
+
+    # 雇用形態の選択肢を取得
+    employment_type_options = Dropdowns.objects.filter(
+        category='employment_type',
+        active=True
+    ).order_by('disp_seq')
+    for option in employment_type_options:
+        option.is_selected = (employment_type_filter == option.value)
     
     # 所属部署の選択肢を取得（現在有効な部署のみ）
     from apps.company.models import CompanyDepartment
@@ -165,6 +175,8 @@ def staff_list(request):
         'regist_form_options': regist_form_options,
         'department_filter': department_filter,
         'department_options': department_options,
+        'employment_type_filter': employment_type_filter,
+        'employment_type_options': employment_type_options,
     })
 
 @login_required

@@ -68,7 +68,7 @@
         "updated_at": "2024-11-06T15:57:02.294Z",
         "updated_by": 1,
         "category": "regist_form",
-        "name": "派遣社員",
+        "name": "仮登録",
         "value": "10",
         "disp_seq": 10,
         "active": true
@@ -83,7 +83,7 @@
         "updated_at": "2024-11-06T15:57:21.195Z",
         "updated_by": 1,
         "category": "regist_form",
-        "name": "正社員",
+        "name": "登録済",
         "value": "20",
         "disp_seq": 20,
         "active": true
@@ -116,7 +116,7 @@
         "name": "契約社員",
         "value": "30",
         "disp_seq": 30,
-        "active": true
+        "active": false
     }
 },
 {
@@ -411,5 +411,53 @@
   {"model": "settings.dropdowns","pk": 186, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "096", "name": "製造作業員"}},
   {"model": "settings.dropdowns","pk": 187, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "097", "name": "建設作業員"}},
   {"model": "settings.dropdowns","pk": 188, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "098", "name": "選別・ピッキング作業員"}},
-  {"model": "settings.dropdowns","pk": 189, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "099", "name": "その他の運搬・清掃・包装・選別等の職業"}}
+  {"model": "settings.dropdowns","pk": 189, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "099", "name": "その他の運搬・清掃・包装・選別等の職業"}},
+{
+    "model": "settings.dropdowns",
+    "pk": 190,
+    "fields": {
+        "version": 1755711205715178,
+        "created_at": "2025-08-20T17:49:12.367Z",
+        "created_by": 1,
+        "updated_at": "2025-08-20T17:49:12.367Z",
+        "updated_by": 1,
+        "category": "employment_type",
+        "name": "正社員",
+        "value": "10",
+        "disp_seq": 10,
+        "active": true
+    }
+},
+{
+    "model": "settings.dropdowns",
+    "pk": 191,
+    "fields": {
+        "version": 1755711217178851,
+        "created_at": "2025-08-20T17:49:23.831Z",
+        "created_by": 1,
+        "updated_at": "2025-08-20T17:49:23.831Z",
+        "updated_by": 1,
+        "category": "employment_type",
+        "name": "契約社員",
+        "value": "20",
+        "disp_seq": 20,
+        "active": true
+    }
+},
+{
+    "model": "settings.dropdowns",
+    "pk": 192,
+    "fields": {
+        "version": 1755711240612770,
+        "created_at": "2025-08-20T17:49:47.265Z",
+        "created_by": 1,
+        "updated_at": "2025-08-20T17:49:47.265Z",
+        "updated_by": 1,
+        "category": "employment_type",
+        "name": "派遣社員",
+        "value": "30",
+        "disp_seq": 30,
+        "active": true
+    }
+}
 ]

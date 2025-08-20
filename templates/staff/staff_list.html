@@ -32,6 +32,14 @@
                     {% endfor %}
                 </select>
             </div>
+            <div class="me-2" style="width: 12em;">
+                <select name="employment_type" class="form-select form-select-sm" style="height: calc(1.5em + 0.5rem + 2px);">
+                    <option value="">全ての雇用形態</option>
+                    {% for option in employment_type_options %}
+                        <option value="{{ option.value }}" {% if option.is_selected %}selected{% endif %}>{{ option.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
             <div class="me-2" style="width: 15em;">
                 <select name="department" class="form-select form-select-sm" style="height: calc(1.5em + 0.5rem + 2px);">
                     <option value="">全ての所属部署</option>
@@ -86,6 +94,7 @@
                         </a>
                     </th>
                     <th>登録区分</th>
+            <th>雇用形態</th>
                     <th class="d-none d-md-table-cell">所属部署</th>
                     <th>操作</th>
                 </tr>
@@ -126,6 +135,17 @@
                             <span class="badge bg-dark" style="font-size:13px">{% my_name 'regist_form' staff.regist_form_code %}</span>
                         {% else %}
                             <span class="badge bg-light" style="font-size:13px">{% my_name 'regist_form' staff.regist_form_code %}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if staff.employment_type == '10' %}
+                            <span class="badge bg-primary" style="font-size:13px">{% my_name 'employment_type' staff.employment_type %}</span>
+                        {% elif staff.employment_type == '20' %}
+                            <span class="badge bg-success" style="font-size:13px">{% my_name 'employment_type' staff.employment_type %}</span>
+                        {% elif staff.employment_type == '30' %}
+                            <span class="badge bg-info" style="font-size:13px">{% my_name 'employment_type' staff.employment_type %}</span>
+                        {% elif staff.employment_type %}
+                            <span class="badge bg-secondary" style="font-size:13px">{% my_name 'employment_type' staff.employment_type %}</span>
                         {% endif %}
                     </td>
                     <td class="d-none d-md-table-cell">
