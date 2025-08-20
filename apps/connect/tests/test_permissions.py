@@ -31,7 +31,7 @@ class PermissionGrantingTest(TestCase):
         
         # Initially, user should not have profile permissions
         self.assertFalse(self.user.has_perm('profile.view_staffprofile'))
-        self.assertFalse(self.user.has_perm('profile.view_staffmynumber'))
+        self.assertFalse(self.user.has_perm('profile.view_profilemynumber'))
 
         # Approve the connection
         response = self.client.post(reverse('connect:staff_approve', args=[self.connection.pk]))
@@ -49,7 +49,7 @@ class PermissionGrantingTest(TestCase):
             'view_staffprofile', 'add_staffprofile', 'change_staffprofile', 'delete_staffprofile'
         ]
         mynumber_perms = [
-            'view_staffmynumber', 'add_staffmynumber', 'change_staffmynumber', 'delete_staffmynumber'
+            'view_profilemynumber', 'add_profilemynumber', 'change_profilemynumber', 'delete_profilemynumber'
         ]
 
         for perm in profile_perms:
