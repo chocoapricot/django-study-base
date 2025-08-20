@@ -1,0 +1,39 @@
+{% extends 'common/_base.html' %}
+{% load sitetree %}
+
+{% block title %}スタッフマイナンバー削除確認{% endblock %}
+
+{% block breadcrumbs %}
+    {% sitetree_breadcrumbs from "main" for "staff_mynumber_delete" %}
+{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        スタッフマイナンバー削除確認
+    </div>
+    <div class="card-body">
+        {% include 'staff/_staff_info_card.html' with staff=staff %}
+
+        <div class="alert alert-warning mt-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            このスタッフのマイナンバーを削除しますか？この操作は取り消せません。
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end">マイナンバー</label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ mynumber.mynumber }}</p>
+            </div>
+        </div>
+
+        <form method="post" class="mt-4">
+            {% csrf_token %}
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-dark">削除</button>
+                <a href="{% url 'staff:staff_mynumber_detail' staff_id=staff.pk %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

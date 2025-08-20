@@ -10,8 +10,8 @@ from django.db.models import Q
 from django.contrib import messages
 from apps.system.logs.utils import log_model_action
 
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile
-from .forms import StaffForm, StaffContactedForm, StaffFileForm
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMyNumberRecord
+from .forms import StaffForm, StaffContactedForm, StaffFileForm, StaffMyNumberRecordForm
 from apps.system.settings.utils import my_parameter
 from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
@@ -757,3 +757,95 @@ def staff_mail_send(request, pk):
         'title': f'{staff.name_last} {staff.name_first} へのメール送信',
     }
     return render(request, 'staff/staff_mail_send.html', context)
+
+
+# ===== スタッフマイナンバー関連ビュー =====
+
+@login_required
+@permission_required('staff.view_staffmynumberrecord', raise_exception=True)
+def staff_mynumber_detail(request, staff_id):
+    """スタッフのマイナンバー詳細表示"""
+    staff = get_object_or_404(Staff, pk=staff_id)
+    try:
+        mynumber = StaffMyNumberRecord.objects.get(staff=staff)
+    except StaffMyNumberRecord.DoesNotExist:
+        # 未登録の場合は登録画面へリダイレクト
+        return redirect('staff:staff_mynumber_create', staff_id=staff.pk)
+
+    context = {
+        'staff': staff,
+        'mynumber': mynumber,
+    }
+    return render(request, 'staff/staff_mynumber_detail.html', context)
+
+
+@login_required
+@permission_required('staff.add_staffmynumberrecord', raise_exception=True)
+def staff_mynumber_create(request, staff_id):
+    """スタッフのマイナンバー登録"""
+    staff = get_object_or_404(Staff, pk=staff_id)
+    # 既に登録済みの場合は編集画面へリダイレクト
+    if hasattr(staff, 'mynumber'):
+        return redirect('staff:staff_mynumber_edit', staff_id=staff.pk)
+
+    if request.method == 'POST':
+        form = StaffMyNumberRecordForm(request.POST)
+        if form.is_valid():
+            mynumber = form.save(commit=False)
+            mynumber.staff = staff
+            mynumber.save()
+            messages.success(request, 'マイナンバーを登録しました。')
+            return redirect('staff:staff_mynumber_detail', staff_id=staff.pk)
+    else:
+        form = StaffMyNumberRecordForm()
+
+    context = {
+        'form': form,
+        'staff': staff,
+        'is_new': True,
+    }
+    return render(request, 'staff/staff_mynumber_form.html', context)
+
+
+@login_required
+@permission_required('staff.change_staffmynumberrecord', raise_exception=True)
+def staff_mynumber_edit(request, staff_id):
+    """スタッフのマイナンバー編集"""
+    staff = get_object_or_404(Staff, pk=staff_id)
+    mynumber = get_object_or_404(StaffMyNumberRecord, staff=staff)
+
+    if request.method == 'POST':
+        form = StaffMyNumberRecordForm(request.POST, instance=mynumber)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'マイナンバーを更新しました。')
+            return redirect('staff:staff_mynumber_detail', staff_id=staff.pk)
+    else:
+        form = StaffMyNumberRecordForm(instance=mynumber)
+
+    context = {
+        'form': form,
+        'staff': staff,
+        'mynumber': mynumber,
+        'is_new': False,
+    }
+    return render(request, 'staff/staff_mynumber_form.html', context)
+
+
+@login_required
+@permission_required('staff.delete_staffmynumberrecord', raise_exception=True)
+def staff_mynumber_delete(request, staff_id):
+    """スタッフのマイナンバー削除確認"""
+    staff = get_object_or_404(Staff, pk=staff_id)
+    mynumber = get_object_or_404(StaffMyNumberRecord, staff=staff)
+
+    if request.method == 'POST':
+        mynumber.delete()
+        messages.success(request, 'マイナンバーを削除しました。')
+        return redirect('staff:staff_detail', pk=staff.pk)
+
+    context = {
+        'staff': staff,
+        'mynumber': mynumber,
+    }
+    return render(request, 'staff/staff_mynumber_confirm_delete.html', context)

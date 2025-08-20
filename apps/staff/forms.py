@@ -2,7 +2,8 @@
 import os
 from django import forms
 from django.forms import TextInput
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMyNumberRecord
+from django.core.exceptions import ValidationError
 
 # スタッフ連絡履歴フォーム
 class StaffContactedForm(forms.ModelForm):
@@ -351,3 +352,47 @@ class StaffFileForm(forms.ModelForm):
                 )
         
         return file
+
+
+class StaffMyNumberRecordForm(forms.ModelForm):
+    """スタッフマイナンバーフォーム"""
+
+    class Meta:
+        model = StaffMyNumberRecord
+        fields = ['mynumber']
+        widgets = {
+            'mynumber': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'maxlength': '12',
+                'pattern': '[0-9]{12}',
+                'inputmode': 'numeric',
+                'style': 'ime-mode:disabled;',
+                'autocomplete': 'off'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # 必須フィールドの設定
+        self.fields['mynumber'].required = True
+
+    def clean_mynumber(self):
+        """マイナンバーのバリデーション"""
+        mynumber = self.cleaned_data.get('mynumber')
+        if mynumber:
+            try:
+                from stdnum.jp import in_
+                # マイナンバーの形式と検査数字をチェック
+                if not in_.is_valid(mynumber):
+                    raise ValidationError('正しいマイナンバーを入力してください。')
+                # 正規化（ハイフンなどを除去）
+                mynumber = in_.compact(mynumber)
+            except ImportError:
+                # python-stdnumがインストールされていない場合は基本的なチェックのみ
+                import re
+                if not re.match(r'^\d{12}$', mynumber):
+                    raise ValidationError('マイナンバーは12桁の数字で入力してください。')
+            except Exception:
+                raise ValidationError('正しいマイナンバーを入力してください。')
+
+        return mynumber
