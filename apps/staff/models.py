@@ -350,7 +350,7 @@ class StaffSkill(MyModel):
         return f"{self.staff} - {self.skill}"
 
 
-class StaffMyNumberRecord(MyModel):
+class StaffMynumber(MyModel):
     """
     スタッフのマイナンバー情報を管理するモデル。
     Staffモデルと1対1で連携し、暗号化して保存することを想定（要追加実装）。

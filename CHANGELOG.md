@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 2025-08-21
 
 ### Changed
+- `apps/staff` にて、`StaffMyNumberRecord` モデルを `StaffMynumber` に名称変更し、関連するすべてのファイル（フォーム、ビュー、テンプレート）を更新しました。これは、命名規則の統一性を高めるためのリファクタリングです。
 - `StaffMynumber` モデルを `ProfileMynumber` に名称変更し、関連するすべてのファイル（フォーム、ビュー、テスト、ドキュメント）を更新しました。これは、プロファイル関連のモデルであることをより明確にするためのリファクタリングです。
 
 ## 2025-08-19

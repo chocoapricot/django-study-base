@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="StaffMyNumberRecord",
+            name="StaffMynumber",
             fields=[
                 (
                     "id",

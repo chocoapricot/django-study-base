@@ -10,8 +10,8 @@ from django.db.models import Q
 from django.contrib import messages
 from apps.system.logs.utils import log_model_action
 
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMyNumberRecord
-from .forms import StaffForm, StaffContactedForm, StaffFileForm, StaffMyNumberRecordForm
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber
+from .forms import StaffForm, StaffContactedForm, StaffFileForm, StaffMynumberForm
 from apps.system.settings.utils import my_parameter
 from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
@@ -31,7 +31,7 @@ def staff_change_history_list(request, pk):
         django_models.Q(model_name='StaffQualification', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffMyNumberRecord', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffMynumber', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')
@@ -262,7 +262,7 @@ def staff_detail(request, pk):
         django_models.Q(model_name='StaffQualification', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffMyNumberRecord', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffMynumber', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')[:5]
@@ -271,7 +271,7 @@ def staff_detail(request, pk):
         django_models.Q(model_name='StaffQualification', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffMyNumberRecord', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffMynumber', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
     ).count()
@@ -770,8 +770,8 @@ def staff_mynumber_detail(request, staff_id):
     """スタッフのマイナンバー詳細表示"""
     staff = get_object_or_404(Staff, pk=staff_id)
     try:
-        mynumber = StaffMyNumberRecord.objects.get(staff=staff)
-    except StaffMyNumberRecord.DoesNotExist:
+        mynumber = StaffMynumber.objects.get(staff=staff)
+    except StaffMynumber.DoesNotExist:
         # 未登録の場合は登録画面へリダイレクト
         return redirect('staff:staff_mynumber_create', staff_id=staff.pk)
 
@@ -792,7 +792,7 @@ def staff_mynumber_create(request, staff_id):
         return redirect('staff:staff_mynumber_edit', staff_id=staff.pk)
 
     if request.method == 'POST':
-        form = StaffMyNumberRecordForm(request.POST)
+        form = StaffMynumberForm(request.POST)
         if form.is_valid():
             mynumber = form.save(commit=False)
             mynumber.staff = staff
@@ -802,7 +802,7 @@ def staff_mynumber_create(request, staff_id):
             messages.success(request, 'マイナンバーを登録しました。')
             return redirect('staff:staff_mynumber_detail', staff_id=staff.pk)
     else:
-        form = StaffMyNumberRecordForm()
+        form = StaffMynumberForm()
 
     context = {
         'form': form,
@@ -817,16 +817,16 @@ def staff_mynumber_create(request, staff_id):
 def staff_mynumber_edit(request, staff_id):
     """スタッフのマイナンバー編集"""
     staff = get_object_or_404(Staff, pk=staff_id)
-    mynumber = get_object_or_404(StaffMyNumberRecord, staff=staff)
+    mynumber = get_object_or_404(StaffMynumber, staff=staff)
 
     if request.method == 'POST':
-        form = StaffMyNumberRecordForm(request.POST, instance=mynumber)
+        form = StaffMynumberForm(request.POST, instance=mynumber)
         if form.is_valid():
             form.save()
             messages.success(request, 'マイナンバーを更新しました。')
             return redirect('staff:staff_mynumber_detail', staff_id=staff.pk)
     else:
-        form = StaffMyNumberRecordForm(instance=mynumber)
+        form = StaffMynumberForm(instance=mynumber)
 
     context = {
         'form': form,
@@ -842,7 +842,7 @@ def staff_mynumber_edit(request, staff_id):
 def staff_mynumber_delete(request, staff_id):
     """スタッフのマイナンバー削除確認"""
     staff = get_object_or_404(Staff, pk=staff_id)
-    mynumber = get_object_or_404(StaffMyNumberRecord, staff=staff)
+    mynumber = get_object_or_404(StaffMynumber, staff=staff)
 
     if request.method == 'POST':
         mynumber.delete()

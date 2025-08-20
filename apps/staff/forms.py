@@ -2,7 +2,7 @@
 import os
 from django import forms
 from django.forms import TextInput
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMyNumberRecord
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber
 from django.core.exceptions import ValidationError
 
 # スタッフ連絡履歴フォーム
@@ -354,11 +354,11 @@ class StaffFileForm(forms.ModelForm):
         return file
 
 
-class StaffMyNumberRecordForm(forms.ModelForm):
+class StaffMynumberForm(forms.ModelForm):
     """スタッフマイナンバーフォーム"""
 
     class Meta:
-        model = StaffMyNumberRecord
+        model = StaffMynumber
         fields = ['mynumber']
         widgets = {
             'mynumber': forms.TextInput(attrs={
