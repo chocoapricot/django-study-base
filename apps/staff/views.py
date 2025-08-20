@@ -31,6 +31,7 @@ def staff_change_history_list(request, pk):
         django_models.Q(model_name='StaffQualification', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffMyNumberRecord', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')
@@ -261,6 +262,7 @@ def staff_detail(request, pk):
         django_models.Q(model_name='StaffQualification', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffMyNumberRecord', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')[:5]
@@ -269,6 +271,7 @@ def staff_detail(request, pk):
         django_models.Q(model_name='StaffQualification', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffMyNumberRecord', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
     ).count()
@@ -794,6 +797,8 @@ def staff_mynumber_create(request, staff_id):
             mynumber = form.save(commit=False)
             mynumber.staff = staff
             mynumber.save()
+            # 変更履歴(AppLog)に記録
+            log_model_action(request.user, 'create', mynumber)
             messages.success(request, 'マイナンバーを登録しました。')
             return redirect('staff:staff_mynumber_detail', staff_id=staff.pk)
     else:

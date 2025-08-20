@@ -260,7 +260,7 @@
                                 <i class="bi bi-link" style="font-size: 20px;color:#17a2b8;"></i>
                                 スタッフが接続承認
                                 {% if connect_request and connect_request.is_approved %}
-                                    スタッフが接続承認（{{ connect_request.approved_at|date:"Y/m/d H:i:s" }}）
+                                    （{{ connect_request.approved_at|date:"Y/m/d H:i:s" }}）
                                 {% endif %}
                             </label>
                         </div>
