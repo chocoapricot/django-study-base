@@ -197,6 +197,47 @@ class ProfileRequest(MyModel):
     def __str__(self):
         return f"{self.connect_staff} - {self.staff_profile} ({self.get_status_display()})"
 
+    def get_staff(self):
+        """関連するスタッフ情報を取得する"""
+        try:
+            return Staff.objects.get(email=self.connect_staff.email)
+        except Staff.DoesNotExist:
+            return None
+
+    def approve(self, user):
+        """プロフィール申請を承認する"""
+        staff = self.get_staff()
+        if not staff or not self.staff_profile:
+            return False, "スタッフまたはプロフィール情報が見つかりません。"
+
+        # 更新するフィールドを定義
+        fields_to_update = [
+            'name_last', 'name_first', 'name_kana_last', 'name_kana_first',
+            'birth_date', 'sex', 'postal_code', 'address1', 'address2', 'address3',
+            'phone',
+        ]
+
+        # StaffモデルとStaffProfileモデルのフィールドを更新
+        for field in fields_to_update:
+            profile_value = getattr(self.staff_profile, field, None)
+            setattr(staff, field, profile_value)
+
+        # Staffのnameフィールドを更新
+        staff.name = f"{staff.name_last} {staff.name_first}"
+
+        staff.save()
+
+        # 申請ステータスを更新
+        self.status = 'approved'
+        self.save()
+        return True, "プロフィール申請を承認し、スタッフ情報を更新しました。"
+
+    def reject(self, user):
+        """プロフィール申請を却下する"""
+        self.status = 'rejected'
+        self.save()
+        return True, "プロフィール申請を却下しました。"
+
 
 class ConnectClient(MyModel):
     """

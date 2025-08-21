@@ -1,0 +1,97 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4>プロフィール申請の確認</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">申請者: {{ staff.name }}</h5>
+                    <hr>
+
+                    <div class="mb-3">
+                        <strong>申請日時:</strong>
+                        <p>{{ profile_request.created_at|date:"Y/m/d H:i" }}</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>現在のステータス:</strong>
+                        <p><span class="badge bg-warning text-dark">{{ profile_request.get_status_display }}</span></p>
+                    </div>
+
+                    <hr>
+                    <h5>申請内容</h5>
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>項目</th>
+                                <th>現在の情報</th>
+                                <th>申請された情報</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>氏名</td>
+                                <td>{{ staff.name_last }} {{ staff.name_first }}</td>
+                                <td>{{ profile_request.staff_profile.name_last }} {{ profile_request.staff_profile.name_first }}</td>
+                            </tr>
+                            <tr>
+                                <td>氏名（カナ）</td>
+                                <td>{{ staff.name_kana_last }} {{ staff.name_kana_first }}</td>
+                                <td>{{ profile_request.staff_profile.name_kana_last }} {{ profile_request.staff_profile.name_kana_first }}</td>
+                            </tr>
+                            <tr>
+                                <td>生年月日</td>
+                                <td>{{ staff.birth_date }}</td>
+                                <td>{{ profile_request.staff_profile.birth_date }}</td>
+                            </tr>
+                            <tr>
+                                <td>性別</td>
+                                <td>{{ staff.get_sex_display }}</td>
+                                <td>{{ profile_request.staff_profile.get_sex_display }}</td>
+                            </tr>
+                            <tr>
+                                <td>郵便番号</td>
+                                <td>{{ staff.postal_code }}</td>
+                                <td>{{ profile_request.staff_profile.postal_code }}</td>
+                            </tr>
+                            <tr>
+                                <td>住所</td>
+                                <td>{{ staff.address1 }}{{ staff.address2 }}{{ staff.address3 }}</td>
+                                <td>{{ profile_request.staff_profile.address1 }}{{ profile_request.staff_profile.address2 }}{{ profile_request.staff_profile.address3 }}</td>
+                            </tr>
+                            <tr>
+                                <td>電話番号</td>
+                                <td>{{ staff.phone }}</td>
+                                <td>{{ profile_request.staff_profile.phone }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <hr>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" name="action" value="approve" class="btn btn-success me-2">
+                                <i class="bi bi-check-circle"></i> 承認して更新する
+                            </button>
+                            <button type="submit" name="action" value="reject" class="btn btn-danger me-2">
+                                <i class="bi bi-x-circle"></i> 却下する
+                            </button>
+                            <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> 戻る
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
