@@ -64,8 +64,8 @@ django-study-base/
 │
 ├── apps/                   # Djangoアプリケーション
 │   ├── system/             # システム管理
-│   │   ├── settings/       # 設定管理 (ドロップダウン、メニュー、パラメータ)
-│   │   └── logs/           # ログ管理 (アプリログ、メールログ)
+│   │   ├── logs/           # ログ管理 (アプリログ、メールログ)
+│   │   └── settings/       # 設定管理 (ドロップダウン、メニュー、パラメータ)
 │   ├── accounts/           # ユーザー管理・認証
 │   ├── profile/            # プロフィール管理
 │   ├── master/             # マスター管理 (資格、スキル、銀行、支払条件)
@@ -101,6 +101,7 @@ django-study-base/
 | `apps_company` | 会社情報 |
 | `apps_company_department` | 部署情報 |
 | `apps_connect_client` | クライアント接続申請 |
+| `apps_connect_mynumber_request` | マイナンバー接続申請 |
 | `apps_connect_staff` | スタッフ接続申請 |
 | `apps_contract_client` | クライアント契約 |
 | `apps_contract_staff` | スタッフ契約 |
@@ -112,9 +113,12 @@ django-study-base/
 | `apps_master_skill` | 技能マスター（カテゴリと技能） |
 | `apps_profile_staff` | スタッフプロファイル |
 | `apps_profile_staff_mynumber` | スタッフマイナンバー |
+| `apps_profile_staff_qualification` | スタッフ保有資格 |
+| `apps_profile_staff_skill` | スタッフ保有スキル |
 | `apps_staff` | スタッフ基本情報 |
 | `apps_staff_contacted` | スタッフ連絡履歴 |
 | `apps_staff_file` | スタッフファイル |
+| `apps_staff_mynumber` | スタッフマイナンバー |
 | `apps_staff_qualification` | スタッフ保有資格 |
 | `apps_staff_skill` | スタッフ保有スキル |
 | `apps_system_app_log` | アプリケーション操作ログ |
