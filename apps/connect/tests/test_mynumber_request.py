@@ -115,3 +115,56 @@ class MynumberRequestSignalTest(TestCase):
         # 2つのMynumberRequestが作成されていることを確認
         self.assertEqual(MynumberRequest.objects.count(), 2)
         self.assertEqual(MynumberRequest.objects.filter(profile_mynumber__user=self.user1).count(), 2)
+
+
+from apps.staff.models import Staff, StaffMynumber
+
+class MynumberRequestApprovalTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', email='test@example.com', password='password')
+        self.staff = Staff.objects.create(email='test@example.com', name_last='Test', name_first='User')
+        self.profile_mynumber = ProfileMynumber.objects.create(user=self.user, mynumber='111111111111')
+        self.connection = ConnectStaff.objects.create(corporate_number='1234567890123', email='test@example.com', status='pending')
+
+    def test_request_creation_on_approval_no_staff_mynumber(self):
+        """
+        承認時にMynumberRequestが作成される (スタッフのマイナンバー無し)
+        """
+        self.connection.approve(self.user)
+        self.assertEqual(MynumberRequest.objects.count(), 1)
+        request = MynumberRequest.objects.first()
+        self.assertEqual(request.connect_staff, self.connection)
+        self.assertEqual(request.profile_mynumber, self.profile_mynumber)
+
+    def test_request_creation_on_approval_different_mynumber(self):
+        """
+        承認時にMynumberRequestが作成される (マイナンバーが異なる)
+        """
+        StaffMynumber.objects.create(staff=self.staff, mynumber='222222222222')
+        self.connection.approve(self.user)
+        self.assertEqual(MynumberRequest.objects.count(), 1)
+
+    def test_no_request_creation_if_mynumber_matches(self):
+        """
+        マイナンバーが一致する場合、MynumberRequestは作成されない
+        """
+        StaffMynumber.objects.create(staff=self.staff, mynumber='111111111111')
+        self.connection.approve(self.user)
+        self.assertEqual(MynumberRequest.objects.count(), 0)
+
+    def test_no_request_creation_if_no_profile_mynumber(self):
+        """
+        プロフィールのマイナンバーが存在しない場合、MynumberRequestは作成されない
+        """
+        self.profile_mynumber.delete()
+        self.connection.approve(self.user)
+        self.assertEqual(MynumberRequest.objects.count(), 0)
+
+    def test_request_deletion_on_unapproval(self):
+        """
+        承認解除時にMynumberRequestが削除される
+        """
+        self.connection.approve(self.user)
+        self.assertEqual(MynumberRequest.objects.count(), 1)
+        self.connection.unapprove()
+        self.assertEqual(MynumberRequest.objects.count(), 0)
