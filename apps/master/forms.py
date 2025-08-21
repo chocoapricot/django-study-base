@@ -179,7 +179,7 @@ class BillPaymentForm(forms.ModelForm):
 
 
 class BillBankForm(forms.ModelForm):
-    """振込先銀行フォーム"""
+    """会社銀行フォーム"""
     
     class Meta:
         model = BillBank

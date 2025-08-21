@@ -70,7 +70,7 @@ def main():
         ("python manage.py loaddata _sample_data/master_qualifications.json", "資格マスタデータ"),
         ("python manage.py loaddata _sample_data/master_skills.json", "技能マスタデータ"),
         ("python manage.py loaddata _sample_data/master_bill_payment.json", "支払いサイトマスタデータ"),
-        ("python manage.py loaddata _sample_data/master_bill_bank.json", "振込先銀行マスタデータ"),
+        ("python manage.py loaddata _sample_data/master_bill_bank.json", "会社銀行マスタデータ"),
         ("python manage.py loaddata _sample_data/master_bank.json", "銀行マスタデータ"),
         ("python manage.py loaddata _sample_data/master_bank_branch.json", "銀行支店マスタデータ"),
         ("python manage.py loaddata _sample_data/company.json", "会社データ"),
@@ -98,7 +98,7 @@ def main():
     print("- 資格マスタ")
     print("- 技能マスタ")
     print("- 支払いサイトマスタ")
-    print("- 振込先銀行マスタ")
+    print("- 会社銀行マスタ")
     print("- 銀行マスタ")
     print("- 銀行支店マスタ")
     print("- 会社データ")

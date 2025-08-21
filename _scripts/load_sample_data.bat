@@ -34,7 +34,7 @@ echo 支払いサイトマスタデータをインポート中...
 python manage.py loaddata _sample_data/master_bill_payment.json
 if errorlevel 1 goto error
 
-echo 振込先銀行マスタデータをインポート中...
+echo 会社銀行マスタデータをインポート中...
 python manage.py loaddata _sample_data/master_bill_bank.json
 if errorlevel 1 goto error
 
@@ -96,7 +96,7 @@ echo - メニュー設定
 echo - 資格マスタ
 echo - 技能マスタ
 echo - 支払いサイトマスタ
-echo - 振込先銀行マスタ
+echo - 会社銀行マスタ
 echo - 銀行マスタ
 echo - 銀行支店マスタ
 echo - 会社データ

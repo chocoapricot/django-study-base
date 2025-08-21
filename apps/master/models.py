@@ -375,7 +375,7 @@ class BillPayment(MyModel):
 
 class BillBank(MyModel):
     """
-    自社の振込先銀行口座情報を管理するマスターデータモデル。
+    自社の銀行口座情報を管理するマスターデータモデル。
     """
     
     name = models.CharField('銀行名', max_length=100)
@@ -399,8 +399,8 @@ class BillBank(MyModel):
     
     class Meta:
         db_table = 'apps_master_bill_bank'
-        verbose_name = '振込先銀行'
-        verbose_name_plural = '振込先銀行'
+        verbose_name = '会社銀行'
+        verbose_name_plural = '会社銀行'
         ordering = ['display_order', 'name', 'branch_name']
         indexes = [
             models.Index(fields=['is_active']),
@@ -468,7 +468,7 @@ class BillBank(MyModel):
     
     @classmethod
     def get_active_list(cls):
-        """有効な振込先銀行一覧を取得"""
+        """有効な会社銀行一覧を取得"""
         return cls.objects.filter(is_active=True).order_by('display_order', 'name', 'branch_name')
 
 

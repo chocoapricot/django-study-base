@@ -9,7 +9,7 @@ User = get_user_model()
 
 
 class BillBankModelTest(TestCase):
-    """振込先銀行モデルのテスト"""
+    """会社銀行モデルのテスト"""
     
     def setUp(self):
         self.bill_bank = BillBank.objects.create(
@@ -133,8 +133,8 @@ class BillBankModelTest(TestCase):
             bill_bank.clean()
     
     def test_get_active_list(self):
-        """有効な振込先銀行一覧取得のテスト"""
-        # 無効な振込先銀行を作成
+        """有効な会社銀行一覧取得のテスト"""
+        # 無効な会社銀行を作成
         BillBank.objects.create(
             name='無効銀行',
             bank_code='0098',
@@ -152,7 +152,7 @@ class BillBankModelTest(TestCase):
 
 
 class BillBankFormTest(TestCase):
-    """振込先銀行フォームのテスト"""
+    """会社銀行フォームのテスト"""
     
     def test_valid_form(self):
         """有効なフォームのテスト"""
@@ -235,7 +235,7 @@ class BillBankFormTest(TestCase):
 
 
 class BillBankViewTest(TestCase):
-    """振込先銀行ビューのテスト"""
+    """会社銀行ビューのテスト"""
     
     def setUp(self):
         self.client = Client()
@@ -257,19 +257,19 @@ class BillBankViewTest(TestCase):
         )
     
     def test_bill_bank_list_view(self):
-        """振込先銀行一覧ビューのテスト"""
+        """会社銀行一覧ビューのテスト"""
         response = self.client.get(reverse('master:bill_bank_list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'テスト銀行')
     
     def test_bill_bank_create_view_get(self):
-        """振込先銀行作成ビュー（GET）のテスト"""
+        """会社銀行作成ビュー（GET）のテスト"""
         response = self.client.get(reverse('master:bill_bank_create'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '振込先銀行作成')
+        self.assertContains(response, '会社銀行作成')
     
     def test_bill_bank_create_view_post(self):
-        """振込先銀行作成ビュー（POST）のテスト"""
+        """会社銀行作成ビュー（POST）のテスト"""
         form_data = {
             'name': '新しい銀行',
             'bank_code': '0020',
@@ -286,7 +286,7 @@ class BillBankViewTest(TestCase):
         self.assertTrue(BillBank.objects.filter(name='新しい銀行').exists())
     
     def test_bill_bank_update_view(self):
-        """振込先銀行更新ビューのテスト"""
+        """会社銀行更新ビューのテスト"""
         response = self.client.get(
             reverse('master:bill_bank_update', kwargs={'pk': self.bill_bank.pk})
         )
@@ -294,7 +294,7 @@ class BillBankViewTest(TestCase):
         self.assertContains(response, 'テスト銀行')
     
     def test_bill_bank_delete_view(self):
-        """振込先銀行削除ビューのテスト"""
+        """会社銀行削除ビューのテスト"""
         response = self.client.get(
             reverse('master:bill_bank_delete', kwargs={'pk': self.bill_bank.pk})
         )
