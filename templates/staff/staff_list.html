@@ -127,14 +127,8 @@
                         <span class="badge {{ staff.regist_form_code|badge_class }}" style="font-size:13px">{% my_name 'regist_form' staff.regist_form_code %}</span>
                     </td>
                     <td>
-                        {% if staff.employment_type == '10' %}
-                            <span class="badge bg-primary" style="font-size:13px">{% my_name 'employment_type' staff.employment_type %}</span>
-                        {% elif staff.employment_type == '20' %}
-                            <span class="badge bg-success" style="font-size:13px">{% my_name 'employment_type' staff.employment_type %}</span>
-                        {% elif staff.employment_type == '30' %}
-                            <span class="badge bg-info" style="font-size:13px">{% my_name 'employment_type' staff.employment_type %}</span>
-                        {% elif staff.employment_type %}
-                            <span class="badge bg-secondary" style="font-size:13px">{% my_name 'employment_type' staff.employment_type %}</span>
+                        {% if staff.employment_type %}
+                            <span class="badge {{ staff.employment_type|badge_class }}" style="font-size:13px">{% my_name 'employment_type' staff.employment_type %}</span>
                         {% endif %}
                     </td>
                     <td class="d-none d-md-table-cell">
