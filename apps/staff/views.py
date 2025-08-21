@@ -880,8 +880,8 @@ def staff_mynumber_delete(request, staff_id):
 def staff_mynumber_request_detail(request, staff_pk, pk):
     """マイナンバー申請の詳細、承認・却下"""
     from apps.connect.models import MynumberRequest
-    mynumber_request = get_object_or_404(MynumberRequest, pk=pk, connect_staff__staff__pk=staff_pk)
     staff = get_object_or_404(Staff, pk=staff_pk)
+    mynumber_request = get_object_or_404(MynumberRequest, pk=pk, connect_staff__email=staff.email)
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -901,7 +901,7 @@ def staff_mynumber_request_detail(request, staff_pk, pk):
                 mynumber_request.status = 'approved'
                 mynumber_request.save()
 
-                log_model_action(request.user, 'update', staff_mynumber, 'マイナンバー申請承認により更新')
+                log_model_action(request.user, 'update', staff_mynumber)
                 messages.success(request, f'マイナンバー申請を承認し、{staff.name}のマイナンバーを更新しました。')
             except Exception as e:
                 messages.error(request, f'承認処理中にエラーが発生しました: {e}')
@@ -910,7 +910,7 @@ def staff_mynumber_request_detail(request, staff_pk, pk):
             # 却下処理
             mynumber_request.status = 'rejected'
             mynumber_request.save()
-            log_model_action(request.user, 'update', mynumber_request, 'マイナンバー申請を却下')
+            log_model_action(request.user, 'update', mynumber_request)
             messages.warning(request, 'マイナンバー申請を却下しました。')
 
         return redirect('staff:staff_detail', pk=staff.pk)
