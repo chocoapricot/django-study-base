@@ -54,6 +54,48 @@ class ConnectStaff(MyModel):
         self.save()
 
 
+class MynumberRequest(MyModel):
+    """
+    マイナンバーの提出を要求するためのモデル。
+    """
+
+    STATUS_CHOICES = [
+        ('pending', '未承認'),
+        ('approved', '承認済み'),
+        ('rejected', '却下'),
+    ]
+
+    connect_staff = models.ForeignKey(
+        ConnectStaff,
+        on_delete=models.CASCADE,
+        verbose_name='スタッフ接続',
+        help_text='関連するスタッフ接続'
+    )
+    profile_mynumber = models.ForeignKey(
+        'profile.ProfileMynumber',
+        on_delete=models.CASCADE,
+        verbose_name='プロフィールマイナンバー',
+        help_text='関連するプロフィールマイナンバー'
+    )
+    status = models.CharField(
+        'ステータス',
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending',
+        help_text='申請の現在のステータス'
+    )
+
+    class Meta:
+        db_table = 'apps_connect_mynumber_request'
+        verbose_name = 'マイナンバー申請'
+        verbose_name_plural = 'マイナンバー申請'
+        unique_together = ['connect_staff', 'profile_mynumber']
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.connect_staff} - {self.profile_mynumber} ({self.get_status_display()})"
+
+
 class ConnectClient(MyModel):
     """
     外部のクライアント担当者がシステムにアクセスするための接続申請を管理するモデル。
