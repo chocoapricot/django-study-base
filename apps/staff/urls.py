@@ -10,6 +10,7 @@ from .views import (
     staff_file_delete, staff_file_download,
     staff_mynumber_detail, staff_mynumber_create, staff_mynumber_edit, staff_mynumber_delete,
     staff_mynumber_request_detail,
+    staff_profile_request_detail,
 )
 
 app_name = 'staff'
@@ -62,4 +63,7 @@ urlpatterns = [
     path('staff/<int:staff_id>/mynumber/edit/', staff_mynumber_edit, name='staff_mynumber_edit'),
     path('staff/<int:staff_id>/mynumber/delete/', staff_mynumber_delete, name='staff_mynumber_delete'),
     path('staff/<int:staff_pk>/mynumber/request/<int:pk>/', staff_mynumber_request_detail, name='staff_mynumber_request_detail'),
+
+    # プロフィール申請
+    path('staff/<int:staff_pk>/profile/request/<int:pk>/', staff_profile_request_detail, name='staff_profile_request_detail'),
 ]

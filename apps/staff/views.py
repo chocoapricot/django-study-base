@@ -291,8 +291,9 @@ def staff_detail(request, pk):
     # 接続関連情報を取得
     connect_request = None
     mynumber_request = None
+    profile_request = None
     if staff.email:
-        from apps.connect.models import ConnectStaff, MynumberRequest
+        from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest
         from apps.company.models import Company
         try:
             # 現在のユーザーの会社の法人番号を取得
@@ -304,6 +305,10 @@ def staff_detail(request, pk):
                 ).first()
                 if connect_request:
                     mynumber_request = MynumberRequest.objects.filter(
+                        connect_staff=connect_request,
+                        status='pending'
+                    ).first()
+                    profile_request = ProfileRequest.objects.filter(
                         connect_staff=connect_request,
                         status='pending'
                     ).first()
@@ -322,6 +327,7 @@ def staff_detail(request, pk):
         'change_logs_count': change_logs_count,
         'connect_request': connect_request,
         'mynumber_request': mynumber_request,
+        'profile_request': profile_request,
     })
 
 # 連絡履歴 登録
@@ -920,3 +926,40 @@ def staff_mynumber_request_detail(request, staff_pk, pk):
         'mynumber_request': mynumber_request,
     }
     return render(request, 'staff/staff_mynumber_request_detail.html', context)
+
+
+@login_required
+@permission_required('staff.change_staff', raise_exception=True)
+def staff_profile_request_detail(request, staff_pk, pk):
+    """プロフィール申請の詳細、承認・却下"""
+    from apps.connect.models import ProfileRequest
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    profile_request = get_object_or_404(ProfileRequest, pk=pk, connect_staff__email=staff.email)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'approve':
+            # 承認処理
+            success, message = profile_request.approve(request.user)
+            if success:
+                log_model_action(request.user, 'update', profile_request)
+                messages.success(request, message)
+            else:
+                messages.error(request, message)
+
+        elif action == 'reject':
+            # 却下処理
+            success, message = profile_request.reject(request.user)
+            if success:
+                log_model_action(request.user, 'update', profile_request)
+                messages.warning(request, message)
+            else:
+                messages.error(request, message)
+
+        return redirect('staff:staff_detail', pk=staff.pk)
+
+    context = {
+        'staff': staff,
+        'profile_request': profile_request,
+    }
+    return render(request, 'staff/staff_profile_request_detail.html', context)

@@ -274,6 +274,23 @@
                 </div>
                 {% endif %}
 
+                {% if profile_request %}
+                <hr>
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-12">
+                        <i class="bi bi-person-lines-fill" style="font-size: 20px; color: #17a2b8;"></i>
+                        <strong>プロフィール申請</strong>
+                        <span class="badge bg-warning text-dark ms-2">{{ profile_request.get_status_display }}</span>
+                        <p class="mt-2">
+                            プロフィールの更新申請があります。
+                            <a href="{% url 'staff:staff_profile_request_detail' staff.pk profile_request.pk %}" class="btn btn-sm btn-info">
+                                詳細を確認
+                            </a>
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+
                 {% else %}
                 <div class="text-muted">メールアドレスが登録されていないため、接続機能は利用できません。</div>
                 {% endif %}
