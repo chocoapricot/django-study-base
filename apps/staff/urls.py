@@ -6,9 +6,10 @@ from .views import (
     staff_change_history_list, staff_mail_send,
     staff_qualification_list, staff_qualification_create, staff_qualification_update, staff_qualification_delete,
     staff_skill_list, staff_skill_create, staff_skill_update, staff_skill_delete,
-    staff_file_list, staff_file_create, 
+    staff_file_list, staff_file_create,
     staff_file_delete, staff_file_download,
     staff_mynumber_detail, staff_mynumber_create, staff_mynumber_edit, staff_mynumber_delete,
+    staff_mynumber_request_detail,
 )
 
 app_name = 'staff'
@@ -60,4 +61,5 @@ urlpatterns = [
     path('staff/<int:staff_id>/mynumber/create/', staff_mynumber_create, name='staff_mynumber_create'),
     path('staff/<int:staff_id>/mynumber/edit/', staff_mynumber_edit, name='staff_mynumber_edit'),
     path('staff/<int:staff_id>/mynumber/delete/', staff_mynumber_delete, name='staff_mynumber_delete'),
+    path('staff/<int:staff_pk>/mynumber/request/<int:pk>/', staff_mynumber_request_detail, name='staff_mynumber_request_detail'),
 ]

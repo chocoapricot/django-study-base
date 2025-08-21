@@ -290,8 +290,9 @@ def staff_detail(request, pk):
     
     # 接続関連情報を取得
     connect_request = None
+    mynumber_request = None
     if staff.email:
-        from apps.connect.models import ConnectStaff
+        from apps.connect.models import ConnectStaff, MynumberRequest
         from apps.company.models import Company
         try:
             # 現在のユーザーの会社の法人番号を取得
@@ -301,6 +302,11 @@ def staff_detail(request, pk):
                     corporate_number=company.corporate_number,
                     email=staff.email
                 ).first()
+                if connect_request:
+                    mynumber_request = MynumberRequest.objects.filter(
+                        connect_staff=connect_request,
+                        status='pending'
+                    ).first()
         except Exception:
             pass
     
@@ -315,6 +321,7 @@ def staff_detail(request, pk):
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
         'connect_request': connect_request,
+        'mynumber_request': mynumber_request,
     })
 
 # 連絡履歴 登録
@@ -866,3 +873,50 @@ def staff_mynumber_delete(request, staff_id):
         'mynumber': mynumber,
     }
     return render(request, 'staff/staff_mynumber_confirm_delete.html', context)
+
+
+@login_required
+@permission_required('staff.change_staffmynumberrecord', raise_exception=True)
+def staff_mynumber_request_detail(request, staff_pk, pk):
+    """マイナンバー申請の詳細、承認・却下"""
+    from apps.connect.models import MynumberRequest
+    mynumber_request = get_object_or_404(MynumberRequest, pk=pk, connect_staff__staff__pk=staff_pk)
+    staff = get_object_or_404(Staff, pk=staff_pk)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'approve':
+            # 承認処理
+            try:
+                # 申請からマイナンバーを取得
+                new_mynumber = mynumber_request.profile_mynumber.mynumber
+
+                # スタッフのマイナンバーを更新または作成
+                staff_mynumber, created = StaffMynumber.objects.update_or_create(
+                    staff=staff,
+                    defaults={'mynumber': new_mynumber}
+                )
+
+                # 申請ステータスを更新
+                mynumber_request.status = 'approved'
+                mynumber_request.save()
+
+                log_model_action(request.user, 'update', staff_mynumber, 'マイナンバー申請承認により更新')
+                messages.success(request, f'マイナンバー申請を承認し、{staff.name}のマイナンバーを更新しました。')
+            except Exception as e:
+                messages.error(request, f'承認処理中にエラーが発生しました: {e}')
+
+        elif action == 'reject':
+            # 却下処理
+            mynumber_request.status = 'rejected'
+            mynumber_request.save()
+            log_model_action(request.user, 'update', mynumber_request, 'マイナンバー申請を却下')
+            messages.warning(request, 'マイナンバー申請を却下しました。')
+
+        return redirect('staff:staff_detail', pk=staff.pk)
+
+    context = {
+        'staff': staff,
+        'mynumber_request': mynumber_request,
+    }
+    return render(request, 'staff/staff_mynumber_request_detail.html', context)
