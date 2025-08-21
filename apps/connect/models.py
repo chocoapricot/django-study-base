@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from apps.common.models import MyModel
 from apps.staff.models import Staff
-from apps.profile.models import ProfileMynumber
+from apps.profile.models import ProfileMynumber, StaffProfile
 
 
 class ConnectStaff(MyModel):
@@ -132,6 +132,48 @@ class MynumberRequest(MyModel):
 
     def __str__(self):
         return f"{self.connect_staff} - {self.profile_mynumber} ({self.get_status_display()})"
+
+
+class ProfileRequest(MyModel):
+    """
+    プロフィールの提出を要求するためのモデル。
+    """
+
+    STATUS_CHOICES = [
+        ('pending', '未承認'),
+        ('approved', '承認済み'),
+        ('rejected', '却下'),
+    ]
+
+    connect_staff = models.ForeignKey(
+        ConnectStaff,
+        on_delete=models.CASCADE,
+        verbose_name='スタッフ接続',
+        help_text='関連するスタッフ接続'
+    )
+    staff_profile = models.ForeignKey(
+        'profile.StaffProfile',
+        on_delete=models.CASCADE,
+        verbose_name='スタッフプロフィール',
+        help_text='関連するスタッフプロフィール'
+    )
+    status = models.CharField(
+        'ステータス',
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending',
+        help_text='申請の現在のステータス'
+    )
+
+    class Meta:
+        db_table = 'apps_connect_profile_request'
+        verbose_name = 'プロフィール申請'
+        verbose_name_plural = 'プロフィール申請'
+        unique_together = ['connect_staff', 'staff_profile']
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.connect_staff} - {self.staff_profile} ({self.get_status_display()})"
 
 
 class ConnectClient(MyModel):
