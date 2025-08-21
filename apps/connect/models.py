@@ -50,35 +50,55 @@ class ConnectStaff(MyModel):
         self.save()
 
         try:
-            user_profile = User.objects.filter(email=self.email).first()
-            if not user_profile:
+            user_instance = User.objects.filter(email=self.email).first()
+            if not user_instance:
                 return
 
-            # In models.py, ProfileMynumber is defined, but it has a one-to-one relationship with the User model.
-            # So, we should access it through the user object.
-            # The related_name from ProfileMynumber to User is 'staff_mynumber'.
-            profile_mynumber_obj = getattr(user_profile, 'staff_mynumber', None)
-            if not profile_mynumber_obj:
+            staff_instance = Staff.objects.filter(email=self.email).first()
+            if not staff_instance:
                 return
 
-            staff = Staff.objects.filter(email=self.email).first()
-            if not staff:
-                return
+            # マイナンバーの比較と申請
+            profile_mynumber_obj = getattr(user_instance, 'staff_mynumber', None)
+            if profile_mynumber_obj:
+                staff_mynumber_obj = getattr(staff_instance, 'mynumber', None)
+                profile_mynumber = profile_mynumber_obj.mynumber
+                staff_mynumber = staff_mynumber_obj.mynumber if staff_mynumber_obj else None
+                if profile_mynumber != staff_mynumber:
+                    MynumberRequest.objects.get_or_create(
+                        connect_staff=self,
+                        profile_mynumber=profile_mynumber_obj
+                    )
 
-            # The related_name from StaffMynumber to Staff is 'mynumber'.
-            staff_mynumber_obj = getattr(staff, 'mynumber', None)
-
-            profile_mynumber = profile_mynumber_obj.mynumber
-            staff_mynumber = staff_mynumber_obj.mynumber if staff_mynumber_obj else None
-
-            if profile_mynumber != staff_mynumber:
-                MynumberRequest.objects.get_or_create(
+            # プロフィールの比較と申請
+            staff_profile_obj = getattr(user_instance, 'staff_profile', None)
+            if not staff_profile_obj or self._is_profile_different(staff_profile_obj, staff_instance):
+                ProfileRequest.objects.get_or_create(
                     connect_staff=self,
-                    profile_mynumber=profile_mynumber_obj
+                    staff_profile=staff_profile_obj
                 )
+
         except Exception:
             # It is recommended to add logging in a production environment.
             pass
+
+    def _is_profile_different(self, staff_profile, staff):
+        """スタッフプロフィールとスタッフマスターを比較する"""
+        fields_to_compare = [
+            'name_last', 'name_first', 'name_kana_last', 'name_kana_first',
+            'birth_date', 'sex', 'postal_code', 'address1', 'address2', 'address3', 'phone'
+        ]
+
+        for field in fields_to_compare:
+            profile_value = getattr(staff_profile, field, None)
+            staff_value = getattr(staff, field, None)
+
+            # Note: This is a simple comparison. Depending on the data types and formats,
+            # more specific comparisons might be needed (e.g., for dates or normalized strings).
+            if str(profile_value or '') != str(staff_value or ''):
+                return True # Found a difference
+
+        return False # No differences found
 
     def unapprove(self):
         """未承認に戻す"""
@@ -87,9 +107,9 @@ class ConnectStaff(MyModel):
         self.approved_by = None
         self.save()
 
-        # The related name from MynumberRequest to ConnectStaff is not explicitly defined,
-        # so the default is mynumberrequest_set.
+        # 関連する申請をすべて削除
         self.mynumberrequest_set.all().delete()
+        self.profilerequest_set.all().delete()
 
 
 class MynumberRequest(MyModel):
@@ -155,7 +175,9 @@ class ProfileRequest(MyModel):
         'profile.StaffProfile',
         on_delete=models.CASCADE,
         verbose_name='スタッフプロフィール',
-        help_text='関連するスタッフプロフィール'
+        help_text='関連するスタッフプロフィール',
+        null=True,
+        blank=True
     )
     status = models.CharField(
         'ステータス',
