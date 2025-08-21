@@ -10,5 +10,6 @@ pdfrw==0.4
 pillow==11.3.0
 PyMuPDF==1.26.3
 pytest==8.4.1
+pytest-django==4.10.0
 requests==2.32.4
 python-stdnum==2.1
