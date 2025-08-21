@@ -96,7 +96,7 @@
         "key": "GLOBAL_CSS_THEME",
         "value": "simplex",
         "default_value": "simplex",
-        "note": "スタイル指定。simplex／pulse／journal／zephyr／cerulean",
+        "note": "スタイル指定。simplex／pulse／journal／zephyr／cerulean／cosmo／flatly／lumen／united／brite",
         "disp_seq": 0,
         "active": true
     }
