@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load dropdowns %}
+{% load badge_tags %}
 {% block content %}
 {% include 'staff/_staff_info_card.html' with staff=staff %}
 
@@ -12,21 +13,7 @@
             <div class="col-sm-2 text-start text-md-end"><strong>連絡種別</strong></div>
             <div class="col-sm-10">
                 {% if contacted.contact_type %}
-                    {% if contacted.contact_type < 10 %}
-                        <span class="badge bg-primary">{% my_name 'contact_type' contacted.contact_type %}</span>
-                    {% elif contacted.contact_type < 20 %}
-                        <span class="badge bg-success">{% my_name 'contact_type' contacted.contact_type %}</span>
-                    {% elif contacted.contact_type < 30 %}
-                        <span class="badge bg-info">{% my_name 'contact_type' contacted.contact_type %}</span>
-                    {% elif contacted.contact_type < 40 %}
-                        <span class="badge bg-warning">{% my_name 'contact_type' contacted.contact_type %}</span>
-                    {% elif contacted.contact_type < 50 %}
-                        <span class="badge bg-danger">{% my_name 'contact_type' contacted.contact_type %}</span>
-                    {% elif contacted.contact_type >= 90 %}
-                        <span class="badge bg-dark">{% my_name 'contact_type' contacted.contact_type %}</span>
-                    {% else %}
-                        <span class="badge bg-light">{% my_name 'contact_type' contacted.contact_type %}</span>
-                    {% endif %}
+                    <span class="badge {{ contacted.contact_type|badge_class }}">{% my_name 'contact_type' contacted.contact_type %}</span>
                 {% endif %}
             </div>
         </div>

@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load dropdowns %}
+{% load badge_tags %}
 {% block content %}
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
@@ -14,19 +15,7 @@
                         </ruby>
                     </h4>
                     <div class="col-sm-2">
-                        {% if client.regist_form_client < 10 %}
-                            <span class="badge bg-primary" style="font-size:15px">{% my_name 'regist_form_client' client.regist_form_client %}</span>
-                        {% elif client.regist_form_client < 20 %}
-                            <span class="badge bg-success" style="font-size:15px">{% my_name 'regist_form_client' client.regist_form_client %}</span>
-                        {% elif client.regist_form_client < 30 %}
-                            <span class="badge bg-info" style="font-size:15px">{% my_name 'regist_form_client' client.regist_form_client %}</span>
-                        {% elif client.regist_form_client < 40 %}
-                            <span class="badge bg-warning" style="font-size:15px">{% my_name 'regist_form_client' client.regist_form_client %}</span>
-                        {% elif client.regist_form_client >= 90 %}
-                            <span class="badge bg-dark" style="font-size:15px">{% my_name 'regist_form_client' client.regist_form_client %}</span>
-                        {% else %}
-                            <span class="badge bg-light" style="font-size:15px">{% my_name 'regist_form_client' client.regist_form_client %}</span>
-                        {% endif %}
+                        <span class="badge {{ client.regist_form_client|badge_class }}" style="font-size:15px">{% my_name 'regist_form_client' client.regist_form_client %}</span>
                     </div>
                 </div>
             </div>
@@ -306,21 +295,7 @@
                 <tr>
                     <td>
                         {% if contacted.contact_type %}
-                            {% if contacted.contact_type < 10 %}
-                                <span class="badge bg-primary">{% my_name 'contact_type' contacted.contact_type %}</span>
-                            {% elif contacted.contact_type < 20 %}
-                                <span class="badge bg-success">{% my_name 'contact_type' contacted.contact_type %}</span>
-                            {% elif contacted.contact_type < 30 %}
-                                <span class="badge bg-info">{% my_name 'contact_type' contacted.contact_type %}</span>
-                            {% elif contacted.contact_type < 40 %}
-                                <span class="badge bg-warning">{% my_name 'contact_type' contacted.contact_type %}</span>
-                            {% elif contacted.contact_type < 50 %}
-                                <span class="badge bg-danger">{% my_name 'contact_type' contacted.contact_type %}</span>
-                            {% elif contacted.contact_type >= 90 %}
-                                <span class="badge bg-dark">{% my_name 'contact_type' contacted.contact_type %}</span>
-                            {% else %}
-                                <span class="badge bg-light">{% my_name 'contact_type' contacted.contact_type %}</span>
-                            {% endif %}
+                            <span class="badge {{ contacted.contact_type|badge_class }}">{% my_name 'contact_type' contacted.contact_type %}</span>
                         {% endif %}
                     </td>
                     <td><a href="{% url 'client:client_contacted_detail' contacted.pk %}">{{ contacted.content }}</a></td>
