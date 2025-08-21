@@ -37,8 +37,8 @@ MASTER_CONFIGS = [
     },
     {
         'category': '請求',
-        'name': '振込先銀行管理',
-        'description': '振込先銀行口座の管理',
+        'name': '会社銀行管理',
+        'description': '会社銀行口座の管理',
         'model': 'master.BillBank',
         'url_name': 'master:bill_bank_list',
         'permission': 'master.view_billbank'
@@ -714,11 +714,11 @@ def bill_payment_delete(request, pk):
     return render(request, 'master/bill_payment_delete.html', context)
 
 
-# 振込先銀行マスタ
+# 会社銀行マスタ
 @login_required
 @permission_required('master.view_billbank', raise_exception=True)
 def bill_bank_list(request):
-    """振込先銀行一覧"""
+    """会社銀行一覧"""
     search_query = request.GET.get('search', '')
     
     bill_banks = BillBank.objects.all()
@@ -753,7 +753,7 @@ def bill_bank_list(request):
     context = {
         'bill_banks': bill_banks_page,
         'search_query': search_query,
-        'title': '振込先銀行管理',
+        'title': '会社銀行管理',
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
     }
@@ -764,19 +764,19 @@ def bill_bank_list(request):
 @login_required
 @permission_required('master.add_billbank', raise_exception=True)
 def bill_bank_create(request):
-    """振込先銀行作成"""
+    """会社銀行作成"""
     if request.method == 'POST':
         form = BillBankForm(request.POST)
         if form.is_valid():
             bill_bank = form.save()
-            messages.success(request, f'振込先銀行「{bill_bank.name} {bill_bank.branch_name}」を作成しました。')
+            messages.success(request, f'会社銀行「{bill_bank.name} {bill_bank.branch_name}」を作成しました。')
             return redirect('master:bill_bank_list')
     else:
         form = BillBankForm()
     
     context = {
         'form': form,
-        'title': '振込先銀行作成',
+        'title': '会社銀行作成',
     }
     return render(request, 'master/bill_bank_form.html', context)
 
@@ -784,14 +784,14 @@ def bill_bank_create(request):
 @login_required
 @permission_required('master.change_billbank', raise_exception=True)
 def bill_bank_update(request, pk):
-    """振込先銀行編集"""
+    """会社銀行編集"""
     bill_bank = get_object_or_404(BillBank, pk=pk)
     
     if request.method == 'POST':
         form = BillBankForm(request.POST, instance=bill_bank)
         if form.is_valid():
             bill_bank = form.save()
-            messages.success(request, f'振込先銀行「{bill_bank.name} {bill_bank.branch_name}」を更新しました。')
+            messages.success(request, f'会社銀行「{bill_bank.name} {bill_bank.branch_name}」を更新しました。')
             return redirect('master:bill_bank_list')
     else:
         form = BillBankForm(instance=bill_bank)
@@ -799,7 +799,7 @@ def bill_bank_update(request, pk):
     context = {
         'form': form,
         'bill_bank': bill_bank,
-        'title': f'振込先銀行編集 - {bill_bank.name} {bill_bank.branch_name}',
+        'title': f'会社銀行編集 - {bill_bank.name} {bill_bank.branch_name}',
     }
     return render(request, 'master/bill_bank_form.html', context)
 
@@ -807,18 +807,18 @@ def bill_bank_update(request, pk):
 @login_required
 @permission_required('master.delete_billbank', raise_exception=True)
 def bill_bank_delete(request, pk):
-    """振込先銀行削除"""
+    """会社銀行削除"""
     bill_bank = get_object_or_404(BillBank, pk=pk)
     
     if request.method == 'POST':
         bill_bank_name = f"{bill_bank.name} {bill_bank.branch_name}"
         bill_bank.delete()
-        messages.success(request, f'振込先銀行「{bill_bank_name}」を削除しました。')
+        messages.success(request, f'会社銀行「{bill_bank_name}」を削除しました。')
         return redirect('master:bill_bank_list')
     
     context = {
         'bill_bank': bill_bank,
-        'title': f'振込先銀行削除 - {bill_bank.name} {bill_bank.branch_name}',
+        'title': f'会社銀行削除 - {bill_bank.name} {bill_bank.branch_name}',
     }
     return render(request, 'master/bill_bank_delete.html', context)
 
@@ -851,15 +851,15 @@ def bill_payment_change_history_list(request):
     })
 
 
-# 振込先銀行変更履歴
+# 会社銀行変更履歴
 @login_required
 @permission_required('master.view_billbank', raise_exception=True)
 def bill_bank_change_history_list(request):
-    """振込先銀行変更履歴一覧"""
+    """会社銀行変更履歴一覧"""
     from apps.system.logs.models import AppLog
     from django.core.paginator import Paginator
     
-    # 振込先銀行の変更履歴を取得
+    # 会社銀行の変更履歴を取得
     logs = AppLog.objects.filter(
         model_name='BillBank',
         action__in=['create', 'update', 'delete']
@@ -872,7 +872,7 @@ def bill_bank_change_history_list(request):
     
     return render(request, 'master/master_change_history_list.html', {
         'logs': logs_page,
-        'title': '振込先銀行変更履歴',
+        'title': '会社銀行変更履歴',
         'list_url': 'master:bill_bank_list',
         'model_name': 'BillBank'
     })

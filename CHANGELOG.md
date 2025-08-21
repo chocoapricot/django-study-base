@@ -1,5 +1,10 @@
 # 変更履歴
 
+## 2025-08-21
+
+### Changed
+- 「振込先銀行」を「会社銀行」に名称変更しました。これに伴い、関連するすべてのファイル（モデル、ビュー、フォーム、テンプレート、テスト、ドキュメント）を更新しました。
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),

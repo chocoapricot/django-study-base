@@ -92,7 +92,7 @@
   - `Qualification`: 資格情報を管理するマスターデータモデル（階層構造対応）。
   - `Skill`: 技能（スキル）情報を管理するマスターデータモデル（階層構造対応）。
   - `BillPayment`: 支払条件（締め日・支払日など）を管理するマスターデータモデル。
-  - `BillBank`: 自社の振込先銀行口座情報を管理するマスターデータモデル。
+  - `BillBank`: 自社の会社銀行口座情報を管理するマスターデータモデル。
   - `Bank`: 銀行情報を管理するマスターデータモデル。
   - `BankBranch`: 銀行の支店情報を管理するマスターデータモデル。
 
@@ -233,9 +233,9 @@
 - `bank_delete.html`: 銀行削除の確認ページ。
 - `bank_form.html`: 銀行の作成・編集フォームページ。
 - `bank_management.html`: 銀行・支店管理ページ。
-- `bill_bank_delete.html`: 振込先銀行削除の確認ページ。
-- `bill_bank_form.html`: 振込先銀行の作成・編集フォームページ。
-- `bill_bank_list.html`: 振込先銀行の一覧ページ。
+- `bill_bank_delete.html`: 会社銀行削除の確認ページ。
+- `bill_bank_form.html`: 会社銀行の作成・編集フォームページ。
+- `bill_bank_list.html`: 会社銀行の一覧ページ。
 - `bill_payment_delete.html`: 支払条件削除の確認ページ。
 - `bill_payment_form.html`: 支払条件の作成・編集フォームページ。
 - `bill_payment_list.html`: 支払条件の一覧ページ。
