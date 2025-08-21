@@ -2,52 +2,56 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="card">
-                <div class="card-header">
-                    <h4>マイナンバー申請の確認</h4>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">申請者: {{ staff.name }}</h5>
-                    <hr>
+{% include 'staff/_staff_info_card.html' with staff=staff %}
 
-                    <div class="mb-3">
-                        <strong>申請日時:</strong>
-                        <p>{{ mynumber_request.created_at|date:"Y/m/d H:i" }}</p>
-                    </div>
-
-                    <div class="mb-3">
-                        <strong>申請されたマイナンバー:</strong>
-                        <p class="h4 text-monospace bg-light p-2 rounded">{{ mynumber_request.profile_mynumber.mynumber }}</p>
-                        <small class="form-text text-muted">この番号でスタッフのマイナンバーを上書きします。</small>
-                    </div>
-
-                    <div class="mb-3">
-                        <strong>現在のステータス:</strong>
-                        <p><span class="badge bg-warning text-dark">{{ mynumber_request.get_status_display }}</span></p>
-                    </div>
-
-                    <hr>
-
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="d-flex justify-content-end">
-                            <button type="submit" name="action" value="approve" class="btn btn-success me-2">
-                                <i class="bi bi-check-circle"></i> 承認する
-                            </button>
-                            <button type="submit" name="action" value="reject" class="btn btn-danger me-2">
-                                <i class="bi bi-x-circle"></i> 却下する
-                            </button>
-                            <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left"></i> 戻る
-                            </a>
-                        </div>
-                    </form>
-                </div>
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        マイナンバー申請の確認
+        <div>
+            <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary me-2"><i class="bi bi-arrow-left"></i> 戻る</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>申請日時</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ mynumber_request.created_at|date:"Y/m/d H:i" }}
             </div>
         </div>
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>申請されたマイナンバー</strong>
+            </div>
+            <div class="col-sm-10">
+                <span class="h4 text-monospace bg-light p-2 rounded">{{ mynumber_request.profile_mynumber.mynumber }}</span>
+                <small class="form-text text-muted">この番号でスタッフのマイナンバーを上書きします。</small>
+            </div>
+        </div>
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>現在のステータス</strong>
+            </div>
+            <div class="col-sm-10">
+                <span class="badge bg-warning text-dark">{{ mynumber_request.get_status_display }}</span>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-flex justify-content-start mt-4">
+                <button type="submit" name="action" value="approve" class="btn btn-sm btn-success me-2">
+                    <i class="bi bi-check-circle"></i> 承認する
+                </button>
+                <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger me-2">
+                    <i class="bi bi-x-circle"></i> 却下する
+                </button>
+                <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">
+                    <i class="bi bi-arrow-left"></i> 戻る
+                </a>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}
