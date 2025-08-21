@@ -256,6 +256,24 @@
                         </div>
                     </div>
                 </div>
+
+                {% if mynumber_request %}
+                <hr>
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-12">
+                        <i class="bi bi-credit-card-2-front" style="font-size: 20px; color: #17a2b8;"></i>
+                        <strong>マイナンバー申請</strong>
+                        <span class="badge bg-warning text-dark ms-2">{{ mynumber_request.get_status_display }}</span>
+                        <p class="mt-2">
+                            マイナンバーの提出申請があります。
+                            <a href="{% url 'staff:staff_mynumber_request_detail' staff.pk mynumber_request.pk %}" class="btn btn-sm btn-info">
+                                詳細を確認
+                            </a>
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+
                 {% else %}
                 <div class="text-muted">メールアドレスが登録されていないため、接続機能は利用できません。</div>
                 {% endif %}
