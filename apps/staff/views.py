@@ -151,21 +151,34 @@ def staff_list(request):
     page_number = request.GET.get('page')  # URLからページ番号を取得
     staffs_pages = paginator.get_page(page_number)
 
-    # 各スタッフが接続承認済みかどうかを判定し、オブジェクトに属性を付与
-    from apps.connect.models import ConnectStaff
+    # 各スタッフが接続承認済みかどうか、またマイナンバーやプロフィールの申請があるかを判定し、オブジェクトに属性を付与
+    from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest
     if corporate_number:
         for staff in staffs_pages:
+            staff.is_connected_approved = False
+            staff.has_pending_mynumber_request = False
+            staff.has_pending_profile_request = False
             if staff.email:
-                staff.is_connected_approved = ConnectStaff.objects.filter(
+                connect_request = ConnectStaff.objects.filter(
                     corporate_number=corporate_number,
-                    email=staff.email,
-                    status='approved'
-                ).exists()
-            else:
-                staff.is_connected_approved = False
+                    email=staff.email
+                ).first()
+                if connect_request:
+                    staff.is_connected_approved = connect_request.status == 'approved'
+                    if staff.is_connected_approved:
+                        staff.has_pending_mynumber_request = MynumberRequest.objects.filter(
+                            connect_staff=connect_request,
+                            status='pending'
+                        ).exists()
+                        staff.has_pending_profile_request = ProfileRequest.objects.filter(
+                            connect_staff=connect_request,
+                            status='pending'
+                        ).exists()
     else:
         for staff in staffs_pages:
             staff.is_connected_approved = False
+            staff.has_pending_mynumber_request = False
+            staff.has_pending_profile_request = False
 
     return render(request, 'staff/staff_list.html', {
         'staffs': staffs_pages, 
@@ -292,9 +305,14 @@ def staff_detail(request, pk):
     connect_request = None
     mynumber_request = None
     profile_request = None
+    last_login = None  # 最終ログイン日時を初期化
+
     if staff.email:
         from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest
         from apps.company.models import Company
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+
         try:
             # 現在のユーザーの会社の法人番号を取得
             company = Company.objects.first()  # 仮の実装、実際は適切な会社を取得
@@ -303,7 +321,15 @@ def staff_detail(request, pk):
                     corporate_number=company.corporate_number,
                     email=staff.email
                 ).first()
-                if connect_request:
+
+                if connect_request and connect_request.is_approved:
+                    # 接続が承認されている場合、最終ログイン日時を取得
+                    try:
+                        user = User.objects.get(email=staff.email)
+                        last_login = user.last_login
+                    except User.DoesNotExist:
+                        last_login = None
+
                     mynumber_request = MynumberRequest.objects.filter(
                         connect_staff=connect_request,
                         status='pending'
@@ -328,6 +354,7 @@ def staff_detail(request, pk):
         'connect_request': connect_request,
         'mynumber_request': mynumber_request,
         'profile_request': profile_request,
+        'last_login': last_login,
     })
 
 # 連絡履歴 登録
