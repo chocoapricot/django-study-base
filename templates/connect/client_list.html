@@ -48,6 +48,9 @@
                 {% for connection in connections %}
                 <tr>
                     <td>
+                        {% if not connection.is_approved %}
+                            <i class="bi bi-arrow-up-circle"></i>
+                        {% endif %}
                         {% with company=companies|get_item:connection.corporate_number %}
                             {% if company %}
                                 {{ company.name }}
