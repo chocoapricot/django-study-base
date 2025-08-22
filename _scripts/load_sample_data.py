@@ -48,6 +48,7 @@ def main():
         "_sample_data/client_department.json",
         "_sample_data/client_user.json",
         "_sample_data/connect_client.json",
+        "_sample_data/contract_client.json",
         "_sample_data/contract_staff.json"
     ]
     
@@ -82,6 +83,7 @@ def main():
         ("python manage.py loaddata _sample_data/client_user.json", "クライアント担当者データ"),
         ("python manage.py loaddata _sample_data/client_contacted.json", "クライアント連絡履歴データ"),
         ("python manage.py loaddata _sample_data/connect_client.json", "クライアント接続データ"),
+        ("python manage.py loaddata _sample_data/contract_client.json", "クライアント契約データ"),
         ("python manage.py loaddata _sample_data/contract_staff.json", "スタッフ契約データ"),
     ]
     
@@ -110,6 +112,7 @@ def main():
     print("- クライアント担当者データ")
     print("- クライアント連絡履歴")
     print("- クライアント接続データ")
+    print("- クライアント契約データ")
     print("- スタッフ契約データ")
 
 if __name__ == "__main__":
