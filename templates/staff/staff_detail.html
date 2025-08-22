@@ -257,6 +257,16 @@
                     </div>
                 </div>
 
+                {% if connect_request and connect_request.is_approved and last_login %}
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-12">
+                        <i class="bi bi-clock-history" style="font-size: 20px; color: #17a2b8;"></i>
+                        <strong>最終ログイン</strong>
+                        <span class="ms-2">{{ last_login|date:"Y/m/d H:i:s" }}</span>
+                    </div>
+                </div>
+                {% endif %}
+
                 {% if mynumber_request %}
                 <hr>
                 <div class="row mb-3 align-items-center">

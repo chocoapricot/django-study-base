@@ -292,9 +292,14 @@ def staff_detail(request, pk):
     connect_request = None
     mynumber_request = None
     profile_request = None
+    last_login = None  # 最終ログイン日時を初期化
+
     if staff.email:
         from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest
         from apps.company.models import Company
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+
         try:
             # 現在のユーザーの会社の法人番号を取得
             company = Company.objects.first()  # 仮の実装、実際は適切な会社を取得
@@ -303,7 +308,15 @@ def staff_detail(request, pk):
                     corporate_number=company.corporate_number,
                     email=staff.email
                 ).first()
-                if connect_request:
+
+                if connect_request and connect_request.is_approved:
+                    # 接続が承認されている場合、最終ログイン日時を取得
+                    try:
+                        user = User.objects.get(email=staff.email)
+                        last_login = user.last_login
+                    except User.DoesNotExist:
+                        last_login = None
+
                     mynumber_request = MynumberRequest.objects.filter(
                         connect_staff=connect_request,
                         status='pending'
@@ -328,6 +341,7 @@ def staff_detail(request, pk):
         'connect_request': connect_request,
         'mynumber_request': mynumber_request,
         'profile_request': profile_request,
+        'last_login': last_login,
     })
 
 # 連絡履歴 登録
