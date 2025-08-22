@@ -264,9 +264,11 @@
                     </tbody>
                 </table>
             </div>
+            {% if users_count > 5 %}
             <div class="card-footer d-flex justify-content-center align-items-center">
                 <a href="{% url 'client:client_user_list' client.id %}" class="btn btn-link">全て表示 (全{{ users_count }}件)</a>
             </div>
+            {% endif %}
         </div>
     </div>
 </div>

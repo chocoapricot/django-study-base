@@ -82,7 +82,7 @@ def log_pre_save(sender, instance, **kwargs):
     if 'migrate' in sys.argv or 'makemigrations' in sys.argv:
         return
     # AppLog自身、MailLog、migrate時は除外
-    if sender.__name__ in ['AppLog', 'MailLog'] or sender._meta.app_label == 'sessions':
+    if sender.__name__ in ['AppLog', 'MailLog', 'Migration'] or sender._meta.app_label == 'sessions':
         return
     if not instance.pk:
         # 新規作成は差分不要
@@ -119,7 +119,7 @@ def log_save(sender, instance, created, **kwargs):
     if 'migrate' in sys.argv or 'makemigrations' in sys.argv:
         return
     # AppLog自身、MailLog、migrate時は除外
-    if sender.__name__ in ['AppLog', 'MailLog'] or sender._meta.app_label == 'sessions':
+    if sender.__name__ in ['AppLog', 'MailLog', 'Migration'] or sender._meta.app_label == 'sessions':
         return
     if created:
         log_action(instance, 'create')
@@ -136,6 +136,6 @@ def log_delete(sender, instance, **kwargs):
     if 'migrate' in sys.argv or 'makemigrations' in sys.argv:
         return
     # AppLog自身、MailLog、migrate時は除外
-    if sender.__name__ in ['AppLog', 'MailLog'] or sender._meta.app_label == 'sessions':
+    if sender.__name__ in ['AppLog', 'MailLog', 'Migration'] or sender._meta.app_label == 'sessions':
         return
     log_action(instance, 'delete')
