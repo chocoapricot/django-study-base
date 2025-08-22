@@ -84,7 +84,7 @@
       "notes": "POC期間3ヶ月、本格導入6ヶ月の予定。成果に応じて契約延長の可能性あり。",
       "payment_site": 1,
       "auto_renewal": false,
-      "is_active": true
+      "is_active": false
     }
   },
   {
@@ -106,7 +106,7 @@
       "notes": "段階的移行により業務停止時間を最小化。移行後3ヶ月間の運用サポート含む。",
       "payment_site": 2,
       "auto_renewal": false,
-      "is_active": true
+      "is_active": false
     }
   },
   {
