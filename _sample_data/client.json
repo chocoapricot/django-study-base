@@ -416,5 +416,24 @@
         "regist_form_client": 1,
         "basic_contract_date": "2023-10-15"
     }
+},
+{
+    "model": "client.client",
+    "pk": 28,
+    "fields": {
+        "created_at": "2024-11-20T12:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2024-11-20T12:00:00.000Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "name": "株式会社Jules&Co",
+        "name_furigana": "じゅーるあんどこー",
+        "postal_code": "1000001",
+        "address_kana": null,
+        "address": "東京都千代田区千代田１－１",
+        "memo": "AIエージェント開発",
+        "regist_form_client": 1,
+        "basic_contract_date": "2024-11-20"
+    }
 }
 ]
