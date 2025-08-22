@@ -31,7 +31,7 @@ def profile(request):
             obj.save()
             if pw:
                 update_session_auth_hash(request, obj)
-            messages.info(request, 'ユーザ情報を保存しました。')
+            messages.success(request, 'プロフィールを更新しました。')
             return redirect('accounts:profile')
     else:
         form = UserProfileForm(instance=user)
