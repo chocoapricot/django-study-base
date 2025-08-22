@@ -15,7 +15,6 @@
 - `python-stdnum`: 各種標準番号の検証
 - `openpyxl`: Excelファイル処理
 - `pymupdf`: PDF処理（pdfrwの代替）
-- `mysqlclient`: MySQLデータベースコネクタ（オプション）
 
 ## 変更履歴管理システム
 - **AppLogモデル**: `apps.system.logs.models.AppLog`で全モデルの変更を統一管理
