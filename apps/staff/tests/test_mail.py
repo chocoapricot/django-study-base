@@ -2,9 +2,9 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core import mail
-from apps.staff.models import Staff, StaffContacted
-from apps.system.logs.models import MailLog
-from apps.staff.forms_mail import StaffMailForm
+from ..models import Staff, StaffContacted
+from ...system.logs.models import MailLog
+from ..forms_mail import StaffMailForm
 
 User = get_user_model()
 
