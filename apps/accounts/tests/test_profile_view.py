@@ -75,3 +75,25 @@ class ProfileViewTest(TestCase):
         self.assertContains(response, 'test@example.com')
         self.assertContains(response, 'ログイン履歴')
         self.assertContains(response, '直近10件まで表示')
+
+    def test_profile_update_post(self):
+        """プロフィール更新のPOSTリクエストをテスト"""
+        self.client.login(username='testuser', password='testpass123')
+
+        # 更新するデータ
+        updated_data = {
+            'email': 'updated@example.com',
+            'last_name': 'Updated',
+            'first_name': 'User',
+        }
+
+        response = self.client.post(reverse('accounts:profile'), updated_data, follow=True)
+
+        # 更新後は同じページにリダイレクトされ、メッセージが表示される
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'プロフィールを更新しました。')
+
+        # データベースでユーザー情報が更新されたか確認
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, 'updated@example.com')
+        self.assertEqual(self.user.last_name, 'Updated')
