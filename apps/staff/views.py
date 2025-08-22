@@ -151,21 +151,34 @@ def staff_list(request):
     page_number = request.GET.get('page')  # URLからページ番号を取得
     staffs_pages = paginator.get_page(page_number)
 
-    # 各スタッフが接続承認済みかどうかを判定し、オブジェクトに属性を付与
-    from apps.connect.models import ConnectStaff
+    # 各スタッフが接続承認済みかどうか、またマイナンバーやプロフィールの申請があるかを判定し、オブジェクトに属性を付与
+    from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest
     if corporate_number:
         for staff in staffs_pages:
+            staff.is_connected_approved = False
+            staff.has_pending_mynumber_request = False
+            staff.has_pending_profile_request = False
             if staff.email:
-                staff.is_connected_approved = ConnectStaff.objects.filter(
+                connect_request = ConnectStaff.objects.filter(
                     corporate_number=corporate_number,
-                    email=staff.email,
-                    status='approved'
-                ).exists()
-            else:
-                staff.is_connected_approved = False
+                    email=staff.email
+                ).first()
+                if connect_request:
+                    staff.is_connected_approved = connect_request.status == 'approved'
+                    if staff.is_connected_approved:
+                        staff.has_pending_mynumber_request = MynumberRequest.objects.filter(
+                            connect_staff=connect_request,
+                            status='pending'
+                        ).exists()
+                        staff.has_pending_profile_request = ProfileRequest.objects.filter(
+                            connect_staff=connect_request,
+                            status='pending'
+                        ).exists()
     else:
         for staff in staffs_pages:
             staff.is_connected_approved = False
+            staff.has_pending_mynumber_request = False
+            staff.has_pending_profile_request = False
 
     return render(request, 'staff/staff_list.html', {
         'staffs': staffs_pages, 
