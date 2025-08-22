@@ -60,6 +60,7 @@ class PasswordValidationTest(TestCase):
     def test_profile_form_valid_password_change(self):
         """プロファイルフォームでの有効なパスワード変更テスト"""
         form_data = {
+            'username': self.user.username,
             'email': self.user.email,
             'first_name': self.user.first_name,
             'last_name': self.user.last_name,
@@ -74,6 +75,7 @@ class PasswordValidationTest(TestCase):
         """プロファイルフォームでの無効なパスワード変更テスト"""
         # 短すぎるパスワード
         form_data = {
+            'username': self.user.username,
             'email': self.user.email,
             'first_name': self.user.first_name,
             'last_name': self.user.last_name,
@@ -88,6 +90,7 @@ class PasswordValidationTest(TestCase):
     def test_profile_form_password_mismatch(self):
         """プロファイルフォームでのパスワード不一致テスト"""
         form_data = {
+            'username': self.user.username,
             'email': self.user.email,
             'first_name': self.user.first_name,
             'last_name': self.user.last_name,
@@ -103,6 +106,7 @@ class PasswordValidationTest(TestCase):
     def test_profile_form_no_password_change(self):
         """プロファイルフォームでパスワード変更なしのテスト"""
         form_data = {
+            'username': self.user.username,
             'email': self.user.email,
             'first_name': self.user.first_name,
             'last_name': self.user.last_name,
@@ -117,6 +121,7 @@ class PasswordValidationTest(TestCase):
         """記号必須パスワードのテスト"""
         # 記号なしパスワード
         form_data = {
+            'username': self.user.username,
             'email': self.user.email,
             'first_name': self.user.first_name,
             'last_name': self.user.last_name,
@@ -135,6 +140,7 @@ class PasswordValidationTest(TestCase):
         """最小文字数パスワードのテスト"""
         # 7文字のパスワード（最小8文字未満）
         form_data = {
+            'username': self.user.username,
             'email': self.user.email,
             'first_name': self.user.first_name,
             'last_name': self.user.last_name,

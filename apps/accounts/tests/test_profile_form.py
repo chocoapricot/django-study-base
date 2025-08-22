@@ -25,6 +25,7 @@ class UserProfileFormTest(TestCase):
     def test_email_change_to_unique_address(self):
         """未使用のメールアドレスへの変更は成功する"""
         form_data = {
+            'username': self.user1.username,
             'email': 'newemail@test.com',
             'first_name': '太郎',
             'last_name': '田中'
@@ -35,6 +36,7 @@ class UserProfileFormTest(TestCase):
     def test_email_change_to_existing_address(self):
         """他のユーザーが使用中のメールアドレスへの変更は失敗する"""
         form_data = {
+            'username': self.user1.username,
             'email': 'user2@test.com',  # user2が既に使用中
             'first_name': '太郎',
             'last_name': '田中'
@@ -47,6 +49,7 @@ class UserProfileFormTest(TestCase):
     def test_email_keep_same_address(self):
         """同じメールアドレスのまま変更は成功する"""
         form_data = {
+            'username': self.user1.username,
             'email': 'user1@test.com',  # 自分のメールアドレス
             'first_name': '太郎',
             'last_name': '田中'
@@ -57,6 +60,7 @@ class UserProfileFormTest(TestCase):
     def test_password_validation(self):
         """パスワード確認のバリデーション"""
         form_data = {
+            'username': self.user1.username,
             'email': 'user1@test.com',
             'first_name': '太郎',
             'last_name': '田中',
@@ -71,6 +75,7 @@ class UserProfileFormTest(TestCase):
     def test_password_validation_success(self):
         """パスワード確認が一致する場合は成功"""
         form_data = {
+            'username': self.user1.username,
             'email': 'user1@test.com',
             'first_name': '太郎',
             'last_name': '田中',
@@ -82,8 +87,20 @@ class UserProfileFormTest(TestCase):
     
     def test_required_fields_validation(self):
         """必須フィールドのバリデーション"""
+        # ユーザー名が空の場合
+        form_data = {
+            'username': '',
+            'email': 'user1@test.com',
+            'first_name': '太郎',
+            'last_name': '田中'
+        }
+        form = UserProfileForm(data=form_data, instance=self.user1)
+        self.assertFalse(form.is_valid())
+        self.assertIn('username', form.errors)
+
         # メールアドレスが空の場合
         form_data = {
+            'username': self.user1.username,
             'email': '',
             'first_name': '太郎',
             'last_name': '田中'
@@ -94,6 +111,7 @@ class UserProfileFormTest(TestCase):
         
         # 姓が空の場合
         form_data = {
+            'username': self.user1.username,
             'email': 'user1@test.com',
             'first_name': '太郎',
             'last_name': ''
@@ -104,6 +122,7 @@ class UserProfileFormTest(TestCase):
         
         # 名が空の場合
         form_data = {
+            'username': self.user1.username,
             'email': 'user1@test.com',
             'first_name': '',
             'last_name': '田中'

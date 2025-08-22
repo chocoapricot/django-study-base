@@ -75,8 +75,9 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = MyUser
-        fields = ['email', 'first_name', 'last_name']  # usernameを除外
+        fields = ['username', 'email', 'first_name', 'last_name']
         widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
             'first_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
@@ -85,9 +86,11 @@ class UserProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # メールアドレス、姓と名を必須にする
+        self.fields['username'].required = True
         self.fields['email'].required = True
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
+        self.fields['username'].label = 'ユーザ名'
         self.fields['email'].label = 'メールアドレス'
         self.fields['first_name'].label = '名'
         self.fields['last_name'].label = '姓'
