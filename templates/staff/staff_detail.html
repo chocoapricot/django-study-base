@@ -248,7 +248,7 @@
                                    {% if connect_request and connect_request.is_approved %}checked{% endif %} disabled>
                             <label class="form-check-label" for="connectApprovalSwitch">
                                 {% if mynumber_request or profile_request %}
-                                    <i class="bi bi-arrow-down-circle" style="font-size: 20px; color:#ffc107;" title="申請あり"></i>
+                                    <i class="bi bi-arrow-down-circle" style="font-size: 20px; color:#17a2b8;" title="申請あり"></i>
                                 {% else %}
                                     <i class="bi bi-link" style="font-size: 20px;color:#17a2b8;"></i>
                                 {% endif %}
@@ -266,7 +266,7 @@
                     <div class="col-sm-12">
                         <i class="bi bi-clock-history" style="font-size: 20px; color: #17a2b8;"></i>
                         <strong>最終ログイン</strong>
-                        <span class="ms-2">{{ last_login|date:"Y/m/d H:i:s" }}</span>
+                        <span class="ms-2">（{{ last_login|date:"Y/m/d H:i:s" }}）</span>
                     </div>
                 </div>
                 {% endif %}
