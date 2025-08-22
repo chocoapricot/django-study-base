@@ -158,6 +158,7 @@ def staff_list(request):
             staff.is_connected_approved = False
             staff.has_pending_mynumber_request = False
             staff.has_pending_profile_request = False
+            staff.has_pending_connection_request = False
             if staff.email:
                 connect_request = ConnectStaff.objects.filter(
                     corporate_number=corporate_number,
@@ -165,6 +166,7 @@ def staff_list(request):
                 ).first()
                 if connect_request:
                     staff.is_connected_approved = connect_request.status == 'approved'
+                    staff.has_pending_connection_request = connect_request.status == 'pending'
                     if staff.is_connected_approved:
                         staff.has_pending_mynumber_request = MynumberRequest.objects.filter(
                             connect_staff=connect_request,
@@ -179,6 +181,7 @@ def staff_list(request):
             staff.is_connected_approved = False
             staff.has_pending_mynumber_request = False
             staff.has_pending_profile_request = False
+            staff.has_pending_connection_request = False
 
     return render(request, 'staff/staff_list.html', {
         'staffs': staffs_pages, 

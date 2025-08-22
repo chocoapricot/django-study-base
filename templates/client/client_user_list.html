@@ -32,11 +32,12 @@
                 <tr>
                     <td>
                         <a href="{% url 'client:client_user_detail' client_user.pk %}" class="text-decoration-none">
-                        {% if client_user.is_connected_approved %}
-                            {{ client_user.name }} <i class="bi bi-link" style="color:#17a2b8;" title="接続承認済み"></i>
-                        {% else %}
                             {{ client_user.name }}
-                        {% endif %}
+                            {% if client_user.has_pending_connection_request %}
+                                <i class="bi bi-arrow-up-circle" title="接続申請中"></i>
+                            {% elif client_user.is_connected_approved %}
+                                <i class="bi bi-link" style="color:#17a2b8;" title="接続承認済み"></i>
+                            {% endif %}
                         </a>
                     </td>
                     <td>

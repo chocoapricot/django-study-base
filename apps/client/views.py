@@ -67,23 +67,30 @@ def client_list(request):
     page_number = request.GET.get('page')
     clients_pages = paginator.get_page(page_number)
 
-    # 各クライアントに「接続承認済み担当者がいるか」フラグを付与（Companyの法人番号で判定）
+    # 各クライアントに「接続承認済み担当者がいるか」「未承認の接続申請があるか」フラグを付与
     from apps.connect.models import ConnectClient
     from apps.company.models import Company
     company = Company.objects.first()
     corporate_number = company.corporate_number if company else None
     for client in clients_pages:
-        has_approved = False
+        client.has_connected_approved_user = False
+        client.has_pending_connection_request = False
         if corporate_number:
-            for user in client.users.all():
-                if user.email and ConnectClient.objects.filter(
-                    corporate_number=corporate_number,
-                    email=user.email,
-                    status='approved'
-                ).exists():
-                    has_approved = True
-                    break
-        client.has_connected_approved_user = has_approved
+            # 承認済みユーザーがいるか
+            if ConnectClient.objects.filter(
+                corporate_number=corporate_number,
+                email__in=client.users.values_list('email', flat=True),
+                status='approved'
+            ).exists():
+                client.has_connected_approved_user = True
+
+            # 未承認の申請があるか
+            if ConnectClient.objects.filter(
+                corporate_number=corporate_number,
+                email__in=client.users.values_list('email', flat=True),
+                status='pending'
+            ).exists():
+                client.has_pending_connection_request = True
 
     return render(request, 'client/client_list.html', {
         'clients': clients_pages, 
@@ -121,24 +128,30 @@ def client_detail(request, pk):
     departments_count = client.departments.count()
     # 担当者一覧（最新5件）
     client_users = client.users.all()[:5]
-    # 各担当者が接続承認済みかどうかを付与
+    # 各担当者が接続承認済みか、未承認の接続申請があるかを付与
     from apps.connect.models import ConnectClient
     from apps.company.models import Company
     company = Company.objects.first()
     corporate_number = company.corporate_number if company else None
     if corporate_number:
         for user in client_users:
+            user.is_connected_approved = False
+            user.has_pending_connection_request = False
             if user.email:
                 user.is_connected_approved = ConnectClient.objects.filter(
                     corporate_number=corporate_number,
                     email=user.email,
                     status='approved'
                 ).exists()
-            else:
-                user.is_connected_approved = False
+                user.has_pending_connection_request = ConnectClient.objects.filter(
+                    corporate_number=corporate_number,
+                    email=user.email,
+                    status='pending'
+                ).exists()
     else:
         for user in client_users:
             user.is_connected_approved = False
+            user.has_pending_connection_request = False
     users_count = client.users.count()
     # ファイル情報（最新5件）
     files = client.files.order_by('-uploaded_at')[:5]
@@ -364,24 +377,30 @@ def client_user_create(request, client_pk):
 def client_user_list(request, client_pk):
     client = get_object_or_404(Client, pk=client_pk)
     client_users = client.users.all()
-    # 各担当者が接続承認済みかどうかを付与
+    # 各担当者が接続承認済みか、未承認の接続申請があるかを付与
     from apps.connect.models import ConnectClient
     from apps.company.models import Company
     company = Company.objects.first()
     corporate_number = company.corporate_number if company else None
     if corporate_number:
         for user in client_users:
+            user.is_connected_approved = False
+            user.has_pending_connection_request = False
             if user.email:
                 user.is_connected_approved = ConnectClient.objects.filter(
                     corporate_number=corporate_number,
                     email=user.email,
                     status='approved'
                 ).exists()
-            else:
-                user.is_connected_approved = False
+                user.has_pending_connection_request = ConnectClient.objects.filter(
+                    corporate_number=corporate_number,
+                    email=user.email,
+                    status='pending'
+                ).exists()
     else:
         for user in client_users:
             user.is_connected_approved = False
+            user.has_pending_connection_request = False
     return render(request, 'client/client_user_list.html', {'client': client, 'client_users': client_users, 'show_client_info': True})
 
 @login_required
