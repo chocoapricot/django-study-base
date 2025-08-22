@@ -56,12 +56,3 @@ python manage.py test apps.client
 
 New tests should be added to the `tests.py` file within the relevant app's directory, or in a `tests` subdirectory for more complex test suites.
 
-## Security considerations
-
-When working on this project, please keep the following security best practices in mind:
-
-- **Keep dependencies updated:** Regularly update dependencies to patch security vulnerabilities.
-- **Do not expose `SECRET_KEY`:** Ensure the `SECRET_KEY` is not hardcoded in settings files and is loaded from environment variables in production.
-- **Use Django's security features:** Leverage built-in protections against common vulnerabilities like Cross-Site Scripting (XSS), Cross-Site Request Forgery (CSRF), and SQL Injection.
-- **Data validation:** Always validate and sanitize user-provided data to prevent security risks.
-- **Permissions and access control:** Ensure that views and API endpoints have appropriate permission checks to prevent unauthorized access.
