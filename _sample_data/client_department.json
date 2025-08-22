@@ -188,5 +188,62 @@
         "valid_from": "2018-01-01",
         "valid_to": "2023-03-31"
     }
+},
+{
+    "model": "client.clientdepartment",
+    "pk": 11,
+    "fields": {
+        "created_at": "2024-11-20T10:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2024-11-20T10:00:00.000Z",
+        "updated_by": 1,
+        "client": 3,
+        "name": "人事部",
+        "department_code": "HR",
+        "postal_code": "4710826",
+        "address": "愛知県豊田市トヨタ町1番地 本社ビル",
+        "phone_number": "0565-28-2123",
+        "display_order": 3,
+        "valid_from": "2020-01-01",
+        "valid_to": null
+    }
+},
+{
+    "model": "client.clientdepartment",
+    "pk": 12,
+    "fields": {
+        "created_at": "2024-11-20T10:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2024-11-20T10:00:00.000Z",
+        "updated_by": 1,
+        "client": 4,
+        "name": "研究開発部",
+        "department_code": "RD",
+        "postal_code": "1030023",
+        "address": "東京都中央区日本橋本町２丁目５番１号",
+        "phone_number": "03-3244-3000",
+        "display_order": 3,
+        "valid_from": "2019-04-01",
+        "valid_to": null
+    }
+},
+{
+    "model": "client.clientdepartment",
+    "pk": 13,
+    "fields": {
+        "created_at": "2024-11-20T10:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2024-11-20T10:00:00.000Z",
+        "updated_by": 1,
+        "client": 6,
+        "name": "ソフトウェア開発部",
+        "department_code": "SW_DEV",
+        "postal_code": "6018116",
+        "address": "京都府京都市南区上鳥羽鉾立町１１番地１",
+        "phone_number": "075-662-9600",
+        "display_order": 2,
+        "valid_from": "2018-01-01",
+        "valid_to": null
+    }
 }
 ]

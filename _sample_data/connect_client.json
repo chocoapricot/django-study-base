@@ -1,0 +1,137 @@
+[
+    {
+        "model": "connect.connectclient",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-11-20T13:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2024-11-20T13:01:00.000Z",
+            "updated_by": 1,
+            "corporate_number": "1234567890122",
+            "email": "tanaka@toyota.co.jp",
+            "status": "approved",
+            "approved_at": "2024-11-20T13:01:00.000Z",
+            "approved_by": 1
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 2,
+        "fields": {
+            "created_at": "2024-11-20T13:02:00.000Z",
+            "created_by": 1,
+            "updated_at": "2024-11-20T13:03:00.000Z",
+            "updated_by": 1,
+            "corporate_number": "1234567890122",
+            "email": "sato@toyota.co.jp",
+            "status": "approved",
+            "approved_at": "2024-11-20T13:03:00.000Z",
+            "approved_by": 1
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 3,
+        "fields": {
+            "created_at": "2024-11-20T13:04:00.000Z",
+            "created_by": 1,
+            "updated_at": "2024-11-20T13:05:00.000Z",
+            "updated_by": 1,
+            "corporate_number": "1234567890122",
+            "email": "suzuki@toyota.co.jp",
+            "status": "approved",
+            "approved_at": "2024-11-20T13:05:00.000Z",
+            "approved_by": 1
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 4,
+        "fields": {
+            "created_at": "2024-11-20T13:06:00.000Z",
+            "created_by": 1,
+            "updated_at": "2024-11-20T13:07:00.000Z",
+            "updated_by": 1,
+            "corporate_number": "1234567890122",
+            "email": "takahashi@astellas.com",
+            "status": "approved",
+            "approved_at": "2024-11-20T13:07:00.000Z",
+            "approved_by": 1
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 5,
+        "fields": {
+            "created_at": "2024-11-20T13:08:00.000Z",
+            "created_by": 1,
+            "updated_at": "2024-11-20T13:08:00.000Z",
+            "updated_by": 1,
+            "corporate_number": "1234567890122",
+            "email": "yamada@astellas.com",
+            "status": "pending",
+            "approved_at": null,
+            "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 6,
+        "fields": {
+            "created_at": "2024-11-20T13:09:00.000Z",
+            "created_by": 1,
+            "updated_at": "2024-11-20T13:09:00.000Z",
+            "updated_by": 1,
+            "corporate_number": "1234567890122",
+            "email": "ito@soumu.go.jp",
+            "status": "pending",
+            "approved_at": null,
+            "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 7,
+        "fields": {
+            "created_at": "2024-11-20T13:10:00.000Z",
+            "created_by": 1,
+            "updated_at": "2024-11-20T13:10:00.000Z",
+            "updated_by": 1,
+            "corporate_number": "1234567890122",
+            "email": "watanabe@soumu.go.jp",
+            "status": "pending",
+            "approved_at": null,
+            "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 8,
+        "fields": {
+            "created_at": "2024-11-20T13:11:00.000Z",
+            "created_by": 1,
+            "updated_at": "2024-11-20T13:11:00.000Z",
+            "updated_by": 1,
+            "corporate_number": "1234567890122",
+            "email": "nakamura@nintendo.co.jp",
+            "status": "pending",
+            "approved_at": null,
+            "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 9,
+        "fields": {
+            "created_at": "2024-11-20T13:12:00.000Z",
+            "created_by": 1,
+            "updated_at": "2024-11-20T13:12:00.000Z",
+            "updated_by": 1,
+            "corporate_number": "1234567890122",
+            "email": "kobayashi@amazon.co.jp",
+            "status": "pending",
+            "approved_at": null,
+            "approved_by": null
+        }
+    }
+]
