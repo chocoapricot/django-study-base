@@ -116,7 +116,9 @@
                             <ruby>
                             {{ staff.name_last }} {{ staff.name_first }}
                             </ruby>
-                            {% if staff.is_connected_approved %}
+                            {% if staff.has_pending_connection_request %}
+                                <i class="bi bi-arrow-up-circle" title="接続申請中"></i>
+                            {% elif staff.is_connected_approved %}
                                 {% if staff.has_pending_mynumber_request or staff.has_pending_profile_request %}
                                     <i class="bi bi-arrow-down-circle" style="color:#17a2b8;" title="申請あり"></i>
                                 {% else %}
