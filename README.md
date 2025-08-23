@@ -102,6 +102,7 @@ django-study-base/
 | `apps_company_department` | 部署情報 |
 | `apps_connect_client` | クライアント接続申請 |
 | `apps_connect_mynumber_request` | マイナンバー接続申請 |
+| `apps_connect_profile_request` | プロフィール変更申請 |
 | `apps_connect_staff` | スタッフ接続申請 |
 | `apps_contract_client` | クライアント契約 |
 | `apps_contract_staff` | スタッフ契約 |
