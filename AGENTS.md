@@ -1,58 +1,32 @@
-# AGENTS.md
+# Instructions for Agents
 
-This file provides guidance for AI agents working with this codebase.
+Agents working on this project must strictly follow the rules below.
 
-## Project overview
+## General
 
-This is a Django-based web application. Based on the project structure, it appears to be a comprehensive system for managing clients, staff, contracts, and company information. It includes features for user authentication, data management, and potentially reporting.
+*   All code must conform to the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html).
+*   All code must be type-hinted using mypy.
+*   All code must have docstrings.
+*   All code must have unit tests.
+*   All code must be formatted with `black` and `isort`.
+*   All code must pass `flake8` and `mypy` checks.
+*   All code must be written in Japanese.
+*   All code must be encoded in UTF-8.
 
-## Build and test commands
+## Commit Messages
 
-To set up the development environment and run the application, use the following commands:
+*   Commit messages must conform to [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
+*   Commit messages must be written in English.
 
-- **Install dependencies:**
-  ```bash
-  pip install -r requirements.txt
-  ```
+## Branch Names
 
-- **Run tests:**
-  ```bash
-  python manage.py test
-  ```
+*   Branch names must be in the format `<type>/<short-description>`.
+*   `<type>` must be one of `feat`, `fix`, `docs`, `style`, `refactor`, `test`, or `chore`.
+*   `<short-description>` should briefly describe the purpose of the branch.
 
-- **Run the development server:**
-  ```bash
-  python manage.py runserver
-  ```
+## Pull Requests
 
-## Code style guidelines
-
-This project follows the **PEP 8** style guide for Python code. To ensure consistency, we use the following tools:
-
-- **Black:** For automated code formatting.
-- **Flake8:** For linting and identifying potential issues.
-
-Before committing any changes, please ensure your code is formatted with Black and passes Flake8 checks.
-
-## Testing instructions
-
-To run the full test suite, use the following command:
-
-```bash
-python manage.py test
-```
-
-You can also run tests for a specific app:
-
-```bash
-python manage.py test apps.app_name
-```
-
-For example, to run tests for the `client` app:
-
-```bash
-python manage.py test apps.client
-```
-
-New tests should be added to the `tests.py` file within the relevant app's directory, or in a `tests` subdirectory for more complex test suites.
-
+*   The pull request title should be the same as the commit message subject.
+*   The pull request description should include an overview of the changes and the reason for the changes.
+*   The pull request description should describe how to test.
+*   The pull request description may include screenshots and videos.
