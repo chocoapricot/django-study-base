@@ -1,9 +1,10 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from apps.connect.models import ConnectStaff
+from apps.connect.models import ConnectStaff, ProfileRequest
 from apps.staff.models import Staff
 from apps.company.models import Company
+from apps.profile.models import StaffProfile
 
 User = get_user_model()
 
@@ -226,3 +227,63 @@ class ConnectViewTest(TestCase):
         permission = Permission.objects.get(codename='view_connectstaff')
         new_user.refresh_from_db()
         self.assertTrue(new_user.has_perm(f'connect.{permission.codename}'))
+
+
+class ConnectStaffApproveMethodTest(TestCase):
+    """ConnectStaff.approveメソッドの詳細なテスト"""
+
+    def setUp(self):
+        self.approver = User.objects.create_user(
+            username='approver',
+            email='approver@example.com',
+            password='TestPass123!'
+        )
+        self.staff_user = User.objects.create_user(
+            username='staffuser',
+            email='staff@example.com',
+            password='TestPass123!',
+            first_name='Taro',
+            last_name='Staff'
+        )
+        self.staff_master = Staff.objects.create(
+            email=self.staff_user.email,
+            name_first='Taro',
+            name_last='Staff',
+        )
+
+    def test_approve_creates_no_request_if_profile_does_not_exist(self):
+        """StaffProfileが存在しない場合、ProfileRequestは作成されない"""
+        connection = ConnectStaff.objects.create(
+            corporate_number='1111111111111',
+            email=self.staff_user.email,
+        )
+        connection.approve(self.approver)
+        self.assertEqual(ProfileRequest.objects.count(), 0)
+
+    def test_approve_creates_request_if_profile_differs(self):
+        """StaffProfileが存在し、Staffマスターと差分がある場合、ProfileRequestが作成される"""
+        StaffProfile.objects.create(
+            user=self.staff_user,
+            name_first='Jiro',  # Staffマスターと異なる名前
+            name_last='Profile',
+        )
+        connection = ConnectStaff.objects.create(
+            corporate_number='2222222222222',
+            email=self.staff_user.email,
+        )
+        connection.approve(self.approver)
+        self.assertEqual(ProfileRequest.objects.count(), 1)
+
+    def test_approve_creates_no_request_if_profile_matches(self):
+        """StaffProfileが存在し、Staffマスターと差分がない場合、ProfileRequestは作成されない"""
+        StaffProfile.objects.create(
+            user=self.staff_user,
+            name_first='Taro',  # Staffマスターと同じ名前
+            name_last='Staff',
+        )
+        connection = ConnectStaff.objects.create(
+            corporate_number='3333333333333',
+            email=self.staff_user.email,
+        )
+        connection.approve(self.approver)
+        self.assertEqual(ProfileRequest.objects.count(), 0)

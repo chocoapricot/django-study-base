@@ -29,7 +29,7 @@ class ConnectStaffProfileRequestTest(TestCase):
             name_kana_last='ヤマダ',
             name_kana_first='タロウ',
             birth_date=date(1990, 1, 1),
-            sex=1,
+            sex=1, # IntegerField
             postal_code='1000001',
             address1='東京都',
             address2='千代田区',
@@ -41,10 +41,10 @@ class ConnectStaffProfileRequestTest(TestCase):
             email='staff@example.com',
         )
 
-    def test_profile_request_created_if_profile_does_not_exist(self):
-        """プロフィールが存在しない場合にプロフィール申請が作成されること"""
+    def test_profile_request_not_created_if_profile_does_not_exist(self):
+        """プロフィールが存在しない場合にプロフィール申請が作成されないこと"""
         self.connection.approve(self.approver)
-        self.assertTrue(
+        self.assertFalse(
             ProfileRequest.objects.filter(connect_staff=self.connection).exists()
         )
 
@@ -57,7 +57,7 @@ class ConnectStaffProfileRequestTest(TestCase):
             name_kana_last='ヤマダ',
             name_kana_first='タロウ',
             birth_date=date(1990, 1, 1),
-            sex=1,
+            sex='1', # CharField
             postal_code='1000001',
             address1='東京都',
             address2='千代田区',
@@ -78,7 +78,7 @@ class ConnectStaffProfileRequestTest(TestCase):
             name_kana_last='ヤマダ',
             name_kana_first='タロウ',
             birth_date=date(1990, 1, 1),
-            sex=1,
+            sex='1', # CharField
             postal_code='1000001',
             address1='東京都',
             address2='千代田区',
@@ -92,7 +92,21 @@ class ConnectStaffProfileRequestTest(TestCase):
 
     def test_profile_request_deleted_on_unapprove(self):
         """未承認に戻した際にプロフィール申請が削除されること"""
-        # プロフィールなしで承認し、申請が作成されることを確認
+        # プロフィールに差分がある状態で承認し、申請が作成されることを確認
+        StaffProfile.objects.create(
+            user=self.staff_user,
+            name_last='山田',
+            name_first='次郎',  # Staffと名前が違う
+            name_kana_last='ヤマダ',
+            name_kana_first='ジロウ',
+            birth_date=date(1990, 1, 1),
+            sex='1', # CharField
+            postal_code='1000001',
+            address1='東京都',
+            address2='千代田区',
+            address3='丸の内1-1',
+            phone='09012345678',
+        )
         self.connection.approve(self.approver)
         self.assertTrue(
             ProfileRequest.objects.filter(connect_staff=self.connection).exists()

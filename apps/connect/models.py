@@ -72,7 +72,7 @@ class ConnectStaff(MyModel):
 
             # プロフィールの比較と申請
             staff_profile_obj = getattr(user_instance, 'staff_profile', None)
-            if not staff_profile_obj or self._is_profile_different(staff_profile_obj, staff_instance):
+            if staff_profile_obj and self._is_profile_different(staff_profile_obj, staff_instance):
                 ProfileRequest.objects.get_or_create(
                     connect_staff=self,
                     staff_profile=staff_profile_obj
