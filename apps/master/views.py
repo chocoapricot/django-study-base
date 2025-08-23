@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.apps import apps
 from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch
 from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm, BillPaymentForm, BillBankForm, BankForm, BankBranchForm
+import json
 
 
 # マスタ設定データ
@@ -773,10 +774,17 @@ def bill_bank_create(request):
             return redirect('master:bill_bank_list')
     else:
         form = BillBankForm()
+
+    branches_by_bank = {}
+    for branch in BankBranch.get_active_list():
+        if branch.bank.bank_code not in branches_by_bank:
+            branches_by_bank[branch.bank.bank_code] = []
+        branches_by_bank[branch.bank.bank_code].append({'code': branch.branch_code, 'name': branch.name})
     
     context = {
         'form': form,
         'title': '会社銀行作成',
+        'branches_json': json.dumps(branches_by_bank)
     }
     return render(request, 'master/bill_bank_form.html', context)
 
@@ -796,10 +804,17 @@ def bill_bank_update(request, pk):
     else:
         form = BillBankForm(instance=bill_bank)
     
+    branches_by_bank = {}
+    for branch in BankBranch.get_active_list():
+        if branch.bank.bank_code not in branches_by_bank:
+            branches_by_bank[branch.bank.bank_code] = []
+        branches_by_bank[branch.bank.bank_code].append({'code': branch.branch_code, 'name': branch.name})
+
     context = {
         'form': form,
         'bill_bank': bill_bank,
         'title': f'会社銀行編集 - {bill_bank.name} {bill_bank.branch_name}',
+        'branches_json': json.dumps(branches_by_bank)
     }
     return render(request, 'master/bill_bank_form.html', context)
 
