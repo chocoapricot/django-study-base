@@ -133,5 +133,350 @@
             "approved_at": null,
             "approved_by": null
         }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 10,
+        "fields": {
+          "created_at": "2024-11-21T04:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T04:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "kato@amazon.co.jp",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 11,
+        "fields": {
+          "created_at": "2024-11-21T04:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T04:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "matsumoto@panasonic.co.jp",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 12,
+        "fields": {
+          "created_at": "2024-11-21T04:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T04:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "morita@nissan.co.jp",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 13,
+        "fields": {
+          "created_at": "2024-11-21T04:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T04:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "ishii@fujitsu.co.jp",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 14,
+        "fields": {
+          "created_at": "2024-11-21T04:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T04:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "shimizu@sony.com",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 15,
+        "fields": {
+          "created_at": "2024-11-21T04:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T04:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "hashimoto@lifecorp.co.jp",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 16,
+        "fields": {
+          "created_at": "2024-11-21T04:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T04:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "kimura@toyota.co.jp",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 17,
+        "fields": {
+          "created_at": "2024-11-21T05:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T05:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "saito@astellas.com",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 18,
+        "fields": {
+          "created_at": "2024-11-21T05:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T05:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "miyamoto@nintendo.co.jp",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 19,
+        "fields": {
+          "created_at": "2024-11-21T05:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T05:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "user.9@example.com",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 20,
+        "fields": {
+          "created_at": "2024-11-21T05:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T05:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "user.10@example.com",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 21,
+        "fields": {
+          "created_at": "2024-11-21T05:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T05:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "user.11@example.com",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 22,
+        "fields": {
+          "created_at": "2024-11-21T05:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T05:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "user.12@example.com",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 23,
+        "fields": {
+          "created_at": "2024-11-21T05:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T05:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "user.14@example.com",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 24,
+        "fields": {
+          "created_at": "2024-11-21T05:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T05:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "user.15@example.com",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 25,
+        "fields": {
+          "created_at": "2024-11-21T05:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T05:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "user.16@example.com",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 26,
+        "fields": {
+          "created_at": "2024-11-21T05:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T05:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "user.17@example.com",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 27,
+        "fields": {
+          "created_at": "2024-11-21T05:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T05:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "user.20@example.com",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 28,
+        "fields": {
+          "created_at": "2024-11-21T05:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T05:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "user.25@example.com",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 29,
+        "fields": {
+          "created_at": "2024-11-21T05:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T05:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "user.26@example.com",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 30,
+        "fields": {
+          "created_at": "2024-11-21T05:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T05:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "user.27@example.com",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 31,
+        "fields": {
+          "created_at": "2024-11-21T05:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T05:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "user.28@example.com",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
+    },
+    {
+        "model": "connect.connectclient",
+        "pk": 32,
+        "fields": {
+          "created_at": "2024-11-21T05:00:00.000Z",
+          "created_by": 1,
+          "updated_at": "2024-11-21T05:00:00.000Z",
+          "updated_by": 1,
+          "corporate_number": "1234567890122",
+          "email": "tanaka@toyota.co.jp",
+          "status": "pending",
+          "approved_at": null,
+          "approved_by": null
+        }
     }
 ]

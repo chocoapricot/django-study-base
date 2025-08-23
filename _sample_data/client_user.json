@@ -376,5 +376,278 @@
         "memo": "ゲーム開発の伝説",
         "display_order": 1
     }
+},
+{
+    "model": "client.clientuser",
+    "pk": 19,
+    "fields": {
+        "created_at": "2024-11-21T02:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2024-11-21T02:00:00.000Z",
+        "updated_by": 1,
+        "client": 9,
+        "department": 14,
+        "name_last": "青木",
+        "name_first": "真也",
+        "name_kana_last": "アオキ",
+        "name_kana_first": "シンヤ",
+        "position": "担当者",
+        "phone_number": "",
+        "email": "user.9@example.com",
+        "memo": "自動追加データ",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 20,
+    "fields": {
+        "created_at": "2024-11-21T02:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2024-11-21T02:00:00.000Z",
+        "updated_by": 1,
+        "client": 10,
+        "department": 15,
+        "name_last": "井上",
+        "name_first": "尚弥",
+        "name_kana_last": "イノウエ",
+        "name_kana_first": "ナオヤ",
+        "position": "担当者",
+        "phone_number": "",
+        "email": "user.10@example.com",
+        "memo": "自動追加データ",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 21,
+    "fields": {
+        "created_at": "2024-11-21T02:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2024-11-21T02:00:00.000Z",
+        "updated_by": 1,
+        "client": 11,
+        "department": 16,
+        "name_last": "宇野",
+        "name_first": "昌磨",
+        "name_kana_last": "ウノ",
+        "name_kana_first": "ショウマ",
+        "position": "担当者",
+        "phone_number": "",
+        "email": "user.11@example.com",
+        "memo": "自動追加データ",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 22,
+    "fields": {
+        "created_at": "2024-11-21T02:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2024-11-21T02:00:00.000Z",
+        "updated_by": 1,
+        "client": 12,
+        "department": 17,
+        "name_last": "江夏",
+        "name_first": "豊",
+        "name_kana_last": "エナツ",
+        "name_kana_first": "ユタカ",
+        "position": "担当者",
+        "phone_number": "",
+        "email": "user.12@example.com",
+        "memo": "自動追加データ",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 23,
+    "fields": {
+        "created_at": "2024-11-21T02:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2024-11-21T02:00:00.000Z",
+        "updated_by": 1,
+        "client": 14,
+        "department": 19,
+        "name_last": "王",
+        "name_first": "貞治",
+        "name_kana_last": "オウ",
+        "name_kana_first": "サダハル",
+        "position": "担当者",
+        "phone_number": "",
+        "email": "user.14@example.com",
+        "memo": "自動追加データ",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 24,
+    "fields": {
+        "created_at": "2024-11-21T02:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2024-11-21T02:00:00.000Z",
+        "updated_by": 1,
+        "client": 15,
+        "department": 20,
+        "name_last": "長嶋",
+        "name_first": "茂雄",
+        "name_kana_last": "ナガシマ",
+        "name_kana_first": "シゲオ",
+        "position": "担当者",
+        "phone_number": "",
+        "email": "user.15@example.com",
+        "memo": "自動追加データ",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 25,
+    "fields": {
+        "created_at": "2024-11-21T02:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2024-11-21T02:00:00.000Z",
+        "updated_by": 1,
+        "client": 16,
+        "department": 21,
+        "name_last": "衣笠",
+        "name_first": "祥雄",
+        "name_kana_last": "キヌガサ",
+        "name_kana_first": "サチオ",
+        "position": "担当者",
+        "phone_number": "",
+        "email": "user.16@example.com",
+        "memo": "自動追加データ",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 26,
+    "fields": {
+        "created_at": "2024-11-21T02:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2024-11-21T02:00:00.000Z",
+        "updated_by": 1,
+        "client": 17,
+        "department": 22,
+        "name_last": "黒田",
+        "name_first": "博樹",
+        "name_kana_last": "クロダ",
+        "name_kana_first": "ヒロキ",
+        "position": "担当者",
+        "phone_number": "",
+        "email": "user.17@example.com",
+        "memo": "自動追加データ",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 27,
+    "fields": {
+        "created_at": "2024-11-21T02:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2024-11-21T02:00:00.000Z",
+        "updated_by": 1,
+        "client": 20,
+        "department": 24,
+        "name_last": "桑田",
+        "name_first": "真澄",
+        "name_kana_last": "クワタ",
+        "name_kana_first": "マスミ",
+        "position": "担当者",
+        "phone_number": "",
+        "email": "user.20@example.com",
+        "memo": "自動追加データ",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 28,
+    "fields": {
+        "created_at": "2024-11-21T02:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2024-11-21T02:00:00.000Z",
+        "updated_by": 1,
+        "client": 25,
+        "department": 27,
+        "name_last": "清原",
+        "name_first": "和博",
+        "name_kana_last": "キヨハラ",
+        "name_kana_first": "カズヒロ",
+        "position": "担当者",
+        "phone_number": "",
+        "email": "user.25@example.com",
+        "memo": "自動追加データ",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 29,
+    "fields": {
+        "created_at": "2024-11-21T02:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2024-11-21T02:00:00.000Z",
+        "updated_by": 1,
+        "client": 26,
+        "department": 28,
+        "name_last": "小久保",
+        "name_first": "裕紀",
+        "name_kana_last": "コクボ",
+        "name_kana_first": "ヒロキ",
+        "position": "担当者",
+        "phone_number": "",
+        "email": "user.26@example.com",
+        "memo": "自動追加データ",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 30,
+    "fields": {
+        "created_at": "2024-11-21T02:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2024-11-21T02:00:00.000Z",
+        "updated_by": 1,
+        "client": 27,
+        "department": 29,
+        "name_last": "斎藤",
+        "name_first": "佑樹",
+        "name_kana_last": "サイトウ",
+        "name_kana_first": "ユウキ",
+        "position": "担当者",
+        "phone_number": "",
+        "email": "user.27@example.com",
+        "memo": "自動追加データ",
+        "display_order": 1
+    }
+},
+{
+    "model": "client.clientuser",
+    "pk": 31,
+    "fields": {
+        "created_at": "2024-11-21T02:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2024-11-21T02:00:00.000Z",
+        "updated_by": 1,
+        "client": 28,
+        "department": 30,
+        "name_last": "ダルビッシュ",
+        "name_first": "有",
+        "name_kana_last": "ダルビッシュ",
+        "name_kana_first": "ユウ",
+        "position": "担当者",
+        "phone_number": "",
+        "email": "user.28@example.com",
+        "memo": "自動追加データ",
+        "display_order": 1
+    }
 }
 ]
