@@ -378,7 +378,9 @@ class BillBank(MyModel):
     自社の銀行口座情報を管理するマスターデータモデル。
     """
     
+    name = models.CharField('銀行名', max_length=100)
     bank_code = models.CharField('銀行コード', max_length=4, help_text='4桁の数字で入力')
+    branch_name = models.CharField('支店名', max_length=100)
     branch_code = models.CharField('支店コード', max_length=3, help_text='3桁の数字で入力')
     account_type = models.CharField(
         '口座種別', 
@@ -399,7 +401,7 @@ class BillBank(MyModel):
         db_table = 'apps_master_bill_bank'
         verbose_name = '会社銀行'
         verbose_name_plural = '会社銀行'
-        ordering = ['display_order', 'bank_code', 'branch_code']
+        ordering = ['display_order', 'name', 'branch_name']
         indexes = [
             models.Index(fields=['is_active']),
             models.Index(fields=['display_order']),
@@ -409,30 +411,6 @@ class BillBank(MyModel):
     
     def __str__(self):
         return f"{self.name} {self.branch_name} {self.account_type_display} {self.account_number}"
-
-    @property
-    def name(self):
-        bank = self.bank
-        return bank.name if bank else ''
-
-    @property
-    def bank(self):
-        try:
-            return Bank.objects.get(bank_code=self.bank_code)
-        except Bank.DoesNotExist:
-            return None
-
-    @property
-    def branch_name(self):
-        branch = self.branch
-        return branch.name if branch else ''
-
-    @property
-    def branch(self):
-        try:
-            return BankBranch.objects.get(bank__bank_code=self.bank_code, branch_code=self.branch_code)
-        except BankBranch.DoesNotExist:
-            return None
     
     @property
     def account_type_display(self):
@@ -491,7 +469,7 @@ class BillBank(MyModel):
     @classmethod
     def get_active_list(cls):
         """有効な会社銀行一覧を取得"""
-        return cls.objects.filter(is_active=True).order_by('display_order', 'bank_code', 'branch_code')
+        return cls.objects.filter(is_active=True).order_by('display_order', 'name', 'branch_name')
 
 
 class Bank(MyModel):

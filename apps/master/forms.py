@@ -180,13 +180,15 @@ class BillPaymentForm(forms.ModelForm):
 
 class BillBankForm(forms.ModelForm):
     """会社銀行フォーム"""
-
+    
     class Meta:
         model = BillBank
-        fields = ['bank_code', 'branch_code', 'account_type', 'account_number', 'account_holder', 'account_holder_kana', 'is_active', 'display_order']
+        fields = ['name', 'bank_code', 'branch_name', 'branch_code', 'account_type', 'account_number', 'account_holder', 'account_holder_kana', 'is_active', 'display_order']
         widgets = {
-            'bank_code': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-            'branch_code': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'bank_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '4', 'pattern': '[0-9]{4}'}),
+            'branch_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'branch_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '3', 'pattern': '[0-9]{3}'}),
             'account_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'account_number': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '8', 'pattern': '[0-9]{1,8}'}),
             'account_holder': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
@@ -195,26 +197,15 @@ class BillBankForm(forms.ModelForm):
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
         }
         labels = {
-            'bank_code': '銀行',
-            'branch_code': '支店',
+            'bank_code': '銀行コード（4桁）',
+            'branch_code': '支店コード（3桁）',
             'account_holder_kana': '口座名義（カナ）',
         }
         help_texts = {
+            'bank_code': '4桁の数字で入力してください（任意）',
+            'branch_code': '3桁の数字で入力してください（任意）',
             'account_number': '1-8桁の数字で入力してください',
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['bank_code'].choices = [('', '---------')] + [(b.bank_code, b.name) for b in Bank.get_active_list()]
-        self.fields['branch_code'].choices = [('', '---------')]
-        if 'bank_code' in self.data:
-            try:
-                bank_code = self.data.get('bank_code')
-                self.fields['branch_code'].choices += [(br.branch_code, br.name) for br in BankBranch.get_active_list().filter(bank__bank_code=bank_code)]
-            except (ValueError, TypeError):
-                pass
-        elif self.instance.pk and self.instance.bank_code:
-            self.fields['branch_code'].choices += [(br.branch_code, br.name) for br in self.instance.bank.branches.filter(is_active=True)]
 
 
 class BankForm(forms.ModelForm):
