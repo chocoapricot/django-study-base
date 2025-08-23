@@ -12,18 +12,11 @@
             {% csrf_token %}
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">銀行名</label>
-                <div class="col-sm-4">
-                    {{ form.name }}
-                    {% if form.name.errors %}
-                        <div class="text-danger small">{{ form.name.errors.0 }}</div>
-                    {% endif %}
+                <label for="id_bank_code_select" class="col-sm-2 col-form-label text-start text-md-end">銀行</label>
+                <div class="col-sm-2">
+                    <input type="text" id="id_bank_code_text" class="form-control form-control-sm" value="{{ form.bank_code.value|default:'' }}" maxlength="4">
                 </div>
-                <label for="{{ form.bank_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
-                    銀行コード
-                    {% my_help_preset "bank_code" %}
-                </label>
-                <div class="col-sm-4">
+                <div class="col-sm-8">
                     {{ form.bank_code }}
                     {% if form.bank_code.errors %}
                         <div class="text-danger small">{{ form.bank_code.errors.0 }}</div>
@@ -32,21 +25,14 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.branch_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">支店名</label>
-                <div class="col-sm-4">
-                    {{ form.branch_name }}
-                    {% if form.branch_name.errors %}
-                        <div class="text-danger small">{{ form.branch_name.errors.0 }}</div>
-                    {% endif %}
+                <label for="id_branch_code_select" class="col-sm-2 col-form-label text-start text-md-end">支店</label>
+                <div class="col-sm-2">
+                    <input type="text" id="id_branch_code_text" class="form-control form-control-sm" value="{{ form.branch_code.value|default:'' }}" maxlength="3">
                 </div>
-                <label for="{{ form.branch_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
-                    支店コード
-                    {% my_help_preset "branch_code" %}
-                </label>
-                <div class="col-sm-4">
+                <div class="col-sm-8">
                     {{ form.branch_code }}
                     {% if form.branch_code.errors %}
-                        <div class="text-danger small">{{ form.branch_code.errors.0 }}</div>
+                        <div class.text-danger small">{{ form.branch_code.errors.0 }}</div>
                     {% endif %}
                 </div>
             </div>
@@ -128,6 +114,82 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const branchesData = JSON.parse('{{ branches_json|escapejs }}');
+    const bankSelect = document.getElementById('id_bank_code');
+    const branchSelect = document.getElementById('id_branch_code');
+    const bankCodeText = document.getElementById('id_bank_code_text');
+    const branchCodeText = document.getElementById('id_branch_code_text');
+
+    function updateBranchOptions() {
+        const selectedBankCode = bankSelect.value;
+        const branches = branchesData[selectedBankCode] || [];
+
+        // Keep the currently selected branch if it's still valid
+        const currentBranchCode = branchSelect.value;
+
+        branchSelect.innerHTML = '<option value="">---------</option>';
+        branches.forEach(function(branch) {
+            const option = document.createElement('option');
+            option.value = branch.code;
+            option.textContent = branch.name;
+            branchSelect.appendChild(option);
+        });
+
+        if (currentBranchCode && branches.some(b => b.code === currentBranchCode)) {
+            branchSelect.value = currentBranchCode;
+        }
+    }
+
+    // --- Event Listeners ---
+
+    // 1. Bank dropdown -> Update Branch dropdown & Bank code text
+    bankSelect.addEventListener('change', function() {
+        updateBranchOptions();
+        bankCodeText.value = this.value;
+        // Clear branch selection
+        branchSelect.value = '';
+        branchCodeText.value = '';
+    });
+
+    // 2. Branch dropdown -> Update Branch code text
+    branchSelect.addEventListener('change', function() {
+        branchCodeText.value = this.value;
+    });
+
+    // 3. Bank code text -> Update Bank dropdown
+    bankCodeText.addEventListener('input', function() {
+        const bankOption = Array.from(bankSelect.options).find(opt => opt.value === this.value);
+        if (bankOption) {
+            bankSelect.value = this.value;
+            updateBranchOptions();
+        } else {
+            bankSelect.value = '';
+        }
+        // Clear branch selection
+        branchSelect.value = '';
+        branchCodeText.value = '';
+    });
+
+    // 4. Branch code text -> Update Branch dropdown
+    branchCodeText.addEventListener('input', function() {
+        const branchOption = Array.from(branchSelect.options).find(opt => opt.value === this.value);
+        if (branchOption) {
+            branchSelect.value = this.value;
+        } else {
+            branchSelect.value = '';
+        }
+    });
+
+    // Initial state setup
+    if (bankSelect.value) {
+        updateBranchOptions();
+        // Restore branch selection if it exists in the form's initial data
+        const initialBranchCode = "{{ form.branch_code.value|default:'' }}";
+        if (initialBranchCode) {
+            branchSelect.value = initialBranchCode;
+        }
+    }
+
     // ツールチップを有効化
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
