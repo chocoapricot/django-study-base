@@ -721,21 +721,27 @@ def bill_payment_delete(request, pk):
 def bill_bank_list(request):
     """会社銀行一覧"""
     search_query = request.GET.get('search', '')
-    
-    bill_banks = BillBank.objects.all()
-    
+
+    # name と branch_name がプロパティになったため、Python側でフィルタリングとソートを行う
+    bill_banks_qs = BillBank.objects.all()
+    all_bill_banks = list(bill_banks_qs)
+
     if search_query:
-        bill_banks = bill_banks.filter(
-            Q(name__icontains=search_query) |
-            Q(branch_name__icontains=search_query) |
-            Q(account_holder__icontains=search_query) |
-            Q(account_holder_kana__icontains=search_query)
-        )
-    
-    bill_banks = bill_banks.order_by('display_order', 'name', 'branch_name')
-    
+        bill_banks_list = [
+            bb for bb in all_bill_banks if
+            search_query.lower() in bb.name.lower() or
+            search_query.lower() in bb.branch_name.lower() or
+            (bb.account_holder and search_query.lower() in bb.account_holder.lower()) or
+            (bb.account_holder_kana and search_query.lower() in bb.account_holder_kana.lower())
+        ]
+    else:
+        bill_banks_list = all_bill_banks
+
+    # Python側でソート
+    bill_banks_list.sort(key=lambda b: (b.display_order, b.name, b.branch_name))
+
     # ページネーション
-    paginator = Paginator(bill_banks, 20)
+    paginator = Paginator(bill_banks_list, 20)
     page = request.GET.get('page')
     bill_banks_page = paginator.get_page(page)
     
