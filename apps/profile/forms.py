@@ -35,7 +35,7 @@ class StaffProfileForm(forms.ModelForm):
     sex = forms.ChoiceField(
         choices=[],
         label='性別',
-        widget=forms.Select(attrs={'class': 'form-control form-control-sm'}),
+        widget=forms.RadioSelect,
         required=False,  # __init__で必須化
     )
     
