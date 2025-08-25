@@ -29,6 +29,8 @@
                             <span class="badge bg-secondary">ファイル</span>
                         {% elif log.model_name == 'StaffMynumber' %}
                             <span class="badge bg-danger">マイナンバー</span>
+                        {% elif log.model_name == 'StaffInternational' %}
+                            <span class="badge bg-danger">外国籍</span>
                         {% elif log.model_name == 'ConnectStaff' %}
                             <span class="badge bg-warning">接続</span>
                         {% elif log.model_name == 'Qualification' %}
