@@ -10,6 +10,7 @@ from .views import (
     staff_file_delete, staff_file_download,
     staff_mynumber_detail, staff_mynumber_create, staff_mynumber_edit, staff_mynumber_delete,
     staff_mynumber_request_detail,
+    staff_bank_detail, staff_bank_create, staff_bank_edit, staff_bank_delete,
     staff_profile_request_detail,
     staff_international_detail, staff_international_create, staff_international_edit, staff_international_delete,
     staff_international_request_detail,
@@ -65,6 +66,12 @@ urlpatterns = [
     path('staff/<int:staff_id>/mynumber/edit/', staff_mynumber_edit, name='staff_mynumber_edit'),
     path('staff/<int:staff_id>/mynumber/delete/', staff_mynumber_delete, name='staff_mynumber_delete'),
     path('staff/<int:staff_pk>/mynumber/request/<int:pk>/', staff_mynumber_request_detail, name='staff_mynumber_request_detail'),
+
+    # 銀行情報管理
+    path('staff/<int:staff_id>/bank/', staff_bank_detail, name='staff_bank_detail'),
+    path('staff/<int:staff_id>/bank/create/', staff_bank_create, name='staff_bank_create'),
+    path('staff/<int:staff_id>/bank/edit/', staff_bank_edit, name='staff_bank_edit'),
+    path('staff/<int:staff_id>/bank/delete/', staff_bank_delete, name='staff_bank_delete'),
 
     # プロフィール申請
     path('staff/<int:staff_pk>/profile/request/<int:pk>/', staff_profile_request_detail, name='staff_profile_request_detail'),

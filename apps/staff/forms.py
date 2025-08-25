@@ -2,7 +2,7 @@
 import os
 from django import forms
 from django.forms import TextInput
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffInternational
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational
 from django.core.exceptions import ValidationError
 
 # スタッフ連絡履歴フォーム
@@ -227,7 +227,7 @@ class StaffForm(forms.ModelForm):
             'phone': forms.TextInput(attrs={
                 'class': 'form-control form-control-sm',
                 'inputmode': 'numeric',
-                'pattern': '[0-9\-]*',
+                'pattern': r'[0-9\-]*',
                 'style': 'ime-mode:disabled;',
                 'autocomplete': 'off',
             }),
@@ -410,6 +410,98 @@ class StaffMynumberForm(forms.ModelForm):
                 raise ValidationError('正しいマイナンバーを入力してください。')
 
         return mynumber
+
+
+class StaffBankForm(forms.ModelForm):
+    """スタッフ銀行情報フォーム"""
+    
+    account_type = forms.ChoiceField(
+        choices=[],
+        label='口座種別',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
+        required=True,
+    )
+
+    class Meta:
+        model = StaffBank
+        fields = ['bank_code', 'branch_code', 'account_type', 'account_number', 'account_holder']
+        widgets = {
+            'bank_code': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'maxlength': '4',
+                'pattern': '[0-9]{4}',
+                'inputmode': 'numeric',
+                'style': 'ime-mode:disabled;',
+                'autocomplete': 'off',
+                'placeholder': '例: 0001'
+            }),
+            'branch_code': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'maxlength': '3',
+                'pattern': '[0-9]{3}',
+                'inputmode': 'numeric',
+                'style': 'ime-mode:disabled;',
+                'autocomplete': 'off',
+                'placeholder': '例: 001'
+            }),
+            'account_number': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'maxlength': '8',
+                'pattern': '[0-9]{1,8}',
+                'inputmode': 'numeric',
+                'style': 'ime-mode:disabled;',
+                'autocomplete': 'off',
+                'placeholder': '例: 1234567'
+            }),
+            'account_holder': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'placeholder': '例: ヤマダ タロウ'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # 口座種別の選択肢を設定
+        from apps.system.settings.models import Dropdowns
+        self.fields['account_type'].choices = [
+            (opt.value, opt.name)
+            for opt in Dropdowns.objects.filter(active=True, category='account_type').order_by('disp_seq')
+        ]
+        
+        # 必須フィールドの設定
+        self.fields['account_type'].required = True
+        self.fields['account_number'].required = True
+        self.fields['account_holder'].required = True
+
+    def clean_bank_code(self):
+        """銀行コードのバリデーション"""
+        bank_code = self.cleaned_data.get('bank_code')
+        if bank_code:
+            if not bank_code.isdigit():
+                raise ValidationError('銀行コードは数字で入力してください。')
+            if len(bank_code) != 4:
+                raise ValidationError('銀行コードは4桁で入力してください。')
+        return bank_code
+
+    def clean_branch_code(self):
+        """支店コードのバリデーション"""
+        branch_code = self.cleaned_data.get('branch_code')
+        if branch_code:
+            if not branch_code.isdigit():
+                raise ValidationError('支店コードは数字で入力してください。')
+            if len(branch_code) != 3:
+                raise ValidationError('支店コードは3桁で入力してください。')
+        return branch_code
+
+    def clean_account_number(self):
+        """口座番号のバリデーション"""
+        account_number = self.cleaned_data.get('account_number')
+        if account_number:
+            if not account_number.isdigit():
+                raise ValidationError('口座番号は数字で入力してください。')
+            if len(account_number) < 1 or len(account_number) > 8:
+                raise ValidationError('口座番号は1-8桁で入力してください。')
+        return account_number
 
 
 class StaffInternationalForm(forms.ModelForm):

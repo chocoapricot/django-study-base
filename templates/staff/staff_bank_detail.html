@@ -1,0 +1,75 @@
+{% extends 'common/_base.html' %}
+{% load help_tags %}
+
+{% block title %}スタッフ銀行情報詳細{% endblock %}
+
+{% block content %}
+{% include 'staff/_staff_info_card.html' with staff=staff %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        スタッフ銀行情報詳細
+        <div>
+            <a href="{% url 'staff:staff_bank_edit' staff_id=staff.pk %}" class="btn btn-sm btn-primary">編集</a>
+            <a href="{% url 'staff:staff_bank_delete' staff_id=staff.pk %}" class="btn btn-sm btn-dark">削除</a>
+        </div>
+    </div>
+    <div class="card-body">
+
+        <div class="row mb-3 mt-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>銀行コード</strong></label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ bank.bank_code|default:"-" }}</p>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>銀行名</strong></label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ bank.bank_name|default:"-" }}</p>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>支店コード</strong></label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ bank.branch_code|default:"-" }}</p>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>支店名</strong></label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ bank.branch_name|default:"-" }}</p>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>口座種別</strong></label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ bank.get_account_type_display|default:"-" }}</p>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>口座番号</strong></label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ bank.account_number }}</p>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>口座名義</strong></label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ bank.account_holder }}</p>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col text-left">
+                <a href="{% url 'staff:staff_detail' pk=staff.pk %}" class="btn btn-sm btn-secondary">スタッフ詳細に戻る</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

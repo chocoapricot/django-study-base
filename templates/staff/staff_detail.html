@@ -17,6 +17,9 @@
                             <a href="{% url 'staff:staff_mynumber_detail' staff.pk %}" class="dropdown-item">
                                 <i class="bi bi-credit-card"></i>　マイナンバー
                             </a>
+                            <a href="{% url 'staff:staff_bank_detail' staff_id=staff.pk %}" class="dropdown-item">
+                                <i class="bi bi-bank"></i>　銀行情報
+                            </a>
                             <a href="{% url 'staff:staff_international_detail' staff.pk %}" class="dropdown-item">
                                 <i class="bi bi-send"></i>　外国籍情報
                             </a>

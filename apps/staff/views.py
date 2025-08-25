@@ -10,8 +10,8 @@ from django.db.models import Q
 from django.contrib import messages
 from apps.system.logs.utils import log_model_action
 
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffInternational
-from .forms import StaffForm, StaffContactedForm, StaffFileForm, StaffMynumberForm, StaffInternationalForm
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational
+from .forms import StaffForm, StaffContactedForm, StaffFileForm, StaffMynumberForm, StaffBankForm, StaffInternationalForm
 from apps.system.settings.utils import my_parameter
 from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
@@ -972,6 +972,102 @@ def staff_mynumber_request_detail(request, staff_pk, pk):
 
 
 @login_required
+@permission_required('staff.view_staff', raise_exception=True)
+def staff_bank_detail(request, staff_id):
+    """スタッフの銀行情報詳細表示"""
+    staff = get_object_or_404(Staff, pk=staff_id)
+    try:
+        bank = staff.bank
+    except StaffBank.DoesNotExist:
+        # 未登録の場合は登録画面へリダイレクト
+        return redirect('staff:staff_bank_create', staff_id=staff.pk)
+
+    context = {
+        'staff': staff,
+        'bank': bank,
+    }
+    return render(request, 'staff/staff_bank_detail.html', context)
+
+
+@login_required
+@permission_required('staff.add_staff', raise_exception=True)
+def staff_bank_create(request, staff_id):
+    """スタッフの銀行情報登録"""
+    staff = get_object_or_404(Staff, pk=staff_id)
+    # 既に登録済みの場合は編集画面へリダイレクト
+    if hasattr(staff, 'bank'):
+        return redirect('staff:staff_bank_edit', staff_id=staff.pk)
+
+    if request.method == 'POST':
+        form = StaffBankForm(request.POST)
+        if form.is_valid():
+            bank = form.save(commit=False)
+            bank.staff = staff
+            bank.save()
+            from apps.system.logs.utils import log_model_action
+            log_model_action(request.user, 'create', bank)
+            messages.success(request, '銀行情報を登録しました。')
+            return redirect('staff:staff_bank_detail', staff_id=staff.pk)
+    else:
+        form = StaffBankForm()
+
+    context = {
+        'staff': staff,
+        'form': form,
+        'is_new': True,
+    }
+    return render(request, 'staff/staff_bank_form.html', context)
+
+
+@login_required
+@permission_required('staff.change_staff', raise_exception=True)
+def staff_bank_edit(request, staff_id):
+    """スタッフの銀行情報編集"""
+    staff = get_object_or_404(Staff, pk=staff_id)
+    bank = get_object_or_404(StaffBank, staff=staff)
+
+    if request.method == 'POST':
+        form = StaffBankForm(request.POST, instance=bank)
+        if form.is_valid():
+            form.save()
+            from apps.system.logs.utils import log_model_action
+            log_model_action(request.user, 'update', bank)
+            messages.success(request, '銀行情報を更新しました。')
+            return redirect('staff:staff_bank_detail', staff_id=staff.pk)
+    else:
+        form = StaffBankForm(instance=bank)
+
+    context = {
+        'staff': staff,
+        'form': form,
+        'bank': bank,
+        'is_new': False,
+    }
+    return render(request, 'staff/staff_bank_form.html', context)
+
+
+@login_required
+@permission_required('staff.delete_staff', raise_exception=True)
+def staff_bank_delete(request, staff_id):
+    """スタッフの銀行情報削除確認"""
+    staff = get_object_or_404(Staff, pk=staff_id)
+    bank = get_object_or_404(StaffBank, staff=staff)
+
+    if request.method == 'POST':
+        bank.delete()
+        from apps.system.logs.utils import log_model_action
+        log_model_action(request.user, 'delete', bank)
+        messages.success(request, '銀行情報を削除しました。')
+        return redirect('staff:staff_detail', pk=staff.pk)
+
+    context = {
+        'staff': staff,
+        'bank': bank,
+    }
+    return render(request, 'staff/staff_bank_confirm_delete.html', context)
+
+
+@login_required
 @permission_required('staff.change_staff', raise_exception=True)
 def staff_profile_request_detail(request, staff_pk, pk):
     """プロフィール申請の詳細、承認・却下"""
@@ -1153,17 +1249,13 @@ def staff_international_request_detail(request, staff_pk, pk):
                 messages.error(request, f'承認処理中にエラーが発生しました: {e}')
             
         elif action == 'reject':
-            # 却下処理
+            # 却下処理 - ステータスのみ変更、プロファイルは削除しない
             international_request.status = 'rejected'
             international_request.save()
             
-            # 却下時は関連する外国籍情報も削除
-            if international_request.profile_international:
-                international_request.profile_international.delete()
-            
             from apps.system.logs.utils import log_model_action
             log_model_action(request.user, 'update', international_request)
-            messages.warning(request, '外国籍情報申請を却下しました。')
+            messages.warning(request, '外国籍情報申請を却下しました。プロファイル情報は保持されます。')
         
         return redirect('staff:staff_detail', pk=staff.pk)
     

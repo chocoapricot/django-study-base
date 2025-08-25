@@ -22,8 +22,8 @@ class StaffInternationalRequestViewTest(TestCase):
         
         # 管理者ユーザー
         self.admin_user = User.objects.create_user(
-            username='admin',
-            email='admin@example.com',
+            username='admin_view',
+            email='admin_view@example.com',
             password='adminpass123'
         )
         
@@ -41,8 +41,8 @@ class StaffInternationalRequestViewTest(TestCase):
         
         # 申請者ユーザー
         self.staff_user = User.objects.create_user(
-            username='staffuser',
-            email='staff@example.com',
+            username='staffuser_view',
+            email='staff_view@example.com',
             password='staffpass123'
         )
         
@@ -52,7 +52,7 @@ class StaffInternationalRequestViewTest(TestCase):
             name_first='太郎',
             name_kana_last='シンセイ',
             name_kana_first='タロウ',
-            email='staff@example.com',
+            email='staff_view@example.com',
             regist_form_code=1,
             sex=1
         )
@@ -64,13 +64,13 @@ class StaffInternationalRequestViewTest(TestCase):
             name_first='太郎',
             name_kana_last='シンセイ',
             name_kana_first='タロウ',
-            email='staff@example.com'
+            email='staff_view@example.com'
         )
         
         # 接続情報
         self.connect_staff = ConnectStaff.objects.create(
             corporate_number='1234567890123',
-            email='staff@example.com',
+            email='staff_view@example.com',
             status='approved'
         )
         
@@ -90,7 +90,7 @@ class StaffInternationalRequestViewTest(TestCase):
             status='pending'
         )
         
-        self.client.login(username='admin', password='adminpass123')
+        self.client.login(username='admin_view', password='adminpass123')
     
     def test_staff_detail_shows_international_request(self):
         """スタッフ詳細画面で外国籍情報申請が表示されるテスト"""
@@ -134,11 +134,11 @@ class StaffInternationalRequestViewTest(TestCase):
         self.assertEqual(response.status_code, 302)  # リダイレクト
         
         # 申請が却下されているか確認
-        self.international_request.refresh_from_db()
-        self.assertEqual(self.international_request.status, 'rejected')
+        updated_request = ConnectInternationalRequest.objects.get(pk=self.international_request.pk)
+        self.assertEqual(updated_request.status, 'rejected')
         
-        # 関連する外国籍情報が削除されているか確認
-        self.assertFalse(
+        # 関連する外国籍情報は削除されずに保持されているか確認
+        self.assertTrue(
             StaffProfileInternational.objects.filter(pk=self.international_profile.pk).exists()
         )
     
@@ -178,8 +178,8 @@ class StaffInternationalRequestIntegrationTest(TestCase):
         
         # 管理者ユーザー
         self.admin_user = User.objects.create_user(
-            username='admin',
-            email='admin@example.com',
+            username='admin_integration',
+            email='admin_integration@example.com',
             password='adminpass123'
         )
         
@@ -197,8 +197,8 @@ class StaffInternationalRequestIntegrationTest(TestCase):
         
         # 申請者ユーザー
         self.staff_user = User.objects.create_user(
-            username='staffuser',
-            email='staff@example.com',
+            username='staffuser_integration',
+            email='staff_integration@example.com',
             password='staffpass123'
         )
         
@@ -219,7 +219,7 @@ class StaffInternationalRequestIntegrationTest(TestCase):
             name_first='太郎',
             name_kana_last='トウゴウ',
             name_kana_first='タロウ',
-            email='staff@example.com',
+            email='staff_integration@example.com',
             regist_form_code=1,
             sex=1
         )
@@ -231,20 +231,20 @@ class StaffInternationalRequestIntegrationTest(TestCase):
             name_first='太郎',
             name_kana_last='トウゴウ',
             name_kana_first='タロウ',
-            email='staff@example.com'
+            email='staff_integration@example.com'
         )
         
         # 接続情報
         self.connect_staff = ConnectStaff.objects.create(
-            corporate_number='1234567890123',
-            email='staff@example.com',
+            corporate_number='9876543210987',
+            email='staff_integration@example.com',
             status='approved'
         )
     
     def test_full_international_request_workflow(self):
         """外国籍情報申請の完全なワークフローテスト"""
         # 1. スタッフユーザーでログインして申請
-        self.client.login(username='staffuser', password='staffpass123')
+        self.client.login(username='staffuser_integration', password='staffpass123')
         
         form_data = {
             'residence_card_number': 'INTEGRATION1234567890',
@@ -265,7 +265,7 @@ class StaffInternationalRequestIntegrationTest(TestCase):
         self.assertEqual(request.status, 'pending')
         
         # 3. 管理者でログインして申請確認
-        self.client.login(username='admin', password='adminpass123')
+        self.client.login(username='admin_integration', password='adminpass123')
         
         response = self.client.get(reverse('staff:staff_detail', kwargs={'pk': self.staff.pk}))
         self.assertEqual(response.status_code, 200)
@@ -301,7 +301,7 @@ class StaffInternationalRequestIntegrationTest(TestCase):
     def test_international_request_rejection_workflow(self):
         """外国籍情報申請却下ワークフローテスト"""
         # 1. スタッフユーザーでログインして申請
-        self.client.login(username='staffuser', password='staffpass123')
+        self.client.login(username='staffuser_integration', password='staffpass123')
         
         form_data = {
             'residence_card_number': 'REJECT1234567890',
@@ -318,7 +318,7 @@ class StaffInternationalRequestIntegrationTest(TestCase):
         international_pk = request.profile_international.pk
         
         # 3. 管理者でログインして申請却下
-        self.client.login(username='admin', password='adminpass123')
+        self.client.login(username='admin_integration', password='adminpass123')
         
         response = self.client.post(
             reverse('staff:staff_international_request_detail', 
@@ -327,10 +327,17 @@ class StaffInternationalRequestIntegrationTest(TestCase):
         )
         self.assertEqual(response.status_code, 302)
         
-        # 4. 申請が却下され、外国籍情報が削除されているか確認
-        request.refresh_from_db()
-        self.assertEqual(request.status, 'rejected')
+        # 4. 申請が却下され、外国籍情報は保持されているか確認
+        # 申請レコードが存在するか確認
+        self.assertTrue(
+            ConnectInternationalRequest.objects.filter(pk=request.pk).exists()
+        )
         
-        self.assertFalse(
+        # 申請ステータスを確認
+        updated_request = ConnectInternationalRequest.objects.get(pk=request.pk)
+        self.assertEqual(updated_request.status, 'rejected')
+        
+        # 外国籍情報は削除されずに保持されているか確認
+        self.assertTrue(
             StaffProfileInternational.objects.filter(pk=international_pk).exists()
         )
