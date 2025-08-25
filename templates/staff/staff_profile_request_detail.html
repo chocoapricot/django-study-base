@@ -112,7 +112,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if staff.sex|add:"" == profile_request.staff_profile.sex|add:"" %}
+                            {% if staff.sex != profile_request.staff_profile.sex %}
                                 <span class="text-primary fw-bold">
                                     {% if profile_request.staff_profile.sex %}
                                         {% my_name 'sex' profile_request.staff_profile.sex %}
