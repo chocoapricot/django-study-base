@@ -41,7 +41,7 @@
         <form method="post" class="mt-4">
             {% csrf_token %}
             <div class="d-flex justify-content-start">
-                <button type="submit" class="btn btn-sm btn-dark">削除する</button>
+                <button type="submit" class="btn btn-sm btn-dark">削除</button>
                 <a href="{% url 'staff:staff_international_detail' staff_id=staff.pk %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
             </div>
         </form>
