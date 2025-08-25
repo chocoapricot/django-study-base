@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.urls import reverse
-from .models import StaffProfile, ProfileMynumber, StaffProfileInternational
-from .forms import StaffProfileForm, ProfileMynumberForm, StaffProfileInternationalForm
+from .models import StaffProfile, ProfileMynumber, StaffProfileInternational, StaffBankProfile
+from .forms import StaffProfileForm, ProfileMynumberForm, StaffProfileInternationalForm, StaffBankProfileForm
 
 
 @login_required
@@ -250,3 +250,71 @@ def international_delete(request):
         'international': international,
     }
     return render(request, 'profile/international_delete.html', context)
+
+
+@login_required
+@permission_required('profile.view_staffbankprofile', raise_exception=True)
+def bank_detail(request):
+    """銀行口座詳細表示"""
+    try:
+        bank = StaffBankProfile.objects.get(user=request.user)
+    except StaffBankProfile.DoesNotExist:
+        bank = None
+
+    context = {
+        'bank': bank,
+    }
+    return render(request, 'profile/bank_detail.html', context)
+
+
+@login_required
+@permission_required('profile.add_staffbankprofile', raise_exception=True)
+@permission_required('profile.change_staffbankprofile', raise_exception=True)
+def bank_edit(request):
+    """銀行口座編集"""
+    try:
+        bank = StaffBankProfile.objects.get(user=request.user)
+        is_new = False
+    except StaffBankProfile.DoesNotExist:
+        bank = None
+        is_new = True
+
+    if request.method == 'POST':
+        form = StaffBankProfileForm(request.POST, instance=bank)
+        if form.is_valid():
+            bank = form.save(commit=False)
+            bank.user = request.user
+            bank.save()
+
+            if is_new:
+                messages.success(request, '銀行口座を登録しました。')
+            else:
+                messages.success(request, '銀行口座を更新しました。')
+
+            return redirect('profile:bank_detail')
+    else:
+        form = StaffBankProfileForm(instance=bank)
+
+    context = {
+        'form': form,
+        'bank': bank,
+        'is_new': is_new,
+    }
+    return render(request, 'profile/bank_form.html', context)
+
+
+@login_required
+@permission_required('profile.delete_staffbankprofile', raise_exception=True)
+def bank_delete(request):
+    """銀行口座削除確認"""
+    bank = get_object_or_404(StaffBankProfile, user=request.user)
+
+    if request.method == 'POST':
+        bank.delete()
+        messages.success(request, '銀行口座を削除しました。')
+        return redirect('profile:bank_detail')
+
+    context = {
+        'bank': bank,
+    }
+    return render(request, 'profile/bank_delete.html', context)

@@ -1,0 +1,74 @@
+{% extends 'common/_base.html' %}
+
+{% block title %}{% if is_new %}銀行口座登録{% else %}銀行口座編集{% endif %}{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        {% if is_new %}銀行口座登録{% else %}銀行口座編集{% endif %}
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.bank_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">銀行コード</label>
+                <div class="col-sm-4">
+                    {{ form.bank_code }}
+                    {% if form.bank_code.errors %}
+                        <div class="text-danger small">{{ form.bank_code.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.branch_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">支店コード</label>
+                <div class="col-sm-4">
+                    {{ form.branch_code }}
+                    {% if form.branch_code.errors %}
+                        <div class="text-danger small">{{ form.branch_code.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.account_type.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">口座種別 <span class="text-danger">*</span></label>
+                <div class="col-sm-4">
+                    {{ form.account_type }}
+                    {% if form.account_type.errors %}
+                        <div class="text-danger small">{{ form.account_type.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.account_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">口座番号 <span class="text-danger">*</span></label>
+                <div class="col-sm-4">
+                    {{ form.account_number }}
+                    {% if form.account_number.errors %}
+                        <div class="text-danger small">{{ form.account_number.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.account_holder.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">口座名義 <span class="text-danger">*</span></label>
+                <div class="col-sm-4">
+                    {{ form.account_holder }}
+                    {% if form.account_holder.errors %}
+                        <div class="text-danger small">{{ form.account_holder.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-primary">
+                    {% if is_new %}登録{% else %}更新{% endif %}
+                </button>
+                <a href="{% url 'profile:bank_detail' %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

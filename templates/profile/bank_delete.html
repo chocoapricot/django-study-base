@@ -1,0 +1,20 @@
+{% extends 'common/_base.html' %}
+
+{% block title %}銀行口座削除{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        銀行口座削除
+    </div>
+    <div class="card-body">
+        <p>本当にこの銀行口座情報を削除しますか？</p>
+        <p><strong>{{ bank.full_bank_info }}</strong></p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-danger">はい、削除します</button>
+            <a href="{% url 'profile:bank_detail' %}" class="btn btn-sm btn-secondary">キャンセル</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

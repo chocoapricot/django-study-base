@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import StaffProfile, ProfileMynumber, StaffProfileInternational
+from .models import StaffProfile, ProfileMynumber, StaffProfileInternational, StaffBankProfile
 
 
 from apps.common.forms.fields import to_fullwidth_katakana, validate_kana
@@ -176,3 +176,36 @@ class StaffProfileInternationalForm(forms.ModelForm):
             raise forms.ValidationError('在留許可開始日は在留期限より前の日付を入力してください。')
         
         return cleaned_data
+
+
+class StaffBankProfileForm(forms.ModelForm):
+    """スタッフ銀行プロフィールフォーム"""
+    account_type = forms.ChoiceField(
+        choices=[],
+        label='口座種別',
+        widget=forms.RadioSelect,
+    )
+
+    class Meta:
+        model = StaffBankProfile
+        fields = [
+            'bank_code', 'branch_code', 'account_type',
+            'account_number', 'account_holder'
+        ]
+        widgets = {
+            'bank_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '4'}),
+            'branch_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '3'}),
+            'account_number': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '8'}),
+            'account_holder': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from apps.system.settings.models import Dropdowns
+        self.fields['account_type'].choices = [
+            (opt.value, opt.name)
+            for opt in Dropdowns.objects.filter(active=True, category='account_type').order_by('disp_seq')
+        ]
+        self.fields['account_type'].required = True
+        self.fields['account_number'].required = True
+        self.fields['account_holder'].required = True
