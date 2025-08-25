@@ -69,7 +69,7 @@ class StaffProfileForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Dropdownsから性別の選択肢を取得
         from apps.system.settings.models import Dropdowns
-        self.fields['sex'].choices = [('', '選択してください')] + [
+        self.fields['sex'].choices = [
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='sex').order_by('disp_seq')
         ]

@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load static %}
+{% load connect_tags %}
 
 {% block content %}
 {% include 'staff/_staff_info_card.html' with staff=staff %}
@@ -36,37 +37,37 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
+                <tr class="{% diff_class staff.name_last profile_request.staff_profile.name_last %}{% diff_class staff.name_first profile_request.staff_profile.name_first %}">
                     <td>氏名</td>
                     <td>{{ staff.name_last }} {{ staff.name_first }}</td>
                     <td>{{ profile_request.staff_profile.name_last }} {{ profile_request.staff_profile.name_first }}</td>
                 </tr>
-                <tr>
+                <tr class="{% diff_class staff.name_kana_last profile_request.staff_profile.name_kana_last %}{% diff_class staff.name_kana_first profile_request.staff_profile.name_kana_first %}">
                     <td>氏名（カナ）</td>
                     <td>{{ staff.name_kana_last }} {{ staff.name_kana_first }}</td>
                     <td>{{ profile_request.staff_profile.name_kana_last }} {{ profile_request.staff_profile.name_kana_first }}</td>
                 </tr>
-                <tr>
+                <tr class="{% diff_class staff.birth_date profile_request.staff_profile.birth_date %}">
                     <td>生年月日</td>
                     <td>{{ staff.birth_date }}</td>
                     <td>{{ profile_request.staff_profile.birth_date }}</td>
                 </tr>
-                <tr>
+                <tr class="{% diff_class staff.sex profile_request.staff_profile.sex %}">
                     <td>性別</td>
-                    <td>{{ staff.get_sex_display }}</td>
-                    <td>{{ profile_request.staff_profile.get_sex_display }}</td>
+                    <td>{{ staff.sex_display }}</td>
+                    <td>{{ profile_request.staff_profile.sex_display }}</td>
                 </tr>
-                <tr>
+                <tr class="{% diff_class staff.postal_code profile_request.staff_profile.postal_code %}">
                     <td>郵便番号</td>
                     <td>{{ staff.postal_code }}</td>
                     <td>{{ profile_request.staff_profile.postal_code }}</td>
                 </tr>
-                <tr>
+                <tr class="{% diff_class staff.address1 profile_request.staff_profile.address1 %}{% diff_class staff.address2 profile_request.staff_profile.address2 %}{% diff_class staff.address3 profile_request.staff_profile.address3 %}">
                     <td>住所</td>
                     <td>{{ staff.address1 }}{{ staff.address2 }}{{ staff.address3 }}</td>
                     <td>{{ profile_request.staff_profile.address1 }}{{ profile_request.staff_profile.address2 }}{{ profile_request.staff_profile.address3 }}</td>
                 </tr>
-                <tr>
+                <tr class="{% diff_class staff.phone profile_request.staff_profile.phone %}">
                     <td>電話番号</td>
                     <td>{{ staff.phone }}</td>
                     <td>{{ profile_request.staff_profile.phone }}</td>
