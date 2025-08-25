@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from apps.common.models import MyModel
 from apps.staff.models import Staff
-from apps.profile.models import ProfileMynumber, StaffProfile
+from apps.profile.models import ProfileMynumber, StaffProfile, StaffProfileInternational
 
 
 class ConnectStaff(MyModel):
@@ -237,6 +237,48 @@ class ProfileRequest(MyModel):
         self.status = 'rejected'
         self.save()
         return True, "プロフィール申請を却下しました。"
+
+
+class ConnectInternationalRequest(MyModel):
+    """
+    外国籍情報の提出を要求するためのモデル。
+    """
+
+    STATUS_CHOICES = [
+        ('pending', '未承認'),
+        ('approved', '承認済み'),
+        ('rejected', '却下'),
+    ]
+
+    connect_staff = models.ForeignKey(
+        ConnectStaff,
+        on_delete=models.CASCADE,
+        verbose_name='スタッフ接続',
+        help_text='関連するスタッフ接続'
+    )
+    profile_international = models.ForeignKey(
+        StaffProfileInternational,
+        on_delete=models.CASCADE,
+        verbose_name='プロフィール外国籍情報',
+        help_text='関連するプロフィール外国籍情報'
+    )
+    status = models.CharField(
+        'ステータス',
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending',
+        help_text='申請の現在のステータス'
+    )
+
+    class Meta:
+        db_table = 'apps_connect_international_request'
+        verbose_name = '外国籍情報申請'
+        verbose_name_plural = '外国籍情報申請'
+        unique_together = ['connect_staff', 'profile_international']
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.connect_staff} - {self.profile_international} ({self.get_status_display()})"
 
 
 class ConnectClient(MyModel):
