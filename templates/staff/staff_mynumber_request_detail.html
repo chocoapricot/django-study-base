@@ -63,62 +63,8 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
-                        <td><strong>登録状況</strong></td>
-                        <td>
-                            {% if staff_mynumber %}
-                                <span class="badge bg-success">登録済み</span>
-                                <small class="text-muted d-block">{{ staff_mynumber.created_at|date:"Y/m/d H:i:s" }} 登録</small>
-                            {% else %}
-                                <span class="badge bg-secondary">未登録</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <span class="badge bg-info">申請中</span>
-                            <small class="text-muted d-block">{{ mynumber_request.profile_mynumber.created_at|date:"Y/m/d H:i:s" }} 申請</small>
-                        </td>
-                    </tr>
                 </tbody>
             </table>
-        </div>
-
-        <!-- セキュリティ注意事項 -->
-        <div class="alert alert-warning mt-3" role="alert">
-            <i class="bi bi-shield-exclamation"></i>
-            <strong>セキュリティ上の注意</strong><br>
-            マイナンバーは承認画面でのみ表示されます。承認処理により、申請されたマイナンバーでスタッフマイナンバーが更新されます。
-        </div>
-
-        <!-- 申請情報 -->
-        <h5 class="mt-4 mb-3">申請情報</h5>
-        <div class="row mb-3">
-            <div class="col-sm-3 text-end">
-                <strong>申請日時</strong>
-            </div>
-            <div class="col-sm-9">
-                {{ mynumber_request.created_at|date:"Y/m/d H:i:s" }}
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-sm-3 text-end">
-                <strong>申請者</strong>
-            </div>
-            <div class="col-sm-9">
-                {{ mynumber_request.profile_mynumber.user.last_name }} {{ mynumber_request.profile_mynumber.user.first_name }}
-                ({{ mynumber_request.profile_mynumber.user.email }})
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-sm-3 text-end">
-                <strong>申請内容</strong>
-            </div>
-            <div class="col-sm-9">
-                {% if staff_mynumber %}
-                    マイナンバーの更新申請
-                {% else %}
-                    マイナンバーの新規登録申請
-                {% endif %}
-            </div>
         </div>
 
         <!-- 承認・却下ボタン -->
@@ -138,15 +84,10 @@
                     <i class="bi bi-x-circle"></i> 却下
                 </button>
             </form>
+            <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
         </div>
         {% endif %}
 
-        <!-- 戻るボタン -->
-        <div class="row mt-3">
-            <div class="col text-left">
-                <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
-            </div>
-        </div>
     </div>
 </div>
 
