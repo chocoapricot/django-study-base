@@ -63,8 +63,7 @@ class StaffProfile(MyModel):
         blank=True,
         help_text='生年月日を入力してください'
     )
-    sex = models.CharField(
-        max_length=1,
+    sex = models.IntegerField(
         verbose_name='性別',
         null=True,
         blank=True,
