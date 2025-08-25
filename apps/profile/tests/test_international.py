@@ -36,29 +36,29 @@ class StaffProfileInternationalModelTest(TestCase):
     def test_create_international_profile(self):
         """外国籍情報の作成テスト"""
         international = StaffProfileInternational.objects.create(
-            user=self.user,
+            staff_profile=self.staff_profile,
             residence_card_number='TEST1234567890',
             residence_status='技術・人文知識・国際業務',
             residence_period_from=date.today(),
             residence_period_to=date.today() + timedelta(days=365)
         )
         
-        self.assertEqual(international.user, self.user)
+        self.assertEqual(international.staff_profile, self.staff_profile)
         self.assertEqual(international.residence_card_number, 'TEST1234567890')
         self.assertEqual(international.residence_status, '技術・人文知識・国際業務')
-        self.assertEqual(str(international), f"{self.user.username} - 外国籍情報")
+        self.assertEqual(str(international), f"{self.staff_profile} - 外国籍情報")
     
     def test_international_profile_str(self):
         """__str__メソッドのテスト"""
         international = StaffProfileInternational.objects.create(
-            user=self.user,
+            staff_profile=self.staff_profile,
             residence_card_number='TEST1234567890',
             residence_status='技術・人文知識・国際業務',
             residence_period_from=date.today(),
             residence_period_to=date.today() + timedelta(days=365)
         )
         
-        expected = f"{self.user.username} - 外国籍情報"
+        expected = f"{self.staff_profile} - 外国籍情報"
         self.assertEqual(str(international), expected)
 
 
@@ -154,7 +154,7 @@ class InternationalViewTest(TestCase):
     def test_international_detail_view_with_data(self):
         """外国籍情報詳細ビュー（データあり）のテスト"""
         international = StaffProfileInternational.objects.create(
-            user=self.user,
+            staff_profile=self.staff_profile,
             residence_card_number='TEST1234567890',
             residence_status='技術・人文知識・国際業務',
             residence_period_from=date.today(),
@@ -185,7 +185,7 @@ class InternationalViewTest(TestCase):
         self.assertEqual(response.status_code, 302)  # リダイレクト
         
         # データが作成されているか確認
-        international = StaffProfileInternational.objects.get(user=self.user)
+        international = StaffProfileInternational.objects.get(staff_profile=self.staff_profile)
         self.assertEqual(international.residence_card_number, 'POST1234567890')
         self.assertEqual(international.residence_status, '留学')
     
@@ -205,7 +205,7 @@ class InternationalViewTest(TestCase):
     def test_international_delete_view_get(self):
         """外国籍情報削除ビュー（GET）のテスト"""
         international = StaffProfileInternational.objects.create(
-            user=self.user,
+            staff_profile=self.staff_profile,
             residence_card_number='DELETE1234567890',
             residence_status='技術・人文知識・国際業務',
             residence_period_from=date.today(),
@@ -220,7 +220,7 @@ class InternationalViewTest(TestCase):
     def test_international_delete_view_post(self):
         """外国籍情報削除ビュー（POST）のテスト"""
         international = StaffProfileInternational.objects.create(
-            user=self.user,
+            staff_profile=self.staff_profile,
             residence_card_number='DELETE1234567890',
             residence_status='技術・人文知識・国際業務',
             residence_period_from=date.today(),
@@ -232,7 +232,7 @@ class InternationalViewTest(TestCase):
         
         # データが削除されているか確認
         self.assertFalse(
-            StaffProfileInternational.objects.filter(user=self.user).exists()
+            StaffProfileInternational.objects.filter(staff_profile=self.staff_profile).exists()
         )
     
     def test_international_view_without_connect_staff(self):
@@ -310,7 +310,7 @@ class InternationalIntegrationTest(TestCase):
         self.assertEqual(response.status_code, 302)
         
         # 3. データが作成されているか確認
-        international = StaffProfileInternational.objects.get(user=self.user)
+        international = StaffProfileInternational.objects.get(staff_profile=self.staff_profile)
         self.assertEqual(international.residence_card_number, 'WORKFLOW1234567890')
         self.assertEqual(international.residence_status, '特定技能')
         
@@ -326,5 +326,5 @@ class InternationalIntegrationTest(TestCase):
         
         # 6. データが削除されているか確認
         self.assertFalse(
-            StaffProfileInternational.objects.filter(user=self.user).exists()
+            StaffProfileInternational.objects.filter(staff_profile=self.staff_profile).exists()
         )

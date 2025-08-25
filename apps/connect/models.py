@@ -110,6 +110,52 @@ class ConnectStaff(MyModel):
         # 関連する申請をすべて削除
         self.mynumberrequest_set.all().delete()
         self.profilerequest_set.all().delete()
+        self.bankrequest_set.all().delete()
+
+
+from apps.profile.apps_profile_staff_bank import StaffBankProfile
+
+
+class BankRequest(MyModel):
+    """
+    銀行情報の提出を要求するためのモデル。
+    """
+
+    STATUS_CHOICES = [
+        ('pending', '未承認'),
+        ('approved', '承認済み'),
+        ('rejected', '却下'),
+    ]
+
+    connect_staff = models.ForeignKey(
+        ConnectStaff,
+        on_delete=models.CASCADE,
+        verbose_name='スタッフ接続',
+        help_text='関連するスタッフ接続'
+    )
+    staff_bank_profile = models.ForeignKey(
+        StaffBankProfile,
+        on_delete=models.CASCADE,
+        verbose_name='スタッフ銀行プロフィール',
+        help_text='関連するスタッフ銀行プロフィール'
+    )
+    status = models.CharField(
+        'ステータス',
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending',
+        help_text='申請の現在のステータス'
+    )
+
+    class Meta:
+        db_table = 'apps_connect_bank_request'
+        verbose_name = '銀行情報申請'
+        verbose_name_plural = '銀行情報申請'
+        unique_together = ['connect_staff', 'staff_bank_profile']
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.connect_staff} - {self.staff_bank_profile} ({self.get_status_display()})"
 
 
 class MynumberRequest(MyModel):

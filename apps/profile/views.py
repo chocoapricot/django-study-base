@@ -159,9 +159,16 @@ def mynumber_delete(request):
 @permission_required('profile.change_staffprofileinternational', raise_exception=True)
 def international_edit(request):
     """外国籍情報登録・編集"""
+    # スタッフプロフィールを取得
+    try:
+        staff_profile = StaffProfile.objects.get(user=request.user)
+    except StaffProfile.DoesNotExist:
+        messages.error(request, 'プロフィールを先に登録してください。')
+        return redirect('profile:edit')
+
     # 既存の外国籍情報を確認
     try:
-        international_profile = StaffProfileInternational.objects.get(user=request.user)
+        international_profile = StaffProfileInternational.objects.get(staff_profile=staff_profile)
         is_new = False
     except StaffProfileInternational.DoesNotExist:
         international_profile = None
@@ -172,35 +179,8 @@ def international_edit(request):
         if form.is_valid():
             # 外国籍情報を保存
             international_profile = form.save(commit=False)
-            international_profile.user = request.user
-            international_profile.email = request.user.email
+            international_profile.staff_profile = staff_profile
             international_profile.save()
-            
-            # 接続申請の作成処理
-            from apps.connect.models import ConnectStaff, ConnectInternationalRequest
-            try:
-                # 承認済みの接続情報を取得
-                connect_staff = ConnectStaff.objects.filter(
-                    email=request.user.email,
-                    status='approved'
-                ).first()
-                
-                if connect_staff:
-                    # 既存の申請がない場合のみ作成
-                    existing_request = ConnectInternationalRequest.objects.filter(
-                        connect_staff=connect_staff,
-                        profile_international=international_profile
-                    ).first()
-                    
-                    if not existing_request:
-                        ConnectInternationalRequest.objects.create(
-                            connect_staff=connect_staff,
-                            profile_international=international_profile,
-                            status='pending'
-                        )
-            except Exception:
-                # 接続申請の作成に失敗しても外国籍情報の保存は成功とする
-                pass
             
             if is_new:
                 messages.success(request, '外国籍情報を登録しました。')
@@ -224,10 +204,15 @@ def international_edit(request):
 def international_detail(request):
     """外国籍情報詳細表示"""
     # 外国籍情報を取得
+    international = None
     try:
-        international = StaffProfileInternational.objects.get(user=request.user)
-    except StaffProfileInternational.DoesNotExist:
-        international = None
+        staff_profile = StaffProfile.objects.get(user=request.user)
+        try:
+            international = StaffProfileInternational.objects.get(staff_profile=staff_profile)
+        except StaffProfileInternational.DoesNotExist:
+            pass
+    except StaffProfile.DoesNotExist:
+        pass
     
     context = {
         'international': international,
@@ -239,7 +224,13 @@ def international_detail(request):
 @permission_required('profile.delete_staffprofileinternational', raise_exception=True)
 def international_delete(request):
     """外国籍情報削除確認"""
-    international = get_object_or_404(StaffProfileInternational, user=request.user)
+    # 外国籍情報を取得
+    try:
+        staff_profile = StaffProfile.objects.get(user=request.user)
+        international = get_object_or_404(StaffProfileInternational, staff_profile=staff_profile)
+    except StaffProfile.DoesNotExist:
+        messages.error(request, '外国籍情報が見つかりません。')
+        return redirect('/')
     
     if request.method == 'POST':
         international.delete()

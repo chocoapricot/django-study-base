@@ -291,6 +291,15 @@
                     </div>
                 </div>
                 {% endif %}
+                {% if bank_request %}
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>銀行情報の提出申請があります。</strong>
+                    <a href="{% url 'staff:staff_bank_request_detail' staff_pk=staff.pk pk=bank_request.pk %}" class="btn btn-sm btn-outline-primary ml-2">
+                        <i class="fas fa-eye"></i> 申請内容を確認
+                    </a>
+                </div>
+                {% endif %}
 
                 {% if mynumber_request %}
                 <hr>

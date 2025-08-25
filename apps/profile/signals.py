@@ -39,7 +39,7 @@ def create_or_update_international_request(sender, instance, **kwargs):
     StaffProfileInternationalが作成または更新されたときに、関連するすべての有効な
     ConnectStaffに対してConnectInternationalRequestを作成または更新します。
     """
-    user = instance.user
+    user = instance.staff_profile.user
 
     # ユーザーに関連する承認済みのConnectStaffを取得
     approved_connections = ConnectStaff.objects.filter(
@@ -49,7 +49,7 @@ def create_or_update_international_request(sender, instance, **kwargs):
 
     # このユーザーの既存のConnectInternationalRequestをすべて削除
     ConnectInternationalRequest.objects.filter(
-        profile_international__user=user
+        profile_international__staff_profile__user=user
     ).delete()
 
     # 承認済みの接続ごとに新しいConnectInternationalRequestを作成

@@ -316,10 +316,11 @@ def staff_detail(request, pk):
     mynumber_request = None
     profile_request = None
     international_request = None
+    bank_request = None
     last_login = None  # 最終ログイン日時を初期化
 
     if staff.email:
-        from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest, ConnectInternationalRequest
+        from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest, ConnectInternationalRequest, BankRequest
         from apps.company.models import Company
         from django.contrib.auth import get_user_model
         User = get_user_model()
@@ -353,6 +354,10 @@ def staff_detail(request, pk):
                         connect_staff=connect_request,
                         status='pending'
                     ).first()
+                    bank_request = BankRequest.objects.filter(
+                        connect_staff=connect_request,
+                        status='pending'
+                    ).first()
         except Exception:
             pass
     
@@ -370,6 +375,7 @@ def staff_detail(request, pk):
         'mynumber_request': mynumber_request,
         'profile_request': profile_request,
         'international_request': international_request,
+        'bank_request': bank_request,
         'last_login': last_login,
     })
 
@@ -1065,6 +1071,59 @@ def staff_bank_delete(request, staff_id):
         'bank': bank,
     }
     return render(request, 'staff/staff_bank_confirm_delete.html', context)
+
+
+@login_required
+@permission_required('staff.change_staff', raise_exception=True)
+def staff_bank_request_detail(request, staff_pk, pk):
+    """銀行情報申請の詳細、承認・却下"""
+    from apps.connect.models import BankRequest
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    bank_request = get_object_or_404(BankRequest, pk=pk, connect_staff__email=staff.email)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'approve':
+            # 承認処理
+            try:
+                # 申請から銀行情報を取得
+                bank_profile = bank_request.staff_bank_profile
+
+                # スタッフの銀行情報を更新または作成
+                staff_bank, created = StaffBank.objects.update_or_create(
+                    staff=staff,
+                    defaults={
+                        'bank_code': bank_profile.bank_code,
+                        'branch_code': bank_profile.branch_code,
+                        'account_type': bank_profile.account_type,
+                        'account_number': bank_profile.account_number,
+                        'account_holder': bank_profile.account_holder,
+                    }
+                )
+
+                # 申請ステータスを更新
+                bank_request.status = 'approved'
+                bank_request.save()
+
+                log_model_action(request.user, 'update', staff_bank)
+                messages.success(request, f'銀行情報申請を承認し、{staff.name}の銀行情報を更新しました。')
+            except Exception as e:
+                messages.error(request, f'承認処理中にエラーが発生しました: {e}')
+
+        elif action == 'reject':
+            # 却下処理
+            bank_request.status = 'rejected'
+            bank_request.save()
+            log_model_action(request.user, 'update', bank_request)
+            messages.warning(request, '銀行情報申請を却下しました。')
+
+        return redirect('staff:staff_detail', pk=staff.pk)
+
+    context = {
+        'staff': staff,
+        'bank_request': bank_request,
+    }
+    return render(request, 'staff/staff_bank_request_detail.html', context)
 
 
 @login_required
