@@ -309,8 +309,13 @@ class StaffQualification(MyModel):
         from django.utils import timezone
         return self.expiry_date < timezone.now().date()
     
-    def is_expiring_soon(self, days=30):
-        """資格が間もなく期限切れかどうか（デフォルト30日以内）"""
+    @property
+    def is_expiring_soon(self):
+        """資格が間もなく期限切れかどうか（30日以内）"""
+        return self.is_expiring_soon_within_days(30)
+    
+    def is_expiring_soon_within_days(self, days=30):
+        """資格が指定日数以内に期限切れかどうか"""
         if not self.expiry_date:
             return False
         from django.utils import timezone
@@ -434,8 +439,13 @@ class StaffInternational(MyModel):
         from django.utils import timezone
         return self.residence_period_to < timezone.now().date()
 
-    def is_expiring_soon(self, days=30):
-        """在留期限が間もなく切れるかどうか（デフォルト30日以内）"""
+    @property
+    def is_expiring_soon(self):
+        """在留期限が間もなく切れるかどうか（30日以内）"""
+        return self.is_expiring_soon_within_days(30)
+    
+    def is_expiring_soon_within_days(self, days=30):
+        """在留期限が指定日数以内に切れるかどうか"""
         from django.utils import timezone
         from datetime import timedelta
         return self.residence_period_to <= timezone.now().date() + timedelta(days=days)
