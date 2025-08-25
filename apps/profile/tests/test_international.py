@@ -100,59 +100,10 @@ class StaffProfileInternationalFormTest(TestCase):
             self.assertIn(field, form.errors)
 
 
-class ConnectInternationalRequestModelTest(TestCase):
-    """ConnectInternationalRequestモデルのテスト"""
-    
-    def setUp(self):
-        self.user = User.objects.create_user(
-            username='testuser',
-            email='test@example.com',
-            password='testpass123'
-        )
-        self.staff_profile = StaffProfile.objects.create(
-            user=self.user,
-            name_last='テスト',
-            name_first='太郎',
-            name_kana_last='テスト',
-            name_kana_first='タロウ',
-            email='test@example.com'
-        )
-        self.connect_staff = ConnectStaff.objects.create(
-            corporate_number='1234567890123',
-            email='test@example.com',
-            status='approved'
-        )
-        self.international_profile = StaffProfileInternational.objects.create(
-            staff_profile=self.staff_profile,
-            residence_card_number='TEST1234567890',
-            residence_status='技術・人文知識・国際業務',
-            residence_period_from=date.today(),
-            residence_period_to=date.today() + timedelta(days=365)
-        )
-    
-    def test_create_international_request(self):
-        """外国籍情報申請の作成テスト"""
-        request = ConnectInternationalRequest.objects.create(
-            connect_staff=self.connect_staff,
-            profile_international=self.international_profile,
-            status='pending'
-        )
-        
-        self.assertEqual(request.connect_staff, self.connect_staff)
-        self.assertEqual(request.profile_international, self.international_profile)
-        self.assertEqual(request.status, 'pending')
-        self.assertEqual(request.get_status_display(), '未承認')
-    
-    def test_international_request_str(self):
-        """__str__メソッドのテスト"""
-        request = ConnectInternationalRequest.objects.create(
-            connect_staff=self.connect_staff,
-            profile_international=self.international_profile,
-            status='pending'
-        )
-        
-        expected = f"{self.connect_staff} - {self.international_profile} (未承認)"
-        self.assertEqual(str(request), expected)
+# ConnectInternationalRequestモデルのテストは申請プロセス削除により不要
+# class ConnectInternationalRequestModelTest(TestCase):
+#     """ConnectInternationalRequestモデルのテスト（申請プロセス削除により無効化）"""
+#     pass
 
 
 class InternationalViewTest(TestCase):
@@ -237,11 +188,6 @@ class InternationalViewTest(TestCase):
         international = StaffProfileInternational.objects.get(staff_profile=self.staff_profile)
         self.assertEqual(international.residence_card_number, 'POST1234567890')
         self.assertEqual(international.residence_status, '留学')
-        
-        # 申請が作成されているか確認
-        request = ConnectInternationalRequest.objects.get(connect_staff=self.connect_staff)
-        self.assertEqual(request.profile_international, international)
-        self.assertEqual(request.status, 'pending')
     
     def test_international_edit_view_post_invalid(self):
         """外国籍情報編集ビュー（POST・不正データ）のテスト"""
@@ -290,12 +236,12 @@ class InternationalViewTest(TestCase):
         )
     
     def test_international_view_without_connect_staff(self):
-        """ConnectStaffなしでのアクセステスト"""
+        """ConnectStaffなしでのアクセステスト（現在は不要だが互換性のため残す）"""
         # ConnectStaffを削除
         self.connect_staff.delete()
         
         response = self.client.get(reverse('profile:international_detail'))
-        self.assertEqual(response.status_code, 302)  # リダイレクト
+        self.assertEqual(response.status_code, 200)  # 正常にアクセス可能
     
     def test_international_view_without_permissions(self):
         """権限なしでのアクセステスト"""
@@ -368,22 +314,17 @@ class InternationalIntegrationTest(TestCase):
         self.assertEqual(international.residence_card_number, 'WORKFLOW1234567890')
         self.assertEqual(international.residence_status, '特定技能')
         
-        # 4. 申請が作成されているか確認
-        request = ConnectInternationalRequest.objects.get(connect_staff=self.connect_staff)
-        self.assertEqual(request.profile_international, international)
-        self.assertEqual(request.status, 'pending')
-        
-        # 5. 詳細画面でデータあり確認
+        # 4. 詳細画面でデータあり確認
         response = self.client.get(reverse('profile:international_detail'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'WORKFLOW1234567890')
         self.assertContains(response, '特定技能')
         
-        # 6. 削除処理
+        # 5. 削除処理
         response = self.client.post(reverse('profile:international_delete'))
         self.assertEqual(response.status_code, 302)
         
-        # 7. データが削除されているか確認
+        # 6. データが削除されているか確認
         self.assertFalse(
             StaffProfileInternational.objects.filter(staff_profile=self.staff_profile).exists()
         )
