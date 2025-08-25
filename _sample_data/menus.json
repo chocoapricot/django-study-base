@@ -324,7 +324,7 @@
         "updated_at": "2025-08-26T15:00:00.000Z",
         "updated_by": 1,
         "name": "外国籍情報",
-        "url": "/profile/international/edit/",
+        "url": "/profile/international/",
         "icon": "bi-send",
         "icon_style": "color:#17a2b8;",
         "parent": null,

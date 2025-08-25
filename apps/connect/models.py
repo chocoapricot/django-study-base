@@ -5,8 +5,7 @@ from django.utils import timezone
 
 from apps.common.models import MyModel
 from apps.staff.models import Staff
-from apps.profile.models import ProfileMynumber, StaffProfile, StaffProfileInternational
-
+from apps.profile.models import ProfileMynumber, StaffProfile, StaffProfileInternational, StaffBankProfile
 
 class ConnectStaff(MyModel):
     """
@@ -113,7 +112,6 @@ class ConnectStaff(MyModel):
         self.bankrequest_set.all().delete()
 
 
-from apps.profile.apps_profile_staff_bank import StaffBankProfile
 
 
 class BankRequest(MyModel):

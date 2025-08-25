@@ -281,7 +281,6 @@ class ProfileMynumber(MyModel):
     スタッフのマイナンバー情報を管理するモデル。
     Userモデルと1対1で連携し、暗号化して保存することを想定（要追加実装）。
     """
-    
     user = models.OneToOneField(
         User, 
         on_delete=models.CASCADE, 
@@ -323,14 +322,19 @@ class ProfileMynumber(MyModel):
 class StaffProfileInternational(MyModel):
     """
     スタッフの外国籍情報を管理するモデル。
-    StaffProfileモデルと1対1で連携し、在留カード情報を保存する。
+    Userモデルと1対1で連携し、在留カード情報を保存する。
     """
 
-    staff_profile = models.OneToOneField(
-        StaffProfile,
+    user = models.OneToOneField(
+        User,
         on_delete=models.CASCADE,
-        verbose_name='スタッフプロフィール',
-        related_name='international'
+        verbose_name='ユーザー',
+        related_name='staff_international'
+    )
+    email = models.EmailField(
+        verbose_name='メールアドレス',
+        help_text='メールアドレス（ログインユーザーと同じ）',
+        default=''
     )
     residence_card_number = models.CharField(
         max_length=20,
@@ -357,4 +361,118 @@ class StaffProfileInternational(MyModel):
         db_table = 'apps_profile_staff_international'
 
     def __str__(self):
-        return f"{self.staff_profile} - 外国籍情報"
+        return f"{self.user.username} - 外国籍情報"
+    
+    def save(self, *args, **kwargs):
+        # ユーザーのメールアドレスと同期
+        if self.user:
+            self.email = self.user.email
+        super().save(*args, **kwargs)
+
+
+
+class StaffBankProfile(MyModel):
+    """
+    スタッフの銀行プロフィール情報を管理するモデル。
+    Userと1対1で連携し、振込先銀行情報を保存する。
+    """
+
+    user = models.OneToOneField(
+        User, 
+        on_delete=models.CASCADE, 
+        verbose_name='ユーザー',
+        related_name='staff_bank'
+    )
+
+    bank_code = models.CharField(
+        max_length=4,
+        verbose_name='銀行コード',
+        help_text='4桁の数字で入力（任意）',
+        blank=True,
+        null=True,
+        validators=[
+            RegexValidator(
+                regex=r'^\d{4}$',
+                message='銀行コードは4桁の数字で入力してください'
+            )
+        ]
+    )
+    branch_code = models.CharField(
+        max_length=3,
+        verbose_name='支店コード',
+        help_text='3桁の数字で入力（任意）',
+        blank=True,
+        null=True,
+        validators=[
+            RegexValidator(
+                regex=r'^\d{3}$',
+                message='支店コードは3桁の数字で入力してください'
+            )
+        ]
+    )
+    account_type = models.CharField(
+        max_length=10,
+        verbose_name='口座種別',
+        help_text='普通、当座など'
+    )
+    account_number = models.CharField(
+        max_length=8,
+        verbose_name='口座番号',
+        help_text='1-8桁の数字で入力',
+        validators=[
+            RegexValidator(
+                regex=r'^\d{1,8}$',
+                message='口座番号は1-8桁の数字で入力してください'
+            )
+        ]
+    )
+    account_holder = models.CharField(
+        max_length=100,
+        verbose_name='口座名義',
+        help_text='口座名義人の名前'
+    )
+
+    class Meta:
+        verbose_name = 'スタッフ銀行プロフィール'
+        verbose_name_plural = 'スタッフ銀行プロフィール'
+        db_table = 'apps_profile_staff_bank'
+
+    def __str__(self):
+        return f"{self.staff_profile} - 銀行情報"
+
+    @property
+    def bank_name(self):
+        """銀行名を取得"""
+        if not self.bank_code:
+            return ''
+        try:
+            from apps.master.models import Bank
+            bank = Bank.objects.get(bank_code=self.bank_code, is_active=True)
+            return bank.name
+        except Bank.DoesNotExist:
+            return f'銀行コード: {self.bank_code}'
+
+    @property
+    def branch_name(self):
+        """支店名を取得"""
+        if not self.bank_code or not self.branch_code:
+            return ''
+        try:
+            from apps.master.models import Bank, BankBranch
+            bank = Bank.objects.get(bank_code=self.bank_code, is_active=True)
+            branch = BankBranch.objects.get(bank=bank, branch_code=self.branch_code, is_active=True)
+            return branch.name
+        except (Bank.DoesNotExist, BankBranch.DoesNotExist):
+            return f'支店コード: {self.branch_code}'
+
+    @property
+    def full_bank_info(self):
+        """完全な銀行情報"""
+        parts = []
+        if self.bank_name:
+            parts.append(self.bank_name)
+        if self.branch_name:
+            parts.append(self.branch_name)
+        if parts:
+            return ' '.join(parts)
+        return '銀行情報なし'
