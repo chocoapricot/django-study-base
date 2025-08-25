@@ -44,8 +44,8 @@
                         <td><strong>マイナンバー</strong></td>
                         <td>
                             {% if staff_mynumber %}
-                                <span class="text-muted">●●●●●●●●●●●●</span>
-                                <small class="text-muted d-block">（セキュリティのため非表示）</small>
+                                {{ staff_mynumber.mynumber }}
+                                <small class="text-muted d-block">（現在登録済み）</small>
                             {% else %}
                                 <span class="text-muted">未登録</span>
                             {% endif %}
@@ -53,12 +53,12 @@
                         <td>
                             {% if staff_mynumber.mynumber != mynumber_request.profile_mynumber.mynumber or not staff_mynumber %}
                                 <span class="text-primary fw-bold">
-                                    <span class="text-muted">●●●●●●●●●●●●</span>
-                                    <small class="text-primary d-block">（新しいマイナンバーが申請されています）</small>
+                                    {{ mynumber_request.profile_mynumber.mynumber }}
+                                    <small class="text-primary d-block">（申請されたマイナンバー）</small>
                                 </span>
                                 <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
                             {% else %}
-                                <span class="text-muted">●●●●●●●●●●●●</span>
+                                {{ mynumber_request.profile_mynumber.mynumber }}
                                 <small class="text-muted d-block">（変更なし）</small>
                             {% endif %}
                         </td>
@@ -86,7 +86,7 @@
         <div class="alert alert-warning mt-3" role="alert">
             <i class="bi bi-shield-exclamation"></i>
             <strong>セキュリティ上の注意</strong><br>
-            マイナンバーは個人情報保護の観点から画面上では非表示にしています。承認処理により、申請されたマイナンバーでスタッフマイナンバーが更新されます。
+            マイナンバーは承認画面でのみ表示されます。承認処理により、申請されたマイナンバーでスタッフマイナンバーが更新されます。
         </div>
 
         <!-- 申請情報 -->
