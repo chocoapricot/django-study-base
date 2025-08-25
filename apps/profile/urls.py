@@ -13,6 +13,9 @@ urlpatterns = [
     path('international/', views.international_detail, name='international_detail'),
     path('international/edit/', views.international_edit, name='international_edit'),
     path('international/delete/', views.international_delete, name='international_delete'),
+    path('bank/', views.bank_detail, name='bank_detail'),
+    path('bank/edit/', views.bank_edit, name='bank_edit'),
+    path('bank/delete/', views.bank_delete, name='bank_delete'),
 
     # 資格
     path('qualification/', views_profile.profile_qualification_list, name='qualification_list'),

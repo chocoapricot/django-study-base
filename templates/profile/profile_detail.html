@@ -98,6 +98,11 @@
             <a href="/" class="btn btn-sm btn-secondary">戻る</a>
         </div>
     </div>
+    <div class="card-footer">
+        <a href="{% url 'profile:mynumber_detail' %}" class="btn btn-sm btn-outline-secondary">マイナンバー</a>
+        <a href="{% url 'profile:bank_detail' %}" class="btn btn-sm btn-outline-secondary">銀行口座</a>
+        <a href="{% url 'profile:international_detail' %}" class="btn btn-sm btn-outline-secondary">外国籍情報</a>
+    </div>
 </div>
 
 {% endblock %}

@@ -1,11 +1,12 @@
 from django import forms
-from allauth.account.forms import SignupForm, ResetPasswordForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from .models import MyUser
 
 User = get_user_model()
+
+from allauth.account.forms import SignupForm, ResetPasswordForm
 
 class MySignupForm(SignupForm):
     last_name = forms.CharField(max_length=30, label='姓', required=True)
