@@ -1,0 +1,50 @@
+{% extends 'common/_base.html' %}
+
+{% block title %}スタッフ外国籍情報削除確認{% endblock %}
+
+{% block content %}
+
+{% include 'staff/_staff_info_card.html' with staff=staff %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        スタッフ外国籍情報削除確認
+    </div>
+    <div class="card-body">
+
+        <div class="alert alert-warning mt-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            このスタッフの外国籍情報を削除しますか？この操作は取り消せません。
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end">在留カード番号</label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ international.residence_card_number }}</p>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end">在留資格</label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ international.residence_status }}</p>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end">在留期間</label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ international.residence_period_from|date:"Y年m月d日" }} ～ {{ international.residence_period_to|date:"Y年m月d日" }}</p>
+            </div>
+        </div>
+
+        <form method="post" class="mt-4">
+            {% csrf_token %}
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-dark">削除する</button>
+                <a href="{% url 'staff:staff_international_detail' staff_id=staff.pk %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

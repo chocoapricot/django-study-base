@@ -142,6 +142,11 @@ class Staff(MyModel):
         """マイナンバーが登録されているかどうかを返す"""
         return hasattr(self, 'mynumber')
 
+    @property
+    def has_international(self):
+        """外国籍情報が登録されているかどうかを返す"""
+        return hasattr(self, 'international')
+
 
 from apps.common.models import MyModel
 import uuid
@@ -304,7 +309,6 @@ class StaffQualification(MyModel):
         from django.utils import timezone
         return self.expiry_date < timezone.now().date()
     
-    @property
     def is_expiring_soon(self, days=30):
         """資格が間もなく期限切れかどうか（デフォルト30日以内）"""
         if not self.expiry_date:
@@ -383,3 +387,55 @@ class StaffMynumber(MyModel):
 
     def __str__(self):
         return f"{self.staff} - マイナンバー"
+
+
+class StaffInternational(MyModel):
+    """
+    スタッフの外国籍情報を管理するモデル。
+    Staffモデルと1対1で連携し、在留カード情報を保存する。
+    """
+
+    staff = models.OneToOneField(
+        Staff,
+        on_delete=models.CASCADE,
+        verbose_name='スタッフ',
+        related_name='international'
+    )
+    residence_card_number = models.CharField(
+        max_length=20,
+        verbose_name='在留カード番号',
+        help_text='在留カード番号を入力してください'
+    )
+    residence_status = models.CharField(
+        max_length=100,
+        verbose_name='在留資格',
+        help_text='在留資格を入力してください'
+    )
+    residence_period_from = models.DateField(
+        verbose_name='在留許可開始日',
+        help_text='在留許可の開始日を入力してください'
+    )
+    residence_period_to = models.DateField(
+        verbose_name='在留期限',
+        help_text='在留期間の終了日（在留期限）を入力してください'
+    )
+
+    class Meta:
+        verbose_name = 'スタッフ外国籍情報'
+        verbose_name_plural = 'スタッフ外国籍情報'
+        db_table = 'apps_staff_international'
+
+    def __str__(self):
+        return f"{self.staff} - 外国籍情報"
+
+    @property
+    def is_expired(self):
+        """在留期限が切れているかどうか"""
+        from django.utils import timezone
+        return self.residence_period_to < timezone.now().date()
+
+    def is_expiring_soon(self, days=30):
+        """在留期限が間もなく切れるかどうか（デフォルト30日以内）"""
+        from django.utils import timezone
+        from datetime import timedelta
+        return self.residence_period_to <= timezone.now().date() + timedelta(days=days)

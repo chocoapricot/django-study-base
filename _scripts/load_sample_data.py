@@ -42,6 +42,7 @@ def main():
         "_sample_data/company.json",
         "_sample_data/company_department.json",
         "_sample_data/staff.json",
+        "_sample_data/staff_international.json",
         "_sample_data/staff_contacted.json",
         "_sample_data/client.json",
         "_sample_data/client_contacted.json",
@@ -77,6 +78,7 @@ def main():
         ("python manage.py loaddata _sample_data/company.json", "会社データ"),
         ("python manage.py loaddata _sample_data/company_department.json", "部署データ"),
         ("python manage.py loaddata _sample_data/staff.json", "スタッフデータ"),
+        ("python manage.py loaddata _sample_data/staff_international.json", "スタッフ外国籍情報データ"),
         ("python manage.py loaddata _sample_data/staff_contacted.json", "スタッフ連絡履歴データ"),
         ("python manage.py loaddata _sample_data/client.json", "クライアントデータ"),
         ("python manage.py loaddata _sample_data/client_department.json", "クライアント組織データ"),
@@ -106,6 +108,7 @@ def main():
     print("- 会社データ")
     print("- 部署データ")
     print("- スタッフデータ")
+    print("- スタッフ外国籍情報")
     print("- スタッフ連絡履歴")
     print("- クライアントデータ")
     print("- クライアント組織データ")

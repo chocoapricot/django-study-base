@@ -10,8 +10,8 @@ from django.db.models import Q
 from django.contrib import messages
 from apps.system.logs.utils import log_model_action
 
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber
-from .forms import StaffForm, StaffContactedForm, StaffFileForm, StaffMynumberForm
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffInternational
+from .forms import StaffForm, StaffContactedForm, StaffFileForm, StaffMynumberForm, StaffInternationalForm
 from apps.system.settings.utils import my_parameter
 from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
@@ -32,6 +32,7 @@ def staff_change_history_list(request, pk):
         django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffMynumber', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffInternational', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')
@@ -183,6 +184,10 @@ def staff_list(request):
             staff.has_pending_profile_request = False
             staff.has_pending_connection_request = False
 
+    # 各スタッフの外国籍情報登録状況を判定
+    for staff in staffs_pages:
+        staff.has_international_info = hasattr(staff, 'international')
+
     return render(request, 'staff/staff_list.html', {
         'staffs': staffs_pages, 
         'query': query, 
@@ -291,6 +296,7 @@ def staff_detail(request, pk):
         django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffMynumber', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffInternational', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')[:5]
@@ -300,6 +306,7 @@ def staff_detail(request, pk):
         django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffMynumber', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffInternational', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
     ).count()
@@ -993,3 +1000,97 @@ def staff_profile_request_detail(request, staff_pk, pk):
         'profile_request': profile_request,
     }
     return render(request, 'staff/staff_profile_request_detail.html', context)
+
+
+# ===== スタッフ外国籍情報関連ビュー =====
+
+@login_required
+@permission_required('staff.view_staffinternational', raise_exception=True)
+def staff_international_detail(request, staff_id):
+    """スタッフの外国籍情報詳細表示"""
+    staff = get_object_or_404(Staff, pk=staff_id)
+    try:
+        international = StaffInternational.objects.get(staff=staff)
+    except StaffInternational.DoesNotExist:
+        # 未登録の場合は登録画面へリダイレクト
+        return redirect('staff:staff_international_create', staff_id=staff.pk)
+
+    context = {
+        'staff': staff,
+        'international': international,
+    }
+    return render(request, 'staff/staff_international_detail.html', context)
+
+
+@login_required
+@permission_required('staff.add_staffinternational', raise_exception=True)
+def staff_international_create(request, staff_id):
+    """スタッフの外国籍情報登録"""
+    staff = get_object_or_404(Staff, pk=staff_id)
+    # 既に登録済みの場合は編集画面へリダイレクト
+    if hasattr(staff, 'international'):
+        return redirect('staff:staff_international_edit', staff_id=staff.pk)
+
+    if request.method == 'POST':
+        form = StaffInternationalForm(request.POST)
+        if form.is_valid():
+            international = form.save(commit=False)
+            international.staff = staff
+            international.save()
+            # 変更履歴(AppLog)に記録
+            log_model_action(request.user, 'create', international)
+            messages.success(request, '外国籍情報を登録しました。')
+            return redirect('staff:staff_international_detail', staff_id=staff.pk)
+    else:
+        form = StaffInternationalForm()
+
+    context = {
+        'form': form,
+        'staff': staff,
+        'is_new': True,
+    }
+    return render(request, 'staff/staff_international_form.html', context)
+
+
+@login_required
+@permission_required('staff.change_staffinternational', raise_exception=True)
+def staff_international_edit(request, staff_id):
+    """スタッフの外国籍情報編集"""
+    staff = get_object_or_404(Staff, pk=staff_id)
+    international = get_object_or_404(StaffInternational, staff=staff)
+
+    if request.method == 'POST':
+        form = StaffInternationalForm(request.POST, instance=international)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '外国籍情報を更新しました。')
+            return redirect('staff:staff_international_detail', staff_id=staff.pk)
+    else:
+        form = StaffInternationalForm(instance=international)
+
+    context = {
+        'form': form,
+        'staff': staff,
+        'international': international,
+        'is_new': False,
+    }
+    return render(request, 'staff/staff_international_form.html', context)
+
+
+@login_required
+@permission_required('staff.delete_staffinternational', raise_exception=True)
+def staff_international_delete(request, staff_id):
+    """スタッフの外国籍情報削除確認"""
+    staff = get_object_or_404(Staff, pk=staff_id)
+    international = get_object_or_404(StaffInternational, staff=staff)
+
+    if request.method == 'POST':
+        international.delete()
+        messages.success(request, '外国籍情報を削除しました。')
+        return redirect('staff:staff_detail', pk=staff.pk)
+
+    context = {
+        'staff': staff,
+        'international': international,
+    }
+    return render(request, 'staff/staff_international_confirm_delete.html', context)

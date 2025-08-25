@@ -2,7 +2,7 @@
 import os
 from django import forms
 from django.forms import TextInput
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffInternational
 from django.core.exceptions import ValidationError
 
 # スタッフ連絡履歴フォーム
@@ -410,3 +410,47 @@ class StaffMynumberForm(forms.ModelForm):
                 raise ValidationError('正しいマイナンバーを入力してください。')
 
         return mynumber
+
+
+class StaffInternationalForm(forms.ModelForm):
+    """スタッフ外国籍情報フォーム"""
+
+    class Meta:
+        model = StaffInternational
+        fields = ['residence_card_number', 'residence_status', 'residence_period_from', 'residence_period_to']
+        widgets = {
+            'residence_card_number': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'maxlength': '20'
+            }),
+            'residence_status': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'maxlength': '100'
+            }),
+            'residence_period_from': forms.DateInput(attrs={
+                'class': 'form-control form-control-sm',
+                'type': 'date'
+            }),
+            'residence_period_to': forms.DateInput(attrs={
+                'class': 'form-control form-control-sm',
+                'type': 'date'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # 必須フィールドの設定
+        for field in self.fields:
+            self.fields[field].required = True
+
+    def clean(self):
+        """在留期間の妥当性チェック"""
+        cleaned_data = super().clean()
+        residence_period_from = cleaned_data.get('residence_period_from')
+        residence_period_to = cleaned_data.get('residence_period_to')
+
+        if residence_period_from and residence_period_to:
+            if residence_period_from >= residence_period_to:
+                raise forms.ValidationError('在留許可開始日は在留期限より前の日付を入力してください。')
+
+        return cleaned_data

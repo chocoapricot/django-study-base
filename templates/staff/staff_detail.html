@@ -12,6 +12,17 @@
                 スタッフ基本情報
                 <ul class="nav nav-pills">
                     <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">その他情報</a>
+                        <div class="dropdown-menu">
+                            <a href="{% url 'staff:staff_mynumber_detail' staff.pk %}" class="dropdown-item">
+                                <i class="bi bi-credit-card"></i>　マイナンバー
+                            </a>
+                            <a href="{% url 'staff:staff_international_detail' staff.pk %}" class="dropdown-item">
+                                <i class="bi bi-globe"></i>　外国籍情報
+                            </a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">印刷</a>
                         <div class="dropdown-menu">
                             <a href="{% url 'staff:staff_rirekisho' staff.pk %}" class="dropdown-item"><i class="bi bi-file-excel"></i>　履歴書　(Excel)</a>
@@ -64,11 +75,14 @@
                                         <span class="copy-target" style="font-size:18px">{{ staff.employee_no }}</span>
                                         <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
                                         <span class="copy-message">コピーしました!</span>
-                                        <a href="{% url 'staff:staff_mynumber_detail' staff.pk %}" class="btn btn-sm btn-outline-primary ms-2" title="マイナンバー">
-                                            <i class="bi bi-credit-card"></i>
-                                        </a>
                                     </span>
                                 {% endif %}
+                                <a href="{% url 'staff:staff_mynumber_detail' staff.pk %}" class="btn btn-sm btn-outline-primary ms-2" title="マイナンバー">
+                                    <i class="bi bi-credit-card"></i>
+                                </a>
+                                <a href="{% url 'staff:staff_international_detail' staff.pk %}" class="btn btn-sm btn-outline-info ms-1" title="外国籍情報">
+                                    <i class="bi bi-globe"></i>
+                                </a>
                             </h4>
                         </div>
                     </div>

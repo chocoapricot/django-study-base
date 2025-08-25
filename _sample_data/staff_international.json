@@ -1,0 +1,50 @@
+[
+    {
+        "model": "staff.staffinternational",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-10-30T12:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2024-10-30T12:00:00.000Z",
+            "updated_by": 1,
+            "version": 1,
+            "staff": 31,
+            "residence_card_number": "SP1506040701",
+            "residence_status": "宣教師",
+            "residence_period_from": "1549-08-15",
+            "residence_period_to": "1551-11-20"
+        }
+    },
+    {
+        "model": "staff.staffinternational",
+        "pk": 2,
+        "fields": {
+            "created_at": "2024-10-30T12:01:00.000Z",
+            "created_by": 1,
+            "updated_at": "2024-10-30T12:01:00.000Z",
+            "updated_by": 1,
+            "version": 1,
+            "staff": 32,
+            "residence_card_number": "PT1532060401",
+            "residence_status": "宣教師・記録者",
+            "residence_period_from": "1563-07-01",
+            "residence_period_to": "1597-07-08"
+        }
+    },
+    {
+        "model": "staff.staffinternational",
+        "pk": 3,
+        "fields": {
+            "created_at": "2024-10-30T12:02:00.000Z",
+            "created_by": 1,
+            "updated_at": "2024-10-30T12:02:00.000Z",
+            "updated_by": 1,
+            "version": 1,
+            "staff": 33,
+            "residence_card_number": "EN1564092401",
+            "residence_status": "外交顧問・船大工",
+            "residence_period_from": "1600-04-19",
+            "residence_period_to": "1620-05-16"
+        }
+    }
+]

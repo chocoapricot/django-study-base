@@ -58,6 +58,10 @@ echo スタッフデータをインポート中...
 python manage.py loaddata _sample_data/staff.json
 if errorlevel 1 goto error
 
+echo スタッフ外国籍情報データをインポート中...
+python manage.py loaddata _sample_data/staff_international.json
+if errorlevel 1 goto error
+
 echo スタッフ連絡履歴データをインポート中...
 python manage.py loaddata _sample_data/staff_contacted.json
 if errorlevel 1 goto error
@@ -102,6 +106,7 @@ echo - 銀行支店マスタ
 echo - 会社データ
 echo - 部署データ
 echo - スタッフデータ
+echo - スタッフ外国籍情報
 echo - スタッフ連絡履歴
 echo - クライアントデータ
 echo - クライアント組織データ
