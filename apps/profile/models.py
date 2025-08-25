@@ -318,3 +318,43 @@ class ProfileMynumber(MyModel):
         if self.user:
             self.email = self.user.email
         super().save(*args, **kwargs)
+
+
+class StaffProfileInternational(MyModel):
+    """
+    スタッフの外国籍情報を管理するモデル。
+    StaffProfileモデルと1対1で連携し、在留カード情報を保存する。
+    """
+
+    staff_profile = models.OneToOneField(
+        StaffProfile,
+        on_delete=models.CASCADE,
+        verbose_name='スタッフプロフィール',
+        related_name='international'
+    )
+    residence_card_number = models.CharField(
+        max_length=20,
+        verbose_name='在留カード番号',
+        help_text='在留カード番号を入力してください'
+    )
+    residence_status = models.CharField(
+        max_length=100,
+        verbose_name='在留資格',
+        help_text='在留資格を入力してください'
+    )
+    residence_period_from = models.DateField(
+        verbose_name='在留許可開始日',
+        help_text='在留許可の開始日を入力してください'
+    )
+    residence_period_to = models.DateField(
+        verbose_name='在留期限',
+        help_text='在留期間の終了日（在留期限）を入力してください'
+    )
+
+    class Meta:
+        verbose_name = 'スタッフ外国籍情報'
+        verbose_name_plural = 'スタッフ外国籍情報'
+        db_table = 'apps_profile_staff_international'
+
+    def __str__(self):
+        return f"{self.staff_profile} - 外国籍情報"
