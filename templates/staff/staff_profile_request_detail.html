@@ -1,94 +1,246 @@
 {% extends 'common/_base.html' %}
-{% load static %}
-{% load connect_tags %}
+{% load dropdowns %}
+{% load badge_tags %}
 
 {% block content %}
-{% include 'staff/_staff_info_card.html' with staff=staff %}
+
+<!-- スタッフ情報カード -->
+{% include 'staff/_staff_info_card.html' %}
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        プロフィール申請の確認
+        <span>プロフィール申請承認</span>
+        <span class="badge bg-warning text-dark">{{ profile_request.get_status_display }}</span>
     </div>
     <div class="card-body">
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end">
+        {% if profile_request.status == 'pending' %}
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle-fill"></i>
+            スタッフから提出されたプロフィール情報を確認し、承認または却下を選択してください。
+        </div>
+        {% elif profile_request.status == 'approved' %}
+        <div class="alert alert-success" role="alert">
+            <i class="bi bi-check-circle-fill"></i>
+            このプロフィール申請は承認済みです。スタッフ情報が更新されています。
+        </div>
+        {% elif profile_request.status == 'rejected' %}
+        <div class="alert alert-danger" role="alert">
+            <i class="bi bi-x-circle-fill"></i>
+            このプロフィール申請は却下されています。
+        </div>
+        {% endif %}
+
+        <!-- 比較表示 -->
+        <h5 class="mt-4 mb-3">情報比較</h5>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 20%;">項目</th>
+                        <th style="width: 40%;">現在のスタッフ情報</th>
+                        <th style="width: 40%;">申請されたプロフィール情報</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>姓</strong></td>
+                        <td>{{ staff.name_last|default:"-" }}</td>
+                        <td>
+                            {% if staff.name_last != profile_request.staff_profile.name_last %}
+                                <span class="text-primary fw-bold">{{ profile_request.staff_profile.name_last|default:"-" }}</span>
+                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
+                            {% else %}
+                                {{ profile_request.staff_profile.name_last|default:"-" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>名</strong></td>
+                        <td>{{ staff.name_first|default:"-" }}</td>
+                        <td>
+                            {% if staff.name_first != profile_request.staff_profile.name_first %}
+                                <span class="text-primary fw-bold">{{ profile_request.staff_profile.name_first|default:"-" }}</span>
+                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
+                            {% else %}
+                                {{ profile_request.staff_profile.name_first|default:"-" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>姓（カナ）</strong></td>
+                        <td>{{ staff.name_kana_last|default:"-" }}</td>
+                        <td>
+                            {% if staff.name_kana_last != profile_request.staff_profile.name_kana_last %}
+                                <span class="text-primary fw-bold">{{ profile_request.staff_profile.name_kana_last|default:"-" }}</span>
+                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
+                            {% else %}
+                                {{ profile_request.staff_profile.name_kana_last|default:"-" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>名（カナ）</strong></td>
+                        <td>{{ staff.name_kana_first|default:"-" }}</td>
+                        <td>
+                            {% if staff.name_kana_first != profile_request.staff_profile.name_kana_first %}
+                                <span class="text-primary fw-bold">{{ profile_request.staff_profile.name_kana_first|default:"-" }}</span>
+                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
+                            {% else %}
+                                {{ profile_request.staff_profile.name_kana_first|default:"-" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>生年月日</strong></td>
+                        <td>{{ staff.birth_date|date:"Y/m/d"|default:"-" }}</td>
+                        <td>
+                            {% if staff.birth_date != profile_request.staff_profile.birth_date %}
+                                <span class="text-primary fw-bold">{{ profile_request.staff_profile.birth_date|date:"Y/m/d"|default:"-" }}</span>
+                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
+                            {% else %}
+                                {{ profile_request.staff_profile.birth_date|date:"Y/m/d"|default:"-" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>性別</strong></td>
+                        <td>
+                            {% if staff.sex %}
+                                {% my_name 'sex' staff.sex %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if staff.sex != profile_request.staff_profile.sex %}
+                                <span class="text-primary fw-bold">
+                                    {% if profile_request.staff_profile.sex %}
+                                        {% my_name 'sex' profile_request.staff_profile.sex %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </span>
+                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
+                            {% else %}
+                                {% if profile_request.staff_profile.sex %}
+                                    {% my_name 'sex' profile_request.staff_profile.sex %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>郵便番号</strong></td>
+                        <td>{{ staff.postal_code|default:"-" }}</td>
+                        <td>
+                            {% if staff.postal_code != profile_request.staff_profile.postal_code %}
+                                <span class="text-primary fw-bold">{{ profile_request.staff_profile.postal_code|default:"-" }}</span>
+                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
+                            {% else %}
+                                {{ profile_request.staff_profile.postal_code|default:"-" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>都道府県</strong></td>
+                        <td>{{ staff.address1|default:"-" }}</td>
+                        <td>
+                            {% if staff.address1 != profile_request.staff_profile.address1 %}
+                                <span class="text-primary fw-bold">{{ profile_request.staff_profile.address1|default:"-" }}</span>
+                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
+                            {% else %}
+                                {{ profile_request.staff_profile.address1|default:"-" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>市区町村</strong></td>
+                        <td>{{ staff.address2|default:"-" }}</td>
+                        <td>
+                            {% if staff.address2 != profile_request.staff_profile.address2 %}
+                                <span class="text-primary fw-bold">{{ profile_request.staff_profile.address2|default:"-" }}</span>
+                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
+                            {% else %}
+                                {{ profile_request.staff_profile.address2|default:"-" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>番地・建物名</strong></td>
+                        <td>{{ staff.address3|default:"-" }}</td>
+                        <td>
+                            {% if staff.address3 != profile_request.staff_profile.address3 %}
+                                <span class="text-primary fw-bold">{{ profile_request.staff_profile.address3|default:"-" }}</span>
+                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
+                            {% else %}
+                                {{ profile_request.staff_profile.address3|default:"-" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>電話番号</strong></td>
+                        <td>{{ staff.phone|default:"-" }}</td>
+                        <td>
+                            {% if staff.phone != profile_request.staff_profile.phone %}
+                                <span class="text-primary fw-bold">{{ profile_request.staff_profile.phone|default:"-" }}</span>
+                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
+                            {% else %}
+                                {{ profile_request.staff_profile.phone|default:"-" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 申請情報 -->
+        <h5 class="mt-4 mb-3">申請情報</h5>
+        <div class="row mb-3">
+            <div class="col-sm-3 text-end">
                 <strong>申請日時</strong>
             </div>
-            <div class="col-sm-10">
-                {{ profile_request.created_at|date:"Y/m/d H:i" }}
+            <div class="col-sm-9">
+                {{ profile_request.created_at|date:"Y/m/d H:i:s" }}
             </div>
         </div>
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end">
-                <strong>現在のステータス</strong>
+        <div class="row mb-3">
+            <div class="col-sm-3 text-end">
+                <strong>申請者</strong>
             </div>
-            <div class="col-sm-10">
-                <span class="badge bg-warning text-dark">{{ profile_request.get_status_display }}</span>
+            <div class="col-sm-9">
+                {{ profile_request.staff_profile.user.last_name }} {{ profile_request.staff_profile.user.first_name }}
+                ({{ profile_request.staff_profile.user.email }})
             </div>
         </div>
 
-        <h5>申請内容</h5>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>項目</th>
-                    <th>現在の情報</th>
-                    <th>申請された情報</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="{% diff_class staff.name_last profile_request.staff_profile.name_last %}{% diff_class staff.name_first profile_request.staff_profile.name_first %}">
-                    <td>氏名</td>
-                    <td>{{ staff.name_last }} {{ staff.name_first }}</td>
-                    <td>{{ profile_request.staff_profile.name_last }} {{ profile_request.staff_profile.name_first }}</td>
-                </tr>
-                <tr class="{% diff_class staff.name_kana_last profile_request.staff_profile.name_kana_last %}{% diff_class staff.name_kana_first profile_request.staff_profile.name_kana_first %}">
-                    <td>氏名（カナ）</td>
-                    <td>{{ staff.name_kana_last }} {{ staff.name_kana_first }}</td>
-                    <td>{{ profile_request.staff_profile.name_kana_last }} {{ profile_request.staff_profile.name_kana_first }}</td>
-                </tr>
-                <tr class="{% diff_class staff.birth_date profile_request.staff_profile.birth_date %}">
-                    <td>生年月日</td>
-                    <td>{{ staff.birth_date }}</td>
-                    <td>{{ profile_request.staff_profile.birth_date }}</td>
-                </tr>
-                <tr class="{% diff_class staff.sex profile_request.staff_profile.sex %}">
-                    <td>性別</td>
-                    <td>{{ staff.sex_display }}</td>
-                    <td>{{ profile_request.staff_profile.sex_display }}</td>
-                </tr>
-                <tr class="{% diff_class staff.postal_code profile_request.staff_profile.postal_code %}">
-                    <td>郵便番号</td>
-                    <td>{{ staff.postal_code }}</td>
-                    <td>{{ profile_request.staff_profile.postal_code }}</td>
-                </tr>
-                <tr class="{% diff_class staff.address1 profile_request.staff_profile.address1 %}{% diff_class staff.address2 profile_request.staff_profile.address2 %}{% diff_class staff.address3 profile_request.staff_profile.address3 %}">
-                    <td>住所</td>
-                    <td>{{ staff.address1 }}{{ staff.address2 }}{{ staff.address3 }}</td>
-                    <td>{{ profile_request.staff_profile.address1 }}{{ profile_request.staff_profile.address2 }}{{ profile_request.staff_profile.address3 }}</td>
-                </tr>
-                <tr class="{% diff_class staff.phone profile_request.staff_profile.phone %}">
-                    <td>電話番号</td>
-                    <td>{{ staff.phone }}</td>
-                    <td>{{ profile_request.staff_profile.phone }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- 承認・却下ボタン -->
+        {% if profile_request.status == 'pending' %}
+        <div class="d-flex justify-content-start mt-4">
+            <form method="post" class="me-2">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="approve">
+                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('プロフィール申請を承認し、スタッフ情報を更新しますか？')">
+                    <i class="bi bi-check-circle"></i> 承認
+                </button>
+            </form>
+            <form method="post" class="me-2">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reject">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('プロフィール申請を却下しますか？')">
+                    <i class="bi bi-x-circle"></i> 却下
+                </button>
+            </form>
+        </div>
+        {% endif %}
 
-        <form method="post">
-            {% csrf_token %}
-            <div class="d-flex justify-content-start mt-4">
-                <button type="submit" name="action" value="approve" class="btn btn-sm btn-success me-2">
-                    承認
-                </button>
-                <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger me-2">
-                    却下
-                </button>
-                <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">
-                    戻る
-                </a>
+        <!-- 戻るボタン -->
+        <div class="row mt-3">
+            <div class="col text-left">
+                <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
             </div>
-        </form>
+        </div>
     </div>
 </div>
+
 {% endblock %}

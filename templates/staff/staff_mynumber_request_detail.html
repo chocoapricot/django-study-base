@@ -1,54 +1,153 @@
 {% extends 'common/_base.html' %}
-{% load static %}
 
 {% block content %}
-{% include 'staff/_staff_info_card.html' with staff=staff %}
+
+<!-- スタッフ情報カード -->
+{% include 'staff/_staff_info_card.html' %}
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        マイナンバー申請の確認
+        <span>マイナンバー申請承認</span>
+        <span class="badge bg-warning text-dark">{{ mynumber_request.get_status_display }}</span>
     </div>
     <div class="card-body">
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end">
+        {% if mynumber_request.status == 'pending' %}
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle-fill"></i>
+            スタッフから提出されたマイナンバー情報を確認し、承認または却下を選択してください。
+        </div>
+        {% elif mynumber_request.status == 'approved' %}
+        <div class="alert alert-success" role="alert">
+            <i class="bi bi-check-circle-fill"></i>
+            このマイナンバー申請は承認済みです。スタッフマイナンバー情報が更新されています。
+        </div>
+        {% elif mynumber_request.status == 'rejected' %}
+        <div class="alert alert-danger" role="alert">
+            <i class="bi bi-x-circle-fill"></i>
+            このマイナンバー申請は却下されています。
+        </div>
+        {% endif %}
+
+        <!-- 比較表示 -->
+        <h5 class="mt-4 mb-3">マイナンバー比較</h5>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 20%;">項目</th>
+                        <th style="width: 40%;">現在のスタッフマイナンバー</th>
+                        <th style="width: 40%;">申請されたマイナンバー</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>マイナンバー</strong></td>
+                        <td>
+                            {% if staff_mynumber %}
+                                <span class="text-muted">●●●●●●●●●●●●</span>
+                                <small class="text-muted d-block">（セキュリティのため非表示）</small>
+                            {% else %}
+                                <span class="text-muted">未登録</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if staff_mynumber.mynumber != mynumber_request.profile_mynumber.mynumber or not staff_mynumber %}
+                                <span class="text-primary fw-bold">
+                                    <span class="text-muted">●●●●●●●●●●●●</span>
+                                    <small class="text-primary d-block">（新しいマイナンバーが申請されています）</small>
+                                </span>
+                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
+                            {% else %}
+                                <span class="text-muted">●●●●●●●●●●●●</span>
+                                <small class="text-muted d-block">（変更なし）</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>登録状況</strong></td>
+                        <td>
+                            {% if staff_mynumber %}
+                                <span class="badge bg-success">登録済み</span>
+                                <small class="text-muted d-block">{{ staff_mynumber.created_at|date:"Y/m/d H:i:s" }} 登録</small>
+                            {% else %}
+                                <span class="badge bg-secondary">未登録</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-info">申請中</span>
+                            <small class="text-muted d-block">{{ mynumber_request.profile_mynumber.created_at|date:"Y/m/d H:i:s" }} 申請</small>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- セキュリティ注意事項 -->
+        <div class="alert alert-warning mt-3" role="alert">
+            <i class="bi bi-shield-exclamation"></i>
+            <strong>セキュリティ上の注意</strong><br>
+            マイナンバーは個人情報保護の観点から画面上では非表示にしています。承認処理により、申請されたマイナンバーでスタッフマイナンバーが更新されます。
+        </div>
+
+        <!-- 申請情報 -->
+        <h5 class="mt-4 mb-3">申請情報</h5>
+        <div class="row mb-3">
+            <div class="col-sm-3 text-end">
                 <strong>申請日時</strong>
             </div>
-            <div class="col-sm-10">
-                {{ mynumber_request.created_at|date:"Y/m/d H:i" }}
+            <div class="col-sm-9">
+                {{ mynumber_request.created_at|date:"Y/m/d H:i:s" }}
             </div>
         </div>
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end">
-                <strong>申請されたマイナンバー</strong>
+        <div class="row mb-3">
+            <div class="col-sm-3 text-end">
+                <strong>申請者</strong>
             </div>
-            <div class="col-sm-10">
-                <span class="h4 text-monospace bg-light p-2 rounded">{{ mynumber_request.profile_mynumber.mynumber }}</span>
-                <small class="form-text text-muted">この番号でスタッフのマイナンバーを上書きします。</small>
+            <div class="col-sm-9">
+                {{ mynumber_request.profile_mynumber.user.last_name }} {{ mynumber_request.profile_mynumber.user.first_name }}
+                ({{ mynumber_request.profile_mynumber.user.email }})
             </div>
         </div>
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end">
-                <strong>現在のステータス</strong>
+        <div class="row mb-3">
+            <div class="col-sm-3 text-end">
+                <strong>申請内容</strong>
             </div>
-            <div class="col-sm-10">
-                <span class="badge bg-warning text-dark">{{ mynumber_request.get_status_display }}</span>
+            <div class="col-sm-9">
+                {% if staff_mynumber %}
+                    マイナンバーの更新申請
+                {% else %}
+                    マイナンバーの新規登録申請
+                {% endif %}
             </div>
         </div>
 
-        <form method="post">
-            {% csrf_token %}
-            <div class="d-flex justify-content-start mt-4">
-                <button type="submit" name="action" value="approve" class="btn btn-sm btn-success me-2">
-                    承認
+        <!-- 承認・却下ボタン -->
+        {% if mynumber_request.status == 'pending' %}
+        <div class="d-flex justify-content-start mt-4">
+            <form method="post" class="me-2">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="approve">
+                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('マイナンバー申請を承認し、スタッフマイナンバー情報を更新しますか？')">
+                    <i class="bi bi-check-circle"></i> 承認
                 </button>
-                <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger me-2">
-                    却下
+            </form>
+            <form method="post" class="me-2">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reject">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('マイナンバー申請を却下しますか？')">
+                    <i class="bi bi-x-circle"></i> 却下
                 </button>
-                <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">
-                    戻る
-                </a>
+            </form>
+        </div>
+        {% endif %}
+
+        <!-- 戻るボタン -->
+        <div class="row mt-3">
+            <div class="col text-left">
+                <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
             </div>
-        </form>
+        </div>
     </div>
 </div>
+
 {% endblock %}
