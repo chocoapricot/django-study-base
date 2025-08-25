@@ -112,7 +112,7 @@ class ClientDepartmentForm(forms.ModelForm):
             'phone_number': forms.TextInput(attrs={
                 'class': 'form-control form-control-sm',
                 'inputmode': 'numeric',
-                'pattern': '[0-9\-]*',
+                'pattern': r'[0-9\-]*',
                 'style': 'ime-mode:disabled;',
                 'autocomplete': 'off',
             }),
@@ -165,7 +165,7 @@ class ClientUserForm(forms.ModelForm):
             'phone_number': forms.TextInput(attrs={
                 'class': 'form-control form-control-sm',
                 'inputmode': 'numeric',
-                'pattern': '[0-9\-]*',
+                'pattern': r'[0-9\-]*',
                 'style': 'ime-mode:disabled;',
                 'autocomplete': 'off',
             }),
