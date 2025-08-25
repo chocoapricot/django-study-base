@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.urls import reverse
-from .models import StaffProfile, ProfileMynumber
-from .forms import StaffProfileForm, ProfileMynumberForm
+from .models import StaffProfile, ProfileMynumber, StaffProfileInternational
+from .forms import StaffProfileForm, ProfileMynumberForm, StaffProfileInternationalForm
 
 
 @login_required
@@ -152,3 +152,140 @@ def mynumber_delete(request):
         'mynumber': mynumber,
     }
     return render(request, 'profile/mynumber_delete.html', context)
+
+
+@login_required
+@permission_required('profile.add_staffprofileinternational', raise_exception=True)
+@permission_required('profile.change_staffprofileinternational', raise_exception=True)
+def international_edit(request):
+    """外国籍情報登録・編集"""
+    from apps.connect.models import ConnectStaff, ConnectInternationalRequest
+    
+    # 接続されたスタッフを取得（メールアドレスで関連付け）
+    try:
+        connect_staff = ConnectStaff.objects.get(email=request.user.email, status='approved')
+    except ConnectStaff.DoesNotExist:
+        messages.error(request, 'スタッフ接続が承認されていません。')
+        return redirect('/')
+    
+    # スタッフプロフィールを取得
+    try:
+        staff_profile = StaffProfile.objects.get(user=request.user)
+    except StaffProfile.DoesNotExist:
+        messages.error(request, 'プロフィールを先に登録してください。')
+        return redirect('profile:edit')
+    
+    # 既存の外国籍情報を確認
+    try:
+        international_profile = StaffProfileInternational.objects.get(staff_profile=staff_profile)
+        is_new = False
+    except StaffProfileInternational.DoesNotExist:
+        international_profile = None
+        is_new = True
+    
+    # 未承認の申請があるかチェック（新規登録時のみ）
+    if is_new:
+        pending_request = ConnectInternationalRequest.objects.filter(
+            connect_staff=connect_staff,
+            status='pending'
+        ).first()
+        
+        if pending_request:
+            messages.info(request, '外国籍情報の申請は既に提出済みです。承認をお待ちください。')
+            return redirect('/')
+    
+    if request.method == 'POST':
+        form = StaffProfileInternationalForm(request.POST, instance=international_profile)
+        if form.is_valid():
+            # 外国籍情報を保存
+            international_profile = form.save(commit=False)
+            international_profile.staff_profile = staff_profile
+            international_profile.save()
+            
+            if is_new:
+                # 新規登録の場合は申請を作成
+                ConnectInternationalRequest.objects.create(
+                    connect_staff=connect_staff,
+                    profile_international=international_profile,
+                    status='pending'
+                )
+                messages.success(request, '外国籍情報の申請を提出しました。承認をお待ちください。')
+            else:
+                # 編集の場合は直接更新
+                messages.success(request, '外国籍情報を更新しました。')
+            
+            return redirect('profile:international_detail')
+    else:
+        form = StaffProfileInternationalForm(instance=international_profile)
+    
+    context = {
+        'form': form,
+        'international_profile': international_profile,
+        'is_new': is_new,
+        'connect_staff': connect_staff,
+    }
+    return render(request, 'profile/international_form.html', context)
+
+
+@login_required
+@permission_required('profile.view_staffprofileinternational', raise_exception=True)
+def international_detail(request):
+    """外国籍情報詳細表示"""
+    from apps.connect.models import ConnectStaff
+    
+    # 接続されたスタッフを取得（メールアドレスで関連付け）
+    try:
+        connect_staff = ConnectStaff.objects.get(email=request.user.email, status='approved')
+    except ConnectStaff.DoesNotExist:
+        messages.error(request, 'スタッフ接続が承認されていません。')
+        return redirect('/')
+    
+    # 外国籍情報を取得
+    international = None
+    try:
+        staff_profile = StaffProfile.objects.get(user=request.user)
+        try:
+            international = StaffProfileInternational.objects.get(staff_profile=staff_profile)
+        except StaffProfileInternational.DoesNotExist:
+            pass
+    except StaffProfile.DoesNotExist:
+        pass
+    
+    context = {
+        'international': international,
+        'connect_staff': connect_staff,
+    }
+    return render(request, 'profile/international_detail.html', context)
+
+
+@login_required
+@permission_required('profile.delete_staffprofileinternational', raise_exception=True)
+def international_delete(request):
+    """外国籍情報削除確認"""
+    from apps.connect.models import ConnectStaff
+    
+    # 接続されたスタッフを取得（メールアドレスで関連付け）
+    try:
+        connect_staff = ConnectStaff.objects.get(email=request.user.email, status='approved')
+    except ConnectStaff.DoesNotExist:
+        messages.error(request, 'スタッフ接続が承認されていません。')
+        return redirect('/')
+    
+    # 外国籍情報を取得
+    try:
+        staff_profile = StaffProfile.objects.get(user=request.user)
+        international = get_object_or_404(StaffProfileInternational, staff_profile=staff_profile)
+    except StaffProfile.DoesNotExist:
+        messages.error(request, '外国籍情報が見つかりません。')
+        return redirect('/')
+    
+    if request.method == 'POST':
+        international.delete()
+        messages.success(request, '外国籍情報を削除しました。')
+        return redirect('profile:international_detail')
+    
+    context = {
+        'international': international,
+        'connect_staff': connect_staff,
+    }
+    return render(request, 'profile/international_delete.html', context)

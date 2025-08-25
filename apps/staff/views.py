@@ -315,10 +315,11 @@ def staff_detail(request, pk):
     connect_request = None
     mynumber_request = None
     profile_request = None
+    international_request = None
     last_login = None  # 最終ログイン日時を初期化
 
     if staff.email:
-        from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest
+        from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest, ConnectInternationalRequest
         from apps.company.models import Company
         from django.contrib.auth import get_user_model
         User = get_user_model()
@@ -348,6 +349,10 @@ def staff_detail(request, pk):
                         connect_staff=connect_request,
                         status='pending'
                     ).first()
+                    international_request = ConnectInternationalRequest.objects.filter(
+                        connect_staff=connect_request,
+                        status='pending'
+                    ).first()
         except Exception:
             pass
     
@@ -364,6 +369,7 @@ def staff_detail(request, pk):
         'connect_request': connect_request,
         'mynumber_request': mynumber_request,
         'profile_request': profile_request,
+        'international_request': international_request,
         'last_login': last_login,
     })
 
@@ -1094,3 +1100,76 @@ def staff_international_delete(request, staff_id):
         'international': international,
     }
     return render(request, 'staff/staff_international_confirm_delete.html', context)
+
+
+@login_required
+@permission_required('staff.change_staff', raise_exception=True)
+def staff_international_request_detail(request, staff_pk, pk):
+    """外国籍情報申請の詳細、承認・却下"""
+    from apps.connect.models import ConnectInternationalRequest
+    from apps.profile.models import StaffProfile, StaffProfileInternational
+    
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    international_request = get_object_or_404(ConnectInternationalRequest, pk=pk)
+    
+    # 現在のスタッフの外国籍情報を取得（StaffInternationalモデルから）
+    current_international = None
+    try:
+        from apps.staff.models import StaffInternational
+        current_international = StaffInternational.objects.get(staff=staff)
+    except StaffInternational.DoesNotExist:
+        # 現在の外国籍情報が存在しない場合はNoneのまま
+        pass
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'approve':
+            # 承認処理
+            try:
+                # 申請から外国籍情報を取得
+                profile_international = international_request.profile_international
+                
+                # スタッフの外国籍情報を更新または作成
+                from apps.staff.models import StaffInternational
+                staff_international, created = StaffInternational.objects.update_or_create(
+                    staff=staff,
+                    defaults={
+                        'residence_card_number': profile_international.residence_card_number,
+                        'residence_status': profile_international.residence_status,
+                        'residence_period_from': profile_international.residence_period_from,
+                        'residence_period_to': profile_international.residence_period_to,
+                    }
+                )
+                
+                # 申請ステータスを更新
+                international_request.status = 'approved'
+                international_request.save()
+                
+                from apps.system.logs.utils import log_model_action
+                log_model_action(request.user, 'update', staff_international)
+                messages.success(request, f'外国籍情報申請を承認し、{staff.name_last} {staff.name_first}の外国籍情報を更新しました。')
+            except Exception as e:
+                messages.error(request, f'承認処理中にエラーが発生しました: {e}')
+            
+        elif action == 'reject':
+            # 却下処理
+            international_request.status = 'rejected'
+            international_request.save()
+            
+            # 却下時は関連する外国籍情報も削除
+            if international_request.profile_international:
+                international_request.profile_international.delete()
+            
+            from apps.system.logs.utils import log_model_action
+            log_model_action(request.user, 'update', international_request)
+            messages.warning(request, '外国籍情報申請を却下しました。')
+        
+        return redirect('staff:staff_detail', pk=staff.pk)
+    
+    context = {
+        'staff': staff,
+        'international_request': international_request,
+        'current_international': current_international,
+    }
+    return render(request, 'staff/staff_international_request_detail.html', context)

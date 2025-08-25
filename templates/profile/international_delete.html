@@ -1,0 +1,59 @@
+{% extends 'common/_base.html' %}
+
+{% block title %}外国籍情報削除確認{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        外国籍情報削除確認
+    </div>
+    <div class="card-body">
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            外国籍情報を削除しますか？この操作は取り消せません。
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label text-start text-md-end"><strong>在留カード番号</strong></label>
+            <div class="col-sm-9">
+                <p class="form-control-plaintext">{{ international.residence_card_number }}</p>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label text-start text-md-end"><strong>在留資格</strong></label>
+            <div class="col-sm-9">
+                <p class="form-control-plaintext">{{ international.residence_status }}</p>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label text-start text-md-end"><strong>在留許可開始日</strong></label>
+            <div class="col-sm-9">
+                <p class="form-control-plaintext">{{ international.residence_period_from|date:"Y年m月d日" }}</p>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-3 col-form-label text-start text-md-end"><strong>在留期限</strong></label>
+            <div class="col-sm-9">
+                <p class="form-control-plaintext">{{ international.residence_period_to|date:"Y年m月d日" }}</p>
+            </div>
+        </div>
+
+        <form method="post" class="mt-4">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col text-left">
+                    <button type="submit" class="btn btn-sm btn-dark" onclick="return confirm('本当に削除しますか？')">
+                        削除
+                    </button>
+                    <a href="{% url 'profile:international_detail' %}" class="btn btn-sm btn-secondary ms-2">
+                        戻る
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

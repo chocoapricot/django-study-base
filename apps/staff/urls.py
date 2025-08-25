@@ -12,6 +12,7 @@ from .views import (
     staff_mynumber_request_detail,
     staff_profile_request_detail,
     staff_international_detail, staff_international_create, staff_international_edit, staff_international_delete,
+    staff_international_request_detail,
 )
 
 app_name = 'staff'
@@ -73,4 +74,7 @@ urlpatterns = [
     path('staff/<int:staff_id>/international/create/', staff_international_create, name='staff_international_create'),
     path('staff/<int:staff_id>/international/edit/', staff_international_edit, name='staff_international_edit'),
     path('staff/<int:staff_id>/international/delete/', staff_international_delete, name='staff_international_delete'),
+    
+    # 外国籍情報申請
+    path('staff/<int:staff_pk>/international/request/<int:pk>/', staff_international_request_detail, name='staff_international_request_detail'),
 ]

@@ -265,7 +265,7 @@
                             <input class="form-check-input" type="checkbox" id="connectApprovalSwitch" 
                                    {% if connect_request and connect_request.is_approved %}checked{% endif %} disabled>
                             <label class="form-check-label" for="connectApprovalSwitch">
-                                {% if mynumber_request or profile_request %}
+                                {% if mynumber_request or profile_request or international_request %}
                                     <i class="bi bi-arrow-down-circle" style="font-size: 20px; color:#17a2b8;" title="申請あり"></i>
                                 {% else %}
                                     <i class="bi bi-link" style="font-size: 20px;color:#17a2b8;"></i>
@@ -299,6 +299,25 @@
                         <p class="mt-2">
                             マイナンバーの提出申請があります。
                             <a href="{% url 'staff:staff_mynumber_request_detail' staff.pk mynumber_request.pk %}" class="btn btn-sm btn-info">
+                                詳細を確認
+                            </a>
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if international_request %}
+                <hr>
+                <div class="row mb-3 align-items-center">
+                    <div class="col-12">
+                        <i class="bi bi-globe" style="font-size: 20px; color: #17a2b8;"></i>
+                        <strong>外国籍情報申請</strong>
+                        <span class="badge bg-warning text-dark ms-2">{{ international_request.get_status_display }}</span>
+                    </div>
+                    <div class="col-12">
+                        <p class="mt-2">
+                            外国籍情報の登録申請があります。
+                            <a href="{% url 'staff:staff_international_request_detail' staff.pk international_request.pk %}" class="btn btn-sm btn-info">
                                 詳細を確認
                             </a>
                         </p>

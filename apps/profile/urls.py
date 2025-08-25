@@ -10,6 +10,9 @@ urlpatterns = [
     path('mynumber/', views.mynumber_detail, name='mynumber_detail'),
     path('mynumber/edit/', views.mynumber_edit, name='mynumber_edit'),
     path('mynumber/delete/', views.mynumber_delete, name='mynumber_delete'),
+    path('international/', views.international_detail, name='international_detail'),
+    path('international/edit/', views.international_edit, name='international_edit'),
+    path('international/delete/', views.international_delete, name='international_delete'),
 
     # 資格
     path('qualification/', views_profile.profile_qualification_list, name='qualification_list'),

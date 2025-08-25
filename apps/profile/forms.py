@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import StaffProfile, ProfileMynumber
+from .models import StaffProfile, ProfileMynumber, StaffProfileInternational
 
 
 from apps.common.forms.fields import to_fullwidth_katakana, validate_kana
@@ -59,7 +59,7 @@ class StaffProfileForm(forms.ModelForm):
             'phone': forms.TextInput(attrs={
                 'class': 'form-control form-control-sm',
                 'inputmode': 'numeric',
-                'pattern': '[0-9\-]*',
+                'pattern': r'[0-9\-]*',
                 'style': 'ime-mode:disabled;',
                 'autocomplete': 'off',
             }),
@@ -128,3 +128,51 @@ class ProfileMynumberForm(forms.ModelForm):
                 raise ValidationError('正しいマイナンバーを入力してください。')
         
         return mynumber
+
+
+class StaffProfileInternationalForm(forms.ModelForm):
+    """スタッフ外国籍プロフィールフォーム"""
+    
+    class Meta:
+        model = StaffProfileInternational
+        fields = ['residence_card_number', 'residence_status', 'residence_period_from', 'residence_period_to']
+        widgets = {
+            'residence_card_number': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'placeholder': '在留カード番号を入力してください'
+            }),
+            'residence_status': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'placeholder': '在留資格を入力してください'
+            }),
+            'residence_period_from': forms.DateInput(attrs={
+                'class': 'form-control form-control-sm',
+                'type': 'date'
+            }),
+            'residence_period_to': forms.DateInput(attrs={
+                'class': 'form-control form-control-sm',
+                'type': 'date'
+            }),
+        }
+        labels = {
+            'residence_card_number': '在留カード番号',
+            'residence_status': '在留資格',
+            'residence_period_from': '在留許可開始日',
+            'residence_period_to': '在留期限',
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # 必須フィールドの設定
+        for field_name in self.fields:
+            self.fields[field_name].required = True
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        period_from = cleaned_data.get('residence_period_from')
+        period_to = cleaned_data.get('residence_period_to')
+        
+        if period_from and period_to and period_from >= period_to:
+            raise forms.ValidationError('在留許可開始日は在留期限より前の日付を入力してください。')
+        
+        return cleaned_data
