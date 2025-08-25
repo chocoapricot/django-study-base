@@ -159,12 +159,6 @@ def mynumber_delete(request):
 @permission_required('profile.change_staffprofileinternational', raise_exception=True)
 def international_edit(request):
     """外国籍情報登録・編集"""
-    # スタッフプロフィールを取得
-    try:
-        staff_profile = StaffProfile.objects.get(user=request.user)
-    except StaffProfile.DoesNotExist:
-        messages.error(request, 'プロフィールを先に登録してください。')
-        return redirect('profile:edit')
     
     # 既存の外国籍情報を確認
     try:
