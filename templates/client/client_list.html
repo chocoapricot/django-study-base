@@ -165,11 +165,8 @@
 {% block extra_js %}
 <script>
 function resetForm() {
-    // フォームの全ての入力をリセット
-    document.querySelector('input[name="q"]').value = '';
-    document.querySelector('select[name="regist_form_client"]').value = '';
-    // フォームを送信
-    document.querySelector('form').submit();
+    // クエリパラメータなしのURLにリダイレクト
+    window.location.href = "{% url 'client:client_list' %}";
 }
 </script>
 {% endblock %}
