@@ -15,7 +15,7 @@
         -->
         <!-- <p class="card-text">これはサンプルです.</p> -->
 
-        <form method="get" action="{% url 'staff:staff_list' %}" class="form-inline d-flex mb-3">
+        <form id="staff-filter-form" method="get" action="{% url 'staff:staff_list' %}" class="form-inline d-flex mb-3">
             <div class="input-group me-2" style="width: 25em;">
                 <span class="input-group-text input-group-text-sm" style="height: calc(1.5em + 0.5rem + 2px);">
                     <i class="bi bi-search"></i> <!-- Bootstrap Iconsの虫眼鏡アイコン -->
@@ -55,10 +55,12 @@
 
         <script>
         function resetForm() {
-            document.querySelector('input[name=q]').value = '';
-            document.querySelector('select[name=regist_form]').value = '';
-            document.querySelector('select[name=department]').value = '';
-            document.querySelector('form').submit();
+            var form = document.getElementById('staff-filter-form');
+            form.querySelector('input[name=q]').value = '';
+            form.querySelector('select[name=regist_form]').value = '';
+            form.querySelector('select[name=employment_type]').value = '';
+            form.querySelector('select[name=department]').value = '';
+            form.submit();
         }
         </script>
 
