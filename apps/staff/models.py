@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 
 from ..common.models import MyModel
 from concurrency.fields import IntegerVersionField
+from django_currentuser.db.models import CurrentUserField
 
 def validate_mynumber(value):
     """マイナンバーのバリデーション関数"""
@@ -153,9 +154,9 @@ class Staff(MyModel):
         return hasattr(self, 'disability')
 
     @property
-    def has_bank(self):
-        """銀行情報が登録されているかどうかを返す"""
-        return hasattr(self, 'bank')
+    def has_contact(self):
+        """連絡先情報が登録されているかどうかを返す"""
+        return hasattr(self, 'contact')
 
 
 from apps.common.models import MyModel
@@ -402,6 +403,35 @@ class StaffMynumber(MyModel):
 
     def __str__(self):
         return f"{self.staff} - マイナンバー"
+
+
+class StaffContact(MyModel):
+    """
+    スタッフの連絡先情報を管理するモデル。
+    """
+    staff = models.OneToOneField(
+        Staff,
+        on_delete=models.CASCADE,
+        verbose_name='スタッフ',
+        related_name='contact'
+    )
+    emergency_contact = models.CharField('緊急連絡先', max_length=100, blank=True, null=True)
+    relationship = models.CharField('続柄', max_length=100, blank=True, null=True)
+    postal_code = models.CharField('郵便番号（住民票）', max_length=7, blank=True, null=True)
+    address1 = models.TextField('住所１（住民票）', blank=True, null=True)
+    address2 = models.TextField('住所２（住民票）', blank=True, null=True)
+    address3 = models.TextField('住所３（住民票）', blank=True, null=True)
+
+    created_by = CurrentUserField(verbose_name="作成者", related_name="created_staff_contact_set_staff_app")
+    updated_by = CurrentUserField(verbose_name="更新者", related_name="updated_staff_contact_set_staff_app")
+
+    class Meta:
+        verbose_name = 'スタッフ連絡先情報'
+        verbose_name_plural = 'スタッフ連絡先情報'
+        db_table = 'apps_staff_contacts'
+
+    def __str__(self):
+        return f"{self.staff} - 連絡先情報"
 
 
 class StaffBank(MyModel):
