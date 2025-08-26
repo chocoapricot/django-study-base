@@ -1,0 +1,57 @@
+{% extends 'common/_base.html' %}
+
+{% block title %}{% if is_new %}連絡先情報登録{% else %}連絡先情報編集{% endif %}{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        {% if is_new %}連絡先情報登録{% else %}連絡先情報編集{% endif %}
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- 電話番号 -->
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.phone.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >電話番号</label>
+                <div class="col-sm-6">
+                    {{ form.phone }}
+                    {% if form.phone.errors %}
+                        <div class="text-danger small">{{ form.phone.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- メールアドレス -->
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.email.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >メールアドレス</label>
+                <div class="col-sm-6">
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="text-danger small">{{ form.email.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 備考 -->
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.notes.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >備考</label>
+                <div class="col-sm-8">
+                    {{ form.notes }}
+                    {% if form.notes.errors %}
+                        <div class="text-danger small">{{ form.notes.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-primary">
+                    {% if is_new %}登録{% else %}更新{% endif %}
+                </button>
+                <a href="{% url 'profile:contact_detail' %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

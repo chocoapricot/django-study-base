@@ -22,6 +22,11 @@ urlpatterns = [
     path('disability/edit/', views.disability_edit, name='disability_edit'),
     path('disability/delete/', views.disability_delete, name='disability_delete'),
 
+    # 連絡先情報
+    path('contact/', views.contact_detail, name='contact_detail'),
+    path('contact/edit/', views.contact_edit, name='contact_edit'),
+    path('contact/delete/', views.contact_delete, name='contact_delete'),
+
     # 資格
     path('qualification/', views_profile.profile_qualification_list, name='qualification_list'),
     path('qualification/create/', views_profile.profile_qualification_create, name='qualification_create'),

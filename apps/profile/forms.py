@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import StaffProfile, ProfileMynumber, StaffProfileInternational, StaffBankProfile, StaffDisabilityProfile
+from .models import StaffProfile, ProfileMynumber, StaffProfileInternational, StaffBankProfile, StaffDisabilityProfile, StaffContact
 
 
 from apps.common.forms.fields import to_fullwidth_katakana, validate_kana
@@ -229,3 +229,24 @@ class StaffDisabilityProfileForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # 必須ではないので required = False のまま
         pass
+
+
+class StaffContactForm(forms.ModelForm):
+    """スタッフ連絡先情報フォーム"""
+
+    class Meta:
+        model = StaffContact
+        fields = [
+            'phone', 'email', 'notes'
+        ]
+        widgets = {
+            'phone': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'inputmode': 'numeric',
+                'pattern': r'[0-9\-]*',
+                'style': 'ime-mode:disabled;',
+                'autocomplete': 'off',
+            }),
+            'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+        }
