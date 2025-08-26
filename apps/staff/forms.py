@@ -465,7 +465,7 @@ class StaffBankForm(forms.ModelForm):
         from apps.system.settings.models import Dropdowns
         self.fields['account_type'].choices = [
             (opt.value, opt.name)
-            for opt in Dropdowns.objects.filter(active=True, category='account_type').order_by('disp_seq')
+            for opt in Dropdowns.objects.filter(active=True, category='bill_account_type').order_by('disp_seq')
         ]
         
         # 必須フィールドの設定

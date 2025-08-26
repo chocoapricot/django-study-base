@@ -204,7 +204,7 @@ class StaffBankProfileForm(forms.ModelForm):
         from apps.system.settings.models import Dropdowns
         self.fields['account_type'].choices = [
             (opt.value, opt.name)
-            for opt in Dropdowns.objects.filter(active=True, category='account_type').order_by('disp_seq')
+            for opt in Dropdowns.objects.filter(active=True, category='bank_account_type').order_by('disp_seq')
         ]
         self.fields['account_type'].required = True
         self.fields['account_number'].required = True

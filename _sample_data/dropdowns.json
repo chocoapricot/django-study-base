@@ -469,9 +469,9 @@
         "created_by": 1,
         "updated_at": "2025-08-26T09:59:17.775Z",
         "updated_by": 1,
-        "category": "account_type",
+        "category": "bank_account_type",
         "name": "普通",
-        "value": "ordinary",
+        "value": "1",
         "disp_seq": 1,
         "active": true
     }
@@ -485,9 +485,9 @@
         "created_by": 1,
         "updated_at": "2025-08-26T09:59:37.548Z",
         "updated_by": 1,
-        "category": "account_type",
+        "category": "bank_account_type",
         "name": "当座",
-        "value": "current",
+        "value": "2",
         "disp_seq": 2,
         "active": true
     }
