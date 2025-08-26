@@ -386,7 +386,7 @@
         "created_by": 1,
         "updated_at": "2025-08-26T18:00:00.000Z",
         "updated_by": 1,
-        "name": "スタッフ連絡先情報",
+        "name": "連絡先情報",
         "url": "/profile/contact/",
         "icon": "bi-person-rolodex",
         "icon_style": "color:#ff69b4;",
