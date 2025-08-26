@@ -2,7 +2,7 @@
 import os
 from django import forms
 from django.forms import TextInput
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability
 from django.core.exceptions import ValidationError
 
 # スタッフ連絡履歴フォーム
@@ -546,3 +546,20 @@ class StaffInternationalForm(forms.ModelForm):
                 raise forms.ValidationError('在留許可開始日は在留期限より前の日付を入力してください。')
 
         return cleaned_data
+
+
+class StaffDisabilityForm(forms.ModelForm):
+    """スタッフ障害者情報フォーム"""
+
+    class Meta:
+        model = StaffDisability
+        fields = ['disability_type', 'severity']
+        widgets = {
+            'disability_type': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'severity': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['disability_type'].required = True
+        self.fields['severity'].required = True

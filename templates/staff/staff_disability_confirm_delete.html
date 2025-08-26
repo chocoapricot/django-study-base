@@ -1,0 +1,22 @@
+{% extends 'common/_base.html' %}
+
+{% block title %}スタッフ障害者情報削除の確認{% endblock %}
+
+{% block content %}
+{% include 'staff/_staff_info_card.html' with staff=staff %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        スタッフ障害者情報削除の確認
+    </div>
+    <div class="card-body">
+        <p>本当に「{{ staff.name }}」の障害者情報を削除しますか？</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-danger">はい、削除します</button>
+            <a href="{% url 'staff:staff_disability_detail' staff_pk=staff.pk %}" class="btn btn-sm btn-secondary">いいえ、戻ります</a>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
