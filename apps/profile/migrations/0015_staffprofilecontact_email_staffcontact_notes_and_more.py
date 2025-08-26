@@ -7,12 +7,12 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("profile", "0014_staffcontact"),
+        ("profile", "0014_staffprofilecontact"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="staffcontact",
+            model_name="staffprofilecontact",
             name="email",
             field=models.EmailField(
                 blank=True,
@@ -23,12 +23,12 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AddField(
-            model_name="staffcontact",
+            model_name="staffprofilecontact",
             name="notes",
             field=models.TextField(blank=True, null=True, verbose_name="備考"),
         ),
         migrations.AddField(
-            model_name="staffcontact",
+            model_name="staffprofilecontact",
             name="phone",
             field=models.CharField(
                 blank=True,

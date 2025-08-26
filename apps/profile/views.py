@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.urls import reverse
-from .models import StaffProfile, ProfileMynumber, StaffProfileInternational, StaffBankProfile, StaffDisabilityProfile, StaffContact
-from .forms import StaffProfileForm, ProfileMynumberForm, StaffProfileInternationalForm, StaffBankProfileForm, StaffDisabilityProfileForm, StaffContactForm
+from .models import StaffProfile, ProfileMynumber, StaffProfileInternational, StaffBankProfile, StaffDisabilityProfile, StaffProfileContact
+from .forms import StaffProfileForm, ProfileMynumberForm, StaffProfileInternationalForm, StaffBankProfileForm, StaffDisabilityProfileForm, StaffProfileContactForm
 
 
 @login_required
@@ -417,12 +417,12 @@ def disability_delete(request):
 
 
 @login_required
-@permission_required('profile.view_staffcontact', raise_exception=True)
+@permission_required('profile.view_staffprofilecontact', raise_exception=True)
 def contact_detail(request):
     """スタッフ連絡先情報詳細表示"""
     try:
-        contact = StaffContact.objects.get(user=request.user)
-    except StaffContact.DoesNotExist:
+        contact = StaffProfileContact.objects.get(user=request.user)
+    except StaffProfileContact.DoesNotExist:
         contact = None
 
     context = {
@@ -432,19 +432,19 @@ def contact_detail(request):
 
 
 @login_required
-@permission_required('profile.add_staffcontact', raise_exception=True)
-@permission_required('profile.change_staffcontact', raise_exception=True)
+@permission_required('profile.add_staffprofilecontact', raise_exception=True)
+@permission_required('profile.change_staffprofilecontact', raise_exception=True)
 def contact_edit(request):
     """スタッフ連絡先情報編集"""
     try:
-        contact = StaffContact.objects.get(user=request.user)
+        contact = StaffProfileContact.objects.get(user=request.user)
         is_new = False
-    except StaffContact.DoesNotExist:
+    except StaffProfileContact.DoesNotExist:
         contact = None
         is_new = True
 
     if request.method == 'POST':
-        form = StaffContactForm(request.POST, instance=contact)
+        form = StaffProfileContactForm(request.POST, instance=contact)
         if form.is_valid():
             contact = form.save(commit=False)
             contact.user = request.user
@@ -457,7 +457,7 @@ def contact_edit(request):
 
             return redirect('profile:contact_detail')
     else:
-        form = StaffContactForm(instance=contact)
+        form = StaffProfileContactForm(instance=contact)
 
     context = {
         'form': form,
@@ -468,10 +468,10 @@ def contact_edit(request):
 
 
 @login_required
-@permission_required('profile.delete_staffcontact', raise_exception=True)
+@permission_required('profile.delete_staffprofilecontact', raise_exception=True)
 def contact_delete(request):
     """スタッフ連絡先情報削除確認"""
-    contact = get_object_or_404(StaffContact, user=request.user)
+    contact = get_object_or_404(StaffProfileContact, user=request.user)
 
     if request.method == 'POST':
         contact.delete()

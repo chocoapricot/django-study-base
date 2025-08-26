@@ -69,6 +69,7 @@ python manage.py test apps.api.tests
 
 # サーバ起動
 .\venv\Scripts\Activate 
+python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver
 

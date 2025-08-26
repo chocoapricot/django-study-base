@@ -7,12 +7,18 @@ urlpatterns = [
     path('', views.profile_detail, name='detail'),
     path('edit/', views.profile_edit, name='edit'),
     path('delete/', views.profile_delete, name='delete'),
+
+    # マイナンバー
     path('mynumber/', views.mynumber_detail, name='mynumber_detail'),
     path('mynumber/edit/', views.mynumber_edit, name='mynumber_edit'),
     path('mynumber/delete/', views.mynumber_delete, name='mynumber_delete'),
+
+    # 外国籍情報
     path('international/', views.international_detail, name='international_detail'),
     path('international/edit/', views.international_edit, name='international_edit'),
     path('international/delete/', views.international_delete, name='international_delete'),
+
+    # 銀行情報
     path('bank/', views.bank_detail, name='bank_detail'),
     path('bank/edit/', views.bank_edit, name='bank_edit'),
     path('bank/delete/', views.bank_delete, name='bank_delete'),

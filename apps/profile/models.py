@@ -527,7 +527,7 @@ class StaffDisabilityProfile(MyModel):
         super().save(*args, **kwargs)
 
 
-class StaffContact(MyModel):
+class StaffProfileContact(MyModel):
     """
     スタッフ連絡先情報プロフィール
     """
