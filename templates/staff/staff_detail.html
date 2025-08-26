@@ -372,6 +372,23 @@
                 </div>
                 {% endif %}
 
+                {% if contact_request %}
+                <hr>
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-12">
+                        <i class="bi bi-person-rolodex" style="font-size: 20px; color: #17a2b8;"></i>
+                        <strong>連絡先情報申請</strong>
+                        <span class="badge bg-warning text-dark ms-2">{{ contact_request.get_status_display }}</span>
+                        <p class="mt-2">
+                            連絡先情報の提出申請があります。
+                            <a href="{% url 'staff:staff_contact_request_detail' staff.pk contact_request.pk %}" class="btn btn-sm btn-info">
+                                詳細を確認
+                            </a>
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+
                 {% if profile_request %}
                 <hr>
                 <div class="row mb-3 align-items-center">

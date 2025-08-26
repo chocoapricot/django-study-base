@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from apps.common.models import MyModel
 from apps.staff.models import Staff
-from apps.profile.models import ProfileMynumber, StaffProfile, StaffProfileInternational, StaffBankProfile, StaffDisabilityProfile
+from apps.profile.models import ProfileMynumber, StaffProfile, StaffProfileInternational, StaffBankProfile, StaffDisabilityProfile, StaffProfileContact
 
 class ConnectStaff(MyModel):
     """
@@ -77,6 +77,16 @@ class ConnectStaff(MyModel):
                     staff_profile=staff_profile_obj
                 )
 
+            # 連絡先の比較と申請
+            profile_contact_obj = getattr(user_instance, 'staff_contact', None)
+            if profile_contact_obj:
+                staff_contact_obj = getattr(staff_instance, 'contact', None)
+                if self._is_contact_different(profile_contact_obj, staff_contact_obj):
+                    ContactRequest.objects.get_or_create(
+                        connect_staff=self,
+                        staff_profile_contact=profile_contact_obj
+                    )
+
         except Exception:
             # It is recommended to add logging in a production environment.
             pass
@@ -99,6 +109,22 @@ class ConnectStaff(MyModel):
 
         return False # No differences found
 
+    def _is_contact_different(self, profile_contact, staff_contact):
+        """スタッフプロフィール連絡先とスタッフ連絡先を比較する"""
+        fields_to_compare = [
+            'emergency_contact', 'relationship', 'postal_code',
+            'address1', 'address2', 'address3'
+        ]
+
+        for field in fields_to_compare:
+            profile_value = getattr(profile_contact, field, None)
+            staff_value = getattr(staff_contact, field, None)
+
+            if str(profile_value or '') != str(staff_value or ''):
+                return True
+
+        return False
+
     def unapprove(self):
         """未承認に戻す"""
         self.status = 'pending'
@@ -110,6 +136,7 @@ class ConnectStaff(MyModel):
         self.mynumberrequest_set.all().delete()
         self.profilerequest_set.all().delete()
         self.bankrequest_set.all().delete()
+        self.contactrequest_set.all().delete()
 
 
 
@@ -154,6 +181,48 @@ class BankRequest(MyModel):
 
     def __str__(self):
         return f"{self.connect_staff} - {self.staff_bank_profile} ({self.get_status_display()})"
+
+
+class ContactRequest(MyModel):
+    """
+    連絡先情報の提出を要求するためのモデル。
+    """
+
+    STATUS_CHOICES = [
+        ('pending', '未承認'),
+        ('approved', '承認済み'),
+        ('rejected', '却下'),
+    ]
+
+    connect_staff = models.ForeignKey(
+        ConnectStaff,
+        on_delete=models.CASCADE,
+        verbose_name='スタッフ接続',
+        help_text='関連するスタッフ接続'
+    )
+    staff_profile_contact = models.ForeignKey(
+        StaffProfileContact,
+        on_delete=models.CASCADE,
+        verbose_name='スタッフ連絡先情報プロフィール',
+        help_text='関連するスタッフ連絡先情報プロフィール'
+    )
+    status = models.CharField(
+        'ステータス',
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending',
+        help_text='申請の現在のステータス'
+    )
+
+    class Meta:
+        db_table = 'apps_connect_contact_request'
+        verbose_name = '連絡先情報接続申請'
+        verbose_name_plural = '連絡先情報接続申請'
+        unique_together = ['connect_staff', 'staff_profile_contact']
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.connect_staff} - {self.staff_profile_contact} ({self.get_status_display()})"
 
 
 class MynumberRequest(MyModel):

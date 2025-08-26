@@ -551,35 +551,17 @@ class StaffProfileContact(MyModel):
         related_name="staff_contact",
         verbose_name="ユーザー",
     )
-    phone = models.CharField(
-        max_length=15,
-        verbose_name='電話番号',
-        null=True,
-        blank=True,
-        validators=[
-            RegexValidator(
-                regex=r'^[\d\-]+$',
-                message='電話番号は数字とハイフンのみ入力可能です'
-            )
-        ],
-        help_text='電話番号を入力してください'
-    )
-    email = models.EmailField(
-        verbose_name='メールアドレス',
-        null=True,
-        blank=True,
-        help_text='連絡先メールアドレスを入力してください'
-    )
-    notes = models.TextField(
-        verbose_name='備考',
-        null=True,
-        blank=True,
-    )
+    emergency_contact = models.CharField('緊急連絡先', max_length=100, blank=True, null=True)
+    relationship = models.CharField('続柄', max_length=100, blank=True, null=True)
+    postal_code = models.CharField('郵便番号（住民票）', max_length=7, blank=True, null=True)
+    address1 = models.TextField('住所１（住民票）', blank=True, null=True)
+    address2 = models.TextField('住所２（住民票）', blank=True, null=True)
+    address3 = models.TextField('住所３（住民票）', blank=True, null=True)
 
     class Meta:
         db_table = "apps_profile_staff_contacts"
-        verbose_name = "スタッフ連絡先情報"
-        verbose_name_plural = "スタッフ連絡先情報"
+        verbose_name = "スタッフ連絡先情報プロフィール"
+        verbose_name_plural = "スタッフ連絡先情報プロフィール"
 
     def __str__(self):
         return f"{self.user.username}"
