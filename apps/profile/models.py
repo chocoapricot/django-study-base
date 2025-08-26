@@ -438,7 +438,7 @@ class StaffBankProfile(MyModel):
         db_table = 'apps_profile_staff_bank'
 
     def __str__(self):
-        return f"{self.staff_profile} - 銀行情報"
+        return f"{self.user.username} - 銀行情報"
 
     @property
     def bank_name(self):

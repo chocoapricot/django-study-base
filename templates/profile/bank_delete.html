@@ -8,11 +8,14 @@
         銀行口座削除
     </div>
     <div class="card-body">
-        <p>本当にこの銀行口座情報を削除しますか？</p>
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            銀行口座情報を削除しますか？この操作は取り消せません。
+        </div>
         <p><strong>{{ bank.full_bank_info }}</strong></p>
         <form method="post">
             {% csrf_token %}
-            <button type="submit" class="btn btn-sm btn-danger">はい、削除します</button>
+            <button type="submit" class="btn btn-sm btn-dark">削除する</button>
             <a href="{% url 'profile:bank_detail' %}" class="btn btn-sm btn-secondary">キャンセル</a>
         </form>
     </div>
