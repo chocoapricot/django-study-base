@@ -525,3 +525,25 @@ class StaffDisabilityProfile(MyModel):
         if self.user:
             self.email = self.user.email
         super().save(*args, **kwargs)
+
+
+class StaffContact(MyModel):
+    """
+    スタッフ連絡先情報プロフィール
+    """
+
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="staff_contact",
+        verbose_name="ユーザー",
+    )
+    # ToDo: 項目を追加
+
+    class Meta:
+        db_table = "apps_profile_staff_contacts"
+        verbose_name = "スタッフ連絡先情報"
+        verbose_name_plural = "スタッフ連絡先情報"
+
+    def __str__(self):
+        return f"{self.user.username}"
