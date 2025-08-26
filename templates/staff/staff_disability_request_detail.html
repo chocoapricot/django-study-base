@@ -1,0 +1,116 @@
+{% extends 'common/_base.html' %}
+{% load dropdowns %}
+
+{% block content %}
+
+<!-- スタッフ情報カード -->
+{% include 'staff/_staff_info_card.html' %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>障害者情報申請承認</span>
+        <span class="badge bg-warning text-dark">{{ disability_request.get_status_display }}</span>
+    </div>
+    <div class="card-body">
+        {% if disability_request.status == 'pending' %}
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle-fill"></i>
+            スタッフから提出された障害者情報を確認し、承認または却下を選択してください。
+        </div>
+        {% elif disability_request.status == 'approved' %}
+        <div class="alert alert-success" role="alert">
+            <i class="bi bi-check-circle-fill"></i>
+            この障害者情報申請は承認済みです。スタッフ障害者情報が更新されています。
+        </div>
+        {% elif disability_request.status == 'rejected' %}
+        <div class="alert alert-danger" role="alert">
+            <i class="bi bi-x-circle-fill"></i>
+            この障害者情報申請は却下されています。
+        </div>
+        {% endif %}
+
+        <!-- 比較表示 -->
+        <h5 class="mt-4 mb-3">障害者情報比較</h5>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 20%;">項目</th>
+                        <th style="width: 40%;">現在のスタッフ障害者情報</th>
+                        <th style="width: 40%;">申請された障害者情報</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>障害の種類</strong></td>
+                        <td>
+                            {% if staff.disability.disability_type %}
+                                {% my_name 'disability_type' staff.disability.disability_type %}
+                            {% else %}
+                                <span class="text-muted">未登録</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if staff.disability.disability_type != disability_request.profile_disability.disability_type or not staff.disability %}
+                                <span class="text-primary fw-bold">
+                                    {% my_name 'disability_type' disability_request.profile_disability.disability_type %}
+                                </span>
+                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
+                            {% else %}
+                                {% my_name 'disability_type' disability_request.profile_disability.disability_type %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>等級</strong></td>
+                        <td>{{ staff.disability.disability_grade|default_if_none:"" }}</td>
+                        <td>
+                            {% if staff.disability.disability_grade != disability_request.profile_disability.disability_grade or not staff.disability %}
+                                <span class="text-primary fw-bold">{{ disability_request.profile_disability.disability_grade|default_if_none:"" }}</span>
+                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
+                            {% else %}
+                                {{ disability_request.profile_disability.disability_grade|default_if_none:"" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>備考</strong></td>
+                        <td>{{ staff.disability.notes|default_if_none:"" }}</td>
+                        <td>
+                            {% if staff.disability.notes != disability_request.profile_disability.notes or not staff.disability %}
+                                <span class="text-primary fw-bold">{{ disability_request.profile_disability.notes|default_if_none:"" }}</span>
+                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
+                            {% else %}
+                                {{ disability_request.profile_disability.notes|default_if_none:"" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 承認・却下ボタン -->
+        {% if disability_request.status == 'pending' %}
+        <div class="d-flex justify-content-start mt-4">
+            <form method="post" class="me-2">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="approve">
+                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('障害者情報申請を承認し、スタッフ情報を更新しますか？')">
+                    <i class="bi bi-check-circle"></i> 承認
+                </button>
+            </form>
+            <form method="post" class="me-2">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reject">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('障害者情報申請を却下しますか？')">
+                    <i class="bi bi-x-circle"></i> 却下
+                </button>
+            </form>
+            <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

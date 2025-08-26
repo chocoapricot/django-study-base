@@ -16,6 +16,7 @@ from .views import (
     staff_international_detail, staff_international_create, staff_international_edit, staff_international_delete,
     staff_international_request_detail,
     staff_disability_detail, staff_disability_create, staff_disability_edit, staff_disability_delete,
+    staff_disability_request_detail,
 )
 
 app_name = 'staff'
@@ -99,4 +100,5 @@ urlpatterns = [
     path('staff/<int:staff_pk>/disability/create/', staff_disability_create, name='staff_disability_create'),
     path('staff/<int:staff_pk>/disability/edit/', staff_disability_edit, name='staff_disability_edit'),
     path('staff/<int:staff_pk>/disability/delete/', staff_disability_delete, name='staff_disability_delete'),
+    path('staff/<int:staff_pk>/disability/request/<int:pk>/', staff_disability_request_detail, name='staff_disability_request_detail'),
 ]

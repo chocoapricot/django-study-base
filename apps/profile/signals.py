@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from apps.profile.models import ProfileMynumber, StaffProfileInternational
-from apps.connect.models import ConnectStaff, MynumberRequest, ConnectInternationalRequest
+from apps.profile.models import ProfileMynumber, StaffProfileInternational, StaffDisabilityProfile
+from apps.connect.models import ConnectStaff, MynumberRequest, ConnectInternationalRequest, DisabilityRequest
 
 
 @receiver(post_save, sender=ProfileMynumber)
@@ -57,5 +57,33 @@ def create_or_update_international_request(sender, instance, **kwargs):
         ConnectInternationalRequest.objects.create(
             connect_staff=connection,
             profile_international=instance,
+            status='pending'
+        )
+
+
+@receiver(post_save, sender=StaffDisabilityProfile)
+def create_or_update_disability_request(sender, instance, **kwargs):
+    """
+    StaffDisabilityProfileが作成または更新されたときに、関連するすべての有効な
+    ConnectStaffに対してDisabilityRequestを作成または更新します。
+    """
+    user = instance.user
+
+    # ユーザーに関連する承認済みのConnectStaffを取得
+    approved_connections = ConnectStaff.objects.filter(
+        email=user.email,
+        status='approved'
+    )
+
+    # このユーザーの既存のDisabilityRequestをすべて削除
+    DisabilityRequest.objects.filter(
+        profile_disability__user=user
+    ).delete()
+
+    # 承認済みの接続ごとに新しいDisabilityRequestを作成
+    for connection in approved_connections:
+        DisabilityRequest.objects.create(
+            connect_staff=connection,
+            profile_disability=instance,
             status='pending'
         )
