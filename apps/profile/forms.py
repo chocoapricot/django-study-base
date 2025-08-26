@@ -247,16 +247,14 @@ class StaffProfileContactForm(forms.ModelForm):
     class Meta:
         model = StaffProfileContact
         fields = [
-            'phone', 'email', 'notes'
+            'emergency_contact', 'relationship', 'postal_code',
+            'address1', 'address2', 'address3'
         ]
         widgets = {
-            'phone': forms.TextInput(attrs={
-                'class': 'form-control form-control-sm',
-                'inputmode': 'numeric',
-                'pattern': r'[0-9\-]*',
-                'style': 'ime-mode:disabled;',
-                'autocomplete': 'off',
-            }),
-            'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
-            'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'emergency_contact': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'relationship': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'postal_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '7'}),
+            'address1': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'address2': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'address3': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
         }

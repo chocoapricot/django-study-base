@@ -1,0 +1,139 @@
+{% extends 'common/_base.html' %}
+
+{% block content %}
+
+<!-- スタッフ情報カード -->
+{% include 'staff/_staff_info_card.html' %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>連絡先情報申請承認</span>
+        <span class="badge bg-warning text-dark">{{ contact_request.get_status_display }}</span>
+    </div>
+    <div class="card-body">
+        {% if contact_request.status == 'pending' %}
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle-fill"></i>
+            スタッフから提出された連絡先情報を確認し、承認または却下を選択してください。
+        </div>
+        {% elif contact_request.status == 'approved' %}
+        <div class="alert alert-success" role="alert">
+            <i class="bi bi-check-circle-fill"></i>
+            この連絡先情報申請は承認済みです。スタッフ連絡先情報が更新されています。
+        </div>
+        {% elif contact_request.status == 'rejected' %}
+        <div class="alert alert-danger" role="alert">
+            <i class="bi bi-x-circle-fill"></i>
+            この連絡先情報申請は却下されています。
+        </div>
+        {% endif %}
+
+        <!-- 比較表示 -->
+        <h5 class="mt-4 mb-3">連絡先情報比較</h5>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 20%;">項目</th>
+                        <th style="width: 40%;">現在の連絡先情報</th>
+                        <th style="width: 40%;">申請された連絡先情報</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% with current_contact=staff.contact profile_contact=contact_request.staff_profile_contact %}
+                    <tr>
+                        <td><strong>緊急連絡先</strong></td>
+                        <td>{{ current_contact.emergency_contact|default_if_none:"" }}</td>
+                        <td>
+                            {% if current_contact.emergency_contact != profile_contact.emergency_contact %}
+                                <span class="text-primary fw-bold">{{ profile_contact.emergency_contact|default_if_none:"" }}</span>
+                            {% else %}
+                                {{ profile_contact.emergency_contact|default_if_none:"" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>続柄</strong></td>
+                        <td>{{ current_contact.relationship|default_if_none:"" }}</td>
+                        <td>
+                            {% if current_contact.relationship != profile_contact.relationship %}
+                                <span class="text-primary fw-bold">{{ profile_contact.relationship|default_if_none:"" }}</span>
+                            {% else %}
+                                {{ profile_contact.relationship|default_if_none:"" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>郵便番号（住民票）</strong></td>
+                        <td>{{ current_contact.postal_code|default_if_none:"" }}</td>
+                        <td>
+                            {% if current_contact.postal_code != profile_contact.postal_code %}
+                                <span class="text-primary fw-bold">{{ profile_contact.postal_code|default_if_none:"" }}</span>
+                            {% else %}
+                                {{ profile_contact.postal_code|default_if_none:"" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>住所１（住民票）</strong></td>
+                        <td>{{ current_contact.address1|default_if_none:"" }}</td>
+                        <td>
+                            {% if current_contact.address1 != profile_contact.address1 %}
+                                <span class="text-primary fw-bold">{{ profile_contact.address1|default_if_none:"" }}</span>
+                            {% else %}
+                                {{ profile_contact.address1|default_if_none:"" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>住所２（住民票）</strong></td>
+                        <td>{{ current_contact.address2|default_if_none:"" }}</td>
+                        <td>
+                            {% if current_contact.address2 != profile_contact.address2 %}
+                                <span class="text-primary fw-bold">{{ profile_contact.address2|default_if_none:"" }}</span>
+                            {% else %}
+                                {{ profile_contact.address2|default_if_none:"" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>住所３（住民票）</strong></td>
+                        <td>{{ current_contact.address3|default_if_none:"" }}</td>
+                        <td>
+                            {% if current_contact.address3 != profile_contact.address3 %}
+                                <span class="text-primary fw-bold">{{ profile_contact.address3|default_if_none:"" }}</span>
+                            {% else %}
+                                {{ profile_contact.address3|default_if_none:"" }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endwith %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 承認・却下ボタン -->
+        {% if contact_request.status == 'pending' %}
+        <div class="d-flex justify-content-start mt-4">
+            <form method="post" class="me-2">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="approve">
+                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('連絡先情報申請を承認し、スタッフ連絡先情報を更新しますか？')">
+                    <i class="bi bi-check-circle"></i> 承認
+                </button>
+            </form>
+            <form method="post" class="me-2">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reject">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('連絡先情報申請を却下しますか？')">
+                    <i class="bi bi-x-circle"></i> 却下
+                </button>
+            </form>
+            <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

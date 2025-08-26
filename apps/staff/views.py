@@ -322,10 +322,11 @@ def staff_detail(request, pk):
     international_request = None
     bank_request = None
     disability_request = None
+    contact_request = None
     last_login = None  # 最終ログイン日時を初期化
 
     if staff.email:
-        from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest, ConnectInternationalRequest, BankRequest, DisabilityRequest
+        from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest, ConnectInternationalRequest, BankRequest, DisabilityRequest, ContactRequest
         from apps.company.models import Company
         from django.contrib.auth import get_user_model
         User = get_user_model()
@@ -367,6 +368,10 @@ def staff_detail(request, pk):
                         connect_staff=connect_request,
                         status='pending'
                     ).first()
+                    contact_request = ContactRequest.objects.filter(
+                        connect_staff=connect_request,
+                        status='pending'
+                    ).first()
         except Exception:
             pass
     
@@ -386,6 +391,7 @@ def staff_detail(request, pk):
         'international_request': international_request,
         'bank_request': bank_request,
         'disability_request': disability_request,
+        'contact_request': contact_request,
         'last_login': last_login,
     })
 
@@ -1177,6 +1183,60 @@ def staff_disability_request_detail(request, staff_pk, pk):
         'disability_request': disability_request,
     }
     return render(request, 'staff/staff_disability_request_detail.html', context)
+
+
+@login_required
+@permission_required('staff.change_staffcontact', raise_exception=True)
+def staff_contact_request_detail(request, staff_pk, pk):
+    """連絡先情報申請の詳細、承認・却下"""
+    from apps.connect.models import ContactRequest
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    contact_request = get_object_or_404(ContactRequest, pk=pk, connect_staff__email=staff.email)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'approve':
+            # 承認処理
+            try:
+                # 申請から情報を取得
+                profile_contact = contact_request.staff_profile_contact
+
+                # スタッフの連絡先情報を更新または作成
+                staff_contact, created = StaffContact.objects.update_or_create(
+                    staff=staff,
+                    defaults={
+                        'emergency_contact': profile_contact.emergency_contact,
+                        'relationship': profile_contact.relationship,
+                        'postal_code': profile_contact.postal_code,
+                        'address1': profile_contact.address1,
+                        'address2': profile_contact.address2,
+                        'address3': profile_contact.address3,
+                    }
+                )
+
+                # 申請ステータスを更新
+                contact_request.status = 'approved'
+                contact_request.save()
+
+                log_model_action(request.user, 'update', staff_contact)
+                messages.success(request, f'連絡先情報申請を承認し、{staff.name}の情報を更新しました。')
+            except Exception as e:
+                messages.error(request, f'承認処理中にエラーが発生しました: {e}')
+
+        elif action == 'reject':
+            # 却下処理
+            contact_request.status = 'rejected'
+            contact_request.save()
+            log_model_action(request.user, 'update', contact_request)
+            messages.warning(request, '連絡先情報申請を却下しました。')
+
+        return redirect('staff:staff_detail', pk=staff.pk)
+
+    context = {
+        'staff': staff,
+        'contact_request': contact_request,
+    }
+    return render(request, 'staff/staff_contact_request_detail.html', context)
 
 
 @login_required
