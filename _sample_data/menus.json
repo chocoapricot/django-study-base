@@ -37,7 +37,7 @@
         "level": 0,
         "exact_match": true,
         "required_permission": "staff.view_staff",
-        "disp_seq": 20,
+        "disp_seq": 25,
         "active": true
     }
 },
