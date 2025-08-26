@@ -18,7 +18,7 @@
                                 <i class="bi bi-credit-card"></i>　マイナンバー
                             </a>
                             <a href="{% url 'staff:staff_contact_detail' staff.pk %}" class="dropdown-item">
-                                <i class="bi bi-person-rolodex"></i>　連絡先情報
+                                <i class="bi bi-person-rolodex"></i>　その他連絡先
                             </a>
                             <a href="{% url 'staff:staff_bank_detail' staff_id=staff.pk %}" class="dropdown-item">
                                 <i class="bi bi-bank"></i>　銀行情報
@@ -85,6 +85,11 @@
                                         <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
                                         <span class="copy-message">コピーしました!</span>
                                     </span>
+                                {% endif %}
+                                {% if staff.has_contact %}
+                                <a href="{% url 'staff:staff_disability_detail' staff_pk=staff.pk %}" class="btn btn-sm btn-warning ms-1" title="その他連絡先">
+                                    <i class="bi bi-person-rolodex"></i>
+                                </a>
                                 {% endif %}
                                 {% if staff.has_mynumber %}
                                 <a href="{% url 'staff:staff_mynumber_detail' staff.pk %}" class="btn btn-sm btn-primary ms-2" title="マイナンバー">
