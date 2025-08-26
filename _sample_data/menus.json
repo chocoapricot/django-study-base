@@ -355,5 +355,26 @@
         "disp_seq": 18,
         "active": true
     }
+},
+{
+    "model": "settings.menu",
+    "pk": 19,
+    "fields": {
+        "version": 1,
+        "created_at": "2025-08-26T17:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2025-08-26T17:00:00.000Z",
+        "updated_by": 1,
+        "name": "障害者情報",
+        "url": "/profile/disability/",
+        "icon": "bi-heart",
+        "icon_style": "color:#6610f2;",
+        "parent": null,
+        "level": 0,
+        "exact_match": true,
+        "required_permission": "profile.view_staffdisabilityprofile",
+        "disp_seq": 19,
+        "active": true
+    }
 }
 ]

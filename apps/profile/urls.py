@@ -17,6 +17,11 @@ urlpatterns = [
     path('bank/edit/', views.bank_edit, name='bank_edit'),
     path('bank/delete/', views.bank_delete, name='bank_delete'),
 
+    # 障害者情報
+    path('disability/', views.disability_detail, name='disability_detail'),
+    path('disability/edit/', views.disability_edit, name='disability_edit'),
+    path('disability/delete/', views.disability_delete, name='disability_delete'),
+
     # 資格
     path('qualification/', views_profile.profile_qualification_list, name='qualification_list'),
     path('qualification/create/', views_profile.profile_qualification_create, name='qualification_create'),

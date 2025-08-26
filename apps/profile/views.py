@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.urls import reverse
-from .models import StaffProfile, ProfileMynumber, StaffProfileInternational, StaffBankProfile
-from .forms import StaffProfileForm, ProfileMynumberForm, StaffProfileInternationalForm, StaffBankProfileForm
+from .models import StaffProfile, ProfileMynumber, StaffProfileInternational, StaffBankProfile, StaffDisabilityProfile
+from .forms import StaffProfileForm, ProfileMynumberForm, StaffProfileInternationalForm, StaffBankProfileForm, StaffDisabilityProfileForm
 
 
 @login_required
@@ -344,3 +344,73 @@ def bank_delete(request):
         'bank': bank,
     }
     return render(request, 'profile/bank_delete.html', context)
+
+
+@login_required
+@permission_required('profile.view_staffdisabilityprofile', raise_exception=True)
+def disability_detail(request):
+    """障害者情報詳細表示"""
+    try:
+        disability = StaffDisabilityProfile.objects.get(user=request.user)
+    except StaffDisabilityProfile.DoesNotExist:
+        disability = None
+
+    context = {
+        'disability': disability,
+    }
+    return render(request, 'profile/disability_detail.html', context)
+
+
+@login_required
+@permission_required('profile.add_staffdisabilityprofile', raise_exception=True)
+@permission_required('profile.change_staffdisabilityprofile', raise_exception=True)
+def disability_edit(request):
+    """障害者情報編集"""
+    try:
+        disability = StaffDisabilityProfile.objects.get(user=request.user)
+        is_new = False
+    except StaffDisabilityProfile.DoesNotExist:
+        disability = None
+        is_new = True
+
+    if request.method == 'POST':
+        form = StaffDisabilityProfileForm(request.POST, instance=disability)
+        if form.is_valid():
+            disability = form.save(commit=False)
+            disability.user = request.user
+            disability.email = request.user.email
+            disability.save()
+
+            if is_new:
+                messages.success(request, '障害者情報を登録しました。')
+            else:
+                messages.success(request, '障害者情報を更新しました。')
+
+            return redirect('profile:disability_detail')
+    else:
+        form = StaffDisabilityProfileForm(instance=disability)
+
+    context = {
+        'form': form,
+        'disability': disability,
+        'is_new': is_new,
+        'user_email': request.user.email,
+    }
+    return render(request, 'profile/disability_form.html', context)
+
+
+@login_required
+@permission_required('profile.delete_staffdisabilityprofile', raise_exception=True)
+def disability_delete(request):
+    """障害者情報削除確認"""
+    disability = get_object_or_404(StaffDisabilityProfile, user=request.user)
+
+    if request.method == 'POST':
+        disability.delete()
+        messages.success(request, '障害者情報を削除しました。')
+        return redirect('profile:disability_detail')
+
+    context = {
+        'disability': disability,
+    }
+    return render(request, 'profile/disability_delete.html', context)
