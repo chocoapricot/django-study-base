@@ -79,8 +79,9 @@ django-study-base/
 │   ├── csstest/            # CSSテスト・開発
 │   └── api/                # REST API
 ├── config/                 # プロジェクト設定
-├── templates/              # HTMLテンプレート
+├── media/                  # アップロードされたファイル
 ├── statics/                # 静的ファイル
+├── templates/              # HTMLテンプレート
 └── requirements.txt        # 依存関係
 ```
 
@@ -100,7 +101,10 @@ django-study-base/
 | `apps_client_user` | クライアント担当者 |
 | `apps_company` | 会社情報 |
 | `apps_company_department` | 部署情報 |
+| `apps_connect_bank_request` | 銀行口座変更申請 |
 | `apps_connect_client` | クライアント接続申請 |
+| `apps_connect_disability_request` | 障害者情報変更申請 |
+| `apps_connect_international_request` | 国際情報変更申請 |
 | `apps_connect_mynumber_request` | マイナンバー接続申請 |
 | `apps_connect_profile_request` | プロフィール変更申請 |
 | `apps_connect_staff` | スタッフ接続申請 |
@@ -113,15 +117,23 @@ django-study-base/
 | `apps_master_qualification` | 資格マスター（カテゴリと資格） |
 | `apps_master_skill` | 技能マスター（カテゴリと技能） |
 | `apps_profile_staff` | スタッフプロファイル |
+| `apps_profile_staff_bank` | スタッフ銀行口座 |
+| `apps_profile_staff_contacts` | スタッフ連絡先 |
+| `apps_profile_staff_disability` | スタッフ障害者情報 |
+| `apps_profile_staff_international` | スタッフ国際情報 |
 | `apps_profile_staff_mynumber` | スタッフマイナンバー |
 | `apps_profile_staff_qualification` | スタッフ保有資格 |
 | `apps_profile_staff_skill` | スタッフ保有スキル |
 | `apps_staff` | スタッフ基本情報 |
+| `apps_staff_bank` | スタッフ銀行口座（旧） |
 | `apps_staff_contacted` | スタッフ連絡履歴 |
+| `apps_staff_contacts` | スタッフ連絡先（旧） |
+| `apps_staff_disability` | スタッフ障害者情報（旧） |
 | `apps_staff_file` | スタッフファイル |
-| `apps_staff_mynumber` | スタッフマイナンバー |
-| `apps_staff_qualification` | スタッフ保有資格 |
-| `apps_staff_skill` | スタッフ保有スキル |
+| `apps_staff_international` | スタッフ国際情報（旧） |
+| `apps_staff_mynumber` | スタッフマイナンバー（旧） |
+| `apps_staff_qualification` | スタッフ保有資格（旧） |
+| `apps_staff_skill` | スタッフ保有スキル（旧） |
 | `apps_system_app_log` | アプリケーション操作ログ |
 | `apps_system_dropdowns` | ドロップダウン設定 |
 | `apps_system_mail_log` | メール送信ログ |
