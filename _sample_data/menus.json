@@ -295,6 +295,28 @@
 },
 {
     "model": "settings.menu",
+    "pk": 21,
+    "fields": {
+        "version": 1756220495209280,
+        "created_at": "2025-08-26T15:16:55.328Z",
+        "created_by": 1,
+        "updated_at": "2025-08-26T15:17:21.861Z",
+        "updated_by": 1,
+        "name": "スタッフマイページ",
+        "url": "/profile/",
+        "icon": "11",
+        "icon_style": "11",
+        "parent": null,
+        "level": 0,
+        "exact_match": true,
+        "required_permission": null,
+        "disp_seq": 10,
+        "active": true
+    }
+}
+,
+{
+    "model": "settings.menu",
     "pk": 16,
     "fields": {
         "version": 1756220535857403,
@@ -395,27 +417,6 @@
         "exact_match": true,
         "required_permission": "profile.view_staffcontact",
         "disp_seq": 20,
-        "active": true
-    }
-},
-{
-    "model": "settings.menu",
-    "pk": 21,
-    "fields": {
-        "version": 1756220495209280,
-        "created_at": "2025-08-26T15:16:55.328Z",
-        "created_by": 1,
-        "updated_at": "2025-08-26T15:17:21.861Z",
-        "updated_by": 1,
-        "name": "スタッフマイページ",
-        "url": "/profile/",
-        "icon": "11",
-        "icon_style": "11",
-        "parent": null,
-        "level": 0,
-        "exact_match": true,
-        "required_permission": null,
-        "disp_seq": 10,
         "active": true
     }
 }
