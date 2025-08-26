@@ -321,10 +321,11 @@ def staff_detail(request, pk):
     profile_request = None
     international_request = None
     bank_request = None
+    disability_request = None
     last_login = None  # 最終ログイン日時を初期化
 
     if staff.email:
-        from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest, ConnectInternationalRequest, BankRequest
+        from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest, ConnectInternationalRequest, BankRequest, DisabilityRequest
         from apps.company.models import Company
         from django.contrib.auth import get_user_model
         User = get_user_model()
@@ -362,6 +363,10 @@ def staff_detail(request, pk):
                         connect_staff=connect_request,
                         status='pending'
                     ).first()
+                    disability_request = DisabilityRequest.objects.filter(
+                        connect_staff=connect_request,
+                        status='pending'
+                    ).first()
         except Exception:
             pass
     
@@ -380,6 +385,7 @@ def staff_detail(request, pk):
         'profile_request': profile_request,
         'international_request': international_request,
         'bank_request': bank_request,
+        'disability_request': disability_request,
         'last_login': last_login,
     })
 
@@ -1120,6 +1126,57 @@ def staff_disability_delete(request, staff_pk):
         'disability': disability,
     }
     return render(request, 'staff/staff_disability_confirm_delete.html', context)
+
+
+@login_required
+@permission_required('staff.change_staffdisability', raise_exception=True)
+def staff_disability_request_detail(request, staff_pk, pk):
+    """障害者情報申請の詳細、承認・却下"""
+    from apps.connect.models import DisabilityRequest
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    disability_request = get_object_or_404(DisabilityRequest, pk=pk, connect_staff__email=staff.email)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'approve':
+            # 承認処理
+            try:
+                # 申請から情報を取得
+                profile_disability = disability_request.profile_disability
+
+                # スタッフの障害者情報を更新または作成
+                staff_disability, created = StaffDisability.objects.update_or_create(
+                    staff=staff,
+                    defaults={
+                        'disability_type': profile_disability.disability_type,
+                        'disability_grade': profile_disability.disability_grade,
+                        'notes': profile_disability.notes,
+                    }
+                )
+
+                # 申請ステータスを更新
+                disability_request.status = 'approved'
+                disability_request.save()
+
+                log_model_action(request.user, 'update', staff_disability)
+                messages.success(request, f'障害者情報申請を承認し、{staff.name}の情報を更新しました。')
+            except Exception as e:
+                messages.error(request, f'承認処理中にエラーが発生しました: {e}')
+
+        elif action == 'reject':
+            # 却下処理
+            disability_request.status = 'rejected'
+            disability_request.save()
+            log_model_action(request.user, 'update', disability_request)
+            messages.warning(request, '障害者情報申請を却下しました。')
+
+        return redirect('staff:staff_detail', pk=staff.pk)
+
+    context = {
+        'staff': staff,
+        'disability_request': disability_request,
+    }
+    return render(request, 'staff/staff_disability_request_detail.html', context)
 
 
 @login_required

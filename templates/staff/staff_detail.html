@@ -353,6 +353,25 @@
                 </div>
                 {% endif %}
 
+                {% if disability_request %}
+                <hr>
+                <div class="row mb-3 align-items-center">
+                    <div class="col-12">
+                        <i class="bi bi-heart" style="font-size: 20px; color: #17a2b8;"></i>
+                        <strong>障害者情報申請</strong>
+                        <span class="badge bg-warning text-dark ms-2">{{ disability_request.get_status_display }}</span>
+                    </div>
+                    <div class="col-12">
+                        <p class="mt-2">
+                            障害者情報の登録申請があります。
+                            <a href="{% url 'staff:staff_disability_request_detail' staff.pk disability_request.pk %}" class="btn btn-sm btn-info">
+                                詳細を確認
+                            </a>
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+
                 {% if profile_request %}
                 <hr>
                 <div class="row mb-3 align-items-center">

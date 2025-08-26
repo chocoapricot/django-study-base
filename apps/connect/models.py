@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from apps.common.models import MyModel
 from apps.staff.models import Staff
-from apps.profile.models import ProfileMynumber, StaffProfile, StaffProfileInternational, StaffBankProfile
+from apps.profile.models import ProfileMynumber, StaffProfile, StaffProfileInternational, StaffBankProfile, StaffDisabilityProfile
 
 class ConnectStaff(MyModel):
     """
@@ -196,6 +196,48 @@ class MynumberRequest(MyModel):
 
     def __str__(self):
         return f"{self.connect_staff} - {self.profile_mynumber} ({self.get_status_display()})"
+
+
+class DisabilityRequest(MyModel):
+    """
+    障害者情報の提出を要求するためのモデル。
+    """
+
+    STATUS_CHOICES = [
+        ('pending', '未承認'),
+        ('approved', '承認済み'),
+        ('rejected', '却下'),
+    ]
+
+    connect_staff = models.ForeignKey(
+        ConnectStaff,
+        on_delete=models.CASCADE,
+        verbose_name='スタッフ接続',
+        help_text='関連するスタッフ接続'
+    )
+    profile_disability = models.ForeignKey(
+        StaffDisabilityProfile,
+        on_delete=models.CASCADE,
+        verbose_name='プロフィール障害者情報',
+        help_text='関連するプロフィール障害者情報'
+    )
+    status = models.CharField(
+        'ステータス',
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending',
+        help_text='申請の現在のステータス'
+    )
+
+    class Meta:
+        db_table = 'apps_connect_disability_request'
+        verbose_name = '障害者情報申請'
+        verbose_name_plural = '障害者情報申請'
+        unique_together = ['connect_staff', 'profile_disability']
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.connect_staff} - {self.profile_disability} ({self.get_status_display()})"
 
 
 class ProfileRequest(MyModel):
