@@ -87,7 +87,7 @@
                                     </span>
                                 {% endif %}
                                 {% if staff.has_contact %}
-                                <a href="{% url 'staff:staff_disability_detail' staff_pk=staff.pk %}" class="btn btn-sm btn-warning ms-1" title="その他連絡先">
+                                <a href="{% url 'staff:staff_contact_detail' staff.pk %}" class="btn btn-sm btn-warning ms-1" title="その他連絡先">
                                     <i class="bi bi-person-rolodex"></i>
                                 </a>
                                 {% endif %}
