@@ -1,0 +1,44 @@
+{% extends 'common/_base.html' %}
+
+{% block title %}障害者情報削除確認{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        障害者情報削除確認
+    </div>
+    <div class="card-body">
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            障害者情報を削除しますか？この操作は取り消せません。
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end">メールアドレス</label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ disability.email }}</p>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end">障害の種類</label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ disability.disability_type|default_if_none:"" }}</p>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end">等級</label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ disability.disability_grade|default_if_none:"" }}</p>
+            </div>
+        </div>
+
+        <form method="post" class="mt-4">
+            {% csrf_token %}
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-dark">削除</button>
+                <a href="{% url 'profile:disability_detail' %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

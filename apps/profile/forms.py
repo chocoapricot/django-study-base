@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import StaffProfile, ProfileMynumber, StaffProfileInternational, StaffBankProfile
+from .models import StaffProfile, ProfileMynumber, StaffProfileInternational, StaffBankProfile, StaffDisabilityProfile
 
 
 from apps.common.forms.fields import to_fullwidth_katakana, validate_kana
@@ -209,3 +209,23 @@ class StaffBankProfileForm(forms.ModelForm):
         self.fields['account_type'].required = True
         self.fields['account_number'].required = True
         self.fields['account_holder'].required = True
+
+
+class StaffDisabilityProfileForm(forms.ModelForm):
+    """スタッフ障害者情報フォーム"""
+
+    class Meta:
+        model = StaffDisabilityProfile
+        fields = [
+            'disability_type', 'disability_grade', 'notes'
+        ]
+        widgets = {
+            'disability_type': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'disability_grade': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # 必須ではないので required = False のまま
+        pass

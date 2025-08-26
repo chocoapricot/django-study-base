@@ -476,3 +476,52 @@ class StaffBankProfile(MyModel):
         if parts:
             return ' '.join(parts)
         return '銀行情報なし'
+
+
+class StaffDisabilityProfile(MyModel):
+    """
+    スタッフの障害者情報を管理するモデル。
+    Userモデルと1対1で連携する。
+    """
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='ユーザー',
+        related_name='staff_disability'
+    )
+    email = models.EmailField(
+        verbose_name='メールアドレス',
+        help_text='メールアドレス（ログインユーザーと同じ）',
+        default=''
+    )
+    disability_type = models.CharField(
+        max_length=100,
+        verbose_name='障害の種類',
+        blank=True,
+        null=True,
+    )
+    disability_grade = models.CharField(
+        max_length=50,
+        verbose_name='等級',
+        blank=True,
+        null=True,
+    )
+    notes = models.TextField(
+        verbose_name='備考',
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = 'スタッフ障害者情報'
+        verbose_name_plural = 'スタッフ障害者情報'
+        db_table = 'apps_profile_staff_disability'
+
+    def __str__(self):
+        return f"{self.user.username} - 障害者情報"
+
+    def save(self, *args, **kwargs):
+        # ユーザーのメールアドレスと同期
+        if self.user:
+            self.email = self.user.email
+        super().save(*args, **kwargs)

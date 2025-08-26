@@ -1,0 +1,66 @@
+{% extends 'common/_base.html' %}
+
+{% block title %}{% if is_new %}障害者情報登録{% else %}障害者情報編集{% endif %}{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        {% if is_new %}障害者情報登録{% else %}障害者情報編集{% endif %}
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- メールアドレス（表示のみ） -->
+            <div class="row mb-3 align-items-center">
+                <label class="col-sm-2 col-form-label text-start text-md-end">メールアドレス</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control form-control-sm" value="{{ user_email }}" readonly>
+                    <small class="text-muted">※ログインユーザーのメールアドレスが自動設定されます</small>
+                </div>
+            </div>
+
+            <!-- 障害の種類 -->
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.disability_type.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >障害の種類</label>
+                <div class="col-sm-6">
+                    {{ form.disability_type }}
+                    {% if form.disability_type.errors %}
+                        <div class="text-danger small">{{ form.disability_type.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 等級 -->
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.disability_grade.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >等級</label>
+                <div class="col-sm-4">
+                    {{ form.disability_grade }}
+                    {% if form.disability_grade.errors %}
+                        <div class="text-danger small">{{ form.disability_grade.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 備考 -->
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.notes.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >備考</label>
+                <div class="col-sm-8">
+                    {{ form.notes }}
+                    {% if form.notes.errors %}
+                        <div class="text-danger small">{{ form.notes.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-primary">
+                    {% if is_new %}登録{% else %}更新{% endif %}
+                </button>
+                <a href="{% url 'profile:disability_detail' %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
