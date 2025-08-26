@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-4">スタッフ連絡先情報</h1>
+    <h2 class="h4">{{ staff.name }}</h2>
+
+    <div class="card my-4">
+        <div class="card-header">
+            連絡先情報
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">緊急連絡先</dt>
+                <dd class="col-sm-9">{{ contact.emergency_contact|default:"-" }}</dd>
+
+                <dt class="col-sm-3">続柄</dt>
+                <dd class="col-sm-9">{{ contact.relationship|default:"-" }}</dd>
+
+                <dt class="col-sm-3">郵便番号（住民票）</dt>
+                <dd class="col-sm-9">{{ contact.postal_code|default:"-" }}</dd>
+
+                <dt class="col-sm-3">住所（住民票）</dt>
+                <dd class="col-sm-9">{{ contact.address1|default:"" }} {{ contact.address2|default:"" }} {{ contact.address3|default:"" }}</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <a href="{% url 'staff:staff_detail' pk=staff.pk %}" class="btn btn-secondary">戻る</a>
+        <div>
+            <a href="{% url 'staff:staff_contact_edit' staff_id=staff.pk %}" class="btn btn-primary">編集</a>
+            <a href="{% url 'staff:staff_contact_delete' staff_id=staff.pk %}" class="btn btn-danger">削除</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

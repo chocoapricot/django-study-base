@@ -10,8 +10,8 @@ from django.db.models import Q
 from django.contrib import messages
 from apps.system.logs.utils import log_model_action
 
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability
-from .forms import StaffForm, StaffContactedForm, StaffFileForm, StaffMynumberForm, StaffBankForm, StaffInternationalForm, StaffDisabilityForm
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact
+from .forms import StaffForm, StaffContactedForm, StaffFileForm, StaffMynumberForm, StaffBankForm, StaffInternationalForm, StaffDisabilityForm, StaffContactForm
 from apps.system.settings.utils import my_parameter
 from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
@@ -928,6 +928,100 @@ def staff_mynumber_delete(request, staff_id):
         'mynumber': mynumber,
     }
     return render(request, 'staff/staff_mynumber_confirm_delete.html', context)
+
+
+# ===== スタッフ連絡先情報関連ビュー =====
+
+@login_required
+@permission_required('staff.view_staffcontact', raise_exception=True)
+def staff_contact_detail(request, staff_id):
+    """スタッフの連絡先情報詳細表示"""
+    staff = get_object_or_404(Staff, pk=staff_id)
+    try:
+        contact = StaffContact.objects.get(staff=staff)
+    except StaffContact.DoesNotExist:
+        # 未登録の場合は登録画面へリダイレクト
+        return redirect('staff:staff_contact_create', staff_id=staff.pk)
+
+    context = {
+        'staff': staff,
+        'contact': contact,
+    }
+    return render(request, 'staff/staff_contact_detail.html', context)
+
+
+@login_required
+@permission_required('staff.add_staffcontact', raise_exception=True)
+def staff_contact_create(request, staff_id):
+    """スタッフの連絡先情報登録"""
+    staff = get_object_or_404(Staff, pk=staff_id)
+    # 既に登録済みの場合は編集画面へリダイレクト
+    if hasattr(staff, 'contact'):
+        return redirect('staff:staff_contact_edit', staff_id=staff.pk)
+
+    if request.method == 'POST':
+        form = StaffContactForm(request.POST)
+        if form.is_valid():
+            contact = form.save(commit=False)
+            contact.staff = staff
+            contact.save()
+            # 変更履歴(AppLog)に記録
+            log_model_action(request.user, 'create', contact)
+            messages.success(request, '連絡先情報を登録しました。')
+            return redirect('staff:staff_contact_detail', staff_id=staff.pk)
+    else:
+        form = StaffContactForm()
+
+    context = {
+        'form': form,
+        'staff': staff,
+        'is_new': True,
+    }
+    return render(request, 'staff/staff_contact_form.html', context)
+
+
+@login_required
+@permission_required('staff.change_staffcontact', raise_exception=True)
+def staff_contact_edit(request, staff_id):
+    """スタッフの連絡先情報編集"""
+    staff = get_object_or_404(Staff, pk=staff_id)
+    contact = get_object_or_404(StaffContact, staff=staff)
+
+    if request.method == 'POST':
+        form = StaffContactForm(request.POST, instance=contact)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '連絡先情報を更新しました。')
+            return redirect('staff:staff_contact_detail', staff_id=staff.pk)
+    else:
+        form = StaffContactForm(instance=contact)
+
+    context = {
+        'form': form,
+        'staff': staff,
+        'contact': contact,
+        'is_new': False,
+    }
+    return render(request, 'staff/staff_contact_form.html', context)
+
+
+@login_required
+@permission_required('staff.delete_staffcontact', raise_exception=True)
+def staff_contact_delete(request, staff_id):
+    """スタッフの連絡先情報削除確認"""
+    staff = get_object_or_404(Staff, pk=staff_id)
+    contact = get_object_or_404(StaffContact, staff=staff)
+
+    if request.method == 'POST':
+        contact.delete()
+        messages.success(request, '連絡先情報を削除しました。')
+        return redirect('staff:staff_detail', pk=staff.pk)
+
+    context = {
+        'staff': staff,
+        'contact': contact,
+    }
+    return render(request, 'staff/staff_contact_confirm_delete.html', context)
 
 
 # ===== スタッフ障害者情報関連ビュー =====

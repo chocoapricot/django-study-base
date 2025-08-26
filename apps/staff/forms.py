@@ -2,7 +2,7 @@
 import os
 from django import forms
 from django.forms import TextInput
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact
 from django.core.exceptions import ValidationError
 
 # スタッフ連絡履歴フォーム
@@ -410,6 +410,25 @@ class StaffMynumberForm(forms.ModelForm):
                 raise ValidationError('正しいマイナンバーを入力してください。')
 
         return mynumber
+
+
+class StaffContactForm(forms.ModelForm):
+    """スタッフ連絡先情報フォーム"""
+
+    class Meta:
+        model = StaffContact
+        fields = ['emergency_contact', 'relationship', 'postal_code', 'address1', 'address2', 'address3']
+        widgets = {
+            'emergency_contact': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'relationship': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'postal_code': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'pattern': '[0-9]{7}', 'inputmode': 'numeric', 'minlength': '7', 'maxlength': '7', 'style': 'ime-mode:disabled;', 'autocomplete': 'off'
+            }),
+            'address1': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'address2': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'address3': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+        }
 
 
 class StaffBankForm(forms.ModelForm):
