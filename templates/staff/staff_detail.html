@@ -24,7 +24,7 @@
                                 <i class="bi bi-send"></i>　外国籍情報
                             </a>
                             <a href="{% url 'staff:staff_disability_detail' staff_pk=staff.pk %}" class="dropdown-item">
-                                <i class="bi bi-person-wheelchair"></i>　障害者情報
+                                <i class="bi bi-heart"></i>　障害者情報
                             </a>
                         </div>
                     </li>
@@ -95,7 +95,7 @@
                                 {% endif %}
                                 {% if staff.has_disability %}
                                 <a href="{% url 'staff:staff_disability_detail' staff_pk=staff.pk %}" class="btn btn-sm btn-warning ms-1" title="障害者情報">
-                                    <i class="bi bi-person-wheelchair"></i>
+                                    <i class="bi bi-heart"></i>
                                 </a>
                                 {% endif %}
                             </h4>
