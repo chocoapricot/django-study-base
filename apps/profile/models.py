@@ -538,7 +538,30 @@ class StaffContact(MyModel):
         related_name="staff_contact",
         verbose_name="ユーザー",
     )
-    # ToDo: 項目を追加
+    phone = models.CharField(
+        max_length=15,
+        verbose_name='電話番号',
+        null=True,
+        blank=True,
+        validators=[
+            RegexValidator(
+                regex=r'^[\d\-]+$',
+                message='電話番号は数字とハイフンのみ入力可能です'
+            )
+        ],
+        help_text='電話番号を入力してください'
+    )
+    email = models.EmailField(
+        verbose_name='メールアドレス',
+        null=True,
+        blank=True,
+        help_text='連絡先メールアドレスを入力してください'
+    )
+    notes = models.TextField(
+        verbose_name='備考',
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         db_table = "apps_profile_staff_contacts"
