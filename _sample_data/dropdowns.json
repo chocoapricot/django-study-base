@@ -459,5 +459,38 @@
         "disp_seq": 30,
         "active": true
     }
+},
+{
+    "model": "settings.dropdowns",
+    "pk": 193,
+    "fields": {
+        "version": 1756201411122555,
+        "created_at": "2025-08-26T09:59:17.774Z",
+        "created_by": 1,
+        "updated_at": "2025-08-26T09:59:17.775Z",
+        "updated_by": 1,
+        "category": "account_type",
+        "name": "普通",
+        "value": "ordinary",
+        "disp_seq": 1,
+        "active": true
+    }
+},
+{
+    "model": "settings.dropdowns",
+    "pk": 194,
+    "fields": {
+        "version": 1756201430895704,
+        "created_at": "2025-08-26T09:59:37.548Z",
+        "created_by": 1,
+        "updated_at": "2025-08-26T09:59:37.548Z",
+        "updated_by": 1,
+        "category": "account_type",
+        "name": "当座",
+        "value": "current",
+        "disp_seq": 2,
+        "active": true
+    }
 }
+
 ]
