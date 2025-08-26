@@ -418,7 +418,7 @@ class StaffBankForm(forms.ModelForm):
     account_type = forms.ChoiceField(
         choices=[],
         label='口座種別',
-        widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
+        widget=forms.RadioSelect,
         required=True,
     )
 
