@@ -23,6 +23,9 @@
                             <a href="{% url 'staff:staff_international_detail' staff.pk %}" class="dropdown-item">
                                 <i class="bi bi-send"></i>　外国籍情報
                             </a>
+                            <a href="{% url 'staff:staff_disability_detail' staff_pk=staff.pk %}" class="dropdown-item">
+                                <i class="bi bi-person-badge"></i>　障害者情報
+                            </a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -88,6 +91,11 @@
                                 {% if staff.has_international %}
                                 <a href="{% url 'staff:staff_international_detail' staff.pk %}" class="btn btn-sm btn-info ms-1" title="外国籍情報">
                                     <i class="bi bi-send"></i>
+                                </a>
+                                {% endif %}
+                                {% if staff.has_disability %}
+                                <a href="{% url 'staff:staff_disability_detail' staff_pk=staff.pk %}" class="btn btn-sm btn-warning ms-1" title="障害者情報">
+                                    <i class="bi bi-person-badge"></i>
                                 </a>
                                 {% endif %}
                             </h4>

@@ -147,6 +147,11 @@ class Staff(MyModel):
         """外国籍情報が登録されているかどうかを返す"""
         return hasattr(self, 'international')
 
+    @property
+    def has_disability(self):
+        """障害者情報が登録されているかどうかを返す"""
+        return hasattr(self, 'disability')
+
 
 from apps.common.models import MyModel
 import uuid
@@ -555,3 +560,34 @@ class StaffInternational(MyModel):
         from django.utils import timezone
         from datetime import timedelta
         return self.residence_period_to <= timezone.now().date() + timedelta(days=days)
+
+
+class StaffDisability(MyModel):
+    """
+    スタッフの障害者情報を管理するモデル。
+    """
+
+    staff = models.OneToOneField(
+        Staff,
+        on_delete=models.CASCADE,
+        verbose_name='スタッフ',
+        related_name='disability'
+    )
+    disability_type = models.CharField(
+        max_length=100,
+        verbose_name='障害の種類',
+        help_text='障害の種類を入力してください'
+    )
+    severity = models.CharField(
+        max_length=100,
+        verbose_name='重度',
+        help_text='障害の重度を入力してください'
+    )
+
+    class Meta:
+        verbose_name = 'スタッフ障害者情報'
+        verbose_name_plural = 'スタッフ障害者情報'
+        db_table = 'apps_staff_disability'
+
+    def __str__(self):
+        return f"{self.staff} - 障害者情報"

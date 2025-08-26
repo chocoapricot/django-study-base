@@ -10,8 +10,8 @@ from django.db.models import Q
 from django.contrib import messages
 from apps.system.logs.utils import log_model_action
 
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational
-from .forms import StaffForm, StaffContactedForm, StaffFileForm, StaffMynumberForm, StaffBankForm, StaffInternationalForm
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability
+from .forms import StaffForm, StaffContactedForm, StaffFileForm, StaffMynumberForm, StaffBankForm, StaffInternationalForm, StaffDisabilityForm
 from apps.system.settings.utils import my_parameter
 from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
@@ -928,6 +928,100 @@ def staff_mynumber_delete(request, staff_id):
         'mynumber': mynumber,
     }
     return render(request, 'staff/staff_mynumber_confirm_delete.html', context)
+
+
+# ===== スタッフ障害者情報関連ビュー =====
+
+@login_required
+@permission_required('staff.view_staffdisability', raise_exception=True)
+def staff_disability_detail(request, staff_pk):
+    """スタッフの障害者情報詳細表示"""
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    try:
+        disability = StaffDisability.objects.get(staff=staff)
+    except StaffDisability.DoesNotExist:
+        # 未登録の場合は登録画面へリダイレクト
+        return redirect('staff:staff_disability_create', staff_pk=staff.pk)
+
+    context = {
+        'staff': staff,
+        'disability': disability,
+    }
+    return render(request, 'staff/staff_disability_detail.html', context)
+
+
+@login_required
+@permission_required('staff.add_staffdisability', raise_exception=True)
+def staff_disability_create(request, staff_pk):
+    """スタッフの障害者情報登録"""
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    # 既に登録済みの場合は編集画面へリダイレクト
+    if hasattr(staff, 'disability'):
+        return redirect('staff:staff_disability_edit', staff_pk=staff.pk)
+
+    if request.method == 'POST':
+        form = StaffDisabilityForm(request.POST)
+        if form.is_valid():
+            disability = form.save(commit=False)
+            disability.staff = staff
+            disability.save()
+            # 変更履歴(AppLog)に記録
+            log_model_action(request.user, 'create', disability)
+            messages.success(request, '障害者情報を登録しました。')
+            return redirect('staff:staff_disability_detail', staff_pk=staff.pk)
+    else:
+        form = StaffDisabilityForm()
+
+    context = {
+        'form': form,
+        'staff': staff,
+        'is_new': True,
+    }
+    return render(request, 'staff/staff_disability_form.html', context)
+
+
+@login_required
+@permission_required('staff.change_staffdisability', raise_exception=True)
+def staff_disability_edit(request, staff_pk):
+    """スタッフの障害者情報編集"""
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    disability = get_object_or_404(StaffDisability, staff=staff)
+
+    if request.method == 'POST':
+        form = StaffDisabilityForm(request.POST, instance=disability)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '障害者情報を更新しました。')
+            return redirect('staff:staff_disability_detail', staff_pk=staff.pk)
+    else:
+        form = StaffDisabilityForm(instance=disability)
+
+    context = {
+        'form': form,
+        'staff': staff,
+        'disability': disability,
+        'is_new': False,
+    }
+    return render(request, 'staff/staff_disability_form.html', context)
+
+
+@login_required
+@permission_required('staff.delete_staffdisability', raise_exception=True)
+def staff_disability_delete(request, staff_pk):
+    """スタッフの障害者情報削除確認"""
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    disability = get_object_or_404(StaffDisability, staff=staff)
+
+    if request.method == 'POST':
+        disability.delete()
+        messages.success(request, '障害者情報を削除しました。')
+        return redirect('staff:staff_detail', pk=staff.pk)
+
+    context = {
+        'staff': staff,
+        'disability': disability,
+    }
+    return render(request, 'staff/staff_disability_confirm_delete.html', context)
 
 
 @login_required
