@@ -129,6 +129,9 @@
                         {% if staff.has_international_info %}
                             <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
                         {% endif %}
+                        {% if staff.has_disability_info %}
+                            <i class="bi bi-heart" style="color:#17a2b8;" title="障害者"></i>
+                        {% endif %}
                     </td>
                     <td class="d-none d-lg-table-cell">{{ staff.address1 }}</td>
                     <td>{{ staff.age }}歳</td>

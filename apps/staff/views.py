@@ -188,6 +188,10 @@ def staff_list(request):
     for staff in staffs_pages:
         staff.has_international_info = hasattr(staff, 'international')
 
+    # 各スタッフの障害者情報登録状況を判定
+    for staff in staffs_pages:
+        staff.has_disability_info = hasattr(staff, 'disability')
+
     return render(request, 'staff/staff_list.html', {
         'staffs': staffs_pages, 
         'query': query, 
