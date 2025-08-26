@@ -87,6 +87,36 @@ class ConnectStaff(MyModel):
                         staff_profile_contact=profile_contact_obj
                     )
 
+            # 銀行情報の比較と申請
+            profile_bank_obj = getattr(user_instance, 'staff_bank', None)
+            if profile_bank_obj:
+                staff_bank_obj = getattr(staff_instance, 'bank', None)
+                if self._is_bank_different(profile_bank_obj, staff_bank_obj):
+                    BankRequest.objects.get_or_create(
+                        connect_staff=self,
+                        staff_bank_profile=profile_bank_obj
+                    )
+
+            # 障害者情報の比較と申請
+            profile_disability_obj = getattr(user_instance, 'staff_disability', None)
+            if profile_disability_obj:
+                staff_disability_obj = getattr(staff_instance, 'disability', None)
+                if self._is_disability_different(profile_disability_obj, staff_disability_obj):
+                    DisabilityRequest.objects.get_or_create(
+                        connect_staff=self,
+                        profile_disability=profile_disability_obj
+                    )
+
+            # 外国籍情報の比較と申請
+            profile_international_obj = getattr(user_instance, 'staff_international', None)
+            if profile_international_obj:
+                staff_international_obj = getattr(staff_instance, 'international', None)
+                if self._is_international_different(profile_international_obj, staff_international_obj):
+                    ConnectInternationalRequest.objects.get_or_create(
+                        connect_staff=self,
+                        profile_international=profile_international_obj
+                    )
+
         except Exception:
             # It is recommended to add logging in a production environment.
             pass
@@ -125,6 +155,53 @@ class ConnectStaff(MyModel):
 
         return False
 
+    def _is_bank_different(self, profile_bank, staff_bank):
+        """スタッフプロフィール銀行情報とスタッフ銀行情報を比較する"""
+        fields_to_compare = [
+            'bank_code', 'branch_code', 'account_type', 'account_number', 'account_holder'
+        ]
+
+        for field in fields_to_compare:
+            profile_value = getattr(profile_bank, field, None)
+            staff_value = getattr(staff_bank, field, None)
+
+            if str(profile_value or '') != str(staff_value or ''):
+                return True
+
+        return False
+
+    def _is_disability_different(self, profile_disability, staff_disability):
+        """スタッフプロフィール障害者情報とスタッフ障害者情報を比較する"""
+        # Note: staff_disability.severity corresponds to profile_disability.disability_grade
+        fields_to_compare = {
+            'disability_type': 'disability_type',
+            'disability_grade': 'severity',
+        }
+
+        for profile_field, staff_field in fields_to_compare.items():
+            profile_value = getattr(profile_disability, profile_field, None)
+            staff_value = getattr(staff_disability, staff_field, None)
+
+            if str(profile_value or '') != str(staff_value or ''):
+                return True
+
+        return False
+
+    def _is_international_different(self, profile_international, staff_international):
+        """スタッフプロフィール外国籍情報とスタッフ外国籍情報を比較する"""
+        fields_to_compare = [
+            'residence_card_number', 'residence_status', 'residence_period_from', 'residence_period_to'
+        ]
+
+        for field in fields_to_compare:
+            profile_value = getattr(profile_international, field, None)
+            staff_value = getattr(staff_international, field, None)
+
+            if str(profile_value or '') != str(staff_value or ''):
+                return True
+
+        return False
+
     def unapprove(self):
         """未承認に戻す"""
         self.status = 'pending'
@@ -137,6 +214,8 @@ class ConnectStaff(MyModel):
         self.profilerequest_set.all().delete()
         self.bankrequest_set.all().delete()
         self.contactrequest_set.all().delete()
+        self.disabilityrequest_set.all().delete()
+        self.connectinternationalrequest_set.all().delete()
 
 
 
