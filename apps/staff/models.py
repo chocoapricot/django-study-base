@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 
 from ..common.models import MyModel
 from concurrency.fields import IntegerVersionField
+from django_currentuser.db.models import CurrentUserField
 
 def validate_mynumber(value):
     """マイナンバーのバリデーション関数"""
@@ -420,6 +421,9 @@ class StaffContact(MyModel):
     address1 = models.TextField('住所１（住民票）', blank=True, null=True)
     address2 = models.TextField('住所２（住民票）', blank=True, null=True)
     address3 = models.TextField('住所３（住民票）', blank=True, null=True)
+
+    created_by = CurrentUserField(verbose_name="作成者", related_name="created_staff_contact_set_staff_app")
+    updated_by = CurrentUserField(verbose_name="更新者", related_name="updated_staff_contact_set_staff_app")
 
     class Meta:
         verbose_name = 'スタッフ連絡先情報'
