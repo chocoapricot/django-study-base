@@ -8,26 +8,35 @@
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">スタッフ連絡先情報</div>
     <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-3">緊急連絡先</dt>
-            <dd class="col-sm-9">{{ contact.emergency_contact|default:"-" }}</dd>
+        <div class="row mb-3 mt-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>緊急連絡先</strong></label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ contact.emergency_contact|default:"-" }}</p>
+            </div>
 
-            <dt class="col-sm-3">続柄</dt>
-            <dd class="col-sm-9">{{ contact.relationship|default:"-" }}</dd>
+            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>続柄</strong></label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ contact.relationship|default:"-" }}</p>
+            </div>
 
-            <dt class="col-sm-3">郵便番号（住民票）</dt>
-            <dd class="col-sm-9">{{ contact.postal_code|default:"-" }}</dd>
+            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>郵便番号（住民票）</strong></label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ contact.postal_code|default:"-" }}</p>
+            </div>
 
-            <dt class="col-sm-3">住所（住民票）</dt>
-            <dd class="col-sm-9">{{ contact.address1|default:"" }} {{ contact.address2|default:"" }} {{ contact.address3|default:"" }}</dd>
-        </dl>
-    </div>
-    <div class="card-footer">
-        <div class="d-flex justify-content-start">
-            <a href="{% url 'staff:staff_detail' pk=staff.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>住所（住民票）</strong></label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ contact.address1|default:"" }} {{ contact.address2|default:"" }} {{ contact.address3|default:"" }}</p>
+            </div>
+
+        </div>
+
+        <div class="d-flex justify-content-start mt-4">
             <a href="{% url 'staff:staff_contact_edit' staff_id=staff.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
             <a href="{% url 'staff:staff_contact_delete' staff_id=staff.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+            <a href="{% url 'staff:staff_detail' pk=staff.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
         </div>
+
     </div>
 </div>
 {% endblock %}
