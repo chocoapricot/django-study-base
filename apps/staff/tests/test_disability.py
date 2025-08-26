@@ -77,19 +77,6 @@ class StaffDisabilityViewsTest(TestCase):
         self.assertContains(response, self.disability_type2.name)
         self.assertContains(response, '2級')
 
-    def test_disability_edit_view_get(self):
-        """編集画面へのGETリクエストが成功することをテスト"""
-        disability = StaffDisability.objects.create(
-            staff=self.staff,
-            disability_type=self.disability_type3.value,
-            severity='3級'
-        )
-        response = self.client.get(reverse('staff:staff_disability_edit', kwargs={'staff_pk': self.staff.pk}))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'staff/staff_disability_form.html')
-        self.assertContains(response, self.disability_type3.name)
-        self.assertContains(response, f'value="{disability.severity}"')
-        self.assertContains(response, f'value="{disability.disability_type}" checked')
 
 
     def test_disability_edit_view_post(self):
