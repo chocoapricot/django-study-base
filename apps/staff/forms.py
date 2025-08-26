@@ -569,16 +569,25 @@ class StaffInternationalForm(forms.ModelForm):
 
 class StaffDisabilityForm(forms.ModelForm):
     """スタッフ障害者情報フォーム"""
+    disability_type = forms.ChoiceField(
+        label='障害の種類',
+        widget=forms.RadioSelect,
+        choices=[],
+        required=True,
+    )
 
     class Meta:
         model = StaffDisability
         fields = ['disability_type', 'severity']
         widgets = {
-            'disability_type': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'severity': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['disability_type'].required = True
+        from apps.system.settings.models import Dropdowns
+        self.fields['disability_type'].choices = [
+            (opt.value, opt.name)
+            for opt in Dropdowns.objects.filter(active=True, category='disability_type').order_by('disp_seq')
+        ]
         self.fields['severity'].required = True

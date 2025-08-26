@@ -213,6 +213,12 @@ class StaffBankProfileForm(forms.ModelForm):
 
 class StaffDisabilityProfileForm(forms.ModelForm):
     """スタッフ障害者情報フォーム"""
+    disability_type = forms.ChoiceField(
+        label='障害の種類',
+        widget=forms.RadioSelect,
+        choices=[],
+        required=False,
+    )
 
     class Meta:
         model = StaffDisabilityProfile
@@ -220,15 +226,19 @@ class StaffDisabilityProfileForm(forms.ModelForm):
             'disability_type', 'disability_grade', 'notes'
         ]
         widgets = {
-            'disability_type': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'disability_grade': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # 必須ではないので required = False のまま
-        pass
+        from apps.system.settings.models import Dropdowns
+        self.fields['disability_type'].choices = [
+            ('', '選択しない')
+        ] + [
+            (opt.value, opt.name)
+            for opt in Dropdowns.objects.filter(active=True, category='disability_type').order_by('disp_seq')
+        ]
 
 
 class StaffProfileContactForm(forms.ModelForm):

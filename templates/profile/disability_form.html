@@ -23,8 +23,13 @@
             <!-- 障害の種類 -->
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.disability_type.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >障害の種類</label>
-                <div class="col-sm-6">
-                    {{ form.disability_type }}
+                <div class="col-sm-10">
+                    {% for radio in form.disability_type %}
+                    <div class="form-check form-check-inline">
+                        {{ radio.tag }}
+                        <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                    </div>
+                    {% endfor %}
                     {% if form.disability_type.errors %}
                         <div class="text-danger small">{{ form.disability_type.errors.0 }}</div>
                     {% endif %}

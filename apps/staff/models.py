@@ -626,3 +626,16 @@ class StaffDisability(MyModel):
 
     def __str__(self):
         return f"{self.staff} - 障害者情報"
+
+    @property
+    def disability_type_display(self):
+        """障害の種類の表示名を取得"""
+        if not self.disability_type:
+            return ''
+
+        from apps.system.settings.models import Dropdowns
+        try:
+            dropdown = Dropdowns.objects.get(category='disability_type', value=self.disability_type, active=True)
+            return dropdown.name
+        except Dropdowns.DoesNotExist:
+            return self.disability_type
