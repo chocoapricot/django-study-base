@@ -32,9 +32,14 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.account_type.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">口座種別 <span class="text-danger">*</span></label>
+                <label class="col-sm-2 col-form-label text-start text-md-end">口座種別 <span class="text-danger">*</span></label>
                 <div class="col-sm-4">
-                    {{ form.account_type }}
+                    {% for radio in form.account_type %}
+                    <div class="form-check form-check-inline">
+                        {{ radio.tag }}
+                        <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                    </div>
+                    {% endfor %}
                     {% if form.account_type.errors %}
                         <div class="text-danger small">{{ form.account_type.errors.0 }}</div>
                     {% endif %}

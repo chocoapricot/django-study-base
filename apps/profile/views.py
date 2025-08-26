@@ -286,6 +286,32 @@ def bank_edit(request):
             bank.user = request.user
             bank.save()
 
+            # 接続申請の作成処理
+            from apps.connect.models import ConnectStaff, BankRequest
+            try:
+                # 承認済みの接続情報を取得
+                connect_staff = ConnectStaff.objects.filter(
+                    email=request.user.email,
+                    status='approved'
+                ).first()
+
+                if connect_staff:
+                    # 既存の申請がない場合のみ作成
+                    existing_request = BankRequest.objects.filter(
+                        connect_staff=connect_staff,
+                        profile_bank=bank
+                    ).first()
+
+                    if not existing_request:
+                        BankRequest.objects.create(
+                            connect_staff=connect_staff,
+                            profile_bank=bank,
+                            status='pending'
+                        )
+            except Exception:
+                # 接続申請の作成に失敗しても処理は継続
+                pass
+
             if is_new:
                 messages.success(request, '銀行口座を登録しました。')
             else:
