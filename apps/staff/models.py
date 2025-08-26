@@ -152,6 +152,11 @@ class Staff(MyModel):
         """障害者情報が登録されているかどうかを返す"""
         return hasattr(self, 'disability')
 
+    @property
+    def has_bank(self):
+        """銀行情報が登録されているかどうかを返す"""
+        return hasattr(self, 'bank')
+
 
 from apps.common.models import MyModel
 import uuid
