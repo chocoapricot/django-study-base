@@ -49,11 +49,10 @@
         </div>
 
         <div class="d-flex justify-content-start mt-4">
-            <div>
-                <a href="{% url 'staff:staff_international_edit' staff_id=staff.pk %}" class="btn btn-sm btn-primary">編集</a>
-                <a href="{% url 'staff:staff_international_delete' staff_id=staff.pk %}" class="btn btn-sm btn-dark">削除</a>
-                <a href="{% url 'staff:staff_detail' pk=staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
-            </div>
+        <div>
+            <a href="{% url 'staff:staff_international_edit' staff_id=staff.pk %}" class="btn btn-sm btn-primary">編集</a>
+            <a href="{% url 'staff:staff_international_delete' staff_id=staff.pk %}" class="btn btn-sm btn-dark">削除</a>
+            <a href="{% url 'staff:staff_detail' pk=staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
         </div>
     </div>
 </div>
