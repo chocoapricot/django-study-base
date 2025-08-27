@@ -613,10 +613,12 @@ class StaffDisability(MyModel):
         verbose_name='障害の種類',
         help_text='障害の種類を入力してください'
     )
-    severity = models.CharField(
+    disability_grade = models.CharField(
         max_length=100,
-        verbose_name='重度',
-        help_text='障害の重度を入力してください'
+        verbose_name='等級',
+        help_text='障害の等級を入力してください',
+        blank=True,
+        null=True
     )
 
     class Meta:

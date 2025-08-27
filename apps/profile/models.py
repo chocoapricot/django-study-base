@@ -506,11 +506,6 @@ class StaffDisabilityProfile(MyModel):
         blank=True,
         null=True,
     )
-    notes = models.TextField(
-        verbose_name='備考',
-        blank=True,
-        null=True,
-    )
 
     class Meta:
         verbose_name = 'スタッフ障害者情報'

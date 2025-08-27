@@ -172,15 +172,13 @@ class ConnectStaff(MyModel):
 
     def _is_disability_different(self, profile_disability, staff_disability):
         """スタッフプロフィール障害者情報とスタッフ障害者情報を比較する"""
-        # Note: staff_disability.severity corresponds to profile_disability.disability_grade
-        fields_to_compare = {
-            'disability_type': 'disability_type',
-            'disability_grade': 'severity',
-        }
+        fields_to_compare = [
+            'disability_type', 'disability_grade'
+        ]
 
-        for profile_field, staff_field in fields_to_compare.items():
-            profile_value = getattr(profile_disability, profile_field, None)
-            staff_value = getattr(staff_disability, staff_field, None)
+        for field in fields_to_compare:
+            profile_value = getattr(profile_disability, field, None)
+            staff_value = getattr(staff_disability, field, None)
 
             if str(profile_value or '') != str(staff_value or ''):
                 return True
