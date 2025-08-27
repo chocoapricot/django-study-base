@@ -36,11 +36,11 @@ def profile(request):
     else:
         form = UserProfileForm(instance=user)
     
-    # AppLogからログイン履歴を取得（直近10件まで）
+   # AppLogからログイン履歴を取得（直近20件まで）
     login_history = AppLog.objects.filter(
         user=user,
-        action='login'
-    ).order_by('-timestamp')[:10]
+        action__in=['login', 'login_failed']
+    ).order_by('-timestamp')[:20]
     
     return render(request, 'account/profile.html', {
         'form': form,

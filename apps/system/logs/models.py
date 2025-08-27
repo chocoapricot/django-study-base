@@ -104,6 +104,7 @@ class AppLog(models.Model):
         ('update', '編集'),
         ('delete', '削除'),
         ('login', 'ログイン'),
+        ('login_failed', 'ログイン失敗'),
         ('logout', 'ログアウト'),
         ('view', '閲覧'),
     ]
@@ -116,7 +117,7 @@ class AppLog(models.Model):
         verbose_name='ユーザー',
         related_name='system_app_logs'
     )
-    action = models.CharField('操作', max_length=10, choices=ACTION_CHOICES)
+    action = models.CharField('操作', max_length=20, choices=ACTION_CHOICES)
     model_name = models.CharField('モデル名', max_length=100)
     object_id = models.CharField('オブジェクトID', max_length=100)
     object_repr = models.TextField('オブジェクト表現')
