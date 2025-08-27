@@ -103,7 +103,7 @@ class StaffViewsTest(TestCase):
             age=10 # ageを10に変更
         )
         # ソートテスト用のスタッフデータを作成 (12件)
-        for i in range(1, 13):
+        for i in range(4, 16):
             Staff.objects.create(
                 name_last=f'Staff {i:02d}',
                 name_first='Test',
@@ -251,7 +251,7 @@ class StaffViewsTest(TestCase):
             'birth_date': '1995-05-05',
             'sex': 2,
             'regist_form_code': 2,
-            'employee_no': 'EMP002',
+            'employee_no': 'EMP999',
             'hire_date': '2024-04-01',  # 社員番号と入社日をセットで設定
             'email': 'newstaff@example.com'
         }
@@ -282,7 +282,7 @@ class StaffViewsTest(TestCase):
             'birth_date': '1990-01-01',
             'sex': 1,
             'regist_form_code': 1,
-            'employee_no': 'EMP001',
+            'employee_no': 'EMP998',
             'hire_date': '2020-04-01',  # 社員番号と入社日をセットで設定
             'email': 'test@example.com'
         }
