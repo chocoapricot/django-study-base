@@ -1377,7 +1377,11 @@ def staff_bank_edit(request, staff_id):
             messages.success(request, '銀行情報を更新しました。')
             return redirect('staff:staff_bank_detail', staff_id=staff.pk)
     else:
-        form = StaffBankForm(instance=bank)
+        initial_data = {
+            'bank_name': bank.bank_name,
+            'branch_name': bank.branch_name,
+        }
+        form = StaffBankForm(instance=bank, initial=initial_data)
 
     context = {
         'staff': staff,
