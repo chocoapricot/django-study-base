@@ -300,108 +300,96 @@
 
                 {% if connect_request and connect_request.is_approved and last_login %}
                 <div class="row mb-3 align-items-center">
-                    <div class="col-sm-12">
+                    <div class="col-sm-1">
+                    </div>
+                    <div class="col-sm-11">
                         <i class="bi bi-clock-history" style="font-size: 20px; color: #17a2b8;"></i>
-                        <strong>最終ログイン</strong>
-                        <span class="ms-2">（{{ last_login|date:"Y/m/d H:i:s" }}）</span>
-                    </div>
-                </div>
-                {% endif %}
-                {% if bank_request %}
-                <div class="alert alert-warning" role="alert">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <strong>銀行情報の提出申請があります。</strong>
-                    <a href="{% url 'staff:staff_bank_request_detail' staff_pk=staff.pk pk=bank_request.pk %}" class="btn btn-sm btn-outline-primary ml-2">
-                        <i class="fas fa-eye"></i> 申請内容を確認
-                    </a>
-                </div>
-                {% endif %}
-
-                {% if mynumber_request %}
-                <hr>
-                <div class="row mb-3 align-items-center">
-                    <div class="col-sm-12">
-                        <i class="bi bi-credit-card-2-front" style="font-size: 20px; color: #17a2b8;"></i>
-                        <strong>マイナンバー申請</strong>
-                        <span class="badge bg-warning text-dark ms-2">{{ mynumber_request.get_status_display }}</span>
-                        <p class="mt-2">
-                            マイナンバーの提出申請があります。
-                            <a href="{% url 'staff:staff_mynumber_request_detail' staff.pk mynumber_request.pk %}" class="btn btn-sm btn-info">
-                                詳細を確認
-                            </a>
-                        </p>
-                    </div>
-                </div>
-                {% endif %}
-
-                {% if international_request %}
-                <hr>
-                <div class="row mb-3 align-items-center">
-                    <div class="col-12">
-                        <i class="bi bi-globe" style="font-size: 20px; color: #17a2b8;"></i>
-                        <strong>外国籍情報申請</strong>
-                        <span class="badge bg-warning text-dark ms-2">{{ international_request.get_status_display }}</span>
-                    </div>
-                    <div class="col-12">
-                        <p class="mt-2">
-                            外国籍情報の登録申請があります。
-                            <a href="{% url 'staff:staff_international_request_detail' staff.pk international_request.pk %}" class="btn btn-sm btn-info">
-                                詳細を確認
-                            </a>
-                        </p>
-                    </div>
-                </div>
-                {% endif %}
-
-                {% if disability_request %}
-                <hr>
-                <div class="row mb-3 align-items-center">
-                    <div class="col-12">
-                        <i class="bi bi-heart" style="font-size: 20px; color: #17a2b8;"></i>
-                        <strong>障害者情報申請</strong>
-                        <span class="badge bg-warning text-dark ms-2">{{ disability_request.get_status_display }}</span>
-                    </div>
-                    <div class="col-12">
-                        <p class="mt-2">
-                            障害者情報の登録申請があります。
-                            <a href="{% url 'staff:staff_disability_request_detail' staff.pk disability_request.pk %}" class="btn btn-sm btn-info">
-                                詳細を確認
-                            </a>
-                        </p>
-                    </div>
-                </div>
-                {% endif %}
-
-                {% if contact_request %}
-                <hr>
-                <div class="row mb-3 align-items-center">
-                    <div class="col-sm-12">
-                        <i class="bi bi-person-rolodex" style="font-size: 20px; color: #17a2b8;"></i>
-                        <strong>連絡先情報申請</strong>
-                        <span class="badge bg-warning text-dark ms-2">{{ contact_request.get_status_display }}</span>
-                        <p class="mt-2">
-                            連絡先情報の提出申請があります。
-                            <a href="{% url 'staff:staff_contact_request_detail' staff.pk contact_request.pk %}" class="btn btn-sm btn-info">
-                                詳細を確認
-                            </a>
-                        </p>
+                        最終ログイン
+                        （{{ last_login|date:"Y/m/d H:i:s" }}）
                     </div>
                 </div>
                 {% endif %}
 
                 {% if profile_request %}
-                <hr>
                 <div class="row mb-3 align-items-center">
-                    <div class="col-sm-12">
+                    <div class="col-sm-1">
+                    </div>
+                    <div class="col-sm-11">
                         <i class="bi bi-person-lines-fill" style="font-size: 20px; color: #17a2b8;"></i>
-                        <strong>プロフィール申請</strong>
-                        <span class="badge bg-warning text-dark ms-2">{{ profile_request.get_status_display }}</span>
-                        <p class="mt-2">
-                            プロフィールの更新申請があります。
-                            <a href="{% url 'staff:staff_profile_request_detail' staff.pk profile_request.pk %}" class="btn btn-sm btn-info">
-                                詳細を確認
-                            </a>
-                        </p>
+                        プロフィールの変更があります。
+                        <a href="{% url 'staff:staff_profile_request_detail' staff.pk profile_request.pk %}" class="btn btn-sm btn-primary">
+                            確認
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if mynumber_request %}
+                <div class="row mb-3 mt-3 align-items-center">
+                    <div class="col-sm-1">
+                    </div>
+                    <div class="col-sm-11">
+                        <i class="bi bi-credit-card-2-front" style="font-size: 20px; color: #17a2b8;"></i>
+                        マイナンバーの変更があります。
+                        <a href="{% url 'staff:staff_mynumber_request_detail' staff.pk mynumber_request.pk %}" class="btn btn-sm btn-primary">
+                            確認
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if bank_request %}
+                <div class="row mb-3 mt-3 align-items-center">
+                    <div class="col-sm-1">
+                    </div>
+                    <div class="col-sm-11">
+                        <i class="bi bi-bank" style="font-size: 20px; color: #17a2b8;"></i>
+                        銀行口座の変更があります
+                        <a href="{% url 'staff:staff_bank_request_detail' staff_pk=staff.pk pk=bank_request.pk %}" class="btn btn-sm btn-primary">
+                            確認
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if contact_request %}
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-1">
+                    </div>
+                    <div class="col-sm-11">
+                        <i class="bi bi-person-rolodex" style="font-size: 20px; color: #17a2b8;"></i>
+                        連絡先情報の変更があります。
+                        <a href="{% url 'staff:staff_contact_request_detail' staff.pk contact_request.pk %}" class="btn btn-sm btn-primary">
+                            確認
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if international_request %}
+                <div class="row mb-3 mt-3 align-items-center">
+                    <div class="col-sm-1">
+                    </div>
+                    <div class="col-sm-11">
+                        <i class="bi bi-send" style="font-size: 20px; color: #17a2b8;"></i>
+                        外国籍情報の変更があります。
+                        <a href="{% url 'staff:staff_international_request_detail' staff.pk international_request.pk %}" class="btn btn-sm btn-primary">
+                            確認
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if disability_request %}
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-1">
+                    </div>
+                    <div class="col-sm-11">
+                        <i class="bi bi-heart" style="font-size: 20px; color: #17a2b8;"></i>
+                        障害者情報の変更があります。
+                        <a href="{% url 'staff:staff_disability_request_detail' staff.pk disability_request.pk %}" class="btn btn-sm btn-primary">
+                            確認
+                        </a>
                     </div>
                 </div>
                 {% endif %}
