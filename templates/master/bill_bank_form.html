@@ -175,6 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
             a = document.createElement("DIV");
             a.setAttribute("id", this.id + "autocomplete-list");
             a.setAttribute("class", "autocomplete-items");
+            this.parentNode.style.position = 'relative';
             this.parentNode.appendChild(a);
 
             const url = url_callback();
