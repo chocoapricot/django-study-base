@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from apps.common.models import MyModel
+from django_currentuser.db.models import CurrentUserField
 
 User = get_user_model()
 
@@ -552,6 +553,9 @@ class StaffProfileContact(MyModel):
     address1 = models.TextField('住所１（住民票）', blank=True, null=True)
     address2 = models.TextField('住所２（住民票）', blank=True, null=True)
     address3 = models.TextField('住所３（住民票）', blank=True, null=True)
+
+    created_by = CurrentUserField(verbose_name="作成者", related_name="created_staff_contact_set", on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = CurrentUserField(verbose_name="更新者", related_name="updated_staff_contact_set", on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         db_table = "apps_profile_staff_contacts"
