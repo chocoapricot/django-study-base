@@ -18,21 +18,39 @@
     <div class="card-body">
         {% if contact %}
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label text-start text-md-end"><strong>電話番号</strong></label>
+                <label class="col-sm-2 col-form-label text-start text-md-end"><strong>緊急連絡先</strong></label>
                 <div class="col-sm-10">
-                    <p class="form-control-plaintext">{{ contact.phone|default_if_none:"" }}</p>
+                    <p class="form-control-plaintext">{{ contact.emergency_contact|default_if_none:"" }}</p>
                 </div>
             </div>
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label text-start text-md-end"><strong>メールアドレス</strong></label>
+                <label class="col-sm-2 col-form-label text-start text-md-end"><strong>続柄</strong></label>
                 <div class="col-sm-10">
-                    <p class="form-control-plaintext">{{ contact.email|default_if_none:"" }}</p>
+                    <p class="form-control-plaintext">{{ contact.relationship|default_if_none:"" }}</p>
                 </div>
             </div>
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label text-start text-md-end"><strong>備考</strong></label>
+                <label class="col-sm-2 col-form-label text-start text-md-end"><strong>郵便番号（住民票）</strong></label>
                 <div class="col-sm-10">
-                    <p class="form-control-plaintext">{{ contact.notes|default_if_none:"" }}</p>
+                    <p class="form-control-plaintext">{{ contact.postal_code|default_if_none:"" }}</p>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-start text-md-end"><strong>住所１（住民票）</strong></label>
+                <div class="col-sm-10">
+                    <p class="form-control-plaintext">{{ contact.address1|default_if_none:"" }}</p>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-start text-md-end"><strong>住所２（住民票）</strong></label>
+                <div class="col-sm-10">
+                    <p class="form-control-plaintext">{{ contact.address2|default_if_none:"" }}</p>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-start text-md-end"><strong>住所３（住民票）</strong></label>
+                <div class="col-sm-10">
+                    <p class="form-control-plaintext">{{ contact.address3|default_if_none:"" }}</p>
                 </div>
             </div>
         {% else %}
