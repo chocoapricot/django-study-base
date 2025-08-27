@@ -319,7 +319,14 @@ def bank_edit(request):
 
             return redirect('profile:bank_detail')
     else:
-        form = StaffBankProfileForm(instance=bank)
+        initial_data = {}
+        if is_new:
+            try:
+                profile = StaffProfile.objects.get(user=request.user)
+                initial_data['account_holder'] = f'{profile.name_kana_last} {profile.name_kana_first}'.strip()
+            except StaffProfile.DoesNotExist:
+                pass
+        form = StaffBankProfileForm(instance=bank, initial=initial_data)
 
     context = {
         'form': form,
