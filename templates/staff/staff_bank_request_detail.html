@@ -1,59 +1,128 @@
-{% extends "common/_base.html" %}
-
-{% block title %}銀行情報申請の詳細{% endblock %}
+{% extends 'common/_base.html' %}
+{% load dropdowns %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-header">
-            <h4 class="mb-0">銀行情報申請の詳細</h4>
+
+<!-- スタッフ情報カード -->
+{% include 'staff/_staff_info_card.html' %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>銀行口座情報申請承認</span>
+    </div>
+    <div class="card-body">
+        {% if bank_request.status == 'pending' %}
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle-fill"></i>
+            スタッフから提出された銀行口座情報を確認し、承認または却下を選択してください。
         </div>
-        <div class="card-body">
-            <p>スタッフ: <strong>{{ staff.name_last }} {{ staff.name_first }}</strong></p>
-            <p>申請日時: {{ bank_request.created_at|date:"Y-m-d H:i" }}</p>
-            <hr>
-            <h5>申請された銀行情報</h5>
+        {% elif bank_request.status == 'approved' %}
+        <div class="alert alert-success" role="alert">
+            <i class="bi bi-check-circle-fill"></i>
+            この銀行口座情報申請は承認済みです。スタッフ銀行口座情報が更新されています。
+        </div>
+        {% elif bank_request.status == 'rejected' %}
+        <div class="alert alert-danger" role="alert">
+            <i class="bi bi-x-circle-fill"></i>
+            この銀行口座情報申請は却下されています。
+        </div>
+        {% endif %}
+
+        <!-- 比較表示 -->
+        <h5 class="mt-4 mb-3">銀行口座情報比較</h5>
+        <div class="table-responsive">
             <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 20%;">項目</th>
+                        <th style="width: 40%;">現在の銀行口座情報</th>
+                        <th style="width: 40%;">申請された銀行口座情報</th>
+                    </tr>
+                </thead>
                 <tbody>
+                    {% with current_bank=staff.bank profile_bank=bank_request.staff_bank_profile %}
                     <tr>
-                        <th style="width: 25%;">銀行名</th>
-                        <td>{{ bank_request.staff_bank_profile.bank_name }} ({{ bank_request.staff_bank_profile.bank_code }})</td>
+                        <td><strong>銀行名</strong></td>
+                        <td>{{ current_bank.bank_name|default_if_none:"" }} ({{ current_bank.bank_code|default_if_none:"" }})</td>
+                        <td>
+                            {% if current_bank.bank_name != profile_bank.bank_name or current_bank.bank_code != profile_bank.bank_code or not current_bank %}
+                                <span class="text-primary fw-bold">{{ profile_bank.bank_name|default_if_none:"" }} ({{ profile_bank.bank_code|default_if_none:"" }})</span>
+                            {% else %}
+                                {{ profile_bank.bank_name|default_if_none:"" }} ({{ profile_bank.bank_code|default_if_none:"" }})
+                            {% endif %}
+                        </td>
                     </tr>
                     <tr>
-                        <th>支店名</th>
-                        <td>{{ bank_request.staff_bank_profile.branch_name }} ({{ bank_request.staff_bank_profile.branch_code }})</td>
+                        <td><strong>支店名</strong></td>
+                        <td>{{ current_bank.branch_name|default_if_none:"" }} ({{ current_bank.branch_code|default_if_none:"" }})</td>
+                        <td>
+                            {% if current_bank.branch_name != profile_bank.branch_name or current_bank.branch_code != profile_bank.branch_code or not current_bank %}
+                                <span class="text-primary fw-bold">{{ profile_bank.branch_name|default_if_none:"" }} ({{ profile_bank.branch_code|default_if_none:"" }})</span>
+                            {% else %}
+                                {{ profile_bank.branch_name|default_if_none:"" }} ({{ profile_bank.branch_code|default_if_none:"" }})
+                            {% endif %}
+                        </td>
                     </tr>
                     <tr>
-                        <th>口座種別</th>
-                        <td>{{ bank_request.staff_bank_profile.account_type }}</td>
+                        <td><strong>口座種別</strong></td>
+                        <td>{% my_name 'account_type' current_bank.account_type %}</td>
+                        <td>
+                            {% if current_bank.account_type != profile_bank.account_type or not current_bank %}
+                                <span class="text-primary fw-bold">{% my_name 'account_type' profile_bank.account_type %}</span>
+                            {% else %}
+                                {% my_name 'account_type' profile_bank.account_type %}
+                            {% endif %}
+                        </td>
                     </tr>
                     <tr>
-                        <th>口座番号</th>
-                        <td>{{ bank_request.staff_bank_profile.account_number }}</td>
+                        <td><strong>口座番号</strong></td>
+                        <td>{{ current_bank.account_number|default_if_none:"" }}</td>
+                        <td>
+                            {% if current_bank.account_number != profile_bank.account_number or not current_bank %}
+                                <span class="text-primary fw-bold">{{ profile_bank.account_number|default_if_none:"" }}</span>
+                            {% else %}
+                                {{ profile_bank.account_number|default_if_none:"" }}
+                            {% endif %}
+                        </td>
                     </tr>
                     <tr>
-                        <th>口座名義</th>
-                        <td>{{ bank_request.staff_bank_profile.account_holder }}</td>
+                        <td><strong>口座名義</strong></td>
+                        <td>{{ current_bank.account_holder|default_if_none:"" }}</td>
+                        <td>
+                            {% if current_bank.account_holder != profile_bank.account_holder or not current_bank %}
+                                <span class="text-primary fw-bold">{{ profile_bank.account_holder|default_if_none:"" }}</span>
+                            {% else %}
+                                {{ profile_bank.account_holder|default_if_none:"" }}
+                            {% endif %}
+                        </td>
                     </tr>
+                    {% endwith %}
                 </tbody>
             </table>
-
-            <hr>
-
-            <form method="post" class="mt-3">
-                {% csrf_token %}
-                <p>この銀行情報申請を承認または却下しますか？</p>
-                <button type="submit" name="action" value="approve" class="btn btn-success">
-                    <i class="fas fa-check"></i> 承認する
-                </button>
-                <button type="submit" name="action" value="reject" class="btn btn-danger" onclick="return confirm('本当に却下しますか？');">
-                    <i class="fas fa-times"></i> 却下する
-                </button>
-                <a href="{% url 'staff:staff_detail' pk=staff.pk %}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> キャンセル
-                </a>
-            </form>
         </div>
+
+        <!-- 承認・却下ボタン -->
+        {% if bank_request.status == 'pending' %}
+        <div class="d-flex justify-content-start mt-4">
+            <form method="post" class="me-2">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="approve">
+                <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('銀行口座情報申請を承認し、スタッフ情報を更新しますか？')">
+                    承認
+                </button>
+            </form>
+            <form method="post" class="me-2">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reject">
+                <button type="submit" class="btn btn-sm btn-dark" onclick="return confirm('銀行口座情報申請を却下しますか？')">
+                    却下
+                </button>
+            </form>
+            <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+        </div>
+        {% endif %}
+
     </div>
 </div>
+
 {% endblock %}
