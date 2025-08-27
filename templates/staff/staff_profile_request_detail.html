@@ -10,7 +10,6 @@
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         <span>プロフィール申請承認</span>
-        <span class="badge bg-warning text-dark">{{ profile_request.get_status_display }}</span>
     </div>
     <div class="card-body">
         {% if profile_request.status == 'pending' %}
@@ -48,7 +47,6 @@
                         <td>
                             {% if staff.name_last != profile_request.staff_profile.name_last %}
                                 <span class="text-primary fw-bold">{{ profile_request.staff_profile.name_last|default:"-" }}</span>
-                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
                             {% else %}
                                 {{ profile_request.staff_profile.name_last|default:"-" }}
                             {% endif %}
@@ -60,7 +58,6 @@
                         <td>
                             {% if staff.name_first != profile_request.staff_profile.name_first %}
                                 <span class="text-primary fw-bold">{{ profile_request.staff_profile.name_first|default:"-" }}</span>
-                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
                             {% else %}
                                 {{ profile_request.staff_profile.name_first|default:"-" }}
                             {% endif %}
@@ -72,7 +69,6 @@
                         <td>
                             {% if staff.name_kana_last != profile_request.staff_profile.name_kana_last %}
                                 <span class="text-primary fw-bold">{{ profile_request.staff_profile.name_kana_last|default:"-" }}</span>
-                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
                             {% else %}
                                 {{ profile_request.staff_profile.name_kana_last|default:"-" }}
                             {% endif %}
@@ -84,7 +80,6 @@
                         <td>
                             {% if staff.name_kana_first != profile_request.staff_profile.name_kana_first %}
                                 <span class="text-primary fw-bold">{{ profile_request.staff_profile.name_kana_first|default:"-" }}</span>
-                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
                             {% else %}
                                 {{ profile_request.staff_profile.name_kana_first|default:"-" }}
                             {% endif %}
@@ -96,7 +91,6 @@
                         <td>
                             {% if staff.birth_date != profile_request.staff_profile.birth_date %}
                                 <span class="text-primary fw-bold">{{ profile_request.staff_profile.birth_date|date:"Y/m/d"|default:"-" }}</span>
-                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
                             {% else %}
                                 {{ profile_request.staff_profile.birth_date|date:"Y/m/d"|default:"-" }}
                             {% endif %}
@@ -120,7 +114,6 @@
                                         -
                                     {% endif %}
                                 </span>
-                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
                             {% else %}
                                 {% if profile_request.staff_profile.sex %}
                                     {% my_name 'sex' profile_request.staff_profile.sex %}
@@ -136,7 +129,6 @@
                         <td>
                             {% if staff.postal_code != profile_request.staff_profile.postal_code %}
                                 <span class="text-primary fw-bold">{{ profile_request.staff_profile.postal_code|default:"-" }}</span>
-                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
                             {% else %}
                                 {{ profile_request.staff_profile.postal_code|default:"-" }}
                             {% endif %}
@@ -148,7 +140,6 @@
                         <td>
                             {% if staff.address1 != profile_request.staff_profile.address1 %}
                                 <span class="text-primary fw-bold">{{ profile_request.staff_profile.address1|default:"-" }}</span>
-                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
                             {% else %}
                                 {{ profile_request.staff_profile.address1|default:"-" }}
                             {% endif %}
@@ -160,7 +151,6 @@
                         <td>
                             {% if staff.address2 != profile_request.staff_profile.address2 %}
                                 <span class="text-primary fw-bold">{{ profile_request.staff_profile.address2|default:"-" }}</span>
-                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
                             {% else %}
                                 {{ profile_request.staff_profile.address2|default:"-" }}
                             {% endif %}
@@ -172,7 +162,6 @@
                         <td>
                             {% if staff.address3 != profile_request.staff_profile.address3 %}
                                 <span class="text-primary fw-bold">{{ profile_request.staff_profile.address3|default:"-" }}</span>
-                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
                             {% else %}
                                 {{ profile_request.staff_profile.address3|default:"-" }}
                             {% endif %}
@@ -184,7 +173,6 @@
                         <td>
                             {% if staff.phone != profile_request.staff_profile.phone %}
                                 <span class="text-primary fw-bold">{{ profile_request.staff_profile.phone|default:"-" }}</span>
-                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
                             {% else %}
                                 {{ profile_request.staff_profile.phone|default:"-" }}
                             {% endif %}
@@ -200,14 +188,14 @@
             <form method="post" class="me-2">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="approve">
-                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('プロフィール申請を承認し、スタッフ情報を更新しますか？')">
+                <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('プロフィール申請を承認し、スタッフ情報を更新しますか？')">
                     承認
                 </button>
             </form>
             <form method="post" class="me-2">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="reject">
-                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('プロフィール申請を却下しますか？')">
+                <button type="submit" class="btn btn-sm btn-dark" onclick="return confirm('プロフィール申請を却下しますか？')">
                     却下
                 </button>
             </form>

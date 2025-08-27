@@ -8,7 +8,6 @@
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         <span>連絡先情報申請承認</span>
-        <span class="badge bg-warning text-dark">{{ contact_request.get_status_display }}</span>
     </div>
     <div class="card-body">
         {% if contact_request.status == 'pending' %}
@@ -118,15 +117,15 @@
             <form method="post" class="me-2">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="approve">
-                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('連絡先情報申請を承認し、スタッフ連絡先情報を更新しますか？')">
-                    <i class="bi bi-check-circle"></i> 承認
+                <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('連絡先情報申請を承認し、スタッフ連絡先情報を更新しますか？')">
+                    承認
                 </button>
             </form>
             <form method="post" class="me-2">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="reject">
-                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('連絡先情報申請を却下しますか？')">
-                    <i class="bi bi-x-circle"></i> 却下
+                <button type="submit" class="btn btn-sm btn-dark" onclick="return confirm('連絡先情報申請を却下しますか？')">
+                    却下
                 </button>
             </form>
             <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>

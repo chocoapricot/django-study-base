@@ -9,7 +9,6 @@
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         <span>障害者情報申請承認</span>
-        <span class="badge bg-warning text-dark">{{ disability_request.get_status_display }}</span>
     </div>
     <div class="card-body">
         {% if disability_request.status == 'pending' %}
@@ -55,7 +54,6 @@
                                 <span class="text-primary fw-bold">
                                     {% my_name 'disability_type' disability_request.profile_disability.disability_type %}
                                 </span>
-                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
                             {% else %}
                                 {% my_name 'disability_type' disability_request.profile_disability.disability_type %}
                             {% endif %}
@@ -67,7 +65,6 @@
                         <td>
                             {% if staff.disability.disability_grade != disability_request.profile_disability.disability_grade or not staff.disability %}
                                 <span class="text-primary fw-bold">{{ disability_request.profile_disability.disability_grade|default_if_none:"" }}</span>
-                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
                             {% else %}
                                 {{ disability_request.profile_disability.disability_grade|default_if_none:"" }}
                             {% endif %}
@@ -79,7 +76,6 @@
                         <td>
                             {% if staff.disability.notes != disability_request.profile_disability.notes or not staff.disability %}
                                 <span class="text-primary fw-bold">{{ disability_request.profile_disability.notes|default_if_none:"" }}</span>
-                                <i class="bi bi-arrow-left text-warning ms-1" title="変更あり"></i>
                             {% else %}
                                 {{ disability_request.profile_disability.notes|default_if_none:"" }}
                             {% endif %}
@@ -95,15 +91,15 @@
             <form method="post" class="me-2">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="approve">
-                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('障害者情報申請を承認し、スタッフ情報を更新しますか？')">
-                    <i class="bi bi-check-circle"></i> 承認
+                <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('障害者情報申請を承認し、スタッフ情報を更新しますか？')">
+                    承認
                 </button>
             </form>
             <form method="post" class="me-2">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="reject">
-                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('障害者情報申請を却下しますか？')">
-                    <i class="bi bi-x-circle"></i> 却下
+                <button type="submit" class="btn btn-sm btn-dark" onclick="return confirm('障害者情報申請を却下しますか？')">
+                    却下
                 </button>
             </form>
             <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
