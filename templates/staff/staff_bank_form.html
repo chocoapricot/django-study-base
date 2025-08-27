@@ -16,6 +16,18 @@
         <form method="post" class="mt-3">
             {% csrf_token %}
 
+            <!-- 銀行名 -->
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.bank_name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">銀行名</label>
+                <div class="col-sm-6 position-relative">
+                    {{ form.bank_name }}
+                    <div id="bank-suggestions" class="list-group position-absolute" style="z-index: 1000; width: 95%;"></div>
+                    {% if form.bank_name.errors %}
+                        <div class="text-danger small">{{ form.bank_name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
             <!-- 銀行コード -->
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.bank_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">銀行コード {% my_help_preset "bank_code" %}</label>
@@ -23,6 +35,18 @@
                     {{ form.bank_code }}
                     {% if form.bank_code.errors %}
                         <div class="text-danger small">{{ form.bank_code.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 支店名 -->
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.branch_name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">支店名</label>
+                <div class="col-sm-6 position-relative">
+                    {{ form.branch_name }}
+                    <div id="branch-suggestions" class="list-group position-absolute" style="z-index: 999; width: 95%;"></div>
+                    {% if form.branch_name.errors %}
+                        <div class="text-danger small">{{ form.branch_name.errors.0 }}</div>
                     {% endif %}
                 </div>
             </div>
@@ -95,4 +119,123 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // DOM要素の取得
+    const bankNameInput = document.getElementById('{{ form.bank_name.id_for_label }}');
+    const bankCodeInput = document.getElementById('{{ form.bank_code.id_for_label }}');
+    const branchNameInput = document.getElementById('{{ form.branch_name.id_for_label }}');
+    const branchCodeInput = document.getElementById('{{ form.branch_code.id_for_label }}');
+    const bankSuggestions = document.getElementById('bank-suggestions');
+    const branchSuggestions = document.getElementById('branch-suggestions');
+
+    // --- イベントリスナー ---
+
+    // 銀行名入力時のオートコンプリート
+    bankNameInput.addEventListener('keyup', function() {
+        const query = bankNameInput.value;
+        if (query.length < 1) {
+            bankSuggestions.innerHTML = '';
+            return;
+        }
+        fetch(`{% url 'api:search_banks' %}?q=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                showSuggestions(data, bankSuggestions, (item) => {
+                    bankNameInput.value = item.name;
+                    bankCodeInput.value = item.bank_code;
+                    bankSuggestions.innerHTML = '';
+                    branchNameInput.value = '';
+                    branchCodeInput.value = '';
+                    branchNameInput.focus();
+                });
+            });
+    });
+
+    // 支店名入力時のオートコンプリート
+    branchNameInput.addEventListener('keyup', function() {
+        const query = branchNameInput.value;
+        const bankCode = bankCodeInput.value;
+        if (query.length < 1 || !bankCode) {
+            branchSuggestions.innerHTML = '';
+            return;
+        }
+        fetch(`{% url 'api:search_bank_branches' %}?bank_code=${bankCode}&q=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                showSuggestions(data, branchSuggestions, (item) => {
+                    branchNameInput.value = item.name;
+                    branchCodeInput.value = item.branch_code;
+                    branchSuggestions.innerHTML = '';
+                });
+            });
+    });
+
+    // 銀行コード入力時に銀行名を取得
+    bankCodeInput.addEventListener('change', function() {
+        const bankCode = bankCodeInput.value;
+        if (bankCode.length === 4) {
+            fetch(`{% url 'api:search_banks' %}?q=${bankCode}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 1) {
+                        bankNameInput.value = data[0].name;
+                    } else {
+                        bankNameInput.value = '';
+                    }
+                });
+        }
+    });
+
+    // 支店コード入力時に支店名を取得
+    branchCodeInput.addEventListener('change', function() {
+        const branchCode = branchCodeInput.value;
+        const bankCode = bankCodeInput.value;
+        if (branchCode.length === 3 && bankCode) {
+            fetch(`{% url 'api:search_bank_branches' %}?bank_code=${bankCode}&q=${branchCode}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 1) {
+                        branchNameInput.value = data[0].name;
+                    } else {
+                        branchNameInput.value = '';
+                    }
+                });
+        }
+    });
+
+    // --- ヘルパー関数 ---
+
+    // 候補リストを表示する関数
+    function showSuggestions(items, container, onSelect) {
+        container.innerHTML = '';
+        if (items.length > 0) {
+            items.forEach(item => {
+                const div = document.createElement('a');
+                div.href = '#';
+                div.className = 'list-group-item list-group-item-action';
+                div.textContent = `${item.name} (${item.bank_code || item.branch_code})`;
+                div.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    onSelect(item);
+                });
+                container.appendChild(div);
+            });
+        }
+    }
+
+    // 候補リストの外側をクリックしたら閉じる
+    document.addEventListener('click', function(e) {
+        if (e.target !== bankNameInput) {
+            bankSuggestions.innerHTML = '';
+        }
+        if (e.target !== branchNameInput) {
+            branchSuggestions.innerHTML = '';
+        }
+    });
+});
+</script>
 {% endblock %}
