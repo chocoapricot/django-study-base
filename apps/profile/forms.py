@@ -223,11 +223,10 @@ class StaffDisabilityProfileForm(forms.ModelForm):
     class Meta:
         model = StaffDisabilityProfile
         fields = [
-            'disability_type', 'disability_grade', 'notes'
+            'disability_type', 'disability_grade'
         ]
         widgets = {
             'disability_grade': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
 
     def __init__(self, *args, **kwargs):

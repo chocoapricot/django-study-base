@@ -55,21 +55,21 @@ class StaffDisabilityViewsTest(TestCase):
         """登録処理が成功することをテスト"""
         data = {
             'disability_type': self.disability_type1.value,
-            'severity': '1級',
+            'disability_grade': '1級',
         }
         response = self.client.post(reverse('staff:staff_disability_create', kwargs={'staff_pk': self.staff.pk}), data)
         self.assertEqual(response.status_code, 302) # 詳細ページへリダイレクト
         self.assertTrue(StaffDisability.objects.filter(staff=self.staff).exists())
         disability = StaffDisability.objects.get(staff=self.staff)
         self.assertEqual(disability.disability_type, self.disability_type1.value)
-        self.assertEqual(disability.severity, '1級')
+        self.assertEqual(disability.disability_grade, '1級')
 
     def test_disability_detail_view(self):
         """詳細画面へのGETリクエストが成功することをテスト"""
         disability = StaffDisability.objects.create(
             staff=self.staff,
             disability_type=self.disability_type2.value,
-            severity='2級'
+            disability_grade='2級'
         )
         response = self.client.get(reverse('staff:staff_disability_detail', kwargs={'staff_pk': self.staff.pk}))
         self.assertEqual(response.status_code, 200)
@@ -84,24 +84,24 @@ class StaffDisabilityViewsTest(TestCase):
         disability = StaffDisability.objects.create(
             staff=self.staff,
             disability_type=self.disability_type4.value,
-            severity='4級'
+            disability_grade='4級'
         )
         data = {
             'disability_type': self.disability_type5.value,
-            'severity': '1級',
+            'disability_grade': '1級',
         }
         response = self.client.post(reverse('staff:staff_disability_edit', kwargs={'staff_pk': self.staff.pk}), data)
         self.assertEqual(response.status_code, 302) # 詳細ページへリダイレクト
         disability.refresh_from_db()
         self.assertEqual(disability.disability_type, self.disability_type5.value)
-        self.assertEqual(disability.severity, '1級')
+        self.assertEqual(disability.disability_grade, '1級')
 
     def test_disability_delete_view_post(self):
         """削除処理が成功することをテスト"""
         disability = StaffDisability.objects.create(
             staff=self.staff,
             disability_type=self.disability_type6.value,
-            severity='A'
+            disability_grade='A'
         )
         response = self.client.post(reverse('staff:staff_disability_delete', kwargs={'staff_pk': self.staff.pk}))
         self.assertEqual(response.status_code, 302) # スタッフ詳細ページへリダイレクト
