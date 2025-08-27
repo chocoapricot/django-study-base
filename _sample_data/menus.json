@@ -3,7 +3,7 @@
     "model": "settings.menu",
     "pk": 1,
     "fields": {
-        "version": 1756219667646876,
+        "version": 1756302281833265,
         "created_at": "2024-10-25T07:19:05.997Z",
         "created_by": 1,
         "updated_at": "2025-08-09T15:27:08.561Z",
@@ -24,7 +24,7 @@
     "model": "settings.menu",
     "pk": 2,
     "fields": {
-        "version": 1756220020266189,
+        "version": 1756302281838474,
         "created_at": "2024-10-25T07:19:42.113Z",
         "created_by": 1,
         "updated_at": "2025-08-26T15:09:26.918Z",
@@ -45,7 +45,7 @@
     "model": "settings.menu",
     "pk": 3,
     "fields": {
-        "version": 1756219667653891,
+        "version": 1756302281840476,
         "created_at": "2024-10-25T07:20:18.686Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.620Z",
@@ -66,7 +66,7 @@
     "model": "settings.menu",
     "pk": 4,
     "fields": {
-        "version": 1756219667655671,
+        "version": 1756302281842377,
         "created_at": "2024-10-25T07:20:18.686Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.659Z",
@@ -87,7 +87,7 @@
     "model": "settings.menu",
     "pk": 5,
     "fields": {
-        "version": 1756219667657434,
+        "version": 1756302281844341,
         "created_at": "2024-10-25T07:21:23.405Z",
         "created_by": 1,
         "updated_at": "2025-08-09T14:28:52.858Z",
@@ -108,7 +108,7 @@
     "model": "settings.menu",
     "pk": 6,
     "fields": {
-        "version": 1756219667659192,
+        "version": 1756302281846867,
         "created_at": "2025-08-06T12:12:24.013Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.696Z",
@@ -129,7 +129,7 @@
     "model": "settings.menu",
     "pk": 8,
     "fields": {
-        "version": 1756219667661016,
+        "version": 1756302281850093,
         "created_at": "2025-07-19T15:46:59.051Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.724Z",
@@ -150,7 +150,7 @@
     "model": "settings.menu",
     "pk": 9,
     "fields": {
-        "version": 1756219667662859,
+        "version": 1756302281853126,
         "created_at": "2025-07-19T15:46:59.051Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.744Z",
@@ -171,7 +171,7 @@
     "model": "settings.menu",
     "pk": 10,
     "fields": {
-        "version": 1756219667664637,
+        "version": 1756302281856143,
         "created_at": "2025-07-19T15:46:59.051Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.761Z",
@@ -192,7 +192,7 @@
     "model": "settings.menu",
     "pk": 11,
     "fields": {
-        "version": 1756219667666387,
+        "version": 1756302281859040,
         "created_at": "2025-08-09T13:20:50.317Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.678Z",
@@ -213,7 +213,7 @@
     "model": "settings.menu",
     "pk": 12,
     "fields": {
-        "version": 1756219667668713,
+        "version": 1756302281861956,
         "created_at": "2025-08-09T14:20:17.099Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.786Z",
@@ -234,7 +234,7 @@
     "model": "settings.menu",
     "pk": 13,
     "fields": {
-        "version": 1756219667671075,
+        "version": 1756302281864412,
         "created_at": "2025-08-09T14:20:17.115Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.808Z",
@@ -255,7 +255,7 @@
     "model": "settings.menu",
     "pk": 14,
     "fields": {
-        "version": 1756219667673413,
+        "version": 1756302281866725,
         "created_at": "2025-08-14T11:36:34.629Z",
         "created_by": 1,
         "updated_at": "2025-08-14T11:36:34.629Z",
@@ -276,7 +276,7 @@
     "model": "settings.menu",
     "pk": 15,
     "fields": {
-        "version": 1756220613437508,
+        "version": 1756302281868727,
         "created_at": "2025-08-16T13:00:00Z",
         "created_by": 1,
         "updated_at": "2025-08-26T15:19:20.089Z",
@@ -295,31 +295,9 @@
 },
 {
     "model": "settings.menu",
-    "pk": 21,
-    "fields": {
-        "version": 1756220495209280,
-        "created_at": "2025-08-26T15:16:55.328Z",
-        "created_by": 1,
-        "updated_at": "2025-08-26T15:17:21.861Z",
-        "updated_by": 1,
-        "name": "スタッフマイページ",
-        "url": "/profile/",
-        "icon": "11",
-        "icon_style": "11",
-        "parent": null,
-        "level": 0,
-        "exact_match": true,
-        "required_permission": null,
-        "disp_seq": 10,
-        "active": true
-    }
-}
-,
-{
-    "model": "settings.menu",
     "pk": 16,
     "fields": {
-        "version": 1756220535857403,
+        "version": 1756302281872301,
         "created_at": "2025-08-16T14:00:00Z",
         "created_by": 1,
         "updated_at": "2025-08-26T15:18:02.509Z",
@@ -340,10 +318,10 @@
     "model": "settings.menu",
     "pk": 17,
     "fields": {
-        "version": 1756220560167797,
+        "version": 1756304782411971,
         "created_at": "2025-08-26T15:00:00Z",
         "created_by": 1,
-        "updated_at": "2025-08-26T15:18:26.820Z",
+        "updated_at": "2025-08-27T14:42:09.064Z",
         "updated_by": 1,
         "name": "外国籍情報",
         "url": "/profile/international/",
@@ -353,7 +331,7 @@
         "level": 1,
         "exact_match": true,
         "required_permission": "profile.add_staffprofileinternational",
-        "disp_seq": 17,
+        "disp_seq": 19,
         "active": true
     }
 },
@@ -361,10 +339,10 @@
     "model": "settings.menu",
     "pk": 18,
     "fields": {
-        "version": 1756220567792585,
+        "version": 1756304764584919,
         "created_at": "2025-08-26T16:00:00Z",
         "created_by": 1,
-        "updated_at": "2025-08-26T15:18:34.444Z",
+        "updated_at": "2025-08-27T14:41:51.237Z",
         "updated_by": 1,
         "name": "銀行口座",
         "url": "/profile/bank/",
@@ -374,7 +352,7 @@
         "level": 1,
         "exact_match": true,
         "required_permission": "profile.view_staffbankprofile",
-        "disp_seq": 18,
+        "disp_seq": 17,
         "active": true
     }
 },
@@ -382,10 +360,10 @@
     "model": "settings.menu",
     "pk": 19,
     "fields": {
-        "version": 1756220578179290,
+        "version": 1756304790698420,
         "created_at": "2025-08-26T17:00:00Z",
         "created_by": 1,
-        "updated_at": "2025-08-26T15:18:44.831Z",
+        "updated_at": "2025-08-27T14:42:17.350Z",
         "updated_by": 1,
         "name": "障害者情報",
         "url": "/profile/disability/",
@@ -395,7 +373,7 @@
         "level": 1,
         "exact_match": true,
         "required_permission": "profile.view_staffdisabilityprofile",
-        "disp_seq": 19,
+        "disp_seq": 20,
         "active": true
     }
 },
@@ -403,10 +381,10 @@
     "model": "settings.menu",
     "pk": 20,
     "fields": {
-        "version": 1756220590584844,
+        "version": 1756304772203244,
         "created_at": "2025-08-26T18:00:00Z",
         "created_by": 1,
-        "updated_at": "2025-08-26T15:18:57.237Z",
+        "updated_at": "2025-08-27T14:41:58.855Z",
         "updated_by": 1,
         "name": "連絡先情報",
         "url": "/profile/contact/",
@@ -416,7 +394,28 @@
         "level": 1,
         "exact_match": true,
         "required_permission": "profile.view_staffcontact",
-        "disp_seq": 20,
+        "disp_seq": 18,
+        "active": true
+    }
+},
+{
+    "model": "settings.menu",
+    "pk": 21,
+    "fields": {
+        "version": 1756302281870574,
+        "created_at": "2025-08-26T15:16:55.328Z",
+        "created_by": 1,
+        "updated_at": "2025-08-26T15:17:21.861Z",
+        "updated_by": 1,
+        "name": "スタッフマイページ",
+        "url": "/profile/",
+        "icon": "11",
+        "icon_style": "11",
+        "parent": null,
+        "level": 0,
+        "exact_match": true,
+        "required_permission": null,
+        "disp_seq": 10,
         "active": true
     }
 }
