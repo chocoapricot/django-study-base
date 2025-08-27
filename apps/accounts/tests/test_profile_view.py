@@ -74,7 +74,7 @@ class ProfileViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'test@example.com')
         self.assertContains(response, 'ログイン履歴')
-        self.assertContains(response, '直近10件まで表示')
+        self.assertContains(response, '直近20件まで表示')
 
     def test_profile_update_post(self):
         """プロフィール更新のPOSTリクエストをテスト"""
