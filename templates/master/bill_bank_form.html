@@ -181,7 +181,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const url = url_callback();
             if (!url) return;
 
-            fetch(`${url}?q=${val}`)
+            const final_url = url.includes('?') ? `${url}&q=${val}` : `${url}?q=${val}`;
+            fetch(final_url)
                 .then(response => response.json())
                 .then(data => {
                     data.forEach(item => {
