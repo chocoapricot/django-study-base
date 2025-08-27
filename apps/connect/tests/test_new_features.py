@@ -179,7 +179,7 @@ class ConnectFeaturesTest(TestCase):
             user=self.staff_user, disability_type="身体障害", disability_grade="1級"
         )
         StaffDisability.objects.create(
-            staff=self.staff, disability_type="精神障害", severity="2級"
+            staff=self.staff, disability_type="精神障害", disability_grade="2級"
         )
         self.connection.approve(self.approver)
         self.assertTrue(
@@ -192,7 +192,7 @@ class ConnectFeaturesTest(TestCase):
             user=self.staff_user, disability_type="身体障害", disability_grade="1級"
         )
         StaffDisability.objects.create(
-            staff=self.staff, disability_type="身体障害", severity="1級"
+            staff=self.staff, disability_type="身体障害", disability_grade="1級"
         )
         self.connection.approve(self.approver)
         self.assertFalse(
