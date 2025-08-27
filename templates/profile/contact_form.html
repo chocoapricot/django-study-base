@@ -8,50 +8,70 @@
         {% if is_new %}連絡先情報登録{% else %}連絡先情報編集{% endif %}
     </div>
     <div class="card-body">
-        <form method="post">
+        <form method="post" class="form-horizontal">
             {% csrf_token %}
 
-            <!-- 電話番号 -->
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.phone.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >電話番号</label>
+            <!-- emergency_contact -->
+            <div class="row mb-3">
+                <label for="{{ form.emergency_contact.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">緊急連絡先</label>
                 <div class="col-sm-6">
-                    {{ form.phone }}
-                    {% if form.phone.errors %}
-                        <div class="text-danger small">{{ form.phone.errors.0 }}</div>
-                    {% endif %}
+                    {{ form.emergency_contact }}
+                    {% if form.emergency_contact.errors %}<div class="text-danger small">{{ form.emergency_contact.errors.as_text }}</div>{% endif %}
                 </div>
             </div>
 
-            <!-- メールアドレス -->
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.email.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >メールアドレス</label>
+            <!-- relationship -->
+            <div class="row mb-3">
+                <label for="{{ form.relationship.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">続柄</label>
                 <div class="col-sm-6">
-                    {{ form.email }}
-                    {% if form.email.errors %}
-                        <div class="text-danger small">{{ form.email.errors.0 }}</div>
-                    {% endif %}
+                    {{ form.relationship }}
+                    {% if form.relationship.errors %}<div class="text-danger small">{{ form.relationship.errors.as_text }}</div>{% endif %}
                 </div>
             </div>
 
-            <!-- 備考 -->
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.notes.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >備考</label>
+            <!-- postal_code -->
+            <div class="row mb-3">
+                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">郵便番号（住民票）</label>
+                <div class="col-sm-3">
+                    {{ form.postal_code }}
+                    {% if form.postal_code.errors %}<div class="text-danger small">{{ form.postal_code.errors.as_text }}</div>{% endif %}
+                </div>
+            </div>
+
+            <!-- address1 -->
+            <div class="row mb-3">
+                <label for="{{ form.address1.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">住所１（住民票）</label>
                 <div class="col-sm-8">
-                    {{ form.notes }}
-                    {% if form.notes.errors %}
-                        <div class="text-danger small">{{ form.notes.errors.0 }}</div>
-                    {% endif %}
+                    {{ form.address1 }}
+                    {% if form.address1.errors %}<div class="text-danger small">{{ form.address1.errors.as_text }}</div>{% endif %}
                 </div>
             </div>
 
-            <div class="d-flex justify-content-start">
-                <button type="submit" class="btn btn-sm btn-primary">
-                    {% if is_new %}登録{% else %}更新{% endif %}
-                </button>
-                <a href="{% url 'profile:contact_detail' %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
+            <!-- address2 -->
+            <div class="row mb-3">
+                <label for="{{ form.address2.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">住所２（住民票）</label>
+                <div class="col-sm-8">
+                    {{ form.address2 }}
+                    {% if form.address2.errors %}<div class="text-danger small">{{ form.address2.errors.as_text }}</div>{% endif %}
+                </div>
+            </div>
+
+            <!-- address3 -->
+            <div class="row mb-3">
+                <label for="{{ form.address3.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">住所３（住民票）</label>
+                <div class="col-sm-8">
+                    {{ form.address3 }}
+                    {% if form.address3.errors %}<div class="text-danger small">{{ form.address3.errors.as_text }}</div>{% endif %}
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-sm-10 offset-sm-2">
+                    <button type="submit" class="btn btn-sm btn-primary">{% if is_new %}登録{% else %}更新{% endif %}</button>
+                    <a href="{% url 'profile:contact_detail' %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
             </div>
         </form>
     </div>
 </div>
-
 {% endblock %}
