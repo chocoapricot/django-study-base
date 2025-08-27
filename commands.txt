@@ -30,7 +30,7 @@ pip install django-allauth
 
 パンくずリスト
 django-sitetree,django-bootstrap-breadcrumbs,django-breadcrumbs、django-view-breadcrumbsはNG。
-でやってみる。
+でやってみるがだめだった
 
 pip install --upgrade pip
 pip install -r requirements.txt
