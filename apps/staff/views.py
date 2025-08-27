@@ -153,13 +153,17 @@ def staff_list(request):
     staffs_pages = paginator.get_page(page_number)
 
     # 各スタッフが接続承認済みかどうか、またマイナンバーやプロフィールの申請があるかを判定し、オブジェクトに属性を付与
-    from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest
+    from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest, BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
     if corporate_number:
         for staff in staffs_pages:
             staff.is_connected_approved = False
             staff.has_pending_mynumber_request = False
             staff.has_pending_profile_request = False
             staff.has_pending_connection_request = False
+            staff.has_pending_bank_request = False
+            staff.has_pending_contact_request = False
+            staff.has_pending_international_request = False
+            staff.has_pending_disability_request = False
             if staff.email:
                 connect_request = ConnectStaff.objects.filter(
                     corporate_number=corporate_number,
@@ -177,12 +181,32 @@ def staff_list(request):
                             connect_staff=connect_request,
                             status='pending'
                         ).exists()
+                        staff.has_pending_bank_request = BankRequest.objects.filter(
+                            connect_staff=connect_request,
+                            status='pending'
+                        ).exists()
+                        staff.has_pending_contact_request = ContactRequest.objects.filter(
+                            connect_staff=connect_request,
+                            status='pending'
+                        ).exists()
+                        staff.has_pending_international_request = ConnectInternationalRequest.objects.filter(
+                            connect_staff=connect_request,
+                            status='pending'
+                        ).exists()
+                        staff.has_pending_disability_request = DisabilityRequest.objects.filter(
+                            connect_staff=connect_request,
+                            status='pending'
+                        ).exists()
     else:
         for staff in staffs_pages:
             staff.is_connected_approved = False
             staff.has_pending_mynumber_request = False
             staff.has_pending_profile_request = False
             staff.has_pending_connection_request = False
+            staff.has_pending_bank_request = False
+            staff.has_pending_contact_request = False
+            staff.has_pending_international_request = False
+            staff.has_pending_disability_request = False
 
     # 各スタッフの外国籍情報登録状況を判定
     for staff in staffs_pages:
