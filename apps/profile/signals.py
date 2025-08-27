@@ -1,7 +1,35 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from apps.profile.models import ProfileMynumber, StaffProfileInternational, StaffDisabilityProfile
-from apps.connect.models import ConnectStaff, MynumberRequest, ConnectInternationalRequest, DisabilityRequest
+from apps.profile.models import ProfileMynumber, StaffProfileInternational, StaffBankProfile, StaffDisabilityProfile
+from apps.connect.models import ConnectStaff, MynumberRequest, ConnectInternationalRequest, BankRequest, DisabilityRequest
+
+
+@receiver(post_save, sender=StaffBankProfile)
+def create_or_update_bank_request(sender, instance, **kwargs):
+    """
+    StaffBankProfileが作成または更新されたときに、関連するすべての有効な
+    ConnectStaffに対してBankRequestを作成または更新します。
+    """
+    user = instance.user
+
+    # ユーザーに関連する承認済みのConnectStaffを取得
+    approved_connections = ConnectStaff.objects.filter(
+        email=user.email,
+        status='approved'
+    )
+
+    # このユーザーの既存のBankRequestをすべて削除
+    BankRequest.objects.filter(
+        staff_bank_profile__user=user
+    ).delete()
+
+    # 承認済みの接続ごとに新しいBankRequestを作成
+    for connection in approved_connections:
+        BankRequest.objects.create(
+            connect_staff=connection,
+            staff_bank_profile=instance,
+            status='pending'
+        )
 
 
 @receiver(post_save, sender=ProfileMynumber)
