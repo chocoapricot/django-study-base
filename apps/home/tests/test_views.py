@@ -54,7 +54,7 @@ class HomeViewTest(TestCase):
 
     def test_home_view_staff_request_count(self):
         """
-        Test that staff_request_count is calculated correctly.
+        Test that staff_request_count is calculated correctly and the link is present.
         """
         self.client.login(email='testuser@example.com', password='password')
 
@@ -94,3 +94,15 @@ class HomeViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('staff_request_count', response.context)
         self.assertEqual(response.context['staff_request_count'], 1)
+        self.assertContains(response, f'href="{reverse("staff:staff_list")}?has_request=true"')
+
+    def test_home_view_staff_request_count_zero(self):
+        """
+        Test that the link is not present when staff_request_count is 0.
+        """
+        self.client.login(email='testuser@example.com', password='password')
+        response = self.client.get(self.home_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('staff_request_count', response.context)
+        self.assertEqual(response.context['staff_request_count'], 0)
+        self.assertNotContains(response, f'href="{reverse("staff:staff_list")}?has_request=true"')
