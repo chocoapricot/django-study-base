@@ -273,3 +273,11 @@ class StaffProfileContactForm(forms.ModelForm):
             'address2': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'address3': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
         }
+
+    def clean_postal_code(self):
+        """郵便番号のバリデーション"""
+        postal_code = self.cleaned_data.get('postal_code')
+        if postal_code:
+            if not postal_code.isdigit() or len(postal_code) != 7:
+                raise forms.ValidationError("郵便番号は7桁の数字で入力してください。")
+        return postal_code
