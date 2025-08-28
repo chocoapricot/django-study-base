@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
-from apps.staff.models import Staff, StaffQualification, StaffSkill, StaffFile
+from apps.staff.models import Staff, StaffBank, StaffContact, StaffDisability, StaffMynumber, StaffInternational, StaffQualification, StaffSkill, StaffFile
 from apps.master.models import Qualification, Skill
 from apps.system.logs.models import AppLog
 from apps.system.settings.models import Dropdowns
@@ -180,6 +180,101 @@ class StaffLogsTestCase(TestCase):
         self.assertEqual(latest_log.model_name, 'StaffFile')
         self.assertEqual(latest_log.object_id, str(staff_file.pk))
     
+    def test_staff_bank_log(self):
+        """スタッフ銀行情報のログ記録テスト"""
+        # 銀行情報作成
+        staff_bank = StaffBank.objects.create(
+            staff=self.staff, bank_code='1234', branch_code='567',
+            account_type='普通', account_number='1234567', account_holder='テスト タロウ'
+        )
+        # ログの初期状態を確認
+        initial_log_count = AppLog.objects.filter(model_name='StaffBank', object_id=str(staff_bank.pk)).count()
+        self.assertEqual(initial_log_count, 1)
+
+        # 銀行情報を更新
+        staff_bank.account_holder = 'テスト ジロウ'
+        staff_bank.save()
+
+        # ログが1件だけ追加されたことを確認
+        logs = AppLog.objects.filter(model_name='StaffBank', object_id=str(staff_bank.pk))
+        self.assertEqual(logs.count(), initial_log_count + 1)
+
+        # ログの内容を確認
+        latest_log = logs.latest('timestamp')
+        self.assertEqual(latest_log.action, 'update')
+        self.assertIn("口座名義: 'テスト タロウ'→'テスト ジロウ'", latest_log.object_repr)
+
+    def test_staff_contact_log(self):
+        """スタッフ連絡先情報のログ記録テスト"""
+        staff_contact = StaffContact.objects.create(
+            staff=self.staff, emergency_contact='090-1234-5678', relationship='父'
+        )
+        initial_log_count = AppLog.objects.filter(model_name='StaffContact', object_id=str(staff_contact.pk)).count()
+        self.assertEqual(initial_log_count, 1)
+
+        staff_contact.emergency_contact = '090-8765-4321'
+        staff_contact.save()
+
+        logs = AppLog.objects.filter(model_name='StaffContact', object_id=str(staff_contact.pk))
+        self.assertEqual(logs.count(), initial_log_count + 1)
+        latest_log = logs.latest('timestamp')
+        self.assertEqual(latest_log.action, 'update')
+        self.assertIn("緊急連絡先: '090-1234-5678'→'090-8765-4321'", latest_log.object_repr)
+
+    def test_staff_disability_log(self):
+        """スタッフ障害者情報のログ記録テスト"""
+        Dropdowns.objects.create(category='disability_type', value='physical', name='身体障害', active=True)
+        staff_disability = StaffDisability.objects.create(
+            staff=self.staff, disability_type='physical', disability_grade='1級'
+        )
+        initial_log_count = AppLog.objects.filter(model_name='StaffDisability', object_id=str(staff_disability.pk)).count()
+        self.assertEqual(initial_log_count, 1)
+
+        staff_disability.disability_grade = '2級'
+        staff_disability.save()
+
+        logs = AppLog.objects.filter(model_name='StaffDisability', object_id=str(staff_disability.pk))
+        self.assertEqual(logs.count(), initial_log_count + 1)
+        latest_log = logs.latest('timestamp')
+        self.assertEqual(latest_log.action, 'update')
+        self.assertIn("等級: '1級'→'2級'", latest_log.object_repr)
+
+    def test_staff_mynumber_log(self):
+        """スタッフマイナンバーのログ記録テスト"""
+        staff_mynumber = StaffMynumber.objects.create(
+            staff=self.staff, mynumber='123456789012'
+        )
+        initial_log_count = AppLog.objects.filter(model_name='StaffMynumber', object_id=str(staff_mynumber.pk)).count()
+        self.assertEqual(initial_log_count, 1)
+
+        staff_mynumber.mynumber = '210987654321'
+        staff_mynumber.save()
+
+        logs = AppLog.objects.filter(model_name='StaffMynumber', object_id=str(staff_mynumber.pk))
+        self.assertEqual(logs.count(), initial_log_count + 1)
+        latest_log = logs.latest('timestamp')
+        self.assertEqual(latest_log.action, 'update')
+        self.assertIn("マイナンバー: '123456789012'→'210987654321'", latest_log.object_repr)
+
+    def test_staff_international_log(self):
+        """スタッフ外国籍情報のログ記録テスト"""
+        from datetime import date
+        staff_international = StaffInternational.objects.create(
+            staff=self.staff, residence_card_number='AB123456CD', residence_status='Engineer',
+            residence_period_from=date(2023, 1, 1), residence_period_to=date(2025, 1, 1)
+        )
+        initial_log_count = AppLog.objects.filter(model_name='StaffInternational', object_id=str(staff_international.pk)).count()
+        self.assertEqual(initial_log_count, 1)
+
+        staff_international.residence_status = 'Highly Skilled Professional'
+        staff_international.save()
+
+        logs = AppLog.objects.filter(model_name='StaffInternational', object_id=str(staff_international.pk))
+        self.assertEqual(logs.count(), initial_log_count + 1)
+        latest_log = logs.latest('timestamp')
+        self.assertEqual(latest_log.action, 'update')
+        self.assertIn("在留資格: 'Engineer'→'Highly Skilled Professional'", latest_log.object_repr)
+
     def tearDown(self):
         """テスト後のクリーンアップ"""
         # アップロードされたファイルを削除
