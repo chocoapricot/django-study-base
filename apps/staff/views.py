@@ -467,7 +467,6 @@ def staff_contacted_update(request, pk):
         form = StaffContactedForm(request.POST, instance=contacted)
         if form.is_valid():
             form.save()
-            log_model_action(request.user, 'update', contacted)
             messages.success(request, '連絡履歴を更新しました。')
             return redirect('staff:staff_detail', pk=staff.pk)
     else:
@@ -484,7 +483,6 @@ def staff_update(request, pk):
             # 変更があったかどうかをチェック
             if form.has_changed():
                 form.save()
-                log_model_action(request.user, 'update', staff)
                 messages.success(request, f'スタッフ「{staff.name}」を更新しました。')
             else:
                 messages.info(request, '変更はありませんでした。')
@@ -920,8 +918,6 @@ def staff_mynumber_create(request, staff_id):
             mynumber = form.save(commit=False)
             mynumber.staff = staff
             mynumber.save()
-            # 変更履歴(AppLog)に記録
-            log_model_action(request.user, 'create', mynumber)
             messages.success(request, 'マイナンバーを登録しました。')
             return redirect('staff:staff_mynumber_detail', staff_id=staff.pk)
     else:
@@ -1014,8 +1010,6 @@ def staff_contact_create(request, staff_id):
             contact = form.save(commit=False)
             contact.staff = staff
             contact.save()
-            # 変更履歴(AppLog)に記録
-            log_model_action(request.user, 'create', contact)
             messages.success(request, '連絡先情報を登録しました。')
             return redirect('staff:staff_contact_detail', staff_id=staff.pk)
     else:
@@ -1108,8 +1102,6 @@ def staff_disability_create(request, staff_pk):
             disability = form.save(commit=False)
             disability.staff = staff
             disability.save()
-            # 変更履歴(AppLog)に記録
-            log_model_action(request.user, 'create', disability)
             messages.success(request, '障害者情報を登録しました。')
             return redirect('staff:staff_disability_detail', staff_pk=staff.pk)
     else:
@@ -1197,7 +1189,6 @@ def staff_disability_request_detail(request, staff_pk, pk):
                 disability_request.status = 'approved'
                 disability_request.save()
 
-                log_model_action(request.user, 'update', staff_disability)
                 messages.success(request, f'障害者情報申請を承認し、{staff.name}の情報を更新しました。')
             except Exception as e:
                 messages.error(request, f'承認処理中にエラーが発生しました: {e}')
@@ -1251,7 +1242,6 @@ def staff_contact_request_detail(request, staff_pk, pk):
                 contact_request.status = 'approved'
                 contact_request.save()
 
-                log_model_action(request.user, 'update', staff_contact)
                 messages.success(request, f'連絡先情報申請を承認し、{staff.name}の情報を更新しました。')
             except Exception as e:
                 messages.error(request, f'承認処理中にエラーが発生しました: {e}')
@@ -1298,7 +1288,6 @@ def staff_mynumber_request_detail(request, staff_pk, pk):
                 mynumber_request.status = 'approved'
                 mynumber_request.save()
 
-                log_model_action(request.user, 'update', staff_mynumber)
                 messages.success(request, f'マイナンバー申請を承認し、{staff.name}のマイナンバーを更新しました。')
             except Exception as e:
                 messages.error(request, f'承認処理中にエラーが発生しました: {e}')
@@ -1352,8 +1341,6 @@ def staff_bank_create(request, staff_id):
             bank = form.save(commit=False)
             bank.staff = staff
             bank.save()
-            from apps.system.logs.utils import log_model_action
-            log_model_action(request.user, 'create', bank)
             messages.success(request, '銀行情報を登録しました。')
             return redirect('staff:staff_bank_detail', staff_id=staff.pk)
     else:
@@ -1381,8 +1368,6 @@ def staff_bank_edit(request, staff_id):
         form = StaffBankForm(request.POST, instance=bank)
         if form.is_valid():
             form.save()
-            from apps.system.logs.utils import log_model_action
-            log_model_action(request.user, 'update', bank)
             messages.success(request, '銀行情報を更新しました。')
             return redirect('staff:staff_bank_detail', staff_id=staff.pk)
     else:
@@ -1410,8 +1395,6 @@ def staff_bank_delete(request, staff_id):
 
     if request.method == 'POST':
         bank.delete()
-        from apps.system.logs.utils import log_model_action
-        log_model_action(request.user, 'delete', bank)
         messages.success(request, '銀行情報を削除しました。')
         return redirect('staff:staff_detail', pk=staff.pk)
 
@@ -1454,7 +1437,6 @@ def staff_bank_request_detail(request, staff_pk, pk):
                 bank_request.status = 'approved'
                 bank_request.save()
 
-                log_model_action(request.user, 'update', staff_bank)
                 messages.success(request, f'銀行情報申請を承認し、{staff.name}の銀行情報を更新しました。')
             except Exception as e:
                 messages.error(request, f'承認処理中にエラーが発生しました: {e}')
@@ -1547,8 +1529,6 @@ def staff_international_create(request, staff_id):
             international = form.save(commit=False)
             international.staff = staff
             international.save()
-            # 変更履歴(AppLog)に記録
-            log_model_action(request.user, 'create', international)
             messages.success(request, '外国籍情報を登録しました。')
             return redirect('staff:staff_international_detail', staff_id=staff.pk)
     else:
@@ -1650,8 +1630,6 @@ def staff_international_request_detail(request, staff_pk, pk):
                 international_request.status = 'approved'
                 international_request.save()
                 
-                from apps.system.logs.utils import log_model_action
-                log_model_action(request.user, 'update', staff_international)
                 messages.success(request, f'外国籍情報申請を承認し、{staff.name_last} {staff.name_first}の外国籍情報を更新しました。')
             except Exception as e:
                 messages.error(request, f'承認処理中にエラーが発生しました: {e}')
