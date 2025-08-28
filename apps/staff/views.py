@@ -32,7 +32,10 @@ def staff_change_history_list(request, pk):
         django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffMynumber', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffContact', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffBank', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffInternational', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffDisability', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')
@@ -324,7 +327,10 @@ def staff_detail(request, pk):
         django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffMynumber', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffContact', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffBank', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffInternational', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffDisability', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')[:5]
@@ -334,7 +340,10 @@ def staff_detail(request, pk):
         django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffMynumber', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffContact', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffBank', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='StaffInternational', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffDisability', object_repr__startswith=f'{staff} - ') |
         django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
     ).count()
