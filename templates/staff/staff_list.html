@@ -5,9 +5,19 @@
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         スタッフ一覧
-        {% if perms.staff.add_staff %}
-        <a href="{% url 'staff:staff_create' %}" class="btn btn-sm btn-primary me-2">新規作成</a>
-        {% endif %}
+        <div class="d-flex">
+            {% if perms.staff.add_staff %}
+            <div class="btn-group me-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    その他検索
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'staff:staff_list' %}?has_request=true">申請一覧</a></li>
+                </ul>
+            </div>
+            <a href="{% url 'staff:staff_create' %}" class="btn btn-sm btn-primary">新規作成</a>
+            {% endif %}
+        </div>
     </div>
     <div class="card-body">
         <!--
@@ -69,28 +79,28 @@
                 <tr>
                     <th><i class="bi bi-person-fill"></i></th>
                     <th>
-                        <a href="?sort={% if request.GET.sort == 'employee_no' %}-employee_no{% else %}employee_no{% endif %}&q={{ query }}&regist_form={{ regist_form_filter }}&department={{ department_filter }}"
+                        <a href="?sort={% if request.GET.sort == 'employee_no' %}-employee_no{% else %}employee_no{% endif %}&q={{ query }}&regist_form={{ regist_form_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}"
                            class="no-link-style">
                             社員番号
                             {% if request.GET.sort == 'employee_no' %}↓{% elif request.GET.sort == '-employee_no' %}↑{% endif %}
                         </a>
                     </th>
                     <th>
-                        <a href="?sort={% if request.GET.sort == 'name_last' %}-name_last{% else %}name_last{% endif %}&q={{ query }}&regist_form={{ regist_form_filter }}&department={{ department_filter }}"
+                        <a href="?sort={% if request.GET.sort == 'name_last' %}-name_last{% else %}name_last{% endif %}&q={{ query }}&regist_form={{ regist_form_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}"
                            class="no-link-style">
                             氏名
                             {% if request.GET.sort == 'name_last' %}↓{% elif request.GET.sort == '-name_last' %}↑{% endif %}
                         </a>
                     </th>
                     <th class="d-none d-lg-table-cell">
-                        <a href="?sort={% if request.GET.sort == 'address1' %}-address1{% else %}address1{% endif %}&q={{ query }}&regist_form={{ regist_form_filter }}&department={{ department_filter }}"
+                        <a href="?sort={% if request.GET.sort == 'address1' %}-address1{% else %}address1{% endif %}&q={{ query }}&regist_form={{ regist_form_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}"
                            class="no-link-style">
                             住所
                             {% if request.GET.sort == 'address1' %}↓{% elif request.GET.sort == '-address1' %}↑{% endif %}
                         </a>
                     </th>
                     <th>
-                        <a href="?sort={% if request.GET.sort == 'age' %}-age{% else %}age{% endif %}&q={{ query }}&regist_form={{ regist_form_filter }}&department={{ department_filter }}"
+                        <a href="?sort={% if request.GET.sort == 'age' %}-age{% else %}age{% endif %}&q={{ query }}&regist_form={{ regist_form_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}"
                            class="no-link-style">
                             年齢
                             {% if request.GET.sort == 'age' %}↓{% elif request.GET.sort == '-age' %}↑{% endif %}
@@ -178,10 +188,10 @@
             <ul class="pagination pagination-sm">
                 <!-- 最初のページ、前のページ -->
                 <li class="page-item {% if not staffs.has_previous %}disabled{% endif %}">
-                    <a class="page-link" href="{% if staffs.has_previous %}?page=1&sort={{ request.GET.sort }}&q={{ query }}&regist_form={{ regist_form_filter }}&department={{ department_filter }}{% else %}#{% endif %}">&laquo;</a>
+                    <a class="page-link" href="{% if staffs.has_previous %}?page=1&sort={{ request.GET.sort }}&q={{ query }}&regist_form={{ regist_form_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}{% else %}#{% endif %}">&laquo;</a>
                 </li>
                 <!--<li class="page-item {% if not staffs.has_previous %}disabled{% endif %}">
-                    <a class="page-link" href="{% if staffs.has_previous %}?page={{ staffs.previous_page_number }}{% else %}#{% endif %}">&lt;</a>
+                    <a class="page-link" href="{% if staffs.has_previous %}?page={{ staffs.previous_page_number }}&sort={{ request.GET.sort }}&q={{ query }}&regist_form={{ regist_form_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}{% else %}#{% endif %}">&lt;</a>
                 </li>-->
         
                 <!-- ページ番号の表示 -->
@@ -194,12 +204,12 @@
                     {% elif num > staffs.number|add:-3 and num < staffs.number|add:3 %}
                         <!-- 現在のページから前後2件まで表示 -->
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ num }}&sort={{ request.GET.sort }}&q={{ query }}&regist_form={{ regist_form_filter }}&department={{ department_filter }}">{{ num }}</a>
+                            <a class="page-link" href="?page={{ num }}&sort={{ request.GET.sort }}&q={{ query }}&regist_form={{ regist_form_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}">{{ num }}</a>
                         </li>
                     {% elif num == 1 or num == staffs.paginator.num_pages %}
                         <!-- 最初と最後のページは常に表示 -->
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ num }}&sort={{ request.GET.sort }}&q={{ query }}&regist_form={{ regist_form_filter }}&department={{ department_filter }}">{{ num }}</a>
+                            <a class="page-link" href="?page={{ num }}&sort={{ request.GET.sort }}&q={{ query }}&regist_form={{ regist_form_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}">{{ num }}</a>
                         </li>
                     {% elif num == staffs.number|add:-3 or num == staffs.number|add:3 %}
                         <!-- ページの省略記号 -->
@@ -211,10 +221,10 @@
         
                 <!-- 次のページ、最後のページ -->
                 <!--<li class="page-item {% if not staffs.has_next %}disabled{% endif %}">
-                    <a class="page-link" href="{% if staffs.has_next %}?page={{ staffs.next_page_number }}{% else %}#{% endif %}">&gt;</a>
+                    <a class="page-link" href="{% if staffs.has_next %}?page={{ staffs.next_page_number }}&sort={{ request.GET.sort }}&q={{ query }}&regist_form={{ regist_form_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}{% else %}#{% endif %}">&gt;</a>
                 </li>-->
                 <li class="page-item {% if not staffs.has_next %}disabled{% endif %}">
-                    <a class="page-link" href="{% if staffs.has_next %}?page={{ staffs.paginator.num_pages }}&sort={{ request.GET.sort }}&q={{ query }}&regist_form={{ regist_form_filter }}&department={{ department_filter }}{% else %}#{% endif %}">&raquo;</a>
+                    <a class="page-link" href="{% if staffs.has_next %}?page={{ staffs.paginator.num_pages }}&sort={{ request.GET.sort }}&q={{ query }}&regist_form={{ regist_form_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}{% else %}#{% endif %}">&raquo;</a>
                 </li>
             </ul>
         </div>
