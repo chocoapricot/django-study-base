@@ -1397,6 +1397,8 @@ def staff_bank_edit(request, staff_id):
         form = StaffBankForm(request.POST, instance=bank)
         if form.is_valid():
             form.save()
+            from apps.system.logs.utils import log_model_action
+            log_model_action(request.user, 'update', bank)
             messages.success(request, '銀行情報を更新しました。')
             return redirect('staff:staff_bank_detail', staff_id=staff.pk)
     else:
