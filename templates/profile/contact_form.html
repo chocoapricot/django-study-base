@@ -30,13 +30,17 @@
             </div>
 
             <!-- postal_code -->
-            <div class="row mb-3">
-                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">郵便番号（住民票）</label>
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">郵便番号（住民票）{% my_help_preset "postal_code" %}</label>
                 <div class="col-sm-3">
                     {{ form.postal_code }}
                     {% if form.postal_code.errors %}<div class="text-danger small">{{ form.postal_code.errors.as_text }}</div>{% endif %}
                 </div>
+                <div class="col-sm">
+                    <button type="button" id="fetch-zipcode-btn" class="btn btn-sm btn-secondary">住所</button>
+                </div>
             </div>
+            <div id="api-message" class="mb-3"></div>
 
             <!-- address1 -->
             <div class="row mb-3">
@@ -74,4 +78,41 @@
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('#fetch-zipcode-btn').on('click', function() {
+        var zipcode = $('#id_postal_code').val();
+        if (zipcode.length !== 7) {
+            alert("郵便番号は7桁の数字で入力してください。");
+            return;
+        }
+
+        $.ajax({
+            url: "{% url 'api:get_zipcode_info' %}",
+            data: { 'zipcode': zipcode },
+            dataType: 'json',
+            success: function(data) {
+                if (data.success) {
+                    $('#id_address1').val(data.data.prefecture + data.data.city);
+                    $('#id_address2').val(data.data.town);
+                    $('#api-message').html(
+                        '<div class="alert alert-info alert-dismissible fade show" role="alert">' +
+                        '住所情報を取得しました。' +
+                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                        '</div>'
+                    );
+                } else {
+                    alert(data.error);
+                }
+            },
+            error: function() {
+                alert("住所情報の取得に失敗しました。");
+            }
+        });
+    });
+});
+</script>
 {% endblock %}
