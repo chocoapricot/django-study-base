@@ -1,5 +1,5 @@
 from django import forms
-from .models import Company, CompanyDepartment
+from .models import Company, CompanyDepartment, CompanyUser
 from stdnum.jp import cn as houjin
 from django.core.exceptions import ValidationError
 
@@ -103,3 +103,11 @@ class CompanyDepartmentForm(forms.ModelForm):
                 return True
         
         return False
+
+class CompanyUserForm(forms.ModelForm):
+    class Meta:
+        model = CompanyUser
+        fields = ['user']
+        widgets = {
+            'user': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+        }
