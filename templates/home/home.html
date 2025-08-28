@@ -56,10 +56,15 @@
                                     <small class="text-muted">接続承認済み</small>
                                 </div>
                                 <div class="col-4">
+                                    {% if staff_request_count > 0 %}
                                     <a href="{% url 'staff:staff_list' %}?has_request=true" class="text-decoration-none">
                                         <h4 class="text-warning">{{ staff_request_count }}</h4>
                                         <small class="text-muted">申請あり</small>
                                     </a>
+                                    {% else %}
+                                        <h4 class="text-warning">{{ staff_request_count }}</h4>
+                                        <small class="text-muted">申請あり</small>
+                                    {% endif %}
                                 </div>
                             </div>
 
