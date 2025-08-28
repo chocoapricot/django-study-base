@@ -467,7 +467,7 @@ class StaffProfileBank(MyModel):
             return f'支店コード: {self.branch_code}'
 
     @property
-    def account_type_display(self):
+    def get_account_type_display(self):
         """口座種別の表示名を取得"""
         if not self.account_type:
             return ''
