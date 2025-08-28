@@ -47,7 +47,7 @@ class BankRequestSignalTest(TestCase):
             user=self.user1,
             bank_code='1234',
             branch_code='567',
-            account_type='普通',
+            account_type='1',
             account_number='1234567',
             account_holder='テスト タロウ'
         )
@@ -68,7 +68,7 @@ class BankRequestSignalTest(TestCase):
             user=self.user1,
             bank_code='1234',
             branch_code='567',
-            account_type='普通',
+            account_type='1',
             account_number='1234567',
             account_holder='テスト タロウ'
         )
@@ -99,7 +99,7 @@ class BankRequestSignalTest(TestCase):
             user=user_no_connection,
             bank_code='1234',
             branch_code='567',
-            account_type='普通',
+            account_type='1',
             account_number='1234567',
             account_holder='テスト タロウ'
         )
@@ -123,7 +123,7 @@ class BankRequestSignalTest(TestCase):
             user=self.user1,
             bank_code='1234',
             branch_code='567',
-            account_type='普通',
+            account_type='1',
             account_number='1234567',
             account_holder='テスト タロウ'
         )

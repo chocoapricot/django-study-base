@@ -467,6 +467,18 @@ class StaffBankProfile(MyModel):
             return f'支店コード: {self.branch_code}'
 
     @property
+    def account_type_display(self):
+        """口座種別の表示名を取得"""
+        if not self.account_type:
+            return ''
+        try:
+            from apps.system.settings.models import Dropdowns
+            dropdown = Dropdowns.objects.get(category='bank_account_type', value=self.account_type, active=True)
+            return dropdown.name
+        except Dropdowns.DoesNotExist:
+            return self.account_type
+
+    @property
     def full_bank_info(self):
         """完全な銀行情報"""
         parts = []
