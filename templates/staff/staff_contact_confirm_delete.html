@@ -16,7 +16,7 @@
             {% csrf_token %}
             <div class="d-flex justify-content-start">
                 <button type="submit" class="btn btn-sm btn-dark me-2">削除</button>
-                <a href="{% url 'staff:staff_detail' pk=staff.pk %}" class="btn btn-sm btn-secondary me-2">キャンセル</a>
+                <a href="{% url 'staff:staff_detail' pk=staff.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
             </div>
         </form>
     </div>

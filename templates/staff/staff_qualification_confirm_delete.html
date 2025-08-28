@@ -12,7 +12,7 @@
         <form method="post">
             {% csrf_token %}
             <button type="submit" class="btn btn-sm btn-danger">削除</button>
-            <a href="{% url 'staff:staff_qualification_list' staff.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
+            <a href="{% url 'staff:staff_qualification_list' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
         </form>
     </div>
 </div>
