@@ -124,7 +124,7 @@ function searchCorporateInfo() {
         return;
     }
     
-    fetch(`{% url 'get_company_info' %}?corporate_number=${corporateNumber}`)
+    fetch(`{% url 'api:get_company_info' %}?corporate_number=${corporateNumber}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
