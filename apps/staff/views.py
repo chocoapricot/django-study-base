@@ -74,6 +74,8 @@ def staff_list(request):
     department_filter = request.GET.get('department', '').strip()  # 所属部署フィルター
     employment_type_filter = request.GET.get('employment_type', '').strip()  # 雇用形態フィルター
     has_request_filter = request.GET.get('has_request', '')
+    has_international_filter = request.GET.get('has_international', '')
+    has_disability_filter = request.GET.get('has_disability', '')
     
     # 基本のクエリセット
     staffs = Staff.objects.all()
@@ -135,6 +137,14 @@ def staff_list(request):
     # 雇用形態での絞り込み
     if employment_type_filter:
         staffs = staffs.filter(employment_type=employment_type_filter)
+
+    # 外国籍での絞り込み
+    if has_international_filter:
+        staffs = staffs.filter(international__isnull=False)
+
+    # 障害者での絞り込み
+    if has_disability_filter:
+        staffs = staffs.filter(disability__isnull=False)
 
     # ソート可能なフィールドを定義
     sortable_fields = [
@@ -258,6 +268,8 @@ def staff_list(request):
         'employment_type_filter': employment_type_filter,
         'employment_type_options': employment_type_options,
         'has_request_filter': has_request_filter,
+        'has_international_filter': has_international_filter,
+        'has_disability_filter': has_disability_filter,
     })
 
 @login_required
