@@ -17,44 +17,34 @@
     </div>
     <div class="card-body">
         {% if bank %}
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label text-start text-md-end">銀行コード</label>
+            <div class="row mb-1">
+                <label class="col-sm-2 col-form-label text-start text-md-end">
+                    <strong>銀行</strong>
+                </label>
                 <div class="col-sm-10">
-                    <p class="form-control-plaintext">{{ bank.bank_code }}</p>
+                    <p class="form-control-plaintext">({{ bank.bank_code }}) {{ bank.bank_name }}</p>
+                </div>
+            </div>
+            <div class="row mb-1">
+                <label class="col-sm-2 col-form-label text-start text-md-end">
+                    <strong>支店</strong>
+                </label>
+                <div class="col-sm-10">
+                    <p class="form-control-plaintext">({{ bank.branch_code }}) {{ bank.branch_name }}</p>
+                </div>
+            </div>
+            <div class="row mb-1">
+                <label class="col-sm-2 col-form-label text-start text-md-end">
+                    <strong>口座</strong>
+                </label>
+                <div class="col-sm-10">
+                    <p class="form-control-plaintext">{{ bank.account_type }} {{ bank.account_number }}</p>
                 </div>
             </div>
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label text-start text-md-end">銀行名</label>
-                <div class="col-sm-10">
-                    <p class="form-control-plaintext">{{ bank.bank_name }}</p>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label text-start text-md-end">支店コード</label>
-                <div class="col-sm-10">
-                    <p class="form-control-plaintext">{{ bank.branch_code }}</p>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label text-start text-md-end">支店名</label>
-                <div class="col-sm-10">
-                    <p class="form-control-plaintext">{{ bank.branch_name }}</p>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label text-start text-md-end">口座種別</label>
-                <div class="col-sm-10">
-                    <p class="form-control-plaintext">{{ bank.account_type }}</p>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label text-start text-md-end">口座番号</label>
-                <div class="col-sm-10">
-                    <p class="form-control-plaintext">{{ bank.account_number }}</p>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label text-start text-md-end">口座名義</label>
+                <label class="col-sm-2 col-form-label text-start text-md-end">
+                    <strong>口座名義</strong>
+                </label>
                 <div class="col-sm-10">
                     <p class="form-control-plaintext">{{ bank.account_holder }}</p>
                 </div>

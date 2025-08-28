@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const query = bankNameInput.value;
         if (query.length < 1) return;
 
-        fetch(`{% url 'api:search_banks' %}?q=${query}`)
+        fetch(`{% url 'search_banks' %}?q=${query}`)
             .then(response => response.json())
             .then(data => {
                 bankList.innerHTML = '';
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
     bankCodeInput.addEventListener('change', function() {
         const code = bankCodeInput.value;
         if (code.length === 4) {
-            fetch(`{% url 'api:search_banks' %}?q=${code}`)
+            fetch(`{% url 'search_banks' %}?q=${code}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.length > 0) {
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const query = branchNameInput.value;
         if (query.length < 1 || !bankCode) return;
 
-        fetch(`{% url 'api:search_bank_branches' %}?bank_code=${bankCode}&q=${query}`)
+        fetch(`{% url 'search_bank_branches' %}?bank_code=${bankCode}&q=${query}`)
             .then(response => response.json())
             .then(data => {
                 branchList.innerHTML = '';
@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const bankCode = bankCodeInput.value;
         const code = branchCodeInput.value;
         if (code.length === 3 && bankCode) {
-            fetch(`{% url 'api:search_bank_branches' %}?bank_code=${bankCode}&q=${code}`)
+            fetch(`{% url 'search_bank_branches' %}?bank_code=${bankCode}&q=${code}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.length > 0) {
