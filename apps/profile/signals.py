@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from apps.profile.models import ProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability
+from apps.profile.models import StaffProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability
 from apps.connect.models import ConnectStaff, MynumberRequest, ConnectInternationalRequest, BankRequest, DisabilityRequest
 
 
@@ -32,10 +32,10 @@ def create_or_update_bank_request(sender, instance, **kwargs):
         )
 
 
-@receiver(post_save, sender=ProfileMynumber)
+@receiver(post_save, sender=StaffProfileMynumber)
 def create_or_update_mynumber_request(sender, instance, **kwargs):
     """
-    ProfileMynumberが作成または更新されたときに、関連するすべての有効な
+    StaffProfileMynumberが作成または更新されたときに、関連するすべての有効な
     ConnectStaffに対してMynumberRequestを作成または更新します。
     既存のレコードは一度すべて削除されます。
     """

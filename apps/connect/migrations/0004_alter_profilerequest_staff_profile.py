@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("connect", "0003_profilerequest"),
-        ("profile", "0007_rename_staffmynumber_profilemynumber"),
+        ("profile", "0007_rename_staffmynumber_staffprofilemynumber"),
     ]
 
     operations = [

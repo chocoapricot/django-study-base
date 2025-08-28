@@ -10,6 +10,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RenameModel(
             old_name="StaffMynumber",
-            new_name="ProfileMynumber",
+            new_name="StaffProfileMynumber",
         ),
     ]

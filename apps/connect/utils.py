@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from .models import ConnectStaff, ConnectClient
-from apps.profile.models import StaffProfile, ProfileMynumber
+from apps.profile.models import StaffProfile, StaffProfileMynumber
 
 User = get_user_model()
 
@@ -16,8 +16,8 @@ def grant_profile_permissions(user):
         for permission in profile_permissions:
             user.user_permissions.add(permission)
 
-        # ProfileMynumber
-        mynumber_content_type = ContentType.objects.get_for_model(ProfileMynumber)
+        # StaffProfileMynumber
+        mynumber_content_type = ContentType.objects.get_for_model(StaffProfileMynumber)
         mynumber_permissions = Permission.objects.filter(content_type=mynumber_content_type)
         for permission in mynumber_permissions:
             user.user_permissions.add(permission)

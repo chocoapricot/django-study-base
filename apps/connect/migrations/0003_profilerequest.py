@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("connect", "0002_mynumberrequest"),
-        ("profile", "0007_rename_staffmynumber_profilemynumber"),
+        ("profile", "0007_rename_staffmynumber_staffprofilemynumber"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 

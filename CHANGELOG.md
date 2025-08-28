@@ -47,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `apps/staff` にて、`StaffMyNumberRecord` モデルを `StaffMynumber` に名称変更し、関連するすべてのファイル（フォーム、ビュー、テンプレート）を更新しました。これは、命名規則の統一性を高めるためのリファクタリングです。
-- `StaffMynumber` モデルを `ProfileMynumber` に名称変更し、関連するすべてのファイル（フォーム、ビュー、テスト、ドキュメント）を更新しました。これは、プロファイル関連のモデルであることをより明確にするためのリファクタリングです。
+- `StaffMynumber` モデルを `StaffProfileMynumber` に名称変更し、関連するすべてのファイル（フォーム、ビュー、テスト、ドキュメント）を更新しました。これは、プロファイル関連のモデルであることをより明確にするためのリファクタリングです。
 
 ## 2025-08-19
 
@@ -150,7 +150,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 2025-08-16
 
 ### Added
-- スタッフ接続が承認された際に、そのユーザーに対してプロファイル (`StaffProfile`) とマイナンバー (`ProfileMynumber`) の表示、追加、変更、削除権限を自動的に付与する機能を追加しました。
+- スタッフ接続が承認された際に、そのユーザーに対してプロファイル (`StaffProfile`) とマイナンバー (`StaffProfileMynumber`) の表示、追加、変更、削除権限を自動的に付与する機能を追加しました。
 - 上記の権限付与ロジックに関するテストケースを追加しました。
 - プロファイル管理機能の各ビューに権限制御を追加しました。
 
@@ -163,7 +163,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - プロファイル管理機能にマイナンバー（個人番号）の登録・編集・削除機能を追加しました。
-- `ProfileMynumber` モデル、フォーム、ビュー、テンプレート、テストコードを追加しました。
+- `StaffProfileMynumber` モデル、フォーム、ビュー、テンプレート、テストコードを追加しました。
 - `python-stdnum` ライブラリを利用したマイナンバーの妥当性チェック機能を追加しました。
 - サイドバーに「マイナンバー」メニューを追加しました。
 

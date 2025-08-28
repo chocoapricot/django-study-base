@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("connect", "0001_initial"),
-        ("profile", "0007_rename_staffmynumber_profilemynumber"),
+        ("profile", "0007_rename_staffmynumber_staffprofilemynumber"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -82,7 +82,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         help_text="関連するプロフィールマイナンバー",
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="profile.profilemynumber",
+                        to="profile.staffprofilemynumber",
                         verbose_name="プロフィールマイナンバー",
                     ),
                 ),

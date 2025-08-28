@@ -79,7 +79,7 @@ statics/
 
 ## 命名規則
 - **アプリ**: 小文字、説明的な名前（例：`staff`、`client`、`contract`、`company`、`connect`、`master`、`profile`）
-- **モデル**: パスカルケース（例：`MyUser`、`Company`、`ClientContract`、`StaffContract`、`ConnectStaff`、`ConnectClient`、`StaffProfile`、`ProfileMynumber`）
+- **モデル**: パスカルケース（例：`MyUser`、`Company`、`ClientContract`、`StaffContract`、`ConnectStaff`、`ConnectClient`、`StaffProfile`、`StaffProfileMynumber`）
 - **URL**: 小文字でハイフン区切り（例：`/staff/contact-list/`、`/contract/client/`、`/company/department-list/`、`/connect/staff/`）
 - **テンプレート**: 小文字でアンダースコア区切り（例：`staff_list.html`、`client_contract_detail.html`、`company_detail.html`、`connect_staff_list.html`）
 - **静的ファイル**: タイプ別にそれぞれのサブディレクトリで整理

@@ -25,7 +25,7 @@ This application is designed for Japanese users (ja-JP locale, Asia/Tokyo timezo
 - Contract management (creation, update, deletion, status tracking of client and staff contracts)
 - Company/Department management (corporate number search, postal code search, change history tracking)
 - Connection management (connection requests/approvals with staff/client representatives, automatic permission granting)
-- Profile management (`StaffProfile`, `ProfileMynumber`)
+- Profile management (`StaffProfile`, `StaffProfileMynumber`)
 - Master data management (qualifications, skills, banks/branches, payment terms, company banks)
 - System settings (dropdowns, menus, parameters), user management, and log management
 - **Unified Change History Management**: Tracking and displaying all data changes using the AppLog system

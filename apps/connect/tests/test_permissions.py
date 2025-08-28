@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.contrib.auth.models import Permission
 from apps.connect.models import ConnectStaff
-from apps.profile.models import StaffProfile, ProfileMynumber
+from apps.profile.models import StaffProfile, StaffProfileMynumber
 
 User = get_user_model()
 
@@ -31,7 +31,7 @@ class PermissionGrantingTest(TestCase):
         
         # Initially, user should not have profile permissions
         self.assertFalse(self.user.has_perm('profile.view_staffprofile'))
-        self.assertFalse(self.user.has_perm('profile.view_profilemynumber'))
+        self.assertFalse(self.user.has_perm('profile.view_staffprofilemynumber'))
 
         # Approve the connection
         response = self.client.post(reverse('connect:staff_approve', args=[self.connection.pk]))
@@ -49,7 +49,7 @@ class PermissionGrantingTest(TestCase):
             'view_staffprofile', 'add_staffprofile', 'change_staffprofile', 'delete_staffprofile'
         ]
         mynumber_perms = [
-            'view_profilemynumber', 'add_profilemynumber', 'change_profilemynumber', 'delete_profilemynumber'
+            'view_staffprofilemynumber', 'add_staffprofilemynumber', 'change_staffprofilemynumber', 'delete_staffprofilemynumber'
         ]
 
         for perm in profile_perms:

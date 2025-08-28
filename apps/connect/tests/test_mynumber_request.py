@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from apps.profile.models import ProfileMynumber
+from apps.profile.models import StaffProfileMynumber
 from apps.connect.models import ConnectStaff, MynumberRequest
 
 User = get_user_model()
@@ -40,10 +40,10 @@ class MynumberRequestSignalTest(TestCase):
 
     def test_request_creation_on_mynumber_create(self):
         """
-        ProfileMynumber作成時にMynumberRequestが作成されることをテスト
+        StaffProfileMynumber作成時にMynumberRequestが作成されることをテスト
         """
-        # ProfileMynumberを作成
-        profile_mynumber = ProfileMynumber.objects.create(
+        # StaffProfileMynumberを作成
+        profile_mynumber = StaffProfileMynumber.objects.create(
             user=self.user1,
             mynumber='123456789012'
         )
@@ -57,10 +57,10 @@ class MynumberRequestSignalTest(TestCase):
 
     def test_request_recreation_on_mynumber_update(self):
         """
-        ProfileMynumber更新時にMynumberRequestが再作成されることをテスト
+        StaffProfileMynumber更新時にMynumberRequestが再作成されることをテスト
         """
-        # 最初にProfileMynumberを作成
-        profile_mynumber = ProfileMynumber.objects.create(
+        # 最初にStaffProfileMynumberを作成
+        profile_mynumber = StaffProfileMynumber.objects.create(
             user=self.user1,
             mynumber='123456789012'
         )
@@ -68,7 +68,7 @@ class MynumberRequestSignalTest(TestCase):
         original_request = MynumberRequest.objects.first()
         original_request_id = original_request.id
 
-        # ProfileMynumberを更新
+        # StaffProfileMynumberを更新
         profile_mynumber.mynumber = '210987654321'
         profile_mynumber.save()
 
@@ -83,11 +83,11 @@ class MynumberRequestSignalTest(TestCase):
         """
         承認済みの接続がない場合、MynumberRequestが作成されないことをテスト
         """
-        # 承認済みの接続がないユーザーでProfileMynumberを作成
+        # 承認済みの接続がないユーザーでStaffProfileMynumberを作成
         user_no_connection = User.objects.create_user(
             username='nouser', email='nouser@example.com', password='password'
         )
-        ProfileMynumber.objects.create(
+        StaffProfileMynumber.objects.create(
             user=user_no_connection,
             mynumber='111122223333'
         )
@@ -106,8 +106,8 @@ class MynumberRequestSignalTest(TestCase):
             status='approved'
         )
 
-        # ProfileMynumberを作成
-        ProfileMynumber.objects.create(
+        # StaffProfileMynumberを作成
+        StaffProfileMynumber.objects.create(
             user=self.user1,
             mynumber='123456789012'
         )
@@ -123,7 +123,7 @@ class MynumberRequestApprovalTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', email='test@example.com', password='password')
         self.staff = Staff.objects.create(email='test@example.com', name_last='Test', name_first='User')
-        self.profile_mynumber = ProfileMynumber.objects.create(user=self.user, mynumber='111111111111')
+        self.profile_mynumber = StaffProfileMynumber.objects.create(user=self.user, mynumber='111111111111')
         self.connection = ConnectStaff.objects.create(corporate_number='1234567890123', email='test@example.com', status='pending')
 
     def test_request_creation_on_approval_no_staff_mynumber(self):

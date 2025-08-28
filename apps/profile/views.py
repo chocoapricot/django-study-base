@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.urls import reverse
-from .models import StaffProfile, ProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact
-from .forms import StaffProfileForm, ProfileMynumberForm, StaffProfileInternationalForm, StaffProfileBankForm, StaffProfileDisabilityForm, StaffProfileContactForm
+from .models import StaffProfile, StaffProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact
+from .forms import StaffProfileForm, StaffProfileMynumberForm, StaffProfileInternationalForm, StaffProfileBankForm, StaffProfileDisabilityForm, StaffProfileContactForm
 
 
 @login_required
@@ -85,12 +85,12 @@ def profile_delete(request):
 
 
 @login_required
-@permission_required('profile.view_profilemynumber', raise_exception=True)
+@permission_required('profile.view_staffprofilemynumber', raise_exception=True)
 def mynumber_detail(request):
     """マイナンバー詳細表示"""
     try:
-        mynumber = ProfileMynumber.objects.get(user=request.user)
-    except ProfileMynumber.DoesNotExist:
+        mynumber = StaffProfileMynumber.objects.get(user=request.user)
+    except StaffProfileMynumber.DoesNotExist:
         mynumber = None
     
     context = {
@@ -100,19 +100,19 @@ def mynumber_detail(request):
 
 
 @login_required
-@permission_required('profile.add_profilemynumber', raise_exception=True)
-@permission_required('profile.change_profilemynumber', raise_exception=True)
+@permission_required('profile.add_staffprofilemynumber', raise_exception=True)
+@permission_required('profile.change_staffprofilemynumber', raise_exception=True)
 def mynumber_edit(request):
     """マイナンバー編集"""
     try:
-        mynumber = ProfileMynumber.objects.get(user=request.user)
+        mynumber = StaffProfileMynumber.objects.get(user=request.user)
         is_new = False
-    except ProfileMynumber.DoesNotExist:
+    except StaffProfileMynumber.DoesNotExist:
         mynumber = None
         is_new = True
 
     if request.method == 'POST':
-        form = ProfileMynumberForm(request.POST, instance=mynumber)
+        form = StaffProfileMynumberForm(request.POST, instance=mynumber)
         if form.is_valid():
             mynumber = form.save(commit=False)
             mynumber.user = request.user
@@ -126,7 +126,7 @@ def mynumber_edit(request):
             
             return redirect('profile:mynumber_detail')
     else:
-        form = ProfileMynumberForm(instance=mynumber)
+        form = StaffProfileMynumberForm(instance=mynumber)
     
     context = {
         'form': form,
@@ -138,10 +138,10 @@ def mynumber_edit(request):
 
 
 @login_required
-@permission_required('profile.delete_profilemynumber', raise_exception=True)
+@permission_required('profile.delete_staffprofilemynumber', raise_exception=True)
 def mynumber_delete(request):
     """マイナンバー削除確認"""
-    mynumber = get_object_or_404(ProfileMynumber, user=request.user)
+    mynumber = get_object_or_404(StaffProfileMynumber, user=request.user)
     
     if request.method == 'POST':
         mynumber.delete()
