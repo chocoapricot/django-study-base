@@ -16,7 +16,7 @@ class BankAPITest(TestCase):
 
     def test_search_banks(self):
         """Test the search_banks API endpoint."""
-        url = reverse('search_banks')
+        url = reverse('api:search_banks')
         response = self.client.get(url, {'q': 'Test'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 1)
@@ -36,7 +36,7 @@ class BankAPITest(TestCase):
 
     def test_search_bank_branches(self):
         """Test the search_bank_branches API endpoint."""
-        url = reverse('search_bank_branches')
+        url = reverse('api:search_bank_branches')
 
         # Search for branches of bank1
         response = self.client.get(url, {'bank_code': '0001', 'q': 'Main'})
