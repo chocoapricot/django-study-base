@@ -73,9 +73,37 @@ def staff_list(request):
     regist_form_filter = request.GET.get('regist_form', '').strip()  # 登録区分フィルター
     department_filter = request.GET.get('department', '').strip()  # 所属部署フィルター
     employment_type_filter = request.GET.get('employment_type', '').strip()  # 雇用形態フィルター
+    has_request_filter = request.GET.get('has_request', '')
     
     # 基本のクエリセット
     staffs = Staff.objects.all()
+
+    if has_request_filter == 'true':
+        from apps.connect.models import (
+            ConnectStaff, MynumberRequest, ProfileRequest, BankRequest,
+            ContactRequest, ConnectInternationalRequest, DisabilityRequest
+        )
+        # Get all ConnectStaff ids that have pending requests
+        pending_mynumber_cs_ids = MynumberRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+        pending_profile_cs_ids = ProfileRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+        pending_bank_cs_ids = BankRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+        pending_contact_cs_ids = ContactRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+        pending_international_cs_ids = ConnectInternationalRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+        pending_disability_cs_ids = DisabilityRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+
+        all_pending_cs_ids = set()
+        all_pending_cs_ids.update(pending_mynumber_cs_ids)
+        all_pending_cs_ids.update(pending_profile_cs_ids)
+        all_pending_cs_ids.update(pending_bank_cs_ids)
+        all_pending_cs_ids.update(pending_contact_cs_ids)
+        all_pending_cs_ids.update(pending_international_cs_ids)
+        all_pending_cs_ids.update(pending_disability_cs_ids)
+
+        # Get the emails of these ConnectStaff objects
+        pending_emails = ConnectStaff.objects.filter(id__in=list(all_pending_cs_ids)).values_list('email', flat=True)
+
+        # Filter the staffs
+        staffs = staffs.filter(email__in=pending_emails)
 
     # 会社の法人番号を取得（最初の会社を仮定）
     from apps.company.models import Company
@@ -229,6 +257,7 @@ def staff_list(request):
         'department_options': department_options,
         'employment_type_filter': employment_type_filter,
         'employment_type_options': employment_type_options,
+        'has_request_filter': has_request_filter,
     })
 
 @login_required

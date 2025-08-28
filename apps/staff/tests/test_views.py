@@ -7,6 +7,8 @@ from apps.staff.models import Staff, StaffContacted
 from apps.system.settings.models import Dropdowns
 from datetime import date, datetime 
 from django.utils import timezone
+from apps.connect.models import ConnectStaff, ProfileRequest
+from apps.profile.models import StaffProfile
 
 User = get_user_model()
 
@@ -374,3 +376,41 @@ class StaffViewsTest(TestCase):
         self.assertTemplateUsed(response, 'staff/staff_change_history_list.html')
         self.assertContains(response, 'テスト')
         self.assertContains(response, 'スタッフ')
+
+    def test_staff_list_filter_by_request(self):
+        """
+        Test that the staff list can be filtered by `has_request=true`.
+        """
+        # Create a staff with a pending request
+        staff_user_with_request = User.objects.create_user(
+            username='staffwithrequest',
+            email='with_request@example.com',
+            password='testpassword'
+        )
+        staff_profile_with_request = StaffProfile.objects.create(
+            user=staff_user_with_request,
+            name_last='With',
+            name_first='Request'
+        )
+        staff_with_request = Staff.objects.create(email='with_request@example.com', name_last='With', name_first='Request')
+        connect_staff_with_request = ConnectStaff.objects.create(
+            corporate_number='1234567890123',
+            email=staff_with_request.email,
+            status='approved'
+        )
+        ProfileRequest.objects.create(
+            connect_staff=connect_staff_with_request,
+            staff_profile=staff_profile_with_request,
+            status='pending'
+        )
+
+        # Create a staff without a pending request
+        staff_without_request = Staff.objects.create(email='without_request@example.com', name_last='Without', name_first='Request')
+
+        # Test with filter
+        response = self.client.get(reverse('staff:staff_list') + '?has_request=true')
+        self.assertEqual(response.status_code, 200)
+
+        staff_list_on_page = response.context['staffs'].object_list
+        self.assertEqual(len(staff_list_on_page), 1)
+        self.assertEqual(staff_list_on_page[0], staff_with_request)

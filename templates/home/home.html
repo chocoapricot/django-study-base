@@ -11,6 +11,66 @@
     </div>
 
     <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+        <div class="card-header">サマリー</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card bg-light h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>
+                                <i class="bi bi-building text-primary"></i>
+                                クライアント
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center mb-3">
+                                <div class="col-6">
+                                    <h4 class="text-primary">{{ client_count }}</h4>
+                                    <small class="text-muted">登録済み</small>
+                                </div>
+                                <div class="col-6">
+                                    <h4 class="text-success">{{ approved_client_count }}</h4>
+                                    <small class="text-muted">接続承認済みユーザ</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="card bg-light h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>
+                                <i class="bi bi-people text-success"></i>
+                                スタッフ
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center mb-3">
+                                <div class="col-4">
+                                    <h4 class="text-primary">{{ staff_count }}</h4>
+                                    <small class="text-muted">登録済み</small>
+                                </div>
+                                <div class="col-4">
+                                    <h4 class="text-success">{{ approved_staff_count }}</h4>
+                                    <small class="text-muted">接続承認済み</small>
+                                </div>
+                                <div class="col-4">
+                                    <a href="{% url 'staff:staff_list' %}?has_request=true" class="text-decoration-none">
+                                        <h4 class="text-warning">{{ staff_request_count }}</h4>
+                                        <small class="text-muted">申請あり</small>
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
         <div class="card-header">利用技術</div>
         <div class="card-body">
             <div class="row">
@@ -63,60 +123,6 @@
                         </ul>
                     </p>
                     
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-        <div class="card-header">サマリー</div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="card bg-light h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span>
-                                <i class="bi bi-building text-primary"></i>
-                                クライアント
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div class="row text-center mb-3">
-                                <div class="col-6">
-                                    <h4 class="text-primary">{{ client_count }}</h4>
-                                    <small class="text-muted">登録済み</small>
-                                </div>
-                                <div class="col-6">
-                                    <h4 class="text-success">{{ approved_client_count }}</h4>
-                                    <small class="text-muted">接続承認済みユーザ</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-4">
-                    <div class="card bg-light h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span>
-                                <i class="bi bi-people text-success"></i>
-                                スタッフ
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div class="row text-center mb-3">
-                                <div class="col-6">
-                                    <h4 class="text-primary">{{ staff_count }}</h4>
-                                    <small class="text-muted">登録済み</small>
-                                </div>
-                                <div class="col-6">
-                                    <h4 class="text-success">{{ approved_staff_count }}</h4>
-                                    <small class="text-muted">接続承認済み</small>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
