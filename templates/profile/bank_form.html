@@ -1,4 +1,5 @@
 {% extends 'common/_base.html' %}
+{% load help_tags %}
 
 {% block title %}{% if is_new %}銀行口座登録{% else %}銀行口座編集{% endif %}{% endblock %}
 
@@ -11,9 +12,19 @@
         <form method="post">
             {% csrf_token %}
 
-            <div class="row mb-3 align-items-center">
+            <div class="row align-items-center">
+                <label for="{{ form.bank_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">銀行コード
+                    {% my_help_preset "bank_code" %}
+                </label>
+                <div class="col-sm-2">
+                    {{ form.bank_code }}
+                    {% if form.bank_code.errors %}
+                        <div class="text-danger small">{{ form.bank_code.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
                 <label for="{{ form.bank_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">銀行名</label>
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                     {{ form.bank_name }}
                     <datalist id="bank-list"></datalist>
                     {% if form.bank_name.errors %}
@@ -22,19 +33,19 @@
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.bank_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">銀行コード</label>
-                <div class="col-sm-4">
-                    {{ form.bank_code }}
-                    {% if form.bank_code.errors %}
-                        <div class="text-danger small">{{ form.bank_code.errors.0 }}</div>
+            <div class="row align-items-center">
+                <label for="{{ form.branch_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">支店コード
+                    {% my_help_preset "branch_code" %}
+                </label>
+                <div class="col-sm-2">
+                    {{ form.branch_code }}
+                    {% if form.branch_code.errors %}
+                        <div class="text-danger small">{{ form.branch_code.errors.0 }}</div>
                     {% endif %}
                 </div>
-            </div>
 
-            <div class="row mb-3 align-items-center">
                 <label for="{{ form.branch_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">支店名</label>
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                     {{ form.branch_name }}
                     <datalist id="branch-list"></datalist>
                     {% if form.branch_name.errors %}
@@ -43,17 +54,7 @@
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.branch_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">支店コード</label>
-                <div class="col-sm-4">
-                    {{ form.branch_code }}
-                    {% if form.branch_code.errors %}
-                        <div class="text-danger small">{{ form.branch_code.errors.0 }}</div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="row mb-3 align-items-center">
+            <div class="row align-items-center">
                 <label class="col-sm-2 col-form-label text-start text-md-end">口座種別 <span class="text-danger">*</span></label>
                 <div class="col-sm-4">
                     {% for radio in form.account_type %}
@@ -68,9 +69,9 @@
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.account_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">口座番号 <span class="text-danger">*</span></label>
-                <div class="col-sm-4">
+            <div class="row align-items-center">
+                <label for="{{ form.account_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">口座番号 <span class="text-danger">*</span>{% my_help_preset "account_number" %}</label>
+                <div class="col-sm-2">
                     {{ form.account_number }}
                     {% if form.account_number.errors %}
                         <div class="text-danger small">{{ form.account_number.errors.0 }}</div>
@@ -78,9 +79,9 @@
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center">
+            <div class="row align-items-center">
                 <label for="{{ form.account_holder.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">口座名義 <span class="text-danger">*</span></label>
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     {{ form.account_holder }}
                     {% if form.account_holder.errors %}
                         <div class="text-danger small">{{ form.account_holder.errors.0 }}</div>
