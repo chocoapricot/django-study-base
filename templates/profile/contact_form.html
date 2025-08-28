@@ -1,4 +1,5 @@
 {% extends 'common/_base.html' %}
+{% load help_tags %}
 
 {% block title %}{% if is_new %}連絡先情報登録{% else %}連絡先情報編集{% endif %}{% endblock %}
 
@@ -8,30 +9,30 @@
         {% if is_new %}連絡先情報登録{% else %}連絡先情報編集{% endif %}
     </div>
     <div class="card-body">
-        <form method="post" class="form-horizontal">
+        <form method="post" class="mt-3">
             {% csrf_token %}
 
-            <!-- emergency_contact -->
-            <div class="row mb-3">
+            <div class="row mb-1">
+                <!-- emergency_contact -->
                 <label for="{{ form.emergency_contact.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">緊急連絡先</label>
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                     {{ form.emergency_contact }}
                     {% if form.emergency_contact.errors %}<div class="text-danger small">{{ form.emergency_contact.errors.as_text }}</div>{% endif %}
                 </div>
-            </div>
 
-            <!-- relationship -->
-            <div class="row mb-3">
+                <!-- relationship -->
                 <label for="{{ form.relationship.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">続柄</label>
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                     {{ form.relationship }}
                     {% if form.relationship.errors %}<div class="text-danger small">{{ form.relationship.errors.as_text }}</div>{% endif %}
                 </div>
             </div>
 
             <!-- postal_code -->
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">郵便番号（住民票）{% my_help_preset "postal_code" %}</label>
+            <div class="row align-items-center">
+                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">
+                    郵便番号(住民票){% my_help_preset "postal_code" %}
+                </label>
                 <div class="col-sm-3">
                     {{ form.postal_code }}
                     {% if form.postal_code.errors %}<div class="text-danger small">{{ form.postal_code.errors.as_text }}</div>{% endif %}
@@ -40,11 +41,10 @@
                     <button type="button" id="fetch-zipcode-btn" class="btn btn-sm btn-secondary">住所</button>
                 </div>
             </div>
-            <div id="api-message" class="mb-3"></div>
 
             <!-- address1 -->
-            <div class="row mb-3">
-                <label for="{{ form.address1.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">住所１（住民票）</label>
+            <div class="row align-items-center">
+                <label for="{{ form.address1.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">住所１(住民票)</label>
                 <div class="col-sm-8">
                     {{ form.address1 }}
                     {% if form.address1.errors %}<div class="text-danger small">{{ form.address1.errors.as_text }}</div>{% endif %}
@@ -52,8 +52,8 @@
             </div>
 
             <!-- address2 -->
-            <div class="row mb-3">
-                <label for="{{ form.address2.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">住所２（住民票）</label>
+            <div class="row align-items-center">
+                <label for="{{ form.address2.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">住所２(住民票)</label>
                 <div class="col-sm-8">
                     {{ form.address2 }}
                     {% if form.address2.errors %}<div class="text-danger small">{{ form.address2.errors.as_text }}</div>{% endif %}
@@ -61,58 +61,60 @@
             </div>
 
             <!-- address3 -->
-            <div class="row mb-3">
-                <label for="{{ form.address3.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">住所３（住民票）</label>
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.address3.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">住所３(住民票)</label>
                 <div class="col-sm-8">
                     {{ form.address3 }}
                     {% if form.address3.errors %}<div class="text-danger small">{{ form.address3.errors.as_text }}</div>{% endif %}
                 </div>
             </div>
 
-            <div class="row mt-3">
-                <div class="col-sm-10 offset-sm-2">
-                    <button type="submit" class="btn btn-sm btn-primary">{% if is_new %}登録{% else %}更新{% endif %}</button>
-                    <a href="{% url 'profile:contact_detail' %}" class="btn btn-sm btn-secondary">戻る</a>
-                </div>
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-primary me-2">{% if is_new %}登録{% else %}更新{% endif %}</button> 
+                <a href="{% url 'profile:contact_detail' %}" class="btn btn-sm btn-secondary">戻る</a>
             </div>
         </form>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-$(document).ready(function() {
     $('#fetch-zipcode-btn').on('click', function() {
         var zipcode = $('#id_postal_code').val();
+        // 7文字チェック
         if (zipcode.length !== 7) {
-            alert("郵便番号は7桁の数字で入力してください。");
-            return;
+            alert("郵便番号は7文字で入力してください。");
+            return; // 処理を終了
         }
-
         $.ajax({
-            url: "{% url 'api:get_zipcode_info' %}",
-            data: { 'zipcode': zipcode },
+            url: "{% url 'get_zipcode_info' %}",
+            data: {
+                zipcode: zipcode
+            },
             dataType: 'json',
-            success: function(data) {
-                if (data.success) {
-                    $('#id_address1').val(data.data.prefecture + data.data.city);
-                    $('#id_address2').val(data.data.town);
+            success: function(response) {
+                // console.log(response); // デバッグ用 削除
+                if (response.success) {
+                    var data = response.data;
+                    $('#id_address1').val(data.address1+data.address2);
+                    $('#id_address2').val(data.address3);
+                    // 他のフィールドも同様にデータをセット
+                    // Bootstrap alert-dismissibleでメッセージ表示
                     $('#api-message').html(
-                        '<div class="alert alert-info alert-dismissible fade show" role="alert">' +
-                        '住所情報を取得しました。' +
-                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
-                        '</div>'
+                        '<div class="alert alert-info alert-dismissible fade show" role="alert">'
+                        + '住所情報を取得しました。'
+                        + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+                        + '</div>'
                     );
                 } else {
-                    alert(data.error);
+                    alert(response.error);
                 }
             },
-            error: function() {
-                alert("住所情報の取得に失敗しました。");
+            error: function(xhr, status, error) {
+                // console.log(xhr, status, error); // デバッグ用 削除
+                alert("郵便番号の取得に失敗しました。");
             }
         });
     });
-});
+
 </script>
 {% endblock %}
