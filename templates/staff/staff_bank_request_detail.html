@@ -1,5 +1,4 @@
 {% extends 'common/_base.html' %}
-{% load dropdowns %}
 
 {% block content %}
 
@@ -65,12 +64,12 @@
                     </tr>
                     <tr>
                         <td><strong>口座種別</strong></td>
-                        <td>{% my_name 'account_type' current_bank.account_type %}</td>
+                        <td>{{ current_bank.get_account_type_display }}</td>
                         <td>
                             {% if current_bank.account_type != profile_bank.account_type or not current_bank %}
-                                <span class="text-primary fw-bold">{% my_name 'account_type' profile_bank.account_type %}</span>
+                                <span class="text-primary fw-bold">{{ profile_bank.get_account_type_display }}</span>
                             {% else %}
-                                {% my_name 'account_type' profile_bank.account_type %}
+                                {{ profile_bank.get_account_type_display }}
                             {% endif %}
                         </td>
                     </tr>
