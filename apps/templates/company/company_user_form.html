@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}担当者設定{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">担当者設定</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">担当者追加</h6>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">保存</button>
+                <a href="{% url 'company:company_detail' %}" class="btn btn-secondary">キャンセル</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
