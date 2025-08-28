@@ -5,5 +5,5 @@ class CommonConfig(AppConfig):
     name = 'apps.common'
 
     def ready(self):
-        from . import signals
+        import apps.common.signals
         from . import authlog
