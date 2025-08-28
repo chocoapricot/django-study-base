@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("connect", "0005_connectinternationalrequest"),
-        ("profile", "0010_staffbankprofile"),
+        ("profile", "0010_staffprofilebank"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -82,7 +82,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         help_text="関連するスタッフ銀行プロフィール",
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="profile.staffbankprofile",
+                        to="profile.staffprofilebank",
                         verbose_name="スタッフ銀行プロフィール",
                     ),
                 ),

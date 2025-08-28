@@ -1,13 +1,13 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from apps.profile.models import ProfileMynumber, StaffProfileInternational, StaffBankProfile, StaffDisabilityProfile
+from apps.profile.models import ProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffDisabilityProfile
 from apps.connect.models import ConnectStaff, MynumberRequest, ConnectInternationalRequest, BankRequest, DisabilityRequest
 
 
-@receiver(post_save, sender=StaffBankProfile)
+@receiver(post_save, sender=StaffProfileBank)
 def create_or_update_bank_request(sender, instance, **kwargs):
     """
-    StaffBankProfileが作成または更新されたときに、関連するすべての有効な
+    StaffProfileBankが作成または更新されたときに、関連するすべての有効な
     ConnectStaffに対してBankRequestを作成または更新します。
     """
     user = instance.user

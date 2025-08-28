@@ -6,16 +6,16 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.contrib.auth.models import Permission
 
-from apps.profile.models import StaffProfile, StaffBankProfile
-from apps.profile.forms import StaffBankProfileForm
+from apps.profile.models import StaffProfile, StaffProfileBank
+from apps.profile.forms import StaffProfileBankForm
 from apps.master.models import Bank, BankBranch
 from apps.system.settings.models import Dropdowns
 
 User = get_user_model()
 
 
-class StaffBankProfileModelTest(TestCase):
-    """StaffBankProfileモデルのテスト"""
+class StaffProfileBankModelTest(TestCase):
+    """StaffProfileBankモデルのテスト"""
     
     def setUp(self):
         self.user = User.objects.create_user(
@@ -29,7 +29,7 @@ class StaffBankProfileModelTest(TestCase):
 
     def test_create_bank_profile(self):
         """銀行プロフィールの作成テスト"""
-        bank = StaffBankProfile.objects.create(
+        bank = StaffProfileBank.objects.create(
             user=self.user,
             bank_code='0001',
             branch_code='001',
@@ -48,7 +48,7 @@ class StaffBankProfileModelTest(TestCase):
     
     def test_bank_profile_properties(self):
         """銀行プロフィールのプロパティテスト"""
-        bank = StaffBankProfile.objects.create(
+        bank = StaffProfileBank.objects.create(
             user=self.user,
             bank_code='0001',
             branch_code='001',
@@ -62,8 +62,8 @@ class StaffBankProfileModelTest(TestCase):
         self.assertEqual(bank.account_type_display, '普通')
 
 
-class StaffBankProfileFormTest(TestCase):
-    """StaffBankProfileFormのテスト"""
+class StaffProfileBankFormTest(TestCase):
+    """StaffProfileBankFormのテスト"""
     
     def setUp(self):
         Dropdowns.objects.create(category='bank_account_type', value='1', name='普通', disp_seq=1)
@@ -78,12 +78,12 @@ class StaffBankProfileFormTest(TestCase):
             'account_holder': 'テスト太郎'
         }
         
-        form = StaffBankProfileForm(data=form_data)
+        form = StaffProfileBankForm(data=form_data)
         self.assertTrue(form.is_valid())
     
     def test_required_fields(self):
         """必須フィールドのテスト"""
-        form = StaffBankProfileForm(data={})
+        form = StaffProfileBankForm(data={})
         self.assertFalse(form.is_valid())
         
         # 必須フィールドのチェック
@@ -106,10 +106,10 @@ class BankViewTest(TestCase):
         # 必要な権限を付与
         permissions = Permission.objects.filter(
             codename__in=[
-                'view_staffbankprofile',
-                'add_staffbankprofile',
-                'change_staffbankprofile',
-                'delete_staffbankprofile'
+                'view_staffprofilebank',
+                'add_staffprofilebank',
+                'change_staffprofilebank',
+                'delete_staffprofilebank'
             ]
         )
         self.user.user_permissions.set(permissions)
@@ -128,7 +128,7 @@ class BankViewTest(TestCase):
     
     def test_bank_detail_view_with_data(self):
         """銀行詳細ビュー（データあり）のテスト"""
-        bank = StaffBankProfile.objects.create(
+        bank = StaffProfileBank.objects.create(
             user=self.user,
             bank_code='0001',
             branch_code='001',
@@ -155,7 +155,7 @@ class BankViewTest(TestCase):
     
     def test_bank_delete_view_get(self):
         """銀行削除ビュー（GET）のテスト"""
-        bank = StaffBankProfile.objects.create(
+        bank = StaffProfileBank.objects.create(
             user=self.user,
             bank_code='0001',
             branch_code='001',
@@ -170,7 +170,7 @@ class BankViewTest(TestCase):
     
     def test_bank_delete_view_post(self):
         """銀行削除ビュー（POST）のテスト"""
-        bank = StaffBankProfile.objects.create(
+        bank = StaffProfileBank.objects.create(
             user=self.user,
             bank_code='0001',
             branch_code='001',
@@ -184,7 +184,7 @@ class BankViewTest(TestCase):
         
         # データが削除されているか確認
         self.assertFalse(
-            StaffBankProfile.objects.filter(user=self.user).exists()
+            StaffProfileBank.objects.filter(user=self.user).exists()
         )
     
     def test_bank_view_without_permissions(self):
@@ -210,10 +210,10 @@ class BankIntegrationTest(TestCase):
         # 必要な権限を付与
         permissions = Permission.objects.filter(
             codename__in=[
-                'view_staffbankprofile',
-                'add_staffbankprofile',
-                'change_staffbankprofile',
-                'delete_staffbankprofile'
+                'view_staffprofilebank',
+                'add_staffprofilebank',
+                'change_staffprofilebank',
+                'delete_staffprofilebank'
             ]
         )
         self.user.user_permissions.set(permissions)
@@ -246,7 +246,7 @@ class BankIntegrationTest(TestCase):
         }
         response = self.client.post(reverse('profile:bank_edit'), form_data)
         self.assertEqual(response.status_code, 302) # Redirect
-        self.assertTrue(StaffBankProfile.objects.filter(user=self.user).exists())
+        self.assertTrue(StaffProfileBank.objects.filter(user=self.user).exists())
 
         # 4. 詳細画面でデータあり確認
         response = self.client.get(reverse('profile:bank_detail'))
@@ -267,5 +267,5 @@ class BankIntegrationTest(TestCase):
         
         # 7. データが削除されているか確認
         self.assertFalse(
-            StaffBankProfile.objects.filter(user=self.user).exists()
+            StaffProfileBank.objects.filter(user=self.user).exists()
         )

@@ -12,7 +12,7 @@ from apps.connect.models import (
 from apps.staff.models import Staff, StaffBank, StaffDisability, StaffInternational
 from apps.profile.models import (
     StaffProfile,
-    StaffBankProfile,
+    StaffProfileBank,
     StaffDisabilityProfile,
     StaffProfileInternational,
 )
@@ -129,7 +129,7 @@ class ConnectFeaturesTest(TestCase):
 
     def test_bank_request_created_on_approval_if_different(self):
         """銀行情報が異なる場合、接続承認時にBankRequestが作成されることをテスト"""
-        StaffBankProfile.objects.create(
+        StaffProfileBank.objects.create(
             user=self.staff_user,
             bank_code="1111",
             branch_code="111",
@@ -152,7 +152,7 @@ class ConnectFeaturesTest(TestCase):
 
     def test_bank_request_not_created_on_approval_if_same(self):
         """銀行情報が同じ場合、接続承認時にBankRequestが作成されないことをテスト"""
-        StaffBankProfile.objects.create(
+        StaffProfileBank.objects.create(
             user=self.staff_user,
             bank_code="1111",
             branch_code="111",

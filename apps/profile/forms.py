@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import StaffProfile, ProfileMynumber, StaffProfileInternational, StaffBankProfile, StaffDisabilityProfile, StaffProfileContact
+from .models import StaffProfile, ProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffDisabilityProfile, StaffProfileContact
 
 
 from apps.common.forms.fields import to_fullwidth_katakana, validate_kana
@@ -178,7 +178,7 @@ class StaffProfileInternationalForm(forms.ModelForm):
         return cleaned_data
 
 
-class StaffBankProfileForm(forms.ModelForm):
+class StaffProfileBankForm(forms.ModelForm):
     """スタッフ銀行プロフィールフォーム"""
     bank_name = forms.CharField(
         label='銀行名',
@@ -197,7 +197,7 @@ class StaffBankProfileForm(forms.ModelForm):
     )
 
     class Meta:
-        model = StaffBankProfile
+        model = StaffProfileBank
         fields = [
             'bank_code', 'branch_code', 'account_type',
             'account_number', 'account_holder'

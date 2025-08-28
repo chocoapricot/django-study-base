@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RemoveField(
-            model_name='staffbankprofile',
+            model_name='staffprofilebank',
             name='staff_profile',
         ),
         migrations.AddField(
-            model_name='staffbankprofile',
+            model_name='staffprofilebank',
             name='user',
             field=models.OneToOneField(default='', on_delete=django.db.models.deletion.CASCADE, related_name='staff_bank', to=settings.AUTH_USER_MODEL, verbose_name='ユーザー'),
             preserve_default=False,

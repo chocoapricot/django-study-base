@@ -11,7 +11,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("profile", "0012_remove_staffbankprofile_staff_profile_and_more"),
+        ("profile", "0012_remove_staffprofilebank_staff_profile_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 

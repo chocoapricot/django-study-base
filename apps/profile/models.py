@@ -372,7 +372,7 @@ class StaffProfileInternational(MyModel):
 
 
 
-class StaffBankProfile(MyModel):
+class StaffProfileBank(MyModel):
     """
     スタッフの銀行プロフィール情報を管理するモデル。
     Userと1対1で連携し、振込先銀行情報を保存する。

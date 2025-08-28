@@ -372,7 +372,7 @@
         "parent": 21,
         "level": 1,
         "exact_match": true,
-        "required_permission": "profile.view_staffbankprofile",
+        "required_permission": "profile.view_staffprofilebank",
         "disp_seq": 17,
         "active": true
     }

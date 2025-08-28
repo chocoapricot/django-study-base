@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from apps.profile.models import StaffBankProfile
+from apps.profile.models import StaffProfileBank
 from apps.connect.models import ConnectStaff, BankRequest
 
 User = get_user_model()
@@ -40,10 +40,10 @@ class BankRequestSignalTest(TestCase):
 
     def test_request_creation_on_bank_profile_create(self):
         """
-        StaffBankProfile作成時にBankRequestが作成されることをテスト
+        StaffProfileBank作成時にBankRequestが作成されることをテスト
         """
-        # StaffBankProfileを作成
-        bank_profile = StaffBankProfile.objects.create(
+        # StaffProfileBankを作成
+        bank_profile = StaffProfileBank.objects.create(
             user=self.user1,
             bank_code='1234',
             branch_code='567',
@@ -61,10 +61,10 @@ class BankRequestSignalTest(TestCase):
 
     def test_request_recreation_on_bank_profile_update(self):
         """
-        StaffBankProfile更新時にBankRequestが再作成されることをテスト
+        StaffProfileBank更新時にBankRequestが再作成されることをテスト
         """
-        # 最初にStaffBankProfileを作成
-        bank_profile = StaffBankProfile.objects.create(
+        # 最初にStaffProfileBankを作成
+        bank_profile = StaffProfileBank.objects.create(
             user=self.user1,
             bank_code='1234',
             branch_code='567',
@@ -76,7 +76,7 @@ class BankRequestSignalTest(TestCase):
         original_request = BankRequest.objects.first()
         original_request_id = original_request.id
 
-        # StaffBankProfileを更新
+        # StaffProfileBankを更新
         bank_profile.account_number = '7654321'
         bank_profile.save()
 
@@ -91,11 +91,11 @@ class BankRequestSignalTest(TestCase):
         """
         承認済みの接続がない場合、BankRequestが作成されないことをテスト
         """
-        # 承認済みの接続がないユーザーでStaffBankProfileを作成
+        # 承認済みの接続がないユーザーでStaffProfileBankを作成
         user_no_connection = User.objects.create_user(
             username='nouser', email='nouser@example.com', password='password'
         )
-        StaffBankProfile.objects.create(
+        StaffProfileBank.objects.create(
             user=user_no_connection,
             bank_code='1234',
             branch_code='567',
@@ -118,8 +118,8 @@ class BankRequestSignalTest(TestCase):
             status='approved'
         )
 
-        # StaffBankProfileを作成
-        StaffBankProfile.objects.create(
+        # StaffProfileBankを作成
+        StaffProfileBank.objects.create(
             user=self.user1,
             bank_code='1234',
             branch_code='567',
