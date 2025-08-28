@@ -219,6 +219,9 @@ class StaffBankProfileForm(forms.ModelForm):
         self.fields['account_type'].required = True
         self.fields['account_number'].required = True
         self.fields['account_holder'].required = True
+        if self.instance and self.instance.pk:
+            self.fields['bank_name'].initial = self.instance.bank_name
+            self.fields['branch_name'].initial = self.instance.branch_name
 
     def save(self, commit=True):
         # bank_name と branch_name をDBに保存しないようにする
