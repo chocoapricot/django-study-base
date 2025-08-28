@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
@@ -146,3 +147,20 @@ class Company(MyModel):
 
     def __str__(self):
         return self.name
+
+
+class CompanyUser(MyModel):
+    """
+    会社の担当者を管理するモデル
+    """
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name="会社")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="担当者")
+
+    class Meta:
+        db_table = 'apps_company_user'
+        verbose_name = '会社担当者'
+        verbose_name_plural = '会社担当者'
+        unique_together = ('company', 'user')
+
+    def __str__(self):
+        return f"{self.user.username}"

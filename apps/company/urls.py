@@ -16,4 +16,8 @@ urlpatterns = [
     
     # 変更履歴
     path('change-history/', views.change_history_list, name='change_history_list'),
+
+    # Company User Management
+    path('users/create/', views.company_user_create, name='company_user_create'),
+    path('users/<int:pk>/delete/', views.company_user_delete, name='company_user_delete'),
 ]

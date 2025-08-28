@@ -1,5 +1,8 @@
 from django.test import TestCase
-from ..models import Company, CompanyDepartment
+from ..models import Company, CompanyDepartment, CompanyUser
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class CompanyModelTest(TestCase):
     """会社モデルのテスト"""
@@ -99,3 +102,26 @@ class CompanyDepartmentModelTest(TestCase):
         # 2025年時点で有効な部署を取得
         valid_depts = CompanyDepartment.get_valid_departments(date(2025, 1, 1))
         self.assertEqual(valid_depts.count(), 1)  # 無期限部署のみ
+
+
+class CompanyUserModelTest(TestCase):
+    """会社担当者モデルのテスト"""
+
+    def setUp(self):
+        self.company = Company.objects.create(name="テスト株式会社")
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.company_user = CompanyUser.objects.create(
+            company=self.company,
+            user=self.user
+        )
+
+    def test_company_user_creation(self):
+        """会社担当者の作成テスト"""
+        self.assertEqual(self.company_user.company, self.company)
+        self.assertEqual(self.company_user.user, self.user)
+        self.assertEqual(str(self.company_user), 'testuser')
+
+    def test_company_user_unique_together(self):
+        """会社と担当者の組み合わせの一意性テスト"""
+        with self.assertRaises(Exception):
+            CompanyUser.objects.create(company=self.company, user=self.user)

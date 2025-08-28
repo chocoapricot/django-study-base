@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from ..models import Company, CompanyDepartment
+from ..models import Company, CompanyDepartment, CompanyUser
 
 User = get_user_model()
 
@@ -152,3 +152,38 @@ class DepartmentViewTest(TestCase):
             'valid_to': self.department.valid_to or ''
         })
         self.assertEqual(response.status_code, 302)  # リダイレクト
+
+
+class CompanyUserViewTest(TestCase):
+    """会社担当者ビューのテスト"""
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123',
+            is_superuser=True # for permissions
+        )
+        self.company = Company.objects.create(name="テスト株式会社")
+        self.company_user = CompanyUser.objects.create(company=self.company, user=self.user)
+
+    def test_company_user_create_view_requires_login(self):
+        """担当者作成ビューのログイン必須テスト"""
+        response = self.client.get(reverse('company:company_user_create'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_company_user_create_post(self):
+        """担当者作成のPOSTテスト"""
+        self.client.login(username='testuser', password='testpass123')
+        another_user = User.objects.create_user(username='anotheruser', password='testpassword')
+        response = self.client.post(reverse('company:company_user_create'), {'user': another_user.pk})
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(CompanyUser.objects.filter(user=another_user).exists())
+
+    def test_company_user_delete_post(self):
+        """担当者削除のPOSTテスト"""
+        self.client.login(username='testuser', password='testpass123')
+        response = self.client.post(reverse('company:company_user_delete', kwargs={'pk': self.company_user.pk}))
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(CompanyUser.objects.filter(pk=self.company_user.pk).exists())

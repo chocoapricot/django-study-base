@@ -1,5 +1,9 @@
 from django.test import TestCase
-from ..forms import CompanyForm
+from ..forms import CompanyForm, CompanyUserForm
+from ..models import Company
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class CompanyFormTest(TestCase):
     """会社情報フォームのテスト"""
@@ -63,3 +67,24 @@ class CompanyFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('phone_number', form.errors)
         self.assertIn('電話番号は数字とハイフンのみ入力してください。', form.errors['phone_number'])
+
+
+class CompanyUserFormTest(TestCase):
+    """会社担当者フォームのテスト"""
+
+    def setUp(self):
+        self.company = Company.objects.create(name="テスト株式会社")
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+
+    def test_valid_form(self):
+        """有効なフォームのテスト"""
+        form_data = {'user': self.user.pk}
+        form = CompanyUserForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+    def test_invalid_form_no_user(self):
+        """ユーザーがいない場合の無効なフォームのテスト"""
+        form_data = {'user': 999} # 存在しないユーザー
+        form = CompanyUserForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('user', form.errors)
