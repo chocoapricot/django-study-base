@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from apps.profile.models import ProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffDisabilityProfile
+from apps.profile.models import ProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability
 from apps.connect.models import ConnectStaff, MynumberRequest, ConnectInternationalRequest, BankRequest, DisabilityRequest
 
 
@@ -89,10 +89,10 @@ def create_or_update_international_request(sender, instance, **kwargs):
         )
 
 
-@receiver(post_save, sender=StaffDisabilityProfile)
+@receiver(post_save, sender=StaffProfileDisability)
 def create_or_update_disability_request(sender, instance, **kwargs):
     """
-    StaffDisabilityProfileが作成または更新されたときに、関連するすべての有効な
+    StaffProfileDisabilityが作成または更新されたときに、関連するすべての有効な
     ConnectStaffに対してDisabilityRequestを作成または更新します。
     """
     user = instance.user

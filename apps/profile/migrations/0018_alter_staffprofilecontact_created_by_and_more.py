@@ -10,7 +10,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("profile", "0017_remove_staffdisabilityprofile_notes"),
+        ("profile", "0017_remove_staffprofiledisability_notes"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 

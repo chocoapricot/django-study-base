@@ -82,7 +82,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         help_text="関連するプロフィール障害者情報",
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="profile.staffdisabilityprofile",
+                        to="profile.staffprofiledisability",
                         verbose_name="プロフィール障害者情報",
                     ),
                 ),

@@ -393,7 +393,7 @@
         "parent": 21,
         "level": 1,
         "exact_match": true,
-        "required_permission": "profile.view_staffdisabilityprofile",
+        "required_permission": "profile.view_staffprofiledisability",
         "disp_seq": 20,
         "active": true
     }

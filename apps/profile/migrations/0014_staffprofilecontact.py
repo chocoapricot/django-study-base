@@ -11,7 +11,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("profile", "0013_staffdisabilityprofile"),
+        ("profile", "0013_staffprofiledisability"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 

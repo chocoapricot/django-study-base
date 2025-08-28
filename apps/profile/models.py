@@ -491,7 +491,7 @@ class StaffProfileBank(MyModel):
         return '銀行情報なし'
 
 
-class StaffDisabilityProfile(MyModel):
+class StaffProfileDisability(MyModel):
     """
     スタッフの障害者情報を管理するモデル。
     Userモデルと1対1で連携する。

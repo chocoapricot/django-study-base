@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.urls import reverse
-from .models import StaffProfile, ProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffDisabilityProfile, StaffProfileContact
-from .forms import StaffProfileForm, ProfileMynumberForm, StaffProfileInternationalForm, StaffProfileBankForm, StaffDisabilityProfileForm, StaffProfileContactForm
+from .models import StaffProfile, ProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact
+from .forms import StaffProfileForm, ProfileMynumberForm, StaffProfileInternationalForm, StaffProfileBankForm, StaffProfileDisabilityForm, StaffProfileContactForm
 
 
 @login_required
@@ -354,12 +354,12 @@ def bank_delete(request):
 
 
 @login_required
-@permission_required('profile.view_staffdisabilityprofile', raise_exception=True)
+@permission_required('profile.view_staffprofiledisability', raise_exception=True)
 def disability_detail(request):
     """障害者情報詳細表示"""
     try:
-        disability = StaffDisabilityProfile.objects.get(user=request.user)
-    except StaffDisabilityProfile.DoesNotExist:
+        disability = StaffProfileDisability.objects.get(user=request.user)
+    except StaffProfileDisability.DoesNotExist:
         disability = None
 
     context = {
@@ -369,19 +369,19 @@ def disability_detail(request):
 
 
 @login_required
-@permission_required('profile.add_staffdisabilityprofile', raise_exception=True)
-@permission_required('profile.change_staffdisabilityprofile', raise_exception=True)
+@permission_required('profile.add_staffprofiledisability', raise_exception=True)
+@permission_required('profile.change_staffprofiledisability', raise_exception=True)
 def disability_edit(request):
     """障害者情報編集"""
     try:
-        disability = StaffDisabilityProfile.objects.get(user=request.user)
+        disability = StaffProfileDisability.objects.get(user=request.user)
         is_new = False
-    except StaffDisabilityProfile.DoesNotExist:
+    except StaffProfileDisability.DoesNotExist:
         disability = None
         is_new = True
 
     if request.method == 'POST':
-        form = StaffDisabilityProfileForm(request.POST, instance=disability)
+        form = StaffProfileDisabilityForm(request.POST, instance=disability)
         if form.is_valid():
             disability = form.save(commit=False)
             disability.user = request.user
@@ -395,7 +395,7 @@ def disability_edit(request):
 
             return redirect('profile:disability_detail')
     else:
-        form = StaffDisabilityProfileForm(instance=disability)
+        form = StaffProfileDisabilityForm(instance=disability)
 
     context = {
         'form': form,
@@ -407,10 +407,10 @@ def disability_edit(request):
 
 
 @login_required
-@permission_required('profile.delete_staffdisabilityprofile', raise_exception=True)
+@permission_required('profile.delete_staffprofiledisability', raise_exception=True)
 def disability_delete(request):
     """障害者情報削除確認"""
-    disability = get_object_or_404(StaffDisabilityProfile, user=request.user)
+    disability = get_object_or_404(StaffProfileDisability, user=request.user)
 
     if request.method == 'POST':
         disability.delete()

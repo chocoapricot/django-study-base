@@ -13,7 +13,7 @@ from apps.staff.models import Staff, StaffBank, StaffDisability, StaffInternatio
 from apps.profile.models import (
     StaffProfile,
     StaffProfileBank,
-    StaffDisabilityProfile,
+    StaffProfileDisability,
     StaffProfileInternational,
 )
 
@@ -175,7 +175,7 @@ class ConnectFeaturesTest(TestCase):
 
     def test_disability_request_created_on_approval_if_different(self):
         """障害者情報が異なる場合、接続承認時にDisabilityRequestが作成されることをテスト"""
-        StaffDisabilityProfile.objects.create(
+        StaffProfileDisability.objects.create(
             user=self.staff_user, disability_type="身体障害", disability_grade="1級"
         )
         StaffDisability.objects.create(
@@ -188,7 +188,7 @@ class ConnectFeaturesTest(TestCase):
 
     def test_disability_request_not_created_on_approval_if_same(self):
         """障害者情報が同じ場合、接続承認時にDisabilityRequestが作成されないことをテスト"""
-        StaffDisabilityProfile.objects.create(
+        StaffProfileDisability.objects.create(
             user=self.staff_user, disability_type="身体障害", disability_grade="1級"
         )
         StaffDisability.objects.create(

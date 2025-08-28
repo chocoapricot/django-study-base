@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import StaffProfile, ProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffDisabilityProfile, StaffProfileContact
+from .models import StaffProfile, ProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact
 
 
 from apps.common.forms.fields import to_fullwidth_katakana, validate_kana
@@ -230,7 +230,7 @@ class StaffProfileBankForm(forms.ModelForm):
         return super().save(commit)
 
 
-class StaffDisabilityProfileForm(forms.ModelForm):
+class StaffProfileDisabilityForm(forms.ModelForm):
     """スタッフ障害者情報フォーム"""
     disability_type = forms.ChoiceField(
         label='障害の種類',
@@ -240,7 +240,7 @@ class StaffDisabilityProfileForm(forms.ModelForm):
     )
 
     class Meta:
-        model = StaffDisabilityProfile
+        model = StaffProfileDisability
         fields = [
             'disability_type', 'disability_grade'
         ]

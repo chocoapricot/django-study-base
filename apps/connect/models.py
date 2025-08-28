@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from apps.common.models import MyModel
 from apps.staff.models import Staff
-from apps.profile.models import ProfileMynumber, StaffProfile, StaffProfileInternational, StaffProfileBank, StaffDisabilityProfile, StaffProfileContact
+from apps.profile.models import ProfileMynumber, StaffProfile, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact
 
 class ConnectStaff(MyModel):
     """
@@ -362,7 +362,7 @@ class DisabilityRequest(MyModel):
         help_text='関連するスタッフ接続'
     )
     profile_disability = models.ForeignKey(
-        StaffDisabilityProfile,
+        StaffProfileDisability,
         on_delete=models.CASCADE,
         verbose_name='プロフィール障害者情報',
         help_text='関連するプロフィール障害者情報'
