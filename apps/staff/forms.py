@@ -497,6 +497,8 @@ class StaffBankForm(forms.ModelForm):
         ]
         
         # 必須フィールドの設定
+        self.fields['bank_code'].required = True
+        self.fields['branch_code'].required = True
         self.fields['account_type'].required = True
         self.fields['account_number'].required = True
         self.fields['account_holder'].required = True
