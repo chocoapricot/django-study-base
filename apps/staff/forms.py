@@ -433,7 +433,16 @@ class StaffContactForm(forms.ModelForm):
 
 class StaffBankForm(forms.ModelForm):
     """スタッフ銀行情報フォーム"""
-    
+    bank_name = forms.CharField(
+        label='銀行名',
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': '例: 三菱ＵＦＪ銀行'})
+    )
+    branch_name = forms.CharField(
+        label='支店名',
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': '例: 東京営業部'})
+    )
     account_type = forms.ChoiceField(
         choices=[],
         label='口座種別',

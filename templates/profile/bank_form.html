@@ -12,11 +12,33 @@
             {% csrf_token %}
 
             <div class="row mb-3 align-items-center">
+                <label for="{{ form.bank_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">銀行名</label>
+                <div class="col-sm-6">
+                    {{ form.bank_name }}
+                    <datalist id="bank-list"></datalist>
+                    {% if form.bank_name.errors %}
+                        <div class="text-danger small">{{ form.bank_name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
                 <label for="{{ form.bank_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">銀行コード</label>
                 <div class="col-sm-4">
                     {{ form.bank_code }}
                     {% if form.bank_code.errors %}
                         <div class="text-danger small">{{ form.bank_code.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.branch_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">支店名</label>
+                <div class="col-sm-6">
+                    {{ form.branch_name }}
+                    <datalist id="branch-list"></datalist>
+                    {% if form.branch_name.errors %}
+                        <div class="text-danger small">{{ form.branch_name.errors.0 }}</div>
                     {% endif %}
                 </div>
             </div>
@@ -76,4 +98,106 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const bankNameInput = document.getElementById('{{ form.bank_name.id_for_label }}');
+    const bankCodeInput = document.getElementById('{{ form.bank_code.id_for_label }}');
+    const branchNameInput = document.getElementById('{{ form.branch_name.id_for_label }}');
+    const branchCodeInput = document.getElementById('{{ form.branch_code.id_for_label }}');
+    const bankList = document.getElementById('bank-list');
+    const branchList = document.getElementById('branch-list');
+
+    bankNameInput.setAttribute('list', 'bank-list');
+    branchNameInput.setAttribute('list', 'branch-list');
+
+    // 銀行名から銀行情報を検索
+    bankNameInput.addEventListener('input', function() {
+        const query = bankNameInput.value;
+        if (query.length < 1) return;
+
+        fetch(`{% url 'api:search_banks' %}?q=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                bankList.innerHTML = '';
+                data.forEach(bank => {
+                    const option = document.createElement('option');
+                    option.value = bank.name;
+                    option.dataset.code = bank.bank_code;
+                    bankList.appendChild(option);
+                });
+            });
+    });
+
+    // 銀行名が選択されたら銀行コードをセット
+    bankNameInput.addEventListener('change', function() {
+        const selectedOption = Array.from(bankList.options).find(opt => opt.value === bankNameInput.value);
+        if (selectedOption) {
+            bankCodeInput.value = selectedOption.dataset.code;
+        }
+    });
+
+    // 銀行コードから銀行名を取得
+    bankCodeInput.addEventListener('change', function() {
+        const code = bankCodeInput.value;
+        if (code.length === 4) {
+            fetch(`{% url 'api:search_banks' %}?q=${code}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        bankNameInput.value = data[0].name;
+                    } else {
+                        bankNameInput.value = '';
+                    }
+                });
+        }
+    });
+
+    // 支店名から支店情報を検索
+    branchNameInput.addEventListener('input', function() {
+        const bankCode = bankCodeInput.value;
+        const query = branchNameInput.value;
+        if (query.length < 1 || !bankCode) return;
+
+        fetch(`{% url 'api:search_bank_branches' %}?bank_code=${bankCode}&q=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                branchList.innerHTML = '';
+                data.forEach(branch => {
+                    const option = document.createElement('option');
+                    option.value = branch.name;
+                    option.dataset.code = branch.branch_code;
+                    branchList.appendChild(option);
+                });
+            });
+    });
+
+    // 支店名が選択されたら支店コードをセット
+    branchNameInput.addEventListener('change', function() {
+        const selectedOption = Array.from(branchList.options).find(opt => opt.value === branchNameInput.value);
+        if (selectedOption) {
+            branchCodeInput.value = selectedOption.dataset.code;
+        }
+    });
+
+    // 支店コードから支店名を取得
+    branchCodeInput.addEventListener('change', function() {
+        const bankCode = bankCodeInput.value;
+        const code = branchCodeInput.value;
+        if (code.length === 3 && bankCode) {
+            fetch(`{% url 'api:search_bank_branches' %}?bank_code=${bankCode}&q=${code}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        branchNameInput.value = data[0].name;
+                    } else {
+                        branchNameInput.value = '';
+                    }
+                });
+        }
+    });
+});
+</script>
 {% endblock %}

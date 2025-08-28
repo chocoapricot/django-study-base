@@ -1348,7 +1348,10 @@ def staff_bank_create(request, staff_id):
             messages.success(request, '銀行情報を登録しました。')
             return redirect('staff:staff_bank_detail', staff_id=staff.pk)
     else:
-        form = StaffBankForm()
+        initial_data = {
+            'account_holder': f'{staff.name_kana_last} {staff.name_kana_first}'.strip()
+        }
+        form = StaffBankForm(initial=initial_data)
 
     context = {
         'staff': staff,
@@ -1374,7 +1377,11 @@ def staff_bank_edit(request, staff_id):
             messages.success(request, '銀行情報を更新しました。')
             return redirect('staff:staff_bank_detail', staff_id=staff.pk)
     else:
-        form = StaffBankForm(instance=bank)
+        initial_data = {
+            'bank_name': bank.bank_name,
+            'branch_name': bank.branch_name,
+        }
+        form = StaffBankForm(instance=bank, initial=initial_data)
 
     context = {
         'staff': staff,

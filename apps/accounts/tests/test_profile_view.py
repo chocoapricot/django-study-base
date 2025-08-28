@@ -18,8 +18,8 @@ class ProfileViewTest(TestCase):
         )
         self.client = Client()
         
-        # 15件のログイン履歴を作成（10件制限のテスト用）
-        for i in range(15):
+        # 25件のログイン履歴を作成（20件制限のテスト用）
+        for i in range(25):
             AppLog.objects.create(
                 user=self.user,
                 action='login',
@@ -29,22 +29,22 @@ class ProfileViewTest(TestCase):
                 timestamp=timezone.now()
             )
     
-    def test_login_history_limit_to_10(self):
-        """ログイン履歴が10件に制限されることをテスト"""
+    def test_login_history_limit_to_20(self):
+        """ログイン履歴が20件に制限されることをテスト"""
         self.client.login(username='testuser', password='testpass123')
         response = self.client.get(reverse('accounts:profile'))
         
         self.assertEqual(response.status_code, 200)
         self.assertIn('login_history', response.context)
         
-        # ログイン履歴が10件以下であることを確認
+        # ログイン履歴が20件以下であることを確認
         login_history = response.context['login_history']
-        self.assertLessEqual(len(login_history), 10)
+        self.assertLessEqual(len(login_history), 20)
         
-        # 実際に15件作成したが、10件のみ取得されることを確認
+        # 実際に25件作成したが、20件のみ取得されることを確認
         total_login_logs = AppLog.objects.filter(user=self.user, action='login').count()
-        self.assertGreaterEqual(total_login_logs, 10)  # 15件以上あることを確認
-        self.assertEqual(len(login_history), 10)  # 取得は10件のみ
+        self.assertGreaterEqual(total_login_logs, 20)  # 25件以上あることを確認
+        self.assertEqual(len(login_history), 20)  # 取得は20件のみ
     
     def test_login_history_order(self):
         """ログイン履歴が新しい順に並んでいることをテスト"""

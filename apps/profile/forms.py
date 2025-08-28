@@ -180,6 +180,16 @@ class StaffProfileInternationalForm(forms.ModelForm):
 
 class StaffBankProfileForm(forms.ModelForm):
     """スタッフ銀行プロフィールフォーム"""
+    bank_name = forms.CharField(
+        label='銀行名',
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': '銀行名を入力'})
+    )
+    branch_name = forms.CharField(
+        label='支店名',
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': '支店名を入力'})
+    )
     account_type = forms.ChoiceField(
         choices=[],
         label='口座種別',
@@ -209,6 +219,12 @@ class StaffBankProfileForm(forms.ModelForm):
         self.fields['account_type'].required = True
         self.fields['account_number'].required = True
         self.fields['account_holder'].required = True
+
+    def save(self, commit=True):
+        # bank_name と branch_name をDBに保存しないようにする
+        self.cleaned_data.pop('bank_name', None)
+        self.cleaned_data.pop('branch_name', None)
+        return super().save(commit)
 
 
 class StaffDisabilityProfileForm(forms.ModelForm):
