@@ -1,0 +1,57 @@
+{% extends 'common/_base.html' %}
+{% block content %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">担当者基本情報</div>
+    <div class="card-body">
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-4">
+                <h4>{{ object.name }}</h4>
+            </div>
+        </div>
+
+        <div class="row align-items-center">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>所属部署</strong>
+            </div>
+            <div class="col-sm-4">
+                {{ object.department.name|default:"未設定" }}
+            </div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>役職</strong>
+            </div>
+            <div class="col-sm-4">
+                {{ object.position|default:"未設定" }}
+            </div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>電話番号</strong>
+            </div>
+            <div class="col-sm-4">
+                {{ object.phone_number|default:"未設定" }}
+            </div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>Email</strong>
+            </div>
+            <div class="col-sm-4">
+                {{ object.email|default:"未設定" }}
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-start">
+            <a href="{% url 'company:company_user_edit' object.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
+            <a href="{% url 'company:company_user_delete' object.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+            <a href="{% url 'company:company_detail' %}" class="btn btn-sm btn-secondary me-2">会社情報に戻る</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
