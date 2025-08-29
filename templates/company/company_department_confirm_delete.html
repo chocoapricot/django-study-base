@@ -13,25 +13,33 @@
             以下の部署を削除しますか？この操作は取り消せません。
         </div>
         
-        <div class="row">
-            <div class="col-md-6">
-                <table class="table table-borderless">
-                    <tr>
-                        <th style="width: 30%;">部署名</th>
-                        <td>{{ department.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>部署コード</th>
-                        <td>{{ department.department_code }}</td>
-                    </tr>
-                    <tr>
-                        <th>会計コード</th>
-                        <td>{{ department.accounting_code|default:"未設定" }}</td>
-                    </tr>
-                </table>
+        <div class="row mb-3">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>部署名</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ department.name }}
             </div>
         </div>
         
+        <div class="row mb-3">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>部署コード</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ department.department_code }}
+            </div>
+        </div>
+        
+        <div class="row mb-3">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>会計コード</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ department.accounting_code|default:"未設定" }}
+            </div>
+        </div>
+
         <form method="post" class="mt-4">
             {% csrf_token %}
             <button type="submit" class="btn btn-sm btn-dark">削除</button>

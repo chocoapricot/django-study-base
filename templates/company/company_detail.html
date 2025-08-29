@@ -70,9 +70,57 @@
     </div>
 </div>
 
-{% include 'company/_department_list_table.html' with show_all_link=True %}
+<!-- 組織一覧と担当者一覧を左右に配置 -->
+<div class="row mt-2 mb-4">
+    <!-- 組織一覧（左側） -->
+    <div class="col-md-4">
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                部署一覧
+                <a href="{% url 'company:department_create' %}" class="btn btn-sm btn-primary">部署追加</a>
+            </div>
+            <div class="card-body mb-0" style="margin-bottom: 2rem;">
+                <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+                    <thead>
+                        <tr>
+                            <th>部署コード</th>
+                            <th>部署名</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for department in departments %}
+                        <tr{% if current_department and department.pk == current_department.pk %} class="table-warning"{% endif %}{% if not department.is_valid_on_date %} style="opacity: 0.6;"{% endif %}>
+                            <td>{{ department.department_code }}</td>
+                            <td><a href="{% url 'company:department_detail' department.pk %}">{{ department.name }}</a></td>
+                            <td>
+                                <a href="{% url 'company:department_edit' department.pk %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="編集">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'company:department_delete' department.pk %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="削除">
+                                    <i class="bi bi-x"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="6">部署が登録されていません</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if show_all_link and departments.count > 5 %}
+                <div class="text-center">
+                    <a href="{% url 'company:department_list' %}" class="btn btn-link">全て表示</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
+    <!-- 担当者一覧（右側） -->
+    <div class="col-md-8">
 {% include 'company/_user_list_table.html' %}
+    </div>
+</div>
 
 <!-- 変更履歴（共通テンプレート使用） -->
 {% url 'company:change_history_list' as company_history_url %}
