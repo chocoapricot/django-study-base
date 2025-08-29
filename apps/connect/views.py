@@ -326,9 +326,16 @@ def connect_client_unapprove(request, pk):
 
 
 @login_required
-def connect_combined_list(request):
-    """スタッフ・クライアント接続一覧"""
-    # 管理者の場合は全ての接続、そうでない場合は自分宛の接続を表示
+def connect_index(request):
+    """接続管理のトップページ"""
+    # ログインユーザー宛の申請数を取得
+    staff_pending_count = ConnectStaff.objects.filter(email=request.user.email, status='pending').count()
+    staff_approved_count = ConnectStaff.objects.filter(email=request.user.email, status='approved').count()
+
+    client_pending_count = ConnectClient.objects.filter(email=request.user.email, status='pending').count()
+    client_approved_count = ConnectClient.objects.filter(email=request.user.email, status='approved').count()
+
+    # 結合リストの取得
     if request.user.is_staff:
         staff_connections = ConnectStaff.objects.all()
         client_connections = ConnectClient.objects.all()
@@ -352,7 +359,6 @@ def connect_combined_list(request):
         staff_connections = staff_connections.filter(status=status_filter)
         client_connections = client_connections.filter(status=status_filter)
 
-    # タイプを付与してリスト化
     staff_list = list(staff_connections)
     for item in staff_list:
         item.type = 'staff'
@@ -398,7 +404,7 @@ def connect_index(request):
     # ログインユーザー宛の申請数を取得
     staff_pending_count = ConnectStaff.objects.filter(email=request.user.email, status='pending').count()
     staff_approved_count = ConnectStaff.objects.filter(email=request.user.email, status='approved').count()
-    
+
     client_pending_count = ConnectClient.objects.filter(email=request.user.email, status='pending').count()
     client_approved_count = ConnectClient.objects.filter(email=request.user.email, status='approved').count()
 
