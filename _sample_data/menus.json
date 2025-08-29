@@ -288,7 +288,7 @@
         "parent": null,
         "level": 0,
         "exact_match": true,
-        "required_permission": null,
+        "required_permission": "profile.view_staffprofile",
         "disp_seq": 10,
         "active": true
     }
