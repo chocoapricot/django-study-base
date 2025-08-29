@@ -1,0 +1,100 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<style>
+.icon-square {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.5rem;
+  border-radius: .75rem;
+}
+</style>
+{% endblock %}
+
+{% block title %}プロフィールメニュー{% endblock %}
+
+{% block content %}
+<div class="container px-4 py-5" id="hanging-icons">
+    <h2 class="pb-2 border-bottom">プロフィール登録</h2>
+    <p>各項目を登録・更新してください。登録済みの項目にはチェックマークが表示されます。</p>
+    <div class="row g-4 py-5 row-cols-1 row-cols-md-2 row-cols-lg-3">
+      <div class="col d-flex align-items-start">
+        <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+          <i class="bi bi-person-vcard"></i>
+        </div>
+        <div>
+          <h3 class="fs-4">基本情報 {% if has_staff %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
+          <p>氏名、住所、連絡先など</p>
+          <a href="{% url 'profile:staff_detail' %}" class="btn btn-sm btn-primary">
+            登録・編集
+          </a>
+        </div>
+      </div>
+      <div class="col d-flex align-items-start">
+        <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+            <i class="bi bi-credit-card-2-front"></i>
+        </div>
+        <div>
+          <h3 class="fs-4">マイナンバー {% if has_mynumber %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
+          <p>マイナンバーを登録</p>
+          <a href="{% url 'profile:mynumber_detail' %}" class="btn btn-sm btn-primary">
+            登録・編集
+          </a>
+        </div>
+      </div>
+      <div class="col d-flex align-items-start">
+        <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+            <i class="bi bi-bank"></i>
+        </div>
+        <div>
+          <h3 class="fs-4">銀行口座 {% if has_bank %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
+          <p>給与振込先の銀行口座</p>
+          <a href="{% url 'profile:bank_detail' %}" class="btn btn-sm btn-primary">
+            登録・編集
+          </a>
+        </div>
+      </div>
+      <div class="col d-flex align-items-start">
+        <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+            <i class="bi bi-telephone-outbound"></i>
+        </div>
+        <div>
+          <h3 class="fs-4">連絡先 {% if has_contact %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
+          <p>緊急連絡先など</p>
+          <a href="{% url 'profile:contact_detail' %}" class="btn btn-sm btn-primary">
+            登録・編集
+          </a>
+        </div>
+      </div>
+      <div class="col d-flex align-items-start">
+        <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+            <i class="bi bi-globe-americas"></i>
+        </div>
+        <div>
+          <h3 class="fs-4">外国籍情報 {% if has_international %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
+          <p>在留資格など</p>
+          <a href="{% url 'profile:international_detail' %}" class="btn btn-sm btn-primary">
+            登録・編集
+          </a>
+        </div>
+      </div>
+      <div class="col d-flex align-items-start">
+        <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+            <i class="bi bi-person-wheelchair"></i>
+        </div>
+        <div>
+          <h3 class="fs-4">障害者情報 {% if has_disability %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
+          <p>障害者手帳など</p>
+          <a href="{% url 'profile:disability_detail' %}" class="btn btn-sm btn-primary">
+            登録・編集
+          </a>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}

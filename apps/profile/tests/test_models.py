@@ -22,7 +22,7 @@ class StaffProfileModelTests(TestCase):
         client = Client()
         client.force_login(user)
         # プロフィール未作成状態で新規作成画面へ
-        url = reverse('profile:edit')
+        url = reverse('profile:staff_edit')
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         form = response.context['form']
@@ -142,7 +142,7 @@ class StaffProfileViewTest(TestCase):
     
     def test_profile_detail_view_no_profile(self):
         """プロフィール詳細ビュー（プロフィール未作成）のテスト"""
-        response = self.client.get(reverse('profile:detail'))
+        response = self.client.get(reverse('profile:staff_detail'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'プロフィールが登録されていません')
     
@@ -156,7 +156,7 @@ class StaffProfileViewTest(TestCase):
             name_kana_first='タロウ',
             email=self.user.email
         )
-        response = self.client.get(reverse('profile:detail'))
+        response = self.client.get(reverse('profile:staff_detail'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '田中')
         self.assertContains(response, '太郎')
@@ -165,7 +165,7 @@ class StaffProfileViewTest(TestCase):
     
     def test_profile_edit_view_get(self):
         """プロフィール編集ビュー（GET）のテスト"""
-        response = self.client.get(reverse('profile:edit'))
+        response = self.client.get(reverse('profile:staff_edit'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'プロフィール作成')
     
@@ -185,7 +185,7 @@ class StaffProfileViewTest(TestCase):
             'phone': '090-1234-5678',
         }
         
-        response = self.client.post(reverse('profile:edit'), data)
+        response = self.client.post(reverse('profile:staff_edit'), data)
         if hasattr(response, 'context') and response.context and 'form' in response.context:
             print('form.errors:', response.context['form'].errors)
         self.assertEqual(response.status_code, 302)  # リダイレクト
@@ -222,7 +222,7 @@ class StaffProfileViewTest(TestCase):
             'phone': '090-1234-5678',
         }
         
-        response = self.client.post(reverse('profile:edit'), data)
+        response = self.client.post(reverse('profile:staff_edit'), data)
         self.assertEqual(response.status_code, 302)  # リダイレクト
         
         # プロフィールが更新されたことを確認
@@ -241,7 +241,7 @@ class StaffProfileViewTest(TestCase):
             email=self.user.email
         )
         
-        response = self.client.get(reverse('profile:delete'))
+        response = self.client.get(reverse('profile:staff_delete'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '田中 太郎')
         self.assertContains(response, 'この操作は取り消せません')
@@ -257,7 +257,7 @@ class StaffProfileViewTest(TestCase):
             email=self.user.email
         )
         
-        response = self.client.post(reverse('profile:delete'))
+        response = self.client.post(reverse('profile:staff_delete'))
         self.assertEqual(response.status_code, 302)  # リダイレクト
         
         # プロフィールが削除されたことを確認
@@ -269,8 +269,8 @@ class StaffProfileViewTest(TestCase):
         
         # 各ビューにアクセスしてログインページにリダイレクトされることを確認
         urls = [
-            reverse('profile:detail'),
-            reverse('profile:edit'),
+            reverse('profile:staff_detail'),
+            reverse('profile:staff_edit'),
         ]
         
         for url in urls:

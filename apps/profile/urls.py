@@ -4,9 +4,12 @@ from . import views, views_profile
 app_name = 'profile'
 
 urlpatterns = [
-    path('', views.profile_detail, name='detail'),
-    path('edit/', views.profile_edit, name='edit'),
-    path('delete/', views.profile_delete, name='delete'),
+    path('', views.profile_index, name='index'),
+
+    # スタッフ情報
+    path('staff/', views.profile_detail, name='staff_detail'),
+    path('staff/edit/', views.profile_edit, name='staff_edit'),
+    path('staff/delete/', views.profile_delete, name='staff_delete'),
 
     # マイナンバー
     path('mynumber/', views.mynumber_detail, name='mynumber_detail'),
