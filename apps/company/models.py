@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
@@ -150,17 +149,25 @@ class Company(MyModel):
 
 
 class CompanyUser(MyModel):
-    """
-    会社の担当者を管理するモデル
-    """
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name="会社")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="担当者")
+    """自社の担当者情報を管理するモデル。"""
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='users', verbose_name='会社')
+    department = models.ForeignKey(CompanyDepartment, on_delete=models.SET_NULL, blank=True, null=True, related_name='users', verbose_name='所属部署')
+    name_last = models.CharField('姓', max_length=50)
+    name_first = models.CharField('名', max_length=50)
+    position = models.CharField('役職', max_length=50, blank=True, null=True)
+    phone_number = models.CharField('電話番号', max_length=20, blank=True, null=True)
+    email = models.EmailField('メールアドレス', blank=True, null=True)
+    display_order = models.PositiveIntegerField('表示順', default=0)
 
     class Meta:
         db_table = 'apps_company_user'
-        verbose_name = '会社担当者'
-        verbose_name_plural = '会社担当者'
-        unique_together = ('company', 'user')
+        verbose_name = '自社担当者'
+        verbose_name_plural = '自社担当者'
+        ordering = ['display_order', 'name_last', 'name_first']
+
+    @property
+    def name(self):
+        return f"{self.name_last} {self.name_first}"
 
     def __str__(self):
-        return f"{self.user.username}"
+        return self.name

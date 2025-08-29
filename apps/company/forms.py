@@ -105,9 +105,28 @@ class CompanyDepartmentForm(forms.ModelForm):
         return False
 
 class CompanyUserForm(forms.ModelForm):
+    def clean_phone_number(self):
+        value = self.cleaned_data.get('phone_number', '')
+        import re
+        if value and not re.fullmatch(r'^[0-9\-]+$', value):
+            raise forms.ValidationError('電話番号は半角数字とハイフンのみ入力してください。')
+        return value
+
     class Meta:
         model = CompanyUser
-        fields = ['user']
+        fields = ['department', 'name_last', 'name_first', 'position', 'phone_number', 'email', 'display_order']
         widgets = {
-            'user': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'department': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'name_last': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'name_first': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'position': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'phone_number': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm',
+                'inputmode': 'numeric',
+                'pattern': r'[0-9\-]*',
+                'style': 'ime-mode:disabled;',
+                'autocomplete': 'off',
+            }),
+            'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
         }

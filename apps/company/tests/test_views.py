@@ -155,35 +155,78 @@ class DepartmentViewTest(TestCase):
 
 
 class CompanyUserViewTest(TestCase):
-    """会社担当者ビューのテスト"""
+    """自社担当者ビューのテスト"""
 
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(
             username='testuser',
-            email='test@example.com',
-            password='testpass123',
-            is_superuser=True # for permissions
+            password='testpassword',
+            is_superuser=True
         )
+        self.client.login(username='testuser', password='testpassword')
+
         self.company = Company.objects.create(name="テスト株式会社")
-        self.company_user = CompanyUser.objects.create(company=self.company, user=self.user)
+        self.department = CompanyDepartment.objects.create(name="テスト部署")
+        self.company_user = CompanyUser.objects.create(
+            company=self.company,
+            name_last="山田",
+            name_first="太郎",
+        )
+        self.create_url = reverse('company:company_user_create')
+        self.edit_url = reverse('company:company_user_edit', kwargs={'pk': self.company_user.pk})
+        self.delete_url = reverse('company:company_user_delete', kwargs={'pk': self.company_user.pk})
+        self.detail_url = reverse('company:company_detail')
 
-    def test_company_user_create_view_requires_login(self):
-        """担当者作成ビューのログイン必須テスト"""
-        response = self.client.get(reverse('company:company_user_create'))
-        self.assertEqual(response.status_code, 302)
+    def test_create_view_get(self):
+        """作成ビューのGETアクセス"""
+        response = self.client.get(self.create_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "担当者作成")
 
-    def test_company_user_create_post(self):
-        """担当者作成のPOSTテスト"""
-        self.client.login(username='testuser', password='testpass123')
-        another_user = User.objects.create_user(username='anotheruser', password='testpassword')
-        response = self.client.post(reverse('company:company_user_create'), {'user': another_user.pk})
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(CompanyUser.objects.filter(user=another_user).exists())
+    def test_create_view_post(self):
+        """作成ビューのPOST"""
+        data = {
+            'department': self.department.pk,
+            'name_last': '鈴木',
+            'name_first': '一郎',
+            'position': '係長',
+            'display_order': 10,
+        }
+        response = self.client.post(self.create_url, data)
+        self.assertRedirects(response, self.detail_url)
+        self.assertTrue(CompanyUser.objects.filter(name_last='鈴木').exists())
 
-    def test_company_user_delete_post(self):
-        """担当者削除のPOSTテスト"""
-        self.client.login(username='testuser', password='testpass123')
-        response = self.client.post(reverse('company:company_user_delete', kwargs={'pk': self.company_user.pk}))
-        self.assertEqual(response.status_code, 302)
+    def test_edit_view_get(self):
+        """編集ビューのGETアクセス"""
+        response = self.client.get(self.edit_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "担当者編集")
+
+    def test_edit_view_post(self):
+        """編集ビューのPOST"""
+        data = {
+            'department': self.department.pk,
+            'name_last': '山田',
+            'name_first': '太郎',
+            'position': '本部長', # Change position
+            'phone_number': '',
+            'email': '',
+            'display_order': 0,
+        }
+        response = self.client.post(self.edit_url, data)
+        self.assertRedirects(response, self.detail_url)
+        self.company_user.refresh_from_db()
+        self.assertEqual(self.company_user.position, '本部長')
+
+    def test_delete_view_get(self):
+        """削除ビューのGETアクセス"""
+        response = self.client.get(self.delete_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "本当に削除しますか？")
+
+    def test_delete_view_post(self):
+        """削除ビューのPOST"""
+        response = self.client.post(self.delete_url)
+        self.assertRedirects(response, self.detail_url)
         self.assertFalse(CompanyUser.objects.filter(pk=self.company_user.pk).exists())

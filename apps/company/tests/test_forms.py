@@ -1,9 +1,6 @@
 from django.test import TestCase
 from ..forms import CompanyForm, CompanyUserForm
-from ..models import Company
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
+from ..models import Company, CompanyDepartment
 
 class CompanyFormTest(TestCase):
     """会社情報フォームのテスト"""
@@ -70,21 +67,40 @@ class CompanyFormTest(TestCase):
 
 
 class CompanyUserFormTest(TestCase):
-    """会社担当者フォームのテスト"""
+    """自社担当者フォームのテスト"""
 
     def setUp(self):
         self.company = Company.objects.create(name="テスト株式会社")
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.department = CompanyDepartment.objects.create(name="テスト部署")
+        self.valid_data = {
+            'department': self.department.pk,
+            'name_last': '田中',
+            'name_first': '角栄',
+            'position': '課長',
+            'phone_number': '090-1234-5678',
+            'email': 'tanaka@example.com',
+            'display_order': 1,
+        }
 
     def test_valid_form(self):
         """有効なフォームのテスト"""
-        form_data = {'user': self.user.pk}
-        form = CompanyUserForm(data=form_data)
+        form = CompanyUserForm(data=self.valid_data)
         self.assertTrue(form.is_valid())
 
-    def test_invalid_form_no_user(self):
-        """ユーザーがいない場合の無効なフォームのテスト"""
-        form_data = {'user': 999} # 存在しないユーザー
-        form = CompanyUserForm(data=form_data)
+    def test_invalid_phone_number(self):
+        """無効な電話番号のテスト"""
+        invalid_data = self.valid_data.copy()
+        invalid_data['phone_number'] = '090-1234-ABCD' # Invalid characters
+        form = CompanyUserForm(data=invalid_data)
         self.assertFalse(form.is_valid())
-        self.assertIn('user', form.errors)
+        self.assertIn('phone_number', form.errors)
+
+    def test_name_required(self):
+        """氏名が必須であることのテスト"""
+        invalid_data = self.valid_data.copy()
+        del invalid_data['name_last']
+        del invalid_data['name_first']
+        form = CompanyUserForm(data=invalid_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('name_last', form.errors)
+        self.assertIn('name_first', form.errors)
