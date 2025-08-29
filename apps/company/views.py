@@ -256,4 +256,8 @@ def company_user_delete(request, pk):
 def company_user_detail(request, pk):
     company_user = get_object_or_404(CompanyUser, pk=pk)
     log_view_detail(request.user, company_user)
-    return render(request, 'company/user_detail.html', {'object': company_user})
+    company_users = CompanyUser.objects.filter(company=company_user.company)
+    return render(request, 'company/user_detail.html', {
+        'object': company_user,
+        'company_users': company_users
+    })
