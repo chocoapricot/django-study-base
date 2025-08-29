@@ -39,7 +39,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr class="{% if not current_international or current_international.residence_card_number != international_request.profile_international.residence_card_number %}table-primary{% endif %}">
                         <td><strong>在留カード番号</strong></td>
                         <td>
                             {% if current_international %}
@@ -56,7 +56,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if not current_international or current_international.residence_status != international_request.profile_international.residence_status %}table-primary{% endif %}">
                         <td><strong>在留資格</strong></td>
                         <td>
                             {% if current_international %}
@@ -73,7 +73,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if not current_international or current_international.residence_period_from != international_request.profile_international.residence_period_from %}table-primary{% endif %}">
                         <td><strong>在留許可開始日</strong></td>
                         <td>
                             {% if current_international %}
@@ -90,7 +90,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if not current_international or current_international.residence_period_to != international_request.profile_international.residence_period_to %}table-primary{% endif %}">
                         <td><strong>在留期限</strong></td>
                         <td>
                             {% if current_international %}
