@@ -10,7 +10,7 @@
             {% if form.errors %}
             <div class="alert alert-dismissible alert-warning">
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                {{ form.errors }}
+                {{ form.non_field_errors }}
             </div>
             {% endif %}
 
@@ -18,18 +18,33 @@
                 <label for="{{ form.department.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.department.label }}</label>
                 <div class="col-sm-8">
                     {{ form.department }}
+                    {% if form.department.errors %}<div class="text-danger">{{ form.department.errors }}</div>{% endif %}
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <label for="{{ form.name_last.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.name_last.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.name_last }}
+                    {% if form.name_last.errors %}<div class="text-danger">{{ form.name_last.errors }}</div>{% endif %}
+                </div>
+                <label for="{{ form.name_first.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.name_first.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.name_first }}
+                    {% if form.name_first.errors %}<div class="text-danger">{{ form.name_first.errors }}</div>{% endif %}
                 </div>
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label class="col-sm-2 col-form-label text-start text-md-end">氏名</label>
+                <label for="{{ form.name_kana_last.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.name_kana_last.label }}</label>
                 <div class="col-sm-4">
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text">{{ form.name_last.label }}</span>
-                        {{ form.name_last }}
-                        <span class="input-group-text">{{ form.name_first.label }}</span>
-                        {{ form.name_first }}
-                    </div>
+                    {{ form.name_kana_last }}
+                    {% if form.name_kana_last.errors %}<div class="text-danger">{{ form.name_kana_last.errors }}</div>{% endif %}
+                </div>
+                <label for="{{ form.name_kana_first.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.name_kana_first.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.name_kana_first }}
+                    {% if form.name_kana_first.errors %}<div class="text-danger">{{ form.name_kana_first.errors }}</div>{% endif %}
                 </div>
             </div>
 
@@ -37,13 +52,15 @@
                 <label for="{{ form.position.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.position.label }}</label>
                 <div class="col-sm-4">
                     {{ form.position }}
+                    {% if form.position.errors %}<div class="text-danger">{{ form.position.errors }}</div>{% endif %}
                 </div>
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.phone_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.phone_number.label }}</label>
+                <label for="{{ form.phone_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.phone_number.label }} {% my_help_preset "phone_number" %}</label>
                 <div class="col-sm-4">
                     {{ form.phone_number }}
+                    {% if form.phone_number.errors %}<div class="text-danger">{{ form.phone_number.errors }}</div>{% endif %}
                 </div>
             </div>
 
@@ -51,6 +68,7 @@
                 <label for="{{ form.email.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.email.label }}</label>
                 <div class="col-sm-8">
                     {{ form.email }}
+                    {% if form.email.errors %}<div class="text-danger">{{ form.email.errors }}</div>{% endif %}
                 </div>
             </div>
 
@@ -58,6 +76,7 @@
                 <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.display_order.label }}</label>
                 <div class="col-sm-2">
                     {{ form.display_order }}
+                    {% if form.display_order.errors %}<div class="text-danger">{{ form.display_order.errors }}</div>{% endif %}
                 </div>
             </div>
 

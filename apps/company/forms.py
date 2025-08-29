@@ -104,7 +104,24 @@ class CompanyDepartmentForm(forms.ModelForm):
         
         return False
 
+from apps.common.forms.fields import to_fullwidth_katakana, validate_kana
+
+class DepartmentChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        period_str = ""
+        if obj.valid_from or obj.valid_to:
+            start = obj.valid_from.strftime('%Y/%m/%d') if obj.valid_from else '無期限'
+            end = obj.valid_to.strftime('%Y/%m/%d') if obj.valid_to else '無期限'
+            period_str = f" ({start}～{end})"
+        return f"{obj.name}{period_str}"
+
 class CompanyUserForm(forms.ModelForm):
+    department = DepartmentChoiceField(
+        queryset=CompanyDepartment.objects.none(),
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
+        label='所属部署',
+    )
+
     def clean_phone_number(self):
         value = self.cleaned_data.get('phone_number', '')
         import re
@@ -112,13 +129,38 @@ class CompanyUserForm(forms.ModelForm):
             raise forms.ValidationError('電話番号は半角数字とハイフンのみ入力してください。')
         return value
 
+    def clean_name_kana_last(self):
+        value = self.cleaned_data.get('name_kana_last', '')
+        if not value:
+            return value
+        validate_kana(value)
+        value = to_fullwidth_katakana(value)
+        return value
+
+    def clean_name_kana_first(self):
+        value = self.cleaned_data.get('name_kana_first', '')
+        if not value:
+            return value
+        validate_kana(value)
+        value = to_fullwidth_katakana(value)
+        return value
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['department'].queryset = CompanyDepartment.get_valid_departments()
+
     class Meta:
         model = CompanyUser
-        fields = ['department', 'name_last', 'name_first', 'position', 'phone_number', 'email', 'display_order']
+        fields = [
+            'department', 'name_last', 'name_first', 'name_kana_last', 'name_kana_first',
+            'position', 'phone_number', 'email', 'display_order'
+        ]
         widgets = {
             'department': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'name_last': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'name_first': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'name_kana_last': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'name_kana_first': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'position': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'phone_number': forms.TextInput(attrs={
                 'class': 'form-control form-control-sm',
