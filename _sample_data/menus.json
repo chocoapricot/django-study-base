@@ -330,7 +330,7 @@
         "parent": 21,
         "level": 1,
         "exact_match": true,
-        "required_permission": "profile.view_staffmynumber",
+        "required_permission": "profile.view_staffprofilemynumber",
         "disp_seq": 16,
         "active": true
     }
