@@ -16,12 +16,12 @@
 </style>
 {% endblock %}
 
-{% block title %}プロフィールメニュー{% endblock %}
+{% block title %}マイプロフィール{% endblock %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4">
   <div class="card-header">
-    プロフィール登録
+    マイプロフィール
   </div>
     <div class="card-body" id="hanging-icons">
       <p>各項目を登録・更新してください。登録済みの項目にはチェックマークが表示されます。</p>
@@ -33,7 +33,7 @@
           <div>
             <h3 class="fs-4">基本情報 {% if has_staff %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
             <p>氏名、住所、連絡先など</p>
-            <a href="{% url 'profile:staff_detail' %}" class="btn btn-sm btn-primary">
+            <a href="{% url 'profile:staff_edit' %}" class="btn btn-sm btn-primary">
               登録・編集
             </a>
           </div>
