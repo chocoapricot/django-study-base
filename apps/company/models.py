@@ -154,6 +154,8 @@ class CompanyUser(MyModel):
     department = models.ForeignKey(CompanyDepartment, on_delete=models.SET_NULL, blank=True, null=True, related_name='users', verbose_name='所属部署')
     name_last = models.CharField('姓', max_length=50)
     name_first = models.CharField('名', max_length=50)
+    name_kana_last = models.CharField('姓カナ', max_length=50, blank=True, null=True)
+    name_kana_first = models.CharField('名カナ', max_length=50, blank=True, null=True)
     position = models.CharField('役職', max_length=50, blank=True, null=True)
     phone_number = models.CharField('電話番号', max_length=20, blank=True, null=True)
     email = models.EmailField('メールアドレス', blank=True, null=True)
