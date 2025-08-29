@@ -51,6 +51,7 @@ def connect_staff_list(request):
         'companies': companies,
         'search_query': search_query,
         'status_filter': status_filter,
+        'show_pagination': True,
     })
 
 
@@ -246,6 +247,7 @@ def connect_client_list(request):
         'companies': companies,
         'search_query': search_query,
         'status_filter': status_filter,
+        'show_pagination': True,
     })
 
 
@@ -324,6 +326,73 @@ def connect_client_unapprove(request, pk):
 
 
 @login_required
+def connect_combined_list(request):
+    """スタッフ・クライアント接続一覧"""
+    # 管理者の場合は全ての接続、そうでない場合は自分宛の接続を表示
+    if request.user.is_staff:
+        staff_connections = ConnectStaff.objects.all()
+        client_connections = ConnectClient.objects.all()
+    else:
+        staff_connections = ConnectStaff.objects.filter(email=request.user.email)
+        client_connections = ConnectClient.objects.filter(email=request.user.email)
+
+    # 検索機能
+    search_query = request.GET.get('q', '')
+    if search_query:
+        staff_connections = staff_connections.filter(
+            Q(corporate_number__icontains=search_query)
+        )
+        client_connections = client_connections.filter(
+            Q(corporate_number__icontains=search_query)
+        )
+
+    # ステータスフィルター
+    status_filter = request.GET.get('status', '')
+    if status_filter:
+        staff_connections = staff_connections.filter(status=status_filter)
+        client_connections = client_connections.filter(status=status_filter)
+
+    # タイプを付与してリスト化
+    staff_list = list(staff_connections)
+    for item in staff_list:
+        item.type = 'staff'
+
+    client_list = list(client_connections)
+    for item in client_list:
+        item.type = 'client'
+
+    # 結合してソート
+    combined_list = sorted(
+        staff_list + client_list,
+        key=lambda x: x.created_at,
+        reverse=True
+    )
+
+    # ページネーション
+    paginator = Paginator(combined_list, 20)
+    page_number = request.GET.get('page')
+    connections = paginator.get_page(page_number)
+
+    # 会社情報を取得（法人番号から）
+    from apps.company.models import Company
+    companies = {}
+    for conn in connections:
+        if conn.corporate_number not in companies:
+            try:
+                company = Company.objects.get(corporate_number=conn.corporate_number)
+                companies[conn.corporate_number] = company
+            except Company.DoesNotExist:
+                companies[conn.corporate_number] = None
+
+    return render(request, 'connect/combined_list.html', {
+        'connections': connections,
+        'companies': companies,
+        'search_query': search_query,
+        'status_filter': status_filter,
+    })
+
+
+@login_required
 def connect_index(request):
     """接続管理のトップページ"""
     # ログインユーザー宛の申請数を取得
@@ -332,10 +401,45 @@ def connect_index(request):
     
     client_pending_count = ConnectClient.objects.filter(email=request.user.email, status='pending').count()
     client_approved_count = ConnectClient.objects.filter(email=request.user.email, status='approved').count()
+
+    # 結合リストの取得
+    if request.user.is_staff:
+        staff_connections = ConnectStaff.objects.all()
+        client_connections = ConnectClient.objects.all()
+    else:
+        staff_connections = ConnectStaff.objects.filter(email=request.user.email)
+        client_connections = ConnectClient.objects.filter(email=request.user.email)
+
+    staff_list = list(staff_connections)
+    for item in staff_list:
+        item.type = 'staff'
+
+    client_list = list(client_connections)
+    for item in client_list:
+        item.type = 'client'
+
+    combined_list = sorted(
+        staff_list + client_list,
+        key=lambda x: x.created_at,
+        reverse=True
+    )
+
+    # 会社情報を取得
+    from apps.company.models import Company
+    companies = {}
+    for conn in combined_list[:10]:
+        if conn.corporate_number not in companies:
+            try:
+                company = Company.objects.get(corporate_number=conn.corporate_number)
+                companies[conn.corporate_number] = company
+            except Company.DoesNotExist:
+                companies[conn.corporate_number] = None
     
     return render(request, 'connect/index.html', {
         'staff_pending_count': staff_pending_count,
         'staff_approved_count': staff_approved_count,
         'client_pending_count': client_pending_count,
         'client_approved_count': client_approved_count,
+        'combined_list': combined_list[:10],
+        'companies': companies,
     })

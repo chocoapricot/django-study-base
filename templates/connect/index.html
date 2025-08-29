@@ -1,10 +1,20 @@
 {% extends 'common/_base.html' %}
+{% load humanize %}
+{% load connect_tags %}
 
 {% block title %}接続管理{% endblock %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header">接続管理</div>
+    <div class="card-header">全ての接続申請</div>
+    <div class="card-body">
+        {% include 'connect/combined_list.html' with connections=combined_list show_pagination=False %}
+    </div>
+</div>
+
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">スタッフ接続管理</div>
     <div class="card-body">
         <p>あなた宛の接続申請を管理できます。</p>
         
@@ -41,7 +51,7 @@
 </div>
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header">接続管理</div>
+    <div class="card-header">クライアント接続管理</div>
     <div class="card-body">
         <p>あなた宛の接続申請を管理できます。</p>
         
