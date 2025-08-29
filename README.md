@@ -80,6 +80,10 @@ django-study-base/
 │   └── api/                # REST API
 ├── config/                 # プロジェクト設定
 ├── media/                  # アップロードされたファイル
+│   ├── client_files/       # クライアントアップロードファイル
+│   │   └── クライアントID/  # 各クライアントごとにフォルダを持ちその中に保存（添付ファイル）
+│   └── staff_files/        # スタッフアップロードファイル
+│       └── スタッフID/      # 各スタッフごとにフォルダを持ちその中に保存（添付ファイル、顔写真：スタッフID.jpg）
 ├── statics/                # 静的ファイル
 ├── templates/              # HTMLテンプレート
 └── requirements.txt        # 依存関係
