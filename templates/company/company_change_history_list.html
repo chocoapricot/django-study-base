@@ -1,6 +1,8 @@
 {% extends 'common/_base.html' %}
 {% block content %}
 
+{% include 'company/_company_info_card.html' %}
+
 <!-- 共通テンプレートを使用して変更履歴を表示（ページネーション・戻るボタン込み） -->
 {% url 'company:company_detail' as company_detail_url %}
 {% with change_logs=change_logs change_logs_count=change_logs_count history_url='' title='変更履歴一覧' back_url=company_detail_url show_full_content=True %}

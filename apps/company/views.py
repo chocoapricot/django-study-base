@@ -87,7 +87,7 @@ def department_detail(request, pk):
     # 全部署一覧を取得
     departments = CompanyDepartment.objects.all().order_by('display_order', 'name')
     
-    return render(request, 'company/department_detail.html', {
+    return render(request, 'company/company_department_detail.html', {
         'department': department,
         'departments': departments,
         'current_department': department
@@ -108,7 +108,7 @@ def department_create(request):
     
     departments = CompanyDepartment.objects.all().order_by('display_order', 'name')
 
-    return render(request, 'company/department_form.html', {
+    return render(request, 'company/company_department_form.html', {
         'form': form,
         'title': '部署作成',
         'departments': departments,
@@ -135,7 +135,7 @@ def department_edit(request, pk):
     # 全部署一覧を取得
     departments = CompanyDepartment.objects.all().order_by('display_order', 'name')
     
-    return render(request, 'company/department_form.html', {
+    return render(request, 'company/company_department_form.html', {
         'form': form, 
         'department': department, 
         'title': '部署編集',
@@ -153,7 +153,7 @@ def department_delete(request, pk):
         messages.success(request, '部署が削除されました。')
         return redirect('company:company_detail')
     
-    return render(request, 'company/department_confirm_delete.html', {'department': department})
+    return render(request, 'company/company_department_confirm_delete.html', {'department': department})
 
 @login_required
 @permission_required('company.view_company', raise_exception=True)
@@ -207,7 +207,7 @@ def company_user_create(request):
         form = CompanyUserForm()
 
     company_users = CompanyUser.objects.filter(company=company)
-    return render(request, 'company/user_form.html', {
+    return render(request, 'company/company_user_form.html', {
         'form': form,
         'company': company,
         'title': '担当者作成',
@@ -231,7 +231,7 @@ def company_user_edit(request, pk):
         form = CompanyUserForm(instance=company_user)
 
     company_users = CompanyUser.objects.filter(company=company)
-    return render(request, 'company/user_form.html', {
+    return render(request, 'company/company_user_form.html', {
         'form': form,
         'company': company,
         'title': '担当者編集',
@@ -248,7 +248,7 @@ def company_user_delete(request, pk):
         messages.success(request, '担当者を削除しました。')
         return redirect('company:company_detail')
 
-    return render(request, 'company/user_confirm_delete.html', {'company_user': company_user})
+    return render(request, 'company/company_user_confirm_delete.html', {'company_user': company_user})
 
 
 @login_required
@@ -257,7 +257,7 @@ def company_user_detail(request, pk):
     company_user = get_object_or_404(CompanyUser, pk=pk)
     log_view_detail(request.user, company_user)
     company_users = CompanyUser.objects.filter(company=company_user.company)
-    return render(request, 'company/user_detail.html', {
+    return render(request, 'company/company_user_detail.html', {
         'object': company_user,
         'company_users': company_users
     })
