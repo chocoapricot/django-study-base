@@ -83,6 +83,7 @@ def company_edit(request):
 def department_detail(request, pk):
     department = get_object_or_404(CompanyDepartment, pk=pk)
     log_view_detail(request.user, department)
+    company = Company.objects.first()
     
     # 全部署一覧を取得
     departments = CompanyDepartment.objects.all().order_by('display_order', 'name')
@@ -90,12 +91,14 @@ def department_detail(request, pk):
     return render(request, 'company/company_department_detail.html', {
         'department': department,
         'departments': departments,
-        'current_department': department
+        'current_department': department,
+        'company': company,
     })
 
 @login_required
 @permission_required('company.add_companydepartment', raise_exception=True)
 def department_create(request):
+    company = Company.objects.first()
     if request.method == 'POST':
         form = CompanyDepartmentForm(request.POST)
         if form.is_valid():
@@ -112,12 +115,14 @@ def department_create(request):
         'form': form,
         'title': '部署作成',
         'departments': departments,
+        'company': company,
     })
 
 @login_required
 @permission_required('company.change_companydepartment', raise_exception=True)
 def department_edit(request, pk):
     department = get_object_or_404(CompanyDepartment, pk=pk)
+    company = Company.objects.first()
     if request.method == 'POST':
         form = CompanyDepartmentForm(request.POST, instance=department)
         if form.is_valid():
@@ -140,20 +145,25 @@ def department_edit(request, pk):
         'department': department, 
         'title': '部署編集',
         'departments': departments,
-        'current_department': department
+        'current_department': department,
+        'company': company,
     })
 
 @login_required
 @permission_required('company.delete_companydepartment', raise_exception=True)
 def department_delete(request, pk):
     department = get_object_or_404(CompanyDepartment, pk=pk)
+    company = Company.objects.first()
     if request.method == 'POST':
         log_model_action(request.user, 'delete', department)
         department.delete()
         messages.success(request, '部署が削除されました。')
         return redirect('company:company_detail')
     
-    return render(request, 'company/company_department_confirm_delete.html', {'department': department})
+    return render(request, 'company/company_department_confirm_delete.html', {
+        'department': department,
+        'company': company,
+    })
 
 @login_required
 @permission_required('company.view_company', raise_exception=True)
@@ -248,7 +258,10 @@ def company_user_delete(request, pk):
         messages.success(request, '担当者を削除しました。')
         return redirect('company:company_detail')
 
-    return render(request, 'company/company_user_confirm_delete.html', {'company_user': company_user})
+    return render(request, 'company/company_user_confirm_delete.html', {
+        'company_user': company_user,
+        'company': company_user.company,
+    })
 
 
 @login_required
@@ -259,5 +272,6 @@ def company_user_detail(request, pk):
     company_users = CompanyUser.objects.filter(company=company_user.company)
     return render(request, 'company/company_user_detail.html', {
         'object': company_user,
-        'company_users': company_users
+        'company_users': company_users,
+        'company': company_user.company,
     })
