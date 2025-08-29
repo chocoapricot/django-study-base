@@ -1,5 +1,6 @@
 from django.test import TestCase, Client
 from django.urls import reverse
+from django.contrib.auth.models import Permission
 from apps.accounts.models import MyUser
 from apps.staff.models import Staff
 from apps.connect.models import ConnectStaff, MynumberRequest
@@ -52,10 +53,13 @@ class HomeViewTest(TestCase):
         self.assertIn('client_count', response.context)
         self.assertIn('approved_client_count', response.context)
 
-    def test_home_view_staff_request_count(self):
+    def test_home_view_staff_request_count_with_permission(self):
         """
-        Test that staff_request_count is calculated correctly and the link is present.
+        Test that staff_request_count is calculated correctly and the link is present for a user with permission.
         """
+        # Add permission to user
+        permission = Permission.objects.get(codename='view_staff')
+        self.user.user_permissions.add(permission)
         self.client.login(email='testuser@example.com', password='password')
 
         # Create staff user
@@ -95,6 +99,50 @@ class HomeViewTest(TestCase):
         self.assertIn('staff_request_count', response.context)
         self.assertEqual(response.context['staff_request_count'], 1)
         self.assertContains(response, f'href="{reverse("staff:staff_list")}?has_request=true"')
+
+    def test_home_view_staff_request_count_no_permission(self):
+        """
+        Test that the link is not present for a user without permission.
+        """
+        self.client.login(email='testuser@example.com', password='password')
+
+        # Create staff user
+        staff_user = MyUser.objects.create_user(
+            username='staffuser@example.com',
+            email='staff@example.com',
+            password='password',
+        )
+        # Create mynumber profile
+        staff_mynumber = StaffProfileMynumber.objects.create(
+            user=staff_user,
+            mynumber='123456789012'
+        )
+
+        # Create Staff data
+        Staff.objects.create(email='staff@example.com')
+
+        # Create ConnectStaff data
+        connect_staff = ConnectStaff.objects.create(
+            corporate_number='1234567890123',
+            email='staff@example.com',
+            status='approved'
+        )
+
+        # Create a pending request
+        MynumberRequest.objects.create(
+            connect_staff=connect_staff,
+            profile_mynumber=staff_mynumber,
+            status='pending'
+        )
+
+        # Create another staff without request
+        Staff.objects.create(email='norequest@example.com')
+
+        response = self.client.get(self.home_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('staff_request_count', response.context)
+        self.assertEqual(response.context['staff_request_count'], 1)
+        self.assertNotContains(response, f'href="{reverse("staff:staff_list")}?has_request=true"')
 
     def test_home_view_staff_request_count_zero(self):
         """
