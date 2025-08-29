@@ -21,16 +21,14 @@
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4">
   <div class="card-header">
-    プロフィールメニュー
+    プロフィール登録
   </div>
-  <div class="card-body">
-    <div class="container px-4 py-5" id="hanging-icons">
-      <h2 class="pb-2 border-bottom">プロフィール登録</h2>
+    <div class="card-body" id="hanging-icons">
       <p>各項目を登録・更新してください。登録済みの項目にはチェックマークが表示されます。</p>
-      <div class="row g-4 py-5 row-cols-1 row-cols-md-2 row-cols-lg-3">
-        <div class="col d-flex align-items-start">
+      <div class="row g-4 py-4 row-cols-1 row-cols-md-2 row-cols-lg-3 ms-3">
+        <div class="col d-flex align-items-start mb-4">
           <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-            <i class="bi bi-person-vcard"></i>
+            <i class="bi bi-person-circle"></i>
           </div>
           <div>
             <h3 class="fs-4">基本情報 {% if has_staff %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
@@ -40,9 +38,9 @@
             </a>
           </div>
         </div>
-        <div class="col d-flex align-items-start">
+        <div class="col d-flex align-items-start mb-4">
           <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-              <i class="bi bi-credit-card-2-front"></i>
+              <i class="bi bi-credit-card"></i>
           </div>
           <div>
             <h3 class="fs-4">マイナンバー {% if has_mynumber %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
@@ -52,7 +50,7 @@
             </a>
           </div>
         </div>
-        <div class="col d-flex align-items-start">
+        <div class="col d-flex align-items-start mb-4">
           <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
               <i class="bi bi-bank"></i>
           </div>
@@ -64,9 +62,9 @@
             </a>
           </div>
         </div>
-        <div class="col d-flex align-items-start">
+        <div class="col d-flex align-items-start mb-4">
           <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-              <i class="bi bi-telephone-outbound"></i>
+              <i class="bi bi-person-rolodex"></i>
           </div>
           <div>
             <h3 class="fs-4">連絡先 {% if has_contact %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
@@ -76,9 +74,9 @@
             </a>
           </div>
         </div>
-        <div class="col d-flex align-items-start">
+        <div class="col d-flex align-items-start mb-4">
           <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-              <i class="bi bi-globe-americas"></i>
+              <i class="bi bi-send"></i>
           </div>
           <div>
             <h3 class="fs-4">外国籍情報 {% if has_international %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
@@ -88,9 +86,9 @@
             </a>
           </div>
         </div>
-        <div class="col d-flex align-items-start">
+        <div class="col d-flex align-items-start mb-4">
           <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-              <i class="bi bi-person-wheelchair"></i>
+              <i class="bi bi-heart"></i>
           </div>
           <div>
             <h3 class="fs-4">障害者情報 {% if has_disability %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
@@ -101,7 +99,6 @@
           </div>
         </div>
       </div>
-  </div>
   </div>
 </div>
 {% endblock %}
