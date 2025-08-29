@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from .models import ConnectStaff, ConnectClient
-from apps.profile.models import StaffProfile, StaffProfileMynumber
+from apps.profile.models import StaffProfile, StaffProfileMynumber, StaffProfileBank, StaffProfileContact, StaffProfileInternational, StaffProfileDisability
 
 User = get_user_model()
 
@@ -10,17 +10,19 @@ User = get_user_model()
 def grant_profile_permissions(user):
     """ユーザーにプロファイル関連の権限を付与"""
     try:
-        # StaffProfile
-        profile_content_type = ContentType.objects.get_for_model(StaffProfile)
-        profile_permissions = Permission.objects.filter(content_type=profile_content_type)
-        for permission in profile_permissions:
-            user.user_permissions.add(permission)
+        models_to_grant = [
+            StaffProfile,
+            StaffProfileMynumber,
+            StaffProfileBank,
+            StaffProfileContact,
+            StaffProfileInternational,
+            StaffProfileDisability,
+        ]
 
-        # StaffProfileMynumber
-        mynumber_content_type = ContentType.objects.get_for_model(StaffProfileMynumber)
-        mynumber_permissions = Permission.objects.filter(content_type=mynumber_content_type)
-        for permission in mynumber_permissions:
-            user.user_permissions.add(permission)
+        for model_class in models_to_grant:
+            content_type = ContentType.objects.get_for_model(model_class)
+            permissions = Permission.objects.filter(content_type=content_type)
+            user.user_permissions.add(*permissions)
 
         return True
 
