@@ -3,7 +3,6 @@ from .models import Company, CompanyDepartment, CompanyUser
 from .forms import CompanyForm, CompanyDepartmentForm, CompanyUserForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.db import IntegrityError
 from apps.system.logs.models import AppLog
 from apps.system.logs.utils import log_view_detail, log_model_action
 from django.db.models import Q
@@ -27,7 +26,7 @@ def company_detail(request):
 
     # 担当者一覧も取得
     company_users = CompanyUser.objects.filter(company=company)
-    
+
     # 会社と部署の変更履歴を統合して取得（最新10件）
     company_logs = AppLog.objects.filter(
         model_name='Company', 
@@ -186,6 +185,7 @@ def change_history_list(request):
     })
 
 
+# Company User CRUD
 @login_required
 @permission_required('company.add_companyuser', raise_exception=True)
 def company_user_create(request):
@@ -199,12 +199,9 @@ def company_user_create(request):
         if form.is_valid():
             company_user = form.save(commit=False)
             company_user.company = company
-            try:
-                company_user.save()
-                log_model_action(request.user, 'create', company_user)
-                messages.success(request, '担当者を設定しました。')
-            except IntegrityError:
-                messages.error(request, 'この担当者は既に追加されています。')
+            company_user.save()
+            log_model_action(request.user, 'create', company_user)
+            messages.success(request, '担当者を作成しました。')
             return redirect('company:company_detail')
     else:
         form = CompanyUserForm()
@@ -212,8 +209,30 @@ def company_user_create(request):
     return render(request, 'company/company_user_form.html', {
         'form': form,
         'company': company,
+        'title': '担当者作成'
     })
 
+@login_required
+@permission_required('company.change_companyuser', raise_exception=True)
+def company_user_edit(request, pk):
+    company_user = get_object_or_404(CompanyUser, pk=pk)
+    company = company_user.company
+
+    if request.method == 'POST':
+        form = CompanyUserForm(request.POST, instance=company_user)
+        if form.is_valid():
+            form.save()
+            log_model_action(request.user, 'update', company_user)
+            messages.success(request, '担当者情報を更新しました。')
+            return redirect('company:company_detail')
+    else:
+        form = CompanyUserForm(instance=company_user)
+
+    return render(request, 'company/company_user_form.html', {
+        'form': form,
+        'company': company,
+        'title': '担当者編集'
+    })
 
 @login_required
 @permission_required('company.delete_companyuser', raise_exception=True)

@@ -1,8 +1,5 @@
 from django.test import TestCase
 from ..models import Company, CompanyDepartment, CompanyUser
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
 
 class CompanyModelTest(TestCase):
     """会社モデルのテスト"""
@@ -105,23 +102,28 @@ class CompanyDepartmentModelTest(TestCase):
 
 
 class CompanyUserModelTest(TestCase):
-    """会社担当者モデルのテスト"""
+    """自社担当者モデルのテスト"""
 
     def setUp(self):
         self.company = Company.objects.create(name="テスト株式会社")
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.department = CompanyDepartment.objects.create(name="テスト部署")
         self.company_user = CompanyUser.objects.create(
             company=self.company,
-            user=self.user
+            department=self.department,
+            name_last="山田",
+            name_first="太郎",
+            position="部長",
+            phone_number="03-1234-5678",
+            email="yamada@example.com",
+            display_order=1
         )
 
     def test_company_user_creation(self):
-        """会社担当者の作成テスト"""
-        self.assertEqual(self.company_user.company, self.company)
-        self.assertEqual(self.company_user.user, self.user)
-        self.assertEqual(str(self.company_user), 'testuser')
+        """自社担当者の作成テスト"""
+        self.assertEqual(self.company_user.name, "山田 太郎")
+        self.assertEqual(self.company_user.position, "部長")
+        self.assertEqual(str(self.company_user), "山田 太郎")
 
-    def test_company_user_unique_together(self):
-        """会社と担当者の組み合わせの一意性テスト"""
-        with self.assertRaises(Exception):
-            CompanyUser.objects.create(company=self.company, user=self.user)
+    def test_company_user_department_relation(self):
+        """部署とのリレーションテスト"""
+        self.assertEqual(self.company_user.department.name, "テスト部署")

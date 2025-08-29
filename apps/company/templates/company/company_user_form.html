@@ -1,14 +1,14 @@
-{% extends 'base.html' %}
+{% extends 'common/_base.html' %}
 
-{% block title %}担当者設定{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <h1 class="h3 mb-4 text-gray-800">担当者設定</h1>
+    <h1 class="h3 mb-4 text-gray-800">{{ title }}</h1>
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">担当者追加</h6>
+            <h6 class="m-0 font-weight-bold text-primary">担当者情報</h6>
         </div>
         <div class="card-body">
             <form method="post">

@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'common/_base.html' %}
 
 {% block title %}担当者削除の確認{% endblock %}
 
@@ -11,7 +11,7 @@
             <h6 class="m-0 font-weight-bold text-primary">本当に削除しますか？</h6>
         </div>
         <div class="card-body">
-            <p><strong>{{ company_user.user.username }}</strong>を会社担当者から削除します。よろしいですか？</p>
+            <p><strong>{{ company_user.name }}</strong>様を会社担当者から削除します。よろしいですか？</p>
             <form method="post">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-danger">削除</button>
