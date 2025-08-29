@@ -12,5 +12,4 @@ urlpatterns = [
     path('client/', views.connect_client_list, name='client_list'),
     path('client/<int:pk>/approve/', views.connect_client_approve, name='client_approve'),
     path('client/<int:pk>/unapprove/', views.connect_client_unapprove, name='client_unapprove'),
-    path('combined/', views.connect_combined_list, name='combined_list'),
 ]
