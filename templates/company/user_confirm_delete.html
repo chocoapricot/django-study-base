@@ -6,11 +6,54 @@
     <div class="card-body">
         <div class="alert alert-warning" role="alert">
             <i class="bi bi-exclamation-triangle-fill"></i>
-            <strong>{{ company_user.name }}</strong>様を会社担当者から削除します。よろしいですか？
+            担当者「<strong>{{ company_user.name }}</strong>」を削除しますか？この操作は取り消せません。
         </div>
+
+        <div class="row mb-3">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>氏名</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ company_user.name }}
+            </div>
+        </div>
+
+        {% if company_user.department %}
+        <div class="row mb-3">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>所属部署</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ company_user.department.name }}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if company_user.position %}
+        <div class="row mb-3">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>役職</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ company_user.position }}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if company_user.email %}
+        <div class="row mb-3">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>メールアドレス</strong>
+            </div>
+            <div class="col-sm-10">
+                {{ company_user.email }}
+            </div>
+        </div>
+        {% endif %}
+
         <form method="post">
             {% csrf_token %}
-            <div class="d-flex justify-content-start">
+            <div class="d-flex justify-content-start mt-4">
                 <button type="submit" class="btn btn-sm btn-danger me-2">削除</button>
                 <a href="{% url 'company:company_detail' %}" class="btn btn-sm btn-secondary">キャンセル</a>
             </div>

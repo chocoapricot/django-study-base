@@ -156,7 +156,6 @@ class CompanyUserForm(forms.ModelForm):
             'position', 'phone_number', 'email', 'display_order'
         ]
         widgets = {
-            'department': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'name_last': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'name_first': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'name_kana_last': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),

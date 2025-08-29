@@ -206,10 +206,12 @@ def company_user_create(request):
     else:
         form = CompanyUserForm()
 
+    company_users = CompanyUser.objects.filter(company=company)
     return render(request, 'company/user_form.html', {
         'form': form,
         'company': company,
-        'title': '担当者作成'
+        'title': '担当者作成',
+        'company_users': company_users
     })
 
 @login_required
@@ -228,10 +230,12 @@ def company_user_edit(request, pk):
     else:
         form = CompanyUserForm(instance=company_user)
 
+    company_users = CompanyUser.objects.filter(company=company)
     return render(request, 'company/user_form.html', {
         'form': form,
         'company': company,
-        'title': '担当者編集'
+        'title': '担当者編集',
+        'company_users': company_users
     })
 
 @login_required
@@ -245,3 +249,11 @@ def company_user_delete(request, pk):
         return redirect('company:company_detail')
 
     return render(request, 'company/user_confirm_delete.html', {'company_user': company_user})
+
+
+@login_required
+@permission_required('company.view_companyuser', raise_exception=True)
+def company_user_detail(request, pk):
+    company_user = get_object_or_404(CompanyUser, pk=pk)
+    log_view_detail(request.user, company_user)
+    return render(request, 'company/user_detail.html', {'object': company_user})
