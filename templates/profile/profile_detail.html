@@ -9,10 +9,10 @@
         プロフィール詳細
         <div>
             {% if profile %}
-                <a href="{% url 'profile:edit' %}" class="btn btn-sm btn-primary">編集</a>
-                <a href="{% url 'profile:delete' %}" class="btn btn-sm btn-dark">削除</a>
+                <a href="{% url 'profile:staff_edit' %}" class="btn btn-sm btn-primary">編集</a>
+                <a href="{% url 'profile:staff_delete' %}" class="btn btn-sm btn-dark">削除</a>
             {% else %}
-                <a href="{% url 'profile:edit' %}" class="btn btn-sm btn-primary">プロフィール作成</a>
+                <a href="{% url 'profile:staff_edit' %}" class="btn btn-sm btn-primary">プロフィール作成</a>
             {% endif %}
         </div>
     </div>

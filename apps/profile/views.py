@@ -7,6 +7,21 @@ from .forms import StaffProfileForm, StaffProfileMynumberForm, StaffProfileInter
 
 
 @login_required
+def profile_index(request):
+    """プロフィールメニュー"""
+    user = request.user
+    context = {
+        'has_staff': StaffProfile.objects.filter(user=user).exists(),
+        'has_mynumber': StaffProfileMynumber.objects.filter(user=user).exists(),
+        'has_bank': StaffProfileBank.objects.filter(user=user).exists(),
+        'has_contact': StaffProfileContact.objects.filter(user=user).exists(),
+        'has_international': StaffProfileInternational.objects.filter(user=user).exists(),
+        'has_disability': StaffProfileDisability.objects.filter(user=user).exists(),
+    }
+    return render(request, 'profile/profile_index.html', context)
+
+
+@login_required
 @permission_required('profile.view_staffprofile', raise_exception=True)
 def profile_detail(request):
     """プロフィール詳細表示"""
@@ -46,7 +61,7 @@ def profile_edit(request):
             else:
                 messages.success(request, 'プロフィールを更新しました。')
             
-            return redirect('profile:detail')
+            return redirect('profile:staff_detail')
     else:
         if profile is None:
             # 新規作成時はUserの姓・名を初期値にセット
@@ -76,7 +91,7 @@ def profile_delete(request):
     if request.method == 'POST':
         profile.delete()
         messages.success(request, 'プロフィールを削除しました。')
-        return redirect('profile:detail')
+        return redirect('profile:staff_detail')
     
     context = {
         'profile': profile,
