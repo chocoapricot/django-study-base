@@ -27,21 +27,27 @@ def company_detail(request):
     # 担当者一覧も取得
     company_users = CompanyUser.objects.filter(company=company)
 
-    # 会社と部署の変更履歴を統合して取得（最新10件）
+    # 会社、部署、担当者の変更履歴を統合して取得
     company_logs = AppLog.objects.filter(
-        model_name='Company', 
-        object_id=str(company.pk), 
+        model_name='Company',
+        object_id=str(company.pk),
         action__in=['create', 'update']
     )
-    
     department_logs = AppLog.objects.filter(
         model_name='CompanyDepartment',
         action__in=['create', 'update', 'delete']
     )
+    company_user_ids = [str(user.pk) for user in company_users]
+    company_user_logs = AppLog.objects.filter(
+        model_name='CompanyUser',
+        object_id__in=company_user_ids,
+        action__in=['create', 'update', 'delete']
+    )
     
-    # 両方のログを統合してタイムスタンプ順にソート
-    change_logs = (company_logs | department_logs).order_by('-timestamp')[:5]
-    change_logs_count = (company_logs | department_logs).count()
+    # 全てのログを統合してタイムスタンプ順にソート
+    all_logs = (company_logs | department_logs | company_user_logs)
+    change_logs = all_logs.order_by('-timestamp')[:5]
+    change_logs_count = all_logs.count()
     
     return render(request, 'company/company_detail.html', {
         'company': company,
@@ -168,27 +174,34 @@ def department_delete(request, pk):
 @login_required
 @permission_required('company.view_company', raise_exception=True)
 def change_history_list(request):
-    """会社と部署の変更履歴一覧"""
+    """会社、部署、担当者の変更履歴一覧"""
     company = Company.objects.first()
     if not company:
         messages.error(request, '会社情報が見つかりません。')
         return redirect('company:company_detail')
-    
-    # 会社と部署の変更履歴を統合して取得
+
+    # 会社、部署、担当者の変更履歴を統合して取得
     company_logs = AppLog.objects.filter(
-        model_name='Company', 
-        object_id=str(company.pk), 
+        model_name='Company',
+        object_id=str(company.pk),
         action__in=['create', 'update']
     )
-    
     department_logs = AppLog.objects.filter(
         model_name='CompanyDepartment',
         action__in=['create', 'update', 'delete']
     )
     
-    # 両方のログを統合してタイムスタンプ順にソート
-    change_logs = (company_logs | department_logs).order_by('-timestamp')
-    
+    company_users = CompanyUser.objects.filter(company=company)
+    company_user_ids = [str(user.pk) for user in company_users]
+    company_user_logs = AppLog.objects.filter(
+        model_name='CompanyUser',
+        object_id__in=company_user_ids,
+        action__in=['create', 'update', 'delete']
+    )
+
+    # 全てのログを統合してタイムスタンプ順にソート
+    change_logs = (company_logs | department_logs | company_user_logs).order_by('-timestamp')
+
     return render(request, 'company/company_change_history_list.html', {
         'change_logs': change_logs,
         'company': company
