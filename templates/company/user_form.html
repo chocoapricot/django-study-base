@@ -1,15 +1,69 @@
 {% extends 'common/_base.html' %}
+{% load help_tags %}
 
 {% block content %}
-<div class="content-box card bg-light mt-2 mb-4">
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">{{ title }}</div>
     <div class="card-body">
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+            {% if form.errors %}
+            <div class="alert alert-dismissible alert-warning">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                {{ form.errors }}
+            </div>
+            {% endif %}
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.department.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.department.label }}</label>
+                <div class="col-sm-8">
+                    {{ form.department }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label class="col-sm-2 col-form-label text-start text-md-end">氏名</label>
+                <div class="col-sm-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">{{ form.name_last.label }}</span>
+                        {{ form.name_last }}
+                        <span class="input-group-text">{{ form.name_first.label }}</span>
+                        {{ form.name_first }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.position.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.position.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.position }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.phone_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.phone_number.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.phone_number }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.email.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.email.label }}</label>
+                <div class="col-sm-8">
+                    {{ form.email }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.display_order.label }}</label>
+                <div class="col-sm-2">
+                    {{ form.display_order }}
+                </div>
+            </div>
+
             <div class="d-flex justify-content-start">
-                <button type="submit" class="btn btn-primary me-2">保存</button>
-                <a href="{% url 'company:company_detail' %}" class="btn btn-secondary">キャンセル</a>
+                <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
+                <a href="{% url 'company:company_detail' %}" class="btn btn-sm btn-secondary">キャンセル</a>
             </div>
         </form>
     </div>
