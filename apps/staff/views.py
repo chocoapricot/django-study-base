@@ -547,7 +547,7 @@ def staff_delete(request, pk):
 @permission_required('staff.view_staff', raise_exception=True)
 def staff_face(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
-    image_path = os.path.join(my_parameter("STAFF_FACE_PATH"), str(staff.pk)+".jpg") 
+    image_path = os.path.join(settings.MEDIA_ROOT, 'staff_files', str(staff.pk) + ".jpg") 
     logger.error(image_path)
 
     # 画像ファイルが存在する場合はそのファイルを返す
