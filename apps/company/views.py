@@ -245,6 +245,7 @@ def company_user_edit(request, pk):
         'form': form,
         'company': company,
         'title': '担当者編集',
+        'current_company_user': company_user,
         'company_users': company_users
     })
 
@@ -273,5 +274,6 @@ def company_user_detail(request, pk):
     return render(request, 'company/company_user_detail.html', {
         'object': company_user,
         'company_users': company_users,
+        'current_company_user': company_user,
         'company': company_user.company,
     })
