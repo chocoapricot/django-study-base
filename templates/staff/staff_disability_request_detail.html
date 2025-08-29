@@ -40,7 +40,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr class="{% if staff.disability.disability_type != disability_request.profile_disability.disability_type or not staff.disability %}table-primary{% endif %}">
                         <td><strong>障害の種類</strong></td>
                         <td>
                             {% if staff.disability.disability_type %}
@@ -59,7 +59,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if staff.disability.disability_grade != disability_request.profile_disability.disability_grade or not staff.disability %}table-primary{% endif %}">
                         <td><strong>等級</strong></td>
                         <td>{{ staff.disability.disability_grade|default_if_none:"" }}</td>
                         <td>
@@ -70,7 +70,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if staff.disability.notes != disability_request.profile_disability.notes or not staff.disability %}table-primary{% endif %}">
                         <td><strong>備考</strong></td>
                         <td>{{ staff.disability.notes|default_if_none:"" }}</td>
                         <td>

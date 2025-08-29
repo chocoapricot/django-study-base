@@ -40,7 +40,7 @@
                 </thead>
                 <tbody>
                     {% with current_bank=staff.bank profile_bank=bank_request.staff_bank_profile %}
-                    <tr>
+                    <tr class="{% if current_bank.bank_name != profile_bank.bank_name or current_bank.bank_code != profile_bank.bank_code or not current_bank %}table-primary{% endif %}">
                         <td><strong>銀行名</strong></td>
                         <td>{{ current_bank.bank_name|default_if_none:"" }} ({{ current_bank.bank_code|default_if_none:"" }})</td>
                         <td>
@@ -51,7 +51,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if current_bank.branch_name != profile_bank.branch_name or current_bank.branch_code != profile_bank.branch_code or not current_bank %}table-primary{% endif %}">
                         <td><strong>支店名</strong></td>
                         <td>{{ current_bank.branch_name|default_if_none:"" }} ({{ current_bank.branch_code|default_if_none:"" }})</td>
                         <td>
@@ -62,7 +62,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if current_bank.account_type != profile_bank.account_type or not current_bank %}table-primary{% endif %}">
                         <td><strong>口座種別</strong></td>
                         <td>{{ current_bank.get_account_type_display }}</td>
                         <td>
@@ -73,7 +73,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if current_bank.account_number != profile_bank.account_number or not current_bank %}table-primary{% endif %}">
                         <td><strong>口座番号</strong></td>
                         <td>{{ current_bank.account_number|default_if_none:"" }}</td>
                         <td>
@@ -84,7 +84,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if current_bank.account_holder != profile_bank.account_holder or not current_bank %}table-primary{% endif %}">
                         <td><strong>口座名義</strong></td>
                         <td>{{ current_bank.account_holder|default_if_none:"" }}</td>
                         <td>

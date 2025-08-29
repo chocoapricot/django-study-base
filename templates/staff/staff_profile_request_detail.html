@@ -41,7 +41,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr class="{% if staff.name_last != profile_request.staff_profile.name_last %}table-primary{% endif %}">
                         <td><strong>姓</strong></td>
                         <td>{{ staff.name_last|default:"-" }}</td>
                         <td>
@@ -52,7 +52,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if staff.name_first != profile_request.staff_profile.name_first %}table-primary{% endif %}">
                         <td><strong>名</strong></td>
                         <td>{{ staff.name_first|default:"-" }}</td>
                         <td>
@@ -63,7 +63,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if staff.name_kana_last != profile_request.staff_profile.name_kana_last %}table-primary{% endif %}">
                         <td><strong>姓（カナ）</strong></td>
                         <td>{{ staff.name_kana_last|default:"-" }}</td>
                         <td>
@@ -74,7 +74,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if staff.name_kana_first != profile_request.staff_profile.name_kana_first %}table-primary{% endif %}">
                         <td><strong>名（カナ）</strong></td>
                         <td>{{ staff.name_kana_first|default:"-" }}</td>
                         <td>
@@ -85,7 +85,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if staff.birth_date != profile_request.staff_profile.birth_date %}table-primary{% endif %}">
                         <td><strong>生年月日</strong></td>
                         <td>{{ staff.birth_date|date:"Y/m/d"|default:"-" }}</td>
                         <td>
@@ -96,7 +96,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if staff.sex != profile_request.staff_profile.sex %}table-primary{% endif %}">
                         <td><strong>性別</strong></td>
                         <td>
                             {% if staff.sex %}
@@ -123,7 +123,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if staff.postal_code != profile_request.staff_profile.postal_code %}table-primary{% endif %}">
                         <td><strong>郵便番号</strong></td>
                         <td>{{ staff.postal_code|default:"-" }}</td>
                         <td>
@@ -134,7 +134,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if staff.address1 != profile_request.staff_profile.address1 %}table-primary{% endif %}">
                         <td><strong>都道府県</strong></td>
                         <td>{{ staff.address1|default:"-" }}</td>
                         <td>
@@ -145,7 +145,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if staff.address2 != profile_request.staff_profile.address2 %}table-primary{% endif %}">
                         <td><strong>市区町村</strong></td>
                         <td>{{ staff.address2|default:"-" }}</td>
                         <td>
@@ -156,7 +156,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if staff.address3 != profile_request.staff_profile.address3 %}table-primary{% endif %}">
                         <td><strong>番地・建物名</strong></td>
                         <td>{{ staff.address3|default:"-" }}</td>
                         <td>
@@ -167,7 +167,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if staff.phone != profile_request.staff_profile.phone %}table-primary{% endif %}">
                         <td><strong>電話番号</strong></td>
                         <td>{{ staff.phone|default:"-" }}</td>
                         <td>

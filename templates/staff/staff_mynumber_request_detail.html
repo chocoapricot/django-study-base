@@ -39,7 +39,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr class="{% if staff_mynumber.mynumber != mynumber_request.profile_mynumber.mynumber or not staff_mynumber %}table-primary{% endif %}">
                         <td><strong>マイナンバー</strong></td>
                         <td>
                             {% if staff_mynumber %}

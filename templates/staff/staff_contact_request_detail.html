@@ -40,7 +40,7 @@
                 </thead>
                 <tbody>
                     {% with current_contact=staff.contact profile_contact=contact_request.staff_profile_contact %}
-                    <tr>
+                    <tr class="{% if current_contact.emergency_contact != profile_contact.emergency_contact %}table-primary{% endif %}">
                         <td><strong>緊急連絡先</strong></td>
                         <td>{{ current_contact.emergency_contact|default_if_none:"" }}</td>
                         <td>
@@ -51,7 +51,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if current_contact.relationship != profile_contact.relationship %}table-primary{% endif %}">
                         <td><strong>続柄</strong></td>
                         <td>{{ current_contact.relationship|default_if_none:"" }}</td>
                         <td>
@@ -62,7 +62,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if current_contact.postal_code != profile_contact.postal_code %}table-primary{% endif %}">
                         <td><strong>郵便番号（住民票）</strong></td>
                         <td>{{ current_contact.postal_code|default_if_none:"" }}</td>
                         <td>
@@ -73,7 +73,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if current_contact.address1 != profile_contact.address1 %}table-primary{% endif %}">
                         <td><strong>住所１（住民票）</strong></td>
                         <td>{{ current_contact.address1|default_if_none:"" }}</td>
                         <td>
@@ -84,7 +84,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if current_contact.address2 != profile_contact.address2 %}table-primary{% endif %}">
                         <td><strong>住所２（住民票）</strong></td>
                         <td>{{ current_contact.address2|default_if_none:"" }}</td>
                         <td>
@@ -95,7 +95,7 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="{% if current_contact.address3 != profile_contact.address3 %}table-primary{% endif %}">
                         <td><strong>住所３（住民票）</strong></td>
                         <td>{{ current_contact.address3|default_if_none:"" }}</td>
                         <td>
