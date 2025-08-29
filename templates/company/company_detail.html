@@ -72,6 +72,8 @@
 
 {% include 'company/_department_list_table.html' with show_all_link=True %}
 
+{% include 'company/_user_list_table.html' %}
+
 <!-- 変更履歴（共通テンプレート使用） -->
 {% url 'company:change_history_list' as company_history_url %}
 {% with change_logs=change_logs change_logs_count=change_logs_count history_url=company_history_url show_full_content=False %}

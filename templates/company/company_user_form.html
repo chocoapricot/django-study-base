@@ -1,0 +1,17 @@
+{% extends 'common/_base.html' %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header">{{ title }}</div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-primary me-2">保存</button>
+                <a href="{% url 'company:company_detail' %}" class="btn btn-secondary">キャンセル</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

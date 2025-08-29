@@ -223,7 +223,7 @@ class CompanyUserViewTest(TestCase):
         """削除ビューのGETアクセス"""
         response = self.client.get(self.delete_url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "本当に削除しますか？")
+        self.assertContains(response, "担当者削除の確認")
 
     def test_delete_view_post(self):
         """削除ビューのPOST"""
