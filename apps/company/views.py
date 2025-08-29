@@ -206,7 +206,7 @@ def company_user_create(request):
     else:
         form = CompanyUserForm()
 
-    return render(request, 'company/company_user_form.html', {
+    return render(request, 'company/user_form.html', {
         'form': form,
         'company': company,
         'title': '担当者作成'
@@ -228,7 +228,7 @@ def company_user_edit(request, pk):
     else:
         form = CompanyUserForm(instance=company_user)
 
-    return render(request, 'company/company_user_form.html', {
+    return render(request, 'company/user_form.html', {
         'form': form,
         'company': company,
         'title': '担当者編集'
@@ -244,4 +244,4 @@ def company_user_delete(request, pk):
         messages.success(request, '担当者を削除しました。')
         return redirect('company:company_detail')
 
-    return render(request, 'company/company_user_confirm_delete.html', {'company_user': company_user})
+    return render(request, 'company/user_confirm_delete.html', {'company_user': company_user})
