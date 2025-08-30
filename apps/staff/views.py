@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Q
 from django.contrib import messages
 from apps.system.logs.utils import log_model_action
+from .forms_mail import ConnectionRequestMailForm
 
 from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact
 from .forms import StaffForm, StaffContactedForm, StaffFileForm, StaffMynumberForm, StaffBankForm, StaffInternationalForm, StaffDisabilityForm, StaffContactForm
@@ -318,7 +319,14 @@ def staff_detail(request, pk):
                         )
                     else:
                         # 新規作成された場合（スイッチON）
-                        messages.success(request, f'{staff}に接続依頼を送信しました。')
+                        # メール送信
+                        mail_form = ConnectionRequestMailForm(staff=staff, user=request.user)
+                        success, message = mail_form.send_mail()
+                        if success:
+                            messages.success(request, f'スタッフ「{staff.name}」への接続申請を送信し、メールを送信しました。')
+                        else:
+                            messages.warning(request, f'スタッフ「{staff.name}」への接続申請を送信しましたが、メールの送信に失敗しました: {message}')
+
                         # 変更履歴に記録
                         AppLog.objects.create(
                             user=request.user,
