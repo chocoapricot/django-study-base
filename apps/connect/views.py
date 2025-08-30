@@ -152,72 +152,7 @@ def connect_staff_unapprove(request, pk):
     return redirect('connect:staff_list')
 
 
-@login_required
-@permission_required('staff.view_staff', raise_exception=True)
-@require_POST
-def create_staff_connection(request):
-    """スタッフ詳細画面から接続申請を作成"""
-    staff_id = request.POST.get('staff_id')
-    
-    if not staff_id:
-        messages.error(request, 'スタッフIDが指定されていません。')
-        return redirect('staff:staff_list')
-    
-    try:
-        from apps.staff.models import Staff
-        staff = Staff.objects.get(pk=staff_id)
-        
-        if not staff.email:
-            messages.error(request, 'このスタッフにはメールアドレスが設定されていません。')
-            return redirect('staff:staff_detail', pk=staff_id)
-        
-        # 会社の法人番号を取得
-        from apps.company.models import Company
-        company = Company.objects.first()
-        if not company or not company.corporate_number:
-            messages.error(request, '会社の法人番号が設定されていません。')
-            return redirect('staff:staff_detail', pk=staff_id)
-        
-        # 既存の申請があるかチェック
-        existing_connection = ConnectStaff.objects.filter(
-            corporate_number=company.corporate_number,
-            email=staff.email
-        ).first()
-        
-        if existing_connection:
-            messages.warning(request, 'この組み合わせの接続申請は既に存在します。')
-            return redirect('staff:staff_detail', pk=staff_id)
-        
-        # 新しい接続申請を作成
-        connection = ConnectStaff.objects.create(
-            corporate_number=company.corporate_number,
-            email=staff.email,
-            created_by=request.user,
-            updated_by=request.user
-        )
-        
-        log_model_action(request.user, 'create', connection)
-        
-        # 既存ユーザーがいる場合は権限を付与
-        from .utils import grant_permissions_on_connection_request
-        grant_permissions_on_connection_request(staff.email)
 
-        # メール送信
-        mail_form = ConnectionRequestMailForm(staff=staff, user=request.user)
-        success, message = mail_form.send_mail()
-        if success:
-            messages.success(request, f'スタッフ「{staff.name}」への接続申請を送信し、メールを送信しました。')
-        else:
-            messages.warning(request, f'スタッフ「{staff.name}」への接続申請を送信しましたが、メールの送信に失敗しました: {message}')
-
-        return redirect('staff:staff_detail', pk=staff_id)
-        
-    except Staff.DoesNotExist:
-        messages.error(request, 'スタッフが見つかりません。')
-        return redirect('staff:staff_list')
-    except Exception as e:
-        messages.error(request, f'エラーが発生しました: {str(e)}')
-        return redirect('staff:staff_list')
 
 
 @login_required
