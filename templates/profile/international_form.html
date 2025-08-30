@@ -9,18 +9,6 @@
         {% if is_new %}外国籍情報登録{% else %}外国籍情報編集{% endif %}
     </div>
     <div class="card-body">
-        {% if is_new %}
-        <div class="alert alert-info" role="alert">
-            <i class="bi bi-info-circle"></i>
-            外国籍情報を登録してください。
-        </div>
-        {% else %}
-        <div class="alert alert-info" role="alert">
-            <i class="bi bi-info-circle"></i>
-            外国籍情報を編集してください。
-        </div>
-        {% endif %}
-
         <form method="post" class="mt-3">
             {% csrf_token %}
 

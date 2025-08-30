@@ -142,9 +142,9 @@
 
             <div class="d-flex justify-content-start">
                 <button type="submit" class="btn btn-sm btn-primary">
-                    {% if is_new %}作成{% else %}更新{% endif %}
+                    {% if is_new %}登録{% else %}更新{% endif %}
                 </button>
-                <a href="{% url 'profile:staff_detail' %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
+                <a href="{% url 'profile:index' %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
             </div>
         </form>
     </div>
