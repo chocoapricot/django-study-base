@@ -127,7 +127,9 @@ def mynumber_edit(request):
         is_new = True
 
     if request.method == 'POST':
-        form = StaffProfileMynumberForm(request.POST, instance=mynumber)
+        form = StaffProfileMynumberForm(request.POST, request.FILES, instance=mynumber)
+        if not form.is_valid():
+            print("Form errors:", form.errors)
         if form.is_valid():
             mynumber = form.save(commit=False)
             mynumber.user = request.user

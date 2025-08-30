@@ -91,7 +91,11 @@ class StaffProfileMynumberForm(forms.ModelForm):
     
     class Meta:
         model = StaffProfileMynumber
-        fields = ['mynumber']
+        fields = [
+            'mynumber',
+            'mynumber_card_front', 'mynumber_card_back',
+            'identity_document_1', 'identity_document_2'
+        ]
         widgets = {
             'mynumber': forms.TextInput(attrs={
                 'class': 'form-control form-control-sm',
@@ -101,12 +105,21 @@ class StaffProfileMynumberForm(forms.ModelForm):
                 'style': 'ime-mode:disabled;',
                 'autocomplete': 'off'
             }),
+            'mynumber_card_front': forms.FileInput(attrs={'class': 'form-control form-control-sm'}),
+            'mynumber_card_back': forms.FileInput(attrs={'class': 'form-control form-control-sm'}),
+            'identity_document_1': forms.FileInput(attrs={'class': 'form-control form-control-sm'}),
+            'identity_document_2': forms.FileInput(attrs={'class': 'form-control form-control-sm'}),
         }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # 必須フィールドの設定
         self.fields['mynumber'].required = True
+        # 添付ファイルは必須ではない
+        self.fields['mynumber_card_front'].required = False
+        self.fields['mynumber_card_back'].required = False
+        self.fields['identity_document_1'].required = False
+        self.fields['identity_document_2'].required = False
     
     def clean_mynumber(self):
         """マイナンバーのバリデーション"""

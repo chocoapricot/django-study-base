@@ -1336,13 +1336,7 @@ def staff_mynumber_request_detail(request, staff_pk, pk):
                 # スタッフのマイナンバーを更新または作成
                 staff_mynumber, created = StaffMynumber.objects.update_or_create(
                     staff=staff,
-                    defaults={
-                        'mynumber': profile_mynumber.mynumber,
-                        'mynumber_card_front': profile_mynumber.mynumber_card_front,
-                        'mynumber_card_back': profile_mynumber.mynumber_card_back,
-                        'identity_document_1': profile_mynumber.identity_document_1,
-                        'identity_document_2': profile_mynumber.identity_document_2,
-                    }
+                    defaults={'mynumber': profile_mynumber.mynumber}
                 )
 
                 # 申請ステータスを更新
