@@ -247,6 +247,14 @@ class StaffProfileQualification(MyModel):
         return f"{self.staff_profile} - {self.qualification}"
 
 
+def profile_files_path(instance, filename):
+    """
+    プロフィールの添付ファイルのアップロード先パスを生成する。
+    MEDIA_ROOT/profile-files/<user_id>/<filename>
+    """
+    return f'profile-files/{instance.user.id}/{filename}'
+
+
 class StaffProfileSkill(MyModel):
     """
     スタッフが保有する技能（スキル）情報を管理するモデル。
@@ -304,7 +312,33 @@ class StaffProfileMynumber(MyModel):
         ],
         help_text='マイナンバーを12桁の数字で入力してください'
     )
-    
+
+    # 添付ファイル
+    mynumber_card_front = models.ImageField(
+        'マイナンバーカード表面',
+        upload_to=profile_files_path,
+        blank=True,
+        null=True,
+    )
+    mynumber_card_back = models.ImageField(
+        'マイナンバーカード裏面',
+        upload_to=profile_files_path,
+        blank=True,
+        null=True,
+    )
+    identity_document_1 = models.ImageField(
+        '本人確認書類１',
+        upload_to=profile_files_path,
+        blank=True,
+        null=True,
+    )
+    identity_document_2 = models.ImageField(
+        '本人確認書類２',
+        upload_to=profile_files_path,
+        blank=True,
+        null=True,
+    )
+
     class Meta:
         verbose_name = 'スタッフマイナンバー'
         verbose_name_plural = 'スタッフマイナンバー'
