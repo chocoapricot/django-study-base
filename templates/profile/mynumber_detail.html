@@ -29,6 +29,56 @@
                     <p class="form-control-plaintext">{{ mynumber.mynumber }}</p>
                 </div>
             </div>
+
+            <!-- 添付ファイル -->
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-start text-md-end">マイナンバーカード表面</label>
+                <div class="col-sm-10">
+                    {% if mynumber.mynumber_card_front %}
+                        <a href="{{ mynumber.mynumber_card_front.url }}" target="_blank">
+                            <img src="{{ mynumber.mynumber_card_front.url }}" alt="マイナンバーカード表面" class="img-thumbnail" style="max-width: 200px;">
+                        </a>
+                    {% else %}
+                        <p class="form-control-plaintext">未登録</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-start text-md-end">マイナンバーカード裏面</label>
+                <div class="col-sm-10">
+                    {% if mynumber.mynumber_card_back %}
+                        <a href="{{ mynumber.mynumber_card_back.url }}" target="_blank">
+                            <img src="{{ mynumber.mynumber_card_back.url }}" alt="マイナンバーカード裏面" class="img-thumbnail" style="max-width: 200px;">
+                        </a>
+                    {% else %}
+                        <p class="form-control-plaintext">未登録</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-start text-md-end">本人確認書類１</label>
+                <div class="col-sm-10">
+                    {% if mynumber.identity_document_1 %}
+                        <a href="{{ mynumber.identity_document_1.url }}" target="_blank">
+                            <img src="{{ mynumber.identity_document_1.url }}" alt="本人確認書類１" class="img-thumbnail" style="max-width: 200px;">
+                        </a>
+                    {% else %}
+                        <p class="form-control-plaintext">未登録</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label text-start text-md-end">本人確認書類２</label>
+                <div class="col-sm-10">
+                    {% if mynumber.identity_document_2 %}
+                        <a href="{{ mynumber.identity_document_2.url }}" target="_blank">
+                            <img src="{{ mynumber.identity_document_2.url }}" alt="本人確認書類２" class="img-thumbnail" style="max-width: 200px;">
+                        </a>
+                    {% else %}
+                        <p class="form-control-plaintext">未登録</p>
+                    {% endif %}
+                </div>
+            </div>
         {% else %}
             <div class="alert alert-info" role="alert">
                 <i class="bi bi-info-circle"></i>

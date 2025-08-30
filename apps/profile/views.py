@@ -183,7 +183,7 @@ def international_edit(request):
         is_new = True
     
     if request.method == 'POST':
-        form = StaffProfileInternationalForm(request.POST, instance=international_profile)
+        form = StaffProfileInternationalForm(request.POST, request.FILES, instance=international_profile)
         if form.is_valid():
             # 外国籍情報を保存
             international_profile = form.save(commit=False)

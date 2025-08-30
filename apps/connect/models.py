@@ -188,7 +188,8 @@ class ConnectStaff(MyModel):
     def _is_international_different(self, profile_international, staff_international):
         """スタッフプロフィール外国籍情報とスタッフ外国籍情報を比較する"""
         fields_to_compare = [
-            'residence_card_number', 'residence_status', 'residence_period_from', 'residence_period_to'
+            'residence_card_number', 'residence_status', 'residence_period_from', 'residence_period_to',
+            'residence_card_front', 'residence_card_back'
         ]
 
         for field in fields_to_compare:

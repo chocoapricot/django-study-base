@@ -8,6 +8,15 @@ from django_currentuser.db.models import CurrentUserField
 User = get_user_model()
 
 
+def residence_card_path(instance, filename):
+    """
+    アップロード先のパスを生成する
+    'profile-files/<user_id>/<filename>'
+    """
+    user_id = instance.user.id
+    return f'profile-files/{user_id}/{filename}'
+
+
 def validate_mynumber(value):
     """マイナンバーのバリデーション関数"""
     if not value:
@@ -388,6 +397,18 @@ class StaffProfileInternational(MyModel):
     residence_period_to = models.DateField(
         verbose_name='在留期限',
         help_text='在留期間の終了日（在留期限）を入力してください'
+    )
+    residence_card_front = models.FileField(
+        verbose_name='在留カード（表面）',
+        upload_to=residence_card_path,
+        blank=True,
+        null=True,
+    )
+    residence_card_back = models.FileField(
+        verbose_name='在留カード（裏面）',
+        upload_to=residence_card_path,
+        blank=True,
+        null=True,
     )
 
     class Meta:

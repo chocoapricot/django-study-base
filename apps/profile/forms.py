@@ -135,7 +135,7 @@ class StaffProfileInternationalForm(forms.ModelForm):
     
     class Meta:
         model = StaffProfileInternational
-        fields = ['residence_card_number', 'residence_status', 'residence_period_from', 'residence_period_to']
+        fields = ['residence_card_number', 'residence_status', 'residence_period_from', 'residence_period_to', 'residence_card_front', 'residence_card_back']
         widgets = {
             'residence_card_number': forms.TextInput(attrs={
                 'class': 'form-control form-control-sm',
@@ -153,18 +153,22 @@ class StaffProfileInternationalForm(forms.ModelForm):
                 'class': 'form-control form-control-sm',
                 'type': 'date'
             }),
+            'residence_card_front': forms.FileInput(attrs={'class': 'form-control form-control-sm'}),
+            'residence_card_back': forms.FileInput(attrs={'class': 'form-control form-control-sm'}),
         }
         labels = {
             'residence_card_number': '在留カード番号',
             'residence_status': '在留資格',
             'residence_period_from': '在留許可開始日',
             'residence_period_to': '在留期限',
+            'residence_card_front': '在留カード（表面）',
+            'residence_card_back': '在留カード（裏面）',
         }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # 必須フィールドの設定
-        for field_name in self.fields:
+        for field_name in ['residence_card_number', 'residence_status', 'residence_period_from', 'residence_period_to']:
             self.fields[field_name].required = True
     
     def clean(self):
