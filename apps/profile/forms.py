@@ -286,7 +286,7 @@ class StaffProfileDisabilityForm(forms.ModelForm):
         label='障害の種類',
         widget=forms.RadioSelect,
         choices=[],
-        required=False,
+        required=True,
     )
 
     class Meta:
@@ -302,8 +302,6 @@ class StaffProfileDisabilityForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         from apps.system.settings.models import Dropdowns
         self.fields['disability_type'].choices = [
-            ('', '選択しない')
-        ] + [
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='disability_type').order_by('disp_seq')
         ]
