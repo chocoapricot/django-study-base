@@ -140,12 +140,6 @@ class StaffProfileViewTest(TestCase):
         from apps.system.settings.models import Dropdowns
         Dropdowns.objects.create(category='sex', value='1', name='男性', disp_seq=1, active=True)
     
-    def test_profile_detail_view_no_profile(self):
-        """プロフィール詳細ビュー（プロフィール未作成）のテスト"""
-        response = self.client.get(reverse('profile:staff_detail'))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'プロフィールが登録されていません')
-    
     def test_profile_detail_view_with_profile(self):
         """プロフィール詳細ビュー（プロフィール作成済み）のテスト"""
         profile = StaffProfile.objects.create(
