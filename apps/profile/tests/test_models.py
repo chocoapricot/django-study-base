@@ -157,11 +157,22 @@ class StaffProfileViewTest(TestCase):
         self.assertContains(response, 'タナカ')
         self.assertContains(response, 'タロウ')
     
-    def test_profile_edit_view_get(self):
-        """プロフィール編集ビュー（GET）のテスト"""
+    def test_profile_edit_view_get_new(self):
+        """プロフィール編集ビュー（GET・新規作成）のテスト"""
         response = self.client.get(reverse('profile:staff_edit'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'プロフィール作成')
+        self.assertContains(response, '基本情報作成')
+
+    def test_profile_edit_view_get_existing(self):
+        """プロフィール編集ビュー（GET・既存編集）のテスト"""
+        StaffProfile.objects.create(
+            user=self.user,
+            name_last='田中',
+            name_first='太郎',
+        )
+        response = self.client.get(reverse('profile:staff_edit'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '基本情報編集')
     
     def test_profile_edit_view_post_create(self):
         """プロフィール編集ビュー（POST・作成）のテスト"""
@@ -333,6 +344,22 @@ class StaffProfileMynumberViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, valid_mynumber)
     
+    def test_mynumber_edit_view_get_new(self):
+        """マイナンバー編集ビュー（GET・新規作成）のテスト"""
+        response = self.client.get(reverse('profile:mynumber_edit'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'マイナンバー登録')
+
+    def test_mynumber_edit_view_get_existing(self):
+        """マイナンバー編集ビュー（GET・既存編集）のテスト"""
+        StaffProfileMynumber.objects.create(
+            user=self.user,
+            mynumber='621498320257'
+        )
+        response = self.client.get(reverse('profile:mynumber_edit'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'マイナンバー編集')
+
     def test_mynumber_edit_view_post_create(self):
         """マイナンバー編集ビュー（POST・作成）のテスト"""
         # 有効なマイナンバーを使用
