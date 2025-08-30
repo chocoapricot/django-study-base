@@ -8,7 +8,7 @@ urlpatterns = [
     path('staff/', views.connect_staff_list, name='staff_list'),
     path('staff/<int:pk>/approve/', views.connect_staff_approve, name='staff_approve'),
     path('staff/<int:pk>/unapprove/', views.connect_staff_unapprove, name='staff_unapprove'),
-    
+    path('staff/create/', views.create_staff_connection, name='create_staff_connection'),
     path('client/', views.connect_client_list, name='client_list'),
     path('client/<int:pk>/approve/', views.connect_client_approve, name='client_approve'),
     path('client/<int:pk>/unapprove/', views.connect_client_unapprove, name='client_unapprove'),

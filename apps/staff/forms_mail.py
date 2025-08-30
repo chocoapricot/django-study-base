@@ -220,3 +220,74 @@ class ConnectionRequestMailForm:
             mail_log.save()
 
             return False, f"メール送信に失敗しました: {str(e)}"
+
+
+class DisconnectionMailForm:
+    """接続解除メール送信フォーム"""
+
+    def __init__(self, staff, user):
+        self.staff = staff
+        self.user = user
+
+    def send_mail(self):
+        """メール送信処理"""
+        subject_template_name = 'staff/email/disconnection_notification_subject.txt'
+        message_template_name = 'staff/email/disconnection_notification_message.txt'
+
+        company = Company.objects.first()
+        company_name = company.name if company else '貴社'
+
+        context = {
+            'staff_name': self.staff.name,
+            'company_name': company_name,
+        }
+        subject = render_to_string(subject_template_name, context).strip()
+        body = render_to_string(message_template_name, context)
+
+        # メールログを作成
+        mail_log = MailLog.objects.create(
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to_email=self.staff.email,
+            mail_type='notification',
+            subject=subject,
+            body=body,
+            status='pending',
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        try:
+            # メール送信
+            send_mail(
+                subject=subject,
+                message=body,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[self.staff.email],
+                fail_silently=False,
+            )
+
+            # 送信成功時の処理
+            mail_log.status = 'sent'
+            mail_log.sent_at = timezone.now()
+            mail_log.save()
+
+            # 連絡履歴に保存
+            StaffContacted.objects.create(
+                staff=self.staff,
+                contacted_at=timezone.now(),
+                content=subject,
+                detail=body,
+                contact_type=50, # メール配信
+                created_by=self.user,
+                updated_by=self.user
+            )
+
+            return True, "メールを送信しました。"
+
+        except Exception as e:
+            # 送信失敗時の処理
+            mail_log.status = 'failed'
+            mail_log.error_message = str(e)
+            mail_log.save()
+
+            return False, f"メール送信に失敗しました: {str(e)}"

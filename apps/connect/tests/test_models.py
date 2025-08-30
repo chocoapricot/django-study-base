@@ -139,7 +139,52 @@ class ConnectViewTest(TestCase):
         self.connection.refresh_from_db()
         self.assertFalse(self.connection.is_approved)
     
+    def test_create_staff_connection(self):
+        """スタッフ接続申請作成のテスト"""
+        # staff.view_staff権限を付与
+        from django.contrib.auth.models import Permission
+        permission = Permission.objects.get(codename='view_staff')
+        self.user.user_permissions.add(permission)
+
+        response = self.client.post(reverse('connect:create_staff_connection'), {
+            'staff_id': self.staff.pk
+        })
+        self.assertEqual(response.status_code, 302)  # リダイレクト
+
+        # 接続申請が作成されたかチェック
+        connection = ConnectStaff.objects.filter(
+            corporate_number=self.company.corporate_number,
+            email=self.staff.email
+        ).first()
+        self.assertIsNotNone(connection)
+        self.assertEqual(connection.status, 'pending')
     
+    def test_create_staff_connection_duplicate(self):
+        """重複する接続申請作成のテスト"""
+        # staff.view_staff権限を付与
+        from django.contrib.auth.models import Permission
+        permission = Permission.objects.get(codename='view_staff')
+        self.user.user_permissions.add(permission)
+
+        # 既存の接続申請を作成
+        ConnectStaff.objects.create(
+            corporate_number=self.company.corporate_number,
+            email=self.staff.email,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        response = self.client.post(reverse('connect:create_staff_connection'), {
+            'staff_id': self.staff.pk
+        })
+        self.assertEqual(response.status_code, 302)  # リダイレクト
+
+        # 重複チェックが働いて新しい申請は作成されないことを確認
+        connections = ConnectStaff.objects.filter(
+            corporate_number=self.company.corporate_number,
+            email=self.staff.email
+        )
+        self.assertEqual(connections.count(), 1)
     
     def test_permission_grant_on_connection_request(self):
         """接続依頼時の権限付与テスト"""

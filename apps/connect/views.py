@@ -203,6 +203,16 @@ def create_staff_connection(request):
 
         messages.success(request, f'スタッフ「{staff.name}」への接続申請を送信しました。')
 
+        return redirect('staff:staff_detail', pk=staff_id)
+
+    except Staff.DoesNotExist:
+        messages.error(request, 'スタッフが見つかりません。')
+        return redirect('staff:staff_list')
+    except Exception as e:
+        messages.error(request, f'エラーが発生しました: {str(e)}')
+        return redirect('staff:staff_list')
+
+
 @login_required
 def connect_client_list(request):
     """クライアント接続一覧"""
