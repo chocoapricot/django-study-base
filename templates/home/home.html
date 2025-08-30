@@ -102,7 +102,7 @@
                         </ul>
                     </p>
                 </div>
-                <div class="col-5">
+                <div class="col-6">
                     <h4 class="card-title">Middleware</h4>
                     <p class="card-text">
                         <ul>
@@ -129,26 +129,7 @@
                             <li>銀行支店検索：DBの支店情報から検索：/api/search_bank_branchs/ (自作API)</li>
                         </ul>
                     </p>
-                </div>
 
-                <div class="col-4">
-                    <h4 class="card-title">Custom Tags</h4>
-                    <p class="card-text">
-                        <ul>
-                            <li>Tooltip：{% templatetag openblock %} load help_tags {% templatetag closeblock %}<br>
-                                例:{% templatetag openblock %} my_help_preset "corporate_number" %}
-                            </li>
-                            <li>Parameter：{% templatetag openblock %} load parameters {% templatetag closeblock %}<br>
-                                例:{% templatetag openblock %} parameter 'SYSTEM_NAME' %}
-                            </li>
-                            <li>Badge color：{% templatetag openblock %} load badge_tags {% templatetag closeblock %}<br>
-                                例:&ltspan class="badge {% templatetag openvariable %} client.regist_form_client|badge_class {% templatetag closevariable %}"
-                            </li>
-                            <li>Dropdown selected：{% templatetag openblock %} load dropdowns {% templatetag closeblock %}<br>
-                                例:{% templatetag openblock %} my_name 'sex' staff.sex %}
-                            </li>
-                        </ul>
-                    </p>
                 </div>
             </div>
         </div>
