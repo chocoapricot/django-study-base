@@ -88,11 +88,7 @@
                     <button type="submit" class="btn btn-sm btn-primary">
                         {% if is_new %}登録{% else %}更新{% endif %}
                     </button>
-                    {% if is_new %}
-                        <a href="/" class="btn btn-sm btn-secondary ms-2">戻る</a>
-                    {% else %}
-                        <a href="{% url 'profile:index' %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
-                    {% endif %}
+                    <a href="{% url 'profile:index' %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
                 </div>
             </div>
         </form>
