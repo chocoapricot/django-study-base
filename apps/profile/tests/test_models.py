@@ -161,7 +161,7 @@ class StaffProfileViewTest(TestCase):
         """プロフィール編集ビュー（GET・新規作成）のテスト"""
         response = self.client.get(reverse('profile:staff_edit'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '基本情報作成')
+        self.assertContains(response, 'プロフィール作成')
 
     def test_profile_edit_view_get_existing(self):
         """プロフィール編集ビュー（GET・既存編集）のテスト"""
@@ -172,7 +172,7 @@ class StaffProfileViewTest(TestCase):
         )
         response = self.client.get(reverse('profile:staff_edit'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '基本情報編集')
+        self.assertContains(response, 'プロフィール編集')
     
     def test_profile_edit_view_post_create(self):
         """プロフィール編集ビュー（POST・作成）のテスト"""
