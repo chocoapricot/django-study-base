@@ -38,9 +38,9 @@ class ProfilePermissionTest(TestCase):
         self.client.login(username='perm_user', password='TestPass123!')
         
         urls = [
-            reverse('profile:detail'),
-            reverse('profile:edit'),
-            reverse('profile:delete'),
+            reverse('profile:staff_detail'),
+            reverse('profile:staff_edit'),
+            reverse('profile:staff_delete'),
             reverse('profile:mynumber_detail'),
             reverse('profile:mynumber_edit'),
             reverse('profile:mynumber_delete'),
@@ -55,9 +55,9 @@ class ProfilePermissionTest(TestCase):
         self.client.login(username='no_perm_user', password='TestPass123!')
 
         urls = [
-            reverse('profile:detail'),
-            reverse('profile:edit'),
-            reverse('profile:delete'),
+            reverse('profile:staff_detail'),
+            reverse('profile:staff_edit'),
+            reverse('profile:staff_delete'),
             reverse('profile:mynumber_detail'),
             reverse('profile:mynumber_edit'),
             reverse('profile:mynumber_delete'),

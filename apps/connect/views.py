@@ -332,10 +332,47 @@ def connect_index(request):
 
     client_pending_count = ConnectClient.objects.filter(email=request.user.email, status='pending').count()
     client_approved_count = ConnectClient.objects.filter(email=request.user.email, status='approved').count()
+
+    # --------------------------------------------------------------------------
+    # 接続申請一覧
+    # --------------------------------------------------------------------------
+    # 管理者の場合は全ての接続、そうでない場合は自分宛の接続を表示
+    if request.user.is_staff:
+        staff_connections = ConnectStaff.objects.all()
+        client_connections = ConnectClient.objects.all()
+    else:
+        staff_connections = ConnectStaff.objects.filter(email=request.user.email)
+        client_connections = ConnectClient.objects.filter(email=request.user.email)
+
+    # 2つのクエリセットをリストに変換し、'type'属性を追加
+    all_connections = []
+    for conn in staff_connections:
+        conn.type = 'staff'
+        all_connections.append(conn)
+
+    for conn in client_connections:
+        conn.type = 'client'
+        all_connections.append(conn)
+
+    # 作成日時で降順にソート
+    all_connections.sort(key=lambda x: x.created_at, reverse=True)
+
+    # 会社情報を取得（法人番号から）
+    from apps.company.models import Company
+    companies = {}
+    for conn in all_connections:
+        if conn.corporate_number not in companies:
+            try:
+                company = Company.objects.get(corporate_number=conn.corporate_number)
+                companies[conn.corporate_number] = company
+            except Company.DoesNotExist:
+                companies[conn.corporate_number] = None
     
     return render(request, 'connect/index.html', {
         'staff_pending_count': staff_pending_count,
         'staff_approved_count': staff_approved_count,
         'client_pending_count': client_pending_count,
         'client_approved_count': client_approved_count,
+        'all_connections': all_connections,
+        'companies': companies,
     })

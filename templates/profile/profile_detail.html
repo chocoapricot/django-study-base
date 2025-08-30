@@ -9,10 +9,10 @@
         プロフィール詳細
         <div>
             {% if profile %}
-                <a href="{% url 'profile:edit' %}" class="btn btn-sm btn-primary">編集</a>
-                <a href="{% url 'profile:delete' %}" class="btn btn-sm btn-dark">削除</a>
+                <a href="{% url 'profile:staff_edit' %}" class="btn btn-sm btn-primary">編集</a>
+                <a href="{% url 'profile:staff_delete' %}" class="btn btn-sm btn-dark">削除</a>
             {% else %}
-                <a href="{% url 'profile:edit' %}" class="btn btn-sm btn-primary">プロフィール作成</a>
+                <a href="{% url 'profile:staff_edit' %}" class="btn btn-sm btn-primary">プロフィール作成</a>
             {% endif %}
         </div>
     </div>
@@ -95,13 +95,8 @@
         {% endif %}
 
         <div class="d-flex justify-content-start">
-            <a href="/" class="btn btn-sm btn-secondary">戻る</a>
+            <a href="/profile/" class="btn btn-sm btn-secondary">戻る</a>
         </div>
-    </div>
-    <div class="card-footer">
-        <a href="{% url 'profile:mynumber_detail' %}" class="btn btn-sm btn-outline-secondary">マイナンバー</a>
-        <a href="{% url 'profile:bank_detail' %}" class="btn btn-sm btn-outline-secondary">銀行口座</a>
-        <a href="{% url 'profile:international_detail' %}" class="btn btn-sm btn-outline-secondary">外国籍情報</a>
     </div>
 </div>
 

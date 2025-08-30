@@ -1,0 +1,110 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<style>
+.icon-square {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.5rem;
+  border-radius: .75rem;
+}
+</style>
+{% endblock %}
+
+{% block title %}プロフィールメニュー{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4">
+  <div class="card-header">
+    プロフィール登録
+  </div>
+    <div class="card-body" id="hanging-icons">
+      <p>各項目を登録・更新してください。登録済みの項目にはチェックマークが表示されます。</p>
+      <div class="row g-4 py-4 row-cols-1 row-cols-md-2 row-cols-lg-3 ms-3">
+        <div class="col d-flex align-items-start mb-4">
+          <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+            <i class="bi bi-person-circle" style="font-size:larger;color:#6c757d;"></i>
+          </div>
+          <div>
+            <h3 class="fs-4">基本情報 {% if has_staff %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
+            <p>氏名、住所、連絡先などを登録してください<br>
+            <a href="{% url 'profile:staff_detail' %}" class="btn btn-sm btn-primary">
+              登録・編集
+            </a>
+            </p>
+          </div>
+        </div>
+        <div class="col d-flex align-items-start mb-4">
+          <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+              <i class="bi bi-credit-card" style="font-size:larger;color:#dc3545;"></i>
+          </div>
+          <div>
+            <h3 class="fs-4">マイナンバー {% if has_mynumber %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
+            <p>マイナンバーを登録してください<br>
+            <a href="{% url 'profile:mynumber_detail' %}" class="btn btn-sm btn-primary">
+              登録・編集
+            </a>
+            </p>
+          </div>
+        </div>
+        <div class="col d-flex align-items-start mb-4">
+          <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+              <i class="bi bi-bank" style="font-size:larger;color:#28a745;"></i>
+          </div>
+          <div>
+            <h3 class="fs-4">銀行口座 {% if has_bank %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
+            <p>給与振込先の銀行口座を登録してください<br>
+            <a href="{% url 'profile:bank_detail' %}" class="btn btn-sm btn-primary">
+              登録・編集
+            </a>
+            </p>
+          </div>
+        </div>
+        <div class="col d-flex align-items-start mb-4">
+          <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+              <i class="bi bi-person-rolodex" style="font-size:larger;color:#ff69b4;"></i>
+          </div>
+          <div>
+            <h3 class="fs-4">連絡先 {% if has_contact %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
+            <p>緊急連絡先の登録をしてください<br>引っ越してまだ住所変更が済んでいない場合もこちらへ<br>
+            <a href="{% url 'profile:contact_detail' %}" class="btn btn-sm btn-primary">
+              登録・編集
+            </a>
+            </p>
+          </div>
+        </div>
+        <div class="col d-flex align-items-start mb-4">
+          <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+              <i class="bi bi-send" style="font-size:larger;color:#17a2b8;"></i>
+          </div>
+          <div>
+            <h3 class="fs-4">外国籍情報 {% if has_international %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
+            <p>外国籍の方は在留資格などの登録をしてください<br>
+            <a href="{% url 'profile:international_detail' %}" class="btn btn-sm btn-primary">
+              登録・編集
+            </a>
+            </p>
+          </div>
+        </div>
+        <div class="col d-flex align-items-start mb-4">
+          <div class="icon-square text-bg-light d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+              <i class="bi bi-heart" style="font-size:larger;color:#6610f2;"></i>
+          </div>
+          <div>
+            <h3 class="fs-4">障害者情報 {% if has_disability %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
+            <p>障害者手帳をお持ちの方はこちらから登録ください<br>
+            <a href="{% url 'profile:disability_detail' %}" class="btn btn-sm btn-primary">
+              登録・編集
+            </a>
+            </p>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
+{% endblock %}
