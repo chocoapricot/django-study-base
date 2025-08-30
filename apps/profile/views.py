@@ -61,7 +61,7 @@ def profile_edit(request):
             else:
                 messages.success(request, 'プロフィールを更新しました。')
             
-            return redirect('profile:staff_detail')
+            return redirect('profile:index')
     else:
         if profile is None:
             # 新規作成時はUserの姓・名を初期値にセット
@@ -139,7 +139,7 @@ def mynumber_edit(request):
             else:
                 messages.success(request, 'マイナンバーを更新しました。')
             
-            return redirect('profile:mynumber_detail')
+            return redirect('profile:index')
     else:
         form = StaffProfileMynumberForm(instance=mynumber)
     
@@ -222,7 +222,7 @@ def international_edit(request):
             else:
                 messages.success(request, '外国籍情報を更新しました。')
             
-            return redirect('profile:international_detail')
+            return redirect('profile:index')
     else:
         form = StaffProfileInternationalForm(instance=international_profile)
     
@@ -332,7 +332,7 @@ def bank_edit(request):
             else:
                 messages.success(request, '銀行口座を更新しました。')
 
-            return redirect('profile:bank_detail')
+            return redirect('profile:index')
     else:
         initial_data = {}
         if is_new:
@@ -408,7 +408,7 @@ def disability_edit(request):
             else:
                 messages.success(request, '障害者情報を更新しました。')
 
-            return redirect('profile:disability_detail')
+            return redirect('profile:index')
     else:
         form = StaffProfileDisabilityForm(instance=disability)
 
@@ -477,7 +477,7 @@ def contact_edit(request):
             else:
                 messages.success(request, '連絡先情報を更新しました。')
 
-            return redirect('profile:contact_detail')
+            return redirect('profile:index')
     else:
         form = StaffProfileContactForm(instance=contact)
 
