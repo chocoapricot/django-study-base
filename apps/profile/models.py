@@ -388,9 +388,7 @@ class StaffProfileBank(MyModel):
     bank_code = models.CharField(
         max_length=4,
         verbose_name='銀行コード',
-        help_text='4桁の数字で入力（任意）',
-        blank=True,
-        null=True,
+        help_text='4桁の数字で入力',
         validators=[
             RegexValidator(
                 regex=r'^\d{4}$',
@@ -401,9 +399,7 @@ class StaffProfileBank(MyModel):
     branch_code = models.CharField(
         max_length=3,
         verbose_name='支店コード',
-        help_text='3桁の数字で入力（任意）',
-        blank=True,
-        null=True,
+        help_text='3桁の数字で入力',
         validators=[
             RegexValidator(
                 regex=r'^\d{3}$',

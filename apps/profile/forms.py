@@ -216,12 +216,45 @@ class StaffProfileBankForm(forms.ModelForm):
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='bank_account_type').order_by('disp_seq')
         ]
+        self.fields['bank_code'].required = True
+        self.fields['branch_code'].required = True
         self.fields['account_type'].required = True
         self.fields['account_number'].required = True
         self.fields['account_holder'].required = True
         if self.instance and self.instance.pk:
             self.fields['bank_name'].initial = self.instance.bank_name
             self.fields['branch_name'].initial = self.instance.branch_name
+
+    def clean_bank_code(self):
+        bank_code = self.cleaned_data.get('bank_code')
+        if bank_code:
+            from apps.master.models import Bank
+            if not Bank.objects.filter(bank_code=bank_code, is_active=True).exists():
+                raise ValidationError("存在しない銀行コードです。")
+        return bank_code
+
+    def clean_branch_code(self):
+        branch_code = self.cleaned_data.get('branch_code')
+        # bank_code がないと検証できないので、ここでは何もしない
+        # clean メソッドで bank_code と合わせて検証する
+        return branch_code
+
+    def clean(self):
+        cleaned_data = super().clean()
+        bank_code = cleaned_data.get('bank_code')
+        branch_code = cleaned_data.get('branch_code')
+
+        if bank_code and branch_code:
+            from apps.master.models import Bank, BankBranch
+            try:
+                bank = Bank.objects.get(bank_code=bank_code, is_active=True)
+                if not BankBranch.objects.filter(bank=bank, branch_code=branch_code, is_active=True).exists():
+                    self.add_error('branch_code', "存在しない支店コードです。")
+            except Bank.DoesNotExist:
+                # clean_bank_code で既にエラーが出ているはずなので、ここでは何もしない
+                pass
+        
+        return cleaned_data
 
     def save(self, commit=True):
         # bank_name と branch_name をDBに保存しないようにする
@@ -261,6 +294,10 @@ class StaffProfileDisabilityForm(forms.ModelForm):
 
 class StaffProfileContactForm(forms.ModelForm):
     """スタッフ連絡先情報フォーム"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['emergency_contact'].required = True
+        self.fields['relationship'].required = True
 
     class Meta:
         model = StaffProfileContact
