@@ -16,12 +16,12 @@
 </style>
 {% endblock %}
 
-{% block title %}マイプロフィール{% endblock %}
+{% block title %}プロフィールメニュー{% endblock %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4">
   <div class="card-header">
-    マイプロフィール
+    プロフィール登録
   </div>
     <div class="card-body" id="hanging-icons">
       <p>各項目を登録・更新してください。登録済みの項目にはチェックマークが表示されます。</p>
@@ -33,7 +33,7 @@
           <div>
             <h3 class="fs-4">基本情報 {% if has_staff %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
             <p>氏名、住所、連絡先などを登録してください<br>
-            <a href="{% url 'profile:staff_edit' %}" class="btn btn-sm {% if has_staff %}btn-light{% else %}btn-primary{% endif %}">
+            <a href="{% url 'profile:staff_detail' %}" class="btn btn-sm btn-primary">
               登録・編集
             </a>
             </p>
@@ -46,7 +46,7 @@
           <div>
             <h3 class="fs-4">マイナンバー {% if has_mynumber %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
             <p>マイナンバーを登録してください<br>
-            <a href="{% url 'profile:mynumber_edit' %}" class="btn btn-sm {% if has_mynumber %}btn-light{% else %}btn-primary{% endif %}">
+            <a href="{% url 'profile:mynumber_detail' %}" class="btn btn-sm btn-primary">
               登録・編集
             </a>
             </p>
@@ -59,7 +59,7 @@
           <div>
             <h3 class="fs-4">銀行口座 {% if has_bank %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
             <p>給与振込先の銀行口座を登録してください<br>
-            <a href="{% url 'profile:bank_edit' %}" class="btn btn-sm {% if has_bank %}btn-light{% else %}btn-primary{% endif %}">
+            <a href="{% url 'profile:bank_detail' %}" class="btn btn-sm btn-primary">
               登録・編集
             </a>
             </p>
@@ -72,7 +72,7 @@
           <div>
             <h3 class="fs-4">連絡先 {% if has_contact %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
             <p>緊急連絡先の登録をしてください<br>引っ越してまだ住所変更が済んでいない場合もこちらへ<br>
-            <a href="{% url 'profile:contact_edit' %}" class="btn btn-sm {% if has_contact %}btn-light{% else %}btn-primary{% endif %}">
+            <a href="{% url 'profile:contact_detail' %}" class="btn btn-sm btn-primary">
               登録・編集
             </a>
             </p>
@@ -85,7 +85,7 @@
           <div>
             <h3 class="fs-4">外国籍情報 {% if has_international %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
             <p>外国籍の方は在留資格などの登録をしてください<br>
-            <a href="{% url 'profile:international_edit' %}" class="btn btn-sm {% if has_international %}btn-light{% else %}btn-primary{% endif %}">
+            <a href="{% url 'profile:international_detail' %}" class="btn btn-sm btn-primary">
               登録・編集
             </a>
             </p>
@@ -98,7 +98,7 @@
           <div>
             <h3 class="fs-4">障害者情報 {% if has_disability %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</h3>
             <p>障害者手帳をお持ちの方はこちらから登録ください<br>
-            <a href="{% url 'profile:disability_edit' %}" class="btn btn-sm {% if has_disability %}btn-light{% else %}btn-primary{% endif %}">
+            <a href="{% url 'profile:disability_detail' %}" class="btn btn-sm btn-primary">
               登録・編集
             </a>
             </p>

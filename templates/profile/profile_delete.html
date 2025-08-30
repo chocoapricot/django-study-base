@@ -1,16 +1,16 @@
 {% extends 'common/_base.html' %}
 
-{% block title %}基本情報削除確認{% endblock %}
+{% block title %}プロフィール削除確認{% endblock %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">
-        基本情報削除確認
+        プロフィール削除確認
     </div>
     <div class="card-body">
         <div class="alert alert-warning" role="alert">
             <i class="bi bi-exclamation-triangle-fill"></i>
-            基本情報「{{ profile.full_name }}」を削除しますか？この操作は取り消せません。
+            プロフィール「{{ profile.full_name }}」を削除しますか？この操作は取り消せません。
         </div>
 
         <div class="row mb-3">

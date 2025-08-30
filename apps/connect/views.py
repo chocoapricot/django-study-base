@@ -336,7 +336,11 @@ def connect_index(request):
     # --------------------------------------------------------------------------
     # 接続申請一覧
     # --------------------------------------------------------------------------
-    # 管理者の場合は全ての接続、そうでない場合は自分宛の接続を表示
+    # Get filter values
+    type_filter = request.GET.get('type', '')
+    status_filter = request.GET.get('status', '')
+
+    # Base querysets
     if request.user.is_staff:
         staff_connections = ConnectStaff.objects.all()
         client_connections = ConnectClient.objects.all()
@@ -344,15 +348,22 @@ def connect_index(request):
         staff_connections = ConnectStaff.objects.filter(email=request.user.email)
         client_connections = ConnectClient.objects.filter(email=request.user.email)
 
-    # 2つのクエリセットをリストに変換し、'type'属性を追加
-    all_connections = []
-    for conn in staff_connections:
-        conn.type = 'staff'
-        all_connections.append(conn)
+    # Apply status filter
+    if status_filter:
+        staff_connections = staff_connections.filter(status=status_filter)
+        client_connections = client_connections.filter(status=status_filter)
 
-    for conn in client_connections:
-        conn.type = 'client'
-        all_connections.append(conn)
+    # Prepare connection list based on type filter
+    all_connections = []
+    if type_filter == 'staff' or not type_filter:
+        for conn in staff_connections:
+            conn.type = 'staff'
+            all_connections.append(conn)
+
+    if type_filter == 'client' or not type_filter:
+        for conn in client_connections:
+            conn.type = 'client'
+            all_connections.append(conn)
 
     # 作成日時で降順にソート
     all_connections.sort(key=lambda x: x.created_at, reverse=True)
@@ -375,4 +386,6 @@ def connect_index(request):
         'client_approved_count': client_approved_count,
         'all_connections': all_connections,
         'companies': companies,
+        'type_filter': type_filter,
+        'status_filter': status_filter,
     })
