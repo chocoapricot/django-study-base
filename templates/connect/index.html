@@ -7,11 +7,32 @@
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">すべての接続申請</div>
     <div class="card-body">
+        <!-- Filter Form -->
+        <form method="get" action="{% url 'connect:index' %}" class="form-inline d-flex flex-wrap mb-3">
+            <div class="me-2 mb-2" style="width: 12em;">
+                <select name="type" class="form-select form-select-sm">
+                    <option value="">すべての種別</option>
+                    <option value="staff" {% if type_filter == 'staff' %}selected{% endif %}>スタッフ</option>
+                    <option value="client" {% if type_filter == 'client' %}selected{% endif %}>クライアント</option>
+                </select>
+            </div>
+            <div class="me-2 mb-2" style="width: 12em;">
+                <select name="status" class="form-select form-select-sm">
+                    <option value="">すべてのステータス</option>
+                    <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>未承認</option>
+                    <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>承認済み</option>
+                </select>
+            </div>
+            <button class="btn btn-primary btn-sm me-2 mb-2" type="submit">絞り込み</button>
+            <a href="{% url 'connect:index' %}" class="btn btn-secondary btn-sm mb-2">リセット</a>
+        </form>
+
         {% if all_connections %}
         <table class="table table-striped table-hover me-2 mt-2" style="border-top: 1px solid #ddd;">
             <thead class="table-light">
                 <tr>
                     <th>会社名</th>
+                    <th>法人番号</th>
                     <th>種別</th>
                     <th>メールアドレス</th>
                     <th>申請日時</th>
@@ -32,6 +53,7 @@
                             {% endif %}
                         {% endwith %}
                     </td>
+                    <td>{{ connection.corporate_number }}</td>
                     <td>
                         {% if connection.type == 'staff' %}
                             <span class="badge bg-primary">スタッフ</span>

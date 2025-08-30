@@ -1,12 +1,12 @@
 {% extends 'common/_base.html' %}
 {% load help_tags %}
 
-{% block title %}{% if is_new %}基本情報作成{% else %}基本情報編集{% endif %}{% endblock %}
+{% block title %}{% if is_new %}プロフィール作成{% else %}プロフィール編集{% endif %}{% endblock %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">
-        {% if is_new %}基本情報作成{% else %}基本情報編集{% endif %}
+        {% if is_new %}プロフィール作成{% else %}プロフィール編集{% endif %}
     </div>
     <div class="card-body">
         <form method="post">
