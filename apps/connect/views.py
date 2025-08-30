@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.utils.http import url_has_allowed_host_and_scheme
 from apps.system.logs.utils import log_model_action
 from apps.system.logs.models import AppLog
 from .models import ConnectStaff, ConnectClient
@@ -101,6 +102,10 @@ def connect_staff_approve(request, pk):
         messages.success(request, '接続申請を承認しました。')
     else:
         messages.info(request, 'この申請は既に承認済みです。')
+
+    next_url = request.GET.get('next')
+    if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+        return redirect(next_url)
     
     return redirect('connect:staff_list')
 
@@ -138,6 +143,10 @@ def connect_staff_unapprove(request, pk):
         messages.success(request, '接続申請を未承認に戻しました。')
     else:
         messages.info(request, 'この申請は未承認です。')
+
+    next_url = request.GET.get('next')
+    if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+        return redirect(next_url)
     
     return redirect('connect:staff_list')
 
@@ -282,6 +291,10 @@ def connect_client_approve(request, pk):
         messages.success(request, 'クライアント接続申請を承認しました。')
     else:
         messages.info(request, 'この申請は既に承認済みです。')
+
+    next_url = request.GET.get('next')
+    if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+        return redirect(next_url)
     
     return redirect('connect:client_list')
 
@@ -319,6 +332,10 @@ def connect_client_unapprove(request, pk):
         messages.success(request, 'クライアント接続申請を未承認に戻しました。')
     else:
         messages.info(request, 'この申請は未承認です。')
+
+    next_url = request.GET.get('next')
+    if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+        return redirect(next_url)
     
     return redirect('connect:client_list')
 
