@@ -8,6 +8,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from apps.system.logs.utils import log_model_action
 from apps.system.logs.models import AppLog
 from .models import ConnectStaff, ConnectClient
+from apps.staff.forms_mail import ConnectionRequestMailForm
 
 
 @login_required
@@ -200,9 +201,15 @@ def create_staff_connection(request):
         # 既存ユーザーがいる場合は権限を付与
         from .utils import grant_permissions_on_connection_request
         grant_permissions_on_connection_request(staff.email)
-        
-        messages.success(request, f'スタッフ「{staff.name}」への接続申請を送信しました。')
-        
+
+        # メール送信
+        mail_form = ConnectionRequestMailForm(staff=staff, user=request.user)
+        success, message = mail_form.send_mail()
+        if success:
+            messages.success(request, f'スタッフ「{staff.name}」への接続申請を送信し、メールを送信しました。')
+        else:
+            messages.warning(request, f'スタッフ「{staff.name}」への接続申請を送信しましたが、メールの送信に失敗しました: {message}')
+
         return redirect('staff:staff_detail', pk=staff_id)
         
     except Staff.DoesNotExist:
