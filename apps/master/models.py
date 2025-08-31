@@ -536,6 +536,39 @@ class Bank(MyModel):
         }
 
 
+class Information(MyModel):
+    """
+    お知らせ情報を管理するマスターデータモデル。
+    """
+
+    TARGET_CHOICES = [
+        ('company', '会社'),
+        ('staff', 'スタッフ'),
+        ('client', 'クライアント'),
+    ]
+
+    target = models.CharField(
+        '対象',
+        max_length=10,
+        choices=TARGET_CHOICES,
+        default='company',
+    )
+    subject = models.CharField('件名', max_length=200)
+    content = models.TextField('内容')
+    start_date = models.DateField('開始日', null=True, blank=True)
+    end_date = models.DateField('終了日', null=True, blank=True)
+    corporation_number = models.CharField('法人番号', max_length=13, blank=True, null=True)
+
+    class Meta:
+        db_table = 'apps_master_information'
+        verbose_name = 'お知らせ'
+        verbose_name_plural = 'お知らせ'
+        ordering = ['-start_date']
+
+    def __str__(self):
+        return self.subject
+
+
 class BankBranch(MyModel):
     """
     銀行の支店情報を管理するマスターデータモデル。

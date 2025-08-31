@@ -1,0 +1,59 @@
+{% extends 'common/_base.html' %}
+{% load help_tags %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header">{{ title }}</div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {% if form.errors %}
+            <div class="alert alert-dismissible alert-warning">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                {{ form.errors }}
+            </div>
+            {% endif %}
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.subject.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">{{ form.subject.label }}</label>
+                <div class="col-sm-10">
+                    {{ form.subject }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.target.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">{{ form.target.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.target }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.content.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">{{ form.content.label }}</label>
+                <div class="col-sm-10">
+                    {{ form.content }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.start_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">{{ form.start_date.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.start_date }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.end_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">{{ form.end_date.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.end_date }}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-start mt-4">
+                <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
+                <a href="{% url 'master:information_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

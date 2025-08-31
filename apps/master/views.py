@@ -5,8 +5,9 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.urls import reverse
 from django.apps import apps
-from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch
-from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm, BillPaymentForm, BillBankForm, BankForm, BankBranchForm
+from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch, Information
+from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm, BillPaymentForm, BillBankForm, BankForm, BankBranchForm, InformationForm
+from apps.company.models import Company
 
 
 # マスタ設定データ
@@ -50,6 +51,14 @@ MASTER_CONFIGS = [
         'model': 'master.Bank',
         'url_name': 'master:bank_management',
         'permission': 'master.view_bank'
+    },
+    {
+        'category': 'その他',
+        'name': 'お知らせ管理',
+        'description': '会社・スタッフ・クライアントへのお知らせを管理',
+        'model': 'master.Information',
+        'url_name': 'master:information_list',
+        'permission': 'master.view_information'
     }
 ]
 
@@ -271,10 +280,7 @@ def qualification_category_create(request):
     if request.method == 'POST':
         form = QualificationCategoryForm(request.POST)
         if form.is_valid():
-            category = form.save(commit=False)
-            category.created_by = request.user
-            category.updated_by = request.user
-            category.save()
+            category = form.save()
             messages.success(request, f'カテゴリ「{category.name}」を作成しました。')
             return redirect('master:qualification_detail', pk=category.pk)
     else:
@@ -294,10 +300,7 @@ def qualification_create(request):
     if request.method == 'POST':
         form = QualificationForm(request.POST)
         if form.is_valid():
-            qualification = form.save(commit=False)
-            qualification.created_by = request.user
-            qualification.updated_by = request.user
-            qualification.save()
+            qualification = form.save()
             messages.success(request, f'資格「{qualification.name}」を作成しました。')
             return redirect('master:qualification_detail', pk=qualification.pk)
     else:
@@ -329,9 +332,7 @@ def qualification_update(request, pk):
     if request.method == 'POST':
         form = form_class(request.POST, instance=qualification)
         if form.is_valid():
-            qualification = form.save(commit=False)
-            qualification.updated_by = request.user
-            qualification.save()
+            qualification = form.save()
             messages.success(request, f'「{qualification.name}」を更新しました。')
             return redirect('master:qualification_detail', pk=qualification.pk)
     else:
@@ -452,10 +453,7 @@ def skill_category_create(request):
     if request.method == 'POST':
         form = SkillCategoryForm(request.POST)
         if form.is_valid():
-            category = form.save(commit=False)
-            category.created_by = request.user
-            category.updated_by = request.user
-            category.save()
+            category = form.save()
             messages.success(request, f'カテゴリ「{category.name}」を作成しました。')
             return redirect('master:skill_detail', pk=category.pk)
     else:
@@ -475,10 +473,7 @@ def skill_create(request):
     if request.method == 'POST':
         form = SkillForm(request.POST)
         if form.is_valid():
-            skill = form.save(commit=False)
-            skill.created_by = request.user
-            skill.updated_by = request.user
-            skill.save()
+            skill = form.save()
             messages.success(request, f'技能「{skill.name}」を作成しました。')
             return redirect('master:skill_detail', pk=skill.pk)
     else:
@@ -510,9 +505,7 @@ def skill_update(request, pk):
     if request.method == 'POST':
         form = form_class(request.POST, instance=skill)
         if form.is_valid():
-            skill = form.save(commit=False)
-            skill.updated_by = request.user
-            skill.save()
+            skill = form.save()
             messages.success(request, f'「{skill.name}」を更新しました。')
             return redirect('master:skill_detail', pk=skill.pk)
     else:
@@ -1248,3 +1241,109 @@ def bank_management_change_history_list(request):
         'list_url': 'master:bank_management',
         'model_name': 'Bank/BankBranch'
     })
+
+
+# お知らせ管理ビュー
+@login_required
+@permission_required('master.view_information', raise_exception=True)
+def information_list(request):
+    """お知らせ一覧"""
+    search_query = request.GET.get('search', '')
+
+    information_list = Information.objects.all()
+
+    if search_query:
+        information_list = information_list.filter(
+            Q(subject__icontains=search_query) |
+            Q(content__icontains=search_query)
+        )
+
+    information_list = information_list.order_by('-start_date')
+
+    paginator = Paginator(information_list, 20)
+    page = request.GET.get('page')
+    information_page = paginator.get_page(page)
+
+    context = {
+        'information_list': information_page,
+        'search_query': search_query,
+        'title': 'お知らせ管理',
+    }
+    return render(request, 'master/information_list.html', context)
+
+
+@login_required
+@permission_required('master.view_information', raise_exception=True)
+def information_detail(request, pk):
+    """お知らせ詳細"""
+    information = get_object_or_404(Information, pk=pk)
+    context = {
+        'information': information,
+    }
+    return render(request, 'master/information_detail.html', context)
+
+
+@login_required
+@permission_required('master.add_information', raise_exception=True)
+def information_create(request):
+    """お知らせ作成"""
+    company = Company.objects.first()
+    if request.method == 'POST':
+        form = InformationForm(request.POST)
+        if form.is_valid():
+            information = form.save(commit=False)
+            if company:
+                information.corporation_number = company.corporate_number
+            information.save()
+            messages.success(request, f'お知らせ「{information.subject}」を作成しました。')
+            return redirect('master:information_list')
+    else:
+        form = InformationForm()
+
+    context = {
+        'form': form,
+        'title': 'お知らせ作成',
+    }
+    return render(request, 'master/information_form.html', context)
+
+
+@login_required
+@permission_required('master.change_information', raise_exception=True)
+def information_update(request, pk):
+    """お知らせ編集"""
+    information = get_object_or_404(Information, pk=pk)
+
+    if request.method == 'POST':
+        form = InformationForm(request.POST, instance=information)
+        if form.is_valid():
+            information = form.save()
+            messages.success(request, f'お知らせ「{information.subject}」を更新しました。')
+            return redirect('master:information_list')
+    else:
+        form = InformationForm(instance=information)
+
+    context = {
+        'form': form,
+        'information': information,
+        'title': f'お知らせ編集 - {information.subject}',
+    }
+    return render(request, 'master/information_form.html', context)
+
+
+@login_required
+@permission_required('master.delete_information', raise_exception=True)
+def information_delete(request, pk):
+    """お知らせ削除"""
+    information = get_object_or_404(Information, pk=pk)
+
+    if request.method == 'POST':
+        information_subject = information.subject
+        information.delete()
+        messages.success(request, f'お知らせ「{information_subject}」を削除しました。')
+        return redirect('master:information_list')
+
+    context = {
+        'information': information,
+        'title': f'お知らせ削除 - {information.subject}',
+    }
+    return render(request, 'master/information_confirm_delete.html', context)

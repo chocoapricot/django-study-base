@@ -14,13 +14,13 @@
     <div class="content-box card bg-light mt-2 mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <span><i class="bi bi-info-circle text-primary"></i> お知らせ</span>
-            <a href="{% url 'information:information_list' %}" class="btn btn-sm btn-outline-secondary">全て表示</a>
+            <a href="{% url 'master:information_list' %}" class="btn btn-sm btn-outline-secondary">全て表示</a>
         </div>
         <div class="card-body">
             <ul class="list-group list-group-flush">
                 {% for info in information_list %}
                     <li class="list-group-item bg-light">
-                        <a href="{% url 'information:information_detail' info.pk %}">{{ info.title }}</a>
+                        <a href="{% url 'master:information_detail' info.pk %}">{{ info.subject }}</a>
                         <small class="text-muted ms-2">({{ info.start_date|date:"Y/m/d" }})</small>
                     </li>
                 {% endfor %}
