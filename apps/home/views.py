@@ -7,14 +7,14 @@ from apps.connect.models import (
     ConnectStaff, ConnectClient, MynumberRequest, ProfileRequest,
     BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
 )
-from apps.information.models import InformationFromCompany
+from apps.master.models import Information
 from django.utils import timezone
 from django.db.models import Q
 
 @login_required
 def home(request):
     today = timezone.now().date()
-    information_list = InformationFromCompany.objects.filter(
+    information_list = Information.objects.filter(
         (Q(start_date__lte=today) | Q(start_date__isnull=True)),
         (Q(end_date__gte=today) | Q(end_date__isnull=True)),
     ).order_by('-start_date')[:5]
