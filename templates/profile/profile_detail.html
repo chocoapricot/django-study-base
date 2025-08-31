@@ -92,11 +92,11 @@
         {% endif %}
 
         <div class="d-flex justify-content-start">
-            <a href="/profile/" class="btn btn-sm btn-secondary">戻る</a>
             {% if profile %}
                 <a href="{% url 'profile:staff_edit' %}" class="btn btn-sm btn-primary ms-2">編集</a>
                 <a href="{% url 'profile:staff_delete' %}" class="btn btn-sm btn-dark ms-2">削除</a>
             {% endif %}
+            <a href="/profile/" class="btn btn-sm btn-secondary">戻る</a>
         </div>
     </div>
 </div>
