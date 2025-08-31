@@ -117,6 +117,24 @@
       background-color: #f8f9fa;
       padding-top: 0px;
       overflow-y: auto;
+      /* For Firefox scrollbar styling */
+      scrollbar-width: thin;
+      scrollbar-color: #dcdcdc #f8f9fa;
+    }
+
+    /* Sidebar scrollbar styling for WebKit browsers */
+    .sidebar::-webkit-scrollbar {
+        width: 8px;
+    }
+    .sidebar::-webkit-scrollbar-track {
+        background: #f8f9fa;
+    }
+    .sidebar::-webkit-scrollbar-thumb {
+        background: #dcdcdc;
+        border-radius: 4px;
+    }
+    .sidebar::-webkit-scrollbar-thumb:hover {
+        background: #c8c8c8;
     }
         .sidebar .nav-link {
             padding: 10px 20px;
