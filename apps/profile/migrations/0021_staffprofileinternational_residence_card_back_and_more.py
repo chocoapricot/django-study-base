@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='staffprofileinternational',
             name='residence_card_back',
-            field=models.FileField(blank=True, null=True, upload_to=apps.profile.models.residence_card_path, verbose_name='在留カード（裏面）'),
+            field=models.FileField(blank=True, null=True, upload_to=apps.profile.models.profile_international_file_path, verbose_name='在留カード（裏面）'),
         ),
         migrations.AddField(
             model_name='staffprofileinternational',
             name='residence_card_front',
-            field=models.FileField(blank=True, null=True, upload_to=apps.profile.models.residence_card_path, verbose_name='在留カード（表面）'),
+            field=models.FileField(blank=True, null=True, upload_to=apps.profile.models.profile_international_file_path, verbose_name='在留カード（表面）'),
         ),
     ]

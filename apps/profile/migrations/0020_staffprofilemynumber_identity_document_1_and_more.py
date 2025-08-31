@@ -14,21 +14,21 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='staffprofilemynumber',
             name='identity_document_1',
-            field=models.ImageField(blank=True, null=True, upload_to=apps.profile.models.profile_files_path, verbose_name='本人確認書類１'),
+            field=models.ImageField(blank=True, null=True, upload_to=apps.profile.models.profile_mynumber_file_path, verbose_name='本人確認書類１'),
         ),
         migrations.AddField(
             model_name='staffprofilemynumber',
             name='identity_document_2',
-            field=models.ImageField(blank=True, null=True, upload_to=apps.profile.models.profile_files_path, verbose_name='本人確認書類２'),
+            field=models.ImageField(blank=True, null=True, upload_to=apps.profile.models.profile_mynumber_file_path, verbose_name='本人確認書類２'),
         ),
         migrations.AddField(
             model_name='staffprofilemynumber',
             name='mynumber_card_back',
-            field=models.ImageField(blank=True, null=True, upload_to=apps.profile.models.profile_files_path, verbose_name='マイナンバーカード裏面'),
+            field=models.ImageField(blank=True, null=True, upload_to=apps.profile.models.profile_mynumber_file_path, verbose_name='マイナンバーカード裏面'),
         ),
         migrations.AddField(
             model_name='staffprofilemynumber',
             name='mynumber_card_front',
-            field=models.ImageField(blank=True, null=True, upload_to=apps.profile.models.profile_files_path, verbose_name='マイナンバーカード表面'),
+            field=models.ImageField(blank=True, null=True, upload_to=apps.profile.models.profile_mynumber_file_path, verbose_name='マイナンバーカード表面'),
         ),
     ]

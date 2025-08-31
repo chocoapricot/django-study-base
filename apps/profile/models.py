@@ -1,3 +1,5 @@
+import uuid
+import os
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
@@ -8,13 +10,24 @@ from django_currentuser.db.models import CurrentUserField
 User = get_user_model()
 
 
-def residence_card_path(instance, filename):
+def profile_mynumber_file_path(instance, filename):
     """
-    アップロード先のパスを生成する
-    'profile-files/<user_id>/<filename>'
+    マイナンバー関連ファイルのアップロード先パスを生成する。
+    MEDIA_ROOT/profile-files/<user_id>/mynumber/<uuid>.<ext>
     """
-    user_id = instance.user.id
-    return f'profile-files/{user_id}/{filename}'
+    ext = filename.split('.')[-1]
+    filename = f"{uuid.uuid4()}.{ext}"
+    return f'profile-files/{instance.user.id}/mynumber/{filename}'
+
+
+def profile_international_file_path(instance, filename):
+    """
+    国際関連ファイルのアップロード先パスを生成する。
+    MEDIA_ROOT/profile-files/<user_id>/international/<uuid>.<ext>
+    """
+    ext = filename.split('.')[-1]
+    filename = f"{uuid.uuid4()}.{ext}"
+    return f'profile-files/{instance.user.id}/international/{filename}'
 
 
 def validate_mynumber(value):
@@ -256,12 +269,6 @@ class StaffProfileQualification(MyModel):
         return f"{self.staff_profile} - {self.qualification}"
 
 
-def profile_files_path(instance, filename):
-    """
-    プロフィールの添付ファイルのアップロード先パスを生成する。
-    MEDIA_ROOT/profile-files/<user_id>/<filename>
-    """
-    return f'profile-files/{instance.user.id}/{filename}'
 
 
 class StaffProfileSkill(MyModel):
@@ -325,25 +332,25 @@ class StaffProfileMynumber(MyModel):
     # 添付ファイル
     mynumber_card_front = models.ImageField(
         'マイナンバーカード表面',
-        upload_to=profile_files_path,
+        upload_to=profile_mynumber_file_path,
         blank=True,
         null=True,
     )
     mynumber_card_back = models.ImageField(
         'マイナンバーカード裏面',
-        upload_to=profile_files_path,
+        upload_to=profile_mynumber_file_path,
         blank=True,
         null=True,
     )
     identity_document_1 = models.ImageField(
         '本人確認書類１',
-        upload_to=profile_files_path,
+        upload_to=profile_mynumber_file_path,
         blank=True,
         null=True,
     )
     identity_document_2 = models.ImageField(
         '本人確認書類２',
-        upload_to=profile_files_path,
+        upload_to=profile_mynumber_file_path,
         blank=True,
         null=True,
     )
@@ -400,13 +407,13 @@ class StaffProfileInternational(MyModel):
     )
     residence_card_front = models.FileField(
         verbose_name='在留カード（表面）',
-        upload_to=residence_card_path,
+        upload_to=profile_international_file_path,
         blank=True,
         null=True,
     )
     residence_card_back = models.FileField(
         verbose_name='在留カード（裏面）',
-        upload_to=residence_card_path,
+        upload_to=profile_international_file_path,
         blank=True,
         null=True,
     )

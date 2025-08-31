@@ -15,11 +15,13 @@ urlpatterns = [
     path('mynumber/', views.mynumber_detail, name='mynumber_detail'),
     path('mynumber/edit/', views.mynumber_edit, name='mynumber_edit'),
     path('mynumber/delete/', views.mynumber_delete, name='mynumber_delete'),
+    path('mynumber/<int:pk>/file/<str:field_name>/', views.download_mynumber_file, name='download_mynumber_file'),
 
     # 外国籍情報
     path('international/', views.international_detail, name='international_detail'),
     path('international/edit/', views.international_edit, name='international_edit'),
     path('international/delete/', views.international_delete, name='international_delete'),
+    path('international/<int:pk>/file/<str:field_name>/', views.download_international_file, name='download_international_file'),
 
     # 銀行情報
     path('bank/', views.bank_detail, name='bank_detail'),

@@ -69,8 +69,8 @@
             <div class="col-md-6 mb-3">
                 <label class="form-label">マイナンバーカード表面</label>
                 {% if mynumber_request.profile_mynumber.mynumber_card_front %}
-                    <a href="{{ mynumber_request.profile_mynumber.mynumber_card_front.url }}" target="_blank">
-                        <img src="{{ mynumber_request.profile_mynumber.mynumber_card_front.url }}" alt="申請されたマイナンバーカード表面" class="img-thumbnail w-100">
+                    <a href="{% url 'profile:download_mynumber_file' pk=mynumber_request.profile_mynumber.pk field_name='mynumber_card_front' %}" target="_blank">
+                        <img src="{% url 'profile:download_mynumber_file' pk=mynumber_request.profile_mynumber.pk field_name='mynumber_card_front' %}" alt="申請されたマイナンバーカード表面" class="img-thumbnail w-100">
                     </a>
                 {% else %}
                     <div class="card card-body bg-light text-center">
@@ -81,8 +81,8 @@
             <div class="col-md-6 mb-3">
                 <label class="form-label">マイナンバーカード裏面</label>
                 {% if mynumber_request.profile_mynumber.mynumber_card_back %}
-                    <a href="{{ mynumber_request.profile_mynumber.mynumber_card_back.url }}" target="_blank">
-                        <img src="{{ mynumber_request.profile_mynumber.mynumber_card_back.url }}" alt="申請されたマイナンバーカード裏面" class="img-thumbnail w-100">
+                    <a href="{% url 'profile:download_mynumber_file' pk=mynumber_request.profile_mynumber.pk field_name='mynumber_card_back' %}" target="_blank">
+                        <img src="{% url 'profile:download_mynumber_file' pk=mynumber_request.profile_mynumber.pk field_name='mynumber_card_back' %}" alt="申請されたマイナンバーカード裏面" class="img-thumbnail w-100">
                     </a>
                 {% else %}
                     <div class="card card-body bg-light text-center">
@@ -93,8 +93,8 @@
             <div class="col-md-6 mb-3">
                 <label class="form-label">本人確認書類１</label>
                 {% if mynumber_request.profile_mynumber.identity_document_1 %}
-                    <a href="{{ mynumber_request.profile_mynumber.identity_document_1.url }}" target="_blank">
-                        <img src="{{ mynumber_request.profile_mynumber.identity_document_1.url }}" alt="申請された本人確認書類１" class="img-thumbnail w-100">
+                    <a href="{% url 'profile:download_mynumber_file' pk=mynumber_request.profile_mynumber.pk field_name='identity_document_1' %}" target="_blank">
+                        <img src="{% url 'profile:download_mynumber_file' pk=mynumber_request.profile_mynumber.pk field_name='identity_document_1' %}" alt="申請された本人確認書類１" class="img-thumbnail w-100">
                     </a>
                 {% else %}
                     <div class="card card-body bg-light text-center">
@@ -105,8 +105,8 @@
             <div class="col-md-6 mb-3">
                 <label class="form-label">本人確認書類２</label>
                 {% if mynumber_request.profile_mynumber.identity_document_2 %}
-                    <a href="{{ mynumber_request.profile_mynumber.identity_document_2.url }}" target="_blank">
-                        <img src="{{ mynumber_request.profile_mynumber.identity_document_2.url }}" alt="申請された本人確認書類２" class="img-thumbnail w-100">
+                    <a href="{% url 'profile:download_mynumber_file' pk=mynumber_request.profile_mynumber.pk field_name='identity_document_2' %}" target="_blank">
+                        <img src="{% url 'profile:download_mynumber_file' pk=mynumber_request.profile_mynumber.pk field_name='identity_document_2' %}" alt="申請された本人確認書類２" class="img-thumbnail w-100">
                     </a>
                 {% else %}
                     <div class="card card-body bg-light text-center">

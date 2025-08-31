@@ -1,3 +1,5 @@
+import os
+from django.http import FileResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
@@ -533,3 +535,46 @@ def contact_delete(request):
         'contact': contact,
     }
     return render(request, 'profile/contact_delete.html', context)
+
+
+@login_required
+def download_mynumber_file(request, pk, field_name):
+    mynumber_profile = get_object_or_404(StaffProfileMynumber, pk=pk)
+
+    # Check if the requesting user is the owner of the profile or a staff member with permission
+    if not (mynumber_profile.user == request.user or request.user.has_perm('staff.view_staffmynumberrecord')):
+        raise Http404
+
+    if field_name not in ['mynumber_card_front', 'mynumber_card_back', 'identity_document_1', 'identity_document_2']:
+        raise Http404
+
+    file_field = getattr(mynumber_profile, field_name)
+
+    if not file_field:
+        raise Http404
+    
+    if not file_field.storage.exists(file_field.name):
+        raise Http404
+
+    return FileResponse(file_field.open('rb'), as_attachment=False)
+
+@login_required
+def download_international_file(request, pk, field_name):
+    international_profile = get_object_or_404(StaffProfileInternational, pk=pk)
+
+    # Check if the requesting user is the owner of the profile or a staff member with permission
+    if not (international_profile.user == request.user or request.user.has_perm('staff.view_staffinternational')):
+        raise Http404
+
+    if field_name not in ['residence_card_front', 'residence_card_back']:
+        raise Http404
+
+    file_field = getattr(international_profile, field_name)
+
+    if not file_field:
+        raise Http404
+    
+    if not file_field.storage.exists(file_field.name):
+        raise Http404
+
+    return FileResponse(file_field.open('rb'), as_attachment=False)

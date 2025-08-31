@@ -35,8 +35,8 @@
                 <label class="col-sm-2 col-form-label text-start text-md-end">マイナンバーカード表面</label>
                 <div class="col-sm-10">
                     {% if mynumber.mynumber_card_front %}
-                        <a href="{{ mynumber.mynumber_card_front.url }}" target="_blank">
-                            <img src="{{ mynumber.mynumber_card_front.url }}" alt="マイナンバーカード表面" class="img-thumbnail" style="max-width: 200px;">
+                        <a href="{% url 'profile:download_mynumber_file' pk=mynumber.pk field_name='mynumber_card_front' %}" target="_blank">
+                            <img src="{% url 'profile:download_mynumber_file' pk=mynumber.pk field_name='mynumber_card_front' %}" alt="マイナンバーカード表面" class="img-thumbnail" style="max-width: 200px;">
                         </a>
                     {% else %}
                         <p class="form-control-plaintext">未登録</p>
@@ -47,8 +47,8 @@
                 <label class="col-sm-2 col-form-label text-start text-md-end">マイナンバーカード裏面</label>
                 <div class="col-sm-10">
                     {% if mynumber.mynumber_card_back %}
-                        <a href="{{ mynumber.mynumber_card_back.url }}" target="_blank">
-                            <img src="{{ mynumber.mynumber_card_back.url }}" alt="マイナンバーカード裏面" class="img-thumbnail" style="max-width: 200px;">
+                        <a href="{% url 'profile:download_mynumber_file' pk=mynumber.pk field_name='mynumber_card_back' %}" target="_blank">
+                            <img src="{% url 'profile:download_mynumber_file' pk=mynumber.pk field_name='mynumber_card_back' %}" alt="マイナンバーカード裏面" class="img-thumbnail" style="max-width: 200px;">
                         </a>
                     {% else %}
                         <p class="form-control-plaintext">未登録</p>
@@ -59,8 +59,8 @@
                 <label class="col-sm-2 col-form-label text-start text-md-end">本人確認書類１</label>
                 <div class="col-sm-10">
                     {% if mynumber.identity_document_1 %}
-                        <a href="{{ mynumber.identity_document_1.url }}" target="_blank">
-                            <img src="{{ mynumber.identity_document_1.url }}" alt="本人確認書類１" class="img-thumbnail" style="max-width: 200px;">
+                        <a href="{% url 'profile:download_mynumber_file' pk=mynumber.pk field_name='identity_document_1' %}" target="_blank">
+                            <img src="{% url 'profile:download_mynumber_file' pk=mynumber.pk field_name='identity_document_1' %}" alt="本人確認書類１" class="img-thumbnail" style="max-width: 200px;">
                         </a>
                     {% else %}
                         <p class="form-control-plaintext">未登録</p>
@@ -71,8 +71,8 @@
                 <label class="col-sm-2 col-form-label text-start text-md-end">本人確認書類２</label>
                 <div class="col-sm-10">
                     {% if mynumber.identity_document_2 %}
-                        <a href="{{ mynumber.identity_document_2.url }}" target="_blank">
-                            <img src="{{ mynumber.identity_document_2.url }}" alt="本人確認書類２" class="img-thumbnail" style="max-width: 200px;">
+                        <a href="{% url 'profile:download_mynumber_file' pk=mynumber.pk field_name='identity_document_2' %}" target="_blank">
+                            <img src="{% url 'profile:download_mynumber_file' pk=mynumber.pk field_name='identity_document_2' %}" alt="本人確認書類２" class="img-thumbnail" style="max-width: 200px;">
                         </a>
                     {% else %}
                         <p class="form-control-plaintext">未登録</p>
