@@ -1,5 +1,5 @@
 from django import forms
-from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch
+from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch, Information
 
 
 class QualificationCategoryForm(forms.ModelForm):
@@ -233,21 +233,17 @@ class BankBranchForm(forms.ModelForm):
     class Meta:
         model = BankBranch
         fields = ['bank', 'name', 'branch_code', 'is_active']
+
+
+class InformationForm(forms.ModelForm):
+    """お知らせ情報フォーム"""
+    class Meta:
+        model = Information
+        fields = ['target', 'subject', 'content', 'start_date', 'end_date']
         widgets = {
-            'bank': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'branch_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '3', 'pattern': '[0-9]{3}'}),
-            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'target': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'subject': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
+            'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
         }
-        labels = {
-            'branch_code': '支店コード（3桁）',
-        }
-        help_texts = {
-            'branch_code': '3桁の数字で入力してください（必須）',
-        }
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # 有効な銀行のみを選択肢に表示
-        self.fields['bank'].queryset = Bank.objects.filter(is_active=True).order_by('bank_code', 'name')
-        self.fields['bank'].empty_label = "銀行を選択してください"

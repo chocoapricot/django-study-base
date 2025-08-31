@@ -5,8 +5,9 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.urls import reverse
 from django.apps import apps
-from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch
-from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm, BillPaymentForm, BillBankForm, BankForm, BankBranchForm
+from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch, Information
+from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm, BillPaymentForm, BillBankForm, BankForm, BankBranchForm, InformationForm
+from apps.company.models import Company
 
 
 # マスタ設定データ
@@ -1248,3 +1249,113 @@ def bank_management_change_history_list(request):
         'list_url': 'master:bank_management',
         'model_name': 'Bank/BankBranch'
     })
+
+
+# お知らせ管理ビュー
+@login_required
+@permission_required('master.view_information', raise_exception=True)
+def information_list(request):
+    """お知らせ一覧"""
+    search_query = request.GET.get('search', '')
+
+    information_list = Information.objects.all()
+
+    if search_query:
+        information_list = information_list.filter(
+            Q(subject__icontains=search_query) |
+            Q(content__icontains=search_query)
+        )
+
+    information_list = information_list.order_by('-start_date')
+
+    paginator = Paginator(information_list, 20)
+    page = request.GET.get('page')
+    information_page = paginator.get_page(page)
+
+    context = {
+        'information_list': information_page,
+        'search_query': search_query,
+        'title': 'お知らせ管理',
+    }
+    return render(request, 'master/information_list.html', context)
+
+
+@login_required
+@permission_required('master.view_information', raise_exception=True)
+def information_detail(request, pk):
+    """お知らせ詳細"""
+    information = get_object_or_404(Information, pk=pk)
+    context = {
+        'information': information,
+    }
+    return render(request, 'master/information_detail.html', context)
+
+
+@login_required
+@permission_required('master.add_information', raise_exception=True)
+def information_create(request):
+    """お知らせ作成"""
+    company = Company.objects.first()
+    if request.method == 'POST':
+        form = InformationForm(request.POST)
+        if form.is_valid():
+            information = form.save(commit=False)
+            if company:
+                information.corporation_number = company.corporate_number
+            information.created_by = request.user
+            information.updated_by = request.user
+            information.save()
+            messages.success(request, f'お知らせ「{information.subject}」を作成しました。')
+            return redirect('master:information_list')
+    else:
+        form = InformationForm()
+
+    context = {
+        'form': form,
+        'title': 'お知らせ作成',
+    }
+    return render(request, 'master/information_form.html', context)
+
+
+@login_required
+@permission_required('master.change_information', raise_exception=True)
+def information_update(request, pk):
+    """お知らせ編集"""
+    information = get_object_or_404(Information, pk=pk)
+
+    if request.method == 'POST':
+        form = InformationForm(request.POST, instance=information)
+        if form.is_valid():
+            information = form.save(commit=False)
+            information.updated_by = request.user
+            information.save()
+            messages.success(request, f'お知らせ「{information.subject}」を更新しました。')
+            return redirect('master:information_list')
+    else:
+        form = InformationForm(instance=information)
+
+    context = {
+        'form': form,
+        'information': information,
+        'title': f'お知らせ編集 - {information.subject}',
+    }
+    return render(request, 'master/information_form.html', context)
+
+
+@login_required
+@permission_required('master.delete_information', raise_exception=True)
+def information_delete(request, pk):
+    """お知らせ削除"""
+    information = get_object_or_404(Information, pk=pk)
+
+    if request.method == 'POST':
+        information_subject = information.subject
+        information.delete()
+        messages.success(request, f'お知らせ「{information_subject}」を削除しました。')
+        return redirect('master:information_list')
+
+    context = {
+        'information': information,
+        'title': f'お知らせ削除 - {information.subject}',
+    }
+    return render(request, 'master/information_confirm_delete.html', context)

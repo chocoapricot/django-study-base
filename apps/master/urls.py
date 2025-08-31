@@ -54,4 +54,11 @@ urlpatterns = [
     # 銀行・銀行支店統合管理
     path('bank-management/', views.bank_management, name='bank_management'),
     path('bank-management/history/', views.bank_management_change_history_list, name='bank_management_change_history_list'),
+
+    # お知らせ管理
+    path('information/', views.information_list, name='information_list'),
+    path('information/create/', views.information_create, name='information_create'),
+    path('information/<int:pk>/', views.information_detail, name='information_detail'),
+    path('information/<int:pk>/update/', views.information_update, name='information_update'),
+    path('information/<int:pk>/delete/', views.information_delete, name='information_delete'),
 ]
