@@ -8,10 +8,7 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         基本情報詳細
         <div>
-            {% if profile %}
-                <a href="{% url 'profile:staff_edit' %}" class="btn btn-sm btn-primary">編集</a>
-                <a href="{% url 'profile:staff_delete' %}" class="btn btn-sm btn-dark">削除</a>
-            {% else %}
+            {% if not profile %}
                 <a href="{% url 'profile:staff_edit' %}" class="btn btn-sm btn-primary">基本情報作成</a>
             {% endif %}
         </div>
@@ -96,6 +93,10 @@
 
         <div class="d-flex justify-content-start">
             <a href="/profile/" class="btn btn-sm btn-secondary">戻る</a>
+            {% if profile %}
+                <a href="{% url 'profile:staff_edit' %}" class="btn btn-sm btn-primary ms-2">編集</a>
+                <a href="{% url 'profile:staff_delete' %}" class="btn btn-sm btn-dark ms-2">削除</a>
+            {% endif %}
         </div>
     </div>
 </div>
