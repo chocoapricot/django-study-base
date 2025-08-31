@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.utils.http import url_has_allowed_host_and_scheme
 from apps.system.logs.utils import log_model_action
 from apps.system.logs.models import AppLog
 from .models import ConnectStaff, ConnectClient
@@ -101,6 +102,10 @@ def connect_staff_approve(request, pk):
         messages.success(request, '接続申請を承認しました。')
     else:
         messages.info(request, 'この申請は既に承認済みです。')
+
+    next_url = request.GET.get('next')
+    if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+        return redirect(next_url)
     
     return redirect('connect:staff_list')
 
@@ -138,71 +143,12 @@ def connect_staff_unapprove(request, pk):
         messages.success(request, '接続申請を未承認に戻しました。')
     else:
         messages.info(request, 'この申請は未承認です。')
+
+    next_url = request.GET.get('next')
+    if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+        return redirect(next_url)
     
     return redirect('connect:staff_list')
-
-
-@login_required
-@permission_required('staff.view_staff', raise_exception=True)
-@require_POST
-def create_staff_connection(request):
-    """スタッフ詳細画面から接続申請を作成"""
-    staff_id = request.POST.get('staff_id')
-    
-    if not staff_id:
-        messages.error(request, 'スタッフIDが指定されていません。')
-        return redirect('staff:staff_list')
-    
-    try:
-        from apps.staff.models import Staff
-        staff = Staff.objects.get(pk=staff_id)
-        
-        if not staff.email:
-            messages.error(request, 'このスタッフにはメールアドレスが設定されていません。')
-            return redirect('staff:staff_detail', pk=staff_id)
-        
-        # 会社の法人番号を取得
-        from apps.company.models import Company
-        company = Company.objects.first()
-        if not company or not company.corporate_number:
-            messages.error(request, '会社の法人番号が設定されていません。')
-            return redirect('staff:staff_detail', pk=staff_id)
-        
-        # 既存の申請があるかチェック
-        existing_connection = ConnectStaff.objects.filter(
-            corporate_number=company.corporate_number,
-            email=staff.email
-        ).first()
-        
-        if existing_connection:
-            messages.warning(request, 'この組み合わせの接続申請は既に存在します。')
-            return redirect('staff:staff_detail', pk=staff_id)
-        
-        # 新しい接続申請を作成
-        connection = ConnectStaff.objects.create(
-            corporate_number=company.corporate_number,
-            email=staff.email,
-            created_by=request.user,
-            updated_by=request.user
-        )
-        
-        log_model_action(request.user, 'create', connection)
-        
-        # 既存ユーザーがいる場合は権限を付与
-        from .utils import grant_permissions_on_connection_request
-        grant_permissions_on_connection_request(staff.email)
-        
-        messages.success(request, f'スタッフ「{staff.name}」への接続申請を送信しました。')
-        
-        return redirect('staff:staff_detail', pk=staff_id)
-        
-    except Staff.DoesNotExist:
-        messages.error(request, 'スタッフが見つかりません。')
-        return redirect('staff:staff_list')
-    except Exception as e:
-        messages.error(request, f'エラーが発生しました: {str(e)}')
-        return redirect('staff:staff_list')
-
 
 @login_required
 def connect_client_list(request):
@@ -282,6 +228,10 @@ def connect_client_approve(request, pk):
         messages.success(request, 'クライアント接続申請を承認しました。')
     else:
         messages.info(request, 'この申請は既に承認済みです。')
+
+    next_url = request.GET.get('next')
+    if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+        return redirect(next_url)
     
     return redirect('connect:client_list')
 
@@ -319,6 +269,10 @@ def connect_client_unapprove(request, pk):
         messages.success(request, 'クライアント接続申請を未承認に戻しました。')
     else:
         messages.info(request, 'この申請は未承認です。')
+
+    next_url = request.GET.get('next')
+    if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+        return redirect(next_url)
     
     return redirect('connect:client_list')
 
@@ -332,10 +286,60 @@ def connect_index(request):
 
     client_pending_count = ConnectClient.objects.filter(email=request.user.email, status='pending').count()
     client_approved_count = ConnectClient.objects.filter(email=request.user.email, status='approved').count()
+
+    # --------------------------------------------------------------------------
+    # 接続申請一覧
+    # --------------------------------------------------------------------------
+    # Get filter values
+    type_filter = request.GET.get('type', '')
+    status_filter = request.GET.get('status', '')
+
+    # Base querysets
+    if request.user.is_staff:
+        staff_connections = ConnectStaff.objects.all()
+        client_connections = ConnectClient.objects.all()
+    else:
+        staff_connections = ConnectStaff.objects.filter(email=request.user.email)
+        client_connections = ConnectClient.objects.filter(email=request.user.email)
+
+    # Apply status filter
+    if status_filter:
+        staff_connections = staff_connections.filter(status=status_filter)
+        client_connections = client_connections.filter(status=status_filter)
+
+    # Prepare connection list based on type filter
+    all_connections = []
+    if type_filter == 'staff' or not type_filter:
+        for conn in staff_connections:
+            conn.type = 'staff'
+            all_connections.append(conn)
+
+    if type_filter == 'client' or not type_filter:
+        for conn in client_connections:
+            conn.type = 'client'
+            all_connections.append(conn)
+
+    # 作成日時で降順にソート
+    all_connections.sort(key=lambda x: x.created_at, reverse=True)
+
+    # 会社情報を取得（法人番号から）
+    from apps.company.models import Company
+    companies = {}
+    for conn in all_connections:
+        if conn.corporate_number not in companies:
+            try:
+                company = Company.objects.get(corporate_number=conn.corporate_number)
+                companies[conn.corporate_number] = company
+            except Company.DoesNotExist:
+                companies[conn.corporate_number] = None
     
     return render(request, 'connect/index.html', {
         'staff_pending_count': staff_pending_count,
         'staff_approved_count': staff_approved_count,
         'client_pending_count': client_pending_count,
         'client_approved_count': client_approved_count,
+        'all_connections': all_connections,
+        'companies': companies,
+        'type_filter': type_filter,
+        'status_filter': status_filter,
     })

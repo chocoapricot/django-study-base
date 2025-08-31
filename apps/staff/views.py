@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Q
 from django.contrib import messages
 from apps.system.logs.utils import log_model_action
+from .forms_mail import ConnectionRequestMailForm, DisconnectionMailForm
 
 from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact
 from .forms import StaffForm, StaffContactedForm, StaffFileForm, StaffMynumberForm, StaffBankForm, StaffInternationalForm, StaffDisabilityForm, StaffContactForm
@@ -307,7 +308,13 @@ def staff_detail(request, pk):
                     if not created:
                         # 既存のレコードがある場合は削除（スイッチOFF）
                         connect_request.delete()
-                        messages.success(request, f'{staff}への接続依頼を取り消しました。')
+                        # メール送信
+                        mail_form = DisconnectionMailForm(staff=staff, user=request.user)
+                        success, message = mail_form.send_mail()
+                        if success:
+                            messages.success(request, f'スタッフ「{staff.name}」への接続を解除し、メールを送信しました。')
+                        else:
+                            messages.warning(request, f'スタッフ「{staff.name}」への接続を解除しましたが、メールの送信に失敗しました: {message}')
                         # 変更履歴に記録
                         AppLog.objects.create(
                             user=request.user,
@@ -318,7 +325,14 @@ def staff_detail(request, pk):
                         )
                     else:
                         # 新規作成された場合（スイッチON）
-                        messages.success(request, f'{staff}に接続依頼を送信しました。')
+                        # メール送信
+                        mail_form = ConnectionRequestMailForm(staff=staff, user=request.user)
+                        success, message = mail_form.send_mail()
+                        if success:
+                            messages.success(request, f'スタッフ「{staff.name}」への接続申請を送信し、メールを送信しました。')
+                        else:
+                            messages.warning(request, f'スタッフ「{staff.name}」への接続申請を送信しましたが、メールの送信に失敗しました: {message}')
+
                         # 変更履歴に記録
                         AppLog.objects.create(
                             user=request.user,
@@ -1316,13 +1330,13 @@ def staff_mynumber_request_detail(request, staff_pk, pk):
         if action == 'approve':
             # 承認処理
             try:
-                # 申請からマイナンバーを取得
-                new_mynumber = mynumber_request.profile_mynumber.mynumber
+                # 申請からマイナンバー情報を取得
+                profile_mynumber = mynumber_request.profile_mynumber
 
                 # スタッフのマイナンバーを更新または作成
                 staff_mynumber, created = StaffMynumber.objects.update_or_create(
                     staff=staff,
-                    defaults={'mynumber': new_mynumber}
+                    defaults={'mynumber': profile_mynumber.mynumber}
                 )
 
                 # 申請ステータスを更新

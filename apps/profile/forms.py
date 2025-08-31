@@ -91,7 +91,11 @@ class StaffProfileMynumberForm(forms.ModelForm):
     
     class Meta:
         model = StaffProfileMynumber
-        fields = ['mynumber']
+        fields = [
+            'mynumber',
+            'mynumber_card_front', 'mynumber_card_back',
+            'identity_document_1', 'identity_document_2'
+        ]
         widgets = {
             'mynumber': forms.TextInput(attrs={
                 'class': 'form-control form-control-sm',
@@ -101,12 +105,21 @@ class StaffProfileMynumberForm(forms.ModelForm):
                 'style': 'ime-mode:disabled;',
                 'autocomplete': 'off'
             }),
+            'mynumber_card_front': forms.FileInput(attrs={'class': 'form-control form-control-sm'}),
+            'mynumber_card_back': forms.FileInput(attrs={'class': 'form-control form-control-sm'}),
+            'identity_document_1': forms.FileInput(attrs={'class': 'form-control form-control-sm'}),
+            'identity_document_2': forms.FileInput(attrs={'class': 'form-control form-control-sm'}),
         }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # 必須フィールドの設定
         self.fields['mynumber'].required = True
+        # 添付ファイルは必須ではない
+        self.fields['mynumber_card_front'].required = False
+        self.fields['mynumber_card_back'].required = False
+        self.fields['identity_document_1'].required = False
+        self.fields['identity_document_2'].required = False
     
     def clean_mynumber(self):
         """マイナンバーのバリデーション"""
@@ -135,7 +148,7 @@ class StaffProfileInternationalForm(forms.ModelForm):
     
     class Meta:
         model = StaffProfileInternational
-        fields = ['residence_card_number', 'residence_status', 'residence_period_from', 'residence_period_to']
+        fields = ['residence_card_number', 'residence_status', 'residence_period_from', 'residence_period_to', 'residence_card_front', 'residence_card_back']
         widgets = {
             'residence_card_number': forms.TextInput(attrs={
                 'class': 'form-control form-control-sm',
@@ -153,18 +166,22 @@ class StaffProfileInternationalForm(forms.ModelForm):
                 'class': 'form-control form-control-sm',
                 'type': 'date'
             }),
+            'residence_card_front': forms.FileInput(attrs={'class': 'form-control form-control-sm'}),
+            'residence_card_back': forms.FileInput(attrs={'class': 'form-control form-control-sm'}),
         }
         labels = {
             'residence_card_number': '在留カード番号',
             'residence_status': '在留資格',
             'residence_period_from': '在留許可開始日',
             'residence_period_to': '在留期限',
+            'residence_card_front': '在留カード（表面）',
+            'residence_card_back': '在留カード（裏面）',
         }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # 必須フィールドの設定
-        for field_name in self.fields:
+        for field_name in ['residence_card_number', 'residence_status', 'residence_period_from', 'residence_period_to']:
             self.fields[field_name].required = True
     
     def clean(self):
@@ -216,12 +233,45 @@ class StaffProfileBankForm(forms.ModelForm):
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='bank_account_type').order_by('disp_seq')
         ]
+        self.fields['bank_code'].required = True
+        self.fields['branch_code'].required = True
         self.fields['account_type'].required = True
         self.fields['account_number'].required = True
         self.fields['account_holder'].required = True
         if self.instance and self.instance.pk:
             self.fields['bank_name'].initial = self.instance.bank_name
             self.fields['branch_name'].initial = self.instance.branch_name
+
+    def clean_bank_code(self):
+        bank_code = self.cleaned_data.get('bank_code')
+        if bank_code:
+            from apps.master.models import Bank
+            if not Bank.objects.filter(bank_code=bank_code, is_active=True).exists():
+                raise ValidationError("存在しない銀行コードです。")
+        return bank_code
+
+    def clean_branch_code(self):
+        branch_code = self.cleaned_data.get('branch_code')
+        # bank_code がないと検証できないので、ここでは何もしない
+        # clean メソッドで bank_code と合わせて検証する
+        return branch_code
+
+    def clean(self):
+        cleaned_data = super().clean()
+        bank_code = cleaned_data.get('bank_code')
+        branch_code = cleaned_data.get('branch_code')
+
+        if bank_code and branch_code:
+            from apps.master.models import Bank, BankBranch
+            try:
+                bank = Bank.objects.get(bank_code=bank_code, is_active=True)
+                if not BankBranch.objects.filter(bank=bank, branch_code=branch_code, is_active=True).exists():
+                    self.add_error('branch_code', "存在しない支店コードです。")
+            except Bank.DoesNotExist:
+                # clean_bank_code で既にエラーが出ているはずなので、ここでは何もしない
+                pass
+
+        return cleaned_data
 
     def save(self, commit=True):
         # bank_name と branch_name をDBに保存しないようにする
@@ -236,7 +286,7 @@ class StaffProfileDisabilityForm(forms.ModelForm):
         label='障害の種類',
         widget=forms.RadioSelect,
         choices=[],
-        required=False,
+        required=True,
     )
 
     class Meta:
@@ -252,8 +302,6 @@ class StaffProfileDisabilityForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         from apps.system.settings.models import Dropdowns
         self.fields['disability_type'].choices = [
-            ('', '選択しない')
-        ] + [
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='disability_type').order_by('disp_seq')
         ]
@@ -261,6 +309,10 @@ class StaffProfileDisabilityForm(forms.ModelForm):
 
 class StaffProfileContactForm(forms.ModelForm):
     """スタッフ連絡先情報フォーム"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['emergency_contact'].required = True
+        self.fields['relationship'].required = True
 
     class Meta:
         model = StaffProfileContact

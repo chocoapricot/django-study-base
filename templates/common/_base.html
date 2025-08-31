@@ -111,11 +111,30 @@
     transition: background-color 0.3s; /* 背景色の変化を滑らかに */
 }
     .sidebar {
-      height: 100vh;
+      height: calc(100vh - 70px);
       position: fixed;
       top: 70px; /* Adjust top value to account for the fixed header */
       background-color: #f8f9fa;
       padding-top: 0px;
+      overflow-y: auto;
+      /* For Firefox scrollbar styling */
+      scrollbar-width: thin;
+      scrollbar-color: #dcdcdc #f8f9fa;
+    }
+
+    /* Sidebar scrollbar styling for WebKit browsers */
+    .sidebar::-webkit-scrollbar {
+        width: 8px;
+    }
+    .sidebar::-webkit-scrollbar-track {
+        background: #f8f9fa;
+    }
+    .sidebar::-webkit-scrollbar-thumb {
+        background: #dcdcdc;
+        border-radius: 4px;
+    }
+    .sidebar::-webkit-scrollbar-thumb:hover {
+        background: #c8c8c8;
     }
         .sidebar .nav-link {
             padding: 10px 20px;
@@ -417,19 +436,4 @@
 </body>
 </html>
 
-<!--
-Bootstrap5のみ機能で独自のJavaScriptつかわずに以下を実現したい。
-・ヘッダは常に表示する。背景色は白とする。メニューアイコン、ロゴ、色付きのシステムごとのアイコン＋システム名、機能名が左から表示される。右には、検索アイコン、通知アイコン、設定アイコン、ログアウトアイコンがあり、アイコンは丸みがかった四角にかこまれている。枠線の色はなく、灰色の背景色とする。ヘッダの上はブラウザと区別がつくように灰色の線を入れる。下にも入れる。
-・幅がせまくなったときに、ヘッダの文字が改行されないように、システムアイコン＋システム名を非表示にする。さらにせまくなったときには、システム名も非表示にする。幅を広げたときにはシステム名を表示する。さらに幅を広げたときには、システムアイコン＋システム名を表示にする。
-・左にメニューを表示する。背景色は白とする。色のついたシステムごとのアイコン、機能名が表示されて、右には件数を表示する。メニューの間はわかるように線を入れる。現在設定されているメニューは灰色背景とする。マウスオーバーすると、灰色背景とする。
-・幅が広いとき、最初はメニューが表示されている。
-・幅が広いときで、メニューが表示されているときにメニューアイコンを押すとメニューがスムーズに非表示になって、メインコンテンツも左にずれる。
-・幅が広いときで、メニューが非表示のときにメニューアイコンを押すと、メニューがスムーズに表示されて、メインコンテンツも右にずれる。
-・幅が広いときでメニューが表示されているときに、幅をせまくすると、メニューが非表示となる。もともとメニューが非表示であれば変わらない。
-・幅がせまいときに、メニューアイコンを押してメニューを表示・非表示ができる。
-・幅がせまいときから、広くしたとき、メニューが表示される。せまいときにメニューを表示・非表示にしても、広くしたら表示する。
-・アイコンはBootstrapのアイコンを利用する。べた塗りのアイコンは使わない。
-・bootstrap.min.css、bootstrap.bundle.min.jsは同じフォルダにあるので、パスは不要。
-・BootswatchのCSSをパスに追加してほしい。「_variables.scss」「_bootswatch.scss」
--->
 

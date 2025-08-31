@@ -8,7 +8,7 @@
         {% if is_new %}マイナンバー登録{% else %}マイナンバー編集{% endif %}
     </div>
     <div class="card-body">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             
             <!-- メールアドレス（表示のみ） -->
@@ -32,11 +32,55 @@
                 </div>
             </div>
 
+            <!-- マイナンバーカード表面 -->
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.mynumber_card_front.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">マイナンバーカード表面</label>
+                <div class="col-sm-6">
+                    {{ form.mynumber_card_front }}
+                    {% if form.mynumber_card_front.errors %}
+                        <div class="text-danger small">{{ form.mynumber_card_front.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- マイナンバーカード裏面 -->
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.mynumber_card_back.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">マイナンバーカード裏面</label>
+                <div class="col-sm-6">
+                    {{ form.mynumber_card_back }}
+                    {% if form.mynumber_card_back.errors %}
+                        <div class="text-danger small">{{ form.mynumber_card_back.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 本人確認書類１ -->
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.identity_document_1.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">本人確認書類１</label>
+                <div class="col-sm-6">
+                    {{ form.identity_document_1 }}
+                    {% if form.identity_document_1.errors %}
+                        <div class="text-danger small">{{ form.identity_document_1.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 本人確認書類２ -->
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.identity_document_2.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">本人確認書類２</label>
+                <div class="col-sm-6">
+                    {{ form.identity_document_2 }}
+                    {% if form.identity_document_2.errors %}
+                        <div class="text-danger small">{{ form.identity_document_2.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
             <div class="d-flex justify-content-start">
                 <button type="submit" class="btn btn-sm btn-primary">
                     {% if is_new %}登録{% else %}更新{% endif %}
                 </button>
-                <a href="{% url 'profile:mynumber_detail' %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
+                <a href="{% url 'profile:index' %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
             </div>
         </form>
     </div>

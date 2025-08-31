@@ -37,6 +37,7 @@ urlpatterns = [
     path('master/', include('apps.master.urls')),
     path('contract/', include('apps.contract.urls')),
     path('profile/', include('apps.profile.urls')),
+    path('information/', include('apps.information.urls')),
 ]
 
 # 開発環境でのメディアファイル配信

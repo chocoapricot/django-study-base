@@ -9,19 +9,7 @@
         {% if is_new %}外国籍情報登録{% else %}外国籍情報編集{% endif %}
     </div>
     <div class="card-body">
-        {% if is_new %}
-        <div class="alert alert-info" role="alert">
-            <i class="bi bi-info-circle"></i>
-            外国籍情報を登録してください。
-        </div>
-        {% else %}
-        <div class="alert alert-info" role="alert">
-            <i class="bi bi-info-circle"></i>
-            外国籍情報を編集してください。
-        </div>
-        {% endif %}
-
-        <form method="post" class="mt-3">
+        <form method="post" class="mt-3" enctype="multipart/form-data">
             {% csrf_token %}
 
             <!-- 在留カード番号 -->
@@ -76,6 +64,32 @@
                 </div>
             </div>
 
+            <!-- 在留カード（表面） -->
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.residence_card_front.id_for_label }}" class="col-sm-3 col-form-label" style="text-align:right">
+                    {{ form.residence_card_front.label }}
+                </label>
+                <div class="col-sm-6">
+                    {{ form.residence_card_front }}
+                    {% if form.residence_card_front.errors %}
+                        <div class="text-danger small">{{ form.residence_card_front.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 在留カード（裏面） -->
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.residence_card_back.id_for_label }}" class="col-sm-3 col-form-label" style="text-align:right">
+                    {{ form.residence_card_back.label }}
+                </label>
+                <div class="col-sm-6">
+                    {{ form.residence_card_back }}
+                    {% if form.residence_card_back.errors %}
+                        <div class="text-danger small">{{ form.residence_card_back.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
             <!-- フォーム全体のエラー -->
             {% if form.non_field_errors %}
                 <div class="alert alert-danger">
@@ -88,11 +102,7 @@
                     <button type="submit" class="btn btn-sm btn-primary">
                         {% if is_new %}登録{% else %}更新{% endif %}
                     </button>
-                    {% if is_new %}
-                        <a href="/" class="btn btn-sm btn-secondary ms-2">戻る</a>
-                    {% else %}
-                        <a href="{% url 'profile:international_detail' %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
-                    {% endif %}
+                    <a href="{% url 'profile:index' %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
                 </div>
             </div>
         </form>

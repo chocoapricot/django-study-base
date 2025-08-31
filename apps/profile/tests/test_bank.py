@@ -67,6 +67,8 @@ class StaffProfileBankFormTest(TestCase):
     
     def setUp(self):
         Dropdowns.objects.create(category='bank_account_type', value='1', name='普通', disp_seq=1)
+        self.bank_master = Bank.objects.create(bank_code='0001', name='テスト銀行', is_active=True)
+        self.branch_master = BankBranch.objects.create(bank=self.bank_master, branch_code='001', name='テスト支店', is_active=True)
 
     def test_valid_form(self):
         """正常なフォームデータのテスト"""

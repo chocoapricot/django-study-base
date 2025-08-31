@@ -1,4 +1,5 @@
 {% extends 'common/_base.html' %}
+{% load static %}
 {% load help_tags %}
 
 {% block content %}
@@ -107,81 +108,33 @@
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'js/form_utils.js' %}"></script>
 <script>
-    $('#fetch-info-btn').on('click', function() {
-        var corporateNumber = $('#id_corporate_number').val();
-        // 13文字チェック
-        if (corporateNumber.length !== 13) {
-            alert("法人番号は13文字で入力してください。");
-            return; // 処理を終了
-        }
-        $.ajax({
+    $(document).ready(function() {
+        setupCorporateInfoFetching({
+            corporateNumberFieldId: 'id_corporate_number',
+            buttonId: 'fetch-info-btn',
             url: "{% url 'get_company_info' %}",
-            data: {
-                corporate_number: corporateNumber
+            infoMappings: {
+                name: 'id_name',
+                kana: 'id_name_furigana',
+                postal_code: 'id_postal_code',
+                location: 'id_address',
+                business_summary: 'id_memo'
             },
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    var data = response.data;
-                    $('#id_name').val(data.name);  // 取得した企業名を設定
-                    $('#id_name_furigana').val(data.kana);
-                    $('#id_postal_code').val(data.postal_code);
-                    $('#id_address').val(data.location);
-                    $('#id_memo').val(data.business_summary);
-                    // 他のフィールドも同様にデータをセット
-                    // Bootstrap alert-dismissibleでメッセージ表示
-                    $('#api-message').html(
-                        '<div class="alert alert-info alert-dismissible fade show" role="alert">'
-                        + '企業情報を取得しました。'
-                        + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
-                        + '</div>'
-                    );
-                } else {
-                    alert(response.error);
-                }
-            },
-            error: function() {
-                alert("企業情報の取得に失敗しました。");
-            }
+            apiMessageId: 'api-message'
         });
-    });
 
-    $('#fetch-zipcode-btn').on('click', function() {
-        var zipcode = $('#id_postal_code').val();
-        // 7文字チェック
-        if (zipcode.length !== 7) {
-            alert("郵便番号は7文字で入力してください。");
-            return; // 処理を終了
-        }
-        $.ajax({
+        setupZipcodeFetching({
+            zipcodeFieldId: 'id_postal_code',
+            buttonId: 'fetch-zipcode-btn',
             url: "{% url 'get_zipcode_info' %}",
-            data: {
-                zipcode: zipcode
-            },
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    var data = response.data;
-                    $('#id_address').val(data.address1+data.address2+data.address3);
-                    // 他のフィールドも同様にデータをセット
-                    // Bootstrap alert-dismissibleでメッセージ表示
-                    $('#api-message').html(
-                        '<div class="alert alert-info alert-dismissible fade show" role="alert">'
-                        + '住所情報を取得しました。'
-                        + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
-                        + '</div>'
-                    );
-                } else {
-                    alert(response.error);
-                }
-            },
-            error: function() {
-                alert("郵便番号の取得に失敗しました。");
-            }
+            addressMappings: [
+                { from: ['address1', 'address2', 'address3'], to: 'id_address' }
+            ],
+            apiMessageId: 'api-message'
         });
     });
-
 </script>
 {% endblock %}
 

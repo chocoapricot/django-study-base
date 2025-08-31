@@ -1,14 +1,58 @@
 {% extends 'common/_base.html' %}
+{% load static %}
+{% load help_tags %}
+
 {% block title %}技能登録・編集{% endblock %}
+
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4">
-    <div class="card-header">技能登録・編集</div>
+    <div class="card-header">
+        <h5 class="mb-0">技能登録・編集</h5>
+    </div>
     <div class="card-body">
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">保存</button>
-            <a href="{% url 'profile:skill_list' %}" class="btn btn-secondary">戻る</a>
+            {% if form.errors %}
+            <div class="alert alert-dismissible alert-warning">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                {{ form.errors }}
+            </div>
+            {% endif %}
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.skill.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.skill.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.skill }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.years_of_experience.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.years_of_experience.label }}</label>
+                <div class="col-sm-3">
+                    {{ form.years_of_experience }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.acquired_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.acquired_date.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.acquired_date }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.memo.label }}</label>
+                <div class="col-sm-8">
+                    {{ form.memo }}
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col text-start">
+                    <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
+                    <a href="{% url 'profile:skill_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
         </form>
     </div>
 </div>

@@ -63,6 +63,59 @@
             </table>
         </div>
 
+        <!-- 添付ファイル表示 -->
+        <h5 class="mt-4 mb-3">添付ファイル</h5>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">マイナンバーカード表面</label>
+                {% if mynumber_request.profile_mynumber.mynumber_card_front %}
+                    <a href="{{ mynumber_request.profile_mynumber.mynumber_card_front.url }}" target="_blank">
+                        <img src="{{ mynumber_request.profile_mynumber.mynumber_card_front.url }}" alt="申請されたマイナンバーカード表面" class="img-thumbnail w-100">
+                    </a>
+                {% else %}
+                    <div class="card card-body bg-light text-center">
+                        <p class="mb-0 text-muted">申請なし</p>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">マイナンバーカード裏面</label>
+                {% if mynumber_request.profile_mynumber.mynumber_card_back %}
+                    <a href="{{ mynumber_request.profile_mynumber.mynumber_card_back.url }}" target="_blank">
+                        <img src="{{ mynumber_request.profile_mynumber.mynumber_card_back.url }}" alt="申請されたマイナンバーカード裏面" class="img-thumbnail w-100">
+                    </a>
+                {% else %}
+                    <div class="card card-body bg-light text-center">
+                        <p class="mb-0 text-muted">申請なし</p>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">本人確認書類１</label>
+                {% if mynumber_request.profile_mynumber.identity_document_1 %}
+                    <a href="{{ mynumber_request.profile_mynumber.identity_document_1.url }}" target="_blank">
+                        <img src="{{ mynumber_request.profile_mynumber.identity_document_1.url }}" alt="申請された本人確認書類１" class="img-thumbnail w-100">
+                    </a>
+                {% else %}
+                    <div class="card card-body bg-light text-center">
+                        <p class="mb-0 text-muted">申請なし</p>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">本人確認書類２</label>
+                {% if mynumber_request.profile_mynumber.identity_document_2 %}
+                    <a href="{{ mynumber_request.profile_mynumber.identity_document_2.url }}" target="_blank">
+                        <img src="{{ mynumber_request.profile_mynumber.identity_document_2.url }}" alt="申請された本人確認書類２" class="img-thumbnail w-100">
+                    </a>
+                {% else %}
+                    <div class="card card-body bg-light text-center">
+                        <p class="mb-0 text-muted">申請なし</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
         <!-- 承認・却下ボタン -->
         {% if mynumber_request.status == 'pending' %}
         <div class="d-flex justify-content-start mt-4">
