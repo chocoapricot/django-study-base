@@ -1,4 +1,5 @@
 {% extends 'common/_base.html' %}
+{% load static %}
 {% load help_tags %}
 {% block content %}
             
@@ -86,7 +87,7 @@
                     {% endif %}
                 </div>
                 <div class="col-sm">
-                    <button type="button" class="btn btn-sm btn-secondary me-2" onclick="searchAddressDept()">住所</button>
+                    <button type="button" id="fetch-zipcode-btn" class="btn btn-sm btn-secondary me-2">住所</button>
                     {% my_help_preset "postal_api" %}
                 </div>
             </div>
@@ -121,31 +122,20 @@
 
 {% include 'company/_department_list_table.html' %}
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'js/form_utils.js' %}"></script>
 <script>
-// 部署用の郵便番号から住所を検索
-function searchAddressDept() {
-    const postalCode = document.getElementById('id_postal_code_dept').value.replace(/[^0-9]/g, '');
-    if (postalCode.length !== 7) {
-        alert('郵便番号は7桁で入力してください');
-        return;
-    }
-    
-    fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${postalCode}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.results && data.results.length > 0) {
-                const result = data.results[0];
-                const address = result.address1 + result.address2 + result.address3;
-                document.getElementById('id_address_dept').value = address;
-            } else {
-                alert('住所が見つかりませんでした');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('住所検索でエラーが発生しました');
-        });
-}
+$(document).ready(function() {
+    setupZipcodeFetching({
+        zipcodeFieldId: 'id_postal_code_dept',
+        buttonId: 'fetch-zipcode-btn',
+        url: "{% url 'get_zipcode_info' %}",
+        addressMappings: [
+            { from: ['address1', 'address2', 'address3'], to: 'id_address_dept' }
+        ],
+        apiMessageId: 'api-message'
+    });
+});
 </script>
 
 {% endblock %}

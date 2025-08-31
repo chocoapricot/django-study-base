@@ -111,43 +111,18 @@
 <script src="{% static 'js/form_utils.js' %}"></script>
 <script>
     $(document).ready(function() {
-        $('#fetch-info-btn').on('click', function() {
-            var corporateNumber = $('#id_corporate_number').val();
-            // 13文字チェック
-            if (corporateNumber.length !== 13) {
-                alert("法人番号は13文字で入力してください。");
-                return; // 処理を終了
-            }
-            $.ajax({
-                url: "{% url 'get_company_info' %}",
-                data: {
-                    corporate_number: corporateNumber
-                },
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        var data = response.data;
-                        $('#id_name').val(data.name);  // 取得した企業名を設定
-                        $('#id_name_furigana').val(data.kana);
-                        $('#id_postal_code').val(data.postal_code);
-                        $('#id_address').val(data.location);
-                        $('#id_memo').val(data.business_summary);
-                        // 他のフィールドも同様にデータをセット
-                        // Bootstrap alert-dismissibleでメッセージ表示
-                        $('#api-message').html(
-                            '<div class="alert alert-info alert-dismissible fade show" role="alert">'
-                            + '企業情報を取得しました。'
-                            + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
-                            + '</div>'
-                        );
-                    } else {
-                        alert(response.error);
-                    }
-                },
-                error: function() {
-                    alert("企業情報の取得に失敗しました。");
-                }
-            });
+        setupCorporateInfoFetching({
+            corporateNumberFieldId: 'id_corporate_number',
+            buttonId: 'fetch-info-btn',
+            url: "{% url 'get_company_info' %}",
+            infoMappings: {
+                name: 'id_name',
+                kana: 'id_name_furigana',
+                postal_code: 'id_postal_code',
+                location: 'id_address',
+                business_summary: 'id_memo'
+            },
+            apiMessageId: 'api-message'
         });
 
         setupZipcodeFetching({
