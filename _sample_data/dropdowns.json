@@ -1,588 +1,3010 @@
 [
-{
+  {
     "model": "settings.dropdowns",
     "pk": 1,
     "fields": {
-        "created_at": "2024-10-25T05:04:59.905Z",
-        "created_by": 1,
-        "updated_at": "2024-10-25T05:04:59.905Z",
-        "updated_by": 1,
-        "category": "sex",
-        "name": "男性",
-        "value": "1",
-        "disp_seq": 1,
-        "active": true
+      "created_at": "2024-10-25T05:04:59.905Z",
+      "created_by": 1,
+      "updated_at": "2024-10-25T05:04:59.905Z",
+      "updated_by": 1,
+      "category": "sex",
+      "name": "男性",
+      "value": "1",
+      "disp_seq": 1,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 2,
     "fields": {
-        "created_at": "2024-10-25T05:05:11.695Z",
-        "created_by": 1,
-        "updated_at": "2024-10-25T05:05:11.695Z",
-        "updated_by": 1,
-        "category": "sex",
-        "name": "女性",
-        "value": "2",
-        "disp_seq": 2,
-        "active": true
+      "created_at": "2024-10-25T05:05:11.695Z",
+      "created_by": 1,
+      "updated_at": "2024-10-25T05:05:11.695Z",
+      "updated_by": 1,
+      "category": "sex",
+      "name": "女性",
+      "value": "2",
+      "disp_seq": 2,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 3,
     "fields": {
-        "created_at": "2024-11-06T15:55:50.740Z",
-        "created_by": 1,
-        "updated_at": "2024-11-06T15:55:50.740Z",
-        "updated_by": 1,
-        "category": "regist_form",
-        "name": "登録中",
-        "value": "1",
-        "disp_seq": 1,
-        "active": true
+      "created_at": "2024-11-06T15:55:50.740Z",
+      "created_by": 1,
+      "updated_at": "2024-11-06T15:55:50.740Z",
+      "updated_by": 1,
+      "category": "regist_form",
+      "name": "登録中",
+      "value": "1",
+      "disp_seq": 1,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 4,
     "fields": {
-        "created_at": "2024-11-06T15:56:44.222Z",
-        "created_by": 1,
-        "updated_at": "2024-11-06T16:12:10.647Z",
-        "updated_by": 1,
-        "category": "regist_form",
-        "name": "審査中",
-        "value": "2",
-        "disp_seq": 2,
-        "active": true
+      "created_at": "2024-11-06T15:56:44.222Z",
+      "created_by": 1,
+      "updated_at": "2024-11-06T16:12:10.647Z",
+      "updated_by": 1,
+      "category": "regist_form",
+      "name": "審査中",
+      "value": "2",
+      "disp_seq": 2,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 5,
     "fields": {
-        "created_at": "2024-11-06T15:57:02.294Z",
-        "created_by": 1,
-        "updated_at": "2024-11-06T15:57:02.294Z",
-        "updated_by": 1,
-        "category": "regist_form",
-        "name": "仮登録",
-        "value": "10",
-        "disp_seq": 10,
-        "active": true
+      "created_at": "2024-11-06T15:57:02.294Z",
+      "created_by": 1,
+      "updated_at": "2024-11-06T15:57:02.294Z",
+      "updated_by": 1,
+      "category": "regist_form",
+      "name": "仮登録",
+      "value": "10",
+      "disp_seq": 10,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 6,
     "fields": {
-        "created_at": "2024-11-06T15:57:21.195Z",
-        "created_by": 1,
-        "updated_at": "2024-11-06T15:57:21.195Z",
-        "updated_by": 1,
-        "category": "regist_form",
-        "name": "登録済",
-        "value": "20",
-        "disp_seq": 20,
-        "active": true
+      "created_at": "2024-11-06T15:57:21.195Z",
+      "created_by": 1,
+      "updated_at": "2024-11-06T15:57:21.195Z",
+      "updated_by": 1,
+      "category": "regist_form",
+      "name": "登録済",
+      "value": "20",
+      "disp_seq": 20,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 7,
     "fields": {
-        "created_at": "2024-11-06T15:57:46.793Z",
-        "created_by": 1,
-        "updated_at": "2024-11-06T15:57:46.793Z",
-        "updated_by": 1,
-        "category": "regist_form",
-        "name": "登録不可",
-        "value": "90",
-        "disp_seq": 90,
-        "active": true
+      "created_at": "2024-11-06T15:57:46.793Z",
+      "created_by": 1,
+      "updated_at": "2024-11-06T15:57:46.793Z",
+      "updated_by": 1,
+      "category": "regist_form",
+      "name": "登録不可",
+      "value": "90",
+      "disp_seq": 90,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 8,
     "fields": {
-        "created_at": "2024-11-07T05:05:40.059Z",
-        "created_by": 1,
-        "updated_at": "2024-11-07T05:05:40.059Z",
-        "updated_by": 1,
-        "category": "regist_form",
-        "name": "契約社員",
-        "value": "30",
-        "disp_seq": 30,
-        "active": false
+      "created_at": "2024-11-07T05:05:40.059Z",
+      "created_by": 1,
+      "updated_at": "2024-11-07T05:05:40.059Z",
+      "updated_by": 1,
+      "category": "regist_form",
+      "name": "契約社員",
+      "value": "30",
+      "disp_seq": 30,
+      "active": false
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 9,
     "fields": {
-        "created_at": "2024-11-12T16:53:17.612Z",
-        "created_by": 1,
-        "updated_at": "2024-11-12T16:53:17.612Z",
-        "updated_by": 1,
-        "category": "regist_form_client",
-        "name": "登録中",
-        "value": "1",
-        "disp_seq": 1,
-        "active": true
+      "created_at": "2024-11-12T16:53:17.612Z",
+      "created_by": 1,
+      "updated_at": "2024-11-12T16:53:17.612Z",
+      "updated_by": 1,
+      "category": "regist_form_client",
+      "name": "登録中",
+      "value": "1",
+      "disp_seq": 1,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 10,
     "fields": {
-        "created_at": "2024-11-12T16:53:31.222Z",
-        "created_by": 1,
-        "updated_at": "2024-11-12T16:53:31.222Z",
-        "updated_by": 1,
-        "category": "regist_form_client",
-        "name": "審査中",
-        "value": "2",
-        "disp_seq": 2,
-        "active": true
+      "created_at": "2024-11-12T16:53:31.222Z",
+      "created_by": 1,
+      "updated_at": "2024-11-12T16:53:31.222Z",
+      "updated_by": 1,
+      "category": "regist_form_client",
+      "name": "審査中",
+      "value": "2",
+      "disp_seq": 2,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 11,
     "fields": {
-        "created_at": "2024-11-12T16:54:40.778Z",
-        "created_by": 1,
-        "updated_at": "2024-11-12T17:09:42.316Z",
-        "updated_by": 1,
-        "category": "regist_form_client",
-        "name": "登録済",
-        "value": "10",
-        "disp_seq": 10,
-        "active": true
+      "created_at": "2024-11-12T16:54:40.778Z",
+      "created_by": 1,
+      "updated_at": "2024-11-12T17:09:42.316Z",
+      "updated_by": 1,
+      "category": "regist_form_client",
+      "name": "登録済",
+      "value": "10",
+      "disp_seq": 10,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 12,
     "fields": {
-        "created_at": "2024-11-12T17:28:05.900Z",
-        "created_by": 1,
-        "updated_at": "2024-11-12T17:28:05.900Z",
-        "updated_by": 1,
-        "category": "regist_form_client",
-        "name": "商談中",
-        "value": "20",
-        "disp_seq": 20,
-        "active": true
+      "created_at": "2024-11-12T17:28:05.900Z",
+      "created_by": 1,
+      "updated_at": "2024-11-12T17:28:05.900Z",
+      "updated_by": 1,
+      "category": "regist_form_client",
+      "name": "商談中",
+      "value": "20",
+      "disp_seq": 20,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 13,
     "fields": {
-        "created_at": "2025-07-12T15:54:13.431Z",
-        "created_by": 1,
-        "updated_at": "2025-07-12T15:56:57.202Z",
-        "updated_by": 1,
-        "category": "contact_type",
-        "name": "問い合わせ",
-        "value": "10",
-        "disp_seq": 10,
-        "active": true
+      "created_at": "2025-07-12T15:54:13.431Z",
+      "created_by": 1,
+      "updated_at": "2025-07-12T15:56:57.202Z",
+      "updated_by": 1,
+      "category": "contact_type",
+      "name": "問い合わせ",
+      "value": "10",
+      "disp_seq": 10,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 14,
     "fields": {
-        "created_at": "2025-07-12T15:54:34.607Z",
-        "created_by": 1,
-        "updated_at": "2025-07-12T15:54:34.607Z",
-        "updated_by": 1,
-        "category": "contact_type",
-        "name": "打ち合わせ",
-        "value": "20",
-        "disp_seq": 20,
-        "active": true
+      "created_at": "2025-07-12T15:54:34.607Z",
+      "created_by": 1,
+      "updated_at": "2025-07-12T15:54:34.607Z",
+      "updated_by": 1,
+      "category": "contact_type",
+      "name": "打ち合わせ",
+      "value": "20",
+      "disp_seq": 20,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 15,
     "fields": {
-        "created_at": "2025-07-12T15:57:30.705Z",
-        "created_by": 1,
-        "updated_at": "2025-07-12T16:00:14.419Z",
-        "updated_by": 1,
-        "category": "contact_type",
-        "name": "メール配信",
-        "value": "50",
-        "disp_seq": 50,
-        "active": true
+      "created_at": "2025-07-12T15:57:30.705Z",
+      "created_by": 1,
+      "updated_at": "2025-07-12T16:00:14.419Z",
+      "updated_by": 1,
+      "category": "contact_type",
+      "name": "メール配信",
+      "value": "50",
+      "disp_seq": 50,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 16,
     "fields": {
-        "created_at": "2025-07-12T16:00:55.130Z",
-        "created_by": 1,
-        "updated_at": "2025-07-12T16:00:55.130Z",
-        "updated_by": 1,
-        "category": "contact_type",
-        "name": "クレーム",
-        "value": "40",
-        "disp_seq": 40,
-        "active": true
+      "created_at": "2025-07-12T16:00:55.130Z",
+      "created_by": 1,
+      "updated_at": "2025-07-12T16:00:55.130Z",
+      "updated_by": 1,
+      "category": "contact_type",
+      "name": "クレーム",
+      "value": "40",
+      "disp_seq": 40,
+      "active": true
     }
-},
-  {"model": "settings.dropdowns", "pk": 17, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "管理的公務員", "value": "01", "disp_seq": 1, "active": true}},
-  {"model": "settings.dropdowns", "pk": 18, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "法人・団体役員", "value": "02", "disp_seq": 2, "active": true}},
-  {"model": "settings.dropdowns", "pk": 19, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "会社管理職", "value": "03", "disp_seq": 3, "active": true}},
-  {"model": "settings.dropdowns", "pk": 20, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "その他の管理的職業従事者", "value": "04", "disp_seq": 4, "active": true}},
-  {"model": "settings.dropdowns", "pk": 21, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "専門的・技術的職業従事者", "value": "05", "disp_seq": 5, "active": true}},
-  {"model": "settings.dropdowns", "pk": 22, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "事務従事者", "value": "06", "disp_seq": 6, "active": true}},
-  {"model": "settings.dropdowns", "pk": 23, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "販売従事者", "value": "07", "disp_seq": 7, "active": true}},
-  {"model": "settings.dropdowns", "pk": 24, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "サービス職業従事者", "value": "08", "disp_seq": 8, "active": true}},
-  {"model": "settings.dropdowns", "pk": 25, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "保安職業従事者", "value": "09", "disp_seq": 9, "active": true}},
-  {"model": "settings.dropdowns", "pk": 26, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "農林漁業従事者", "value": "10", "disp_seq": 10, "active": true}},
-  {"model": "settings.dropdowns", "pk": 27, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "生産工程従事者", "value": "11", "disp_seq": 11, "active": true}},
-  {"model": "settings.dropdowns", "pk": 28, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "輸送・機械運転従事者", "value": "12", "disp_seq": 12, "active": true}},
-  {"model": "settings.dropdowns", "pk": 29, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "建設従事者", "value": "13", "disp_seq": 13, "active": true}},
-  {"model": "settings.dropdowns", "pk": 30, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "採掘従事者", "value": "14", "disp_seq": 14, "active": true}},
-  {"model": "settings.dropdowns", "pk": 31, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "運搬の職業従事者", "value": "15", "disp_seq": 15, "active": true}},
-  {"model": "settings.dropdowns", "pk": 32, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "清掃の職業従事者", "value": "16", "disp_seq": 16, "active": true}},
-  {"model": "settings.dropdowns", "pk": 33, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "包装の職業従事者", "value": "17", "disp_seq": 17, "active": true}},
-  {"model": "settings.dropdowns", "pk": 34, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "医師", "value": "18", "disp_seq": 18, "active": true}},
-  {"model": "settings.dropdowns", "pk": 35, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "歯科医師", "value": "19", "disp_seq": 19, "active": true}},
-  {"model": "settings.dropdowns", "pk": 36, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "薬剤師", "value": "20", "disp_seq": 20, "active": true}},
-  {"model": "settings.dropdowns", "pk": 37, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "獣医師", "value": "21", "disp_seq": 21, "active": true}},
-  {"model": "settings.dropdowns", "pk": 38, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "看護師", "value": "22", "disp_seq": 22, "active": true}},
-  {"model": "settings.dropdowns", "pk": 39, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "保健師", "value": "23", "disp_seq": 23, "active": true}},
-  {"model": "settings.dropdowns", "pk": 40, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "助産師", "value": "24", "disp_seq": 24, "active": true}},
-  {"model": "settings.dropdowns", "pk": 41, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "歯科衛生士", "value": "25", "disp_seq": 25, "active": true}},
-  {"model": "settings.dropdowns", "pk": 42, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "歯科技工士", "value": "26", "disp_seq": 26, "active": true}},
-  {"model": "settings.dropdowns", "pk": 43, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "臨床検査技師", "value": "27", "disp_seq": 27, "active": true}},
-  {"model": "settings.dropdowns", "pk": 44, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "診療放射線技師", "value": "28", "disp_seq": 28, "active": true}},
-  {"model": "settings.dropdowns", "pk": 45, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "理学療法士", "value": "29", "disp_seq": 29, "active": true}},
-  {"model": "settings.dropdowns", "pk": 46, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "作業療法士", "value": "30", "disp_seq": 30, "active": true}},
-  {"model": "settings.dropdowns", "pk": 47, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "臨床工学技士", "value": "31", "disp_seq": 31, "active": true}},
-  {"model": "settings.dropdowns", "pk": 48, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "視能訓練士", "value": "32", "disp_seq": 32, "active": true}},
-  {"model": "settings.dropdowns", "pk": 49, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "臨床心理士", "value": "33", "disp_seq": 33, "active": true}},
-  {"model": "settings.dropdowns", "pk": 50, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "管理栄養士", "value": "34", "disp_seq": 34, "active": true}},
-  {"model": "settings.dropdowns", "pk": 51, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "栄養士", "value": "35", "disp_seq": 35, "active": true}},
-  {"model": "settings.dropdowns", "pk": 52, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "言語聴覚士", "value": "36", "disp_seq": 36, "active": true}},
-  {"model": "settings.dropdowns", "pk": 53, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "義肢装具士", "value": "37", "disp_seq": 37, "active": true}},
-  {"model": "settings.dropdowns", "pk": 54, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "救急救命士", "value": "38", "disp_seq": 38, "active": true}},
-  {"model": "settings.dropdowns", "pk": 55, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "その他の医療技術者", "value": "39", "disp_seq": 39, "active": true}},
-  {"model": "settings.dropdowns", "pk": 56, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "保育士", "value": "40", "disp_seq": 40, "active": true}},
-  {"model": "settings.dropdowns", "pk": 57, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "介護福祉士", "value": "41", "disp_seq": 41, "active": true}},
-  {"model": "settings.dropdowns", "pk": 58, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "社会福祉士", "value": "42", "disp_seq": 42, "active": true}},
-  {"model": "settings.dropdowns", "pk": 59, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "精神保健福祉士", "value": "43", "disp_seq": 43, "active": true}},
-  {"model": "settings.dropdowns", "pk": 60, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "社会福祉主事", "value": "44", "disp_seq": 44, "active": true}},
-  {"model": "settings.dropdowns", "pk": 61, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "児童指導員", "value": "45", "disp_seq": 45, "active": true}},
-  {"model": "settings.dropdowns", "pk": 62, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "ケースワーカー", "value": "46", "disp_seq": 46, "active": true}},
-  {"model": "settings.dropdowns", "pk": 63, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "その他の福祉専門職", "value": "47", "disp_seq": 47, "active": true}},
-  {"model": "settings.dropdowns", "pk": 64, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "教員", "value": "48", "disp_seq": 48, "active": true}},
-  {"model": "settings.dropdowns", "pk": 65, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "大学教員", "value": "49", "disp_seq": 49, "active": true}},
-  {"model": "settings.dropdowns", "pk": 66, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "研究者", "value": "50", "disp_seq": 50, "active": true}},
-  {"model": "settings.dropdowns", "pk": 67, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "弁護士", "value": "51", "disp_seq": 51, "active": true}},
-  {"model": "settings.dropdowns", "pk": 68, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "司法書士", "value": "52", "disp_seq": 52, "active": true}},
-  {"model": "settings.dropdowns", "pk": 69, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "行政書士", "value": "53", "disp_seq": 53, "active": true}},
-  {"model": "settings.dropdowns", "pk": 70, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "公認会計士", "value": "54", "disp_seq": 54, "active": true}},
-  {"model": "settings.dropdowns", "pk": 71, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "税理士", "value": "55", "disp_seq": 55, "active": true}},
-  {"model": "settings.dropdowns", "pk": 72, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "社会保険労務士", "value": "56", "disp_seq": 56, "active": true}},
-  {"model": "settings.dropdowns", "pk": 73, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "中小企業診断士", "value": "57", "disp_seq": 57, "active": true}},
-  {"model": "settings.dropdowns", "pk": 74, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "不動産鑑定士", "value": "58", "disp_seq": 58, "active": true}},
-  {"model": "settings.dropdowns", "pk": 75, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "技術士", "value": "59", "disp_seq": 59, "active": true}},
-  {"model": "settings.dropdowns", "pk": 76, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "建築士", "value": "60", "disp_seq": 60, "active": true}},
-  {"model": "settings.dropdowns", "pk": 77, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "土地家屋調査士", "value": "61", "disp_seq": 61, "active": true}},
-  {"model": "settings.dropdowns", "pk": 78, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "測量士", "value": "62", "disp_seq": 62, "active": true}},
-  {"model": "settings.dropdowns", "pk": 79, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "電気主任技術者", "value": "63", "disp_seq": 63, "active": true}},
-  {"model": "settings.dropdowns", "pk": 80, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "ボイラー技士", "value": "64", "disp_seq": 64, "active": true}},
-  {"model": "settings.dropdowns", "pk": 81, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "危険物取扱者", "value": "65", "disp_seq": 65, "active": true}},
-  {"model": "settings.dropdowns", "pk": 82, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "自動車整備士", "value": "66", "disp_seq": 66, "active": true}},
-  {"model": "settings.dropdowns", "pk": 83, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "調理師", "value": "67", "disp_seq": 67, "active": true}},
-  {"model": "settings.dropdowns", "pk": 84, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "製菓衛生師", "value": "68", "disp_seq": 68, "active": true}},
-  {"model": "settings.dropdowns", "pk": 85, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "理容師", "value": "69", "disp_seq": 69, "active": true}},
-  {"model": "settings.dropdowns", "pk": 86, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "美容師", "value": "70", "disp_seq": 70, "active": true}},
-  {"model": "settings.dropdowns", "pk": 87, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "クリーニング師", "value": "71", "disp_seq": 71, "active": true}},
-  {"model": "settings.dropdowns", "pk": 88, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "その他のサービス職業従事者", "value": "72", "disp_seq": 72, "active": true}},
-  {"model": "settings.dropdowns", "pk": 89, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "その他の運搬・清掃・包装等従事者", "value": "73", "disp_seq": 73, "active": true}},
-  {"model": "settings.dropdowns", "pk": 90, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1, "category": "jobs_soumu", "name": "分類不能の職業", "value": "99", "disp_seq": 99, "active": true}},
-  {"model": "settings.dropdowns","pk": 91, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "001", "name": "法人・団体役員"}},
-  {"model": "settings.dropdowns","pk": 92, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "002", "name": "法人・団体管理職員"}},
-  {"model": "settings.dropdowns","pk": 93, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "003", "name": "会社役員"}},
-  {"model": "settings.dropdowns","pk": 94, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "004", "name": "会社管理職員"}},
-  {"model": "settings.dropdowns","pk": 95, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "005", "name": "行政機関の管理職員"}},
-  {"model": "settings.dropdowns","pk": 96, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "006", "name": "行政機関の部課長級職員"}},
-  {"model": "settings.dropdowns","pk": 97, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "007", "name": "行政機関の係長級職員"}},
-  {"model": "settings.dropdowns","pk": 98, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "008", "name": "行政機関の一般職員"}},
-  {"model": "settings.dropdowns","pk": 99, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "009", "name": "専門的・技術的職業従事者"}},
-  {"model": "settings.dropdowns","pk": 100, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "010", "name": "医師"}},
-  {"model": "settings.dropdowns","pk": 101, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "011", "name": "歯科医師"}},
-  {"model": "settings.dropdowns","pk": 102, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "012", "name": "薬剤師"}},
-  {"model": "settings.dropdowns","pk": 103, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "013", "name": "看護師"}},
-  {"model": "settings.dropdowns","pk": 104, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "014", "name": "保健師"}},
-  {"model": "settings.dropdowns","pk": 105, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "015", "name": "助産師"}},
-  {"model": "settings.dropdowns","pk": 106, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "016", "name": "理学療法士"}},
-  {"model": "settings.dropdowns","pk": 107, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "017", "name": "作業療法士"}},
-  {"model": "settings.dropdowns","pk": 108, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "018", "name": "臨床検査技師"}},
-  {"model": "settings.dropdowns","pk": 109, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "019", "name": "診療放射線技師"}},
-  {"model": "settings.dropdowns","pk": 110, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "020", "name": "臨床工学技士"}},
-  {"model": "settings.dropdowns","pk": 111, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "021", "name": "管理栄養士"}},
-  {"model": "settings.dropdowns","pk": 112, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "022", "name": "栄養士"}},
-  {"model": "settings.dropdowns","pk": 113, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "023", "name": "保育士"}},
-  {"model": "settings.dropdowns","pk": 114, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "024", "name": "幼稚園教諭"}},
-  {"model": "settings.dropdowns","pk": 115, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "025", "name": "小学校教諭"}},
-  {"model": "settings.dropdowns","pk": 116, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "026", "name": "中学校教諭"}},
-  {"model": "settings.dropdowns","pk": 117, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "027", "name": "高等学校教諭"}},
-  {"model": "settings.dropdowns","pk": 118, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "028", "name": "特別支援学校教諭"}},
-  {"model": "settings.dropdowns","pk": 119, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "029", "name": "大学教員"}},
-  {"model": "settings.dropdowns","pk": 120, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "030", "name": "専門学校教員"}},
-  {"model": "settings.dropdowns","pk": 121, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "031", "name": "各種学校教員"}},
-  {"model": "settings.dropdowns","pk": 122, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "032", "name": "学習塾講師"}},
-  {"model": "settings.dropdowns","pk": 123, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "033", "name": "自動車教習所指導員"}},
-  {"model": "settings.dropdowns","pk": 124, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "034", "name": "その他の教育職"}},
-  {"model": "settings.dropdowns","pk": 125, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "035", "name": "弁護士"}},
-  {"model": "settings.dropdowns","pk": 126, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "036", "name": "司法書士"}},
-  {"model": "settings.dropdowns","pk": 127, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "037", "name": "行政書士"}},
-  {"model": "settings.dropdowns","pk": 128, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "038", "name": "税理士"}},
-  {"model": "settings.dropdowns","pk": 129, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "039", "name": "公認会計士"}},
-  {"model": "settings.dropdowns","pk": 130, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "040", "name": "社会保険労務士"}},
-  {"model": "settings.dropdowns","pk": 131, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "041", "name": "中小企業診断士"}},
-  {"model": "settings.dropdowns","pk": 132, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "042", "name": "弁理士"}},
-  {"model": "settings.dropdowns","pk": 133, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "043", "name": "土地家屋調査士"}},
-  {"model": "settings.dropdowns","pk": 134, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "044", "name": "測量士"}},
-  {"model": "settings.dropdowns","pk": 135, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "045", "name": "建築士"}},
-  {"model": "settings.dropdowns","pk": 136, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "046", "name": "技術士"}},
-  {"model": "settings.dropdowns","pk": 137, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "047", "name": "電気主任技術者"}},
-  {"model": "settings.dropdowns","pk": 138, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "048", "name": "電気工事士"}},
-  {"model": "settings.dropdowns","pk": 139, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "049", "name": "ボイラー技士"}},
-  {"model": "settings.dropdowns","pk": 140, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "050", "name": "危険物取扱者"}},
-  {"model": "settings.dropdowns","pk": 141, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "051", "name": "衛生管理者"}},
-  {"model": "settings.dropdowns","pk": 142, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "052", "name": "労働安全コンサルタント"}},
-  {"model": "settings.dropdowns","pk": 143, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "053", "name": "労働衛生コンサルタント"}},
-  {"model": "settings.dropdowns","pk": 144, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "054", "name": "その他の専門的職業"}},
-  {"model": "settings.dropdowns","pk": 145, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "055", "name": "事務職員"}},
-  {"model": "settings.dropdowns","pk": 146, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "056", "name": "営業職員"}},
-  {"model": "settings.dropdowns","pk": 147, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "057", "name": "販売職員"}},
-  {"model": "settings.dropdowns","pk": 148, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "058", "name": "サービス職員"}},
-  {"model": "settings.dropdowns","pk": 149, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "059", "name": "保安職員"}},
-  {"model": "settings.dropdowns","pk": 150, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "060", "name": "運搬職員"}},
-  {"model": "settings.dropdowns","pk": 151, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "061", "name": "清掃職員"}},
-  {"model": "settings.dropdowns","pk": 152, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "062", "name": "包装職員"}},
-  {"model": "settings.dropdowns","pk": 153, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "063", "name": "選別職員"}},
-  {"model": "settings.dropdowns","pk": 154, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "064", "name": "製造職員"}},
-  {"model": "settings.dropdowns","pk": 155, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "065", "name": "建設職員"}},
-  {"model": "settings.dropdowns","pk": 156, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "066", "name": "土木職員"}},
-  {"model": "settings.dropdowns","pk": 157, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "067", "name": "電気職員"}},
-  {"model": "settings.dropdowns","pk": 158, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "068", "name": "機械職員"}},
-  {"model": "settings.dropdowns","pk": 159, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "069", "name": "自動車整備士"}},
-  {"model": "settings.dropdowns","pk": 160, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "070", "name": "その他の技術職"}},
-  {"model": "settings.dropdowns","pk": 161, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "071", "name": "農業従事者"}},
-  {"model": "settings.dropdowns","pk": 162, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "072", "name": "林業従事者"}},
-  {"model": "settings.dropdowns","pk": 163, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "073", "name": "漁業従事者"}},
-  {"model": "settings.dropdowns","pk": 164, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "074", "name": "鉱業従事者"}},
-  {"model": "settings.dropdowns","pk": 165, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "075", "name": "建設作業員"}},
-  {"model": "settings.dropdowns","pk": 166, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "076", "name": "土木作業員"}},
-  {"model": "settings.dropdowns","pk": 167, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "077", "name": "電気作業員"}},
-  {"model": "settings.dropdowns","pk": 168, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "078", "name": "機械作業員"}},
-  {"model": "settings.dropdowns","pk": 169, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "079", "name": "自動車作業員"}},
-  {"model": "settings.dropdowns","pk": 170, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "080", "name": "その他の作業員"}},
-  {"model": "settings.dropdowns","pk": 171, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "081", "name": "運転手"}},
-  {"model": "settings.dropdowns","pk": 172, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "082", "name": "運搬作業員"}},
-  {"model": "settings.dropdowns","pk": 173, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "083", "name": "清掃作業員"}},
-  {"model": "settings.dropdowns","pk": 174, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "084", "name": "包装作業員"}},
-  {"model": "settings.dropdowns","pk": 175, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "085", "name": "選別作業員"}},
-  {"model": "settings.dropdowns","pk": 176, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "086", "name": "その他の運搬・清掃・包装・選別等の職業"}},
-  {"model": "settings.dropdowns","pk": 177, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "087", "name": "警備員"}},
-  {"model": "settings.dropdowns","pk": 178, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "088", "name": "消防士"}},
-  {"model": "settings.dropdowns","pk": 179, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "089", "name": "自衛官"}},
-  {"model": "settings.dropdowns","pk": 180, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "090", "name": "警察官"}},
-  {"model": "settings.dropdowns","pk": 181, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "091", "name": "その他の保安職"}},
-  {"model": "settings.dropdowns","pk": 182, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "092", "name": "販売作業員"}},
-  {"model": "settings.dropdowns","pk": 183, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "093", "name": "サービス作業員"}},
-  {"model": "settings.dropdowns","pk": 184, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "094", "name": "事務作業員"}},
-  {"model": "settings.dropdowns","pk": 185, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "095", "name": "営業作業員"}},
-  {"model": "settings.dropdowns","pk": 186, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "096", "name": "製造作業員"}},
-  {"model": "settings.dropdowns","pk": 187, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "097", "name": "建設作業員"}},
-  {"model": "settings.dropdowns","pk": 188, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "098", "name": "選別・ピッキング作業員"}},
-  {"model": "settings.dropdowns","pk": 189, "fields": {"created_at": "2025-08-18T00:00:00Z", "created_by": 1, "updated_at": "2025-08-18T00:00:00Z", "updated_by": 1,  "disp_seq": 99, "active": true,"category": "jobs_kourou", "value": "099", "name": "その他の運搬・清掃・包装・選別等の職業"}},
-{
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 17,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "管理的公務員",
+      "value": "01",
+      "disp_seq": 1,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 18,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "法人・団体役員",
+      "value": "02",
+      "disp_seq": 2,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 19,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "法人・団体管理職員",
+      "value": "03",
+      "disp_seq": 3,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 20,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "その他の管理的職業従事者",
+      "value": "04",
+      "disp_seq": 4,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 21,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "研究者",
+      "value": "05",
+      "disp_seq": 5,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 22,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "農林水産技術者",
+      "value": "06",
+      "disp_seq": 6,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 23,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "製造技術者（開発）",
+      "value": "07",
+      "disp_seq": 7,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 24,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "製造技術者（開発を除く）",
+      "value": "08",
+      "disp_seq": 8,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 25,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "建築・土木・測量技術者",
+      "value": "09",
+      "disp_seq": 9,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 26,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "情報処理・通信技術者",
+      "value": "10",
+      "disp_seq": 10,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 27,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "その他の技術者",
+      "value": "11",
+      "disp_seq": 11,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 28,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "医師，歯科医師，獣医師，薬剤師",
+      "value": "12",
+      "disp_seq": 12,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 29,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "保健師，助産師，看護師",
+      "value": "13",
+      "disp_seq": 13,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 30,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "医療技術者",
+      "value": "14",
+      "disp_seq": 14,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 31,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "その他の保健医療従事者",
+      "value": "15",
+      "disp_seq": 15,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 32,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "社会福祉専門職業従事者",
+      "value": "16",
+      "disp_seq": 16,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 33,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "法務従事者",
+      "value": "17",
+      "disp_seq": 17,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 34,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "経営・金融・保険専門職業従事者",
+      "value": "18",
+      "disp_seq": 18,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 35,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "教員",
+      "value": "19",
+      "disp_seq": 19,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 36,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "宗教家",
+      "value": "20",
+      "disp_seq": 20,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 37,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "著述家，記者，編集者",
+      "value": "21",
+      "disp_seq": 21,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 38,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "美術家，デザイナー，写真家，映像撮影者",
+      "value": "22",
+      "disp_seq": 22,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 39,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "音楽家，舞台芸術家",
+      "value": "23",
+      "disp_seq": 23,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 40,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "その他の専門的職業従事者",
+      "value": "24",
+      "disp_seq": 24,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 41,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "一般事務従事者",
+      "value": "25",
+      "disp_seq": 25,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 42,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "会計事務従事者",
+      "value": "26",
+      "disp_seq": 26,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 43,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "生産関連事務従事者",
+      "value": "27",
+      "disp_seq": 27,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 44,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "営業・販売事務従事者",
+      "value": "28",
+      "disp_seq": 28,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 45,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "外勤事務従事者",
+      "value": "29",
+      "disp_seq": 29,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 46,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "運輸・郵便事務従事者",
+      "value": "30",
+      "disp_seq": 30,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 47,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "事務用機器操作員",
+      "value": "31",
+      "disp_seq": 31,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 48,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "商品販売従事者",
+      "value": "32",
+      "disp_seq": 32,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 49,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "販売類似職業従事者",
+      "value": "33",
+      "disp_seq": 33,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 50,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "営業職業従事者",
+      "value": "34",
+      "disp_seq": 34,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 51,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "家庭生活支援サービス職業従事者",
+      "value": "35",
+      "disp_seq": 35,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 52,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "介護サービス職業従事者",
+      "value": "36",
+      "disp_seq": 36,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 53,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "保健医療サービス職業従事者",
+      "value": "37",
+      "disp_seq": 37,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 54,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "生活衛生サービス職業従事者",
+      "value": "38",
+      "disp_seq": 38,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 55,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "飲食物調理従事者",
+      "value": "39",
+      "disp_seq": 39,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 56,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "接客・給仕職業従事者",
+      "value": "40",
+      "disp_seq": 40,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 57,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "居住施設・ビル等管理人",
+      "value": "41",
+      "disp_seq": 41,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 58,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "その他のサービス職業従事者",
+      "value": "42",
+      "disp_seq": 42,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 59,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "自衛官",
+      "value": "43",
+      "disp_seq": 43,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 60,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "司法警察職員",
+      "value": "44",
+      "disp_seq": 44,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 61,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "その他の保安職業従事者",
+      "value": "45",
+      "disp_seq": 45,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 62,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "農業従事者",
+      "value": "46",
+      "disp_seq": 46,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 63,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "林業従事者",
+      "value": "47",
+      "disp_seq": 47,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 64,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "漁業従事者",
+      "value": "48",
+      "disp_seq": 48,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 65,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "生産設備制御・監視従事者（金属製品）",
+      "value": "49",
+      "disp_seq": 49,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 66,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "生産設備制御・監視従事者（金属製品を除く）",
+      "value": "50",
+      "disp_seq": 50,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 67,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "機械組立設備制御・監視従事者",
+      "value": "51",
+      "disp_seq": 51,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 68,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "製品製造・加工処理従事者（金属製品）",
+      "value": "52",
+      "disp_seq": 52,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 69,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "製品製造・加工処理従事者（金属製品を除く）",
+      "value": "53",
+      "disp_seq": 53,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 70,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "機械組立従事者",
+      "value": "54",
+      "disp_seq": 54,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 71,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "機械整備・修理従事者",
+      "value": "55",
+      "disp_seq": 55,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 72,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "製品検査従事者（金属製品）",
+      "value": "56",
+      "disp_seq": 56,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 73,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "製品検査従事者（金属製品を除く）",
+      "value": "57",
+      "disp_seq": 57,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 74,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "機械検査従事者",
+      "value": "58",
+      "disp_seq": 58,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 75,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "生産関連・生産類似作業従事者",
+      "value": "59",
+      "disp_seq": 59,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 76,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "鉄道運転従事者",
+      "value": "60",
+      "disp_seq": 60,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 77,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "自動車運転従事者",
+      "value": "61",
+      "disp_seq": 61,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 78,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "船舶・航空機運転従事者",
+      "value": "62",
+      "disp_seq": 62,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 79,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "その他の輸送従事者",
+      "value": "63",
+      "disp_seq": 63,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 80,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "定置・建設機械運転従事者",
+      "value": "64",
+      "disp_seq": 64,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 81,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "建設躯体工事従事者",
+      "value": "65",
+      "disp_seq": 65,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 82,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "建設従事者（建設躯体工事従事者を除く）",
+      "value": "66",
+      "disp_seq": 66,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 83,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "電気工事従事者",
+      "value": "67",
+      "disp_seq": 67,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 84,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "土木作業従事者",
+      "value": "68",
+      "disp_seq": 68,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 85,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "採掘従事者",
+      "value": "69",
+      "disp_seq": 69,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 86,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "運搬従事者",
+      "value": "70",
+      "disp_seq": 70,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 87,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "清掃従事者",
+      "value": "71",
+      "disp_seq": 71,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 88,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "包装従事者",
+      "value": "72",
+      "disp_seq": 72,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 89,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "その他の運搬・清掃・包装等従事者",
+      "value": "73",
+      "disp_seq": 73,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 90,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "category": "jobs_soumu",
+      "name": "分類不能の職業",
+      "value": "99",
+      "disp_seq": 99,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 91,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "001",
+      "name": "法人・団体役員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 92,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "002",
+      "name": "法人・団体管理職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 93,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "003",
+      "name": "会社役員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 94,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "004",
+      "name": "会社管理職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 95,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "005",
+      "name": "行政機関の管理職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 96,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "006",
+      "name": "行政機関の部課長級職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 97,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "007",
+      "name": "行政機関の係長級職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 98,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "008",
+      "name": "行政機関の一般職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 99,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "009",
+      "name": "専門的・技術的職業従事者"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 100,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "010",
+      "name": "医師"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 101,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "011",
+      "name": "歯科医師"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 102,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "012",
+      "name": "薬剤師"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 103,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "013",
+      "name": "看護師"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 104,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "014",
+      "name": "保健師"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 105,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "015",
+      "name": "助産師"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 106,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "016",
+      "name": "理学療法士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 107,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "017",
+      "name": "作業療法士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 108,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "018",
+      "name": "臨床検査技師"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 109,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "019",
+      "name": "診療放射線技師"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 110,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "020",
+      "name": "臨床工学技士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 111,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "021",
+      "name": "管理栄養士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 112,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "022",
+      "name": "栄養士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 113,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "023",
+      "name": "保育士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 114,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "024",
+      "name": "幼稚園教諭"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 115,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "025",
+      "name": "小学校教諭"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 116,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "026",
+      "name": "中学校教諭"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 117,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "027",
+      "name": "高等学校教諭"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 118,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "028",
+      "name": "特別支援学校教諭"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 119,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "029",
+      "name": "大学教員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 120,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "030",
+      "name": "専門学校教員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 121,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "031",
+      "name": "各種学校教員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 122,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "032",
+      "name": "学習塾講師"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 123,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "033",
+      "name": "自動車教習所指導員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 124,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "034",
+      "name": "その他の教育職"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 125,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "035",
+      "name": "弁護士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 126,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "036",
+      "name": "司法書士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 127,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "037",
+      "name": "行政書士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 128,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "038",
+      "name": "税理士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 129,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "039",
+      "name": "公認会計士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 130,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "040",
+      "name": "社会保険労務士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 131,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "041",
+      "name": "中小企業診断士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 132,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "042",
+      "name": "弁理士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 133,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "043",
+      "name": "土地家屋調査士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 134,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "044",
+      "name": "測量士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 135,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "045",
+      "name": "建築士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 136,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "046",
+      "name": "技術士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 137,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "047",
+      "name": "電気主任技術者"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 138,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "048",
+      "name": "電気工事士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 139,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "049",
+      "name": "ボイラー技士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 140,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "050",
+      "name": "危険物取扱者"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 141,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "051",
+      "name": "衛生管理者"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 142,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "052",
+      "name": "労働安全コンサルタント"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 143,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "053",
+      "name": "労働衛生コンサルタント"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 144,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "054",
+      "name": "その他の専門的職業"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 145,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "055",
+      "name": "事務職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 146,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "056",
+      "name": "営業職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 147,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "057",
+      "name": "販売職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 148,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "058",
+      "name": "サービス職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 149,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "059",
+      "name": "保安職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 150,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "060",
+      "name": "運搬職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 151,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "061",
+      "name": "清掃職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 152,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "062",
+      "name": "包装職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 153,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "063",
+      "name": "選別職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 154,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "064",
+      "name": "製造職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 155,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "065",
+      "name": "建設職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 156,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "066",
+      "name": "土木職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 157,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "067",
+      "name": "電気職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 158,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "068",
+      "name": "機械職員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 159,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "069",
+      "name": "自動車整備士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 160,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "070",
+      "name": "その他の技術職"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 161,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "071",
+      "name": "農業従事者"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 162,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "072",
+      "name": "林業従事者"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 163,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "073",
+      "name": "漁業従事者"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 164,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "074",
+      "name": "鉱業従事者"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 165,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "075",
+      "name": "建設作業員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 166,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "076",
+      "name": "土木作業員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 167,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "077",
+      "name": "電気作業員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 168,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "078",
+      "name": "機械作業員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 169,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "079",
+      "name": "自動車作業員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 170,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "080",
+      "name": "その他の作業員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 171,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "081",
+      "name": "運転手"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 172,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "082",
+      "name": "運搬作業員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 173,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "083",
+      "name": "清掃作業員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 174,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "084",
+      "name": "包装作業員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 175,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "085",
+      "name": "選別作業員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 176,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "086",
+      "name": "その他の運搬・清掃・包装・選別等の職業"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 177,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "087",
+      "name": "警備員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 178,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "088",
+      "name": "消防士"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 179,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "089",
+      "name": "自衛官"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 180,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "090",
+      "name": "警察官"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 181,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "091",
+      "name": "その他の保安職"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 182,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "092",
+      "name": "販売作業員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 183,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "093",
+      "name": "サービス作業員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 184,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "094",
+      "name": "事務作業員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 185,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "095",
+      "name": "営業作業員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 186,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "096",
+      "name": "製造作業員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 187,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "097",
+      "name": "建設作業員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 188,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "098",
+      "name": "選別・ピッキング作業員"
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 189,
+    "fields": {
+      "created_at": "2025-08-18T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-18T00:00:00Z",
+      "updated_by": 1,
+      "disp_seq": 99,
+      "active": true,
+      "category": "jobs_kourou",
+      "value": "099",
+      "name": "その他の運搬・清掃・包装・選別等の職業"
+    }
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 190,
     "fields": {
-        "version": 1755711205715178,
-        "created_at": "2025-08-20T17:49:12.367Z",
-        "created_by": 1,
-        "updated_at": "2025-08-20T17:49:12.367Z",
-        "updated_by": 1,
-        "category": "employment_type",
-        "name": "正社員",
-        "value": "10",
-        "disp_seq": 10,
-        "active": true
+      "version": 1755711205715178,
+      "created_at": "2025-08-20T17:49:12.367Z",
+      "created_by": 1,
+      "updated_at": "2025-08-20T17:49:12.367Z",
+      "updated_by": 1,
+      "category": "employment_type",
+      "name": "正社員",
+      "value": "10",
+      "disp_seq": 10,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 191,
     "fields": {
-        "version": 1755711217178851,
-        "created_at": "2025-08-20T17:49:23.831Z",
-        "created_by": 1,
-        "updated_at": "2025-08-20T17:49:23.831Z",
-        "updated_by": 1,
-        "category": "employment_type",
-        "name": "契約社員",
-        "value": "20",
-        "disp_seq": 20,
-        "active": true
+      "version": 1755711217178851,
+      "created_at": "2025-08-20T17:49:23.831Z",
+      "created_by": 1,
+      "updated_at": "2025-08-20T17:49:23.831Z",
+      "updated_by": 1,
+      "category": "employment_type",
+      "name": "契約社員",
+      "value": "20",
+      "disp_seq": 20,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 192,
     "fields": {
-        "version": 1755711240612770,
-        "created_at": "2025-08-20T17:49:47.265Z",
-        "created_by": 1,
-        "updated_at": "2025-08-20T17:49:47.265Z",
-        "updated_by": 1,
-        "category": "employment_type",
-        "name": "派遣社員",
-        "value": "30",
-        "disp_seq": 30,
-        "active": true
+      "version": 1755711240612770,
+      "created_at": "2025-08-20T17:49:47.265Z",
+      "created_by": 1,
+      "updated_at": "2025-08-20T17:49:47.265Z",
+      "updated_by": 1,
+      "category": "employment_type",
+      "name": "派遣社員",
+      "value": "30",
+      "disp_seq": 30,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 193,
     "fields": {
-        "version": 1756201411122555,
-        "created_at": "2025-08-26T09:59:17.774Z",
-        "created_by": 1,
-        "updated_at": "2025-08-26T09:59:17.775Z",
-        "updated_by": 1,
-        "category": "bank_account_type",
-        "name": "普通",
-        "value": "1",
-        "disp_seq": 1,
-        "active": true
+      "version": 1756201411122555,
+      "created_at": "2025-08-26T09:59:17.774Z",
+      "created_by": 1,
+      "updated_at": "2025-08-26T09:59:17.775Z",
+      "updated_by": 1,
+      "category": "bank_account_type",
+      "name": "普通",
+      "value": "1",
+      "disp_seq": 1,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 194,
     "fields": {
-        "version": 1756201430895704,
-        "created_at": "2025-08-26T09:59:37.548Z",
-        "created_by": 1,
-        "updated_at": "2025-08-26T09:59:37.548Z",
-        "updated_by": 1,
-        "category": "bank_account_type",
-        "name": "当座",
-        "value": "2",
-        "disp_seq": 2,
-        "active": true
+      "version": 1756201430895704,
+      "created_at": "2025-08-26T09:59:37.548Z",
+      "created_by": 1,
+      "updated_at": "2025-08-26T09:59:37.548Z",
+      "updated_by": 1,
+      "category": "bank_account_type",
+      "name": "当座",
+      "value": "2",
+      "disp_seq": 2,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 195,
     "fields": {
-        "version": 1756221229364719,
-        "created_at": "2025-08-26T15:28:20.881Z",
-        "created_by": 1,
-        "updated_at": "2025-08-26T15:29:36.017Z",
-        "updated_by": 1,
-        "category": "disability_type",
-        "name": "身体障害者",
-        "value": "1",
-        "disp_seq": 1,
-        "active": true
+      "version": 1756221229364719,
+      "created_at": "2025-08-26T15:28:20.881Z",
+      "created_by": 1,
+      "updated_at": "2025-08-26T15:29:36.017Z",
+      "updated_by": 1,
+      "category": "disability_type",
+      "name": "身体障害者",
+      "value": "1",
+      "disp_seq": 1,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 196,
     "fields": {
-        "version": 1756221236612793,
-        "created_at": "2025-08-26T15:29:16.529Z",
-        "created_by": 1,
-        "updated_at": "2025-08-26T15:29:43.265Z",
-        "updated_by": 1,
-        "category": "disability_type",
-        "name": "知的障害者",
-        "value": "2",
-        "disp_seq": 2,
-        "active": true
+      "version": 1756221236612793,
+      "created_at": "2025-08-26T15:29:16.529Z",
+      "created_by": 1,
+      "updated_at": "2025-08-26T15:29:43.265Z",
+      "updated_by": 1,
+      "category": "disability_type",
+      "name": "知的障害者",
+      "value": "2",
+      "disp_seq": 2,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 197,
     "fields": {
-        "version": 1756221248601623,
-        "created_at": "2025-08-26T15:29:55.254Z",
-        "created_by": 1,
-        "updated_at": "2025-08-26T15:29:55.254Z",
-        "updated_by": 1,
-        "category": "disability_type",
-        "name": "精神障害者",
-        "value": "3",
-        "disp_seq": 3,
-        "active": true
+      "version": 1756221248601623,
+      "created_at": "2025-08-26T15:29:55.254Z",
+      "created_by": 1,
+      "updated_at": "2025-08-26T15:29:55.254Z",
+      "updated_by": 1,
+      "category": "disability_type",
+      "name": "精神障害者",
+      "value": "3",
+      "disp_seq": 3,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 198,
     "fields": {
-        "created_at": "2025-08-31T00:00:00Z",
-        "created_by": 1,
-        "updated_at": "2025-08-31T00:00:00Z",
-        "updated_by": 1,
-        "category": "information_target",
-        "name": "会社",
-        "value": "company",
-        "disp_seq": 1,
-        "active": true
+      "created_at": "2025-08-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-31T00:00:00Z",
+      "updated_by": 1,
+      "category": "information_target",
+      "name": "会社",
+      "value": "company",
+      "disp_seq": 1,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 199,
     "fields": {
-        "created_at": "2025-08-31T00:00:00Z",
-        "created_by": 1,
-        "updated_at": "2025-08-31T00:00:00Z",
-        "updated_by": 1,
-        "category": "information_target",
-        "name": "スタッフ",
-        "value": "staff",
-        "disp_seq": 2,
-        "active": true
+      "created_at": "2025-08-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-31T00:00:00Z",
+      "updated_by": 1,
+      "category": "information_target",
+      "name": "スタッフ",
+      "value": "staff",
+      "disp_seq": 2,
+      "active": true
     }
-},
-{
+  },
+  {
     "model": "settings.dropdowns",
     "pk": 200,
     "fields": {
-        "created_at": "2025-08-31T00:00:00Z",
-        "created_by": 1,
-        "updated_at": "2025-08-31T00:00:00Z",
-        "updated_by": 1,
-        "category": "information_target",
-        "name": "クライアント",
-        "value": "client",
-        "disp_seq": 3,
-        "active": true
+      "created_at": "2025-08-31T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-08-31T00:00:00Z",
+      "updated_by": 1,
+      "category": "information_target",
+      "name": "クライアント",
+      "value": "client",
+      "disp_seq": 3,
+      "active": true
     }
-}
+  }
 ]
