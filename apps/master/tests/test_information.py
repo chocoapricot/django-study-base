@@ -2,8 +2,10 @@ from django.test import TestCase, Client as TestClient
 from unittest.mock import patch
 from django.test import TestCase, Client as TestClient
 from django.urls import reverse
+import os
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
-from apps.master.models import Information
+from apps.master.models import Information, InformationFile
 from apps.company.models import Company
 from apps.master.forms import InformationForm
 
@@ -165,3 +167,58 @@ class InformationViewTest(TestCase):
         self.assertFalse(
             Information.objects.filter(pk=self.information.pk).exists()
         )
+
+    def test_information_create_with_files(self):
+        """お知らせ作成（ファイル添付あり）のテスト"""
+        file1 = SimpleUploadedFile("file1.txt", b"content1")
+        file2 = SimpleUploadedFile("file2.txt", b"content2")
+        
+        form_data = {
+            'target': 'company',
+            'subject': 'New Info with Files',
+            'content': 'Some content',
+        }
+
+        response = self.test_client.post(reverse('master:information_create'), {
+            **form_data,
+            'attachments': [file1, file2]
+        })
+        
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Information.objects.count(), 2) # including self.information
+        new_info = Information.objects.get(subject='New Info with Files')
+        self.assertEqual(new_info.files.count(), 2)
+        
+        for f in new_info.files.all():
+            f.delete()
+
+    def test_information_update_with_files(self):
+        """お知らせ更新（ファイル追加・削除）のテスト"""
+        file1 = SimpleUploadedFile("file1.txt", b"content1")
+        info_file1 = InformationFile.objects.create(information=self.information, file=file1)
+
+        file2 = SimpleUploadedFile("file2.txt", b"content2")
+        
+        form_data = {
+            'target': 'company',
+            'subject': 'Updated Subject',
+            'content': 'Updated content',
+            'delete_attachments': [info_file1.pk]
+        }
+
+        response = self.test_client.post(
+            reverse('master:information_update', kwargs={'pk': self.information.pk}), {
+            **form_data,
+            'attachments': [file2]
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.information.refresh_from_db()
+        self.assertEqual(self.information.subject, 'Updated Subject')
+        self.assertEqual(self.information.files.count(), 1)
+        self.assertEqual(self.information.files.first().filename, 'file2.txt')
+        
+        self.assertFalse(os.path.exists(info_file1.file.path))
+
+        for f in self.information.files.all():
+            f.delete()

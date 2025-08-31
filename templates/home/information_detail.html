@@ -8,7 +8,20 @@
     <div class="card-body">
         <h4 class="card-title">{{ information.subject }}</h4>
         <p class="card-text">{{ information.content|linebreaksbr }}</p>
-        <div class="d-flex justify-content-start">
+
+        {% if information.files.all %}
+        <hr>
+        <h5>添付ファイル</h5>
+        <ul class="list-unstyled">
+            {% for file in information.files.all %}
+                <li class="mb-1">
+                    <a href="{{ file.file.url }}" target="_blank">{{ file.filename }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <div class="d-flex justify-content-start mt-4">
             <a href="{% url 'home:home' %}" class="btn btn-sm btn-secondary me-2">戻る</a>
         </div>
     </div>

@@ -5,7 +5,7 @@
 <div class="content-box card bg-light mt-2 mb-4">
     <div class="card-header">{{ title }}</div>
     <div class="card-body">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% if form.errors %}
             <div class="alert alert-dismissible alert-warning">
@@ -48,6 +48,30 @@
                     {{ form.end_date }}
                 </div>
             </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="attachments" class="col-sm-2 col-form-label" style="text-align:right;">添付ファイル</label>
+                <div class="col-sm-10">
+                    <input type="file" name="attachments" id="attachments" multiple class="form-control form-control-sm">
+                </div>
+            </div>
+
+            {% if information.files.all %}
+            <div class="row mb-3">
+                <div class="col-sm-10 offset-sm-2">
+                    <p>現在の添付ファイル:</p>
+                    <ul class="list-unstyled">
+                        {% for file in information.files.all %}
+                        <li class="mb-2">
+                            <a href="{{ file.file.url }}" target="_blank">{{ file.filename }}</a>
+                            <input type="checkbox" name="delete_attachments" value="{{ file.pk }}" class="form-check-input ms-2">
+                            <label class="form-check-label">削除</label>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
 
             <div class="d-flex justify-content-start mt-4">
                 <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>

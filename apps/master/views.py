@@ -5,7 +5,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.urls import reverse
 from django.apps import apps
-from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch, Information
+from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch, Information, InformationFile
 from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm, BillPaymentForm, BillBankForm, BankForm, BankBranchForm, InformationForm
 from apps.company.models import Company
 
@@ -1295,12 +1295,17 @@ def information_create(request):
     """お知らせ作成"""
     company = Company.objects.first()
     if request.method == 'POST':
-        form = InformationForm(request.POST)
+        form = InformationForm(request.POST, request.FILES)
         if form.is_valid():
             information = form.save(commit=False)
             if company:
                 information.corporation_number = company.corporate_number
             information.save()
+
+            # Handle file uploads
+            for f in request.FILES.getlist('attachments'):
+                InformationFile.objects.create(information=information, file=f)
+
             messages.success(request, f'お知らせ「{information.subject}」を作成しました。')
             return redirect('master:information_list')
     else:
@@ -1320,9 +1325,21 @@ def information_update(request, pk):
     information = get_object_or_404(Information, pk=pk)
 
     if request.method == 'POST':
-        form = InformationForm(request.POST, instance=information)
+        form = InformationForm(request.POST, request.FILES, instance=information)
         if form.is_valid():
+            # Handle file deletion
+            delete_ids = request.POST.getlist('delete_attachments')
+            if delete_ids:
+                files_to_delete = InformationFile.objects.filter(pk__in=delete_ids, information=information)
+                for f in files_to_delete:
+                    f.delete()
+
             information = form.save()
+
+            # Handle new file uploads
+            for f in request.FILES.getlist('attachments'):
+                InformationFile.objects.create(information=information, file=f)
+
             messages.success(request, f'お知らせ「{information.subject}」を更新しました。')
             return redirect('master:information_list')
     else:
