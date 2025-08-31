@@ -1,0 +1,16 @@
+{% extends 'common/_base.html' %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header">
+        お知らせ詳細
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">{{ information.subject }}</h4>
+        <p class="card-text">{{ information.content|linebreaksbr }}</p>
+        <div class="d-flex justify-content-start">
+            <a href="{% url 'home:home' %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

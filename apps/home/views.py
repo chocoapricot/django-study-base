@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from apps.staff.models import Staff
 from apps.client.models import Client
+from apps.company.models import Company
 from apps.contract.models import ClientContract, StaffContract
 from apps.connect.models import (
     ConnectStaff, ConnectClient, MynumberRequest, ProfileRequest,
@@ -11,14 +12,50 @@ from apps.master.models import Information
 from django.utils import timezone
 from django.db.models import Q
 
-@login_required
-def home(request):
+def get_filtered_informations(user):
+    """
+    ユーザーに基づいてフィルタリングされたお知らせを取得する
+    """
     today = timezone.now().date()
-    information_list = Information.objects.filter(
+    
+    # 基本的な絞り込み
+    base_query = Information.objects.filter(
         (Q(start_date__lte=today) | Q(start_date__isnull=True)),
         (Q(end_date__gte=today) | Q(end_date__isnull=True)),
-    ).order_by('-start_date')[:5]
+    )
 
+    # ユーザーの属性に応じてフィルタリング
+    company_info = Company.objects.first()
+    
+    # 接続済みの法人番号リストを取得
+    approved_staff_corporate_numbers = ConnectStaff.objects.filter(
+        email=user.email, status='approved'
+    ).values_list('corporate_number', flat=True)
+    
+    approved_client_corporate_numbers = ConnectClient.objects.filter(
+        email=user.email, status='approved'
+    ).values_list('corporate_number', flat=True)
+    
+    # OR条件を構築
+    filter_conditions = Q()
+
+    # 会社向けお知らせ
+    if company_info:
+        filter_conditions |= Q(target='company', corporation_number=company_info.corporate_number)
+
+    # スタッフ向けお知らせ
+    if approved_staff_corporate_numbers:
+        filter_conditions |= Q(target='staff', corporation_number__in=list(approved_staff_corporate_numbers))
+
+    # クライアント向けお知らせ
+    if approved_client_corporate_numbers:
+        filter_conditions |= Q(target='client', corporation_number__in=list(approved_client_corporate_numbers))
+
+    return base_query.filter(filter_conditions)
+
+@login_required
+def home(request):
+    information_list = get_filtered_informations(request.user).order_by('-start_date')[:5]
     staff_count = Staff.objects.count()
     approved_staff_count = ConnectStaff.objects.filter(status='approved').count()
 
@@ -57,3 +94,16 @@ def home(request):
     }
 
     return render(request, 'home/home.html', context)
+
+
+from django.shortcuts import get_object_or_404
+
+@login_required
+def information_detail(request, pk):
+    informations = get_filtered_informations(request.user)
+    information = get_object_or_404(informations, pk=pk)
+    
+    context = {
+        'information': information,
+    }
+    return render(request, 'home/information_detail.html', context)
