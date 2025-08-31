@@ -50,7 +50,7 @@
                 <div class="col-sm-9">
                     {% if international.residence_card_front %}
                         <a href="{{ international.residence_card_front.url }}" target="_blank">
-                            <img src="{{ international.residence_card_front.url }}" alt="在留カード（表面）" class="img-fluid" style="max-width: 300px;">
+                            <img src="{{ international.residence_card_front.url }}" alt="在留カード（表面）" class="img-fluid border p-1" style="max-width: 300px;">
                         </a>
                     {% else %}
                         <p class="form-control-plaintext">-</p>
@@ -63,7 +63,7 @@
                 <div class="col-sm-9">
                     {% if international.residence_card_back %}
                         <a href="{{ international.residence_card_back.url }}" target="_blank">
-                            <img src="{{ international.residence_card_back.url }}" alt="在留カード（裏面）" class="img-fluid" style="max-width: 300px;">
+                            <img src="{{ international.residence_card_back.url }}" alt="在留カード（裏面）" class="img-fluid border p-1" style="max-width: 300px;">
                         </a>
                     {% else %}
                         <p class="form-control-plaintext">-</p>

@@ -118,7 +118,7 @@
                 <p><strong>在留カード（表面）</strong></p>
                 {% if international_request.profile_international.residence_card_front %}
                     <a href="{{ international_request.profile_international.residence_card_front.url }}" target="_blank">
-                        <img src="{{ international_request.profile_international.residence_card_front.url }}" alt="在留カード（表面）" class="img-fluid">
+                        <img src="{{ international_request.profile_international.residence_card_front.url }}" alt="在留カード（表面）" class="img-fluid border p-1">
                     </a>
                 {% else %}
                     <p>添付ファイルはありません。</p>
@@ -128,7 +128,7 @@
                 <p><strong>在留カード（裏面）</strong></p>
                 {% if international_request.profile_international.residence_card_back %}
                     <a href="{{ international_request.profile_international.residence_card_back.url }}" target="_blank">
-                        <img src="{{ international_request.profile_international.residence_card_back.url }}" alt="在留カード（裏面）" class="img-fluid">
+                        <img src="{{ international_request.profile_international.residence_card_back.url }}" alt="在留カード（裏面）" class="img-fluid border p-1">
                     </a>
                 {% else %}
                     <p>添付ファイルはありません。</p>
