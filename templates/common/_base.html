@@ -111,11 +111,12 @@
     transition: background-color 0.3s; /* 背景色の変化を滑らかに */
 }
     .sidebar {
-      height: 100vh;
+      height: calc(100vh - 70px);
       position: fixed;
       top: 70px; /* Adjust top value to account for the fixed header */
       background-color: #f8f9fa;
       padding-top: 0px;
+      overflow-y: auto;
     }
         .sidebar .nav-link {
             padding: 10px 20px;
