@@ -539,7 +539,50 @@
         "disp_seq": 3,
         "active": true
     }
+},
+{
+    "model": "settings.dropdowns",
+    "pk": 198,
+    "fields": {
+        "created_at": "2025-08-31T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-08-31T00:00:00Z",
+        "updated_by": 1,
+        "category": "information_target",
+        "name": "会社",
+        "value": "company",
+        "disp_seq": 1,
+        "active": true
+    }
+},
+{
+    "model": "settings.dropdowns",
+    "pk": 199,
+    "fields": {
+        "created_at": "2025-08-31T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-08-31T00:00:00Z",
+        "updated_by": 1,
+        "category": "information_target",
+        "name": "スタッフ",
+        "value": "staff",
+        "disp_seq": 2,
+        "active": true
+    }
+},
+{
+    "model": "settings.dropdowns",
+    "pk": 200,
+    "fields": {
+        "created_at": "2025-08-31T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-08-31T00:00:00Z",
+        "updated_by": 1,
+        "category": "information_target",
+        "name": "クライアント",
+        "value": "client",
+        "disp_seq": 3,
+        "active": true
+    }
 }
-
-
 ]

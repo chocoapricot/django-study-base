@@ -78,7 +78,13 @@ def get_data_count(model_class):
     try:
         if hasattr(model_class, 'level'):
             return model_class.objects.filter(level=2, is_active=True).count()
-        return model_class.objects.filter(is_active=True).count()
+
+        # is_active属性があるモデルの場合
+        if hasattr(model_class, 'is_active'):
+            return model_class.objects.filter(is_active=True).count()
+
+        # is_active属性がないモデル（Informationなど）の場合
+        return model_class.objects.count()
     except Exception:
         return 0
 
