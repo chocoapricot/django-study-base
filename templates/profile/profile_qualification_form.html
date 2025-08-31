@@ -1,14 +1,72 @@
 {% extends 'common/_base.html' %}
+{% load static %}
+{% load help_tags %}
+
 {% block title %}資格登録・編集{% endblock %}
+
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4">
-    <div class="card-header">資格登録・編集</div>
+    <div class="card-header">
+        <h5 class="mb-0">資格登録・編集</h5>
+    </div>
     <div class="card-body">
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">保存</button>
-            <a href="{% url 'profile:qualification_list' %}" class="btn btn-secondary">戻る</a>
+            {% if form.errors %}
+            <div class="alert alert-dismissible alert-warning">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                {{ form.errors }}
+            </div>
+            {% endif %}
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.qualification.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.qualification.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.qualification }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.score.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.score.label }}</label>
+                <div class="col-sm-3">
+                    {{ form.score }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.acquired_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.acquired_date.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.acquired_date }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.expiry_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.expiry_date.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.expiry_date }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.certificate_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.certificate_number.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.certificate_number }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.memo.label }}</label>
+                <div class="col-sm-8">
+                    {{ form.memo }}
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col text-start">
+                    <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
+                    <a href="{% url 'profile:qualification_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
         </form>
     </div>
 </div>

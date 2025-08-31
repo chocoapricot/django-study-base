@@ -2,13 +2,19 @@
 {% block title %}資格削除確認{% endblock %}
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4">
-    <div class="card-header">資格削除確認</div>
+    <div class="card-header">
+        <h5 class="mb-0">資格削除確認</h5>
+    </div>
     <div class="card-body">
-        <p>本当に「{{ qualification.qualification.name }}」を削除しますか？</p>
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            本当に「{{ qualification.qualification.name }}」を削除しますか？<br>
+            この操作は元に戻すことはできません。
+        </div>
         <form method="post">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger">削除</button>
-            <a href="{% url 'profile:qualification_list' %}" class="btn btn-secondary">戻る</a>
+            <button type="submit" class="btn btn-sm btn-dark">削除</button>
+            <a href="{% url 'profile:qualification_list' %}" class="btn btn-sm btn-secondary">戻る</a>
         </form>
     </div>
 </div>
