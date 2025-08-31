@@ -10,7 +10,7 @@
         <p>あなた宛の接続申請を管理できます。</p>
         
         {% if staff_pending_count == 0 and staff_approved_count == 0 and client_pending_count == 0 and client_approved_count == 0 %}
-            <p class="text-muted">現在、接続申請はありません。</p>  
+            <p class="text-muted">現在、接続申請はありません。</p>
         {% else %}
             {% if staff_pending_count > 0 or staff_approved_count > 0%}
             <div class="row mb-4">
@@ -25,7 +25,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="col-md-6 mb-3">
                     <div class="card">
                         <div class="card-body">
@@ -53,7 +53,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="col-md-6 mb-3">
                     <div class="card">
                         <div class="card-body">

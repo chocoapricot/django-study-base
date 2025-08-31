@@ -270,7 +270,7 @@ class StaffProfileBankForm(forms.ModelForm):
             except Bank.DoesNotExist:
                 # clean_bank_code で既にエラーが出ているはずなので、ここでは何もしない
                 pass
-        
+
         return cleaned_data
 
     def save(self, commit=True):
