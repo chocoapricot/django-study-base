@@ -39,19 +39,6 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name_kana_last.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.name_kana_last.label }}</label>
-                <div class="col-sm-4">
-                    {{ form.name_kana_last }}
-                    {% if form.name_kana_last.errors %}<div class="text-danger">{{ form.name_kana_last.errors }}</div>{% endif %}
-                </div>
-                <label for="{{ form.name_kana_first.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.name_kana_first.label }}</label>
-                <div class="col-sm-4">
-                    {{ form.name_kana_first }}
-                    {% if form.name_kana_first.errors %}<div class="text-danger">{{ form.name_kana_first.errors }}</div>{% endif %}
-                </div>
-            </div>
-
-            <div class="row mb-3 align-items-center">
                 <label for="{{ form.position.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.position.label }}</label>
                 <div class="col-sm-4">
                     {{ form.position }}

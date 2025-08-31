@@ -129,22 +129,6 @@ class CompanyUserForm(forms.ModelForm):
             raise forms.ValidationError('電話番号は半角数字とハイフンのみ入力してください。')
         return value
 
-    def clean_name_kana_last(self):
-        value = self.cleaned_data.get('name_kana_last', '')
-        if not value:
-            return value
-        validate_kana(value)
-        value = to_fullwidth_katakana(value)
-        return value
-
-    def clean_name_kana_first(self):
-        value = self.cleaned_data.get('name_kana_first', '')
-        if not value:
-            return value
-        validate_kana(value)
-        value = to_fullwidth_katakana(value)
-        return value
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['department'].queryset = CompanyDepartment.get_valid_departments()
@@ -152,14 +136,12 @@ class CompanyUserForm(forms.ModelForm):
     class Meta:
         model = CompanyUser
         fields = [
-            'department', 'name_last', 'name_first', 'name_kana_last', 'name_kana_first',
+            'department', 'name_last', 'name_first',
             'position', 'phone_number', 'email', 'display_order'
         ]
         widgets = {
             'name_last': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'name_first': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'name_kana_last': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'name_kana_first': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'position': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'phone_number': forms.TextInput(attrs={
                 'class': 'form-control form-control-sm',
