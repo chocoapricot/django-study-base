@@ -44,30 +44,30 @@
             </tbody>
         </table>
 
-        {% if is_paginated %}
+        {% if information_list.has_other_pages %}
         <nav aria-label="Page navigation">
             <ul class="pagination pagination-sm">
-                {% if page_obj.has_previous %}
+                {% if information_list.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?page=1">&laquo;</a>
+                        <a class="page-link" href="?page=1&search={{ search_query }}">&laquo;</a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&lsaquo;</a>
+                        <a class="page-link" href="?page={{ information_list.previous_page_number }}&search={{ search_query }}">&lsaquo;</a>
                     </li>
                 {% endif %}
 
                 <li class="page-item disabled">
                     <span class="page-link">
-                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                        Page {{ information_list.number }} of {{ information_list.paginator.num_pages }}
                     </span>
                 </li>
 
-                {% if page_obj.has_next %}
+                {% if information_list.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">&rsaquo;</a>
+                        <a class="page-link" href="?page={{ information_list.next_page_number }}&search={{ search_query }}">&rsaquo;</a>
                     </li>
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a>
+                        <a class="page-link" href="?page={{ information_list.paginator.num_pages }}&search={{ search_query }}">&raquo;</a>
                     </li>
                 {% endif %}
             </ul>
