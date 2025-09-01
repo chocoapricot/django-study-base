@@ -241,7 +241,7 @@ class InformationForm(forms.ModelForm):
         model = Information
         fields = ['target', 'subject', 'content', 'start_date', 'end_date']
         widgets = {
-            'target': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'target': forms.RadioSelect(),
             'subject': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
             'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
