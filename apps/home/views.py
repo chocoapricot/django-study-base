@@ -49,13 +49,22 @@ def get_filtered_informations(user):
 
     # クライアント向けお知らせ
     if approved_client_corporate_numbers:
-        filter_conditions |= Q(target='client', corporation_number__in=list(approved_client_corporate_numbers))
+        filter_conditions |= Q(target='client', corporation_number__in=list(approved_client_corporate_numbers)) 
 
     return base_query.filter(filter_conditions)
 
 @login_required
 def home(request):
     information_list = get_filtered_informations(request.user).order_by('-start_date')[:5]
+    
+    # お知らせに会社名を付与
+    corporation_numbers = [info.corporation_number for info in information_list if info.corporation_number]
+    if corporation_numbers:
+        companies = Company.objects.filter(corporate_number__in=corporation_numbers).in_bulk(field_name='corporate_number')
+        for info in information_list:
+            if info.corporation_number in companies:
+                info.company_name = companies[info.corporation_number].name
+
     staff_count = Staff.objects.count()
     approved_staff_count = ConnectStaff.objects.filter(status='approved').count()
 
@@ -102,6 +111,14 @@ from django.shortcuts import get_object_or_404
 def information_detail(request, pk):
     informations = get_filtered_informations(request.user)
     information = get_object_or_404(informations, pk=pk)
+    
+    # お知らせに会社名を付与
+    if information.corporation_number:
+        try:
+            company = Company.objects.get(corporate_number=information.corporation_number)
+            information.company_name = company.name
+        except Company.DoesNotExist:
+            information.company_name = None
     
     context = {
         'information': information,

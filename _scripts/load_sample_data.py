@@ -39,15 +39,16 @@ def main():
         "_sample_data/master_bill_bank.json",
         "_sample_data/master_bank.json",
         "_sample_data/master_bank_branch.json",
+        "_sample_data/master_information.json",
         "_sample_data/company.json",
         "_sample_data/company_department.json",
         "_sample_data/staff.json",
         "_sample_data/staff_international.json",
         "_sample_data/staff_contacted.json",
         "_sample_data/client.json",
-        "_sample_data/client_contacted.json",
         "_sample_data/client_department.json",
         "_sample_data/client_user.json",
+        "_sample_data/client_contacted.json",
         "_sample_data/connect_client.json",
         "_sample_data/contract_client.json",
         "_sample_data/contract_staff.json"
@@ -75,6 +76,7 @@ def main():
         ("python manage.py loaddata _sample_data/master_bill_bank.json", "会社銀行マスタデータ"),
         ("python manage.py loaddata _sample_data/master_bank.json", "銀行マスタデータ"),
         ("python manage.py loaddata _sample_data/master_bank_branch.json", "銀行支店マスタデータ"),
+        ("python manage.py loaddata _sample_data/master_information.json", "お知らせマスタデータ"),
         ("python manage.py loaddata _sample_data/company.json", "会社データ"),
         ("python manage.py loaddata _sample_data/company_department.json", "部署データ"),
         ("python manage.py loaddata _sample_data/staff.json", "スタッフデータ"),
@@ -86,7 +88,7 @@ def main():
         ("python manage.py loaddata _sample_data/client_contacted.json", "クライアント連絡履歴データ"),
         ("python manage.py loaddata _sample_data/connect_client.json", "クライアント接続データ"),
         ("python manage.py loaddata _sample_data/contract_client.json", "クライアント契約データ"),
-        ("python manage.py loaddata _sample_data/contract_staff.json", "スタッフ契約データ"),
+        ("python manage.py loaddata _sample_data/contract_staff.json", "スタッフ契約データ")
     ]
     
     for command, description in import_commands:
@@ -105,6 +107,7 @@ def main():
     print("- 会社銀行マスタ")
     print("- 銀行マスタ")
     print("- 銀行支店マスタ")
+    print("- お知らせマスタ")
     print("- 会社データ")
     print("- 部署データ")
     print("- スタッフデータ")

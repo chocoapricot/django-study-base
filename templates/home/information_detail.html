@@ -2,28 +2,45 @@
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4">
-    <div class="card-header">
-        お知らせ詳細
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">{{ information.subject }}</h5>
+        <div>
+            {% if information.company_name %}
+            <span class="badge bg-secondary">{{ information.company_name }}</span>
+            {% endif %}
+        </div>
     </div>
     <div class="card-body">
-        <h4 class="card-title">{{ information.subject }}</h4>
-        <p class="card-text">{{ information.content|linebreaksbr }}</p>
+        <div class="mb-3 text-muted">
+            <small>公開日: 
+                {% if information.start_date %}
+                    {{ information.start_date|date:"Y/m/d" }}
+                {% else %}
+                    {{ information.updated_at|date:"Y/m/d" }}
+                {% endif %}
+            </small>
+            {% if information.end_date %}
+            <small class="ms-3">終了日: {{ information.end_date|date:"Y/m/d" }}</small>
+            {% endif %}
+        </div>
+        <hr>
+        <p class="card-text" style="white-space: pre-wrap;">{{ information.content }}</p>
 
         {% if information.files.all %}
         <hr>
-        <h5>添付ファイル</h5>
-        <ul class="list-unstyled">
+        <h5><i class="bi bi-paperclip"></i> 添付ファイル</h5>
+        <ul class="list-group list-group-flush">
             {% for file in information.files.all %}
-                <li class="mb-1">
-                    <a href="{{ file.file.url }}" target="_blank">{{ file.filename }}</a>
+                <li class="list-group-item bg-light">
+                    <a href="{{ file.file.url }}" target="_blank" class="text-decoration-none">
+                        <i class="bi bi-file-earmark-arrow-down"></i> {{ file.filename }}
+                    </a>
                 </li>
             {% endfor %}
         </ul>
         {% endif %}
 
-        <div class="d-flex justify-content-start mt-4">
-            <a href="{% url 'home:home' %}" class="btn btn-sm btn-secondary me-2">戻る</a>
-        </div>
+        <a href="{% url 'home:home' %}" class="btn btn-sm btn-secondary">戻る</a>
     </div>
 </div>
 {% endblock %}
