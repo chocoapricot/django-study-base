@@ -61,4 +61,5 @@ urlpatterns = [
     path('information/<int:pk>/', views.information_detail, name='information_detail'),
     path('information/<int:pk>/update/', views.information_update, name='information_update'),
     path('information/<int:pk>/delete/', views.information_delete, name='information_delete'),
+    path('information/history/', views.information_all_change_history_list, name='information_all_change_history_list'),
 ]

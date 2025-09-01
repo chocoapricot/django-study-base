@@ -81,4 +81,10 @@
         </div>
     </div>
 </div>
+
+<!-- 変更履歴一覧 -->
+{% url 'master:information_change_history_list' as information_history_url %}
+{% with change_logs=change_logs change_logs_count=change_logs_count history_url=information_history_url show_full_content=False %}
+    {% include 'common/_change_history_list.html' %}
+{% endwith %}
 {% endblock %}

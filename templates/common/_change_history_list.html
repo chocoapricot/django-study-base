@@ -69,6 +69,10 @@
                             <span class="badge bg-primary">銀行</span>
                         {% elif log.model_name == 'BankBranch' %}
                             <span class="badge bg-info">銀行支店</span>
+                        {% elif log.model_name == 'Information' %}
+                            <span class="badge bg-primary">お知らせ</span>
+                        {% elif log.model_name == 'InformationFile' %}
+                            <span class="badge bg-secondary">添付ファイル</span>
                         {% elif log.model_name %}
                             <span class="badge bg-primary">{{ log.model_name }}</span>
                         {% else %}

@@ -1254,6 +1254,8 @@ def bank_management_change_history_list(request):
 @permission_required('master.view_information', raise_exception=True)
 def information_list(request):
     """お知らせ一覧"""
+    from apps.system.logs.models import AppLog
+    
     search_query = request.GET.get('search', '')
 
     information_list = Information.objects.all()
@@ -1270,10 +1272,24 @@ def information_list(request):
     page = request.GET.get('page')
     information_page = paginator.get_page(page)
 
+    # 変更履歴（最新5件）
+    change_logs = AppLog.objects.filter(
+        model_name='Information',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')[:5]
+    
+    # 変更履歴の総件数
+    change_logs_count = AppLog.objects.filter(
+        model_name='Information',
+        action__in=['create', 'update', 'delete']
+    ).count()
+
     context = {
         'information_list': information_page,
         'search_query': search_query,
         'title': 'お知らせ管理',
+        'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
     }
     return render(request, 'master/information_list.html', context)
 
@@ -1370,3 +1386,28 @@ def information_delete(request, pk):
         'title': f'お知らせ削除 - {information.subject}',
     }
     return render(request, 'master/information_confirm_delete.html', context)
+
+
+@login_required
+@permission_required('master.view_information', raise_exception=True)
+def information_all_change_history_list(request):
+    """お知らせマスタ全体の変更履歴一覧"""
+    
+    # お知らせマスタの変更履歴を取得
+    logs = AppLog.objects.filter(
+        model_name='Information',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')
+    
+    # ページネーション
+    paginator = Paginator(logs, 20)  # 1ページあたり20件
+    page_number = request.GET.get('page')
+    logs = paginator.get_page(page_number)
+    
+    context = {
+        'logs': logs,
+        'model_name': 'Information',
+        'title': 'お知らせマスタ変更履歴',
+        'list_url': 'master:information_list',
+    }
+    return render(request, 'master/master_change_history_list.html', context)
