@@ -55,6 +55,9 @@ urlpatterns = [
     path('bank-management/', views.bank_management, name='bank_management'),
     path('bank-management/history/', views.bank_management_change_history_list, name='bank_management_change_history_list'),
     path('bank/import/', views.bank_import, name='bank_import'),
+    path('bank/import/upload/', views.bank_import_upload, name='bank_import_upload'),
+    path('bank/import/process/<str:task_id>/', views.bank_import_process, name='bank_import_process'),
+    path('bank/import/progress/<str:task_id>/', views.bank_import_progress, name='bank_import_progress'),
 
     # お知らせ管理
     path('information/', views.information_list, name='information_list'),

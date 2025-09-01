@@ -8,6 +8,12 @@ from django.apps import apps
 from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch, Information, InformationFile
 from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm, BillPaymentForm, BillBankForm, BankForm, BankBranchForm, InformationForm, CSVImportForm
 from apps.company.models import Company
+from django.http import JsonResponse
+from django.core.cache import cache
+from django.views.decorators.http import require_POST
+import uuid
+import os
+from django.conf import settings
 
 
 # マスタ設定データ
@@ -1224,62 +1230,131 @@ from django.db import transaction
 @login_required
 @permission_required('master.add_bank', raise_exception=True)
 def bank_import(request):
-    """銀行・支店CSV取込"""
-    if request.method == 'POST':
-        form = CSVImportForm(request.POST, request.FILES)
-        if form.is_valid():
-            csv_file = request.FILES['csv_file']
-            try:
-                with transaction.atomic():
-                    reader = csv.reader(io.TextIOWrapper(csv_file, encoding='utf-8'))
-                    imported_count = 0
-                    errors = []
-                    for i, row in enumerate(reader):
-                        try:
-                            bank_code = row[0]
-                            branch_code = row[1]
-                            name = row[3].strip()
-                            record_type = row[4]
-
-                            if record_type == '1': # 銀行
-                                bank, created = Bank.objects.update_or_create(
-                                    bank_code=bank_code,
-                                    defaults={'name': name, 'is_active': True}
-                                )
-                                imported_count += 1
-                            elif record_type == '2': # 支店
-                                try:
-                                    bank = Bank.objects.get(bank_code=bank_code)
-                                    branch, created = BankBranch.objects.update_or_create(
-                                        bank=bank,
-                                        branch_code=branch_code,
-                                        defaults={'name': name, 'is_active': True}
-                                    )
-                                    imported_count += 1
-                                except Bank.DoesNotExist:
-                                    errors.append(f'{i+1}行目: 銀行コード {bank_code} が見つかりません。')
-
-                        except Exception as e:
-                            errors.append(f'{i+1}行目: {e}')
-                    
-                    if errors:
-                        for error in errors:
-                            messages.error(request, error)
-                    else:
-                        messages.success(request, f'{imported_count}件のデータを登録しました。')
-                    return redirect('master:bank_import')
-
-            except Exception as e:
-                messages.error(request, f'CSVファイルの処理中にエラーが発生しました: {e}')
-
-    else:
-        form = CSVImportForm()
-    
+    """銀行・支店CSV取込ページを表示"""
+    form = CSVImportForm()
     context = {
         'form': form,
         'title': '銀行・支店CSV取込',
     }
     return render(request, 'master/bank_import.html', context)
+
+@login_required
+@permission_required('master.add_bank', raise_exception=True)
+@require_POST
+def bank_import_upload(request):
+    """CSVファイルをアップロードしてタスクIDを返す"""
+    form = CSVImportForm(request.POST, request.FILES)
+    if form.is_valid():
+        csv_file = request.FILES['csv_file']
+
+        # 一時保存ディレクトリを作成
+        temp_dir = os.path.join(settings.MEDIA_ROOT, 'temp_uploads')
+        os.makedirs(temp_dir, exist_ok=True)
+
+        # ユニークなファイル名を生成
+        task_id = str(uuid.uuid4())
+        temp_file_path = os.path.join(temp_dir, f'{task_id}.csv')
+
+        # ファイルを一時保存
+        with open(temp_file_path, 'wb+') as f:
+            for chunk in csv_file.chunks():
+                f.write(chunk)
+
+        # キャッシュにタスク情報を保存
+        cache.set(f'import_task_{task_id}', {
+            'file_path': temp_file_path,
+            'status': 'uploaded',
+            'progress': 0,
+            'total': 0,
+            'errors': [],
+        }, timeout=3600)
+
+        return JsonResponse({'task_id': task_id})
+
+    return JsonResponse({'error': 'CSVファイルのアップロードに失敗しました。'}, status=400)
+
+@login_required
+@permission_required('master.add_bank', raise_exception=True)
+@require_POST
+def bank_import_process(request, task_id):
+    """CSVファイルのインポート処理を実行"""
+    task_info = cache.get(f'import_task_{task_id}')
+    if not task_info or task_info['status'] != 'uploaded':
+        return JsonResponse({'error': '無効なタスクIDです。'}, status=400)
+
+    file_path = task_info['file_path']
+
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            rows = list(reader)
+            total_rows = len(rows)
+
+        task_info['total'] = total_rows
+        cache.set(f'import_task_{task_id}', task_info, timeout=3600)
+
+        imported_count = 0
+        errors = []
+
+        with transaction.atomic():
+            for i, row in enumerate(rows):
+                try:
+                    bank_code = row[0]
+                    branch_code = row[1]
+                    name = row[3].strip()
+                    record_type = row[4]
+
+                    if record_type == '1': # 銀行
+                        bank, created = Bank.objects.update_or_create(
+                            bank_code=bank_code,
+                            defaults={'name': name, 'is_active': True}
+                        )
+                        imported_count += 1
+                    elif record_type == '2': # 支店
+                        try:
+                            bank = Bank.objects.get(bank_code=bank_code)
+                            branch, created = BankBranch.objects.update_or_create(
+                                bank=bank,
+                                branch_code=branch_code,
+                                defaults={'name': name, 'is_active': True}
+                            )
+                            imported_count += 1
+                        except Bank.DoesNotExist:
+                            errors.append(f'{i+1}行目: 銀行コード {bank_code} が見つかりません。')
+
+                except Exception as e:
+                    errors.append(f'{i+1}行目: {e}')
+
+                # 進捗を更新
+                task_info['progress'] = i + 1
+                cache.set(f'import_task_{task_id}', task_info, timeout=3600)
+
+        task_info['status'] = 'completed'
+        task_info['errors'] = errors
+        task_info['imported_count'] = imported_count
+        cache.set(f'import_task_{task_id}', task_info, timeout=3600)
+
+        return JsonResponse({'status': 'completed', 'imported_count': imported_count, 'errors': errors})
+
+    except Exception as e:
+        task_info['status'] = 'failed'
+        task_info['errors'] = [f'処理中に予期せぬエラーが発生しました: {e}']
+        cache.set(f'import_task_{task_id}', task_info, timeout=3600)
+        return JsonResponse({'error': str(e)}, status=500)
+    finally:
+        # 一時ファイルを削除
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+@login_required
+@permission_required('master.add_bank', raise_exception=True)
+def bank_import_progress(request, task_id):
+    """インポートの進捗状況を返す"""
+    task_info = cache.get(f'import_task_{task_id}')
+    if not task_info:
+        return JsonResponse({'error': '無効なタスクIDです。'}, status=404)
+    
+    return JsonResponse(task_info)
 
 # 銀行・銀行支店統合変更履歴
 @login_required
