@@ -17,9 +17,94 @@ from apps.system.settings.utils import my_parameter
 from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
 from apps.common.utils import fill_excel_from_template, fill_pdf_from_template
+from django.http import HttpResponse
+from .resources import StaffResource
+import datetime
 
 # ロガーの作成
 logger = logging.getLogger('staff')
+
+
+@login_required
+@permission_required('staff.view_staff', raise_exception=True)
+def staff_export(request):
+    """スタッフデータのエクスポート（CSV/Excel）"""
+    # フィルタリングロジックをstaff_listからコピー
+    query = request.GET.get('q', '').strip()
+    regist_form_filter = request.GET.get('regist_form', '').strip()
+    department_filter = request.GET.get('department', '').strip()
+    employment_type_filter = request.GET.get('employment_type', '').strip()
+    has_request_filter = request.GET.get('has_request', '')
+    has_international_filter = request.GET.get('has_international', '')
+    has_disability_filter = request.GET.get('has_disability', '')
+    format_type = request.GET.get('format', 'csv')
+
+    staffs = Staff.objects.all()
+
+    if has_request_filter == 'true':
+        from apps.connect.models import (
+            ConnectStaff, MynumberRequest, ProfileRequest, BankRequest,
+            ContactRequest, ConnectInternationalRequest, DisabilityRequest
+        )
+        pending_mynumber_cs_ids = MynumberRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+        pending_profile_cs_ids = ProfileRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+        pending_bank_cs_ids = BankRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+        pending_contact_cs_ids = ContactRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+        pending_international_cs_ids = ConnectInternationalRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+        pending_disability_cs_ids = DisabilityRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+
+        all_pending_cs_ids = set()
+        all_pending_cs_ids.update(pending_mynumber_cs_ids)
+        all_pending_cs_ids.update(pending_profile_cs_ids)
+        all_pending_cs_ids.update(pending_bank_cs_ids)
+        all_pending_cs_ids.update(pending_contact_cs_ids)
+        all_pending_cs_ids.update(pending_international_cs_ids)
+        all_pending_cs_ids.update(pending_disability_cs_ids)
+
+        pending_emails = ConnectStaff.objects.filter(id__in=list(all_pending_cs_ids)).values_list('email', flat=True)
+        staffs = staffs.filter(email__in=pending_emails)
+
+    if query:
+        staffs = staffs.filter(
+            Q(name_last__icontains=query) | Q(name_first__icontains=query) |
+            Q(name_kana_last__icontains=query) | Q(name_kana_first__icontains=query) |
+            Q(name__icontains=query) | Q(address_kana__icontains=query) |
+            Q(address1__icontains=query) | Q(address2__icontains=query) |
+            Q(address3__icontains=query) | Q(email__icontains=query) |
+            Q(employee_no__icontains=query)
+        )
+
+    if regist_form_filter:
+        staffs = staffs.filter(regist_form_code=regist_form_filter)
+    if department_filter:
+        staffs = staffs.filter(department_code=department_filter)
+    if employment_type_filter:
+        staffs = staffs.filter(employment_type=employment_type_filter)
+    if has_international_filter:
+        staffs = staffs.filter(international__isnull=False)
+    if has_disability_filter:
+        staffs = staffs.filter(disability__isnull=False)
+
+    staffs = staffs.order_by('employee_no')
+
+    # リソースを使ってエクスポート
+    resource = StaffResource()
+    dataset = resource.export(staffs)
+
+    timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+
+    if format_type == 'excel':
+        response = HttpResponse(
+            dataset.xlsx,
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename="staff_{timestamp}.xlsx"'
+    else:
+        csv_data = '\ufeff' + dataset.csv
+        response = HttpResponse(csv_data, content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="staff_{timestamp}.csv"'
+
+    return response
 
 @login_required
 @permission_required('staff.view_staff', raise_exception=True)
