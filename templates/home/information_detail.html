@@ -40,7 +40,7 @@
         </ul>
         {% endif %}
 
-        <a href="{% url 'home:home' %}" class="btn btn-sm btn-secondary">戻る</a>
+        <a href="{% if next %}{{ next }}{% else %}{% url 'home:home' %}{% endif %}" class="btn btn-sm btn-secondary">戻る</a>
     </div>
 </div>
 {% endblock %}

@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from apps.staff.models import Staff
 from apps.client.models import Client
 from apps.company.models import Company
@@ -55,7 +56,9 @@ def get_filtered_informations(user):
 
 @login_required
 def home(request):
-    information_list = get_filtered_informations(request.user).order_by('-start_date')[:5]
+    all_informations = get_filtered_informations(request.user).order_by('-start_date')
+    information_list = all_informations[:5]
+    information_count = all_informations.count()
     
     # お知らせに会社名を付与
     corporation_numbers = [info.corporation_number for info in information_list if info.corporation_number]
@@ -100,12 +103,34 @@ def home(request):
         'approved_client_count': approved_client_count,
         'staff_request_count': staff_request_count,
         'information_list': information_list,
+        'information_count': information_count,
     }
 
     return render(request, 'home/home.html', context)
 
 
 from django.shortcuts import get_object_or_404
+
+@login_required
+def information_list(request):
+    information_list = get_filtered_informations(request.user).order_by('-start_date')
+    
+    # お知らせに会社名を付与
+    corporation_numbers = [info.corporation_number for info in information_list if info.corporation_number]
+    if corporation_numbers:
+        companies = Company.objects.filter(corporate_number__in=corporation_numbers).in_bulk(field_name='corporate_number')
+        for info in information_list:
+            if info.corporation_number in companies:
+                info.company_name = companies[info.corporation_number].name
+    
+    paginator = Paginator(information_list, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'page_obj': page_obj,
+    }
+    return render(request, 'home/information_list.html', context)
 
 @login_required
 def information_detail(request, pk):
@@ -122,5 +147,6 @@ def information_detail(request, pk):
     
     context = {
         'information': information,
+        'next': request.GET.get('next', ''),
     }
     return render(request, 'home/information_detail.html', context)
