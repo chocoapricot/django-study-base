@@ -641,7 +641,6 @@ def bill_payment_list(request):
     context = {
         'bill_payments': bill_payments_page,
         'search_query': search_query,
-        'title': '支払条件管理',
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
     }
@@ -752,7 +751,6 @@ def bill_bank_list(request):
     context = {
         'bill_banks': bill_banks_page,
         'search_query': search_query,
-        'title': '会社銀行管理',
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
     }
@@ -915,7 +913,6 @@ def bank_list(request):
     context = {
         'banks': banks_page,
         'search_query': search_query,
-        'title': '銀行管理',
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
     }
@@ -1060,7 +1057,6 @@ def bank_branch_list(request):
         'search_query': search_query,
         'bank_filter': bank_filter,
         'banks': banks,
-        'title': '銀行支店管理',
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
     }
@@ -1217,7 +1213,6 @@ def bank_management(request):
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
         'history_url': 'master:bank_management_change_history_list',
-        'title': '銀行・銀行支店管理',
     }
     return render(request, 'master/bank_management.html', context)
 
@@ -1287,7 +1282,6 @@ def information_list(request):
     context = {
         'information_list': information_page,
         'search_query': search_query,
-        'title': 'お知らせ管理',
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
     }
