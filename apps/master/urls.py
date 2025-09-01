@@ -54,6 +54,7 @@ urlpatterns = [
     # 銀行・銀行支店統合管理
     path('bank-management/', views.bank_management, name='bank_management'),
     path('bank-management/history/', views.bank_management_change_history_list, name='bank_management_change_history_list'),
+    path('bank/import/', views.bank_import, name='bank_import'),
 
     # お知らせ管理
     path('information/', views.information_list, name='information_list'),

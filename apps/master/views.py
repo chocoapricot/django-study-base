@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.urls import reverse
 from django.apps import apps
 from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch, Information, InformationFile
-from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm, BillPaymentForm, BillBankForm, BankForm, BankBranchForm, InformationForm
+from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm, BillPaymentForm, BillBankForm, BankForm, BankBranchForm, InformationForm, CSVImportForm
 from apps.company.models import Company
 
 
@@ -1217,6 +1217,71 @@ def bank_management(request):
     return render(request, 'master/bank_management.html', context)
 
 
+import csv
+import io
+from django.db import transaction
+
+@login_required
+@permission_required('master.add_bank', raise_exception=True)
+def bank_import(request):
+    """銀行・支店CSV取込"""
+    if request.method == 'POST':
+        form = CSVImportForm(request.POST, request.FILES)
+        if form.is_valid():
+            csv_file = request.FILES['csv_file']
+            try:
+                with transaction.atomic():
+                    reader = csv.reader(io.TextIOWrapper(csv_file, encoding='utf-8'))
+                    imported_count = 0
+                    errors = []
+                    for i, row in enumerate(reader):
+                        try:
+                            bank_code = row[0]
+                            branch_code = row[1]
+                            name = row[2].strip()
+                            name_kana = row[3].strip()
+                            record_type = row[4]
+
+                            if record_type == '1': # 銀行
+                                bank, created = Bank.objects.update_or_create(
+                                    bank_code=bank_code,
+                                    defaults={'name': name, 'is_active': True}
+                                )
+                                imported_count += 1
+                            elif record_type == '2': # 支店
+                                try:
+                                    bank = Bank.objects.get(bank_code=bank_code)
+                                    branch, created = BankBranch.objects.update_or_create(
+                                        bank=bank,
+                                        branch_code=branch_code,
+                                        defaults={'name': name, 'is_active': True}
+                                    )
+                                    imported_count += 1
+                                except Bank.DoesNotExist:
+                                    errors.append(f'{i+1}行目: 銀行コード {bank_code} が見つかりません。')
+
+                        except Exception as e:
+                            errors.append(f'{i+1}行目: {e}')
+                    
+                    if errors:
+                        for error in errors:
+                            messages.error(request, error)
+                    else:
+                        messages.success(request, f'{imported_count}件のデータを登録しました。')
+                    return redirect('master:bank_import')
+
+            except Exception as e:
+                messages.error(request, f'CSVファイルの処理中にエラーが発生しました: {e}')
+
+    else:
+        form = CSVImportForm()
+    
+    context = {
+        'form': form,
+        'title': '銀行・支店CSV取込',
+    }
+    return render(request, 'master/bank_import.html', context)
+
 # 銀行・銀行支店統合変更履歴
 @login_required
 @permission_required('master.view_bank', raise_exception=True)
@@ -1263,7 +1328,7 @@ def information_list(request):
 
     information_list = information_list.order_by('-start_date')
 
-    paginator = Paginator(information_list, 10)
+    paginator = Paginator(information_list, 20)
     page = request.GET.get('page')
     information_page = paginator.get_page(page)
 

@@ -235,6 +235,15 @@ class BankBranchForm(forms.ModelForm):
         fields = ['bank', 'name', 'branch_code', 'is_active']
 
 
+class CSVImportForm(forms.Form):
+    """CSV取込フォーム"""
+    csv_file = forms.FileField(
+        label='CSVファイル',
+        help_text='CSVファイルを選択してください。',
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control form-control-sm'})
+    )
+
+
 class InformationForm(forms.ModelForm):
     """お知らせ情報フォーム"""
     class Meta:
