@@ -44,101 +44,104 @@
 
 {% block extra_js %}
 <script>
-document.getElementById('import-form').addEventListener('submit', function(e) {
-    e.preventDefault();
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('import-form').addEventListener('submit', function(e) {
+        e.preventDefault();
 
-    const form = e.target;
-    const formData = new FormData(form);
-    const fileInput = form.querySelector('input[type="file"]');
-    const progressContainer = document.getElementById('progress-container');
-    const progressBar = document.getElementById('progress-bar');
-    const progressText = document.getElementById('progress-text');
-    const resultContainer = document.getElementById('result-container');
+        const form = e.target;
+        const formData = new FormData(form);
+        const fileInput = form.querySelector('input[type="file"]');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const resultContainer = document.getElementById('result-container');
 
-    if (!fileInput.files || fileInput.files.length === 0) {
-        resultContainer.innerHTML = '<div class="alert alert-danger">ファイルを選択してください。</div>';
-        return;
-    }
-
-    progressContainer.style.display = 'block';
-    progressBar.style.width = '0%';
-    progressBar.setAttribute('aria-valuenow', 0);
-    progressText.textContent = '';
-    resultContainer.innerHTML = '';
-
-    // 1. ファイルをアップロード
-    fetch("{% url 'master:bank_import_upload' %}", {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRFToken': '{{ csrf_token }}'
+        if (!fileInput.files || fileInput.files.length === 0) {
+            resultContainer.innerHTML = '<div class="alert alert-danger">ファイルを選択してください。</div>';
+            return;
         }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            throw new Error(data.error);
-        }
-        const taskId = data.task_id;
-        progressText.textContent = 'アップロード完了。処理を開始します...';
 
-        // 2. 処理を開始
-        return fetch(`/master/bank/import/process/${taskId}/`, {
+        progressContainer.style.display = 'block';
+        progressBar.style.width = '0%';
+        progressBar.setAttribute('aria-valuenow', 0);
+        progressText.textContent = '';
+        resultContainer.innerHTML = '';
+
+        let taskId;
+
+        // 1. ファイルをアップロード
+        fetch("{% url 'master:bank_import_upload' %}", {
             method: 'POST',
+            body: formData,
             headers: {
                 'X-CSRFToken': '{{ csrf_token }}'
             }
-        });
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('処理の開始に失敗しました。');
-        }
-        const taskId = response.url.split('/')[4];
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            taskId = data.task_id;
+            progressText.textContent = 'アップロード完了。処理を開始します...';
 
-        // 3. 進捗をポーリング
-        const interval = setInterval(() => {
-            fetch(`/master/bank/import/progress/${taskId}/`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.total > 0) {
-                    const percentage = Math.round((data.progress / data.total) * 100);
-                    progressBar.style.width = percentage + '%';
-                    progressBar.setAttribute('aria-valuenow', percentage);
-                    progressText.textContent = `${data.progress}件 / ${data.total}件 (${percentage}%)`;
+            // 2. 処理を開始
+            return fetch(`/master/bank/import/process/${taskId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
                 }
+            });
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('処理の開始に失敗しました。');
+            }
 
-                if (data.status === 'completed' || data.status === 'failed') {
+            // 3. 進捗をポーリング
+            const interval = setInterval(() => {
+                fetch(`/master/bank/import/progress/${taskId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.total > 0) {
+                        const percentage = Math.round((data.progress / data.total) * 100);
+                        progressBar.style.width = percentage + '%';
+                        progressBar.setAttribute('aria-valuenow', percentage);
+                        progressText.textContent = `${data.progress}件 / ${data.total}件 (${percentage}%)`;
+                    }
+
+                    if (data.status === 'completed' || data.status === 'failed') {
+                        clearInterval(interval);
+                        progressContainer.style.display = 'none';
+
+                        let resultMessage = '';
+                        if (data.status === 'completed') {
+                            resultMessage = `<div class="alert alert-success">インポートが完了しました。${data.imported_count}件のデータが登録されました。</div>`;
+                        } else {
+                            resultMessage = `<div class="alert alert-danger">インポート中にエラーが発生しました。</div>`;
+                        }
+
+                        if (data.errors && data.errors.length > 0) {
+                            resultMessage += '<h5>エラー詳細:</h5><ul>';
+                            data.errors.forEach(error => {
+                                resultMessage += `<li>${error}</li>`;
+                            });
+                            resultMessage += '</ul>';
+                        }
+                        resultContainer.innerHTML = resultMessage;
+                    }
+                })
+                .catch(error => {
                     clearInterval(interval);
                     progressContainer.style.display = 'none';
-
-                    let resultMessage = '';
-                    if (data.status === 'completed') {
-                        resultMessage = `<div class="alert alert-success">インポートが完了しました。${data.imported_count}件のデータが登録されました。</div>`;
-                    } else {
-                        resultMessage = `<div class="alert alert-danger">インポート中にエラーが発生しました。</div>`;
-                    }
-
-                    if (data.errors && data.errors.length > 0) {
-                        resultMessage += '<h5>エラー詳細:</h5><ul>';
-                        data.errors.forEach(error => {
-                            resultMessage += `<li>${error}</li>`;
-                        });
-                        resultMessage += '</ul>';
-                    }
-                    resultContainer.innerHTML = resultMessage;
-                }
-            })
-            .catch(error => {
-                clearInterval(interval);
-                progressContainer.style.display = 'none';
-                resultContainer.innerHTML = `<div class="alert alert-danger">進捗の取得中にエラーが発生しました: ${error}</div>`;
-            });
-        }, 2000);
-    })
-    .catch(error => {
-        progressContainer.style.display = 'none';
-        resultContainer.innerHTML = `<div class="alert alert-danger">エラーが発生しました: ${error.message}</div>`;
+                    resultContainer.innerHTML = `<div class="alert alert-danger">進捗の取得中にエラーが発生しました: ${error}</div>`;
+                });
+            }, 2000);
+        })
+        .catch(error => {
+            progressContainer.style.display = 'none';
+            resultContainer.innerHTML = `<div class="alert alert-danger">エラーが発生しました: ${error.message}</div>`;
+        });
     });
 });
 </script>
