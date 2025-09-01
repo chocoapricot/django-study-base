@@ -1296,9 +1296,9 @@ def bank_import_process(request, task_id):
         imported_count = 0
         errors = []
 
-        with transaction.atomic():
-            for i, row in enumerate(rows):
-                try:
+        for i, row in enumerate(rows):
+            try:
+                with transaction.atomic():
                     bank_code = row[0]
                     branch_code = row[1]
                     name = row[3].strip()
@@ -1322,12 +1322,12 @@ def bank_import_process(request, task_id):
                         except Bank.DoesNotExist:
                             errors.append(f'{i+1}行目: 銀行コード {bank_code} が見つかりません。')
 
-                except Exception as e:
-                    errors.append(f'{i+1}行目: {e}')
+            except Exception as e:
+                errors.append(f'{i+1}行目: {e}')
 
-                # 進捗を更新
-                task_info['progress'] = i + 1
-                cache.set(f'import_task_{task_id}', task_info, timeout=3600)
+            # 進捗を更新
+            task_info['progress'] = i + 1
+            cache.set(f'import_task_{task_id}', task_info, timeout=3600)
 
         task_info['status'] = 'completed'
         task_info['errors'] = errors
