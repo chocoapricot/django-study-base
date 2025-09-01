@@ -1,1 +1,614 @@
-[{"model": "master.information", "pk": 1, "fields": {"target": "company", "subject": "【会社向け】システムメンテナンスのお知らせ", "content": "平素より大変お世話になっております。\n下記の日程でシステムメンテナンスを実施いたします。\nご不便をおかけいたしますが、ご協力のほどよろしくお願い申し上げます。\n\n■日時\n2025年9月15日(月) 22:00 〜 24:00", "start_date": "2025-09-01", "end_date": "2025-09-15", "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 2, "fields": {"target": "staff", "subject": "【スタッフ向け】健康診断のご案内", "content": "スタッフの皆様へ\n\n今年度の健康診断を以下の通り実施いたします。\n対象者の方は、期間内に必ず受診してください。\n\n■受診期間\n2025年10月1日(水) 〜 2025年10月31日(金)\n\n詳細は添付の資料をご確認ください。", "start_date": "2025-09-10", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 3, "fields": {"target": "client", "subject": "【クライアント様向け】夏季休業のお知らせ", "content": "クライアント各位\n\n誠に勝手ながら、以下の期間を夏季休業とさせていただきます。\n\n■休業期間\n2025年8月11日(月) 〜 2025年8月15日(金)\n\n期間中はご不便をおかけいたしますが、何卒ご了承くださいますようお願い申し上げます。", "start_date": "2025-08-01", "end_date": "2025-08-15", "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 4, "fields": {"target": "company", "subject": "【会社向け】重要なお知らせ 2", "content": "会社向けの重要なお知らせです。内容をご確認ください。(2)", "start_date": "2025-09-02", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 5, "fields": {"target": "company", "subject": "【会社向け】重要なお知らせ 3", "content": "会社向けの重要なお知らせです。内容をご確認ください。(3)", "start_date": "2025-09-03", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 6, "fields": {"target": "company", "subject": "【会社向け】重要なお知らせ 4", "content": "会社向けの重要なお知らせです。内容をご確認ください。(4)", "start_date": "2025-09-04", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 7, "fields": {"target": "company", "subject": "【会社向け】重要なお知らせ 5", "content": "会社向けの重要なお知らせです。内容をご確認ください。(5)", "start_date": "2025-09-05", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 8, "fields": {"target": "company", "subject": "【会社向け】重要なお知らせ 6", "content": "会社向けの重要なお知らせです。内容をご確認ください。(6)", "start_date": "2025-09-06", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 9, "fields": {"target": "company", "subject": "【会社向け】重要なお知らせ 7", "content": "会社向けの重要なお知らせです。内容をご確認ください。(7)", "start_date": "2025-09-07", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 10, "fields": {"target": "company", "subject": "【会社向け】重要なお知らせ 8", "content": "会社向けの重要なお知らせです。内容をご確認ください。(8)", "start_date": "2025-09-08", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 11, "fields": {"target": "company", "subject": "【会社向け】重要なお知らせ 9", "content": "会社向けの重要なお知らせです。内容をご確認ください。(9)", "start_date": "2025-09-09", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 12, "fields": {"target": "company", "subject": "【会社向け】重要なお知らせ 10", "content": "会社向けの重要なお知らせです。内容をご確認ください。(10)", "start_date": "2025-09-10", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 13, "fields": {"target": "staff", "subject": "【スタッフ向け】研修のご案内 2", "content": "スキルアップ研修のご案内です。奮ってご参加ください。(2)", "start_date": "2025-09-12", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 14, "fields": {"target": "staff", "subject": "【スタッフ向け】研修のご案内 3", "content": "スキルアップ研修のご案内です。奮ってご参加ください。(3)", "start_date": "2025-09-13", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 15, "fields": {"target": "staff", "subject": "【スタッフ向け】研修のご案内 4", "content": "スキルアップ研修のご案内です。奮ってご参加ください。(4)", "start_date": "2025-09-14", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 16, "fields": {"target": "staff", "subject": "【スタッフ向け】研修のご案内 5", "content": "スキルアップ研修のご案内です。奮ってご参加ください。(5)", "start_date": "2025-09-15", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 17, "fields": {"target": "staff", "subject": "【スタッフ向け】研修のご案内 6", "content": "スキルアップ研修のご案内です。奮ってご参加ください。(6)", "start_date": "2025-09-16", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 18, "fields": {"target": "staff", "subject": "【スタッフ向け】研修のご案内 7", "content": "スキルアップ研修のご案内です。奮ってご参加ください。(7)", "start_date": "2025-09-17", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 19, "fields": {"target": "staff", "subject": "【スタッフ向け】研修のご案内 8", "content": "スキルアップ研修のご案内です。奮ってご参加ください。(8)", "start_date": "2025-09-18", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 20, "fields": {"target": "staff", "subject": "【スタッフ向け】研修のご案内 9", "content": "スキルアップ研修のご案内です。奮ってご参加ください。(9)", "start_date": "2025-09-19", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 21, "fields": {"target": "staff", "subject": "【スタッフ向け】研修のご案内 10", "content": "スキルアップ研修のご案内です。奮ってご参加ください。(10)", "start_date": "2025-09-20", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 22, "fields": {"target": "client", "subject": "【クライアント様向け】新サービスのご案内 2", "content": "新しいサービスを開始いたしました。ぜひご活用ください。(2)", "start_date": "2025-08-17", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 23, "fields": {"target": "client", "subject": "【クライアント様向け】新サービスのご案内 3", "content": "新しいサービスを開始いたしました。ぜひご活用ください。(3)", "start_date": "2025-08-18", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 24, "fields": {"target": "client", "subject": "【クライアント様向け】新サービスのご案内 4", "content": "新しいサービスを開始いたしました。ぜひご活用ください。(4)", "start_date": "2025-08-19", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 25, "fields": {"target": "client", "subject": "【クライアント様向け】新サービスのご案内 5", "content": "新しいサービスを開始いたしました。ぜひご活用ください。(5)", "start_date": "2025-08-20", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 26, "fields": {"target": "client", "subject": "【クライアント様向け】新サービスのご案内 6", "content": "新しいサービスを開始いたしました。ぜひご活用ください。(6)", "start_date": "2025-08-21", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 27, "fields": {"target": "client", "subject": "【クライアント様向け】新サービスのご案内 7", "content": "新しいサービスを開始いたしました。ぜひご活用ください。(7)", "start_date": "2025-08-22", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 28, "fields": {"target": "client", "subject": "【クライアント様向け】新サービスのご案内 8", "content": "新しいサービスを開始いたしました。ぜひご活用ください。(8)", "start_date": "2025-08-23", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 29, "fields": {"target": "client", "subject": "【クライアント様向け】新サービスのご案内 9", "content": "新しいサービスを開始いたしました。ぜひご活用ください。(9)", "start_date": "2025-08-24", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 30, "fields": {"target": "client", "subject": "【クライアント様向け】新サービスのご案内 10", "content": "新しいサービスを開始いたしました。ぜひご活用ください。(10)", "start_date": "2025-08-25", "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 31, "fields": {"target": "company", "subject": "【会社向け】社内規定の改訂について", "content": "就業規則が改訂されました。詳細は社内ポータルをご確認ください。", "start_date": null, "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 32, "fields": {"target": "company", "subject": "【会社向け】コンプライアンス研修資料", "content": "いつでも閲覧可能なコンプライアンス研修資料です。", "start_date": null, "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 33, "fields": {"target": "staff", "subject": "【スタッフ向け】各種申請書フォーマット", "content": "各種申請書のフォーマットはこちらからダウンロードしてください。", "start_date": null, "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 34, "fields": {"target": "staff", "subject": "【スタッフ向け】福利厚生について", "content": "利用可能な福利厚生の一覧です。", "start_date": null, "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 35, "fields": {"target": "client", "subject": "【クライアント様向け】サービス利用規約", "content": "最新のサービス利用規約です。ご一読ください。", "start_date": null, "end_date": null, "corporation_number": "1234567890122"}}, {"model": "master.information", "pk": 36, "fields": {"target": "client", "subject": "【クライアント様向け】お問い合わせ窓口", "content": "サービスに関するお問い合わせはこちらまでお願いいたします。", "start_date": null, "end_date": null, "corporation_number": "1234567890122"}}]
+[
+    {
+        "model": "master.information",
+        "pk": 1,
+        "fields": {
+            "target": "company",
+            "subject": "【会社向け】システムメンテナンスのお知らせ",
+            "content": "平素より大変お世話になっております。\n下記の日程でシステムメンテナンスを実施いたします。\nご不便をおかけいたしますが、ご協力のほどよろしくお願い申し上げます。\n\n■日時\n2025年9月15日(月) 22:00 〜 24:00",
+            "start_date": "2025-09-01",
+            "end_date": "2025-09-15",
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 2,
+        "fields": {
+            "target": "staff",
+            "subject": "【スタッフ向け】健康診断のご案内",
+            "content": "スタッフの皆様へ\n\n今年度の健康診断を以下の通り実施いたします。\n対象者の方は、期間内に必ず受診してください。\n\n■受診期間\n2025年10月1日(水) 〜 2025年10月31日(金)\n\n詳細は添付の資料をご確認ください。",
+            "start_date": "2025-09-10",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 3,
+        "fields": {
+            "target": "client",
+            "subject": "【クライアント様向け】夏季休業のお知らせ",
+            "content": "クライアント各位\n\n誠に勝手ながら、以下の期間を夏季休業とさせていただきます。\n\n■休業期間\n2025年8月11日(月) 〜 2025年8月15日(金)\n\n期間中はご不便をおかけいたしますが、何卒ご了承くださいますようお願い申し上げます。",
+            "start_date": "2025-08-01",
+            "end_date": "2025-08-15",
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 4,
+        "fields": {
+            "target": "company",
+            "subject": "【会社向け】重要なお知らせ 2",
+            "content": "会社向けの重要なお知らせです。内容をご確認ください。(2)",
+            "start_date": "2025-09-02",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 5,
+        "fields": {
+            "target": "company",
+            "subject": "【会社向け】重要なお知らせ 3",
+            "content": "会社向けの重要なお知らせです。内容をご確認ください。(3)",
+            "start_date": "2025-09-03",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 6,
+        "fields": {
+            "target": "company",
+            "subject": "【会社向け】重要なお知らせ 4",
+            "content": "会社向けの重要なお知らせです。内容をご確認ください。(4)",
+            "start_date": "2025-09-04",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 7,
+        "fields": {
+            "target": "company",
+            "subject": "【会社向け】重要なお知らせ 5",
+            "content": "会社向けの重要なお知らせです。内容をご確認ください。(5)",
+            "start_date": "2025-09-05",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 8,
+        "fields": {
+            "target": "company",
+            "subject": "【会社向け】重要なお知らせ 6",
+            "content": "会社向けの重要なお知らせです。内容をご確認ください。(6)",
+            "start_date": "2025-09-06",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 9,
+        "fields": {
+            "target": "company",
+            "subject": "【会社向け】重要なお知らせ 7",
+            "content": "会社向けの重要なお知らせです。内容をご確認ください。(7)",
+            "start_date": "2025-09-07",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 10,
+        "fields": {
+            "target": "company",
+            "subject": "【会社向け】重要なお知らせ 8",
+            "content": "会社向けの重要なお知らせです。内容をご確認ください。(8)",
+            "start_date": "2025-09-08",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 11,
+        "fields": {
+            "target": "company",
+            "subject": "【会社向け】重要なお知らせ 9",
+            "content": "会社向けの重要なお知らせです。内容をご確認ください。(9)",
+            "start_date": "2025-09-09",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 12,
+        "fields": {
+            "target": "company",
+            "subject": "【会社向け】重要なお知らせ 10",
+            "content": "会社向けの重要なお知らせです。内容をご確認ください。(10)",
+            "start_date": "2025-09-10",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 13,
+        "fields": {
+            "target": "staff",
+            "subject": "【スタッフ向け】研修のご案内 2",
+            "content": "スキルアップ研修のご案内です。奮ってご参加ください。(2)",
+            "start_date": "2025-09-12",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 14,
+        "fields": {
+            "target": "staff",
+            "subject": "【スタッフ向け】研修のご案内 3",
+            "content": "スキルアップ研修のご案内です。奮ってご参加ください。(3)",
+            "start_date": "2025-09-13",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 15,
+        "fields": {
+            "target": "staff",
+            "subject": "【スタッフ向け】研修のご案内 4",
+            "content": "スキルアップ研修のご案内です。奮ってご参加ください。(4)",
+            "start_date": "2025-09-14",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 16,
+        "fields": {
+            "target": "staff",
+            "subject": "【スタッフ向け】研修のご案内 5",
+            "content": "スキルアップ研修のご案内です。奮ってご参加ください。(5)",
+            "start_date": "2025-09-15",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 17,
+        "fields": {
+            "target": "staff",
+            "subject": "【スタッフ向け】研修のご案内 6",
+            "content": "スキルアップ研修のご案内です。奮ってご参加ください。(6)",
+            "start_date": "2025-09-16",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 18,
+        "fields": {
+            "target": "staff",
+            "subject": "【スタッフ向け】研修のご案内 7",
+            "content": "スキルアップ研修のご案内です。奮ってご参加ください。(7)",
+            "start_date": "2025-09-17",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 19,
+        "fields": {
+            "target": "staff",
+            "subject": "【スタッフ向け】研修のご案内 8",
+            "content": "スキルアップ研修のご案内です。奮ってご参加ください。(8)",
+            "start_date": "2025-09-18",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 20,
+        "fields": {
+            "target": "staff",
+            "subject": "【スタッフ向け】研修のご案内 9",
+            "content": "スキルアップ研修のご案内です。奮ってご参加ください。(9)",
+            "start_date": "2025-09-19",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 21,
+        "fields": {
+            "target": "staff",
+            "subject": "【スタッフ向け】研修のご案内 10",
+            "content": "スキルアップ研修のご案内です。奮ってご参加ください。(10)",
+            "start_date": "2025-09-20",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 22,
+        "fields": {
+            "target": "client",
+            "subject": "【クライアント様向け】新サービスのご案内 2",
+            "content": "新しいサービスを開始いたしました。ぜひご活用ください。(2)",
+            "start_date": "2025-08-17",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 23,
+        "fields": {
+            "target": "client",
+            "subject": "【クライアント様向け】新サービスのご案内 3",
+            "content": "新しいサービスを開始いたしました。ぜひご活用ください。(3)",
+            "start_date": "2025-08-18",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 24,
+        "fields": {
+            "target": "client",
+            "subject": "【クライアント様向け】新サービスのご案内 4",
+            "content": "新しいサービスを開始いたしました。ぜひご活用ください。(4)",
+            "start_date": "2025-08-19",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 25,
+        "fields": {
+            "target": "client",
+            "subject": "【クライアント様向け】新サービスのご案内 5",
+            "content": "新しいサービスを開始いたしました。ぜひご活用ください。(5)",
+            "start_date": "2025-08-20",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 26,
+        "fields": {
+            "target": "client",
+            "subject": "【クライアント様向け】新サービスのご案内 6",
+            "content": "新しいサービスを開始いたしました。ぜひご活用ください。(6)",
+            "start_date": "2025-08-21",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 27,
+        "fields": {
+            "target": "client",
+            "subject": "【クライアント様向け】新サービスのご案内 7",
+            "content": "新しいサービスを開始いたしました。ぜひご活用ください。(7)",
+            "start_date": "2025-08-22",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 28,
+        "fields": {
+            "target": "client",
+            "subject": "【クライアント様向け】新サービスのご案内 8",
+            "content": "新しいサービスを開始いたしました。ぜひご活用ください。(8)",
+            "start_date": "2025-08-23",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 29,
+        "fields": {
+            "target": "client",
+            "subject": "【クライアント様向け】新サービスのご案内 9",
+            "content": "新しいサービスを開始いたしました。ぜひご活用ください。(9)",
+            "start_date": "2025-08-24",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 30,
+        "fields": {
+            "target": "client",
+            "subject": "【クライアント様向け】新サービスのご案内 10",
+            "content": "新しいサービスを開始いたしました。ぜひご活用ください。(10)",
+            "start_date": "2025-08-25",
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 31,
+        "fields": {
+            "target": "company",
+            "subject": "【会社向け】社内規定の改訂について",
+            "content": "就業規則が改訂されました。詳細は社内ポータルをご確認ください。",
+            "start_date": null,
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 32,
+        "fields": {
+            "target": "company",
+            "subject": "【会社向け】コンプライアンス研修資料",
+            "content": "いつでも閲覧可能なコンプライアンス研修資料です。",
+            "start_date": null,
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 33,
+        "fields": {
+            "target": "staff",
+            "subject": "【スタッフ向け】各種申請書フォーマット",
+            "content": "各種申請書のフォーマットはこちらからダウンロードしてください。",
+            "start_date": null,
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 34,
+        "fields": {
+            "target": "staff",
+            "subject": "【スタッフ向け】福利厚生について",
+            "content": "利用可能な福利厚生の一覧です。",
+            "start_date": null,
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 35,
+        "fields": {
+            "target": "client",
+            "subject": "【クライアント様向け】サービス利用規約",
+            "content": "最新のサービス利用規約です。ご一読ください。",
+            "start_date": null,
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "master.information",
+        "pk": 36,
+        "fields": {
+            "target": "client",
+            "subject": "【クライアント様向け】お問い合わせ窓口",
+            "content": "サービスに関するお問い合わせはこちらまでお願いいたします。",
+            "start_date": null,
+            "end_date": null,
+            "corporation_number": "1234567890122",
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1
+        }
+    }
+]
