@@ -1263,7 +1263,7 @@ def information_list(request):
 
     information_list = information_list.order_by('-start_date')
 
-    paginator = Paginator(information_list, 20)
+    paginator = Paginator(information_list, 10)
     page = request.GET.get('page')
     information_page = paginator.get_page(page)
 
