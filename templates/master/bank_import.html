@@ -3,43 +3,32 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">{{ title }}</h5>
-                </div>
-                <div class="card-body">
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                        {% endfor %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        {{ title }}
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" class="form-horizontal">
+            {% csrf_token %}
+            
+            <div class="mb-3 row">
+                <label for="{{ form.csv_file.id_for_label }}" class="col-sm-2 col-form-label">{{ form.csv_file.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.csv_file }}
+                    <div class="form-text">{{ form.csv_file.help_text }}</div>
+                    {% if form.csv_file.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.csv_file.errors|striptags }}
+                        </div>
                     {% endif %}
-                    
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            {{ form.csv_file.label_tag }}
-                            {{ form.csv_file }}
-                            <div class="form-text">{{ form.csv_file.help_text }}</div>
-                            {% if form.csv_file.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {% for error in form.csv_file.errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="d-flex justify-content-end">
-                            <a href="{% url 'master:bank_management' %}" class="btn btn-secondary me-2">戻る</a>
-                            <button type="submit" class="btn btn-primary">取り込み実行</button>
-                        </div>
-                    </form>
                 </div>
             </div>
-        </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-sm btn-primary">取込</button>
+                <a href="{% url 'master:bank_management' %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}

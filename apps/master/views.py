@@ -1238,8 +1238,7 @@ def bank_import(request):
                         try:
                             bank_code = row[0]
                             branch_code = row[1]
-                            name = row[2].strip()
-                            name_kana = row[3].strip()
+                            name = row[3].strip()
                             record_type = row[4]
 
                             if record_type == '1': # 銀行
