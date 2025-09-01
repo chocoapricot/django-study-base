@@ -42,6 +42,7 @@ def main():
         "_sample_data/master_information.json",
         "_sample_data/company.json",
         "_sample_data/company_department.json",
+        "_sample_data/company_user.json",
         "_sample_data/staff.json",
         "_sample_data/staff_international.json",
         "_sample_data/staff_contacted.json",
@@ -79,6 +80,7 @@ def main():
         ("python manage.py loaddata _sample_data/master_information.json", "お知らせマスタデータ"),
         ("python manage.py loaddata _sample_data/company.json", "会社データ"),
         ("python manage.py loaddata _sample_data/company_department.json", "部署データ"),
+        ("python manage.py loaddata _sample_data/company_user.json", "自社担当者データ"),
         ("python manage.py loaddata _sample_data/staff.json", "スタッフデータ"),
         ("python manage.py loaddata _sample_data/staff_international.json", "スタッフ外国籍情報データ"),
         ("python manage.py loaddata _sample_data/staff_contacted.json", "スタッフ連絡履歴データ"),
@@ -110,6 +112,7 @@ def main():
     print("- お知らせマスタ")
     print("- 会社データ")
     print("- 部署データ")
+    print("- 自社担当者データ")
     print("- スタッフデータ")
     print("- スタッフ外国籍情報")
     print("- スタッフ連絡履歴")
