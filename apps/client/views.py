@@ -99,6 +99,63 @@ def client_list(request):
         'regist_form_options': regist_form_options
     })
 
+
+@login_required
+@permission_required('client.view_client', raise_exception=True)
+def client_export(request):
+    """クライアントデータのエクスポート（CSV/Excel）"""
+    from django.http import HttpResponse
+    from .resources import ClientResource
+    import datetime
+    
+    # 検索条件を取得（client_listと同じロジック）
+    query = request.GET.get('q', '').strip()
+    regist_form_client = request.GET.get('regist_form_client', '').strip()
+    format_type = request.GET.get('format', 'csv')
+    
+    clients = Client.objects.all()
+    
+    # キーワード検索
+    if query:
+        clients = clients.filter(
+            Q(name__icontains=query)
+            | Q(name_furigana__icontains=query)
+            | Q(address__icontains=query)
+            | Q(memo__icontains=query)
+        )
+    
+    # 登録区分での絞り込み
+    if regist_form_client:
+        try:
+            regist_form_client_int = int(regist_form_client)
+            clients = clients.filter(regist_form_client=regist_form_client_int)
+        except ValueError:
+            pass  # 無効な値の場合はフィルタリングしない
+    
+    # ソート
+    clients = clients.order_by('corporate_number')
+    
+    # リソースを使ってエクスポート
+    resource = ClientResource()
+    dataset = resource.export(clients)
+    
+    # ファイル名を生成（日時付き）
+    timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+    
+    if format_type == 'excel':
+        response = HttpResponse(
+            dataset.xlsx,
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename="clients_{timestamp}.xlsx"'
+    else:  # CSV
+        # BOMを追加してExcelで正しく表示されるようにする
+        csv_data = '\ufeff' + dataset.csv
+        response = HttpResponse(csv_data, content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="clients_{timestamp}.csv"'
+    
+    return response
+
 @login_required
 @permission_required('client.add_client', raise_exception=True)
 def client_create(request):

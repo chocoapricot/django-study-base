@@ -27,13 +27,22 @@
                 <select name="regist_form_client" class="form-select form-select-sm">
                     <option value="">登録区分（全て）</option>
                     {% for option in regist_form_options %}
-                        <option value="{{ option.value }}" {% if regist_form_client == option.value %}selected{% endif %}>
+                        <option value="{{ option.value }}" {% if regist_form_client == option.value|stringformat:"s" %}selected{% endif %}>
                             {{ option.name }}
                         </option>
                     {% endfor %}
                 </select>
             </div>
-            <button class="btn btn-primary btn-sm me-2 mb-2" type="submit">検索</button>
+            <div class="btn-group me-2 mb-2" role="group">
+                <button class="btn btn-primary btn-sm" type="submit">検索</button>
+                <button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" onclick="exportData('csv')">CSV出力</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="exportData('excel')">Excel出力</a></li>
+                </ul>
+            </div>
             <button class="btn btn-secondary btn-sm mb-2" type="button" onclick="resetForm()">リセット</button>
         </form>
 
@@ -41,6 +50,32 @@
         function resetForm() {
             // クエリパラメータなしのURLにリダイレクト
             window.location.href = "{% url 'client:client_list' %}";
+        }
+        
+        function exportData(format) {
+            const message = format === 'csv' ? 'CSV形式でデータを出力しますか？' : 'Excel形式でデータを出力しますか？';
+            if (confirm(message)) {
+                const params = new URLSearchParams();
+                
+                // 検索キーワード
+                const queryInput = document.querySelector('input[name="q"]');
+                if (queryInput && queryInput.value.trim()) {
+                    params.append('q', queryInput.value.trim());
+                }
+                
+                // 登録区分
+                const registFormSelect = document.querySelector('select[name="regist_form_client"]');
+                if (registFormSelect && registFormSelect.value) {
+                    params.append('regist_form_client', registFormSelect.value);
+                }
+                
+                // 出力形式を追加
+                params.append('format', format);
+                
+                // ダウンロード用のURLを生成してリダイレクト
+                const exportUrl = "{% url 'client:client_export' %}" + '?' + params.toString();
+                window.location.href = exportUrl;
+            }
         }
         </script>
         
