@@ -3,16 +3,21 @@ from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranc
 from apps.system.settings.models import Dropdowns
 
 
+class CustomModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.value}：{obj.name}"
+
+
 class JobCategoryForm(forms.ModelForm):
     """職種マスタフォーム"""
-    jobs_kourou = forms.ModelChoiceField(
+    jobs_kourou = CustomModelChoiceField(
         queryset=Dropdowns.objects.filter(category='jobs_kourou', active=True),
         required=False,
         label='職業分類(厚労省)',
         empty_label='選択してください',
         widget=forms.Select(attrs={'class': 'form-control form-control-sm'})
     )
-    jobs_soumu = forms.ModelChoiceField(
+    jobs_soumu = CustomModelChoiceField(
         queryset=Dropdowns.objects.filter(category='jobs_soumu', active=True),
         required=False,
         label='職業分類(総務省)',
