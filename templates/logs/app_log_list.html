@@ -111,7 +111,7 @@
             <tbody>
                 {% for log in app_logs %}
                 <tr>
-                    <td>{{ log.timestamp|date:'Y/m/d H:i:s' }}</td>
+                                        <td>{{ log.timestamp|date:'Y/m/d H:i:s.u' }}</td>
                     <td>{{ log.user }}</td>
                     <td>{{ log.action }}</td>
                     <td>{{ log.model_name }}</td>
