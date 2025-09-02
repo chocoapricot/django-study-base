@@ -83,24 +83,33 @@ document.addEventListener('DOMContentLoaded', function() {
             taskId = data.task_id;
             progressText.textContent = 'アップロード完了。処理を開始します...';
 
-            // 2. 処理を開始
-            return fetch(`/master/bank/import/process/${taskId}/`, {
+            // 2. 処理を開始 (非同期で呼び出し、完了を待たない)
+            fetch(`/master/bank/import/process/${taskId}/`, {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': '{{ csrf_token }}'
                 }
-            });
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('処理の開始に失敗しました。');
-            }
+            }).then(response => response.json())
+              .then(data => {
+                  // この時点では処理はバックグラウンドで実行中
+                  // 最終的な結果はポーリングで取得するため、ここでは特別な処理は不要
+              })
+              .catch(error => {
+                  // process自体の呼び出しエラー
+                  console.error('Import process initiation failed:', error);
+                  // ポーリングがエラーをハンドルするので、ここではUIへの通知は限定的にする
+              });
 
-            // 3. 進捗をポーリング
+            // 3. 進捗のポーリングを開始
             const interval = setInterval(() => {
                 fetch(`/master/bank/import/progress/${taskId}/`)
                 .then(response => response.json())
                 .then(data => {
+                    if (data.error) {
+                        // タスクIDが無効などのバックエンドエラー
+                        throw new Error(data.error);
+                    }
+
                     if (data.total > 0) {
                         const percentage = Math.round((data.progress / data.total) * 100);
                         progressBar.style.width = percentage + '%';
@@ -110,29 +119,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if (data.status === 'completed' || data.status === 'failed') {
                         clearInterval(interval);
-                        progressContainer.style.display = 'none';
+                        // 少し待ってから結果を表示（DB反映のラグを考慮）
+                        setTimeout(() => {
+                            progressContainer.style.display = 'none';
+                            let resultMessage = '';
+                            if (data.status === 'completed') {
+                                resultMessage = `<div class="alert alert-success">インポートが完了しました。${data.imported_count}件のデータが登録されました。</div>`;
+                            } else {
+                                resultMessage = `<div class="alert alert-danger">インポート中にエラーが発生しました。</div>`;
+                            }
 
-                        let resultMessage = '';
-                        if (data.status === 'completed') {
-                            resultMessage = `<div class="alert alert-success">インポートが完了しました。${data.imported_count}件のデータが登録されました。</div>`;
-                        } else {
-                            resultMessage = `<div class="alert alert-danger">インポート中にエラーが発生しました。</div>`;
-                        }
-
-                        if (data.errors && data.errors.length > 0) {
-                            resultMessage += '<h5>エラー詳細:</h5><ul>';
-                            data.errors.forEach(error => {
-                                resultMessage += `<li>${error}</li>`;
-                            });
-                            resultMessage += '</ul>';
-                        }
-                        resultContainer.innerHTML = resultMessage;
+                            if (data.errors && data.errors.length > 0) {
+                                resultMessage += '<h5>エラー詳細:</h5><ul>';
+                                data.errors.forEach(error => {
+                                    resultMessage += `<li>${error}</li>`;
+                                });
+                                resultMessage += '</ul>';
+                            }
+                            resultContainer.innerHTML = resultMessage;
+                        }, 500);
                     }
                 })
                 .catch(error => {
                     clearInterval(interval);
                     progressContainer.style.display = 'none';
-                    resultContainer.innerHTML = `<div class="alert alert-danger">進捗の取得中にエラーが発生しました: ${error}</div>`;
+                    resultContainer.innerHTML = `<div class="alert alert-danger">進捗の取得中にエラーが発生しました: ${error.message}</div>`;
                 });
             }, 2000);
         })
