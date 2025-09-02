@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.urls import reverse
 from django.apps import apps
 from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch, Information, InformationFile, JobCategory, StaffAgreement
-from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm, BillPaymentForm, BillBankForm, BankForm, BankBranchForm, InformationForm, CSVImportForm, JobCategoryForm
+from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm, BillPaymentForm, BillBankForm, BankForm, BankBranchForm, InformationForm, CSVImportForm, JobCategoryForm, StaffAgreementForm
 from apps.company.models import Company
 from django.http import JsonResponse
 from django.core.cache import cache
@@ -1692,16 +1692,127 @@ def information_all_change_history_list(request):
     return render(request, 'master/master_change_history_list.html', context)
 
 
-class StaffAgreementListView(ListView):
-    model = StaffAgreement
-    template_name = 'master/staffagreement_list.html'
-    context_object_name = 'agreements'
-    paginate_by = 20
+# スタッフ同意文言管理
+@login_required
+@permission_required('master.view_staffagreement', raise_exception=True)
+def staff_agreement_list(request):
+    """スタッフ同意文言一覧"""
+    from apps.system.logs.models import AppLog
+    search_query = request.GET.get('search', '')
+    agreements = StaffAgreement.objects.all()
+    if search_query:
+        agreements = agreements.filter(name__icontains=search_query)
 
-    def get_queryset(self):
-        return StaffAgreement.objects.order_by('display_order', 'name')
+    agreements = agreements.order_by('display_order', 'name')
 
-class StaffAgreementDetailView(DetailView):
-    model = StaffAgreement
-    template_name = 'master/staffagreement_detail.html'
-    context_object_name = 'agreement'
+    paginator = Paginator(agreements, 20)
+    page = request.GET.get('page')
+    agreements_page = paginator.get_page(page)
+
+    change_logs = AppLog.objects.filter(
+        model_name='StaffAgreement',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')[:5]
+
+    change_logs_count = AppLog.objects.filter(
+        model_name='StaffAgreement',
+        action__in=['create', 'update', 'delete']
+    ).count()
+
+    context = {
+        'agreements': agreements_page,
+        'search_query': search_query,
+        'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
+        'history_url_name': 'master:staff_agreement_change_history_list'
+    }
+    return render(request, 'master/staffagreement_list.html', context)
+
+@login_required
+@permission_required('master.view_staffagreement', raise_exception=True)
+def staff_agreement_detail(request, pk):
+    """スタッフ同意文言詳細"""
+    agreement = get_object_or_404(StaffAgreement, pk=pk)
+    context = {
+        'agreement': agreement,
+    }
+    return render(request, 'master/staffagreement_detail.html', context)
+
+@login_required
+@permission_required('master.add_staffagreement', raise_exception=True)
+def staff_agreement_create(request):
+    """スタッフ同意文言作成"""
+    if request.method == 'POST':
+        form = StaffAgreementForm(request.POST)
+        if form.is_valid():
+            agreement = form.save()
+            messages.success(request, f'同意文言「{agreement.name}」を作成しました。')
+            return redirect('master:staff_agreement_list')
+    else:
+        form = StaffAgreementForm()
+
+    context = {
+        'form': form,
+        'title': '同意文言作成',
+    }
+    return render(request, 'master/staffagreement_form.html', context)
+
+@login_required
+@permission_required('master.change_staffagreement', raise_exception=True)
+def staff_agreement_update(request, pk):
+    """スタッフ同意文言編集"""
+    agreement = get_object_or_404(StaffAgreement, pk=pk)
+    if request.method == 'POST':
+        form = StaffAgreementForm(request.POST, instance=agreement)
+        if form.is_valid():
+            agreement = form.save()
+            messages.success(request, f'同意文言「{agreement.name}」を更新しました。')
+            return redirect('master:staff_agreement_list')
+    else:
+        form = StaffAgreementForm(instance=agreement)
+
+    context = {
+        'form': form,
+        'agreement': agreement,
+        'title': f'同意文言編集 - {agreement.name}',
+    }
+    return render(request, 'master/staffagreement_form.html', context)
+
+@login_required
+@permission_required('master.delete_staffagreement', raise_exception=True)
+def staff_agreement_delete(request, pk):
+    """スタッフ同意文言削除"""
+    agreement = get_object_or_404(StaffAgreement, pk=pk)
+    if request.method == 'POST':
+        agreement_name = agreement.name
+        agreement.delete()
+        messages.success(request, f'同意文言「{agreement_name}」を削除しました。')
+        return redirect('master:staff_agreement_list')
+
+    context = {
+        'agreement': agreement,
+        'title': f'同意文言削除 - {agreement.name}',
+    }
+    return render(request, 'master/staffagreement_confirm_delete.html', context)
+
+@login_required
+@permission_required('master.view_staffagreement', raise_exception=True)
+def staff_agreement_change_history_list(request):
+    """スタッフ同意文言変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+
+    logs = AppLog.objects.filter(
+        model_name='StaffAgreement',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')
+
+    paginator = Paginator(logs, 20)
+    page = request.GET.get('page')
+    logs_page = paginator.get_page(page)
+
+    return render(request, 'master/master_change_history_list.html', {
+        'logs': logs_page,
+        'title': 'スタッフ同意文言変更履歴',
+        'list_url': 'master:staff_agreement_list',
+        'model_name': 'StaffAgreement'
+    })

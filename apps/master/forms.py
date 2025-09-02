@@ -1,5 +1,5 @@
 from django import forms
-from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch, Information, JobCategory
+from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch, Information, JobCategory, StaffAgreement
 from apps.system.settings.models import Dropdowns
 
 
@@ -288,4 +288,17 @@ class InformationForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
             'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+        }
+
+
+class StaffAgreementForm(forms.ModelForm):
+    """スタッフ同意文言フォーム"""
+    class Meta:
+        model = StaffAgreement
+        fields = ['name', 'agreement_text', 'display_order', 'is_active']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'agreement_text': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 10}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
