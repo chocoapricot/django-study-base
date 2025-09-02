@@ -284,7 +284,7 @@
                 <i class="bi bi-person-circle" style="font-size: 20px; margin-right: 4px;"></i>
                 {{ request.user.username }}
             </a>
-            <form action="/accounts/logout/" method="post" style="display:inline;">
+            <form action="/accounts/logout/" method="post" style="display:inline;" onsubmit="return confirm('ログアウトしますか？');">
                 {% csrf_token %}
                 <button type="submit" class="btn p-0" title="ログアウト" style="background:none;border:none;outline:none;box-shadow:none;">
                     <i class="bi bi-box-arrow-right"></i>
