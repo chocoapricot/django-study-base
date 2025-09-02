@@ -81,9 +81,9 @@ django-study-base/
 ├── config/                 # プロジェクト設定
 ├── media/                  # アップロードされたファイル
 │   ├── client_files/       # クライアントアップロードファイル
-│   │   └── クライアントID/  # 各クライアントごとにフォルダを持ちその中に保存（添付ファイル）
+│   │   └── {クライアントID}/
 │   └── staff_files/        # スタッフアップロードファイル
-│       └── スタッフID/      # 各スタッフごとにフォルダを持ちその中に保存（添付ファイル、顔写真：スタッフID.jpg）
+│       └── {スタッフID}/
 ├── statics/                # 静的ファイル
 ├── templates/              # HTMLテンプレート
 └── requirements.txt        # 依存関係
@@ -105,8 +105,10 @@ django-study-base/
 | `apps_client_user` | クライアント担当者 |
 | `apps_company` | 会社情報 |
 | `apps_company_department` | 部署情報 |
+| `apps_company_user` | 会社担当者 |
 | `apps_connect_bank_request` | 銀行口座変更申請 |
 | `apps_connect_client` | クライアント接続申請 |
+| `apps_connect_contact_request` | 連絡先変更申請 |
 | `apps_connect_disability_request` | 障害者情報変更申請 |
 | `apps_connect_international_request` | 国際情報変更申請 |
 | `apps_connect_mynumber_request` | マイナンバー接続申請 |
@@ -118,11 +120,13 @@ django-study-base/
 | `apps_master_bank_branch` | 銀行支店マスター |
 | `apps_master_bill_bank` | 会社銀行マスター |
 | `apps_master_bill_payment` | 支払条件マスター |
+| `apps_master_information` | お知らせマスター |
+| `apps_master_information_file` | お知らせファイル |
 | `apps_master_qualification` | 資格マスター（カテゴリと資格） |
 | `apps_master_skill` | 技能マスター（カテゴリと技能） |
 | `apps_profile_staff` | スタッフプロフィール |
 | `apps_profile_staff_bank` | プロフィール銀行口座 |
-| `apps_profile_staff_contacts` | プロフィール連絡先 |
+| `apps_profile_staff_contact` | プロフィール連絡先 |
 | `apps_profile_staff_disability` | プロフィール障害者情報 |
 | `apps_profile_staff_international` | プロフィール外国籍情報 |
 | `apps_profile_staff_mynumber` | プロフィールマイナンバー |
@@ -131,7 +135,7 @@ django-study-base/
 | `apps_staff` | スタッフ基本情報 |
 | `apps_staff_bank` | スタッフ銀行口座 |
 | `apps_staff_contacted` | スタッフ連絡履歴 |
-| `apps_staff_contacts` | スタッフ連絡先 |
+| `apps_staff_contact` | スタッフ連絡先 |
 | `apps_staff_disability` | スタッフ障害者情報 |
 | `apps_staff_file` | スタッフファイル |
 | `apps_staff_international` | スタッフ外国籍情報 |
