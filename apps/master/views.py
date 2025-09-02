@@ -5,12 +5,13 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.urls import reverse
 from django.apps import apps
-from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch, Information, InformationFile, JobCategory
+from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch, Information, InformationFile, JobCategory, StaffAgreement
 from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm, BillPaymentForm, BillBankForm, BankForm, BankBranchForm, InformationForm, CSVImportForm, JobCategoryForm
 from apps.company.models import Company
 from django.http import JsonResponse
 from django.core.cache import cache
 from django.views.decorators.http import require_POST
+from django.views.generic import ListView, DetailView
 import uuid
 import os
 from django.conf import settings
@@ -1681,3 +1682,18 @@ def information_all_change_history_list(request):
         'list_url': 'master:information_list',
     }
     return render(request, 'master/master_change_history_list.html', context)
+
+
+class StaffAgreementListView(ListView):
+    model = StaffAgreement
+    template_name = 'master/staffagreement_list.html'
+    context_object_name = 'agreements'
+    paginate_by = 20
+
+    def get_queryset(self):
+        return StaffAgreement.objects.order_by('display_order', 'name')
+
+class StaffAgreementDetailView(DetailView):
+    model = StaffAgreement
+    template_name = 'master/staffagreement_detail.html'
+    context_object_name = 'agreement'

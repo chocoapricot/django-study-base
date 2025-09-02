@@ -73,4 +73,8 @@ urlpatterns = [
     path('information/<int:pk>/update/', views.information_update, name='information_update'),
     path('information/<int:pk>/delete/', views.information_delete, name='information_delete'),
     path('information/history/', views.information_all_change_history_list, name='information_all_change_history_list'),
+
+    # スタッフ同意文言管理
+    path('staff-agreement/', views.StaffAgreementListView.as_view(), name='staff_agreement_list'),
+    path('staff-agreement/<int:pk>/', views.StaffAgreementDetailView.as_view(), name='staff_agreement_detail'),
 ]
