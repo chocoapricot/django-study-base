@@ -551,6 +551,42 @@ class Bank(MyModel):
         }
 
 
+class StaffAgreement(MyModel):
+    """
+    スタッフ同意文言マスター
+    """
+    name = models.CharField('名称', max_length=100)
+    agreement_text = models.TextField('文言')
+    display_order = models.IntegerField('表示順', default=0)
+    is_active = models.BooleanField('有効', default=True)
+
+    class Meta:
+        db_table = 'apps_master_staff_agreement'
+        verbose_name = 'スタッフ同意文言'
+        verbose_name_plural = 'スタッフ同意文言'
+        ordering = ['display_order', 'name']
+        indexes = [
+            models.Index(fields=['is_active']),
+            models.Index(fields=['display_order']),
+        ]
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            try:
+                original = StaffAgreement.objects.get(pk=self.pk)
+                if (self.name == original.name and
+                    self.agreement_text == original.agreement_text and
+                    self.display_order == original.display_order and
+                    self.is_active == original.is_active):
+                    return  # No changes, so don't save
+            except StaffAgreement.DoesNotExist:
+                pass  # Object is new, proceed to save
+        super().save(*args, **kwargs)
+
+
 class JobCategory(MyModel):
     """
     職種マスタ
