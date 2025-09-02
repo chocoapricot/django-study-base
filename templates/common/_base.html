@@ -250,6 +250,25 @@
     cursor: pointer;
 }
 
+.sidebar-header {
+    height: 40px;
+}
+
+#pin-sidebar {
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
+    color: #6c757d;
+}
+
+#pin-sidebar:hover {
+    color: #000;
+}
+
+.sidebar.pinned ~ .header #toggleSidebar {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
     </style>
 </head>
 <body>
@@ -296,6 +315,11 @@
 <!-- Sidebar for large screens -->
 <div id="sidebar" class="col-md-3 col-lg-2 d-none d-md-block bg-light sidebar">
   <div class="position-sticky">
+    <div class="sidebar-header d-flex justify-content-end p-2">
+        <button class="btn btn-sm" id="pin-sidebar" title="Pin sidebar">
+            <i class="bi bi-pin-angle-fill"></i>
+        </button>
+    </div>
     <ul class="nav flex-column">
       {% for menu in menus %}
           {% if menu.level == 0 and menu|has_menu_permission:user %}
@@ -385,25 +409,79 @@
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 
     <script>
-        document.getElementById('toggleSidebar').addEventListener('click', function() {
-  var sidebar = document.getElementById('sidebar');
-  var mainContent = document.getElementById('mainContent');
-            
-  // Toggle sidebar closed class and main content class simultaneously
+document.addEventListener("DOMContentLoaded", function () {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    const toggleSidebarBtn = document.getElementById('toggleSidebar');
+    const pinSidebarBtn = document.getElementById('pin-sidebar');
+    const pinIcon = pinSidebarBtn.querySelector('i');
+
+    // localStorageからピンの状態を読み込む。デフォルトはピン留め(true)
+    let isMenuPinned = localStorage.getItem('isMenuPinned') !== 'false';
+
+    function closeSidebar() {
+        sidebar.classList.add('sidebar-closed');
+        mainContent.classList.remove('col-md-9', 'col-lg-10');
+        mainContent.classList.add('col-md-12', 'content-expanded');
+    }
+
+    function openSidebar() {
+        sidebar.classList.remove('sidebar-closed');
+        mainContent.classList.remove('col-md-12', 'content-expanded');
+        mainContent.classList.add('col-md-9', 'col-lg-10');
+    }
+
+    function updateSidebarState() {
+        if (isMenuPinned) {
+            sidebar.classList.add('pinned');
+            pinIcon.classList.remove('bi-pin-angle');
+            pinIcon.classList.add('bi-pin-angle-fill');
+            pinSidebarBtn.title = 'サイドバーのピン留めを外す';
+            openSidebar(); // ピン留めされているときは常に開く
+        } else {
+            sidebar.classList.remove('pinned');
+            pinIcon.classList.remove('bi-pin-angle-fill');
+            pinIcon.classList.add('bi-pin-angle');
+            pinSidebarBtn.title = 'サイドバーをピン留めする';
+        }
+        localStorage.setItem('isMenuPinned', isMenuPinned);
+    }
+
+    // ハンバーガーメニューのクリックイベント
+    toggleSidebarBtn.addEventListener('click', function() {
+        if (!isMenuPinned) {
             sidebar.classList.toggle('sidebar-closed');
-  
-  // Adjust main content column size
-  if (sidebar.classList.contains('sidebar-closed')) {
-    // Expand main content to full width immediately
-    mainContent.classList.remove('col-md-9', 'col-lg-10');
-    mainContent.classList.add('col-md-12', 'content-expanded');
-  } else {
-    // Revert main content to original size immediately
-    mainContent.classList.remove('col-md-12', 'content-expanded');
-    mainContent.classList.add('col-md-9', 'col-lg-10');
-  }
+            mainContent.classList.toggle('content-expanded');
+            if(mainContent.classList.contains('content-expanded')) {
+                mainContent.classList.remove('col-md-9', 'col-lg-10');
+                mainContent.classList.add('col-md-12');
+            } else {
+                mainContent.classList.remove('col-md-12');
+                mainContent.classList.add('col-md-9', 'col-lg-10');
+            }
+        }
+    });
+
+    // ピン留めボタンのクリックイベント
+    pinSidebarBtn.addEventListener('click', function () {
+        isMenuPinned = !isMenuPinned;
+        updateSidebarState();
+    });
+
+    // サイドバーのメニュー項目クリック時のイベント
+    const sidebarLinks = sidebar.querySelectorAll('.nav-link');
+    sidebarLinks.forEach(function(link) {
+        link.addEventListener('click', function() {
+            if (!isMenuPinned) {
+                closeSidebar();
+            }
         });
-        </script>
+    });
+
+    // 初期状態の設定
+    updateSidebarState();
+});
+    </script>
 <script>
     function updateWindowWidth() {
         document.getElementById('window-width').textContent = window.innerWidth;
