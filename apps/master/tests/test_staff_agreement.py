@@ -106,3 +106,18 @@ class StaffAgreementViewTest(TestCase):
         self.assertContains(response, 'ビューテスト用同意文言')
         self.assertContains(response, 'ビューテスト用のテキストです。')
         self.assertTemplateUsed(response, 'master/staffagreement_detail.html')
+
+    def test_master_index_list_contains_link(self):
+        """マスタ一覧に同意文言管理へのリンクが表示されるかテスト"""
+        from django.contrib.auth.models import Permission
+        # The master_index_list view requires at least one 'view' permission to be accessed
+        # and the specific permission for the item to be displayed.
+        permissions = Permission.objects.filter(
+            codename__in=['view_qualification', 'view_staffagreement']
+        )
+        self.user.user_permissions.set(permissions)
+
+        response = self.client.get(reverse('master:master_index_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'スタッフ同意文言管理')
+        self.assertContains(response, reverse('master:staff_agreement_list'))

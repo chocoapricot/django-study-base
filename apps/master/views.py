@@ -44,6 +44,14 @@ MASTER_CONFIGS = [
         'permission': 'master.view_jobcategory'
     },
     {
+        'category': 'スタッフ',
+        'name': 'スタッフ同意文言管理',
+        'description': 'スタッフ登録時の同意文言を管理',
+        'model': 'master.StaffAgreement',
+        'url_name': 'master:staff_agreement_list',
+        'permission': 'master.view_staffagreement'
+    },
+    {
         'category': '請求',
         'name': '支払条件管理',
         'description': '請求・支払条件の管理',
