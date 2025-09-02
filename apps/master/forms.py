@@ -1,5 +1,33 @@
 from django import forms
-from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch, Information
+from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch, Information, JobCategory
+from apps.system.settings.models import Dropdowns
+
+
+class JobCategoryForm(forms.ModelForm):
+    """職種マスタフォーム"""
+    jobs_kourou = forms.ModelChoiceField(
+        queryset=Dropdowns.objects.filter(category='jobs_kourou', active=True),
+        required=False,
+        label='職業分類(厚労省)',
+        empty_label='選択してください',
+        widget=forms.Select(attrs={'class': 'form-control form-control-sm'})
+    )
+    jobs_soumu = forms.ModelChoiceField(
+        queryset=Dropdowns.objects.filter(category='jobs_soumu', active=True),
+        required=False,
+        label='職業分類(総務省)',
+        empty_label='選択してください',
+        widget=forms.Select(attrs={'class': 'form-control form-control-sm'})
+    )
+
+    class Meta:
+        model = JobCategory
+        fields = ['name', 'jobs_kourou', 'jobs_soumu', 'display_order', 'is_active']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
 
 
 class QualificationCategoryForm(forms.ModelForm):

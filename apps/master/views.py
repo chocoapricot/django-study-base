@@ -5,8 +5,8 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.urls import reverse
 from django.apps import apps
-from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch, Information, InformationFile
-from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm, BillPaymentForm, BillBankForm, BankForm, BankBranchForm, InformationForm, CSVImportForm
+from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch, Information, InformationFile, JobCategory
+from .forms import QualificationForm, QualificationCategoryForm, SkillForm, SkillCategoryForm, BillPaymentForm, BillBankForm, BankForm, BankBranchForm, InformationForm, CSVImportForm, JobCategoryForm
 from apps.company.models import Company
 from django.http import JsonResponse
 from django.core.cache import cache
@@ -33,6 +33,14 @@ MASTER_CONFIGS = [
         'model': 'master.Skill',
         'url_name': 'master:skill_list',
         'permission': 'master.view_skill'
+    },
+    {
+        'category': 'スタッフ',
+        'name': '職種管理',
+        'description': '職種情報の管理',
+        'model': 'master.JobCategory',
+        'url_name': 'master:job_category_list',
+        'permission': 'master.view_jobcategory'
     },
     {
         'category': '請求',
@@ -548,6 +556,109 @@ def skill_delete(request, pk):
     }
     return render(request, 'master/skill_delete.html', context)
 
+
+# 職種管理ビュー
+@login_required
+@permission_required('master.view_jobcategory', raise_exception=True)
+def job_category_list(request):
+    """職種一覧"""
+    search_query = request.GET.get('search', '')
+    
+    job_categories = JobCategory.objects.all()
+    
+    if search_query:
+        job_categories = job_categories.filter(
+            Q(name__icontains=search_query)
+        )
+    
+    job_categories = job_categories.order_by('display_order', 'name')
+    
+    paginator = Paginator(job_categories, 20)
+    page = request.GET.get('page')
+    job_categories_page = paginator.get_page(page)
+    
+    from apps.system.logs.models import AppLog
+    change_logs = AppLog.objects.filter(
+        model_name='JobCategory',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')[:5]
+    
+    change_logs_count = AppLog.objects.filter(
+        model_name='JobCategory',
+        action__in=['create', 'update', 'delete']
+    ).count()
+    
+    context = {
+        'job_categories': job_categories_page,
+        'search_query': search_query,
+        'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
+    }
+    return render(request, 'master/job_category_list.html', context)
+
+
+@login_required
+@permission_required('master.add_jobcategory', raise_exception=True)
+def job_category_create(request):
+    """職種作成"""
+    if request.method == 'POST':
+        form = JobCategoryForm(request.POST)
+        if form.is_valid():
+            job_category = form.save()
+            messages.success(request, f'職種「{job_category.name}」を作成しました。')
+            return redirect('master:job_category_list')
+    else:
+        form = JobCategoryForm()
+    
+    context = {
+        'form': form,
+        'title': '職種作成',
+    }
+    return render(request, 'master/job_category_form.html', context)
+
+
+@login_required
+@permission_required('master.change_jobcategory', raise_exception=True)
+def job_category_update(request, pk):
+    """職種編集"""
+    job_category = get_object_or_404(JobCategory, pk=pk)
+    
+    if request.method == 'POST':
+        form = JobCategoryForm(request.POST, instance=job_category)
+        if form.is_valid():
+            job_category = form.save()
+            messages.success(request, f'職種「{job_category.name}」を更新しました。')
+            return redirect('master:job_category_list')
+    else:
+        form = JobCategoryForm(instance=job_category)
+    
+    context = {
+        'form': form,
+        'job_category': job_category,
+        'title': f'職種編集 - {job_category.name}',
+    }
+    return render(request, 'master/job_category_form.html', context)
+
+
+@login_required
+@permission_required('master.delete_jobcategory', raise_exception=True)
+def job_category_delete(request, pk):
+    """職種削除"""
+    job_category = get_object_or_404(JobCategory, pk=pk)
+    
+    if request.method == 'POST':
+        job_category_name = job_category.name
+        job_category.delete()
+        messages.success(request, f'職種「{job_category_name}」を削除しました。')
+        return redirect('master:job_category_list')
+    
+    context = {
+        'job_category': job_category,
+        'title': f'職種削除 - {job_category.name}',
+    }
+    return render(request, 'master/job_category_delete.html', context)
+
+
 # 変更履歴ビュー
 @login_required
 @permission_required('master.view_qualification', raise_exception=True)
@@ -598,6 +709,32 @@ def skill_change_history_list(request):
         'title': '技能マスタ変更履歴',
         'list_url': 'master:skill_list',
         'model_name': 'Skill'
+    })
+
+
+@login_required
+@permission_required('master.view_jobcategory', raise_exception=True)
+def job_category_change_history_list(request):
+    """職種マスタ変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    from django.core.paginator import Paginator
+    
+    # 職種マスタの変更履歴を取得
+    logs = AppLog.objects.filter(
+        model_name='JobCategory',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')
+    
+    # ページネーション
+    paginator = Paginator(logs, 20)
+    page = request.GET.get('page')
+    logs_page = paginator.get_page(page)
+    
+    return render(request, 'master/master_change_history_list.html', {
+        'logs': logs_page,
+        'title': '職種マスタ変更履歴',
+        'list_url': 'master:job_category_list',
+        'model_name': 'JobCategory'
     })
 
 

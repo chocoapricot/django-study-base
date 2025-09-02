@@ -27,6 +27,13 @@ urlpatterns = [
     path('qualification/history/', views.qualification_change_history_list, name='qualification_change_history_list'),
     path('skill/history/', views.skill_change_history_list, name='skill_change_history_list'),
     
+    # 職種管理
+    path('job-category/', views.job_category_list, name='job_category_list'),
+    path('job-category/create/', views.job_category_create, name='job_category_create'),
+    path('job-category/<int:pk>/update/', views.job_category_update, name='job_category_update'),
+    path('job-category/<int:pk>/delete/', views.job_category_delete, name='job_category_delete'),
+    path('job-category/history/', views.job_category_change_history_list, name='job_category_change_history_list'),
+
     # 支払いサイト管理
     path('bill-payment/', views.bill_payment_list, name='bill_payment_list'),
     path('bill-payment/create/', views.bill_payment_create, name='bill_payment_create'),

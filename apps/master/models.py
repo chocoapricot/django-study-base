@@ -551,6 +551,55 @@ class Bank(MyModel):
         }
 
 
+class JobCategory(MyModel):
+    """
+    職種マスタ
+    """
+    name = models.CharField('名称', max_length=100)
+    display_order = models.IntegerField('表示順', default=0)
+    is_active = models.BooleanField('有効', default=True)
+    jobs_kourou = models.ForeignKey(
+        'settings.Dropdowns',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='職業分類(厚労省)',
+        related_name='job_category_kourou',
+        limit_choices_to={'category': 'jobs_kourou', 'active': True}
+    )
+    jobs_soumu = models.ForeignKey(
+        'settings.Dropdowns',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='職業分類(総務省)',
+        related_name='job_category_soumu',
+        limit_choices_to={'category': 'jobs_soumu', 'active': True}
+    )
+
+    class Meta:
+        db_table = 'apps_master_job_category'
+        verbose_name = '職種マスタ'
+        verbose_name_plural = '職種マスタ'
+        ordering = ['display_order', 'name']
+        indexes = [
+            models.Index(fields=['is_active']),
+            models.Index(fields=['display_order']),
+        ]
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def usage_count(self):
+        """この職種の利用件数"""
+        return 0
+
+    def get_usage_details(self):
+        """利用詳細を取得"""
+        return {'total_count': 0}
+
+
 class Information(MyModel):
     """
     お知らせ情報を管理するマスターデータモデル。
