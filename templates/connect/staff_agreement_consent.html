@@ -1,0 +1,44 @@
+{% extends "_base.html" %}
+
+{% block main %}
+<div class="container mt-4">
+    <h2>スタッフ接続の同意確認</h2>
+    <p>接続を承認する前に、以下の内容に同意してください。</p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body">
+                {% for checkbox in form.agreements %}
+                    <div class="mb-3">
+                        <h5 class="card-title">{{ checkbox.choice_label.name }}</h5>
+                        <div class="card p-3" style="max-height: 200px; overflow-y: auto;">
+                            {{ checkbox.choice_label.agreement_text|linebreaksbr }}
+                        </div>
+                        <div class="form-check mt-2">
+                            {{ checkbox.tag }}
+                            <label class="form-check-label" for="{{ checkbox.id_for_label }}">
+                                上記の「{{ checkbox.choice_label.name }}」に同意します。
+                            </label>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">同意して接続を承認する</button>
+            <a href="{{ request.META.HTTP_REFERER|default:'connect:staff_list' }}" class="btn btn-secondary">キャンセル</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

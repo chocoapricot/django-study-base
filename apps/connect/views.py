@@ -7,8 +7,10 @@ from django.db.models import Q
 from django.utils.http import url_has_allowed_host_and_scheme
 from apps.system.logs.utils import log_model_action
 from apps.system.logs.models import AppLog
-from .models import ConnectStaff, ConnectClient
-
+from .models import ConnectStaff, ConnectClient, ConnectStaffAgree
+from apps.master.models import StaffAgreement
+from .forms import StaffAgreementConsentForm
+from django.urls import reverse
 
 @login_required
 def connect_staff_list(request):
@@ -60,20 +62,36 @@ def connect_staff_list(request):
 def connect_staff_approve(request, pk):
     """スタッフ接続を承認"""
     connection = get_object_or_404(ConnectStaff, pk=pk)
-    
-    # 権限チェック：管理者または申請対象者本人のみ承認可能
+
     if not (request.user.is_staff or connection.email == request.user.email):
         messages.error(request, 'この申請を承認する権限がありません。')
         return redirect('connect:staff_list')
-    
+
+    # 有効な同意書を取得
+    required_agreements = StaffAgreement.objects.filter(
+        corporation_number=connection.corporate_number,
+        is_active=True
+    )
+    if required_agreements.exists():
+        # 同意済みのものを取得
+        agreed_pks = ConnectStaffAgree.objects.filter(
+            email=connection.email,
+            corporate_number=connection.corporate_number,
+            is_agreed=True
+        ).values_list('staff_agreement__pk', flat=True)
+
+        # 未同意のものを特定
+        unagreed_agreements = required_agreements.exclude(pk__in=agreed_pks)
+        if unagreed_agreements.exists():
+            # 未同意の同意書があれば、同意画面にリダイレクト
+            return redirect(reverse('connect:staff_agreement_consent', kwargs={'pk': pk}))
+
     if connection.status == 'pending':
         connection.approve(request.user)
         
-        # スタッフの変更履歴に記録するため、スタッフIDを取得
         from apps.staff.models import Staff
         try:
             staff = Staff.objects.get(email=connection.email)
-            # スタッフの変更履歴として記録
             AppLog.objects.create(
                 user=request.user,
                 model_name='ConnectStaff',
@@ -82,10 +100,8 @@ def connect_staff_approve(request, pk):
                 action='update'
             )
         except Staff.DoesNotExist:
-            # スタッフが見つからない場合は通常のログ記録
             log_model_action(request.user, 'update', connection)
         
-        # 承認時に権限を付与
         from .utils import grant_permissions_on_connection_request, grant_profile_permissions
         from django.contrib.auth import get_user_model
         User = get_user_model()
@@ -96,7 +112,6 @@ def connect_staff_approve(request, pk):
             user = User.objects.get(email=connection.email)
             grant_profile_permissions(user)
         except User.DoesNotExist:
-            # ユーザーが存在しない場合はエラーメッセージをログに出力（将来的にはより良いハンドリングを検討）
             print(f"[ERROR] 権限付与対象のユーザーが見つかりません: {connection.email}")
         
         messages.success(request, '接続申請を承認しました。')
@@ -108,6 +123,48 @@ def connect_staff_approve(request, pk):
         return redirect(next_url)
     
     return redirect('connect:staff_list')
+
+
+@login_required
+def staff_agreement_consent(request, pk):
+    """スタッフの同意取得画面"""
+    connection = get_object_or_404(ConnectStaff, pk=pk)
+
+    required_agreements = StaffAgreement.objects.filter(
+        corporation_number=connection.corporate_number,
+        is_active=True
+    )
+    agreed_pks = ConnectStaffAgree.objects.filter(
+        email=connection.email,
+        corporate_number=connection.corporate_number,
+        is_agreed=True
+    ).values_list('staff_agreement__pk', flat=True)
+    unagreed_agreements = required_agreements.exclude(pk__in=agreed_pks)
+
+    if not unagreed_agreements.exists():
+        messages.info(request, "すべての必要な同意は完了しています。")
+        return redirect('connect:staff_list')
+
+    if request.method == 'POST':
+        form = StaffAgreementConsentForm(request.POST, agreements_queryset=unagreed_agreements)
+        if form.is_valid():
+            for agreement in form.cleaned_data['agreements']:
+                ConnectStaffAgree.objects.update_or_create(
+                    email=connection.email,
+                    corporate_number=connection.corporate_number,
+                    staff_agreement=agreement,
+                    defaults={'is_agreed': True}
+                )
+
+            # 同意が得られたので、再度承認処理を試みる
+            return connect_staff_approve(request, pk)
+    else:
+        form = StaffAgreementConsentForm(agreements_queryset=unagreed_agreements)
+
+    return render(request, 'connect/staff_agreement_consent.html', {
+        'form': form,
+        'connection': connection,
+    })
 
 
 @login_required
