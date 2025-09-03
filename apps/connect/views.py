@@ -164,6 +164,7 @@ def staff_agreement_consent(request, pk):
     return render(request, 'connect/staff_agreement_consent.html', {
         'form': form,
         'connection': connection,
+        'unagreed_agreements': unagreed_agreements,
     })
 
 

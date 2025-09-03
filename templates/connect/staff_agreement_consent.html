@@ -21,19 +21,22 @@
 
         <div class="card">
             <div class="card-body">
-                {% for checkbox in form.agreements %}
+                {% for agreement in unagreed_agreements %}
                     <div class="mb-3">
-                        <h5 class="card-title">{{ checkbox.choice_label.name }}</h5>
+                        <h5 class="card-title">{{ agreement.name }}</h5>
                         <div class="card p-3" style="max-height: 200px; overflow-y: auto;">
-                            {{ checkbox.choice_label.agreement_text|linebreaksbr }}
+                            {{ agreement.agreement_text|linebreaksbr }}
                         </div>
                         <div class="form-check mt-2">
-                            {{ checkbox.tag }}
-                            <label class="form-check-label" for="{{ checkbox.id_for_label }}">
-                                上記の「{{ checkbox.choice_label.name }}」に同意します。
+                            <input type="checkbox" name="{{ form.agreements.name }}" value="{{ agreement.pk }}" class="form-check-input" required id="id_{{ form.agreements.name }}_{{ forloop.counter0 }}">
+                            <label class="form-check-label" for="id_{{ form.agreements.name }}_{{ forloop.counter0 }}">
+                                上記の「{{ agreement.name }}」に同意します。
                             </label>
                         </div>
                     </div>
+                {% endfor %}
+                {% for error in form.agreements.errors %}
+                <div class="alert alert-danger">{{ error }}</div>
                 {% endfor %}
             </div>
         </div>
