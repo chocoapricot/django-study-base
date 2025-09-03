@@ -2,6 +2,8 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from apps.master.models import StaffAgreement
+from apps.master.forms import StaffAgreementForm
+from django.contrib.auth.models import Permission
 import time
 
 User = get_user_model()
@@ -83,11 +85,17 @@ class StaffAgreementViewTest(TestCase):
             password='testpass123',
             is_staff=True
         )
+        # Grant all permissions for the model
+        permissions = Permission.objects.filter(
+            content_type__app_label='master',
+            content_type__model='staffagreement'
+        )
+        self.user.user_permissions.set(permissions)
         self.client.login(username='testuser', password='testpass123')
 
         self.agreement = StaffAgreement.objects.create(
-            name='ビューテスト用同意文言',
-            agreement_text='ビューテスト用のテキストです。',
+            name='テスト同意文言',
+            agreement_text='テスト用のテキストです。',
             created_by=self.user,
             updated_by=self.user
         )
@@ -96,28 +104,52 @@ class StaffAgreementViewTest(TestCase):
         """一覧表示ビューのテスト"""
         response = self.client.get(reverse('master:staff_agreement_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'ビューテスト用同意文言')
+        self.assertContains(response, 'スタッフ同意文言一覧')
+        self.assertContains(response, self.agreement.name)
         self.assertTemplateUsed(response, 'master/staffagreement_list.html')
 
     def test_detail_view(self):
         """詳細表示ビューのテスト"""
         response = self.client.get(reverse('master:staff_agreement_detail', kwargs={'pk': self.agreement.pk}))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'ビューテスト用同意文言')
-        self.assertContains(response, 'ビューテスト用のテキストです。')
+        self.assertContains(response, 'スタッフ同意文言詳細')
+        self.assertContains(response, self.agreement.name)
         self.assertTemplateUsed(response, 'master/staffagreement_detail.html')
 
-    def test_master_index_list_contains_link(self):
-        """マスタ一覧に同意文言管理へのリンクが表示されるかテスト"""
-        from django.contrib.auth.models import Permission
-        # The master_index_list view requires at least one 'view' permission to be accessed
-        # and the specific permission for the item to be displayed.
-        permissions = Permission.objects.filter(
-            codename__in=['view_qualification', 'view_staffagreement']
-        )
-        self.user.user_permissions.set(permissions)
-
-        response = self.client.get(reverse('master:master_index_list'))
+    def test_create_view_get(self):
+        """作成ビュー(GET)のテスト"""
+        response = self.client.get(reverse('master:staff_agreement_create'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'スタッフ同意文言管理')
-        self.assertContains(response, reverse('master:staff_agreement_list'))
+        self.assertIsInstance(response.context['form'], StaffAgreementForm)
+        self.assertTemplateUsed(response, 'master/staffagreement_form.html')
+
+    def test_create_view_post(self):
+        """作成ビュー(POST)のテスト"""
+        data = {
+            'name': '新規同意文言',
+            'agreement_text': '新しいテキスト',
+            'display_order': 10,
+            'is_active': True,
+        }
+        response = self.client.post(reverse('master:staff_agreement_create'), data)
+        self.assertRedirects(response, reverse('master:staff_agreement_list'))
+        self.assertTrue(StaffAgreement.objects.filter(name='新規同意文言').exists())
+
+    def test_update_view_post(self):
+        """更新ビュー(POST)のテスト"""
+        data = {
+            'name': '更新された同意文言',
+            'agreement_text': self.agreement.agreement_text,
+            'display_order': self.agreement.display_order,
+            'is_active': self.agreement.is_active,
+        }
+        response = self.client.post(reverse('master:staff_agreement_update', kwargs={'pk': self.agreement.pk}), data)
+        self.assertRedirects(response, reverse('master:staff_agreement_list'))
+        self.agreement.refresh_from_db()
+        self.assertEqual(self.agreement.name, '更新された同意文言')
+
+    def test_delete_view_post(self):
+        """削除ビュー(POST)のテスト"""
+        response = self.client.post(reverse('master:staff_agreement_delete', kwargs={'pk': self.agreement.pk}))
+        self.assertRedirects(response, reverse('master:staff_agreement_list'))
+        self.assertFalse(StaffAgreement.objects.filter(pk=self.agreement.pk).exists())

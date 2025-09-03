@@ -75,6 +75,10 @@ urlpatterns = [
     path('information/history/', views.information_all_change_history_list, name='information_all_change_history_list'),
 
     # スタッフ同意文言管理
-    path('staff-agreement/', views.StaffAgreementListView.as_view(), name='staff_agreement_list'),
-    path('staff-agreement/<int:pk>/', views.StaffAgreementDetailView.as_view(), name='staff_agreement_detail'),
+    path('staff-agreement/', views.staff_agreement_list, name='staff_agreement_list'),
+    path('staff-agreement/create/', views.staff_agreement_create, name='staff_agreement_create'),
+    path('staff-agreement/<int:pk>/', views.staff_agreement_detail, name='staff_agreement_detail'),
+    path('staff-agreement/<int:pk>/update/', views.staff_agreement_update, name='staff_agreement_update'),
+    path('staff-agreement/<int:pk>/delete/', views.staff_agreement_delete, name='staff_agreement_delete'),
+    path('staff-agreement/history/', views.staff_agreement_change_history_list, name='staff_agreement_change_history_list'),
 ]

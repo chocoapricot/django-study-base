@@ -1,0 +1,116 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block title %}スタッフ同意文言一覧{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        スタッフ同意文言一覧
+        <div>
+            <a href="{% url 'master:staff_agreement_create' %}" class="btn btn-sm btn-primary">
+                新規作成
+            </a>
+        </div>
+    </div>
+    <div class="card-body mb-0">
+        <!-- 検索フォーム -->
+        <form method="get" class="mb-3">
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="text" name="search" value="{{ search_query }}" class="form-control form-control-sm" placeholder="名称で検索">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-sm btn-secondary">検索</button>
+                    <a href="{% url 'master:staff_agreement_list' %}" class="btn btn-sm btn-outline-secondary">クリア</a>
+                </div>
+            </div>
+        </form>
+
+        <!-- 一覧テーブル -->
+        <div class="table-responsive">
+            <table class="table table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th width="75%">名称</th>
+                        <th width="10%">状態</th>
+                        <th width="15%">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for agreement in agreements %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'master:staff_agreement_detail' agreement.pk %}">{{ agreement.name }}</a>
+                        </td>
+                        <td>
+                            {% if agreement.is_active %}
+                                <span class="badge bg-success">有効</span>
+                            {% else %}
+                                <span class="badge bg-secondary">無効</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'master:staff_agreement_update' agreement.pk %}" class="btn btn-dark btn-sm" title="編集">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{% url 'master:staff_agreement_delete' agreement.pk %}" class="btn btn-dark btn-sm" title="削除">
+                                <i class="bi bi-x"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center">同意文言が登録されていません。</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ページネーション -->
+        {% if agreements.has_other_pages %}
+        <nav aria-label="ページネーション">
+            <ul class="pagination pagination-sm justify-content-center">
+                {% if agreements.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ agreements.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">前へ</a>
+                    </li>
+                {% endif %}
+
+                {% for num in agreements.paginator.page_range %}
+                    {% if agreements.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > agreements.number|add:'-3' and num < agreements.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if agreements.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ agreements.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">次へ</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+        <div class="d-flex justify-content-start">
+            <a href="{% url 'master:master_index_list' %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+        </div>
+    </div>
+</div>
+
+<!-- 変更履歴一覧 -->
+{% if history_url_name %}
+{% url history_url_name as history_url %}
+{% with change_logs=change_logs change_logs_count=change_logs_count history_url=history_url show_full_content=False %}
+    {% include 'common/_change_history_list.html' %}
+{% endwith %}
+{% endif %}
+
+{% endblock %}
