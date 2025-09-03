@@ -70,7 +70,7 @@ MASTER_CONFIGS = [
     },
     {
         "category": "スタッフ",
-        "name": "スタッフ同意文言管理",
+        "name": "同意文言管理",
         "description": "スタッフ登録時の同意文言を管理",
         "model": "master.StaffAgreement",
         "url_name": "master:staff_agreement_list",
