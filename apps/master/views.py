@@ -15,6 +15,7 @@ from django.views.generic import ListView, DetailView
 import uuid
 import os
 from django.conf import settings
+from datetime import datetime, timezone
 
 
 # マスタ設定データ
@@ -1413,6 +1414,9 @@ def bank_import_upload(request):
             'progress': 0,
             'total': 0,
             'errors': [],
+            'start_time': datetime.now(timezone.utc).isoformat(),
+            'elapsed_time_seconds': 0,
+            'estimated_time_remaining_seconds': 0,
         }, timeout=3600)
 
         return JsonResponse({'task_id': task_id})
@@ -1429,6 +1433,7 @@ def bank_import_process(request, task_id):
         return JsonResponse({'error': '無効なタスクIDです。'}, status=400)
 
     file_path = task_info['file_path']
+    start_time = datetime.fromisoformat(task_info['start_time'])
 
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -1443,6 +1448,7 @@ def bank_import_process(request, task_id):
         errors = []
 
         for i, row in enumerate(rows):
+            progress = i + 1
             try:
                 with transaction.atomic():
                     bank_code = row[0]
@@ -1466,13 +1472,23 @@ def bank_import_process(request, task_id):
                             )
                             imported_count += 1
                         except Bank.DoesNotExist:
-                            errors.append(f'{i+1}行目: 銀行コード {bank_code} が見つかりません。')
+                            errors.append(f'{progress}行目: 銀行コード {bank_code} が見つかりません。')
 
             except Exception as e:
-                errors.append(f'{i+1}行目: {e}')
+                errors.append(f'{progress}行目: {e}')
 
-            # 進捗を更新
-            task_info['progress'] = i + 1
+            # 進捗と時間を更新
+            now = datetime.now(timezone.utc)
+            elapsed_time = now - start_time
+
+            if progress > 0 and total_rows > progress:
+                estimated_time_remaining = (elapsed_time / progress) * (total_rows - progress)
+                task_info['estimated_time_remaining_seconds'] = int(estimated_time_remaining.total_seconds())
+            else:
+                task_info['estimated_time_remaining_seconds'] = 0
+
+            task_info['progress'] = progress
+            task_info['elapsed_time_seconds'] = int(elapsed_time.total_seconds())
             cache.set(f'import_task_{task_id}', task_info, timeout=3600)
 
         task_info['status'] = 'completed'

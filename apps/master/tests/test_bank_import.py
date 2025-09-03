@@ -80,12 +80,16 @@ class BankImportTest(TestCase):
         with open(temp_file_path, 'w', encoding='utf-8') as f:
             f.write(csv_data)
 
+        from datetime import datetime, timezone
         cache.set(f'import_task_{task_id}', {
             'file_path': temp_file_path,
             'status': 'uploaded',
             'progress': 0,
             'total': 0,
             'errors': [],
+            'start_time': datetime.now(timezone.utc).isoformat(),
+            'elapsed_time_seconds': 0,
+            'estimated_time_remaining_seconds': 0,
         }, timeout=3600)
 
         response = self.client.post(reverse('master:bank_import_process', kwargs={'task_id': task_id}))
@@ -112,12 +116,16 @@ class BankImportTest(TestCase):
         with open(temp_file_path, 'w', encoding='utf-8') as f:
             f.write(csv_data)
 
+        from datetime import datetime, timezone
         cache.set(f'import_task_{task_id}', {
             'file_path': temp_file_path,
             'status': 'uploaded',
             'progress': 0,
             'total': 0,
             'errors': [],
+            'start_time': datetime.now(timezone.utc).isoformat(),
+            'elapsed_time_seconds': 0,
+            'estimated_time_remaining_seconds': 0,
         }, timeout=3600)
 
         response = self.client.post(reverse('master:bank_import_process', kwargs={'task_id': task_id}))
