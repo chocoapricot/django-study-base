@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const percentage = Math.round((data.progress / data.total) * 100);
                         progressBar.style.width = percentage + '%';
                         progressBar.setAttribute('aria-valuenow', percentage);
-                        progressText.textContent = `進捗: ${data.progress} / ${data.total}件 (${percentage}%)`;
+                        progressText.textContent = `進捗: ${data.progress.toLocaleString()} / ${data.total.toLocaleString()}件 (${percentage}%)`;
                     }
 
                     elapsedTimeEl.textContent = `経過時間: ${formatTime(data.elapsed_time_seconds)}`;
