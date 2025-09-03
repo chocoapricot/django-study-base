@@ -5,7 +5,7 @@
     "fields": {
       "name": "個人情報取得の同意",
       "agreement_text": "私は、貴社が私の個人情報を、雇用管理、給与支払い、社会保険手続き、およびその他業務上必要な範囲で取得、利用、および第三者に提供することに同意します。",
-      "corporation_number": null,
+      "corporation_number": "1234567890122",
       "display_order": 1,
       "is_active": true,
       "created_at": "2025-09-03T00:00:00Z",
@@ -18,7 +18,7 @@
     "fields": {
       "name": "給与明細電子化の同意",
       "agreement_text": "私は、給与明細書、賞与明細書、源泉徴収票等の書類が、書面による交付に代えて、電子的な方法で交付されることに同意します。電子交付された給与明細等は、社内システムを通じて閲覧・印刷が可能です。",
-      "corporation_number": null,
+      "corporation_number": "1234567890122",
       "display_order": 2,
       "is_active": true,
       "created_at": "2025-09-03T00:00:00Z",
@@ -31,7 +31,7 @@
     "fields": {
       "name": "契約書電子発行の同意",
       "agreement_text": "私は、雇用契約書、労働条件通知書、その他関連する書類が、書面による交付に代えて、電子的な方法で交付されることに同意します。電子交付された書類は、指定された電子署名サービスまたは社内システムを通じて内容を確認し、署名・捺印に代わる電子署名をもって契約を締結します。",
-      "corporation_number": null,
+      "corporation_number": "1234567890122",
       "display_order": 3,
       "is_active": true,
       "created_at": "2025-09-03T00:00:00Z",
