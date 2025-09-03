@@ -158,7 +158,7 @@
         .sidebar .nav-link.active, .sidebar .nav-link:hover {
             background-color: #f0f0f0;
         }
-        .sidebar .nav-link.active i {
+        .sidebar .nav-link.active > i {
             color: #28a745; /* 選択されたメニューアイコンの色 */
         }
     .offcanvas-body {
@@ -250,9 +250,28 @@
     cursor: pointer;
 }
 
+.nav-link.has-pin {
+    justify-content: space-between;
+}
+
+#pin-sidebar {
+    background-color: transparent;
+    border: none;
+    color: #6c757d;
+    padding: 0 0 0 10px;
+    font-size: 20px;
+}
+
+#pin-sidebar:hover {
+    color: #000;
+}
+
+body.no-transition #sidebar {
+    transition: none;
+}
     </style>
 </head>
-<body>
+<body class="no-transition">
 
     <!-- ヘッダー -->
     <div class="header">
@@ -385,25 +404,113 @@
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 
     <script>
-        document.getElementById('toggleSidebar').addEventListener('click', function() {
-  var sidebar = document.getElementById('sidebar');
-  var mainContent = document.getElementById('mainContent');
+document.addEventListener("DOMContentLoaded", function () {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    const toggleSidebarBtn = document.getElementById('toggleSidebar');
+    let pinSidebarBtn = null;
+    let pinIcon = null;
+
+    // sessionStorageからピンの状態を読み込む。デフォルトはピン留め(true)
+    let isMenuPinned = sessionStorage.getItem('isMenuPinned') !== 'false';
+
+    function closeSidebar() {
+        sidebar.classList.add('sidebar-closed');
+        mainContent.classList.remove('col-md-9', 'col-lg-10');
+        mainContent.classList.add('col-md-12', 'content-expanded');
+    }
+
+    function openSidebar() {
+        sidebar.classList.remove('sidebar-closed');
+        mainContent.classList.remove('col-md-12', 'content-expanded');
+        mainContent.classList.add('col-md-9', 'col-lg-10');
+    }
+
+    function updateSidebarState() {
+        if (!pinIcon) return;
+
+        if (isMenuPinned) {
+            sidebar.classList.add('pinned');
+            pinIcon.classList.remove('bi-pin-angle');
+            pinIcon.classList.add('bi-pin-angle-fill');
+            pinSidebarBtn.title = 'サイドバーのピン留めを外す';
+            openSidebar();
+        } else {
+            sidebar.classList.remove('pinned');
+            pinIcon.classList.remove('bi-pin-angle-fill');
+            pinIcon.classList.add('bi-pin-angle');
+            pinSidebarBtn.title = 'サイドバーをピン留めする';
+        }
+        sessionStorage.setItem('isMenuPinned', isMenuPinned);
+    }
+
+    function createAndPlacePinButton() {
+        const firstTopLevelLink = document.querySelector('#sidebar .nav > .nav-item:first-child > .nav-link');
+        
+        if (firstTopLevelLink) {
+            pinSidebarBtn = document.createElement('button');
+            pinSidebarBtn.className = 'btn btn-sm';
+            pinSidebarBtn.id = 'pin-sidebar';
             
-  // Toggle sidebar closed class and main content class simultaneously
+            pinIcon = document.createElement('i');
+            pinIcon.className = 'bi';
+            pinSidebarBtn.appendChild(pinIcon);
+            
+            firstTopLevelLink.appendChild(pinSidebarBtn);
+            firstTopLevelLink.classList.add('has-pin');
+
+            pinSidebarBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                isMenuPinned = !isMenuPinned;
+                updateSidebarState();
+                if (!isMenuPinned) {
+                    closeSidebar();
+                }
+            });
+            
+            updateSidebarState();
+        }
+    }
+
+    toggleSidebarBtn.addEventListener('click', function() {
+        if (!isMenuPinned) {
             sidebar.classList.toggle('sidebar-closed');
-  
-  // Adjust main content column size
-  if (sidebar.classList.contains('sidebar-closed')) {
-    // Expand main content to full width immediately
-    mainContent.classList.remove('col-md-9', 'col-lg-10');
-    mainContent.classList.add('col-md-12', 'content-expanded');
-  } else {
-    // Revert main content to original size immediately
-    mainContent.classList.remove('col-md-12', 'content-expanded');
-    mainContent.classList.add('col-md-9', 'col-lg-10');
-  }
+            mainContent.classList.toggle('content-expanded');
+            if(mainContent.classList.contains('content-expanded')) {
+                mainContent.classList.remove('col-md-9', 'col-lg-10');
+                mainContent.classList.add('col-md-12');
+            } else {
+                mainContent.classList.remove('col-md-12');
+                mainContent.classList.add('col-md-9', 'col-lg-10');
+            }
+        }
+    });
+
+    const sidebarLinks = sidebar.querySelectorAll('.nav-link');
+    sidebarLinks.forEach(function(link) {
+        link.addEventListener('click', function() {
+            if (!isMenuPinned) {
+                closeSidebar();
+            }
         });
-        </script>
+    });
+    
+    createAndPlacePinButton();
+
+    // 初期状態の反映
+    if (isMenuPinned) {
+        openSidebar();
+    } else {
+        closeSidebar();
+    }
+
+    // 初期化後のトランジションを有効にする
+    setTimeout(function() {
+        document.body.classList.remove('no-transition');
+    }, 10);
+});
+    </script>
 <script>
     function updateWindowWidth() {
         document.getElementById('window-width').textContent = window.innerWidth;

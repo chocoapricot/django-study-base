@@ -3,8 +3,10 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from .models import StaffProfile, StaffProfileQualification, StaffProfileSkill
 from .forms_profile import StaffProfileQualificationForm, StaffProfileSkillForm
+from .decorators import check_staff_agreement
 
 @login_required
+@check_staff_agreement
 def profile_qualification_list(request):
     profile = get_object_or_404(StaffProfile, user=request.user)
     qualifications = profile.qualifications.all()
@@ -14,6 +16,7 @@ def profile_qualification_list(request):
     })
 
 @login_required
+@check_staff_agreement
 def profile_qualification_create(request):
     profile = get_object_or_404(StaffProfile, user=request.user)
     if request.method == 'POST':
@@ -32,6 +35,7 @@ def profile_qualification_create(request):
     })
 
 @login_required
+@check_staff_agreement
 def profile_qualification_update(request, pk):
     profile = get_object_or_404(StaffProfile, user=request.user)
     qualification = get_object_or_404(StaffProfileQualification, pk=pk, staff_profile=profile)
@@ -50,6 +54,7 @@ def profile_qualification_update(request, pk):
     })
 
 @login_required
+@check_staff_agreement
 def profile_qualification_delete(request, pk):
     profile = get_object_or_404(StaffProfile, user=request.user)
     qualification = get_object_or_404(StaffProfileQualification, pk=pk, staff_profile=profile)
@@ -63,6 +68,7 @@ def profile_qualification_delete(request, pk):
     })
 
 @login_required
+@check_staff_agreement
 def profile_skill_list(request):
     profile = get_object_or_404(StaffProfile, user=request.user)
     skills = profile.skills.all()
@@ -72,6 +78,7 @@ def profile_skill_list(request):
     })
 
 @login_required
+@check_staff_agreement
 def profile_skill_create(request):
     profile = get_object_or_404(StaffProfile, user=request.user)
     if request.method == 'POST':
@@ -90,6 +97,7 @@ def profile_skill_create(request):
     })
 
 @login_required
+@check_staff_agreement
 def profile_skill_update(request, pk):
     profile = get_object_or_404(StaffProfile, user=request.user)
     skill = get_object_or_404(StaffProfileSkill, pk=pk, staff_profile=profile)
@@ -108,6 +116,7 @@ def profile_skill_update(request, pk):
     })
 
 @login_required
+@check_staff_agreement
 def profile_skill_delete(request, pk):
     profile = get_object_or_404(StaffProfile, user=request.user)
     skill = get_object_or_404(StaffProfileSkill, pk=pk, staff_profile=profile)

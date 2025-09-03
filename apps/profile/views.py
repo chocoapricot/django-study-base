@@ -6,9 +6,11 @@ from django.contrib import messages
 from django.urls import reverse
 from .models import StaffProfile, StaffProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact
 from .forms import StaffProfileForm, StaffProfileMynumberForm, StaffProfileInternationalForm, StaffProfileBankForm, StaffProfileDisabilityForm, StaffProfileContactForm
+from .decorators import check_staff_agreement
 
 
 @login_required
+@check_staff_agreement
 def profile_index(request):
     """プロフィールメニュー"""
     user = request.user
@@ -24,6 +26,7 @@ def profile_index(request):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('profile.view_staffprofile', raise_exception=True)
 def profile_detail(request):
     """プロフィール詳細表示"""
@@ -39,6 +42,7 @@ def profile_detail(request):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('profile.add_staffprofile', raise_exception=True)
 @permission_required('profile.change_staffprofile', raise_exception=True)
 def profile_edit(request):
@@ -85,6 +89,7 @@ def profile_edit(request):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('profile.delete_staffprofile', raise_exception=True)
 def profile_delete(request):
     """プロフィール削除確認"""
@@ -102,6 +107,7 @@ def profile_delete(request):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('profile.view_staffprofilemynumber', raise_exception=True)
 def mynumber_detail(request):
     """マイナンバー詳細表示"""
@@ -117,6 +123,7 @@ def mynumber_detail(request):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('profile.add_staffprofilemynumber', raise_exception=True)
 @permission_required('profile.change_staffprofilemynumber', raise_exception=True)
 def mynumber_edit(request):
@@ -157,6 +164,7 @@ def mynumber_edit(request):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('profile.delete_staffprofilemynumber', raise_exception=True)
 def mynumber_delete(request):
     """マイナンバー削除確認"""
@@ -174,6 +182,7 @@ def mynumber_delete(request):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('profile.add_staffprofileinternational', raise_exception=True)
 @permission_required('profile.change_staffprofileinternational', raise_exception=True)
 def international_edit(request):
@@ -239,6 +248,7 @@ def international_edit(request):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('profile.view_staffprofileinternational', raise_exception=True)
 def international_detail(request):
     """外国籍情報詳細表示"""
@@ -255,6 +265,7 @@ def international_detail(request):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('profile.delete_staffprofileinternational', raise_exception=True)
 def international_delete(request):
     """外国籍情報削除確認"""
@@ -272,6 +283,7 @@ def international_delete(request):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('profile.view_staffprofilebank', raise_exception=True)
 def bank_detail(request):
     """銀行口座詳細表示"""
@@ -287,6 +299,7 @@ def bank_detail(request):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('profile.add_staffprofilebank', raise_exception=True)
 @permission_required('profile.change_staffprofilebank', raise_exception=True)
 def bank_edit(request):
@@ -356,6 +369,7 @@ def bank_edit(request):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('profile.delete_staffprofilebank', raise_exception=True)
 def bank_delete(request):
     """銀行口座削除確認"""
@@ -373,6 +387,7 @@ def bank_delete(request):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('profile.view_staffprofiledisability', raise_exception=True)
 def disability_detail(request):
     """障害者情報詳細表示"""
@@ -388,6 +403,7 @@ def disability_detail(request):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('profile.add_staffprofiledisability', raise_exception=True)
 @permission_required('profile.change_staffprofiledisability', raise_exception=True)
 def disability_edit(request):
@@ -426,6 +442,7 @@ def disability_edit(request):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('profile.delete_staffprofiledisability', raise_exception=True)
 def disability_delete(request):
     """障害者情報削除確認"""
@@ -443,6 +460,7 @@ def disability_delete(request):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('profile.view_staffprofilecontact', raise_exception=True)
 def contact_detail(request):
     """スタッフ連絡先情報詳細表示"""
@@ -458,6 +476,7 @@ def contact_detail(request):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('profile.add_staffprofilecontact', raise_exception=True)
 @permission_required('profile.change_staffprofilecontact', raise_exception=True)
 def contact_edit(request):
@@ -521,6 +540,7 @@ def contact_edit(request):
 
 
 @login_required
+@check_staff_agreement
 @permission_required('profile.delete_staffprofilecontact', raise_exception=True)
 def contact_delete(request):
     """スタッフ連絡先情報削除確認"""
@@ -538,6 +558,7 @@ def contact_delete(request):
 
 
 @login_required
+@check_staff_agreement
 def download_mynumber_file(request, pk, field_name):
     mynumber_profile = get_object_or_404(StaffProfileMynumber, pk=pk)
 
@@ -559,6 +580,7 @@ def download_mynumber_file(request, pk, field_name):
     return FileResponse(file_field.open('rb'), as_attachment=False)
 
 @login_required
+@check_staff_agreement
 def download_international_file(request, pk, field_name):
     international_profile = get_object_or_404(StaffProfileInternational, pk=pk)
 
