@@ -20,6 +20,9 @@
             <dt class="col-sm-2">文言</dt>
             <dd class="col-sm-10" style="white-space: pre-wrap;">{{ agreement.agreement_text }}</dd>
 
+            <dt class="col-sm-2">法人番号</dt>
+            <dd class="col-sm-10">{{ agreement.corporation_number|default:"-" }}</dd>
+
             <dt class="col-sm-2">表示順</dt>
             <dd class="col-sm-10">{{ agreement.display_order }}</dd>
 
