@@ -42,6 +42,69 @@
     </div>
 </div>
 
+<!-- 同意済みスタッフ一覧 -->
+<div class="card mt-3">
+    <div class="card-header">
+        <h5 class="mb-0">同意済みスタッフ一覧</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" action="">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="name" class="form-control form-control-sm" placeholder="氏名で絞り込み" value="{{ filter_name }}">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" name="email" class="form-control form-control-sm" placeholder="メールアドレスで絞り込み" value="{{ filter_email }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-sm btn-primary">絞り込み</button>
+                    <a href="{% url 'master:staff_agreement_detail' agreement.pk %}" class="btn btn-sm btn-secondary ms-2">クリア</a>
+                </div>
+            </div>
+        </form>
+
+        <div class="table-responsive mt-3">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            <a href="?sort=staff__email&dir={% if sort_by == 'staff__email' %}{{ opposite_dir }}{% else %}asc{% endif %}&name={{ filter_name }}&email={{ filter_email }}">
+                                メールアドレス
+                                {% if sort_by == 'staff__email' %}<i class="bi bi-arrow-{% if sort_dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?sort=staff__name&dir={% if sort_by == 'staff__name' %}{{ opposite_dir }}{% else %}asc{% endif %}&name={{ filter_name }}&email={{ filter_email }}">
+                                氏名
+                                {% if sort_by == 'staff__name' %}<i class="bi bi-arrow-{% if sort_dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?sort=agreed_at&dir={% if sort_by == 'agreed_at' %}{{ opposite_dir }}{% else %}asc{% endif %}&name={{ filter_name }}&email={{ filter_email }}">
+                                同意日時
+                                {% if sort_by == 'agreed_at' %}<i class="bi bi-arrow-{% if sort_dir == 'asc' %}up{% else %}down{% endif %}"></i>{% endif %}
+                            </a>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for agreed_staff in agreed_staff_list %}
+                    <tr>
+                        <td><a href="{% url 'staff:staff_detail' agreed_staff.staff.pk %}">{{ agreed_staff.staff.email }}</a></td>
+                        <td>{{ agreed_staff.staff.name }}</td>
+                        <td>{{ agreed_staff.agreed_at|date:"Y/m/d H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center">同意したスタッフはいません。</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <!-- 変更履歴一覧 -->
 {% if history_url_name %}
 {% url history_url_name as history_url %}
