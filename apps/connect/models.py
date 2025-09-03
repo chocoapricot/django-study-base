@@ -570,7 +570,7 @@ class ConnectStaffAgree(MyModel):
     corporate_number = models.CharField('法人番号', max_length=13)
     staff_agreement = models.ForeignKey(
         StaffAgreement,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         verbose_name='スタッフ同意文言'
     )
     is_agreed = models.BooleanField('同意有無', default=False)
