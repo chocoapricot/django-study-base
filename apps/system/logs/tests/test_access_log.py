@@ -3,87 +3,79 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from apps.system.logs.models import AccessLog
+from django.contrib.contenttypes.models import ContentType
+from apps.staff.models import Staff
 
 User = get_user_model()
 
 class AccessLogViewTest(TestCase):
-    def setUp(self):
-        # Create a user and a group with permissions
-        self.user = User.objects.create_user(username='testuser', password='password')
-        self.group, _ = Group.objects.get_or_create(name='testgroup')
-        # Django automatically creates view permission for each model
-        permission = Permission.objects.get(codename='view_accesslog')
-        self.group.permissions.add(permission)
-        self.user.groups.add(self.group)
-        self.client.login(username='testuser', password='password')
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(username='testuser', password='password')
+        cls.group, _ = Group.objects.get_or_create(name='testgroup')
 
-    def test_access_log_view(self):
+        content_type = ContentType.objects.get_for_model(AccessLog)
+        try:
+            permission = Permission.objects.get(
+                codename='view_accesslog',
+                content_type=content_type,
+            )
+            cls.group.permissions.add(permission)
+        except Permission.DoesNotExist:
+            pass
+        cls.user.groups.add(cls.group)
+
+    def setUp(self):
+        self.client.login(username='testuser', password='password')
+        AccessLog.objects.all().delete()
+        # Create dummy staff objects for reversing detail URL
+        self.s1 = Staff.objects.create(name='staff1')
+        self.s2 = Staff.objects.create(name='staff2')
+
+    def test_access_log_aggregation_and_display(self):
         """
-        Test that the access log view is accessible to users with the correct permission
-        and that it displays access log data correctly.
+        Test that different URLs are correctly aggregated under a single clean pattern.
         """
-        # Create some access logs with URL patterns that will be discovered by get_all_urls
-        # Note: The URL discovery is a bit naive and will include regex characters.
-        # A more robust solution would be to clean these up, but for now, we test against what it produces.
-        AccessLog.objects.create(url='/', user=self.user)
+        # Manually create logs before accessing the view
         AccessLog.objects.create(url='/', user=self.user)
         AccessLog.objects.create(url='/staff/', user=self.user)
+        AccessLog.objects.create(url='/staff/staff/detail/1/', user=self.user)
+        AccessLog.objects.create(url='/staff/staff/detail/2/', user=self.user)
 
-        # Access the view
-        response = self.client.get(reverse('logs:access_log_list'))
-
-        # Check that the view returns a 200 status code
-        self.assertEqual(response.status_code, 200)
-
-        # Check that the correct template is used
-        self.assertTemplateUsed(response, 'logs/access_log_list.html')
-
-        # Check that the context contains the url_data
-        self.assertIn('url_data', response.context)
-
-        # Check that the url_data contains the correct counts
-        url_data = response.context['url_data']
-
-        # The get_all_urls function might return complex regex patterns.
-        # We find the relevant entries and check their counts.
-        # This is a simplified check. A better test might mock get_all_urls.
-
-        # Let's find the data for the URLs we logged.
-        # The view logic might strip trailing slashes or have other quirks.
-        # Let's check for the presence of the logged URL and its count.
-
-        # A simple way to verify is to check the counts for the URLs we know we logged.
-        # We need to find the dictionary in the list that corresponds to our URL.
-
-        # The view is designed to aggregate counts, so let's check that.
-        # Let's simulate a more realistic scenario.
-        self.client.get(reverse('home:home')) # This should log '/'
-        self.client.get(reverse('home:home'))
-        self.client.get(reverse('staff:staff_list')) # This should log '/staff/'
-
+        # Access the log view page
         response = self.client.get(reverse('logs:access_log_list'))
         self.assertEqual(response.status_code, 200)
 
-        # The middleware should have logged these requests.
-        self.assertTrue(AccessLog.objects.filter(url='/').exists())
-        self.assertTrue(AccessLog.objects.filter(url='/staff/').exists())
+        url_data = {item['url']: item['count'] for item in response.context['url_data']}
 
-    def test_access_log_sorting_and_filtering(self):
-        """Test sorting and filtering functionality of the access log view."""
-        # Create logs for testing
-        self.client.get(reverse('home:home'))
-        self.client.get(reverse('staff:staff_list'))
-        self.client.get(reverse('staff:staff_list'))
+        self.assertIn('/staff/staff/detail/#/', url_data)
+        self.assertEqual(url_data['/staff/staff/detail/#/'], 2, "Staff detail URLs should be aggregated")
 
-        # Test default sort (by url)
-        response = self.client.get(reverse('logs:access_log_list'))
-        url_data = response.context['url_data']
-        # Extract urls, they should be sorted alphabetically
-        urls = [item['url'] for item in url_data if item['count'] > 0]
-        self.assertEqual(urls, sorted(urls))
+        self.assertIn('/staff/', url_data)
+        self.assertEqual(url_data['/staff/'], 1, "Staff list URL count should be 1")
 
-        # Test sort by count descending
+        self.assertIn('/', url_data)
+        self.assertEqual(url_data['/'], 1, "Home page URL count should be 1")
+
+        self.assertIn('/logs/url/', url_data)
+        self.assertEqual(url_data['/logs/url/'], 0, "Log page itself should have a count of 0 in the response")
+
+    def test_sorting(self):
+        """
+        Test the sorting functionality of the access log view.
+        """
+        AccessLog.objects.create(url='/', user=self.user)
+        AccessLog.objects.create(url='/staff/', user=self.user)
+        AccessLog.objects.create(url='/staff/', user=self.user)
+
         response = self.client.get(reverse('logs:access_log_list') + '?sort=-count')
+        self.assertEqual(response.status_code, 200)
         url_data = response.context['url_data']
         counts = [item['count'] for item in url_data]
-        self.assertEqual(counts, sorted(counts, reverse=True))
+        self.assertEqual(counts, sorted(counts, reverse=True), "Should be sorted by count descending")
+
+        response = self.client.get(reverse('logs:access_log_list') + '?sort=url')
+        self.assertEqual(response.status_code, 200)
+        url_data = response.context['url_data']
+        urls = [item['url'] for item in url_data]
+        self.assertEqual(urls, sorted(urls), "Should be sorted by URL ascending")
