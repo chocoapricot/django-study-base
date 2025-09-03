@@ -7,43 +7,47 @@
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         スタッフ同意文言詳細
-        <div>
-            <a href="{% url 'master:staff_agreement_update' agreement.pk %}" class="btn btn-sm btn-dark">編集</a>
-            <a href="{% url 'master:staff_agreement_delete' agreement.pk %}" class="btn btn-sm btn-dark">削除</a>
+    </div>
+    <div class="card-body mb-0">
+        <div class="row">
+            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>名称</strong></label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ agreement.name }}</p>
+            </div>
         </div>
-    </div>
-    <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-2">名称</dt>
-            <dd class="col-sm-10">{{ agreement.name }}</dd>
 
-            <dt class="col-sm-2">文言</dt>
-            <dd class="col-sm-10" style="white-space: pre-wrap;">{{ agreement.agreement_text }}</dd>
+        <div class="row">
+            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>文言</strong></label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext" style="white-space: pre-wrap;">{{ agreement.agreement_text }}</p>
+            </div>
+        </div>
 
-            <dt class="col-sm-2">法人番号</dt>
-            <dd class="col-sm-10">{{ agreement.corporation_number|default:"-" }}</dd>
+        <div class="row">
+            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>状態</strong></label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">
+                    {% if agreement.is_active %}
+                        <span class="badge bg-success">有効</span>
+                    {% else %}
+                        <span class="badge bg-secondary">無効</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        <a href="{% url 'master:staff_agreement_update' agreement.pk %}" class="btn btn-sm btn-primary">編集</a>
+        <a href="{% url 'master:staff_agreement_delete' agreement.pk %}" class="btn btn-sm btn-dark">削除</a>
+        <a href="{% url 'master:staff_agreement_list' %}" class="btn btn-sm btn-secondary">戻る</a>
 
-            <dt class="col-sm-2">表示順</dt>
-            <dd class="col-sm-10">{{ agreement.display_order }}</dd>
-
-            <dt class="col-sm-2">状態</dt>
-            <dd class="col-sm-10">
-                {% if agreement.is_active %}
-                    <span class="badge bg-success">有効</span>
-                {% else %}
-                    <span class="badge bg-secondary">無効</span>
-                {% endif %}
-            </dd>
-
-            <dt class="col-sm-2">作成日時</dt>
-            <dd class="col-sm-10">{{ agreement.created_at|date:"Y-m-d H:i" }}</dd>
-
-            <dt class="col-sm-2">更新日時</dt>
-            <dd class="col-sm-10">{{ agreement.updated_at|date:"Y-m-d H:i" }}</dd>
-        </dl>
-    </div>
-    <div class="card-footer">
-        <a href="{% url 'master:staff_agreement_list' %}" class="btn btn-sm btn-secondary">一覧に戻る</a>
     </div>
 </div>
+
+<!-- 変更履歴一覧 -->
+{% if history_url_name %}
+{% url history_url_name as history_url %}
+{% with change_logs=change_logs change_logs_count=change_logs_count history_url=history_url show_full_content=False %}
+    {% include 'common/_change_history_list.html' %}
+{% endwith %}
+{% endif %}
+
 {% endblock %}
