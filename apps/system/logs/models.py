@@ -143,3 +143,32 @@ class AppLog(models.Model):
     def action_display_name(self):
         """操作の表示名"""
         return dict(self.ACTION_CHOICES).get(self.action, self.action)
+
+
+class AccessLog(models.Model):
+    """
+    アクセスログを記録するモデル。
+    """
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='ユーザー',
+        related_name='access_logs'
+    )
+    url = models.CharField('URL', max_length=2048)
+    timestamp = models.DateTimeField('タイムスタンプ', auto_now_add=True)
+
+    class Meta:
+        db_table = 'apps_system_access_log'
+        verbose_name = 'アクセスログ'
+        verbose_name_plural = 'アクセスログ'
+        ordering = ['-timestamp']
+        indexes = [
+            models.Index(fields=['timestamp']),
+            models.Index(fields=['user']),
+        ]
+
+    def __str__(self):
+        return f"{self.timestamp} - {self.user} - {self.url}"

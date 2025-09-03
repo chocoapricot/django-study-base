@@ -2,10 +2,13 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
-from .models import MailLog, AppLog
+from .models import MailLog, AppLog, AccessLog
 from django.http import HttpResponse
 from .resources import AppLogResource, MailLogResource
 import datetime
+from django.db.models import Count
+from django.urls import get_resolver, URLPattern, URLResolver
+from datetime import timedelta
 
 @login_required
 @permission_required('logs.view_maillog', raise_exception=True)
@@ -274,3 +277,85 @@ def mail_log_export(request):
     return response
 
 
+def get_all_urls(url_patterns, parent_pattern=''):
+    """
+    プロジェクト内のすべてのURLを再帰的にリストアップする
+    """
+    urls = []
+    for pattern in url_patterns:
+        if isinstance(pattern, URLResolver):
+            # include()されたURLConfの場合、再帰的に探索
+            urls.extend(get_all_urls(pattern.url_patterns, parent_pattern + pattern.pattern.regex.pattern))
+        elif isinstance(pattern, URLPattern):
+            # 通常のURLパターンの場合
+            # パターンから正規表現の特殊文字を除去し、整形
+            url_path = parent_pattern + pattern.pattern.regex.pattern
+            # ^ と $ を削除
+            url_path = url_path.strip('^$')
+            # URLパラメータ部分（例: <int:pk>）を無視
+            import re
+            url_path = re.sub(r'<[^>]+>', '', url_path)
+            # URLの先頭にスラッシュを追加
+            if not url_path.startswith('/'):
+                url_path = '/' + url_path
+            urls.append(url_path)
+    return urls
+
+
+@login_required
+@permission_required('logs.view_accesslog', raise_exception=True)
+def access_log_list(request):
+    """アクセスログ一覧"""
+    # 日付範囲フィルタ
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+
+    access_logs = AccessLog.objects.all()
+
+    if start_date_str:
+        try:
+            start_date = datetime.datetime.strptime(start_date_str, '%Y-%m-%d')
+            access_logs = access_logs.filter(timestamp__gte=start_date)
+        except ValueError:
+            start_date_str = None
+    if end_date_str:
+        try:
+            end_date = datetime.datetime.strptime(end_date_str, '%Y-%m-%d')
+            access_logs = access_logs.filter(timestamp__lt=end_date + timedelta(days=1))
+        except ValueError:
+            end_date_str = None
+
+    # URLごとのアクセス数を集計
+    access_counts = access_logs.values('url').annotate(count=Count('id')).order_by('url')
+    access_counts_dict = {item['url']: item['count'] for item in access_counts}
+
+    # プロジェクトの全URLリストを取得
+    resolver = get_resolver()
+    all_urls = sorted(list(set(get_all_urls(resolver.url_patterns))))
+
+    # 全URLとアクセス数を結合
+    url_data = []
+    for url in all_urls:
+        # adminとaccountsは除外
+        if not url.startswith('/admin') and not url.startswith('/accounts'):
+            url_data.append({
+                'url': url,
+                'count': access_counts_dict.get(url, 0)
+            })
+
+    # ソート
+    sort = request.GET.get('sort', 'url')
+    reverse = sort.startswith('-')
+    sort_key = sort.lstrip('-')
+
+    if sort_key in ['url', 'count']:
+        url_data.sort(key=lambda x: x[sort_key], reverse=reverse)
+
+    context = {
+        'url_data': url_data,
+        'start_date': start_date_str,
+        'end_date': end_date_str,
+        'sort': sort,
+    }
+
+    return render(request, 'logs/access_log_list.html', context)
