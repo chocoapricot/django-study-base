@@ -50,7 +50,7 @@ class ClientLogsTestCase(TestCase):
     
     def test_client_file_log(self):
         """クライアントファイルのログ記録テスト"""
-        initial_log_count = AppLog.objects.filter(model_name=ClientFile._meta.verbose_name).count()
+        initial_log_count = AppLog.objects.filter(model_name='ClientFile').count()
         
         # テスト用ファイル作成
         test_file = SimpleUploadedFile(
@@ -67,12 +67,12 @@ class ClientLogsTestCase(TestCase):
         )
         
         # ログが作成されたことを確認
-        self.assertGreater(AppLog.objects.filter(model_name=ClientFile._meta.verbose_name).count(), initial_log_count)
+        self.assertGreater(AppLog.objects.filter(model_name='ClientFile').count(), initial_log_count)
         
         # 最新のログを確認
         latest_log = AppLog.objects.latest('timestamp')
         self.assertEqual(latest_log.action, 'create')
-        self.assertEqual(latest_log.model_name, ClientFile._meta.verbose_name)
+        self.assertEqual(latest_log.model_name, 'ClientFile')
         self.assertEqual(latest_log.object_id, str(client_file.pk))
         
         # ファイル更新
@@ -80,18 +80,18 @@ class ClientLogsTestCase(TestCase):
         client_file.save()
         
         # 更新ログが作成されたことを確認
-        self.assertGreater(AppLog.objects.filter(model_name=ClientFile._meta.verbose_name, action='update').count(), 0)
+        self.assertGreater(AppLog.objects.filter(model_name='ClientFile', action='update').count(), 0)
         
         # ファイル削除
         client_file.delete()
         
         # 削除ログが作成されたことを確認
-        self.assertGreater(AppLog.objects.filter(model_name=ClientFile._meta.verbose_name, action='delete').count(), 0)
+        self.assertGreater(AppLog.objects.filter(model_name='ClientFile', action='delete').count(), 0)
         
         # 削除ログを確認
         delete_log = AppLog.objects.latest('timestamp')
         self.assertEqual(delete_log.action, 'delete')
-        self.assertEqual(delete_log.model_name, ClientFile._meta.verbose_name)
+        self.assertEqual(delete_log.model_name, 'ClientFile')
     
     def tearDown(self):
         """テスト後のクリーンアップ"""

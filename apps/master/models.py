@@ -557,6 +557,7 @@ class StaffAgreement(MyModel):
     """
     name = models.CharField('名称', max_length=100)
     agreement_text = models.TextField('文言')
+    corporation_number = models.CharField('法人番号', max_length=13, blank=True, null=True)
     display_order = models.IntegerField('表示順', default=0)
     is_active = models.BooleanField('有効', default=True)
 

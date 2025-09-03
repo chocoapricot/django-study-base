@@ -4,6 +4,7 @@ from django.urls import reverse
 from apps.master.models import StaffAgreement
 from apps.master.forms import StaffAgreementForm
 from django.contrib.auth.models import Permission
+from apps.company.models import Company
 import time
 
 User = get_user_model()
@@ -93,6 +94,11 @@ class StaffAgreementViewTest(TestCase):
         self.user.user_permissions.set(permissions)
         self.client.login(username='testuser', password='testpass123')
 
+        self.company = Company.objects.create(
+            name='テスト会社',
+            corporate_number='1234567890123'
+        )
+
         self.agreement = StaffAgreement.objects.create(
             name='テスト同意文言',
             agreement_text='テスト用のテキストです。',
@@ -133,7 +139,8 @@ class StaffAgreementViewTest(TestCase):
         }
         response = self.client.post(reverse('master:staff_agreement_create'), data)
         self.assertRedirects(response, reverse('master:staff_agreement_list'))
-        self.assertTrue(StaffAgreement.objects.filter(name='新規同意文言').exists())
+        new_agreement = StaffAgreement.objects.get(name='新規同意文言')
+        self.assertEqual(new_agreement.corporation_number, self.company.corporate_number)
 
     def test_update_view_post(self):
         """更新ビュー(POST)のテスト"""

@@ -1742,10 +1742,14 @@ def staff_agreement_detail(request, pk):
 @permission_required('master.add_staffagreement', raise_exception=True)
 def staff_agreement_create(request):
     """スタッフ同意文言作成"""
+    company = Company.objects.first()
     if request.method == 'POST':
         form = StaffAgreementForm(request.POST)
         if form.is_valid():
-            agreement = form.save()
+            agreement = form.save(commit=False)
+            if company:
+                agreement.corporation_number = company.corporate_number
+            agreement.save()
             messages.success(request, f'同意文言「{agreement.name}」を作成しました。')
             return redirect('master:staff_agreement_list')
     else:
