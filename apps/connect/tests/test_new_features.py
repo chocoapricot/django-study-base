@@ -1,15 +1,18 @@
 from datetime import date
-from django.test import TestCase
+from django.test import TestCase, Client
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 from apps.company.models import Company
 from apps.connect.models import (
     ConnectStaff,
+    ConnectStaffAgree,
     ProfileRequest,
     BankRequest,
     DisabilityRequest,
     ConnectInternationalRequest,
 )
 from apps.staff.models import Staff, StaffBank, StaffDisability, StaffInternational
+from apps.master.models import StaffAgreement
 from apps.profile.models import (
     StaffProfile,
     StaffProfileBank,
@@ -242,5 +245,131 @@ class ConnectFeaturesTest(TestCase):
         self.assertFalse(
             ConnectInternationalRequest.objects.filter(
                 connect_staff=self.connection
+            ).exists()
+        )
+
+
+class StaffAgreementConsentTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.company_user = self._create_user(
+            email="company@example.com",
+            is_staff=True,
+            is_active=True
+        )
+        self.staff_user = self._create_user(
+            email="staff@example.com",
+            is_staff=False,
+            is_active=True
+        )
+        self.company = self._create_company()
+        self.staff = self._create_staff(self.staff_user, self.company)
+
+    def _create_user(self, email, is_staff, is_active):
+        User = get_user_model()
+        # The 'username' field is required. Use email as username.
+        return User.objects.create_user(
+            username=email,
+            email=email,
+            password="password",
+            is_staff=is_staff,
+            is_active=is_active
+        )
+
+    def _create_company(self):
+        return Company.objects.create(
+            name="Test Company",
+            corporate_number="1234567890123"
+        )
+
+    def _create_staff(self, user, company):
+        staff = Staff.objects.create(
+            email=user.email,
+            name="Test Staff",
+        )
+        staff.user = user
+        staff.company = company
+        staff.save()
+        return staff
+
+    def test_redirect_to_consent_if_unagreed_exists(self):
+        """未同意の同意書がある場合、同意画面にリダイレクトされる"""
+        self.client.login(email='company@example.com', password='password')
+        agreement = StaffAgreement.objects.create(
+            corporation_number=self.company.corporate_number,
+            name="Test Agreement",
+            agreement_text="Please agree.",
+            is_active=True
+        )
+        connection = ConnectStaff.objects.create(
+            corporate_number=self.company.corporate_number,
+            email=self.staff.email,
+            status='pending'
+        )
+
+        response = self.client.post(reverse('connect:staff_approve', kwargs={'pk': connection.pk}))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('connect:staff_agreement_consent', kwargs={'pk': connection.pk}))
+
+    def test_approve_if_all_agreed(self):
+        """全ての同意書に同意済みの場合、直接承認される"""
+        self.client.login(email='company@example.com', password='password')
+        agreement = StaffAgreement.objects.create(
+            corporation_number=self.company.corporate_number,
+            name="Test Agreement",
+            agreement_text="Please agree.",
+            is_active=True
+        )
+        ConnectStaffAgree.objects.create(
+            email=self.staff.email,
+            corporate_number=self.company.corporate_number,
+            staff_agreement=agreement,
+            is_agreed=True
+        )
+        connection = ConnectStaff.objects.create(
+            corporate_number=self.company.corporate_number,
+            email=self.staff.email,
+            status='pending'
+        )
+
+        response = self.client.post(reverse('connect:staff_approve', kwargs={'pk': connection.pk}))
+        self.assertRedirects(response, reverse('connect:staff_list'))
+        connection.refresh_from_db()
+        self.assertEqual(connection.status, 'approved')
+
+    def test_consent_submission_and_approval(self):
+        """同意画面で同意し、その後承認される"""
+        self.client.login(email='company@example.com', password='password')
+        agreement = StaffAgreement.objects.create(
+            corporation_number=self.company.corporate_number,
+            name="Test Agreement",
+            agreement_text="Please agree.",
+            is_active=True
+        )
+        connection = ConnectStaff.objects.create(
+            corporate_number=self.company.corporate_number,
+            email=self.staff.email,
+            status='pending'
+        )
+
+        # 同意画面へ
+        response = self.client.post(reverse('connect:staff_approve', kwargs={'pk': connection.pk}))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('connect:staff_agreement_consent', kwargs={'pk': connection.pk}))
+
+        # 同意を送信
+        response = self.client.post(reverse('connect:staff_agreement_consent', kwargs={'pk': connection.pk}), {
+            'agreements': [agreement.pk]
+        })
+
+        # 承認され、リストにリダイレクトされる
+        self.assertRedirects(response, reverse('connect:staff_list'))
+        connection.refresh_from_db()
+        self.assertEqual(connection.status, 'approved')
+        self.assertTrue(
+            ConnectStaffAgree.objects.filter(
+                email=self.staff.email,
+                staff_agreement=agreement,
+                is_agreed=True
             ).exists()
         )
