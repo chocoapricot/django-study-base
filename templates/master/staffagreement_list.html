@@ -32,7 +32,8 @@
             <table class="table table-sm table-hover">
                 <thead>
                     <tr>
-                        <th width="75%">名称</th>
+                        <th width="10%">表示順</th>
+                        <th width="65%">名称</th>
                         <th width="10%">状態</th>
                         <th width="15%">操作</th>
                     </tr>
@@ -40,6 +41,7 @@
                 <tbody>
                     {% for agreement in agreements %}
                     <tr>
+                        <td>{{ agreement.display_order }}</td>
                         <td>
                             <a href="{% url 'master:staff_agreement_detail' agreement.pk %}">{{ agreement.name }}</a>
                         </td>
@@ -61,7 +63,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="3" class="text-center">同意文言が登録されていません。</td>
+                        <td colspan="4" class="text-center">同意文言が登録されていません。</td>
                     </tr>
                     {% endfor %}
                 </tbody>

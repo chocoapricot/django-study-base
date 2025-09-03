@@ -1,7 +1,7 @@
 from django import forms
 from apps.master.models import StaffAgreement
 
-class StaffAgreementConsentForm(forms.Form):
+class StaffAgreeForm(forms.Form):
     """
     スタッフ同意確認フォーム
     """

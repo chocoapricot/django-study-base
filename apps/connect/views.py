@@ -9,7 +9,7 @@ from apps.system.logs.utils import log_model_action
 from apps.system.logs.models import AppLog
 from .models import ConnectStaff, ConnectClient, ConnectStaffAgree
 from apps.master.models import StaffAgreement
-from .forms import StaffAgreementConsentForm
+from .forms import StaffAgreeForm
 from django.urls import reverse
 
 @login_required
@@ -84,7 +84,7 @@ def connect_staff_approve(request, pk):
         unagreed_agreements = required_agreements.exclude(pk__in=agreed_pks)
         if unagreed_agreements.exists():
             # 未同意の同意書があれば、同意画面にリダイレクト
-            return redirect(reverse('connect:staff_agreement_consent', kwargs={'pk': pk}))
+            return redirect(reverse('connect:staff_agree', kwargs={'pk': pk}))
 
     if connection.status == 'pending':
         connection.approve(request.user)
@@ -126,7 +126,7 @@ def connect_staff_approve(request, pk):
 
 
 @login_required
-def staff_agreement_consent(request, pk):
+def staff_agree(request, pk):
     """スタッフの同意取得画面"""
     connection = get_object_or_404(ConnectStaff, pk=pk)
 
@@ -146,7 +146,7 @@ def staff_agreement_consent(request, pk):
         return redirect('connect:staff_list')
 
     if request.method == 'POST':
-        form = StaffAgreementConsentForm(request.POST, agreements_queryset=unagreed_agreements)
+        form = StaffAgreeForm(request.POST, agreements_queryset=unagreed_agreements)
         if form.is_valid():
             for agreement in form.cleaned_data['agreements']:
                 ConnectStaffAgree.objects.update_or_create(
@@ -159,9 +159,9 @@ def staff_agreement_consent(request, pk):
             # 同意が得られたので、再度承認処理を試みる
             return connect_staff_approve(request, pk)
     else:
-        form = StaffAgreementConsentForm(agreements_queryset=unagreed_agreements)
+        form = StaffAgreeForm(agreements_queryset=unagreed_agreements)
 
-    return render(request, 'connect/staff_agreement_consent.html', {
+    return render(request, 'connect/staff_agree.html', {
         'form': form,
         'connection': connection,
         'unagreed_agreements': unagreed_agreements,

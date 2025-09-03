@@ -249,7 +249,7 @@ class ConnectFeaturesTest(TestCase):
         )
 
 
-class StaffAgreementConsentTest(TestCase):
+class StaffAgreeTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.company_user = self._create_user(
@@ -292,7 +292,7 @@ class StaffAgreementConsentTest(TestCase):
         staff.save()
         return staff
 
-    def test_redirect_to_consent_if_unagreed_exists(self):
+    def test_redirect_to_agree_if_unagreed_exists(self):
         """未同意の同意書がある場合、同意画面にリダイレクトされる"""
         self.client.login(email='company@example.com', password='password')
         agreement = StaffAgreement.objects.create(
@@ -309,7 +309,7 @@ class StaffAgreementConsentTest(TestCase):
 
         response = self.client.post(reverse('connect:staff_approve', kwargs={'pk': connection.pk}))
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse('connect:staff_agreement_consent', kwargs={'pk': connection.pk}))
+        self.assertEqual(response.url, reverse('connect:staff_agree', kwargs={'pk': connection.pk}))
 
     def test_approve_if_all_agreed(self):
         """全ての同意書に同意済みの場合、直接承認される"""
@@ -337,7 +337,7 @@ class StaffAgreementConsentTest(TestCase):
         connection.refresh_from_db()
         self.assertEqual(connection.status, 'approved')
 
-    def test_consent_submission_and_approval(self):
+    def test_agree_submission_and_approval(self):
         """同意画面で同意し、その後承認される"""
         self.client.login(email='company@example.com', password='password')
         agreement = StaffAgreement.objects.create(
@@ -355,10 +355,10 @@ class StaffAgreementConsentTest(TestCase):
         # 同意画面へ
         response = self.client.post(reverse('connect:staff_approve', kwargs={'pk': connection.pk}))
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse('connect:staff_agreement_consent', kwargs={'pk': connection.pk}))
+        self.assertEqual(response.url, reverse('connect:staff_agree', kwargs={'pk': connection.pk}))
 
         # 同意を送信
-        response = self.client.post(reverse('connect:staff_agreement_consent', kwargs={'pk': connection.pk}), {
+        response = self.client.post(reverse('connect:staff_agree', kwargs={'pk': connection.pk}), {
             'agreements': [agreement.pk]
         })
 
