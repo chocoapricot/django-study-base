@@ -33,7 +33,7 @@ def log_action(instance, action, diff_text=None):
     AppLog.objects.create(
         user=user if user and user.is_authenticated else None,
         action=action,
-        model_name=instance.__class__.__name__,
+        model_name=instance._meta.verbose_name,
         object_id=str(getattr(instance, 'pk', '')),
         object_repr=diff_text if diff_text else str(instance),
         version=getattr(instance, 'version', None)
