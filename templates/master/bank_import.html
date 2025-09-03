@@ -8,28 +8,6 @@
         {{ title }}
     </div>
     <div class="card-body">
-        <div class="card mb-4">
-            <div class="card-header">
-                CSVフォーマットの説明
-            </div>
-            <div class="card-body">
-                <p>CSVファイルは以下の形式で作成してください。文字コードは <strong>UTF-8</strong> を使用してください。</p>
-                <ul>
-                    <li><strong>1列目:</strong> 銀行コード (必須, 4桁の数字)</li>
-                    <li><strong>2列目:</strong> 支店コード (データ種別が「支店」の場合必須, 3桁の数字)</li>
-                    <li><strong>3列目:</strong> 支店名カナ (システムでは利用されません, 空でも可)</li>
-                    <li><strong>4列目:</strong> 銀行名 または 支店名 (必須)</li>
-                    <li><strong>5列目:</strong> データ種別 (必須, <code>1</code>: 銀行, <code>2</code>: 支店)</li>
-                </ul>
-                <p><strong>サンプル:</strong></p>
-                <pre><code># 銀行データの登録
-9900,,,テスト銀行,1
-
-# 支店データの登録 (銀行コード9900は事前に登録されている必要があります)
-9900,001,ﾄｳｷﾖｳ,東京支店,2
-9900,002,ｵｵｻｶ,大阪支店,2</code></pre>
-            </div>
-        </div>
 
         <form id="import-form" method="post" enctype="multipart/form-data" class="form-horizontal">
             {% csrf_token %}
@@ -65,6 +43,30 @@
         </div>
 
         <div id="result-container" class="mt-4"></div>
+
+        <div class="card border-dark mb-4">
+            <div class="card-header">
+                CSVフォーマットの説明
+            </div>
+            <div class="card-body">
+                <p>CSVファイルは以下の形式で作成してください。文字コードは <strong>UTF-8</strong> を使用してください。</p>
+                <ul>
+                    <li><strong>1列目:</strong> 銀行コード (必須, 4桁の数字)</li>
+                    <li><strong>2列目:</strong> 支店コード (データ種別が「支店」の場合必須, 3桁の数字)</li>
+                    <li><strong>3列目:</strong> 支店名カナ (システムでは利用されません, 空でも可)</li>
+                    <li><strong>4列目:</strong> 銀行名 または 支店名 (必須)</li>
+                    <li><strong>5列目:</strong> データ種別 (必須, <code>1</code>: 銀行, <code>2</code>: 支店)</li>
+                </ul>
+                <p><strong>サンプル:</strong></p>
+                <pre><code># 銀行データの登録
+9900,,,テスト銀行,1
+
+# 支店データの登録 (銀行コード9900は事前に登録されている必要があります)
+9900,001,ﾄｳｷﾖｳ,東京支店,2
+9900,002,ｵｵｻｶ,大阪支店,2</code></pre>
+            </div>
+        </div>
+
     </div>
 </div>
 
