@@ -6,6 +6,7 @@ from django.utils import timezone
 from apps.common.models import MyModel
 from apps.staff.models import Staff
 from apps.profile.models import StaffProfileMynumber, StaffProfile, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact
+from apps.master.models import StaffAgreement
 
 class ConnectStaff(MyModel):
     """
@@ -560,3 +561,26 @@ class ConnectClient(MyModel):
         self.approved_at = None
         self.approved_by = None
         self.save()
+
+class ConnectStaffAgree(MyModel):
+    """
+    スタッフの同意情報を管理するモデル。
+    """
+    email = models.EmailField('メールアドレス')
+    corporate_number = models.CharField('法人番号', max_length=13)
+    staff_agreement = models.ForeignKey(
+        StaffAgreement,
+        on_delete=models.PROTECT,
+        verbose_name='スタッフ同意文言'
+    )
+    is_agreed = models.BooleanField('同意有無', default=False)
+
+    class Meta:
+        db_table = 'apps_connect_staff_agree'
+        verbose_name = 'スタッフ同意'
+        verbose_name_plural = 'スタッフ同意'
+        unique_together = ['email', 'corporate_number', 'staff_agreement']
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.email} - {self.staff_agreement.name}"
