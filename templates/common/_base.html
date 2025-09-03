@@ -464,9 +464,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 e.stopPropagation();
                 isMenuPinned = !isMenuPinned;
                 updateSidebarState();
-                if (!isMenuPinned) {
-                    closeSidebar();
-                }
             });
             
             updateSidebarState();
@@ -475,25 +472,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     toggleSidebarBtn.addEventListener('click', function() {
         if (!isMenuPinned) {
-            sidebar.classList.toggle('sidebar-closed');
-            mainContent.classList.toggle('content-expanded');
-            if(mainContent.classList.contains('content-expanded')) {
-                mainContent.classList.remove('col-md-9', 'col-lg-10');
-                mainContent.classList.add('col-md-12');
+            if (sidebar.classList.contains('sidebar-closed')) {
+                openSidebar();
             } else {
-                mainContent.classList.remove('col-md-12');
-                mainContent.classList.add('col-md-9', 'col-lg-10');
-            }
-        }
-    });
-
-    const sidebarLinks = sidebar.querySelectorAll('.nav-link');
-    sidebarLinks.forEach(function(link) {
-        link.addEventListener('click', function() {
-            if (!isMenuPinned) {
                 closeSidebar();
             }
-        });
+        }
     });
     
     createAndPlacePinButton();
