@@ -241,13 +241,13 @@ class StaffAgreementDetailViewAgreedStaffListTest(TestCase):
 
     def test_filter_by_name(self):
         """氏名によるフィルタリングをテスト"""
-        response = self.client.get(self.url, {"name": "Alice"})
+        response = self.client.get(self.url, {"q": "Alice"})
         self.assertEqual(len(response.context["agreed_staff_list"]), 1)
         self.assertEqual(response.context["agreed_staff_list"][0]["staff"], self.staff1)
 
     def test_filter_by_email(self):
         """メールアドレスによるフィルタリングをテスト"""
-        response = self.client.get(self.url, {"email": "bbb@example.com"})
+        response = self.client.get(self.url, {"q": "bbb@example.com"})
         self.assertEqual(len(response.context["agreed_staff_list"]), 1)
         self.assertEqual(response.context["agreed_staff_list"][0]["staff"], self.staff2)
 
@@ -278,7 +278,7 @@ class StaffAgreementDetailViewAgreedStaffListTest(TestCase):
     def test_combined_filter(self):
         """複合フィルタリングをテスト"""
         response = self.client.get(
-            self.url, {"name": "Bob", "email": "bbb@example.com"}
+            self.url, {"q": "Bob"}
         )
         self.assertEqual(len(response.context["agreed_staff_list"]), 1)
         self.assertEqual(response.context["agreed_staff_list"][0]["staff"], self.staff2)
