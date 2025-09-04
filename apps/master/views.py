@@ -992,13 +992,11 @@ def bill_bank_list(request):
 
     if search_query:
         bill_banks = bill_banks.filter(
-            Q(name__icontains=search_query)
-            | Q(branch_name__icontains=search_query)
-            | Q(account_holder__icontains=search_query)
+            Q(account_holder__icontains=search_query)
             | Q(account_holder_kana__icontains=search_query)
         )
 
-    bill_banks = bill_banks.order_by("display_order", "name", "branch_name")
+    bill_banks = bill_banks.order_by("display_order", "bank_code", "branch_code")
 
     # ページネーション
     paginator = Paginator(bill_banks, 20)
@@ -1035,7 +1033,7 @@ def bill_bank_create(request):
             bill_bank = form.save()
             messages.success(
                 request,
-                f"会社銀行「{bill_bank.name} {bill_bank.branch_name}」を作成しました。",
+                f"会社銀行「{bill_bank.bank_name} {bill_bank.branch_name}」を作成しました。",
             )
             return redirect("master:bill_bank_list")
     else:
@@ -1060,7 +1058,7 @@ def bill_bank_update(request, pk):
             bill_bank = form.save()
             messages.success(
                 request,
-                f"会社銀行「{bill_bank.name} {bill_bank.branch_name}」を更新しました。",
+                f"会社銀行「{bill_bank.bank_name} {bill_bank.branch_name}」を更新しました。",
             )
             return redirect("master:bill_bank_list")
     else:
@@ -1069,7 +1067,7 @@ def bill_bank_update(request, pk):
     context = {
         "form": form,
         "bill_bank": bill_bank,
-        "title": f"会社銀行編集 - {bill_bank.name} {bill_bank.branch_name}",
+        "title": f"会社銀行編集 - {bill_bank.bank_name} {bill_bank.branch_name}",
     }
     return render(request, "master/bill_bank_form.html", context)
 
@@ -1081,14 +1079,14 @@ def bill_bank_delete(request, pk):
     bill_bank = get_object_or_404(BillBank, pk=pk)
 
     if request.method == "POST":
-        bill_bank_name = f"{bill_bank.name} {bill_bank.branch_name}"
+        bill_bank_name = f"{bill_bank.bank_name} {bill_bank.branch_name}"
         bill_bank.delete()
         messages.success(request, f"会社銀行「{bill_bank_name}」を削除しました。")
         return redirect("master:bill_bank_list")
 
     context = {
         "bill_bank": bill_bank,
-        "title": f"会社銀行削除 - {bill_bank.name} {bill_bank.branch_name}",
+        "title": f"会社銀行削除 - {bill_bank.bank_name} {bill_bank.branch_name}",
     }
     return render(request, "master/bill_bank_delete.html", context)
 

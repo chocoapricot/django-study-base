@@ -393,9 +393,7 @@ class BillBank(MyModel):
     自社の銀行口座情報を管理するマスターデータモデル。
     """
     
-    name = models.CharField('銀行名', max_length=100)
     bank_code = models.CharField('銀行コード', max_length=4, help_text='4桁の数字で入力')
-    branch_name = models.CharField('支店名', max_length=100)
     branch_code = models.CharField('支店コード', max_length=3, help_text='3桁の数字で入力')
     account_type = models.CharField(
         '口座種別', 
@@ -416,7 +414,7 @@ class BillBank(MyModel):
         db_table = 'apps_master_bill_bank'
         verbose_name = '会社銀行'
         verbose_name_plural = '会社銀行'
-        ordering = ['display_order', 'name', 'branch_name']
+        ordering = ['display_order']
         indexes = [
             models.Index(fields=['is_active']),
             models.Index(fields=['display_order']),
@@ -425,7 +423,26 @@ class BillBank(MyModel):
         ]
     
     def __str__(self):
-        return f"{self.name} {self.branch_name} {self.account_type_display} {self.account_number}"
+        try:
+            return f"{self.bank_name} {self.branch_name} {self.account_type_display} {self.account_number}"
+        except (Bank.DoesNotExist, BankBranch.DoesNotExist):
+            return f"{self.bank_code} {self.branch_code} {self.account_type_display} {self.account_number}"
+
+    @property
+    def bank(self):
+        return Bank.objects.get(bank_code=self.bank_code)
+
+    @property
+    def branch(self):
+        return BankBranch.objects.get(bank__bank_code=self.bank_code, branch_code=self.branch_code)
+
+    @property
+    def bank_name(self):
+        return self.bank.name
+
+    @property
+    def branch_name(self):
+        return self.branch.name
     
     @property
     def account_type_display(self):
@@ -435,16 +452,19 @@ class BillBank(MyModel):
     @property
     def full_bank_info(self):
         """完全な銀行情報"""
-        bank_info = f"{self.name}"
-        if self.bank_code:
-            bank_info += f"（{self.bank_code}）"
-        
-        branch_info = f" {self.branch_name}"
-        if self.branch_code:
-            branch_info += f"（{self.branch_code}）"
-        
-        return f"{bank_info}{branch_info} {self.account_type_display} {self.account_number}"
-    
+        try:
+            bank_info = f"{self.bank_name}"
+            if self.bank_code:
+                bank_info += f"（{self.bank_code}）"
+            
+            branch_info = f" {self.branch_name}"
+            if self.branch_code:
+                branch_info += f"（{self.branch_code}）"
+            
+            return f"{bank_info}{branch_info} {self.account_type_display} {self.account_number}"
+        except (Bank.DoesNotExist, BankBranch.DoesNotExist):
+            return f"銀行情報不明（{self.bank_code}） 支店情報不明（{self.branch_code}） {self.account_type_display} {self.account_number}"
+
     @property
     def account_info(self):
         """口座情報"""
@@ -484,7 +504,7 @@ class BillBank(MyModel):
     @classmethod
     def get_active_list(cls):
         """有効な会社銀行一覧を取得"""
-        return cls.objects.filter(is_active=True).order_by('display_order', 'name', 'branch_name')
+        return cls.objects.filter(is_active=True).order_by('display_order')
 
 
 class Bank(MyModel):

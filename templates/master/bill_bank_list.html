@@ -44,7 +44,7 @@
                     {% for bill_bank in bill_banks %}
                     <tr>
                         <td>
-                            <a href="{% url 'master:bill_bank_update' bill_bank.pk %}">{{ bill_bank.name }}</a>
+                            <a href="{% url 'master:bill_bank_update' bill_bank.pk %}">{{ bill_bank.bank_name }}</a>
                             {% if bill_bank.bank_code %}
                                 <br><small class="text-muted">（{{ bill_bank.bank_code }}）</small>
                             {% endif %}

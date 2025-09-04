@@ -216,11 +216,9 @@ class BillBankForm(forms.ModelForm):
     
     class Meta:
         model = BillBank
-        fields = ['name', 'bank_code', 'branch_name', 'branch_code', 'account_type', 'account_number', 'account_holder', 'account_holder_kana', 'is_active', 'display_order']
+        fields = ['bank_code', 'branch_code', 'account_type', 'account_number', 'account_holder', 'account_holder_kana', 'is_active', 'display_order']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'bank_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '4', 'pattern': '[0-9]{4}'}),
-            'branch_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'branch_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '3', 'pattern': '[0-9]{3}'}),
             'account_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'account_number': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '8', 'pattern': '[0-9]{1,8}'}),
