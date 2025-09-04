@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import MailLog, AppLog
+from .models import MailLog, AppLog, AccessLog
 
 @admin.register(MailLog)
 class MailLogAdmin(admin.ModelAdmin):
@@ -43,6 +43,33 @@ class MailLogAdmin(admin.ModelAdmin):
         """追加権限を無効化（ログは自動生成のため）"""
         return False
     
+    def has_change_permission(self, request, obj=None):
+        """変更権限を無効化（ログは変更不可）"""
+        return False
+
+
+@admin.register(AccessLog)
+class AccessLogAdmin(admin.ModelAdmin):
+    """アクセスログの管理画面"""
+
+    list_display = [
+        'id', 'timestamp', 'user', 'url'
+    ]
+    list_filter = [
+        'timestamp', 'user'
+    ]
+    search_fields = [
+        'user__username', 'url'
+    ]
+    readonly_fields = [
+        'timestamp', 'user', 'url'
+    ]
+    ordering = ['-timestamp']
+
+    def has_add_permission(self, request):
+        """追加権限を無効化（ログは自動生成のため）"""
+        return False
+
     def has_change_permission(self, request, obj=None):
         """変更権限を無効化（ログは変更不可）"""
         return False
