@@ -18,14 +18,14 @@
     </div>
     <div class="card-body mb-0">
         <!-- 検索・フィルタフォーム -->
-        <form method="get" class="mb-3">
+        <form method="get" class="mb-3" id="searchForm">
             <div class="row">
                 <div class="col-md-3">
                     <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-sm" placeholder="名称で検索">
                 </div>
                 <div class="col-md-2">
                     <select name="category" class="form-control form-control-sm">
-                        <option value="">全カテゴリ</option>
+                        <option value="">カテゴリ（全て）</option>
                         {% for category in categories %}
                             <option value="{{ category.pk }}" {% if category_filter == category.pk|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
                         {% endfor %}
@@ -33,14 +33,14 @@
                 </div>
                 <div class="col-md-2">
                     <select name="is_active" class="form-control form-control-sm">
-                        <option value="">全て</option>
+                        <option value="">有効（全て）</option>
                         <option value="true" {% if is_active_filter == 'true' %}selected{% endif %}>有効</option>
                         <option value="false" {% if is_active_filter == 'false' %}selected{% endif %}>無効</option>
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <button type="submit" class="btn btn-sm btn-secondary">検索</button>
-                    <a href="{% url 'master:skill_list' %}" class="btn btn-sm btn-outline-secondary">クリア</a>
+                    <button type="submit" class="btn btn-sm btn-primary">検索</button>
+                    <button class="btn btn-sm btn-secondary" type="button" onclick="resetForm('searchForm', '{% url "master:skill_list" %}')">リセット</button>
                 </div>
             </div>
         </form>
@@ -123,4 +123,6 @@
 {% with change_logs=change_logs change_logs_count=change_logs_count history_url=skill_history_url show_full_content=False %}
     {% include 'common/_change_history_list.html' %}
 {% endwith %}
+
+<script src="{% static 'js/form_utils.js' %}"></script>
 {% endblock %}

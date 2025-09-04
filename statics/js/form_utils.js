@@ -54,6 +54,27 @@ function setupZipcodeFetching(options) {
 }
 
 /**
+ * フォームの入力値をリセットし、指定されたURLにリダイレクトします。
+ * @param {string} formId - リセット対象のフォームのID
+ * @param {string} resetUrl - リダイレクト先のURL
+ */
+function resetForm(formId, resetUrl) {
+    const form = document.getElementById(formId);
+    if (form) {
+        // テキスト入力とセレクトボックスをクリア
+        form.querySelectorAll('input[type="text"], select').forEach(element => {
+            element.value = '';
+        });
+        // チェックボックスとラジオボタンの選択を解除
+        form.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(element => {
+            element.checked = false;
+        });
+    }
+    // 指定されたURLにリダイレクト
+    window.location.href = resetUrl;
+}
+
+/**
  * 法人番号から企業情報を自動入力する機能を設定します。
  * @param {object} options - 設定オプション
  * @param {string} options.corporateNumberFieldId - 法人番号入力フィールドのID
