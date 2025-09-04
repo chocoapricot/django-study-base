@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch, Information, JobCategory, StaffAgreement
 from apps.system.settings.models import Dropdowns
 
@@ -213,30 +214,83 @@ class BillPaymentForm(forms.ModelForm):
 
 class BillBankForm(forms.ModelForm):
     """会社銀行フォーム"""
-    
+    bank_name = forms.CharField(
+        label='銀行名',
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': '銀行名を入力'})
+    )
+    branch_name = forms.CharField(
+        label='支店名',
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': '支店名を入力'})
+    )
+    account_type = forms.ChoiceField(
+        choices=[],
+        label='口座種別',
+        widget=forms.Select,
+    )
+
     class Meta:
         model = BillBank
-        fields = ['bank_code', 'branch_code', 'account_type', 'account_number', 'account_holder', 'account_holder_kana', 'is_active', 'display_order']
+        fields = [
+            'bank_code', 'branch_code', 'account_type', 'account_number',
+            'account_holder', 'account_holder_kana', 'is_active', 'display_order'
+        ]
         widgets = {
-            'bank_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '4', 'pattern': '[0-9]{4}'}),
-            'branch_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '3', 'pattern': '[0-9]{3}'}),
-            'account_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-            'account_number': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '8', 'pattern': '[0-9]{1,8}'}),
+            'bank_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '4'}),
+            'branch_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '3'}),
+            'account_number': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '8'}),
             'account_holder': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'account_holder_kana': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
         }
-        labels = {
-            'bank_code': '銀行コード（4桁）',
-            'branch_code': '支店コード（3桁）',
-            'account_holder_kana': '口座名義（カナ）',
-        }
-        help_texts = {
-            'bank_code': '4桁の数字で入力してください（任意）',
-            'branch_code': '3桁の数字で入力してください（任意）',
-            'account_number': '1-8桁の数字で入力してください',
-        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from apps.system.settings.models import Dropdowns
+        self.fields['account_type'].choices = [
+            ('', '---------')
+        ] + [
+            (opt.value, opt.name)
+            for opt in Dropdowns.objects.filter(active=True, category='bank_account_type').order_by('disp_seq')
+        ]
+        self.fields['bank_code'].required = True
+        self.fields['branch_code'].required = True
+        self.fields['account_type'].required = True
+        self.fields['account_number'].required = True
+        self.fields['account_holder'].required = True
+        self.fields['account_holder_kana'].required = True
+
+        if self.instance and self.instance.pk:
+            self.fields['bank_name'].initial = self.instance.bank_name
+            self.fields['branch_name'].initial = self.instance.branch_name
+
+    def clean_bank_code(self):
+        bank_code = self.cleaned_data.get('bank_code')
+        if bank_code:
+            if not Bank.objects.filter(bank_code=bank_code, is_active=True).exists():
+                raise ValidationError("存在しない銀行コードです。")
+        return bank_code
+
+    def clean(self):
+        cleaned_data = super().clean()
+        bank_code = cleaned_data.get('bank_code')
+        branch_code = cleaned_data.get('branch_code')
+
+        if bank_code and branch_code:
+            try:
+                bank = Bank.objects.get(bank_code=bank_code, is_active=True)
+                if not BankBranch.objects.filter(bank=bank, branch_code=branch_code, is_active=True).exists():
+                    self.add_error('branch_code', "存在しない支店コードです。")
+            except Bank.DoesNotExist:
+                pass
+        return cleaned_data
+
+    def save(self, commit=True):
+        self.cleaned_data.pop('bank_name', None)
+        self.cleaned_data.pop('branch_name', None)
+        return super().save(commit)
 
 
 class BankForm(forms.ModelForm):

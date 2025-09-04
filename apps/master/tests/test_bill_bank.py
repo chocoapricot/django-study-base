@@ -135,7 +135,13 @@ class BillBankModelTest(TestCase):
 
 class BillBankFormTest(TestCase):
     """会社銀行フォームのテスト"""
-    
+
+    def setUp(self):
+        from apps.system.settings.models import Dropdowns
+        self.bank = Bank.objects.create(bank_code='0010', name='テスト銀行')
+        self.branch = BankBranch.objects.create(bank=self.bank, branch_code='100', name='テスト支店')
+        Dropdowns.objects.create(category='bank_account_type', value='ordinary', name='普通')
+
     def test_valid_form(self):
         """有効なフォームのテスト"""
         form_data = {
@@ -149,6 +155,8 @@ class BillBankFormTest(TestCase):
             'display_order': 1
         }
         form = BillBankForm(data=form_data)
+        if not form.is_valid():
+            print(form.errors)
         self.assertTrue(form.is_valid())
     
     def test_invalid_form_missing_account_holder(self):
@@ -198,6 +206,7 @@ class BillBankViewTest(TestCase):
     """会社銀行ビューのテスト"""
     
     def setUp(self):
+        from apps.system.settings.models import Dropdowns
         self.client = Client()
         self.user = User.objects.create_user(
             username='testuser',
@@ -213,8 +222,11 @@ class BillBankViewTest(TestCase):
             branch_code='999',
             account_type='ordinary',
             account_number='1111111',
-            account_holder='テスト会社'
+            account_holder='テスト会社',
+            account_holder_kana='テストガイシャ'
         )
+        Dropdowns.objects.create(category='bank_account_type', value='ordinary', name='普通')
+        Dropdowns.objects.create(category='bank_account_type', value='current', name='当座')
     
     def test_bill_bank_list_view(self):
         """会社銀行一覧ビューのテスト"""
@@ -238,6 +250,7 @@ class BillBankViewTest(TestCase):
             'account_type': 'current',
             'account_number': '2222222',
             'account_holder': '新しい会社',
+            'account_holder_kana': 'アタラシイカイシャ',
             'is_active': True,
             'display_order': 1
         }

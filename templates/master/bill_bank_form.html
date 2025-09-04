@@ -1,5 +1,4 @@
 {% extends 'common/_base.html' %}
-{% load static %}
 {% load help_tags %}
 
 {% block title %}{{ title }}{% endblock %}
@@ -10,43 +9,45 @@
     <div class="card-body">
         <form method="post">
             {% csrf_token %}
-            
+
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">銀行名</label>
-                <div class="col-sm-4">
-                    {{ form.name }}
-                    {% if form.name.errors %}
-                        <div class="text-danger small">{{ form.name.errors.0 }}</div>
-                    {% endif %}
-                </div>
-                <label for="{{ form.bank_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
-                    銀行コード
+                <label for="{{ form.bank_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">銀行コード
                     {% my_help_preset "bank_code" %}
                 </label>
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     {{ form.bank_code }}
                     {% if form.bank_code.errors %}
                         <div class="text-danger small">{{ form.bank_code.errors.0 }}</div>
                     {% endif %}
                 </div>
+
+                <label for="{{ form.bank_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">銀行名</label>
+                <div class="col-sm-4">
+                    {{ form.bank_name }}
+                    <datalist id="bank-list"></datalist>
+                    {% if form.bank_name.errors %}
+                        <div class="text-danger small">{{ form.bank_name.errors.0 }}</div>
+                    {% endif %}
+                </div>
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.branch_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">支店名</label>
-                <div class="col-sm-4">
-                    {{ form.branch_name }}
-                    {% if form.branch_name.errors %}
-                        <div class="text-danger small">{{ form.branch_name.errors.0 }}</div>
-                    {% endif %}
-                </div>
-                <label for="{{ form.branch_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
-                    支店コード
+                <label for="{{ form.branch_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">支店コード
                     {% my_help_preset "branch_code" %}
                 </label>
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     {{ form.branch_code }}
                     {% if form.branch_code.errors %}
                         <div class="text-danger small">{{ form.branch_code.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <label for="{{ form.branch_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">支店名</label>
+                <div class="col-sm-4">
+                    {{ form.branch_name }}
+                    <datalist id="branch-list"></datalist>
+                    {% if form.branch_name.errors %}
+                        <div class="text-danger small">{{ form.branch_name.errors.0 }}</div>
                     {% endif %}
                 </div>
             </div>
@@ -118,144 +119,107 @@
 
             <div class="row mt-3">
                 <div class="col text-left">
-                    <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
-                    <a href="{% url 'master:bill_bank_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                    <button type="submit" class="btn btn-sm btn-primary">保存</button>
+                    <a href="{% url 'master:bill_bank_list' %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
                 </div>
             </div>
         </form>
     </div>
 </div>
 
-<style>
-    .autocomplete-items {
-        position: absolute;
-        border: 1px solid #d4d4d4;
-        border-bottom: none;
-        border-top: none;
-        z-index: 99;
-        top: 100%;
-        left: 0;
-        right: 0;
-    }
-    .autocomplete-items div {
-        padding: 10px;
-        cursor: pointer;
-        background-color: #fff;
-        border-bottom: 1px solid #d4d4d4;
-    }
-    .autocomplete-items div:hover {
-        background-color: #e9e9e9;
-    }
-    .autocomplete-active {
-        background-color: DodgerBlue !important;
-        color: #ffffff;
-    }
-</style>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // ツールチップを有効化
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-
-    const bankNameInput = document.getElementById('{{ form.name.id_for_label }}');
+    const bankNameInput = document.getElementById('{{ form.bank_name.id_for_label }}');
     const bankCodeInput = document.getElementById('{{ form.bank_code.id_for_label }}');
     const branchNameInput = document.getElementById('{{ form.branch_name.id_for_label }}');
     const branchCodeInput = document.getElementById('{{ form.branch_code.id_for_label }}');
+    const bankList = document.getElementById('bank-list');
+    const branchList = document.getElementById('branch-list');
 
-    function setupAutocomplete(input, url_callback, on_select) {
-        let currentFocus;
-        input.addEventListener("input", function(e) {
-            let a, b, i, val = this.value;
-            closeAllLists();
-            if (!val) { return false; }
-            currentFocus = -1;
-            a = document.createElement("DIV");
-            a.setAttribute("id", this.id + "autocomplete-list");
-            a.setAttribute("class", "autocomplete-items");
-            this.parentNode.style.position = 'relative';
-            this.parentNode.appendChild(a);
+    bankNameInput.setAttribute('list', 'bank-list');
+    branchNameInput.setAttribute('list', 'branch-list');
 
-            const url = url_callback();
-            if (!url) return;
+    // 銀行名から銀行情報を検索
+    bankNameInput.addEventListener('input', function() {
+        const query = bankNameInput.value;
+        if (query.length < 1) return;
 
-            const final_url = url.includes('?') ? `${url}&q=${val}` : `${url}?q=${val}`;
-            fetch(final_url)
-                .then(response => response.json())
-                .then(data => {
-                    data.forEach(item => {
-                        b = document.createElement("DIV");
-                        b.innerHTML = `<strong>${item.name}</strong> (${item.bank_code || item.branch_code})`;
-                        b.addEventListener("click", function(e) {
-                            on_select(item);
-                            closeAllLists();
-                        });
-                        a.appendChild(b);
-                    });
+        fetch(`{% url 'search_banks' %}?q=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                bankList.innerHTML = '';
+                data.forEach(bank => {
+                    const option = document.createElement('option');
+                    option.value = bank.name;
+                    option.dataset.code = bank.bank_code;
+                    bankList.appendChild(option);
                 });
-        });
+            });
+    });
 
-        function closeAllLists(elmnt) {
-            var x = document.getElementsByClassName("autocomplete-items");
-            for (var i = 0; i < x.length; i++) {
-                if (elmnt != x[i] && elmnt != input) {
-                    x[i].parentNode.removeChild(x[i]);
-                }
-            }
+    // 銀行名が選択されたら銀行コードをセット
+    bankNameInput.addEventListener('change', function() {
+        const selectedOption = Array.from(bankList.options).find(opt => opt.value === bankNameInput.value);
+        if (selectedOption) {
+            bankCodeInput.value = selectedOption.dataset.code;
         }
-        document.addEventListener("click", function (e) {
-            closeAllLists(e.target);
-        });
-    }
+    });
 
-    setupAutocomplete(
-        bankNameInput,
-        () => '/api/search_banks/',
-        (item) => {
-            bankNameInput.value = item.name;
-            bankCodeInput.value = item.bank_code;
-        }
-    );
-
-    setupAutocomplete(
-        branchNameInput,
-        () => {
-            const bankCode = bankCodeInput.value;
-            if (bankCode) {
-                return `/api/search_bank_branches/?bank_code=${bankCode}`;
-            }
-            return null;
-        },
-        (item) => {
-            branchNameInput.value = item.name;
-            branchCodeInput.value = item.branch_code;
-        }
-    );
-
+    // 銀行コードから銀行名を取得
     bankCodeInput.addEventListener('change', function() {
-        const code = this.value;
+        const code = bankCodeInput.value;
         if (code.length === 4) {
-            fetch(`/api/search_banks/?q=${code}`)
+            fetch(`{% url 'search_banks' %}?q=${code}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.length > 0) {
                         bankNameInput.value = data[0].name;
+                    } else {
+                        bankNameInput.value = '';
                     }
                 });
         }
     });
 
+    // 支店名から支店情報を検索
+    branchNameInput.addEventListener('input', function() {
+        const bankCode = bankCodeInput.value;
+        const query = branchNameInput.value;
+        if (query.length < 1 || !bankCode) return;
+
+        fetch(`{% url 'search_bank_branches' %}?bank_code=${bankCode}&q=${query}`)
+            .then(response => response.json())
+            .then(data => {
+                branchList.innerHTML = '';
+                data.forEach(branch => {
+                    const option = document.createElement('option');
+                    option.value = branch.name;
+                    option.dataset.code = branch.branch_code;
+                    branchList.appendChild(option);
+                });
+            });
+    });
+
+    // 支店名が選択されたら支店コードをセット
+    branchNameInput.addEventListener('change', function() {
+        const selectedOption = Array.from(branchList.options).find(opt => opt.value === branchNameInput.value);
+        if (selectedOption) {
+            branchCodeInput.value = selectedOption.dataset.code;
+        }
+    });
+
+    // 支店コードから支店名を取得
     branchCodeInput.addEventListener('change', function() {
         const bankCode = bankCodeInput.value;
-        const branchCode = this.value;
-        if (bankCode.length === 4 && branchCode.length === 3) {
-            fetch(`/api/search_bank_branches/?bank_code=${bankCode}&q=${branchCode}`)
+        const code = branchCodeInput.value;
+        if (code.length === 3 && bankCode) {
+            fetch(`{% url 'search_bank_branches' %}?bank_code=${bankCode}&q=${code}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.length > 0) {
                         branchNameInput.value = data[0].name;
+                    } else {
+                        branchNameInput.value = '';
                     }
                 });
         }
