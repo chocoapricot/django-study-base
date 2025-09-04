@@ -31,13 +31,9 @@
         </div>
     </div>
     <div class="card-body">
-        <!--
-        <h5 class="card-title">スタッフ一覧</h5>
-        -->
-        <!-- <p class="card-text">これはサンプルです.</p> -->
 
         <form id="staff-filter-form" method="get" action="{% url 'staff:staff_list' %}" class="form-inline d-flex mb-3">
-            <div class="input-group me-2" style="width: 25em;">
+            <div class="input-group me-2 mb-2" style="width: 25em;">
                 <span class="input-group-text input-group-text-sm" style="height: calc(1.5em + 0.5rem + 2px);">
                     <i class="bi bi-search"></i> <!-- Bootstrap Iconsの虫眼鏡アイコン -->
                 </span>
@@ -80,7 +76,7 @@
                     <li><a class="dropdown-item" href="#" onclick="exportData('excel')"><i class="bi bi-file-earmark-excel"></i> Excel出力</a></li>
                 </ul>
             </div>
-            <button class="btn btn-secondary btn-sm" type="button" onclick="resetForm()">リセット</button>
+            <button class="btn btn-secondary btn-sm mb-2" type="button" onclick="resetForm()">リセット</button>
         </form>
 
         <script>
