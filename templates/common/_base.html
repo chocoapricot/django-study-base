@@ -440,6 +440,7 @@ document.addEventListener("DOMContentLoaded", function () {
             pinIcon.classList.remove('bi-pin-angle-fill');
             pinIcon.classList.add('bi-pin-angle');
             pinSidebarBtn.title = 'サイドバーをピン留めする';
+            closeSidebar();
         }
         sessionStorage.setItem('isMenuPinned', isMenuPinned);
     }
