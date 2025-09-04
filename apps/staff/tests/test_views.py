@@ -222,18 +222,22 @@ class StaffViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         
         # 検索フォームの要素が存在することを確認
-        self.assertContains(response, 'input-group-text-sm')  # 検索アイコンのサイズクラス
-        self.assertContains(response, 'form-control-sm')      # 検索入力欄のサイズクラス
-        self.assertContains(response, 'form-select-sm')       # セレクトボックスのサイズクラス
+        self.assertContains(response, 'input-group-text')
+        self.assertNotContains(response, 'input-group-text-sm')
+        self.assertContains(response, 'form-control-sm')
+        self.assertContains(response, 'form-select-sm')
         
-        # 高さ調整のCSSが適用されていることを確認
-        self.assertContains(response, 'height: calc(1.5em + 0.5rem + 2px)')
+        # 高さ調整のインラインCSSが適用されていないことを確認
+        self.assertNotContains(response, 'height: calc(1.5em + 0.5rem + 2px)')
         
         # 検索キーワード入力欄の幅設定を確認
         self.assertContains(response, 'width: 25em')
         
         # 登録区分セレクトボックスの幅設定を確認
         self.assertContains(response, 'width: 12em')
+
+        # selectの親divにinput-groupクラスがあることを確認
+        self.assertContains(response, '<div class="input-group me-2 mb-2" style="width: 12em;">')
         
         # 検索・リセットボタンが存在することを確認
         self.assertContains(response, 'type="submit"')
