@@ -32,8 +32,9 @@ from .forms import (
     StaffAgreementForm,
 )
 from apps.company.models import Company
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.core.cache import cache
+from .resources import AgreedStaffResource
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView, DetailView
 import uuid
@@ -135,6 +136,85 @@ def get_data_count(model_class):
         return model_class.objects.count()
     except Exception:
         return 0
+
+
+@login_required
+@permission_required("master.view_staffagreement", raise_exception=True)
+def agreed_staff_export(request, pk):
+    """同意済みスタッフデータのエクスポート（CSV/Excel）"""
+    agreement = get_object_or_404(StaffAgreement, pk=pk)
+
+    # 同意したスタッフの接続情報を取得
+    agreed_connections = ConnectStaffAgree.objects.filter(
+        staff_agreement=agreement, is_agreed=True
+    )
+
+    # 関連するスタッフのメールアドレスリストを取得
+    staff_emails = agreed_connections.values_list("email", flat=True)
+
+    # メールアドレスに紐づくスタッフ情報を取得
+    staff_qs = Staff.objects.filter(email__in=staff_emails)
+
+    # フィルタリング
+    query = request.GET.get("q", "")
+    if query:
+        staff_qs = staff_qs.filter(
+            Q(name__icontains=query) | Q(email__icontains=query)
+        )
+
+    # フィルタリング後のメールアドレスリストで再度絞り込み
+    filtered_emails = staff_qs.values_list("email", flat=True)
+    agreed_connections = agreed_connections.filter(email__in=filtered_emails)
+
+    # 表示用にスタッフ情報と同意日時を結合
+    staff_dict = {staff.email: staff for staff in staff_qs}
+    agreed_staff_list = []
+    for conn in agreed_connections:
+        staff = staff_dict.get(conn.email)
+        if staff:
+            agreed_staff_list.append(
+                {
+                    "staff": staff,
+                    "agreed_at": conn.created_at,
+                }
+            )
+
+    # ソート
+    sort_by = request.GET.get("sort", "agreed_at")
+    sort_dir = request.GET.get("dir", "desc")
+    reverse_sort = sort_dir == "desc"
+
+    if sort_by == "staff__name":
+        agreed_staff_list.sort(
+            key=lambda x: (x["staff"].name_last or "", x["staff"].name_first or ""),
+            reverse=reverse_sort,
+        )
+    elif sort_by == "staff__email":
+        agreed_staff_list.sort(key=lambda x: x["staff"].email or "", reverse=reverse_sort)
+    else:  # agreed_at
+        agreed_staff_list.sort(key=lambda x: x["agreed_at"], reverse=reverse_sort)
+
+    # リソースを使ってエクスポート
+    resource = AgreedStaffResource()
+    dataset = resource.export(agreed_staff_list)
+
+    # ファイル名を生成（日時付き）
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    format_type = request.GET.get('format', 'csv')
+
+    if format_type == 'excel':
+        response = HttpResponse(
+            dataset.xlsx,
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename="agreed_staff_{pk}_{timestamp}.xlsx"'
+    else:  # CSV
+        # BOMを追加してExcelで正しく表示されるようにする
+        csv_data = '\ufeff' + dataset.csv
+        response = HttpResponse(csv_data, content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="agreed_staff_{pk}_{timestamp}.csv"'
+
+    return response
 
 
 @login_required
@@ -1848,14 +1928,11 @@ def staff_agreement_detail(request, pk):
     staff_qs = Staff.objects.filter(email__in=staff_emails)
 
     # フィルタリング
-    name_query = request.GET.get("name", "")
-    email_query = request.GET.get("email", "")
-
-    if name_query:
-        staff_qs = staff_qs.filter(name__icontains=name_query)
-
-    if email_query:
-        staff_qs = staff_qs.filter(email__icontains=email_query)
+    query = request.GET.get("q", "")
+    if query:
+        staff_qs = staff_qs.filter(
+            Q(name__icontains=query) | Q(email__icontains=query)
+        )
 
     # フィルタリング後のメールアドレスリストで再度絞り込み
     filtered_emails = staff_qs.values_list("email", flat=True)
@@ -1896,8 +1973,7 @@ def staff_agreement_detail(request, pk):
         "object": agreement,
         "agreement": agreement,
         "agreed_staff_list": agreed_staff_list,
-        "filter_name": name_query,
-        "filter_email": email_query,
+        "query": query,
         "sort_by": sort_by,
         "sort_dir": sort_dir,
         "opposite_dir": "asc" if sort_dir == "desc" else "desc",
