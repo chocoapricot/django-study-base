@@ -21,9 +21,9 @@
                 <form method="get" class="mb-3">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="input-group">
+                            <div class="input-group mb-2 me-2">
                                 <input type="text" name="search" class="form-control form-control-sm" placeholder="銀行名、銀行コードで検索" value="{{ search_query }}">
-                                <button class="btn btn-sm btn-outline-secondary" type="submit">検索</button>
+                                <button class="btn btn-sm btn-primary" type="submit">検索</button>
                                 {% if search_query %}
                                     <a href="{% url 'master:bank_management' %}" class="btn btn-sm btn-outline-secondary">クリア</a>
                                 {% endif %}
