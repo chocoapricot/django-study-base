@@ -32,35 +32,35 @@
     </div>
     <div class="card-body">
 
-        <form id="staff-filter-form" method="get" action="{% url 'staff:staff_list' %}" class="form-inline d-flex mb-3">
+        <form id="staff-filter-form" method="get" action="{% url 'staff:staff_list' %}" class="form-inline d-flex flex-wrap mb-3">
             <div class="input-group me-2 mb-2" style="width: 25em;">
-                <span class="input-group-text input-group-text-sm" style="height: calc(1.5em + 0.5rem + 2px);">
+                <span class="input-group-text">
                     <i class="bi bi-search"></i> <!-- Bootstrap Iconsの虫眼鏡アイコン -->
                 </span>
                 <input type="text" name="q" value="{{ query }}" class="form-control form-control-sm" placeholder="検索キーワード">
-                <span class="input-group-text" style="cursor: pointer; height: calc(1.5em + 0.5rem + 2px);" onclick="document.querySelector('input[name=q]').value = '';">
+                <span class="input-group-text" style="cursor: pointer;" onclick="document.querySelector('input[name=q]').value = '';">
                     <i class="bi bi-x"></i>
                 </span>
             </div>
-            <div class="me-2" style="width: 12em;">
-                <select name="regist_form" class="form-select form-select-sm" style="height: calc(1.5em + 0.5rem + 2px);">
-                    <option value="">全ての登録区分</option>
+            <div class="input-group me-2 mb-2" style="width: 12em;">
+                <select name="regist_form" class="form-select form-select-sm">
+                    <option value="">登録区分（全て）</option>
                     {% for option in regist_form_options %}
                         <option value="{{ option.value }}" {% if option.is_selected %}selected{% endif %}>{{ option.name }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="me-2" style="width: 12em;">
-                <select name="employment_type" class="form-select form-select-sm" style="height: calc(1.5em + 0.5rem + 2px);">
-                    <option value="">全ての雇用形態</option>
+            <div class="input-group me-2 mb-2" style="width: 12em;">
+                <select name="employment_type" class="form-select form-select-sm">
+                    <option value="">雇用形態（全て）</option>
                     {% for option in employment_type_options %}
                         <option value="{{ option.value }}" {% if option.is_selected %}selected{% endif %}>{{ option.name }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="me-2" style="width: 15em;">
-                <select name="department" class="form-select form-select-sm" style="height: calc(1.5em + 0.5rem + 2px);">
-                    <option value="">全ての所属部署</option>
+            <div class="input-group me-2 mb-2" style="width: 15em;">
+                <select name="department" class="form-select form-select-sm">
+                    <option value="">所属部署（全て）</option>
                     {% for dept in department_options %}
                         <option value="{{ dept.department_code }}" {% if dept.is_selected %}selected{% endif %}>{{ dept.name }}</option>
                     {% endfor %}
