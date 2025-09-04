@@ -418,26 +418,5 @@
         "disp_seq": 11,
         "active": false
     }
-},
-{
-    "model": "settings.menu",
-    "pk": 22,
-    "fields": {
-        "version": 17566504184,
-        "created_at": "2025-07-19T15:46:59.051Z",
-        "created_by": 1,
-        "updated_at": "2025-08-14T10:18:29.744Z",
-        "updated_by": 1,
-        "name": "URLログ",
-        "url": "/logs/url/",
-        "icon": "bi-list-check",
-        "icon_style": "color:#28a745;",
-        "parent": null,
-        "level": 0,
-        "exact_match": true,
-        "required_permission": "logs.view_urllog",
-        "disp_seq": 120,
-        "active": true
-    }
 }
 ]

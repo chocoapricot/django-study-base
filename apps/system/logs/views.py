@@ -9,18 +9,19 @@ import datetime
 from django.db.models import Count
 from django.urls import get_resolver, URLPattern, URLResolver
 from datetime import timedelta
-import re
 
 @login_required
 @permission_required('logs.view_maillog', raise_exception=True)
 def mail_log_list(request):
     """メール送信ログ一覧"""
+    # 検索とフィルタリング
     query = request.GET.get('q', '').strip()
     mail_type = request.GET.get('mail_type', '').strip()
     status = request.GET.get('status', '').strip()
     
     mail_logs = MailLog.objects.all()
     
+    # キーワード検索
     if query:
         mail_logs = mail_logs.filter(
             Q(to_email__icontains=query) |
@@ -28,12 +29,15 @@ def mail_log_list(request):
             Q(from_email__icontains=query)
         )
     
+    # メール種別フィルタ
     if mail_type:
         mail_logs = mail_logs.filter(mail_type=mail_type)
     
+    # 送信状況フィルタ
     if status:
         mail_logs = mail_logs.filter(status=status)
     
+    # ソート
     sort = request.GET.get('sort', '-created_at')
     sortable_fields = [
         'created_at', '-created_at',
@@ -48,10 +52,12 @@ def mail_log_list(request):
     else:
         mail_logs = mail_logs.order_by('-created_at')
     
+    # ページネーション
     paginator = Paginator(mail_logs, 20)
     page_number = request.GET.get('page')
     mail_logs_page = paginator.get_page(page_number)
     
+    # フィルタ選択肢
     mail_type_choices = MailLog.MAIL_TYPE_CHOICES
     status_choices = MailLog.STATUS_CHOICES
     
@@ -89,8 +95,12 @@ def app_log_list(request):
     
     app_logs = AppLog.objects.select_related('user').order_by('-timestamp')
     
+    # テキスト検索（複数キーワードのAND検索対応）
     if query:
+        # 半角スペースで分割してキーワードリストを作成
         keywords = [keyword.strip() for keyword in query.split() if keyword.strip()]
+
+        # 各キーワードに対してOR条件を作成し、それらをANDで結合
         for keyword in keywords:
             keyword_filter = (
                 Q(user__username__icontains=keyword) |
@@ -101,34 +111,59 @@ def app_log_list(request):
             )
             app_logs = app_logs.filter(keyword_filter)
     
-    date_filter_for_url = ''
-    date_filter_for_display = ''
+    # 日付検索（年月日または年月）
+    date_filter_for_url = ''  # URLパラメータ用（ハイフン区切り）
+    date_filter_for_display = ''  # 表示用（スラッシュ区切り）
     
     if date_filter_raw:
         try:
-            date_filter_cleaned = date_filter_raw.strip()
+            date_filter_cleaned = date_filter_raw.strip()  # 前後の空白を除去
+            # スラッシュをハイフンに変換（内部処理用）
             date_filter_normalized = date_filter_cleaned.replace('/', '-')
+
+            # ハイフンで分割して解析
             parts = date_filter_normalized.split('-')
             
             if len(parts) == 3:
+                # 年月日形式（YYYY-M-D または YYYY-MM-DD）
                 year, month, day = parts
-                date_obj = datetime.datetime(int(year), int(month), int(day))
-                app_logs = app_logs.filter(timestamp__date=date_obj.date())
-                date_filter_for_url = f"{int(year):04d}-{int(month):02d}-{int(day):02d}"
-                date_filter_for_display = date_filter_cleaned
-            elif len(parts) == 2:
-                year, month = parts
-                if 1 <= int(month) <= 12:
-                    app_logs = app_logs.filter(
-                        timestamp__year=int(year),
-                        timestamp__month=int(month)
-                    )
-                    date_filter_for_url = f"{int(year):04d}-{int(month):02d}"
+                try:
+                    # 日付オブジェクトを作成して妥当性をチェック
+                    date_obj = datetime.datetime(int(year), int(month), int(day))
+                    app_logs = app_logs.filter(timestamp__date=date_obj.date())
+                    # 0埋めした形式でURLパラメータを作成
+                    date_filter_for_url = f"{int(year):04d}-{int(month):02d}-{int(day):02d}"
+                    # 表示用は入力された形式を保持
                     date_filter_for_display = date_filter_cleaned
-        except (ValueError, IndexError):
+                except ValueError:
+                    # 無効な日付の場合は無視
+                    pass
+
+            elif len(parts) == 2:
+                # 年月形式（YYYY-M または YYYY-MM）
+                year, month = parts
+                try:
+                    # 年月の妥当性をチェック
+                    if 1 <= int(month) <= 12:
+                        app_logs = app_logs.filter(
+                            timestamp__year=int(year),
+                            timestamp__month=int(month)
+                        )
+                        # 0埋めした形式でURLパラメータを作成
+                        date_filter_for_url = f"{int(year):04d}-{int(month):02d}"
+                        # 表示用は入力された形式を保持
+                        date_filter_for_display = date_filter_cleaned
+                except ValueError:
+                    # 無効な年月の場合は無視
+                    pass
+
+        except (ValueError, IndexError) as e:
+            # 無効な日付形式の場合は無視
+            print(f"日付フィルターエラー: {date_filter_raw}, エラー: {e}")  # デバッグ用
             pass
     
-    paginator = Paginator(app_logs, 20)
+    # ページネーション
+    paginator = Paginator(app_logs, 20)  # 1ページ20件
     page = request.GET.get('page')
     try:
         app_logs_page = paginator.page(page)
@@ -140,8 +175,8 @@ def app_log_list(request):
     context = {
         'app_logs': app_logs_page,
         'query': query,
-        'date_filter': date_filter_for_display,
-        'date_filter_url': date_filter_for_url,
+        'date_filter': date_filter_for_display,  # 表示用（スラッシュ区切り）
+        'date_filter_url': date_filter_for_url,  # URLパラメータ用（ハイフン区切り）
     }
     
     return render(request, 'logs/app_log_list.html', context)
@@ -242,92 +277,79 @@ def mail_log_export(request):
     return response
 
 
-def get_url_patterns(url_patterns, parent_route=''):
+def get_all_urls(url_patterns, parent_pattern=''):
     """
-    Recursively collect URL patterns from the project, returning a list of
-    tuples: (compiled regex, clean URL string).
+    プロジェクト内のすべてのURLを再帰的にリストアップする
     """
-    patterns = []
-    for p in url_patterns:
-        # The string representation of the pattern
-        route_str = str(p.pattern)
+    urls = []
+    for pattern in url_patterns:
+        if isinstance(pattern, URLResolver):
+            # include()されたURLConfの場合、再帰的に探索
+            urls.extend(get_all_urls(pattern.url_patterns, parent_pattern + pattern.pattern.regex.pattern))
+        elif isinstance(pattern, URLPattern):
+            # 通常のURLパターンの場合
+            # パターンから正規表現の特殊文字を除去し、整形
+            url_path = parent_pattern + pattern.pattern.regex.pattern
+            # ^ と $ を削除
+            url_path = url_path.strip('^$')
+            # URLパラメータ部分（例: <int:pk>）を無視
+            import re
+            url_path = re.sub(r'<[^>]+>', '', url_path)
+            # URLの先頭にスラッシュを追加
+            if not url_path.startswith('/'):
+                url_path = '/' + url_path
+            urls.append(url_path)
+    return urls
 
-        if isinstance(p, URLResolver):
-            # Recurse for included URLconfs
-            patterns.extend(get_url_patterns(p.url_patterns, parent_route + route_str))
-        elif isinstance(p, URLPattern):
-            full_route = parent_route + route_str
-
-            # Convert Django path converters to regex
-            regex_str = re.sub(r'<int:[^>]+>', r'[0-9]+', full_route)
-            regex_str = re.sub(r'<str:[^>]+>', r'[^/]+', regex_str)
-            regex_str = re.sub(r'<slug:[^>]+>', r'[-a-zA-Z0-9_]+', regex_str)
-            regex_str = re.sub(r'<uuid:[^>]+>', r'[0-9a-fA-F-]+', regex_str)
-            regex_str = re.sub(r'<path:[^>]+>', r'.+', regex_str)
-
-            # Create the user-friendly "clean" URL
-            clean_url = '/' + re.sub(r'<[^>]+>', '#', full_route).replace('//', '/')
-
-            # Compile the final regex. It must match the full path.
-            # The path from request.path starts with '/', so the regex should too.
-            final_regex = f'^/{regex_str}$'
-
-            try:
-                patterns.append((re.compile(final_regex), clean_url))
-            except re.error:
-                continue
-    return patterns
 
 @login_required
 @permission_required('logs.view_accesslog', raise_exception=True)
 def access_log_list(request):
     """アクセスログ一覧"""
-    start_date_str = request.GET.get('start_date', '')
-    end_date_str = request.GET.get('end_date', '')
+    # 日付範囲フィルタ
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
 
-    logs_qs = AccessLog.objects.all()
+    access_logs = AccessLog.objects.all()
 
     if start_date_str:
         try:
             start_date = datetime.datetime.strptime(start_date_str, '%Y-%m-%d')
-            logs_qs = logs_qs.filter(timestamp__gte=start_date)
+            access_logs = access_logs.filter(timestamp__gte=start_date)
         except ValueError:
-            start_date_str = ''
+            start_date_str = None
     if end_date_str:
         try:
             end_date = datetime.datetime.strptime(end_date_str, '%Y-%m-%d')
-            logs_qs = logs_qs.filter(timestamp__lt=end_date + timedelta(days=1))
+            access_logs = access_logs.filter(timestamp__lt=end_date + timedelta(days=1))
         except ValueError:
-            end_date_str = ''
+            end_date_str = None
 
-    access_counts = logs_qs.values('url').annotate(count=Count('id'))
+    # URLごとのアクセス数を集計
+    access_counts = access_logs.values('url').annotate(count=Count('id')).order_by('url')
+    access_counts_dict = {item['url']: item['count'] for item in access_counts}
 
+    # プロジェクトの全URLリストを取得
     resolver = get_resolver()
-    url_patterns_map = get_url_patterns(resolver.url_patterns)
+    all_urls = sorted(list(set(get_all_urls(resolver.url_patterns))))
 
-    pattern_counts = {clean_url: 0 for _, clean_url in url_patterns_map}
+    # 全URLとアクセス数を結合
+    url_data = []
+    for url in all_urls:
+        # adminとaccountsは除外
+        if not url.startswith('/admin') and not url.startswith('/accounts'):
+            url_data.append({
+                'url': url,
+                'count': access_counts_dict.get(url, 0)
+            })
 
-    for item in access_counts:
-        raw_url = item['url']
-        count = item['count']
-
-        for compiled_regex, clean_pattern in url_patterns_map:
-            # Match the raw URL from the DB against the compiled regex
-            if compiled_regex.fullmatch(raw_url):
-                pattern_counts[clean_pattern] += count
-                break
-
-    url_data = [{'url': url, 'count': count} for url, count in pattern_counts.items()]
-
-    # Exclude admin URLs from the final list
-    url_data = [item for item in url_data if not item['url'].startswith('/admin')]
-
+    # ソート
     sort = request.GET.get('sort', 'url')
     reverse = sort.startswith('-')
     sort_key = sort.lstrip('-')
 
     if sort_key in ['url', 'count']:
-        url_data.sort(key=lambda x: x.get(sort_key, 0), reverse=reverse)
+        url_data.sort(key=lambda x: x[sort_key], reverse=reverse)
 
     context = {
         'url_data': url_data,
