@@ -7,17 +7,16 @@
     </div>
     <div class="card-body">
         <form method="get" class="mb-4">
-            <div class="row">
-                <div class="col-md-2">
-                    <label for="start_date" class="form-label">開始日</label>
-                    <input type="date" id="start_date" name="start_date" class="form-control form-control-sm" value="{{ start_date|default:'' }}">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <input type="date" name="start_date" class="form-control form-control-sm" value="{{ start_date|default:'' }}" placeholder="開始日">
                 </div>
-                <div class="col-md-2">
-                    <label for="end_date" class="form-label">終了日</label>
-                    <input type="date" id="end_date" name="end_date" class="form-control form-control-sm" value="{{ end_date|default:'' }}">
+                <div class="col-md-3">
+                    <input type="date" name="end_date" class="form-control form-control-sm" value="{{ end_date|default:'' }}" placeholder="終了日">
                 </div>
-                <div class="col-md-4 d-flex align-items-end">
+                <div class="col-md-6">
                     <button type="submit" class="btn btn-primary btn-sm">検索</button>
+                    <a href="{% url 'logs:url_log_summary' %}" class="btn btn-secondary btn-sm">リセット</a>
                 </div>
             </div>
         </form>
@@ -25,29 +24,37 @@
         <table class="table table-striped table-hover me-2 mt-2" style="border-top: 1px solid #ddd;">
             <thead>
                 <tr>
-                    <th>
+                    <th style="width: 50%;">
                         <a href="?sort={% if sort == 'url' %}-url{% else %}url{% endif %}&start_date={{ start_date|default:'' }}&end_date={{ end_date|default:'' }}" class="no-link-style">
                             URL
                             {% if sort == 'url' %}<i class="bi bi-arrow-down"></i>{% elif sort == '-url' %}<i class="bi bi-arrow-up"></i>{% endif %}
                         </a>
                     </th>
-                    <th>
+                    <th style="width: 10%;" class="text-end">
                         <a href="?sort={% if sort == '-count' %}count{% else %}-count{% endif %}&start_date={{ start_date|default:'' }}&end_date={{ end_date|default:'' }}" class="no-link-style">
                             アクセス件数
                             {% if sort == '-count' %}<i class="bi bi-arrow-up"></i>{% elif sort == 'count' %}<i class="bi bi-arrow-down"></i>{% endif %}
                         </a>
                     </th>
+                    <th style="width: 10%;" class="text-end">割合</th>
+                    <th style="width: 30%;">比率</th>
                 </tr>
             </thead>
             <tbody>
                 {% for item in url_data %}
                 <tr>
                     <td>{{ item.url }}</td>
-                    <td>{{ item.count }}</td>
+                    <td class="text-end">{{ item.count }}</td>
+                    <td class="text-end">{{ item.percentage|floatformat:1 }}%</td>
+                    <td>
+                        <div class="progress bg-transparent" style="height: 10px;">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ item.relative_percentage|floatformat:2 }}%;" aria-valuenow="{{ item.relative_percentage|floatformat:2 }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="2" class="text-center">ログがありません</td>
+                    <td colspan="4" class="text-center">ログがありません</td>
                 </tr>
                 {% endfor %}
             </tbody>

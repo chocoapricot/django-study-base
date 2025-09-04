@@ -77,16 +77,16 @@
     <div class="card-body">
         <!-- Filter Form -->
         <form method="get" action="{% url 'connect:index' %}" class="form-inline d-flex flex-wrap mb-3">
-            <div class="me-2 mb-2" style="width: 12em;">
+            <div class="input-group me-2 mb-2" style="width: 12em;">
                 <select name="type" class="form-select form-select-sm">
-                    <option value="">すべての種別</option>
+                    <option value="">種別（全て）</option>
                     <option value="staff" {% if type_filter == 'staff' %}selected{% endif %}>スタッフ</option>
                     <option value="client" {% if type_filter == 'client' %}selected{% endif %}>クライアント</option>
                 </select>
             </div>
-            <div class="me-2 mb-2" style="width: 12em;">
+            <div class="input-group me-2 mb-2" style="width: 12em;">
                 <select name="status" class="form-select form-select-sm">
-                    <option value="">すべてのステータス</option>
+                    <option value="">ステータス（全て）</option>
                     <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>未承認</option>
                     <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>承認済み</option>
                 </select>

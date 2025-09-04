@@ -244,33 +244,44 @@ def mail_log_export(request):
 
 def get_url_patterns(url_patterns, parent_route=''):
     """
-    Recursively collect URL patterns from the project, returning a list of
-    tuples: (compiled regex, clean URL string).
+    プロジェクトからURLパターンを再帰的に収集し、
+    (コンパイル済み正規表現, 整形済みURL文字列) のタプルのリストを返す。
     """
     patterns = []
     for p in url_patterns:
-        # The string representation of the pattern
         route_str = str(p.pattern)
 
         if isinstance(p, URLResolver):
-            # Recurse for included URLconfs
+            # URLResolverの場合は再帰的に処理
             patterns.extend(get_url_patterns(p.url_patterns, parent_route + route_str))
         elif isinstance(p, URLPattern):
-            full_route = parent_route + route_str
+            # URLPatternの場合はパターンを整形
+            full_route_pattern = parent_route + route_str
 
-            # Convert Django path converters to regex
-            regex_str = re.sub(r'<int:[^>]+>', r'[0-9]+', full_route)
-            regex_str = re.sub(r'<str:[^>]+>', r'[^/]+', regex_str)
-            regex_str = re.sub(r'<slug:[^>]+>', r'[-a-zA-Z0-9_]+', regex_str)
-            regex_str = re.sub(r'<uuid:[^>]+>', r'[0-9a-fA-F-]+', regex_str)
-            regex_str = re.sub(r'<path:[^>]+>', r'.+', regex_str)
+            # request.path と照合するための正規表現を構築
+            regex_for_match = re.sub(r'<int:[^>]+>', r'[0-9]+', full_route_pattern)
+            regex_for_match = re.sub(r'<str:[^>]+>', r'[^/]+', regex_for_match)
+            regex_for_match = re.sub(r'<slug:[^>]+>', r'[-a-zA-Z0-9_]+', regex_for_match)
+            regex_for_match = re.sub(r'<uuid:[^>]+>', r'[0-9a-fA-F-]+', regex_for_match)
+            regex_for_match = re.sub(r'<path:[^>]+>', r'.+', regex_for_match)
+            
+            final_regex = f'^{regex_for_match.strip("^$")}$'
+            # request.path は '/' で始まるため、パターンもそれに合わせる
+            final_regex = '/' + final_regex.lstrip('^')
+            final_regex = final_regex.replace('//', '/')
 
-            # Create the user-friendly "clean" URL
-            clean_url = '/' + re.sub(r'<[^>]+>', '#', full_route).replace('//', '/')
+            # 表示用のURLを整形
+            clean_url = full_route_pattern
+            # 正規表現グループを置換
+            clean_url = re.sub(r'\(\?P<[^>]+>.*?\)', '#', clean_url)
+            # pathコンバータを置換
+            clean_url = re.sub(r'<[^>]+>', '#', clean_url)
+            # 不要な文字を削除し、スラッシュを正規化
+            clean_url = clean_url.strip('^$')
+            clean_url = '/' + clean_url
+            clean_url = clean_url.replace('//', '/')
+            clean_url = clean_url.replace('-', '#')
 
-            # Compile the final regex. It must match the full path.
-            # The path from request.path starts with '/', so the regex should too.
-            final_regex = f'^/{regex_str}$'
 
             try:
                 patterns.append((re.compile(final_regex), clean_url))
@@ -322,7 +333,24 @@ def url_log_summary(request):
     # Exclude admin URLs from the final list
     url_data = [item for item in url_data if not item['url'].startswith('/admin')]
 
-    sort = request.GET.get('sort', 'url')
+    # アクセス総数を計算し、各URLの割合を算出
+    total_count = sum(item['count'] for item in url_data)
+    # 最大アクセス数を取得
+    max_count = max(item['count'] for item in url_data) if url_data else 0
+
+    # 各URLの割合と、最大値に対する相対的な割合を計算
+    for item in url_data:
+        if total_count > 0:
+            item['percentage'] = (item['count'] / total_count) * 100
+        else:
+            item['percentage'] = 0
+        
+        if max_count > 0:
+            item['relative_percentage'] = (item['count'] / max_count) * 100
+        else:
+            item['relative_percentage'] = 0
+
+    sort = request.GET.get('sort', '-count')
     reverse = sort.startswith('-')
     sort_key = sort.lstrip('-')
 
