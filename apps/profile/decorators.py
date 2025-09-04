@@ -39,7 +39,9 @@ def check_staff_agreement(view_func):
 
             if unagreed_agreements.exists():
                 # 未同意の規約があれば、その接続の同意画面にリダイレクト
-                return redirect(reverse('connect:staff_agree', kwargs={'pk': connection.pk}))
+                agree_url = reverse('connect:staff_agree', kwargs={'pk': connection.pk})
+                # 元のURLをnextパラメータとして付与
+                return redirect(f'{agree_url}?next={request.path}')
 
         return view_func(request, *args, **kwargs)
     return _wrapped_view

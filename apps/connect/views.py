@@ -156,6 +156,11 @@ def staff_agree(request, pk):
                     defaults={'is_agreed': True}
                 )
 
+            # nextパラメータがあればそちらにリダイレクト
+            next_url = request.GET.get('next')
+            if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+                return redirect(next_url)
+
             # 同意が得られたので、再度承認処理を試みる
             return connect_staff_approve(request, pk)
     else:
