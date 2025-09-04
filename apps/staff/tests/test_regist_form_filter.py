@@ -180,7 +180,7 @@ class RegistFormFilterTest(TestCase):
         self.assertContains(response, '山田')  # 退職者
         
         # デフォルト選択状態の確認
-        self.assertContains(response, 'value="">全ての登録区分</option>')
+        self.assertContains(response, 'value="">登録区分（全て）</option>')
 
     def test_regist_form_filter_with_search(self):
         """検索キーワードと登録区分フィルターの組み合わせテスト"""

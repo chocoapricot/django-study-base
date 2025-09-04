@@ -207,7 +207,7 @@ class StaffViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         
         # 登録区分の選択肢が含まれていることを確認
-        self.assertContains(response, '全ての登録区分')
+        self.assertContains(response, '登録区分（全て）')
         self.assertContains(response, '正社員')
         self.assertContains(response, '契約社員')
         self.assertContains(response, '派遣社員')
