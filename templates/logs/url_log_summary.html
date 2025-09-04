@@ -48,7 +48,7 @@
                     <td class="text-end">{{ item.percentage|floatformat:1 }}%</td>
                     <td>
                         <div class="progress bg-transparent" style="height: 10px;">
-                            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ item.relative_percentage|floatformat:2 }}%;" aria-valuenow="{{ item.relative_percentage|floatformat:2 }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar" role="progressbar" style="width: {{ item.relative_percentage|floatformat:2 }}%;" aria-valuenow="{{ item.relative_percentage|floatformat:2 }}" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                     </td>
                 </tr>
