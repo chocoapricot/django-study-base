@@ -43,7 +43,7 @@ class AccessLogViewTest(TestCase):
         AccessLog.objects.create(url='/staff/staff/detail/2/', user=self.user)
 
         # Access the log view page
-        response = self.client.get(reverse('logs:access_log_list'))
+        response = self.client.get(reverse('logs:url_log_summary'))
         self.assertEqual(response.status_code, 200)
 
         url_data = {item['url']: item['count'] for item in response.context['url_data']}
@@ -68,13 +68,13 @@ class AccessLogViewTest(TestCase):
         AccessLog.objects.create(url='/staff/', user=self.user)
         AccessLog.objects.create(url='/staff/', user=self.user)
 
-        response = self.client.get(reverse('logs:access_log_list') + '?sort=-count')
+        response = self.client.get(reverse('logs:url_log_summary') + '?sort=-count')
         self.assertEqual(response.status_code, 200)
         url_data = response.context['url_data']
         counts = [item['count'] for item in url_data]
         self.assertEqual(counts, sorted(counts, reverse=True), "Should be sorted by count descending")
 
-        response = self.client.get(reverse('logs:access_log_list') + '?sort=url')
+        response = self.client.get(reverse('logs:url_log_summary') + '?sort=url')
         self.assertEqual(response.status_code, 200)
         url_data = response.context['url_data']
         urls = [item['url'] for item in url_data]

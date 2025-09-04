@@ -280,7 +280,7 @@ def get_url_patterns(url_patterns, parent_route=''):
 
 @login_required
 @permission_required('logs.view_accesslog', raise_exception=True)
-def access_log_list(request):
+def url_log_summary(request):
     """アクセスログ一覧"""
     start_date_str = request.GET.get('start_date', '')
     end_date_str = request.GET.get('end_date', '')
@@ -336,4 +336,4 @@ def access_log_list(request):
         'sort': sort,
     }
 
-    return render(request, 'logs/access_log_list.html', context)
+    return render(request, 'logs/url_log_summary.html', context)
