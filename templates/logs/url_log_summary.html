@@ -17,7 +17,7 @@
                     <input type="date" id="end_date" name="end_date" class="form-control form-control-sm" value="{{ end_date|default:'' }}">
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary btn-sm">フィルタ</button>
+                    <button type="submit" class="btn btn-primary btn-sm">検索</button>
                 </div>
             </div>
         </form>
@@ -26,13 +26,13 @@
             <thead>
                 <tr>
                     <th>
-                        <a href="?sort={% if sort == 'url' %}-url{% else %}url{% endif %}&start_date={{ start_date|default:'' }}&end_date={{ end_date|default:'' }}">
+                        <a href="?sort={% if sort == 'url' %}-url{% else %}url{% endif %}&start_date={{ start_date|default:'' }}&end_date={{ end_date|default:'' }}" class="no-link-style">
                             URL
                             {% if sort == 'url' %}<i class="bi bi-arrow-down"></i>{% elif sort == '-url' %}<i class="bi bi-arrow-up"></i>{% endif %}
                         </a>
                     </th>
                     <th>
-                        <a href="?sort={% if sort == '-count' %}count{% else %}-count{% endif %}&start_date={{ start_date|default:'' }}&end_date={{ end_date|default:'' }}">
+                        <a href="?sort={% if sort == '-count' %}count{% else %}-count{% endif %}&start_date={{ start_date|default:'' }}&end_date={{ end_date|default:'' }}" class="no-link-style">
                             アクセス件数
                             {% if sort == '-count' %}<i class="bi bi-arrow-up"></i>{% elif sort == 'count' %}<i class="bi bi-arrow-down"></i>{% endif %}
                         </a>
