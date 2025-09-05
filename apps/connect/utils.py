@@ -78,7 +78,7 @@ def check_and_grant_permissions_for_email(email):
     except User.DoesNotExist:
         return False
     except Exception as e:
-        print(f"[ERROR] 権限チェックエラー: {e}")
+        #print(f"[ERROR] 権限チェックエラー: {e}")
         return False
 
 
@@ -140,7 +140,7 @@ def check_and_grant_client_permissions_for_email(email):
             return False
             
     except User.DoesNotExist:
-        print(f"[INFO] ユーザー {email} は存在しません")
+        #print(f"[INFO] ユーザー {email} は存在しません")
         return False
     except Exception as e:
         print(f"[ERROR] クライアント権限チェックエラー: {e}")

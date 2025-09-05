@@ -1,13 +1,14 @@
 from django import forms
 from django.core.mail import send_mail
-from django.template.loader import render_to_string
+from django.template import Context, Template
 from django.conf import settings
 from apps.system.logs.models import MailLog
-from apps.staff.models import StaffContacted, Staff
+from apps.staff.models import StaffContacted
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from apps.company.models import Company
+from apps.master.models import MailTemplate
 
 
 class StaffMailForm(forms.Form):
@@ -152,11 +153,14 @@ class ConnectionRequestMailForm:
         user_exists = User.objects.filter(email=self.staff.email).exists()
 
         if user_exists:
-            subject_template_name = 'staff/email/connect_request_existing_user_subject.txt'
-            message_template_name = 'staff/email/connect_request_existing_user_message.txt'
+            template_key = 'connect_request_existing_user'
         else:
-            subject_template_name = 'staff/email/connect_request_new_user_subject.txt'
-            message_template_name = 'staff/email/connect_request_new_user_message.txt'
+            template_key = 'connect_request_new_user'
+
+        try:
+            mail_template = MailTemplate.objects.get(template_key=template_key)
+        except MailTemplate.DoesNotExist:
+            return False, f"メールテンプレート '{template_key}' が見つかりません。"
 
         company = Company.objects.first()
         company_name = company.name if company else '貴社'
@@ -164,14 +168,18 @@ class ConnectionRequestMailForm:
         login_url = settings.LOGIN_URL
         signup_url = reverse('account_signup')
 
-        context = {
+        context = Context({
             'staff_name': self.staff.name,
             'company_name': company_name,
             'login_url': login_url,
             'signup_url': signup_url,
-        }
-        subject = render_to_string(subject_template_name, context).strip()
-        body = render_to_string(message_template_name, context)
+        })
+        
+        subject_template = Template(mail_template.subject)
+        body_template = Template(mail_template.body)
+
+        subject = subject_template.render(context)
+        body = body_template.render(context)
 
         # メールログを作成
         mail_log = MailLog.objects.create(
@@ -231,18 +239,25 @@ class DisconnectionMailForm:
 
     def send_mail(self):
         """メール送信処理"""
-        subject_template_name = 'staff/email/disconnection_notification_subject.txt'
-        message_template_name = 'staff/email/disconnection_notification_message.txt'
+        template_key = 'disconnection_notification'
+        try:
+            mail_template = MailTemplate.objects.get(template_key=template_key)
+        except MailTemplate.DoesNotExist:
+            return False, f"メールテンプレート '{template_key}' が見つかりません。"
 
         company = Company.objects.first()
         company_name = company.name if company else '貴社'
 
-        context = {
+        context = Context({
             'staff_name': self.staff.name,
             'company_name': company_name,
-        }
-        subject = render_to_string(subject_template_name, context).strip()
-        body = render_to_string(message_template_name, context)
+        })
+        
+        subject_template = Template(mail_template.subject)
+        body_template = Template(mail_template.body)
+
+        subject = subject_template.render(context)
+        body = body_template.render(context)
 
         # メールログを作成
         mail_log = MailLog.objects.create(

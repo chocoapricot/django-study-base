@@ -27,9 +27,9 @@ class MyPasswordValidator:
                 code='password_too_short',
             )
         # 最大文字数チェック（設定がある場合のみ）
-        print(f"[DEBUG] max_length={max_length}, len(password)={len(password)}, password='{password}'")
+        #print(f"[DEBUG] max_length={max_length}, len(password)={len(password)}, password='{password}'")
         if max_length is not None and len(password) > max_length:
-            print(f"[DEBUG] パスワード長超過: {len(password)} > {max_length}")
+            #print(f"[DEBUG] パスワード長超過: {len(password)} > {max_length}")
             raise ValidationError(
                 _(f"パスワードは{max_length}文字以下で入力してください。"),
                 code='password_too_long',
