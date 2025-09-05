@@ -575,11 +575,13 @@ class MailTemplate(MyModel):
     """
     メールテンプレートを管理するマスターデータモデル。
     """
+    name = models.CharField('日本語名', max_length=255, editable=False, default='')
     template_key = models.CharField(
         'テンプレートキー',
         max_length=255,
         unique=True,
-        help_text='プログラム側で識別するためのキー（例: "connect_request_new_user"）'
+        help_text='プログラム側で識別するためのキー（例: "connect_request_new_user"）',
+        editable=False
     )
     subject = models.CharField('件名', max_length=255)
     body = models.TextField('本文')
@@ -592,7 +594,7 @@ class MailTemplate(MyModel):
         ordering = ['template_key']
 
     def __str__(self):
-        return f'{self.template_key} - {self.subject}'
+        return self.name
 
 
 class StaffAgreement(MyModel):

@@ -17,8 +17,8 @@ class MailTemplateViewTest(TestCase):
         permissions = Permission.objects.filter(
             content_type__app_label='master',
             codename__in=[
-                'add_mailtemplate', 'view_mailtemplate',
-                'change_mailtemplate', 'delete_mailtemplate'
+                'view_mailtemplate',
+                'change_mailtemplate',
             ]
         )
         self.user.user_permissions.set(permissions)
@@ -27,6 +27,7 @@ class MailTemplateViewTest(TestCase):
         self.client.login(username='testuser', password='testpass123')
 
         self.template = MailTemplate.objects.create(
+            name='テストテンプレート',
             template_key='test_template',
             subject='Test Subject',
             body='Test Body'
@@ -36,29 +37,15 @@ class MailTemplateViewTest(TestCase):
         """Test the list view."""
         response = self.client.get(reverse('master:mail_template_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.template.template_key)
+        self.assertContains(response, self.template.name)
+        self.assertNotContains(response, '新規作成')
 
     def test_mail_template_detail_view(self):
         """Test the detail view."""
         response = self.client.get(reverse('master:mail_template_detail', kwargs={'pk': self.template.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.template.subject)
-
-    def test_mail_template_create_view(self):
-        """Test the create view (GET)."""
-        response = self.client.get(reverse('master:mail_template_create'))
-        self.assertEqual(response.status_code, 200)
-
-    def test_mail_template_create_post(self):
-        """Test the create view (POST)."""
-        data = {
-            'template_key': 'new_template',
-            'subject': 'New Subject',
-            'body': 'New Body'
-        }
-        response = self.client.post(reverse('master:mail_template_create'), data)
-        self.assertEqual(response.status_code, 302)  # Redirect on success
-        self.assertTrue(MailTemplate.objects.filter(template_key='new_template').exists())
+        self.assertNotContains(response, 'delete/')
 
     def test_mail_template_update_view(self):
         """Test the update view (GET)."""
@@ -68,22 +55,22 @@ class MailTemplateViewTest(TestCase):
     def test_mail_template_update_post(self):
         """Test the update view (POST)."""
         data = {
-            'template_key': 'updated_template',
             'subject': 'Updated Subject',
-            'body': 'Updated Body'
+            'body': 'Updated Body',
+            'remarks': 'Updated remarks.'
         }
         response = self.client.post(reverse('master:mail_template_update', kwargs={'pk': self.template.pk}), data)
         self.assertEqual(response.status_code, 302)  # Redirect on success
         self.template.refresh_from_db()
-        self.assertEqual(self.template.template_key, 'updated_template')
+        self.assertEqual(self.template.subject, 'Updated Subject')
+        self.assertEqual(self.template.body, 'Updated Body')
 
-    def test_mail_template_delete_view(self):
-        """Test the delete view (GET)."""
-        response = self.client.get(reverse('master:mail_template_delete', kwargs={'pk': self.template.pk}))
-        self.assertEqual(response.status_code, 200)
+    def test_create_view_is_removed(self):
+        """Test that the create view returns 404."""
+        with self.assertRaises(Exception):
+            reverse('master:mail_template_create')
 
-    def test_mail_template_delete_post(self):
-        """Test the delete view (POST)."""
-        response = self.client.post(reverse('master:mail_template_delete', kwargs={'pk': self.template.pk}))
-        self.assertEqual(response.status_code, 302)  # Redirect on success
-        self.assertFalse(MailTemplate.objects.filter(pk=self.template.pk).exists())
+    def test_delete_view_is_removed(self):
+        """Test that the delete view returns 404."""
+        with self.assertRaises(Exception):
+            reverse('master:mail_template_delete', kwargs={'pk': self.template.pk})

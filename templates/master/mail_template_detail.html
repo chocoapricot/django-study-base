@@ -1,7 +1,7 @@
 {% extends 'common/_base.html' %}
 {% load static %}
 
-{% block title %}メールテンプレート詳細 - {{ mail_template.template_key }}{% endblock %}
+{% block title %}メールテンプレート詳細 - {{ mail_template.name }}{% endblock %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
@@ -9,6 +9,13 @@
         メールテンプレート詳細
     </div>
     <div class="card-body">
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end">日本語名</label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ mail_template.name }}</p>
+            </div>
+        </div>
+
         <div class="row mb-3">
             <label class="col-sm-2 col-form-label text-start text-md-end">テンプレートキー</label>
             <div class="col-sm-10">
@@ -41,7 +48,6 @@
 
         <div class="d-flex justify-content-start">
             <a href="{% url 'master:mail_template_update' mail_template.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
-            <a href="{% url 'master:mail_template_delete' mail_template.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
             <a href="{% url 'master:mail_template_list' %}" class="btn btn-sm btn-secondary">一覧に戻る</a>
         </div>
     </div>
