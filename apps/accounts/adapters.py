@@ -2,6 +2,10 @@ from allauth.account.adapter import DefaultAccountAdapter
 from django.conf import settings
 from apps.system.logs.utils import log_mail
 from allauth.account.models import EmailAddress
+from apps.master.models import MailTemplate
+from django.template import Context, Template
+from django.core.mail import send_mail
+
 class MyAccountAdapter(DefaultAccountAdapter):
     def save_user(self, request, user, form, commit=True):
         # まずallauthのデフォルトの保存処理を実行
@@ -32,11 +36,28 @@ class MyAccountAdapter(DefaultAccountAdapter):
                 mail_type = 'password_reset'
             elif 'password_change' in template_prefix:
                 mail_type = 'password_change'
-            
-            # メール内容を取得（render_mailはEmailMultiAlternativesオブジェクトを返す）
-            msg = self.render_mail(template_prefix, email, context)
-            subject = msg.subject
-            body = msg.body
+
+            if mail_type == 'password_reset':
+                try:
+                    mail_template = MailTemplate.objects.get(template_key='password_reset_key')
+
+                    # コンテキストにユーザー情報を追加
+                    user = context.get('user')
+                    if user:
+                        context['user_name'] = user.get_full_name() or user.username
+
+                    ctx = Context(context)
+                    subject = Template(mail_template.subject).render(ctx)
+                    body = Template(mail_template.body).render(ctx)
+
+                except MailTemplate.DoesNotExist:
+                    # テンプレートが見つからない場合はデフォルトの動作にフォールバック
+                    return super().send_mail(template_prefix, email, context)
+            else:
+                # 他のメールタイプはデフォルトの動作
+                msg = self.render_mail(template_prefix, email, context)
+                subject = msg.subject
+                body = msg.body
             
             # ログを記録
             mail_log = log_mail(
@@ -50,13 +71,17 @@ class MyAccountAdapter(DefaultAccountAdapter):
             )
             
             # 実際のメール送信
-            result = super().send_mail(template_prefix, email, context)
+            send_mail(
+                subject,
+                body,
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                fail_silently=False,
+            )
             
             # 送信成功時にログを更新
             from apps.system.logs.utils import update_mail_log_status
             update_mail_log_status(mail_log.id, 'sent')
-            
-            return result
             
         except Exception as e:
             # 送信失敗時にログを更新

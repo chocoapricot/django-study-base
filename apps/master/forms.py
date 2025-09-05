@@ -224,6 +224,11 @@ class BillBankForm(forms.ModelForm):
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control form-control-sm', 'placeholder': '支店名を入力'})
     )
+    account_type = forms.ChoiceField(
+        choices=[],
+        label='口座種別',
+        widget=forms.Select,
+    )
 
     class Meta:
         model = BillBank
@@ -234,7 +239,6 @@ class BillBankForm(forms.ModelForm):
         widgets = {
             'bank_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '4'}),
             'branch_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '3'}),
-            'account_type': forms.RadioSelect,
             'account_number': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '8'}),
             'account_holder': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'account_holder_kana': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
@@ -244,6 +248,13 @@ class BillBankForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        from apps.system.settings.models import Dropdowns
+        self.fields['account_type'].choices = [
+            ('', '---------')
+        ] + [
+            (opt.value, opt.name)
+            for opt in Dropdowns.objects.filter(active=True, category='bank_account_type').order_by('disp_seq')
+        ]
         self.fields['bank_code'].required = True
         self.fields['branch_code'].required = True
         self.fields['account_type'].required = True

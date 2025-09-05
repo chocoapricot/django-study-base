@@ -571,6 +571,30 @@ class Bank(MyModel):
         }
 
 
+class MailTemplate(MyModel):
+    """
+    メールテンプレートを管理するマスターデータモデル。
+    """
+    template_key = models.CharField(
+        'テンプレートキー',
+        max_length=255,
+        unique=True,
+        help_text='プログラム側で識別するためのキー（例: "connect_request_new_user"）'
+    )
+    subject = models.CharField('件名', max_length=255)
+    body = models.TextField('本文')
+    remarks = models.TextField('備考', blank=True, null=True, help_text='このテンプレートの説明や変数のリストなど')
+
+    class Meta:
+        db_table = 'apps_master_mail_template'
+        verbose_name = 'メールテンプレート'
+        verbose_name_plural = 'メールテンプレート'
+        ordering = ['template_key']
+
+    def __str__(self):
+        return f'{self.template_key} - {self.subject}'
+
+
 class StaffAgreement(MyModel):
     """
     スタッフ同意文言マスター
