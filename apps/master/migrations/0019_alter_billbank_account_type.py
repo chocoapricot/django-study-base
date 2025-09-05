@@ -15,4 +15,22 @@ class Migration(migrations.Migration):
             name='account_type',
             field=models.CharField(help_text='普通、当座など', max_length=10, verbose_name='口座種別'),
         ),
+        migrations.AddField(
+            model_name="mailtemplate",
+            name="name",
+            field=models.CharField(
+                default="", editable=False, max_length=255, verbose_name="日本語名"
+            ),
+        ),
+        migrations.AlterField(
+            model_name="mailtemplate",
+            name="template_key",
+            field=models.CharField(
+                editable=False,
+                help_text='プログラム側で識別するためのキー（例: "connect_request_new_user"）',
+                max_length=255,
+                unique=True,
+                verbose_name="テンプレートキー",
+            ),
+        ),
     ]
