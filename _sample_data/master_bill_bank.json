@@ -3,9 +3,7 @@
     "model": "master.billbank",
     "pk": 1,
     "fields": {
-      "name": "三菱UFJ銀行",
       "bank_code": "0005",
-      "branch_name": "新宿支店",
       "branch_code": "320",
       "account_type": "ordinary",
       "account_number": "1234567",
@@ -21,9 +19,7 @@
     "model": "master.billbank",
     "pk": 2,
     "fields": {
-      "name": "三井住友銀行",
       "bank_code": "0009",
-      "branch_name": "渋谷支店",
       "branch_code": "140",
       "account_type": "ordinary",
       "account_number": "2345678",
@@ -39,9 +35,7 @@
     "model": "master.billbank",
     "pk": 3,
     "fields": {
-      "name": "みずほ銀行",
       "bank_code": "0001",
-      "branch_name": "丸の内支店",
       "branch_code": "001",
       "account_type": "current",
       "account_number": "3456789",
@@ -57,9 +51,7 @@
     "model": "master.billbank",
     "pk": 4,
     "fields": {
-      "name": "りそな銀行",
       "bank_code": "0010",
-      "branch_name": "大阪支店",
       "branch_code": "001",
       "account_type": "ordinary",
       "account_number": "4567890",
@@ -75,9 +67,7 @@
     "model": "master.billbank",
     "pk": 5,
     "fields": {
-      "name": "ゆうちょ銀行",
       "bank_code": "9900",
-      "branch_name": "〇一八支店",
       "branch_code": "018",
       "account_type": "ordinary",
       "account_number": "5678901",
@@ -93,9 +83,7 @@
     "model": "master.billbank",
     "pk": 6,
     "fields": {
-      "name": "楽天銀行",
       "bank_code": "0036",
-      "branch_name": "第一営業支店",
       "branch_code": "251",
       "account_type": "ordinary",
       "account_number": "6789012",
