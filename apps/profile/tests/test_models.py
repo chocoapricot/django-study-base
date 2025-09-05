@@ -156,6 +156,10 @@ class StaffProfileViewTest(TestCase):
         self.assertContains(response, '太郎')
         self.assertContains(response, 'タナカ')
         self.assertContains(response, 'タロウ')
+
+        # テンプレートタグの出力を確認
+        from apps.system.settings.templatetags.dropdowns import my_name
+        self.assertContains(response, my_name('sex', profile.sex))
     
     def test_profile_edit_view_get_new(self):
         """プロフィール編集ビュー（GET・新規作成）のテスト"""
@@ -200,6 +204,7 @@ class StaffProfileViewTest(TestCase):
         self.assertEqual(profile.name_last, '田中')
         self.assertEqual(profile.name_first, '太郎')
         self.assertEqual(profile.email, self.user.email)
+        self.assertEqual(profile.sex, 1)
     
     def test_profile_edit_view_post_update(self):
         """プロフィール編集ビュー（POST・更新）のテスト"""
@@ -234,6 +239,7 @@ class StaffProfileViewTest(TestCase):
         profile.refresh_from_db()
         self.assertEqual(profile.name_last, '佐藤')
         self.assertEqual(profile.name_first, '花子')
+        self.assertEqual(profile.sex, 1)
     
     def test_profile_delete_view_get(self):
         """プロフィール削除ビュー（GET）のテスト"""

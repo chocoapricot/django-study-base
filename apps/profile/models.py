@@ -180,18 +180,6 @@ class StaffProfile(MyModel):
         address_parts = [self.address1, self.address2, self.address3]
         return ''.join([part for part in address_parts if part])
     
-    @property
-    def sex_display(self):
-        """性別の表示名を返す"""
-        if not self.sex:
-            return ''
-        
-        from apps.system.settings.models import Dropdowns
-        try:
-            dropdown = Dropdowns.objects.get(category='sex', value=self.sex, active=True)
-            return dropdown.name
-        except Dropdowns.DoesNotExist:
-            return self.sex
 
     def __init__(self, *args, **kwargs):
         """新規インスタンス作成時にユーザーの姓・名で初期化する"""
@@ -597,18 +585,6 @@ class StaffProfileDisability(MyModel):
             self.email = self.user.email
         super().save(*args, **kwargs)
 
-    @property
-    def disability_type_display(self):
-        """障害の種類の表示名を取得"""
-        if not self.disability_type:
-            return ''
-
-        from apps.system.settings.models import Dropdowns
-        try:
-            dropdown = Dropdowns.objects.get(category='disability_type', value=self.disability_type, active=True)
-            return dropdown.name
-        except Dropdowns.DoesNotExist:
-            return self.disability_type
 
 
 class StaffProfileContact(MyModel):
