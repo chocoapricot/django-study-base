@@ -34,7 +34,7 @@ class PasswordResetTest(TestCase):
         """有効なメールアドレスでリセット要求をするとメールが送信されリダイレクトすること"""
         response = self.client.post(reverse('account_reset_password'), {'email': 'test@example.com'})
         self.assertEqual(len(mail.outbox), 1)
-        self.assertIn('パスワードリセットのご案内', mail.outbox[0].subject)
+        self.assertIn('パスワード再設定メール', mail.outbox[0].subject)
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('account_reset_password_done'))
 
