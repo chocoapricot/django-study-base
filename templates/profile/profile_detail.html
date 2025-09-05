@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load help_tags %}
+{% load dropdowns %}
 
 {% block title %}基本情報詳細{% endblock %}
 
@@ -32,7 +33,7 @@
             <div class="row mb-1">
                 <label class="col-sm-2 col-form-label text-start text-md-end"><strong>性別</strong></label>
                 <div class="col-sm-10">
-                    <p class="form-control-plaintext">{{ profile.sex_display }}</p>
+                    <p class="form-control-plaintext">{% my_name 'sex' profile.sex %}</p>
                 </div>
             </div>
             <div class="row mb-1">

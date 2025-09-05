@@ -74,7 +74,9 @@ class StaffDisabilityViewsTest(TestCase):
         response = self.client.get(reverse('staff:staff_disability_detail', kwargs={'staff_pk': self.staff.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_disability_detail.html')
-        self.assertContains(response, self.disability_type2.name)
+        # テンプレートタグの出力を確認
+        from apps.system.settings.templatetags.dropdowns import my_name
+        self.assertContains(response, my_name('disability_type', disability.disability_type))
         self.assertContains(response, '2級')
 
 
