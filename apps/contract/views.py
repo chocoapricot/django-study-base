@@ -3,10 +3,11 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from .models import ClientContract, StaffContract
 from .forms import ClientContractForm, StaffContractForm
 from apps.system.logs.models import AppLog
+from apps.common.utils import fill_pdf_from_template
 from apps.client.models import Client
 from apps.staff.models import Staff
 
@@ -509,3 +510,26 @@ def staff_contract_change_history_list(request, pk):
         'list_url_pk': pk,
         'model_name': 'StaffContract'
     })
+
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def client_contract_pdf(request, pk):
+    """クライアント契約書のPDFを生成して返す"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+    client = contract.client
+
+    # フォームに埋め込むデータを準備
+    form_data = {
+        'Text7': client.name if client.name else '',
+        'Text6': client.name_furigana if client.name_furigana else '',
+        'Text10': client.address if client.address else '',
+    }
+
+    # PDFフォームにデータを埋め込む（メモリ上にPDFを作成）
+    output_pdf = fill_pdf_from_template('templates/pdfs/2025bun_01_input.pdf', form_data)
+
+    # メモリ上のPDFをレスポンスとして返す
+    response = HttpResponse(output_pdf.read(), content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="client_contract_{pk}.pdf"'
+    return response
