@@ -396,13 +396,9 @@ class BillBank(MyModel):
     bank_code = models.CharField('銀行コード', max_length=4, help_text='4桁の数字で入力')
     branch_code = models.CharField('支店コード', max_length=3, help_text='3桁の数字で入力')
     account_type = models.CharField(
-        '口座種別', 
-        max_length=10, 
-        choices=[
-            ('ordinary', '普通'),
-            ('current', '当座'),
-        ],
-        default='ordinary'
+        '口座種別',
+        max_length=10,
+        help_text='普通、当座など'
     )
     account_number = models.CharField('口座番号', max_length=8)
     account_holder = models.CharField('口座名義', max_length=100)
@@ -424,9 +420,9 @@ class BillBank(MyModel):
     
     def __str__(self):
         try:
-            return f"{self.bank_name} {self.branch_name} {self.account_type_display} {self.account_number}"
+            return f"{self.bank_name} {self.branch_name} {self.get_account_type_display} {self.account_number}"
         except (Bank.DoesNotExist, BankBranch.DoesNotExist):
-            return f"{self.bank_code} {self.branch_code} {self.account_type_display} {self.account_number}"
+            return f"{self.bank_code} {self.branch_code} {self.get_account_type_display} {self.account_number}"
 
     @property
     def bank(self):
@@ -443,12 +439,19 @@ class BillBank(MyModel):
     @property
     def branch_name(self):
         return self.branch.name
-    
+
     @property
-    def account_type_display(self):
-        """口座種別の表示名"""
-        return dict(self._meta.get_field('account_type').choices).get(self.account_type, self.account_type)
-    
+    def get_account_type_display(self):
+        """口座種別の表示名を取得"""
+        if not self.account_type:
+            return ''
+        try:
+            from apps.system.settings.models import Dropdowns
+            dropdown = Dropdowns.objects.get(category='bank_account_type', value=self.account_type, active=True)
+            return dropdown.name
+        except Dropdowns.DoesNotExist:
+            return self.account_type
+
     @property
     def full_bank_info(self):
         """完全な銀行情報"""
@@ -461,14 +464,14 @@ class BillBank(MyModel):
             if self.branch_code:
                 branch_info += f"（{self.branch_code}）"
             
-            return f"{bank_info}{branch_info} {self.account_type_display} {self.account_number}"
+            return f"{bank_info}{branch_info} {self.get_account_type_display} {self.account_number}"
         except (Bank.DoesNotExist, BankBranch.DoesNotExist):
-            return f"銀行情報不明（{self.bank_code}） 支店情報不明（{self.branch_code}） {self.account_type_display} {self.account_number}"
+            return f"銀行情報不明（{self.bank_code}） 支店情報不明（{self.branch_code}） {self.get_account_type_display} {self.account_number}"
 
     @property
     def account_info(self):
         """口座情報"""
-        return f"{self.account_type_display} {self.account_number} {self.account_holder}"
+        return f"{self.get_account_type_display} {self.account_number} {self.account_holder}"
     
     def clean(self):
         """バリデーション"""

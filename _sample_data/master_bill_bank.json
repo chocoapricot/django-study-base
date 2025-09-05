@@ -5,7 +5,7 @@
     "fields": {
       "bank_code": "0005",
       "branch_code": "320",
-      "account_type": "ordinary",
+      "account_type": "1",
       "account_number": "1234567",
       "account_holder": "株式会社サンプル",
       "account_holder_kana": "カブシキガイシャサンプル",
@@ -20,8 +20,8 @@
     "pk": 2,
     "fields": {
       "bank_code": "0009",
-      "branch_code": "140",
-      "account_type": "ordinary",
+      "branch_code": "001",
+      "account_type": "1",
       "account_number": "2345678",
       "account_holder": "株式会社テスト",
       "account_holder_kana": "カブシキガイシャテスト",
@@ -37,7 +37,7 @@
     "fields": {
       "bank_code": "0001",
       "branch_code": "001",
-      "account_type": "current",
+      "account_type": "2",
       "account_number": "3456789",
       "account_holder": "株式会社デモ",
       "account_holder_kana": "カブシキガイシャデモ",
@@ -53,7 +53,7 @@
     "fields": {
       "bank_code": "0010",
       "branch_code": "001",
-      "account_type": "ordinary",
+      "account_type": "1",
       "account_number": "4567890",
       "account_holder": "合同会社サンプル",
       "account_holder_kana": "ゴウドウガイシャサンプル",
@@ -69,7 +69,7 @@
     "fields": {
       "bank_code": "9900",
       "branch_code": "018",
-      "account_type": "ordinary",
+      "account_type": "1",
       "account_number": "5678901",
       "account_holder": "個人事業主田中太郎",
       "account_holder_kana": "コジンジギョウヌシタナカタロウ",
@@ -85,7 +85,7 @@
     "fields": {
       "bank_code": "0036",
       "branch_code": "251",
-      "account_type": "ordinary",
+      "account_type": "1",
       "account_number": "6789012",
       "account_holder": "株式会社ネット企業",
       "account_holder_kana": "カブシキガイシャネットキギョウ",

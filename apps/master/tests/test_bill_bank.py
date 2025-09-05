@@ -8,12 +8,17 @@ from apps.master.forms import BillBankForm
 User = get_user_model()
 
 
+from apps.system.settings.models import Dropdowns
+
+
 class BillBankModelTest(TestCase):
     """会社銀行モデルのテスト"""
     
     def setUp(self):
         self.bank = Bank.objects.create(name='三菱UFJ銀行', bank_code='0005')
         self.branch = BankBranch.objects.create(bank=self.bank, name='新宿支店', branch_code='001')
+        Dropdowns.objects.create(category='bank_account_type', value='ordinary', name='普通', disp_seq=1)
+        Dropdowns.objects.create(category='bank_account_type', value='current', name='当座', disp_seq=2)
         self.bill_bank = BillBank.objects.create(
             bank_code='0005',
             branch_code='001',
@@ -30,9 +35,9 @@ class BillBankModelTest(TestCase):
         expected = '三菱UFJ銀行 新宿支店 普通 1234567'
         self.assertEqual(str(self.bill_bank), expected)
     
-    def test_account_type_display(self):
+    def test_get_account_type_display(self):
         """口座種別表示のテスト"""
-        self.assertEqual(self.bill_bank.account_type_display, '普通')
+        self.assertEqual(self.bill_bank.get_account_type_display, '普通')
         
         bank2 = Bank.objects.create(name='みずほ銀行', bank_code='0001')
         BankBranch.objects.create(bank=bank2, name='渋谷支店', branch_code='140')
@@ -43,7 +48,7 @@ class BillBankModelTest(TestCase):
             account_number='9876543',
             account_holder='株式会社サンプル'
         )
-        self.assertEqual(bill_bank.account_type_display, '当座')
+        self.assertEqual(bill_bank.get_account_type_display, '当座')
     
     def test_full_bank_info(self):
         """完全な銀行情報のテスト"""
@@ -140,7 +145,7 @@ class BillBankFormTest(TestCase):
         from apps.system.settings.models import Dropdowns
         self.bank = Bank.objects.create(bank_code='0010', name='テスト銀行')
         self.branch = BankBranch.objects.create(bank=self.bank, branch_code='100', name='テスト支店')
-        Dropdowns.objects.create(category='bank_account_type', value='ordinary', name='普通')
+        Dropdowns.objects.create(category='bank_account_type', value='ordinary', name='普通', disp_seq=1)
 
     def test_valid_form(self):
         """有効なフォームのテスト"""

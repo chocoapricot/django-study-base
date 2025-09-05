@@ -56,7 +56,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            {{ bill_bank.account_type_display }} {{ bill_bank.account_number }}
+                            {{ bill_bank.get_account_type_display }} {{ bill_bank.account_number }}
                         </td>
                         <td>
                             {{ bill_bank.account_holder }}
