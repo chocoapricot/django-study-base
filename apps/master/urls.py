@@ -85,8 +85,7 @@ urlpatterns = [
 
     # メールテンプレート管理
     path('mail-template/', views.mail_template_list, name='mail_template_list'),
-    path('mail-template/create/', views.mail_template_create, name='mail_template_create'),
     path('mail-template/<int:pk>/', views.mail_template_detail, name='mail_template_detail'),
     path('mail-template/<int:pk>/update/', views.mail_template_update, name='mail_template_update'),
-    path('mail-template/<int:pk>/delete/', views.mail_template_delete, name='mail_template_delete'),
+    path('mail-template/history/', views.mail_template_change_history_list, name='mail_template_change_history_list'),
 ]

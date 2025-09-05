@@ -20,11 +20,8 @@ class MailTemplateForm(forms.ModelForm):
 
     class Meta:
         model = MailTemplate
-        fields = ["template_key", "subject", "body", "remarks"]
+        fields = ["subject", "body", "remarks"]
         widgets = {
-            "template_key": forms.TextInput(
-                attrs={"class": "form-control form-control-sm"}
-            ),
             "subject": forms.TextInput(attrs={"class": "form-control form-control-sm"}),
             "body": forms.Textarea(
                 attrs={"class": "form-control form-control-sm", "rows": 10}

@@ -3,6 +3,7 @@
     "model": "master.mailtemplate",
     "pk": 1,
     "fields": {
+      "name": "パスワードリセット通知",
       "template_key": "password_reset_key",
       "subject": "パスワードリセットのご案内",
       "body": "{{ user.get_full_name }}様\n\nパスワードのリセットを受け付けました。\n以下のリンクからパスワードの再設定を行ってください。\n\n{{ password_reset_url }}\n\nよろしくお願いいたします。",
@@ -17,6 +18,7 @@
     "model": "master.mailtemplate",
     "pk": 2,
     "fields": {
+      "name": "接続申請通知（既存ユーザー）",
       "template_key": "connect_request_existing_user",
       "subject": "【{{ company_name }}】接続申請のお知らせ",
       "body": "{{ staff_name }}様\n\n{{ company_name }}の管理者より、システムへの接続申請がありました。\n\n下記URLよりログインして、申請を承認してください。\n\n{{ login_url }}\n\nよろしくお願いいたします。",
@@ -31,6 +33,7 @@
     "model": "master.mailtemplate",
     "pk": 3,
     "fields": {
+      "name": "接続申請通知（新規ユーザー）",
       "template_key": "connect_request_new_user",
       "subject": "【{{ company_name }}】アカウント登録と接続申請のお知らせ",
       "body": "{{ staff_name }}様\n\n{{ company_name }}の管理者より、システムへの接続申請がありました。\n\nシステムを利用するにはアカウント登録が必要です。\n下記URLよりアカウント登録を行い、その後、再度ログインして申請を承認してください。\n\n{{ signup_url }}\n\nよろしくお願いいたします。",
@@ -45,6 +48,7 @@
     "model": "master.mailtemplate",
     "pk": 4,
     "fields": {
+      "name": "接続解除通知",
       "template_key": "disconnection_notification",
       "subject": "【{{ company_name }}】接続解除のお知らせ",
       "body": "{{ staff_name }}様\n\n{{ company_name }}の管理者により、システムとの接続が解除されました。\n\nご了承ください。",

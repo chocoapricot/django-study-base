@@ -9,22 +9,25 @@
         {{ title }}
     </div>
     <div class="card-body">
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end">日本語名</label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ mail_template.name }}</p>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end">テンプレートキー</label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ mail_template.template_key }}</p>
+            </div>
+        </div>
+
+        <hr>
+
         <form method="post">
             {% csrf_token %}
             {{ form.non_field_errors }}
-
-            <div class="row mb-3">
-                <label for="{{ form.template_key.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">テンプレートキー <span class="text-danger">*</span></label>
-                <div class="col-sm-6">
-                    {{ form.template_key }}
-                    {% if form.template_key.help_text %}
-                        <small class="form-text text-muted">{{ form.template_key.help_text }}</small>
-                    {% endif %}
-                    {% if form.template_key.errors %}
-                        <div class="text-danger small">{{ form.template_key.errors.0 }}</div>
-                    {% endif %}
-                </div>
-            </div>
 
             <div class="row mb-3">
                 <label for="{{ form.subject.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">件名 <span class="text-danger">*</span></label>
