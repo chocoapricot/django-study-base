@@ -82,4 +82,11 @@ urlpatterns = [
     path('staff-agreement/<int:pk>/update/', views.staff_agreement_update, name='staff_agreement_update'),
     path('staff-agreement/<int:pk>/delete/', views.staff_agreement_delete, name='staff_agreement_delete'),
     path('staff-agreement/history/', views.staff_agreement_change_history_list, name='staff_agreement_change_history_list'),
+
+    # メールテンプレート管理
+    path('mail-template/', views.mail_template_list, name='mail_template_list'),
+    path('mail-template/create/', views.mail_template_create, name='mail_template_create'),
+    path('mail-template/<int:pk>/', views.mail_template_detail, name='mail_template_detail'),
+    path('mail-template/<int:pk>/update/', views.mail_template_update, name='mail_template_update'),
+    path('mail-template/<int:pk>/delete/', views.mail_template_delete, name='mail_template_delete'),
 ]

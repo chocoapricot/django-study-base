@@ -16,6 +16,7 @@ from .models import (
     InformationFile,
     JobCategory,
     StaffAgreement,
+    MailTemplate,
 )
 from .forms import (
     QualificationForm,
@@ -30,6 +31,7 @@ from .forms import (
     CSVImportForm,
     JobCategoryForm,
     StaffAgreementForm,
+    MailTemplateForm,
 )
 from apps.company.models import Company
 from django.http import JsonResponse, HttpResponse
@@ -108,6 +110,14 @@ MASTER_CONFIGS = [
         "model": "master.Information",
         "url_name": "master:information_list",
         "permission": "master.view_information",
+    },
+    {
+        "category": "その他",
+        "name": "メールテンプレート管理",
+        "description": "各種メールテンプレートを管理します",
+        "model": "master.MailTemplate",
+        "url_name": "master:mail_template_list",
+        "permission": "master.view_mailtemplate",
     },
 ]
 
@@ -806,6 +816,110 @@ def qualification_change_history_list(request):
             "model_name": "Qualification",
         },
     )
+
+
+# メールテンプレート管理ビュー
+@login_required
+@permission_required("master.view_mailtemplate", raise_exception=True)
+def mail_template_list(request):
+    """メールテンプレート一覧"""
+    search_query = request.GET.get("search", "")
+
+    mail_templates = MailTemplate.objects.all()
+
+    if search_query:
+        mail_templates = mail_templates.filter(
+            Q(template_key__icontains=search_query)
+            | Q(subject__icontains=search_query)
+            | Q(body__icontains=search_query)
+        )
+
+    mail_templates = mail_templates.order_by("template_key")
+
+    paginator = Paginator(mail_templates, 20)
+    page = request.GET.get("page")
+    mail_templates_page = paginator.get_page(page)
+
+    context = {
+        "mail_templates": mail_templates_page,
+        "search_query": search_query,
+    }
+    return render(request, "master/mail_template_list.html", context)
+
+
+@login_required
+@permission_required("master.view_mailtemplate", raise_exception=True)
+def mail_template_detail(request, pk):
+    """メールテンプレート詳細"""
+    mail_template = get_object_or_404(MailTemplate, pk=pk)
+    context = {"mail_template": mail_template}
+    return render(request, "master/mail_template_detail.html", context)
+
+
+@login_required
+@permission_required("master.add_mailtemplate", raise_exception=True)
+def mail_template_create(request):
+    """メールテンプレート作成"""
+    if request.method == "POST":
+        form = MailTemplateForm(request.POST)
+        if form.is_valid():
+            mail_template = form.save()
+            messages.success(
+                request, f"メールテンプレート「{mail_template.template_key}」を作成しました。"
+            )
+            return redirect("master:mail_template_list")
+    else:
+        form = MailTemplateForm()
+
+    context = {
+        "form": form,
+        "title": "メールテンプレート作成",
+    }
+    return render(request, "master/mail_template_form.html", context)
+
+
+@login_required
+@permission_required("master.change_mailtemplate", raise_exception=True)
+def mail_template_update(request, pk):
+    """メールテンプレート編集"""
+    mail_template = get_object_or_404(MailTemplate, pk=pk)
+
+    if request.method == "POST":
+        form = MailTemplateForm(request.POST, instance=mail_template)
+        if form.is_valid():
+            mail_template = form.save()
+            messages.success(
+                request, f"メールテンプレート「{mail_template.template_key}」を更新しました。"
+            )
+            return redirect("master:mail_template_list")
+    else:
+        form = MailTemplateForm(instance=mail_template)
+
+    context = {
+        "form": form,
+        "mail_template": mail_template,
+        "title": f"メールテンプレート編集 - {mail_template.template_key}",
+    }
+    return render(request, "master/mail_template_form.html", context)
+
+
+@login_required
+@permission_required("master.delete_mailtemplate", raise_exception=True)
+def mail_template_delete(request, pk):
+    """メールテンプレート削除"""
+    mail_template = get_object_or_404(MailTemplate, pk=pk)
+
+    if request.method == "POST":
+        mail_template_key = mail_template.template_key
+        mail_template.delete()
+        messages.success(request, f"メールテンプレート「{mail_template_key}」を削除しました。")
+        return redirect("master:mail_template_list")
+
+    context = {
+        "mail_template": mail_template,
+        "title": f"メールテンプレート削除 - {mail_template.template_key}",
+    }
+    return render(request, "master/mail_template_confirm_delete.html", context)
 
 
 @login_required
