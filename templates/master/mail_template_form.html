@@ -1,0 +1,69 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        {{ title }}
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            <div class="row mb-3">
+                <label for="{{ form.template_key.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">テンプレートキー <span class="text-danger">*</span></label>
+                <div class="col-sm-6">
+                    {{ form.template_key }}
+                    {% if form.template_key.help_text %}
+                        <small class="form-text text-muted">{{ form.template_key.help_text }}</small>
+                    {% endif %}
+                    {% if form.template_key.errors %}
+                        <div class="text-danger small">{{ form.template_key.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="{{ form.subject.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">件名 <span class="text-danger">*</span></label>
+                <div class="col-sm-8">
+                    {{ form.subject }}
+                    {% if form.subject.errors %}
+                        <div class="text-danger small">{{ form.subject.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="{{ form.body.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">本文 <span class="text-danger">*</span></label>
+                <div class="col-sm-8">
+                    {{ form.body }}
+                    {% if form.body.errors %}
+                        <div class="text-danger small">{{ form.body.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="{{ form.remarks.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">備考</label>
+                <div class="col-sm-8">
+                    {{ form.remarks }}
+                     {% if form.remarks.help_text %}
+                        <small class="form-text text-muted">{{ form.remarks.help_text }}</small>
+                    {% endif %}
+                    {% if form.remarks.errors %}
+                        <div class="text-danger small">{{ form.remarks.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
+                <a href="{% url 'master:mail_template_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

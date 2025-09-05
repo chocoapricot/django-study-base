@@ -1,7 +1,38 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Qualification, Skill, BillPayment, BillBank, Bank, BankBranch, Information, JobCategory, StaffAgreement
+from .models import (
+    Qualification,
+    Skill,
+    BillPayment,
+    BillBank,
+    Bank,
+    BankBranch,
+    Information,
+    JobCategory,
+    StaffAgreement,
+    MailTemplate,
+)
 from apps.system.settings.models import Dropdowns
+
+
+class MailTemplateForm(forms.ModelForm):
+    """メールテンプレートフォーム"""
+
+    class Meta:
+        model = MailTemplate
+        fields = ["template_key", "subject", "body", "remarks"]
+        widgets = {
+            "template_key": forms.TextInput(
+                attrs={"class": "form-control form-control-sm"}
+            ),
+            "subject": forms.TextInput(attrs={"class": "form-control form-control-sm"}),
+            "body": forms.Textarea(
+                attrs={"class": "form-control form-control-sm", "rows": 10}
+            ),
+            "remarks": forms.Textarea(
+                attrs={"class": "form-control form-control-sm", "rows": 3}
+            ),
+        }
 
 
 class CustomModelChoiceField(forms.ModelChoiceField):

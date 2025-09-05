@@ -1,0 +1,40 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block title %}メールテンプレート削除確認{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        メールテンプレート削除確認
+    </div>
+    <div class="card-body">
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            メールテンプレート「{{ mail_template.template_key }}」を削除しますか？この操作は取り消せません。
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end">テンプレートキー</label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ mail_template.template_key }}</p>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label text-start text-md-end">件名</label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ mail_template.subject }}</p>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-dark me-2">削除</button>
+                <a href="{% url 'master:mail_template_detail' mail_template.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

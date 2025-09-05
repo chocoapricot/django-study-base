@@ -1,0 +1,101 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block title %}メールテンプレート一覧{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        メールテンプレート一覧
+        <div>
+            <a href="{% url 'master:mail_template_create' %}" class="btn btn-sm btn-primary">
+                新規作成
+            </a>
+        </div>
+    </div>
+    <div class="card-body mb-0">
+        <!-- 検索フォーム -->
+        <form method="get" class="mb-3">
+            <div class="row">
+                <div class="col-md-5">
+                    <input type="text" name="search" value="{{ search_query }}" class="form-control form-control-sm" placeholder="キー、件名、本文で検索">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-sm btn-primary">検索</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- 一覧テーブル -->
+        <div class="table-responsive">
+            <table class="table table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th width="25%">テンプレートキー</th>
+                        <th width="30%">件名</th>
+                        <th width="35%">本文</th>
+                        <th width="10%">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in mail_templates %}
+                    <tr>
+                        <td><a href="{% url 'master:mail_template_detail' t.pk %}">{{ t.template_key }}</a></td>
+                        <td>{{ t.subject|truncatechars:50 }}</td>
+                        <td>{{ t.body|truncatechars:80 }}</td>
+                        <td>
+                            <a href="{% url 'master:mail_template_update' t.pk %}" class="btn btn-dark btn-sm" title="編集">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{% url 'master:mail_template_delete' t.pk %}" class="btn btn-dark btn-sm" title="削除">
+                                <i class="bi bi-x"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">メールテンプレートが登録されていません。</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ページネーション -->
+        {% if mail_templates.has_other_pages %}
+        <nav aria-label="ページネーション">
+            <ul class="pagination pagination-sm justify-content-center">
+                {% if mail_templates.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ mail_templates.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">前へ</a>
+                    </li>
+                {% endif %}
+
+                {% for num in mail_templates.paginator.page_range %}
+                    {% if mail_templates.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > mail_templates.number|add:'-3' and num < mail_templates.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if mail_templates.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ mail_templates.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">次へ</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+        <div class="d-flex justify-content-start mt-3">
+            <a href="{% url 'master:master_index_list' %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
