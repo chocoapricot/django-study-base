@@ -81,8 +81,8 @@ def get_dropdown_display_name(field_name, value, model_name):
 def log_pre_save(sender, instance, **kwargs):
     if 'migrate' in sys.argv or 'makemigrations' in sys.argv:
         return
-    # AppLog自身、MailLog、migrate時は除外
-    if sender.__name__ in ['AppLog', 'MailLog', 'Migration'] or sender._meta.app_label == 'sessions':
+    # AppLog自身、MailLog、AccessLog、migrate時は除外
+    if sender.__name__ in ['AppLog', 'MailLog', 'AccessLog', 'Migration'] or sender._meta.app_label == 'sessions':
         return
     if not instance.pk:
         # 新規作成は差分不要
@@ -118,8 +118,8 @@ def log_pre_save(sender, instance, **kwargs):
 def log_save(sender, instance, created, **kwargs):
     if 'migrate' in sys.argv or 'makemigrations' in sys.argv:
         return
-    # AppLog自身、MailLog、migrate時は除外
-    if sender.__name__ in ['AppLog', 'MailLog', 'Migration'] or sender._meta.app_label == 'sessions':
+    # AppLog自身、MailLog、AccessLog、migrate時は除外
+    if sender.__name__ in ['AppLog', 'MailLog', 'AccessLog', 'Migration'] or sender._meta.app_label == 'sessions':
         return
     if created:
         log_action(instance, 'create')
@@ -135,7 +135,7 @@ def log_save(sender, instance, created, **kwargs):
 def log_delete(sender, instance, **kwargs):
     if 'migrate' in sys.argv or 'makemigrations' in sys.argv:
         return
-    # AppLog自身、MailLog、migrate時は除外
-    if sender.__name__ in ['AppLog', 'MailLog', 'Migration'] or sender._meta.app_label == 'sessions':
+    # AppLog自身、MailLog、AccessLog、migrate時は除外
+    if sender.__name__ in ['AppLog', 'MailLog', 'AccessLog', 'Migration'] or sender._meta.app_label == 'sessions':
         return
     log_action(instance, 'delete')
