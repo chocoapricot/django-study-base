@@ -217,13 +217,14 @@ class StaffProfileBankForm(forms.ModelForm):
         model = StaffProfileBank
         fields = [
             'bank_code', 'branch_code', 'account_type',
-            'account_number', 'account_holder'
+            'account_number', 'account_holder', 'document_file'
         ]
         widgets = {
             'bank_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '4'}),
             'branch_code': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '3'}),
             'account_number': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'maxlength': '8'}),
             'account_holder': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'document_file': forms.FileInput(attrs={'class': 'form-control form-control-sm'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -238,6 +239,7 @@ class StaffProfileBankForm(forms.ModelForm):
         self.fields['account_type'].required = True
         self.fields['account_number'].required = True
         self.fields['account_holder'].required = True
+        self.fields['document_file'].required = False
         if self.instance and self.instance.pk:
             self.fields['bank_name'].initial = self.instance.bank_name
             self.fields['branch_name'].initial = self.instance.branch_name

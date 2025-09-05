@@ -9,7 +9,7 @@
         {% if is_new %}銀行口座登録{% else %}銀行口座編集{% endif %}
     </div>
     <div class="card-body">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
 
             <div class="row align-items-center">
@@ -85,6 +85,22 @@
                     {{ form.account_holder }}
                     {% if form.account_holder.errors %}
                         <div class="text-danger small">{{ form.account_holder.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <label for="{{ form.document_file.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">確認書類</label>
+                <div class="col-sm-6">
+                    {{ form.document_file }}
+                    {% if form.document_file.errors %}
+                        <div class="text-danger small">{{ form.document_file.errors.0 }}</div>
+                    {% endif %}
+                    {% if form.instance.document_file %}
+                        <p class="form-text">
+                            現在設定されているファイル:
+                            <a href="{{ form.instance.document_file.url }}" target="_blank">{{ form.instance.document_file.name }}</a>
+                        </p>
                     {% endif %}
                 </div>
             </div>

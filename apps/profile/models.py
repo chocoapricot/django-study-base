@@ -30,6 +30,16 @@ def profile_international_file_path(instance, filename):
     return f'profile-files/{instance.user.id}/international/{filename}'
 
 
+def profile_bank_file_path(instance, filename):
+    """
+    銀行口座関連ファイルのアップロード先パスを生成する。
+    MEDIA_ROOT/profile-files/<user_id>/bank/<uuid>.<ext>
+    """
+    ext = filename.split('.')[-1]
+    filename = f"{uuid.uuid4()}.{ext}"
+    return f'profile-files/{instance.user.id}/bank/{filename}'
+
+
 def validate_mynumber(value):
     """マイナンバーのバリデーション関数"""
     if not value:
@@ -489,6 +499,13 @@ class StaffProfileBank(MyModel):
         max_length=100,
         verbose_name='口座名義',
         help_text='口座名義人の名前'
+    )
+    document_file = models.FileField(
+        verbose_name='確認書類',
+        upload_to=profile_bank_file_path,
+        blank=True,
+        null=True,
+        help_text='通帳の表紙など、銀行情報が確認できる書類をアップロードしてください。'
     )
 
     class Meta:

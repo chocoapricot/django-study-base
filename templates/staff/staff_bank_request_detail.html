@@ -95,6 +95,17 @@
                             {% endif %}
                         </td>
                     </tr>
+                    <tr>
+                        <td><strong>確認書類</strong></td>
+                        <td>(なし)</td>
+                        <td>
+                            {% if profile_bank.document_file %}
+                                <a href="{{ profile_bank.document_file.url }}" target="_blank" class="text-primary fw-bold">申請されたファイルを表示</a>
+                            {% else %}
+                                (なし)
+                            {% endif %}
+                        </td>
+                    </tr>
                     {% endwith %}
                 </tbody>
             </table>

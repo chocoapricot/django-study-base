@@ -312,7 +312,7 @@ def bank_edit(request):
         is_new = True
 
     if request.method == 'POST':
-        form = StaffProfileBankForm(request.POST, instance=bank)
+        form = StaffProfileBankForm(request.POST, request.FILES, instance=bank)
         if form.is_valid():
             bank = form.save(commit=False)
             bank.user = request.user
