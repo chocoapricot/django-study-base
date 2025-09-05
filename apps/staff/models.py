@@ -540,19 +540,6 @@ class StaffBank(MyModel):
             return ' '.join(parts)
         return '銀行情報なし'
 
-    @property
-    def get_account_type_display(self):
-        """口座種別の表示名を取得"""
-        if not self.account_type:
-            return ''
-        try:
-            from apps.system.settings.models import Dropdowns
-            dropdown = Dropdowns.objects.get(category='bank_account_type', value=self.account_type, active=True)
-            return dropdown.name
-        except Dropdowns.DoesNotExist:
-            return self.account_type
-
-
 class StaffInternational(MyModel):
     """
     スタッフの外国籍情報を管理するモデル。

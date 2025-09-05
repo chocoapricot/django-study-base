@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load help_tags %}
+{% load dropdowns %}
 
 {% block title %}スタッフ銀行情報詳細{% endblock %}
 
@@ -29,7 +30,7 @@
         <div class="row mb-1">
             <label class="col-sm-2 col-form-label text-start text-md-end"><strong>口座</strong></label>
             <div class="col-sm-10">
-                <p class="form-control-plaintext">{{ bank.get_account_type_display }} {{ bank.account_number }}</p>
+                <p class="form-control-plaintext">{% my_name 'bank_account_type' bank.account_type %} {{ bank.account_number }}</p>
             </div>
         </div>
 

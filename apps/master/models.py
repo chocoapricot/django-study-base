@@ -420,9 +420,9 @@ class BillBank(MyModel):
     
     def __str__(self):
         try:
-            return f"{self.bank_name} {self.branch_name} {self.get_account_type_display} {self.account_number}"
+            return f"{self.bank_name} {self.branch_name} {self.account_type} {self.account_number}"
         except (Bank.DoesNotExist, BankBranch.DoesNotExist):
-            return f"{self.bank_code} {self.branch_code} {self.get_account_type_display} {self.account_number}"
+            return f"{self.bank_code} {self.branch_code} {self.account_type} {self.account_number}"
 
     @property
     def bank(self):
@@ -441,18 +441,6 @@ class BillBank(MyModel):
         return self.branch.name
 
     @property
-    def get_account_type_display(self):
-        """口座種別の表示名を取得"""
-        if not self.account_type:
-            return ''
-        try:
-            from apps.system.settings.models import Dropdowns
-            dropdown = Dropdowns.objects.get(category='bank_account_type', value=self.account_type, active=True)
-            return dropdown.name
-        except Dropdowns.DoesNotExist:
-            return self.account_type
-
-    @property
     def full_bank_info(self):
         """完全な銀行情報"""
         try:
@@ -464,14 +452,14 @@ class BillBank(MyModel):
             if self.branch_code:
                 branch_info += f"（{self.branch_code}）"
             
-            return f"{bank_info}{branch_info} {self.get_account_type_display} {self.account_number}"
+            return f"{bank_info}{branch_info} {self.account_type} {self.account_number}"
         except (Bank.DoesNotExist, BankBranch.DoesNotExist):
-            return f"銀行情報不明（{self.bank_code}） 支店情報不明（{self.branch_code}） {self.get_account_type_display} {self.account_number}"
+            return f"銀行情報不明（{self.bank_code}） 支店情報不明（{self.branch_code}） {self.account_type} {self.account_number}"
 
     @property
     def account_info(self):
         """口座情報"""
-        return f"{self.get_account_type_display} {self.account_number} {self.account_holder}"
+        return f"{self.account_type} {self.account_number} {self.account_holder}"
     
     def clean(self):
         """バリデーション"""

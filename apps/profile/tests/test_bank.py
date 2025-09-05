@@ -59,7 +59,6 @@ class StaffProfileBankModelTest(TestCase):
         
         self.assertEqual(bank.bank_name, 'テスト銀行')
         self.assertEqual(bank.branch_name, 'テスト支店')
-        self.assertEqual(bank.get_account_type_display, '普通')
 
 
 class StaffProfileBankFormTest(TestCase):

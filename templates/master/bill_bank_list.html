@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load static %}
+{% load dropdowns %}
 
 {% block title %}会社銀行一覧{% endblock %}
 
@@ -56,7 +57,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            {{ bill_bank.get_account_type_display }} {{ bill_bank.account_number }}
+                            {% my_name 'bank_account_type' bill_bank.account_type %} {{ bill_bank.account_number }}
                         </td>
                         <td>
                             {{ bill_bank.account_holder }}

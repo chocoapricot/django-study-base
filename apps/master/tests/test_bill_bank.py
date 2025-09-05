@@ -32,27 +32,12 @@ class BillBankModelTest(TestCase):
     
     def test_str_method(self):
         """__str__メソッドのテスト"""
-        expected = '三菱UFJ銀行 新宿支店 普通 1234567'
+        expected = '三菱UFJ銀行 新宿支店 ordinary 1234567'
         self.assertEqual(str(self.bill_bank), expected)
-    
-    def test_get_account_type_display(self):
-        """口座種別表示のテスト"""
-        self.assertEqual(self.bill_bank.get_account_type_display, '普通')
-        
-        bank2 = Bank.objects.create(name='みずほ銀行', bank_code='0001')
-        BankBranch.objects.create(bank=bank2, name='渋谷支店', branch_code='140')
-        bill_bank = BillBank.objects.create(
-            bank_code='0001',
-            branch_code='140',
-            account_type='current',
-            account_number='9876543',
-            account_holder='株式会社サンプル'
-        )
-        self.assertEqual(bill_bank.get_account_type_display, '当座')
     
     def test_full_bank_info(self):
         """完全な銀行情報のテスト"""
-        expected = '三菱UFJ銀行（0005） 新宿支店（001） 普通 1234567'
+        expected = '三菱UFJ銀行（0005） 新宿支店（001） ordinary 1234567'
         self.assertEqual(self.bill_bank.full_bank_info, expected)
         
         bank2 = Bank.objects.create(name='地方銀行', bank_code='0097')
@@ -64,12 +49,12 @@ class BillBankModelTest(TestCase):
             account_number='1111111',
             account_holder='テスト会社'
         )
-        expected_with_code = '地方銀行（0097） 本店（997） 普通 1111111'
+        expected_with_code = '地方銀行（0097） 本店（997） ordinary 1111111'
         self.assertEqual(bill_bank.full_bank_info, expected_with_code)
     
     def test_account_info(self):
         """口座情報のテスト"""
-        expected = '普通 1234567 株式会社テスト'
+        expected = 'ordinary 1234567 株式会社テスト'
         self.assertEqual(self.bill_bank.account_info, expected)
     
     def test_validation_bank_code(self):
