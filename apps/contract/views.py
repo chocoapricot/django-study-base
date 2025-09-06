@@ -522,56 +522,46 @@ def staff_contract_change_history_list(request, pk):
 def client_contract_pdf(request, pk):
     """クライアント契約書のPDFを生成して返す"""
     contract = get_object_or_404(ClientContract, pk=pk)
-    client = contract.client
 
-    # フォームに埋め込むデータを準備
-    form_data = {
-        'Text7': client.name if client.name else '',
-        'Text6': client.name_furigana if client.name_furigana else '',
-        'Text10': client.address if client.address else '',
-    }
-
-    # PDFフォームにデータを埋め込む（メモリ上にPDFを作成）
-    output_pdf = fill_pdf_from_template('templates/pdfs/2025bun_01_input.pdf', form_data)
-
-    # メモリ上のPDFをレスポンスとして返す
-    response = HttpResponse(output_pdf.read(), content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="client_contract_{pk}.pdf"'
-    return response
-
-
-@login_required
-@permission_required('contract.view_clientcontract', raise_exception=True)
-def client_contracts_pdf(request):
-    """クライアント契約一覧のPDFを生成して返す"""
     # フォントの登録
     font_path = 'statics/fonts/ipag.ttf'
     pdfmetrics.registerFont(TTFont('IPAG', font_path))
 
     # レスポンスの準備
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="client_contracts.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="client_contract_{pk}.pdf"'
 
     # PDFドキュメントの作成
     buffer = io.BytesIO()
     p = canvas.Canvas(buffer, pagesize=letter)
-    p.setFont('IPAG', 10)
-
-    # 契約データの取得
-    contracts = ClientContract.objects.select_related('client').all().order_by('client__name', '-start_date')
+    p.setFont('IPAG', 12)
 
     # PDFに内容を書き込む
-    p.drawString(50, 750, "クライアント契約一覧")
+    p.drawString(50, 750, f"契約詳細: {contract.contract_name}")
     y = 720
-    for contract in contracts:
+
+    fields = {
+        "クライアント": contract.client.name,
+        "契約番号": contract.contract_number,
+        "契約種別": contract.get_contract_type_display(),
+        "契約開始日": contract.start_date,
+        "契約終了日": contract.end_date or "N/A",
+        "契約金額": f"{contract.contract_amount} 円" if contract.contract_amount else "N/A",
+        "支払いサイト": contract.payment_site.name if contract.payment_site else "N/A",
+        "自動更新": "はい" if contract.auto_renewal else "いいえ",
+        "ステータス": contract.status,
+        "契約内容": contract.description,
+        "備考": contract.notes,
+    }
+
+    for label, value in fields.items():
         if y < 50:
             p.showPage()
-            p.setFont('IPAG', 10)
+            p.setFont('IPAG', 12)
             y = 750
-
-        text = f"契約名: {contract.contract_name}, クライアント: {contract.client.name}, 契約期間: {contract.start_date} ~ {contract.end_date or 'N/A'}, ステータス: {contract.status}"
-        p.drawString(50, y, text)
-        y -= 20
+        text = f"{label}: {value}"
+        p.drawString(60, y, text)
+        y -= 25
 
     p.showPage()
     p.save()

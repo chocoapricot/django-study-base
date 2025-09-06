@@ -13,7 +13,6 @@ urlpatterns = [
     path('client/<int:pk>/', views.client_contract_detail, name='client_contract_detail'),
     path('client/<int:pk>/update/', views.client_contract_update, name='client_contract_update'),
     path('client/<int:pk>/delete/', views.client_contract_delete, name='client_contract_delete'),
-    path('client/pdf/', views.client_contracts_pdf, name='client_contracts_pdf'),
     path('client/<int:pk>/pdf/', views.client_contract_pdf, name='client_contract_pdf'),
     path('client/<int:pk>/change_history/', views.client_contract_change_history_list, name='client_contract_change_history_list'),
     
