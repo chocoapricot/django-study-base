@@ -12,9 +12,12 @@
         {% else %}
             クライアント契約一覧
         {% endif %}
-        {% if not client_filter %}
-            <a href="{% url 'contract:client_contract_create' %}" class="btn btn-sm btn-primary me-2">新規作成</a>
-        {% endif %}
+        <div>
+            <a href="{% url 'contract:client_contracts_pdf' %}" class="btn btn-sm btn-secondary me-2">PDFダウンロード</a>
+            {% if not client_filter %}
+                <a href="{% url 'contract:client_contract_create' %}" class="btn btn-sm btn-primary me-2">新規作成</a>
+            {% endif %}
+        </div>
     </div>
     <div class="card-body">
         <!-- クライアントフィルタ時のパンくずリスト -->

@@ -10,6 +10,11 @@ from apps.system.logs.models import AppLog
 from apps.common.utils import fill_pdf_from_template
 from apps.client.models import Client
 from apps.staff.models import Staff
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+import io
 
 
 # 契約管理トップページ
@@ -532,4 +537,47 @@ def client_contract_pdf(request, pk):
     # メモリ上のPDFをレスポンスとして返す
     response = HttpResponse(output_pdf.read(), content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="client_contract_{pk}.pdf"'
+    return response
+
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def client_contracts_pdf(request):
+    """クライアント契約一覧のPDFを生成して返す"""
+    # フォントの登録
+    font_path = 'statics/fonts/ipag.ttf'
+    pdfmetrics.registerFont(TTFont('IPAG', font_path))
+
+    # レスポンスの準備
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="client_contracts.pdf"'
+
+    # PDFドキュメントの作成
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    p.setFont('IPAG', 10)
+
+    # 契約データの取得
+    contracts = ClientContract.objects.select_related('client').all().order_by('client__name', '-start_date')
+
+    # PDFに内容を書き込む
+    p.drawString(50, 750, "クライアント契約一覧")
+    y = 720
+    for contract in contracts:
+        if y < 50:
+            p.showPage()
+            p.setFont('IPAG', 10)
+            y = 750
+
+        text = f"契約名: {contract.contract_name}, クライアント: {contract.client.name}, 契約期間: {contract.start_date} ~ {contract.end_date or 'N/A'}, ステータス: {contract.status}"
+        p.drawString(50, y, text)
+        y -= 20
+
+    p.showPage()
+    p.save()
+
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
+
     return response
