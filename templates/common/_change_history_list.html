@@ -115,36 +115,8 @@
         </table>
         
         <!-- ページネーション（ページ分割されている場合） -->
-         {% if change_logs.has_other_pages %}
-        <ul class="pagination pagination-sm">
-            <!-- 最初のページ -->
-            <li class="page-item {% if not change_logs.has_previous %}disabled{% endif %}">
-                <a class="page-link" href="{% if change_logs.has_previous %}?page=1{% else %}#{% endif %}">&laquo;</a>
-            </li>
-            {% for num in change_logs.paginator.page_range %}
-                {% if num == change_logs.number %}
-                    <li class="page-item active">
-                        <a class="page-link" href="#">{{ num }}</a>
-                    </li>
-                {% elif num > change_logs.number|add:-3 and num < change_logs.number|add:3 %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                    </li>
-                {% elif num == 1 or num == change_logs.paginator.num_pages %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                    </li>
-                {% elif num == change_logs.number|add:-3 or num == change_logs.number|add:3 %}
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#">...</a>
-                    </li>
-                {% endif %}
-            {% endfor %}
-            <!-- 最後のページ -->
-            <li class="page-item {% if not logs.has_next %}disabled{% endif %}">
-                <a class="page-link" href="{% if logs.has_next %}?page={{ logs.paginator.num_pages }}{% else %}#{% endif %} ">&raquo;</a>
-            </li>
-        </ul>
+        {% if change_logs.has_other_pages %}
+            {% include 'common/_pagination.html' with page_obj=change_logs %}
         {% endif %}
 
         <!-- 戻るボタン（全件表示画面でのみ表示） -->
