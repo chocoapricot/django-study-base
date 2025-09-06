@@ -14,6 +14,8 @@ pip install django-currentuser
 pip install pillow
 # API処理用？
 pip install requests
+# PDF
+pip install reportlab
 # Excel埋め込み用
 pip install openpyxl
 # PDFフォーム埋め込み用⇒Acrobatで表示されない
