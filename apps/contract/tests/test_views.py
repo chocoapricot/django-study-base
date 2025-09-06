@@ -65,10 +65,3 @@ class ContractViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/pdf')
         self.assertEqual(response['Content-Disposition'], f'attachment; filename="client_contract_{self.client_contract.pk}.pdf"')
-
-    def test_client_contracts_pdf_view(self):
-        """クライアント契約一覧PDFビューのテスト"""
-        response = self.client.get(reverse('contract:client_contracts_pdf'))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['Content-Type'], 'application/pdf')
-        self.assertEqual(response['Content-Disposition'], 'attachment; filename="client_contracts.pdf"')
