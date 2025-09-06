@@ -273,7 +273,7 @@ class RegistFormFilterTest(TestCase):
                 hire_date=date(2020, 4, (i % 28) + 1)  # 入社日を追加（月内の日付でループ）
             )
         
-        response = self.client.get(reverse('staff:staff_list'), {'regist_form': '1'})
+        response = self.client.get(reverse('staff:staff_list'), {'regist_form': '1', 'q': '', 'sort': ''})
         self.assertEqual(response.status_code, 200)
         
         # ページネーションリンクにregist_formパラメータが含まれていることを確認
@@ -281,7 +281,7 @@ class RegistFormFilterTest(TestCase):
         
         # 次のページリンクを確認
         if response.context['staffs'].has_next:
-            self.assertContains(response, f'page={response.context["staffs"].paginator.num_pages}&sort=&q=&regist_form=1')
+            self.assertContains(response, f'href="?regist_form=1&amp;q=&amp;sort=&amp;page={response.context["staffs"].next_page_number()}"')
 
     def test_regist_form_badge_display(self):
         """登録区分バッジの表示テスト"""
