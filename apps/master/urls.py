@@ -88,6 +88,7 @@ urlpatterns = [
     path('contract-pattern/create/', views.contract_pattern_create, name='contract_pattern_create'),
     path('contract-pattern/<int:pk>/update/', views.contract_pattern_update, name='contract_pattern_update'),
     path('contract-pattern/<int:pk>/delete/', views.contract_pattern_delete, name='contract_pattern_delete'),
+    path('contract-pattern/history/', views.contract_pattern_change_history_list, name='contract_pattern_change_history_list'),
 
     # メールテンプレート管理
     path('mail-template/', views.mail_template_list, name='mail_template_list'),
