@@ -73,7 +73,7 @@ class ContractPatternForm(forms.ModelForm):
         fields = ['name', 'contract_type', 'display_order', 'is_active']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'contract_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'contract_type': forms.RadioSelect(),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
@@ -85,7 +85,7 @@ class ContractTermForm(forms.ModelForm):
         model = ContractTerms
         fields = ['contract_clause', 'contract_terms', 'display_order']
         widgets = {
-            'contract_clause': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'contract_clause': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_terms': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
         }
