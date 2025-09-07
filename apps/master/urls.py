@@ -86,9 +86,13 @@ urlpatterns = [
     # 契約パターン管理
     path('contract-pattern/', views.contract_pattern_list, name='contract_pattern_list'),
     path('contract-pattern/create/', views.contract_pattern_create, name='contract_pattern_create'),
+    path('contract-pattern/<int:pk>/detail/', views.contract_pattern_detail, name='contract_pattern_detail'),
     path('contract-pattern/<int:pk>/update/', views.contract_pattern_update, name='contract_pattern_update'),
     path('contract-pattern/<int:pk>/delete/', views.contract_pattern_delete, name='contract_pattern_delete'),
     path('contract-pattern/history/', views.contract_pattern_change_history_list, name='contract_pattern_change_history_list'),
+    path('contract-pattern/<int:pattern_pk>/term/create/', views.contract_term_create, name='contract_term_create'),
+    path('contract-term/<int:pk>/update/', views.contract_term_update, name='contract_term_update'),
+    path('contract-term/<int:pk>/delete/', views.contract_term_delete, name='contract_term_delete'),
 
     # メールテンプレート管理
     path('mail-template/', views.mail_template_list, name='mail_template_list'),

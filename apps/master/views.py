@@ -35,7 +35,7 @@ from .forms import (
     StaffAgreementForm,
     MailTemplateForm,
     ContractPatternForm,
-    BaseContractTermsFormSet,
+    ContractTermForm,
 )
 from apps.company.models import Company
 from django.http import JsonResponse, HttpResponse
@@ -2233,20 +2233,15 @@ def contract_pattern_create(request):
     """契約パターン作成"""
     if request.method == 'POST':
         form = ContractPatternForm(request.POST)
-        formset = BaseContractTermsFormSet(request.POST)
-        if form.is_valid() and formset.is_valid():
+        if form.is_valid():
             pattern = form.save()
-            formset.instance = pattern
-            formset.save()
             messages.success(request, f"契約パターン「{pattern.name}」を作成しました。")
             return redirect('master:contract_pattern_list')
     else:
         form = ContractPatternForm()
-        formset = BaseContractTermsFormSet()
 
     context = {
         'form': form,
-        'formset': formset,
         'title': '契約パターン作成'
     }
     return render(request, 'master/contract_pattern_form.html', context)
@@ -2259,24 +2254,33 @@ def contract_pattern_update(request, pk):
     pattern = get_object_or_404(ContractPattern, pk=pk)
     if request.method == 'POST':
         form = ContractPatternForm(request.POST, instance=pattern)
-        formset = BaseContractTermsFormSet(request.POST, instance=pattern)
-        if form.is_valid() and formset.is_valid():
+        if form.is_valid():
             pattern = form.save()
-            formset.instance = pattern
-            formset.save()
             messages.success(request, f"契約パターン「{pattern.name}」を更新しました。")
             return redirect('master:contract_pattern_list')
     else:
         form = ContractPatternForm(instance=pattern)
-        formset = BaseContractTermsFormSet(instance=pattern)
 
     context = {
         'form': form,
-        'formset': formset,
         'pattern': pattern,
         'title': f'契約パターン編集 - {pattern.name}'
     }
     return render(request, 'master/contract_pattern_form.html', context)
+
+
+@login_required
+@permission_required("master.view_contractpattern", raise_exception=True)
+def contract_pattern_detail(request, pk):
+    """契約パターン詳細"""
+    pattern = get_object_or_404(ContractPattern, pk=pk)
+    terms = pattern.terms.all().order_by('display_order')
+    context = {
+        'pattern': pattern,
+        'terms': terms,
+        'title': f'契約パターン詳細 - {pattern.name}'
+    }
+    return render(request, 'master/contract_pattern_detail.html', context)
 
 
 @login_required
@@ -2322,3 +2326,69 @@ def contract_pattern_change_history_list(request):
             "model_name": "ContractPattern",
         },
     )
+
+
+@login_required
+@permission_required("master.add_contractterms", raise_exception=True)
+def contract_term_create(request, pattern_pk):
+    """契約文言作成"""
+    pattern = get_object_or_404(ContractPattern, pk=pattern_pk)
+    if request.method == 'POST':
+        form = ContractTermForm(request.POST)
+        if form.is_valid():
+            term = form.save(commit=False)
+            term.contract_pattern = pattern
+            term.save()
+            messages.success(request, "契約文言を作成しました。")
+            return redirect('master:contract_pattern_detail', pk=pattern_pk)
+    else:
+        form = ContractTermForm()
+
+    context = {
+        'form': form,
+        'pattern': pattern,
+        'title': '契約文言作成'
+    }
+    return render(request, 'master/contract_term_form.html', context)
+
+
+@login_required
+@permission_required("master.change_contractterms", raise_exception=True)
+def contract_term_update(request, pk):
+    """契約文言編集"""
+    term = get_object_or_404(ContractTerms, pk=pk)
+    pattern = term.contract_pattern
+    if request.method == 'POST':
+        form = ContractTermForm(request.POST, instance=term)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "契約文言を更新しました。")
+            return redirect('master:contract_pattern_detail', pk=pattern.pk)
+    else:
+        form = ContractTermForm(instance=term)
+
+    context = {
+        'form': form,
+        'term': term,
+        'pattern': pattern,
+        'title': '契約文言編集'
+    }
+    return render(request, 'master/contract_term_form.html', context)
+
+
+@login_required
+@permission_required("master.delete_contractterms", raise_exception=True)
+def contract_term_delete(request, pk):
+    """契約文言削除"""
+    term = get_object_or_404(ContractTerms, pk=pk)
+    pattern_pk = term.contract_pattern.pk
+    if request.method == 'POST':
+        term.delete()
+        messages.success(request, "契約文言を削除しました。")
+        return redirect('master:contract_pattern_detail', pk=pattern_pk)
+
+    context = {
+        'term': term,
+        'title': '契約文言削除'
+    }
+    return render(request, 'master/contract_term_confirm_delete.html', context)
