@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
     branchNameInput.setAttribute('list', 'branch-list');
 
     // 銀行名から銀行情報を検索
-    bankNameInput.addEventListener('input', function() {
+    bankNameInput.addEventListener('keyup', function() {
         const query = bankNameInput.value;
         if (query.length < 1) return;
 
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // 銀行名が選択されたら銀行コードをセット
-    bankNameInput.addEventListener('change', function() {
+    bankNameInput.addEventListener('keyup', function() {
         const selectedOption = Array.from(bankList.options).find(opt => opt.value === bankNameInput.value);
         if (selectedOption) {
             bankCodeInput.value = selectedOption.dataset.code;
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // 銀行コードから銀行名を取得
-    bankCodeInput.addEventListener('change', function() {
+    bankCodeInput.addEventListener('keyup', function() {
         const code = bankCodeInput.value;
         if (code.length === 4) {
             fetch(`{% url 'search_banks' %}?q=${code}`)
@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // 支店名から支店情報を検索
-    branchNameInput.addEventListener('input', function() {
+    branchNameInput.addEventListener('keyup', function() {
         const bankCode = bankCodeInput.value;
         const query = branchNameInput.value;
         if (query.length < 1 || !bankCode) return;

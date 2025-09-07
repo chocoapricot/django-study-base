@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // 銀行コード入力時に銀行名を取得
-    bankCodeInput.addEventListener('change', function() {
+    bankCodeInput.addEventListener('keyup', function() {
         const bankCode = bankCodeInput.value;
         if (bankCode.length === 4) {
             fetch(`{% url 'search_banks' %}?q=${bankCode}`)
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // 支店コード入力時に支店名を取得
-    branchCodeInput.addEventListener('change', function() {
+    branchCodeInput.addEventListener('keyup', function() {
         const branchCode = branchCodeInput.value;
         const bankCode = bankCodeInput.value;
         if (branchCode.length === 3 && bankCode) {
