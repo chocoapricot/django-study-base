@@ -79,18 +79,16 @@ class ContractPatternForm(forms.ModelForm):
         }
 
 
-BaseContractTermsFormSet = forms.inlineformset_factory(
-    ContractPattern,
-    ContractTerms,
-    fields=('contract_clause', 'contract_terms', 'display_order'),
-    extra=1,
-    can_delete=True,
-    widgets={
-        'contract_clause': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
-        'contract_terms': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
-        'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
-    }
-)
+class ContractTermForm(forms.ModelForm):
+    """契約文言フォーム"""
+    class Meta:
+        model = ContractTerms
+        fields = ['contract_clause', 'contract_terms', 'display_order']
+        widgets = {
+            'contract_clause': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'contract_terms': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+        }
 
 
 class QualificationCategoryForm(forms.ModelForm):
