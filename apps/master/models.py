@@ -562,6 +562,65 @@ class Bank(MyModel):
         }
 
 
+class ContractPattern(MyModel):
+    """
+    契約パターンマスタ
+    """
+    CONTRACT_TYPE_CHOICES = [
+        ('staff', 'スタッフ契約'),
+        ('client', 'クライアント契約'),
+    ]
+    name = models.CharField('名称', max_length=100)
+    contract_type = models.CharField(
+        '契約種別',
+        max_length=10,
+        choices=CONTRACT_TYPE_CHOICES,
+        default='staff',
+    )
+    display_order = models.IntegerField('表示順', default=0)
+    is_active = models.BooleanField('有効', default=True)
+
+    class Meta:
+        db_table = 'apps_master_contract_pattern'
+        verbose_name = '契約パターン'
+        verbose_name_plural = '契約パターン'
+        ordering = ['display_order', 'name']
+        indexes = [
+            models.Index(fields=['is_active']),
+            models.Index(fields=['display_order']),
+        ]
+
+    def __str__(self):
+        return self.name
+
+
+class ContractTerms(MyModel):
+    """
+    契約文言マスタ
+    """
+    contract_pattern = models.ForeignKey(
+        ContractPattern,
+        on_delete=models.CASCADE,
+        verbose_name='契約パターン',
+        related_name='terms'
+    )
+    contract_clause = models.TextField('契約条項')
+    contract_terms = models.TextField('契約文言')
+    display_order = models.IntegerField('表示順', default=0)
+
+    class Meta:
+        db_table = 'apps_master_contract_terms'
+        verbose_name = '契約文言'
+        verbose_name_plural = '契約文言'
+        ordering = ['display_order']
+        indexes = [
+            models.Index(fields=['display_order']),
+        ]
+
+    def __str__(self):
+        return f"{self.contract_pattern.name} - {self.id}"
+
+
 class MailTemplate(MyModel):
     """
     メールテンプレートを管理するマスターデータモデル。
