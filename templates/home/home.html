@@ -32,7 +32,7 @@
         </div>
         {% if information_count > 5 %}
         <div class="card-footer text-center">
-            <a href="{% url 'home:information_list' %}" class="text-decoration-none">全て表示</a>
+            <a href="{% url 'home:information_list' %}" class="text-decoration-none">全て表示 (全{{ information_count }}件)</a>
         </div>
         {% endif %}
     </div>
