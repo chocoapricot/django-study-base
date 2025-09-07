@@ -2,6 +2,7 @@ from django import forms
 from .models import ClientContract, StaffContract
 from apps.client.models import Client
 from apps.staff.models import Staff
+from apps.system.settings.models import Dropdowns
 
 
 class ClientContractForm(forms.ModelForm):
@@ -21,7 +22,7 @@ class ClientContractForm(forms.ModelForm):
     class Meta:
         model = ClientContract
         fields = [
-            'client', 'contract_name', 'contract_number', 'contract_type',
+            'client', 'contract_name', 'contract_number', 'contract_type', 'contract_status',
             'start_date', 'end_date', 'contract_amount',
             'description', 'notes', 'payment_site', 'is_active'
         ]
@@ -30,6 +31,7 @@ class ClientContractForm(forms.ModelForm):
             'contract_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'contract_status': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'contract_amount': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
@@ -49,6 +51,9 @@ class ClientContractForm(forms.ModelForm):
         # 支払条件の選択肢を設定（デフォルト）
         self.fields['payment_site'].queryset = BillPayment.get_active_list()
         
+        #契約状況の選択肢を設定
+        self.fields['contract_status'].choices = [(d.value, d.name) for d in Dropdowns.objects.filter(category='contract_status', active=True)]
+
         # クライアントを取得
         client = None
         if self.instance and self.instance.pk and hasattr(self.instance, 'client') and self.instance.client:
@@ -139,7 +144,7 @@ class StaffContractForm(forms.ModelForm):
     class Meta:
         model = StaffContract
         fields = [
-            'staff', 'contract_name', 'contract_number', 'contract_type',
+            'staff', 'contract_name', 'contract_number', 'contract_type', 'contract_status',
             'start_date', 'end_date', 'contract_amount',
             'description', 'notes', 'is_active'
         ]
@@ -148,6 +153,7 @@ class StaffContractForm(forms.ModelForm):
             'contract_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'contract_status': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'contract_amount': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
@@ -161,6 +167,9 @@ class StaffContractForm(forms.ModelForm):
         # 編集時に選択されたスタッフ名を表示
         if self.instance and self.instance.pk and hasattr(self.instance, 'staff') and self.instance.staff:
             self.fields['staff_display'].initial = f"{self.instance.staff.name_last} {self.instance.staff.name_first}"
+
+        #契約状況の選択肢を設定
+        self.fields['contract_status'].choices = [(d.value, d.name) for d in Dropdowns.objects.filter(category='contract_status', active=True)]
     
     def clean(self):
         cleaned_data = super().clean()
