@@ -3,15 +3,32 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>{{ title }}</h2>
-    <p>本当に契約パターン「{{ pattern.name }}」を削除しますか？</p>
-    <p>この操作は元に戻せません。</p>
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">{{ title }}</div>
+    <div class="card-body">
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            契約パターン「{{ pattern.name }}」を削除しますか？この操作は取り消せません。
+        </div>
 
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">削除</button>
-        <a href="{% url 'master:contract_pattern_list' %}" class="btn btn-secondary">キャンセル</a>
-    </form>
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-3 text-start text-md-end">
+                <strong>名称</strong>
+            </div>
+            <div class="col-sm-9">
+                {{ pattern.name }}
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <button type="submit" class="btn btn-sm btn-dark me-2">削除</button>
+                    <a href="{% url 'master:contract_pattern_detail' pattern.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}
