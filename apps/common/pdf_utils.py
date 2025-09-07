@@ -43,13 +43,15 @@ def generate_contract_pdf(buffer, title, intro_text, items):
         story.append(Paragraph(intro_text, styles['IntroText']))
 
     # 3. 各項目の表示
+    table_data = []
     for item in items:
         item_title = Paragraph(item.get('title', ''), styles['ItemTitle'])
         item_text = Paragraph(item.get('text', '').replace('\n', '<br/>'), styles['ItemText'])
+        table_data.append([item_title, item_text])
 
+    if table_data:
         # テーブルで罫線を表現
-        data = [[item_title, item_text]]
-        table = Table(data, colWidths=['25%', '75%'])
+        table = Table(table_data, colWidths=['25%', '75%'])
         table.setStyle(TableStyle([
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
