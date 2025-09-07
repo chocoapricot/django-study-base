@@ -46,6 +46,7 @@ Django学習用のプロジェクトです。スタッフ管理とクライア�
 - `pillow`: 画像処理
 - `openpyxl`: Excelファイル処理
 - `PyMuPDF`: PDF処理
+- `reportlab`: PDF処理
 - `requests`: HTTP通信
 - `python-stdnum`: 各種標準番号の検証
 
@@ -118,11 +119,11 @@ django-study-base/
 | `apps_contract_client` | クライアント契約 |
 | `apps_contract_staff` | スタッフ契約 |
 | `apps_master_bank` | 銀行マスター |
-| `apps_master_bank_branch` | 銀行支店マスター |
+| `apps_master_bank_branch` | 銀行支店マスター（銀行に対して１：N） |
 | `apps_master_bill_bank` | 会社銀行マスター |
 | `apps_master_bill_payment` | 支払条件マスター |
-| `apps_master_contract_pattern` | （自動追加） |
-| `apps_master_contract_terms` | （自動追加） |
+| `apps_master_contract_pattern` | 契約パターンマスター |
+| `apps_master_contract_terms` | 契約文言マスター（契約パターンに対して１：N） |
 | `apps_master_information` | お知らせマスター |
 | `apps_master_information_file` | お知らせファイル |
 | `apps_master_job_category` | 職種マスター |
@@ -148,7 +149,7 @@ django-study-base/
 | `apps_staff_mynumber` | スタッフマイナンバー |
 | `apps_staff_qualification` | スタッフ保有資格 |
 | `apps_staff_skill` | スタッフ保有スキル |
-| `apps_system_access_log` | （自動追加） |
+| `apps_system_access_log` | アクセスログ集計用 |
 | `apps_system_app_log` | アプリケーション操作ログ |
 | `apps_system_dropdowns` | ドロップダウン設定 |
 | `apps_system_mail_log` | メール送信ログ |
