@@ -107,6 +107,7 @@ class AppLog(models.Model):
         ('login_failed', 'ログイン失敗'),
         ('logout', 'ログアウト'),
         ('view', '閲覧'),
+        ('print', '印刷'),
     ]
     
     user = models.ForeignKey(

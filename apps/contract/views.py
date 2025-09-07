@@ -136,7 +136,7 @@ def client_contract_detail(request, pk):
     change_logs = AppLog.objects.filter(
         model_name='ClientContract',
         object_id=str(contract.pk),
-        action__in=['create', 'update', 'delete']
+        action__in=['create', 'update', 'delete', 'print']
     ).order_by('-timestamp')[:10]  # 最新10件
     
     context = {
@@ -312,7 +312,7 @@ def staff_contract_detail(request, pk):
     change_logs = AppLog.objects.filter(
         model_name='StaffContract',
         object_id=str(contract.pk),
-        action__in=['create', 'update', 'delete']
+        action__in=['create', 'update', 'delete', 'print']
     ).order_by('-timestamp')[:10]  # 最新10件
     
     context = {
@@ -586,6 +586,15 @@ def client_contract_pdf(request, pk):
     buffer.close()
     response.write(pdf)
 
+    # AppLogに記録
+    AppLog.objects.create(
+        user=request.user,
+        action='print',
+        model_name='ClientContract',
+        object_id=str(contract.pk),
+        object_repr=f'契約書PDF出力: {contract.contract_name}'
+    )
+
     return response
 
 
@@ -654,5 +663,14 @@ def staff_contract_pdf(request, pk):
     pdf = buffer.getvalue()
     buffer.close()
     response.write(pdf)
+
+    # AppLogに記録
+    AppLog.objects.create(
+        user=request.user,
+        action='print',
+        model_name='StaffContract',
+        object_id=str(contract.pk),
+        object_repr=f'契約書PDF出力: {contract.contract_name}'
+    )
 
     return response
