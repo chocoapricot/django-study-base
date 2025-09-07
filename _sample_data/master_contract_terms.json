@@ -1,0 +1,156 @@
+[
+  {
+    "model": "master.contractterms",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "contract_pattern": 1,
+      "contract_clause": "第1条（目的）",
+      "contract_terms": "本契約は、甲と乙の間の雇用関係を定めるものである。",
+      "display_order": 10
+    }
+  },
+  {
+    "model": "master.contractterms",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "contract_pattern": 1,
+      "contract_clause": "第2条（業務内容）",
+      "contract_terms": "乙は、甲の指示に従い、誠実に業務を遂行するものとする。",
+      "display_order": 20
+    }
+  },
+  {
+    "model": "master.contractterms",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "contract_pattern": 2,
+      "contract_clause": "第1条（契約期間）",
+      "contract_terms": "本契約の期間は、YYYY年MM月DD日からYYYY年MM月DD日までとする。",
+      "display_order": 10
+    }
+  },
+  {
+    "model": "master.contractterms",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "contract_pattern": 2,
+      "contract_clause": "第2条（更新）",
+      "contract_terms": "本契約は、期間満了の1ヶ月前までに甲乙いずれかから申し出がない限り、同一条件で1年間更新されるものとする。",
+      "display_order": 20
+    }
+  },
+  {
+    "model": "master.contractterms",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "contract_pattern": 3,
+      "contract_clause": "第1条（派遣基本契約）",
+      "contract_terms": "甲は乙に対し、労働者派遣法に基づき、労働者を派遣する。",
+      "display_order": 10
+    }
+  },
+  {
+    "model": "master.contractterms",
+    "pk": 6,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "contract_pattern": 4,
+      "contract_clause": "第1条（紹介予定派遣）",
+      "contract_terms": "甲は乙に対し、紹介予定派遣として労働者を派遣する。",
+      "display_order": 10
+    }
+  },
+  {
+    "model": "master.contractterms",
+    "pk": 7,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "contract_pattern": 5,
+      "contract_clause": "第1条（業務委託）",
+      "contract_terms": "甲は乙に対し、本件業務を委託し、乙はこれを受託する。",
+      "display_order": 10
+    }
+  },
+  {
+    "model": "master.contractterms",
+    "pk": 8,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "contract_pattern": 5,
+      "contract_clause": "第2条（成果物）",
+      "contract_terms": "乙は、甲に対し、本件業務の成果物を納入するものとする。",
+      "display_order": 20
+    }
+  },
+  {
+    "model": "master.contractterms",
+    "pk": 9,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "contract_pattern": 6,
+      "contract_clause": "第1条（業務委託）",
+      "contract_terms": "甲は乙に対し、本件業務を委託し、乙はこれを受託する。",
+      "display_order": 10
+    }
+  },
+  {
+    "model": "master.contractterms",
+    "pk": 10,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "contract_pattern": 6,
+      "contract_clause": "第2条（善管注意義務）",
+      "contract_terms": "乙は、善良なる管理者の注意をもって、本件業務を遂行するものとする。",
+      "display_order": 20
+    }
+  },
+  {
+    "model": "master.contractterms",
+    "pk": 11,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "contract_pattern": 7,
+      "contract_clause": "第1条（派遣基本契約）",
+      "contract_terms": "甲は乙に対し、労働者派遣法に基づき、労働者を派遣する。",
+      "display_order": 10
+    }
+  }
+]

@@ -42,6 +42,9 @@ def main():
         "_sample_data/master_staff_agreement.json",
         "_sample_data/master_information.json",
         "_sample_data/master_mail_template.json",
+        "_sample_data/master_job_category.json",
+        "_sample_data/master_contract_pattern.json",
+        "_sample_data/master_contract_terms.json",
         "_sample_data/company.json",
         "_sample_data/company_department.json",
         "_sample_data/company_user.json",
@@ -82,6 +85,9 @@ def main():
         ("python manage.py loaddata _sample_data/master_staff_agreement.json", "スタッフ同意文言マスタデータ"),
         ("python manage.py loaddata _sample_data/master_information.json", "お知らせマスタデータ"),
         ("python manage.py loaddata _sample_data/master_mail_template.json", "メールテンプレートマスタデータ"),
+        ("python manage.py loaddata _sample_data/master_job_category.json", "職種マスタデータ"),
+        ("python manage.py loaddata _sample_data/master_contract_pattern.json", "契約パターンマスタデータ"),
+        ("python manage.py loaddata _sample_data/master_contract_terms.json", "契約文言マスタデータ"),
         ("python manage.py loaddata _sample_data/company.json", "会社データ"),
         ("python manage.py loaddata _sample_data/company_department.json", "部署データ"),
         ("python manage.py loaddata _sample_data/company_user.json", "自社担当者データ"),
@@ -115,6 +121,9 @@ def main():
     print("- 銀行支店マスタ")
     print("- お知らせマスタ")
     print("- メールテンプレートマスタ")
+    print("- 職種マスタ")
+    print("- 契約パターンマスタ")
+    print("- 契約文言マスタ")
     print("- 会社データ")
     print("- 部署データ")
     print("- 自社担当者データ")
