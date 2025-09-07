@@ -551,8 +551,14 @@ def client_contract_pdf(request, pk):
         {"title": "備考", "text": str(contract.notes)},
     ]
 
+    # ステータスが30未満（下書き、確認中）の場合は透かしを入れる
+    watermark = None
+    # contract_status is a CharField, so we need to convert to int for comparison
+    if contract.contract_status and int(contract.contract_status) < 30:
+        watermark = 'DRAFT'
+
     # 共通関数を呼び出してPDFを生成
-    generate_contract_pdf(buffer, title, intro_text, items)
+    generate_contract_pdf(buffer, title, intro_text, items, watermark_text=watermark)
 
     # レスポンスにPDFを書き込む
     pdf = buffer.getvalue()
@@ -594,8 +600,13 @@ def staff_contract_pdf(request, pk):
         {"title": "備考", "text": str(contract.notes or "")},
     ]
 
+    # ステータスが30未満（下書き、確認中）の場合は透かしを入れる
+    watermark = None
+    if contract.contract_status and int(contract.contract_status) < 30:
+        watermark = 'DRAFT'
+
     # 共通関数を呼び出してPDFを生成
-    generate_contract_pdf(buffer, title, intro_text, items)
+    generate_contract_pdf(buffer, title, intro_text, items, watermark_text=watermark)
 
     # レスポンスにPDFを書き込む
     pdf = buffer.getvalue()

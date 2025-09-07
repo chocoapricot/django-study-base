@@ -10,7 +10,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 
-def generate_contract_pdf(buffer, title, intro_text, items):
+def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None):
     """
     契約書形式のPDFを生成する共通関数
 
@@ -18,6 +18,7 @@ def generate_contract_pdf(buffer, title, intro_text, items):
     :param title: 帳票のメインタイトル
     :param intro_text: タイトルの下に表示する前文
     :param items: 罫線付きで表示する項目のリスト。各項目は {'title': '項目名', 'text': '内容'} の辞書。
+    :param watermark_text: 透かしとして表示する文字列（オプショナル）
     """
     # 日本語フォントの登録
     font_path = 'statics/fonts/ipagp.ttf'  # プロポーショナルフォントを使用
@@ -60,5 +61,19 @@ def generate_contract_pdf(buffer, title, intro_text, items):
         story.append(table)
         story.append(Spacer(1, 10))
 
+    # 透かしを描画する内部関数
+    def watermark_canvas(canvas, doc):
+        canvas.saveState()
+        canvas.setFont('IPAPGothic', 100)
+        canvas.setFillColor(colors.lightgrey, alpha=0.3)
+        # ページの中心に回転させて描画
+        canvas.translate(A4[0] / 2, A4[1] / 2)
+        canvas.rotate(45)
+        canvas.drawCentredString(0, 0, watermark_text)
+        canvas.restoreState()
+
     # PDFのビルド
-    doc.build(story)
+    if watermark_text:
+        doc.build(story, onFirstPage=watermark_canvas, onLaterPages=watermark_canvas)
+    else:
+        doc.build(story)
