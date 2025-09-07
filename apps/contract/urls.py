@@ -22,6 +22,7 @@ urlpatterns = [
     path('staff/<int:pk>/', views.staff_contract_detail, name='staff_contract_detail'),
     path('staff/<int:pk>/update/', views.staff_contract_update, name='staff_contract_update'),
     path('staff/<int:pk>/delete/', views.staff_contract_delete, name='staff_contract_delete'),
+    path('staff/<int:pk>/pdf/', views.staff_contract_pdf, name='staff_contract_pdf'),
     path('staff/<int:pk>/change_history/', views.staff_contract_change_history_list, name='staff_contract_change_history_list'),
     
     # 選択用画面

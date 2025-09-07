@@ -112,6 +112,7 @@
         <div class="row mt-3">
             <div class="col text-left">
                 {% if not from_staff_detail %}
+                    <a href="{% url 'contract:staff_contract_pdf' contract.pk %}" class="btn btn-sm btn-info me-2">PDF発行</a>
                     <a href="{% url 'contract:staff_contract_update' contract.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
                     <a href="{% url 'contract:staff_contract_delete' contract.pk %}" class="btn btn-sm btn-dark  me-2">削除</a>
                 {% endif %}

@@ -65,3 +65,17 @@ class ContractViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/pdf')
         self.assertEqual(response['Content-Disposition'], f'attachment; filename="client_contract_{self.client_contract.pk}.pdf"')
+
+    def test_staff_contract_pdf_view(self):
+        """スタッフ契約PDFビューのテスト"""
+        from apps.staff.models import Staff
+        staff = Staff.objects.create(name_last='Test', name_first='Staff')
+        staff_contract = StaffContract.objects.create(
+            staff=staff,
+            contract_name='Test Staff Contract',
+            start_date=datetime.date.today()
+        )
+        response = self.client.get(reverse('contract:staff_contract_pdf', kwargs={'pk': staff_contract.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertEqual(response['Content-Disposition'], f'attachment; filename="staff_contract_{staff_contract.pk}.pdf"')
