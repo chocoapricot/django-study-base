@@ -157,7 +157,6 @@ class BillPaymentModelTest(TestCase):
         contract = ClientContract.objects.create(
             client=client,
             contract_name='テスト契約',
-            contract_type='service',
             start_date=date.today(),
             end_date=date(2025, 12, 31),
             payment_site=self.bill_payment
@@ -185,7 +184,6 @@ class BillPaymentModelTest(TestCase):
         contract = ClientContract.objects.create(
             client=client,
             contract_name='テスト契約',
-            contract_type='service',
             start_date=date.today(),
             end_date=date(2025, 12, 31),
             payment_site=self.bill_payment
