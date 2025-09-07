@@ -2197,6 +2197,7 @@ def staff_agreement_change_history_list(request):
 @permission_required("master.view_contractpattern", raise_exception=True)
 def contract_pattern_list(request):
     """契約パターン一覧"""
+    from apps.system.logs.models import AppLog
     search_query = request.GET.get("search", "")
     patterns = ContractPattern.objects.all()
     if search_query:
@@ -2204,10 +2205,24 @@ def contract_pattern_list(request):
 
     patterns = patterns.order_by('display_order', 'name')
 
+    paginator = Paginator(patterns, 20)
+    page = request.GET.get("page")
+    patterns_page = paginator.get_page(page)
+
+    change_logs = AppLog.objects.filter(
+        model_name="ContractPattern", action__in=["create", "update", "delete"]
+    ).order_by("-timestamp")[:5]
+
+    change_logs_count = AppLog.objects.filter(
+        model_name="ContractPattern", action__in=["create", "update", "delete"]
+    ).count()
+
     context = {
-        'patterns': patterns,
+        'patterns': patterns_page,
         'search_query': search_query,
-        'title': '契約パターン管理'
+        'title': '契約パターン管理',
+        'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
     }
     return render(request, 'master/contract_pattern_list.html', context)
 
@@ -2280,3 +2295,30 @@ def contract_pattern_delete(request, pk):
         'title': f'契約パターン削除 - {pattern.name}'
     }
     return render(request, 'master/contract_pattern_confirm_delete.html', context)
+
+
+@login_required
+@permission_required("master.view_contractpattern", raise_exception=True)
+def contract_pattern_change_history_list(request):
+    """契約パターン変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    from django.core.paginator import Paginator
+
+    logs = AppLog.objects.filter(
+        model_name="ContractPattern", action__in=["create", "update", "delete"]
+    ).order_by("-timestamp")
+
+    paginator = Paginator(logs, 20)
+    page = request.GET.get("page")
+    logs_page = paginator.get_page(page)
+
+    return render(
+        request,
+        "master/master_change_history_list.html",
+        {
+            "logs": logs_page,
+            "title": "契約パターン変更履歴",
+            "list_url": "master:contract_pattern_list",
+            "model_name": "ContractPattern",
+        },
+    )
