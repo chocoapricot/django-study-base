@@ -10,6 +10,7 @@ from apps.system.logs.models import AppLog
 from apps.common.utils import fill_pdf_from_template
 from apps.client.models import Client
 from apps.staff.models import Staff
+from apps.system.settings.models import Dropdowns
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
@@ -72,23 +73,12 @@ def client_contract_list(request):
     
     # ステータスフィルタを適用
     if status_filter:
-        from django.utils import timezone
-        today = timezone.now().date()
-        
-        if status_filter == 'current':
-            contracts = contracts.filter(
-                is_active=True,
-                start_date__lte=today,
-                end_date__gte=today
-            )
-        elif status_filter == 'expired':
-            contracts = contracts.filter(end_date__lt=today)
-        elif status_filter == 'future':
-            contracts = contracts.filter(start_date__gt=today)
-        elif status_filter == 'inactive':
-            contracts = contracts.filter(is_active=False)
-    
+        contracts = contracts.filter(contract_status=status_filter)
+
     contracts = contracts.order_by('-start_date', 'client__name')
+
+    # 契約状況のドロップダウンリストを取得
+    contract_status_list = Dropdowns.objects.filter(category='contract_status', active=True)
     
     # ページネーション
     paginator = Paginator(contracts, 20)
@@ -110,6 +100,7 @@ def client_contract_list(request):
         'status_filter': status_filter,
         'client_filter': client_filter,
         'filtered_client': filtered_client,
+        'contract_status_list': contract_status_list,
     }
     return render(request, 'contract/client_contract_list.html', context)
 
@@ -248,23 +239,12 @@ def staff_contract_list(request):
     
     # ステータスフィルタを適用
     if status_filter:
-        from django.utils import timezone
-        today = timezone.now().date()
-        
-        if status_filter == 'current':
-            contracts = contracts.filter(
-                is_active=True,
-                start_date__lte=today,
-                end_date__gte=today
-            )
-        elif status_filter == 'expired':
-            contracts = contracts.filter(end_date__lt=today)
-        elif status_filter == 'future':
-            contracts = contracts.filter(start_date__gt=today)
-        elif status_filter == 'inactive':
-            contracts = contracts.filter(is_active=False)
-    
+        contracts = contracts.filter(contract_status=status_filter)
+
     contracts = contracts.order_by('-start_date', 'staff__name_last', 'staff__name_first')
+
+    # 契約状況のドロップダウンリストを取得
+    contract_status_list = Dropdowns.objects.filter(category='contract_status', active=True)
     
     # ページネーション
     paginator = Paginator(contracts, 20)
@@ -286,6 +266,7 @@ def staff_contract_list(request):
         'status_filter': status_filter,
         'staff_filter': staff_filter,
         'filtered_staff': filtered_staff,
+        'contract_status_list': contract_status_list,
     }
     return render(request, 'contract/staff_contract_list.html', context)
 
