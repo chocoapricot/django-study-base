@@ -65,19 +65,19 @@ MASTER_CONFIGS = [
     },
     {
         "category": "スタッフ",
-        "name": "職種管理",
-        "description": "職種情報の管理",
-        "model": "master.JobCategory",
-        "url_name": "master:job_category_list",
-        "permission": "master.view_jobcategory",
-    },
-    {
-        "category": "スタッフ",
         "name": "同意文言管理",
         "description": "スタッフ登録時の同意文言を管理",
         "model": "master.StaffAgreement",
         "url_name": "master:staff_agreement_list",
         "permission": "master.view_staffagreement",
+    },
+    {
+        "category": "契約",
+        "name": "職種管理",
+        "description": "職種情報の管理",
+        "model": "master.JobCategory",
+        "url_name": "master:job_category_list",
+        "permission": "master.view_jobcategory",
     },
     {
         "category": "請求",
@@ -96,7 +96,7 @@ MASTER_CONFIGS = [
         "permission": "master.view_billbank",
     },
     {
-        "category": "その他",
+        "category": "請求",
         "name": "銀行・銀行支店管理",
         "description": "銀行と銀行支店の統合管理",
         "model": "master.Bank",
