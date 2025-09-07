@@ -59,7 +59,6 @@ class ContractFormTest(TestCase):
             'contract_name': 'フォームテスト契約',
             'job_category': self.job_category.pk,
             'contract_pattern': self.client_pattern.pk,
-            'contract_type': 'service',
             'start_date': date(2024, 2, 1),
             'end_date': date(2024, 12, 31),
             'is_active': True,
@@ -86,7 +85,6 @@ class ContractFormTest(TestCase):
             'contract_name': 'フォームテスト雇用契約',
             'job_category': self.job_category.pk,
             'contract_pattern': self.staff_pattern.pk,
-            'contract_type': 'full_time',
             'start_date': date(2024, 5, 1),
             'end_date': date(2024, 12, 31),
             'is_active': True,
@@ -113,7 +111,6 @@ class ContractFormTest(TestCase):
         contract = ClientContract.objects.create(
             client=self.client_obj,
             contract_name='既存契約',
-            contract_type='service',
             start_date=date(2024, 2, 1),
             end_date=date(2024, 12, 31),
             contract_amount=1000000,
@@ -146,7 +143,6 @@ class ContractFormTest(TestCase):
         contract = StaffContract.objects.create(
             staff=self.staff,
             contract_name='雇用契約',
-            contract_type='full_time',
             start_date=date(2024, 4, 1),
             end_date=date(2024, 12, 31),
             contract_amount=300000,
@@ -168,7 +164,6 @@ class ContractFormTest(TestCase):
         form_data = {
             'client': self.client_obj.pk,
             'contract_name': 'テスト契約',
-            'contract_type': 'service',
             'start_date': date(2023, 12, 1),  # 基本契約締結日より前
             'end_date': date(2024, 12, 31),
             'contract_amount': 1000000,
@@ -185,7 +180,6 @@ class ContractFormTest(TestCase):
         form_data = {
             'staff': self.staff.pk,
             'contract_name': '雇用契約',
-            'contract_type': 'full_time',
             'start_date': date(2024, 3, 1),  # 入社日より前
             'end_date': date(2024, 12, 31),
             'contract_amount': 300000,
@@ -202,7 +196,6 @@ class ContractFormTest(TestCase):
         form_data = {
             'client': self.client_obj.pk,
             'contract_name': 'テスト契約',
-            'contract_type': 'service',
             'start_date': date(2024, 2, 1),  # 基本契約締結日以降
             'end_date': date(2024, 12, 31),
             'contract_amount': 1000000,
@@ -217,7 +210,6 @@ class ContractFormTest(TestCase):
         form_data = {
             'staff': self.staff.pk,
             'contract_name': '雇用契約',
-            'contract_type': 'full_time',
             'start_date': date(2024, 4, 1),  # 入社日以降
             'end_date': date(2024, 12, 31),
             'contract_amount': 300000,
@@ -291,7 +283,6 @@ class ContractFormDisplayTest(TestCase):
         contract = ClientContract.objects.create(
             client=self.client_obj,
             contract_name='表示テスト契約',
-            contract_type='service',
             start_date=date(2024, 2, 1),
             end_date=date(2024, 12, 31),
             contract_amount=500000,
@@ -318,7 +309,6 @@ class ContractFormDisplayTest(TestCase):
         contract = StaffContract.objects.create(
             staff=self.staff,
             contract_name='表示テスト雇用契約',
-            contract_type='full_time',
             start_date=date(2024, 4, 1),
             end_date=date(2024, 12, 31),
             contract_amount=280000,
@@ -352,7 +342,6 @@ class ContractFormDisplayTest(TestCase):
         contract = ClientContract.objects.create(
             client=special_client,
             contract_name='特殊文字テスト契約',
-            contract_type='service',
             start_date=date(2024, 2, 1),
             end_date=date(2024, 12, 31),
             contract_amount=100000,
@@ -380,7 +369,6 @@ class ContractFormDisplayTest(TestCase):
         contract = StaffContract.objects.create(
             staff=special_staff,
             contract_name='特殊文字テスト雇用契約',
-            contract_type='part_time',
             start_date=date(2024, 4, 1),
             end_date=date(2024, 12, 31),
             contract_amount=200000,

@@ -10,14 +10,6 @@ class ClientContract(MyModel):
     契約期間、金額、契約種別などを記録する。
     """
     
-    CONTRACT_TYPE_CHOICES = [
-        ('service', 'サービス契約'),
-        ('maintenance', '保守契約'),
-        ('development', '開発契約'),
-        ('consulting', 'コンサルティング契約'),
-        ('other', 'その他'),
-    ]
-    
     client = models.ForeignKey(
         Client,
         on_delete=models.CASCADE,
@@ -41,7 +33,6 @@ class ClientContract(MyModel):
         limit_choices_to={'contract_type': 'client'},
     )
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
-    contract_type = models.CharField('契約種別', max_length=20, choices=CONTRACT_TYPE_CHOICES, default='service')
     contract_status = models.CharField('契約状況', max_length=2, blank=True, null=True)
     start_date = models.DateField('契約開始日')
     end_date = models.DateField('契約終了日', blank=True, null=True)
@@ -88,15 +79,6 @@ class StaffContract(MyModel):
     雇用形態、契約期間、金額などを記録する。
     """
     
-    CONTRACT_TYPE_CHOICES = [
-        ('full_time', '正社員'),
-        ('part_time', 'パートタイム'),
-        ('contract', '契約社員'),
-        ('freelance', 'フリーランス'),
-        ('intern', 'インターン'),
-        ('other', 'その他'),
-    ]
-    
     staff = models.ForeignKey(
         Staff,
         on_delete=models.CASCADE,
@@ -120,7 +102,6 @@ class StaffContract(MyModel):
         limit_choices_to={'contract_type': 'staff'},
     )
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
-    contract_type = models.CharField('契約種別', max_length=20, choices=CONTRACT_TYPE_CHOICES, default='full_time')
     contract_status = models.CharField('契約状況', max_length=2, blank=True, null=True)
     start_date = models.DateField('契約開始日')
     end_date = models.DateField('契約終了日', blank=True, null=True)

@@ -28,7 +28,7 @@ class ClientContractForm(forms.ModelForm):
     class Meta:
         model = ClientContract
         fields = [
-            'client', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_type', 'contract_status',
+            'client', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
             'start_date', 'end_date', 'contract_amount',
             'description', 'notes', 'payment_site', 'is_active'
         ]
@@ -38,7 +38,6 @@ class ClientContractForm(forms.ModelForm):
             'job_category': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'contract_pattern': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'contract_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'contract_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'contract_amount': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
@@ -153,7 +152,7 @@ class StaffContractForm(forms.ModelForm):
     class Meta:
         model = StaffContract
         fields = [
-            'staff', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_type', 'contract_status',
+            'staff', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
             'start_date', 'end_date', 'contract_amount',
             'description', 'notes', 'is_active'
         ]
@@ -163,7 +162,6 @@ class StaffContractForm(forms.ModelForm):
             'job_category': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'contract_pattern': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'contract_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'contract_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'contract_amount': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
