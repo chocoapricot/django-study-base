@@ -1,6 +1,8 @@
 {% extends 'common/_base.html' %}
 {% load static %}
 {% load humanize %}
+{% load dropdowns %}
+{% load badge_tags %}
 
 {% block title %}クライアント契約一覧{% endblock %}
 
@@ -45,11 +47,10 @@
             </div>
             <div class="input-group me-2 mb-2" style="width: 12em;">
                 <select name="status" class="form-select form-select-sm">
-                    <option value="">ステータス（全て）</option>
-                    <option value="current" {% if status_filter == 'current' %}selected{% endif %}>有効期間中</option>
-                    <option value="future" {% if status_filter == 'future' %}selected{% endif %}>開始前</option>
-                    <option value="expired" {% if status_filter == 'expired' %}selected{% endif %}>期限切れ</option>
-                    <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>無効</option>
+                    <option value="">契約状況（全て）</option>
+                    {% for status in contract_status_list %}
+                    <option value="{{ status.value }}" {% if status_filter == status.value %}selected{% endif %}>{{ status.name }}</option>
+                    {% endfor %}
                 </select>
             </div>
             <button class="btn btn-primary btn-sm me-2 mb-2" type="submit">検索</button>
@@ -78,7 +79,7 @@
                                     <th>契約番号</th>
                                     <th>契約期間</th>
                                     <th class="text-end">契約金額</th>
-                                    <th>ステータス</th>
+                                    <th>契約状況</th>
                                     <th>操作</th>
                                 </tr>
                             </thead>
@@ -106,19 +107,9 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if contract.is_active %}
-                                            {% if contract.is_current %}
-                                                <span class="badge bg-success">有効期間中</span>
-                                            {% elif contract.is_future %}
-                                                <span class="badge bg-info">開始前</span>
-                                            {% elif contract.is_expired %}
-                                                <span class="badge bg-warning">期限切れ</span>
-                                            {% else %}
-                                                <span class="badge bg-primary">有効</span>
-                                            {% endif %}
-                                        {% else %}
-                                            <span class="badge bg-secondary">無効</span>
-                                        {% endif %}
+                                        <span class="badge {{ contract.contract_status|badge_class }}">
+                                            {% my_name 'contract_status' contract.contract_status %}
+                                        </span>
                                     </td>
                                     <td>
                                         {% if not client_filter %}

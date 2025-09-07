@@ -1,6 +1,8 @@
 {% extends 'common/_base.html' %}
 {% load static %}
 {% load humanize %}
+{% load dropdowns %}
+{% load badge_tags %}
 
 {% block title %}スタッフ契約詳細 - {{ contract.contract_name }}{% endblock %}
 
@@ -51,21 +53,11 @@
                                     <td>{{ contract.get_contract_type_display }}</td>
                                 </tr>
                                 <tr>
-                                    <th>ステータス</th>
+                                    <th>契約状況</th>
                                     <td>
-                                        {% if contract.is_active %}
-                                            {% if contract.is_current %}
-                                                <span class="badge bg-success">有効期間中</span>
-                                            {% elif contract.is_future %}
-                                                <span class="badge bg-info">開始前</span>
-                                            {% elif contract.is_expired %}
-                                                <span class="badge bg-warning">期限切れ</span>
-                                            {% else %}
-                                                <span class="badge bg-primary">有効</span>
-                                            {% endif %}
-                                        {% else %}
-                                            <span class="badge bg-secondary">無効</span>
-                                        {% endif %}
+                                        <span class="badge {{ contract.contract_status|badge_class }}">
+                                            {% my_name 'contract_status' contract.contract_status %}
+                                        </span>
                                     </td>
                                 </tr>
                             </table>
