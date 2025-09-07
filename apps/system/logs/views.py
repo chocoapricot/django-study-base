@@ -280,7 +280,6 @@ def get_url_patterns(url_patterns, parent_route=''):
             clean_url = clean_url.strip('^$')
             clean_url = '/' + clean_url
             clean_url = clean_url.replace('//', '/')
-            clean_url = clean_url.replace('-', '#')
 
 
             try:
