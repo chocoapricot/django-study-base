@@ -45,6 +45,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import ListView, DetailView
 import uuid
 import os
+from itertools import chain
 from django.conf import settings
 from datetime import datetime, timezone
 
@@ -2220,11 +2221,11 @@ def contract_pattern_list(request):
     patterns_page = paginator.get_page(page)
 
     change_logs = AppLog.objects.filter(
-        model_name="ContractPattern", action__in=["create", "update", "delete"]
+        model_name__in=["ContractPattern", "ContractTerms"], action__in=["create", "update", "delete"]
     ).order_by("-timestamp")[:5]
 
     change_logs_count = AppLog.objects.filter(
-        model_name="ContractPattern", action__in=["create", "update", "delete"]
+        model_name__in=["ContractPattern", "ContractTerms"], action__in=["create", "update", "delete"]
     ).count()
 
     context = {
@@ -2279,16 +2280,42 @@ def contract_pattern_update(request, pk):
     return render(request, 'master/contract_pattern_form.html', context)
 
 
+from itertools import chain
+from apps.system.logs.models import AppLog
+
 @login_required
 @permission_required("master.view_contractpattern", raise_exception=True)
 def contract_pattern_detail(request, pk):
     """契約パターン詳細"""
     pattern = get_object_or_404(ContractPattern, pk=pk)
     terms = pattern.terms.all().order_by('display_order')
+
+    # 契約パターンの変更履歴
+    pattern_logs = AppLog.objects.filter(
+        model_name='ContractPattern',
+        object_id=str(pattern.pk)
+    )
+
+    # 関連する契約文言の変更履歴
+    term_ids = [str(term.pk) for term in terms]
+    terms_logs = AppLog.objects.filter(
+        model_name='ContractTerms',
+        object_id__in=term_ids
+    )
+
+    # 履歴を結合してソート
+    change_logs = sorted(
+        chain(pattern_logs, terms_logs),
+        key=lambda log: log.timestamp,
+        reverse=True
+    )
+
     context = {
         'pattern': pattern,
         'terms': terms,
-        'title': f'契約パターン詳細 - {pattern.name}'
+        'title': f'契約パターン詳細 - {pattern.name}',
+        'change_logs': change_logs[:20],  # ページネーションは一旦省略し、最新20件を表示
+        'change_logs_count': len(change_logs),
     }
     return render(request, 'master/contract_pattern_detail.html', context)
 

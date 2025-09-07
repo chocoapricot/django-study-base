@@ -32,13 +32,13 @@
             <table class="table table-sm table-hover">
                 <thead>
                     <tr>
-                        <th width="25%">名称</th>
-                        <th width="25%">職業分類(厚労省)</th>
-                        <th width="25%">職業分類(総務省)</th>
+                        <th width="15%">名称</th>
+                        <th width="20%">職業分類(厚労省)</th>
+                        <th width="20%">職業分類(総務省)</th>
                         <th width="10%">状態</th>
                         <th width="10%">表示順</th>
                         <th width="10%">利用件数</th>
-                        <th width="15%">操作</th>
+                        <th width="10%">操作</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -73,7 +73,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center">職種が登録されていません。</td>
+                        <td colspan="7" class="text-center">職種が登録されていません。</td>
                     </tr>
                     {% endfor %}
                 </tbody>

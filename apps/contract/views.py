@@ -551,6 +551,28 @@ def client_contract_pdf(request, pk):
         {"title": "備考", "text": str(contract.notes)},
     ]
 
+    # 契約パターンに紐づく契約文言を追加
+    if contract.contract_pattern:
+        terms = contract.contract_pattern.terms.all().order_by('display_order')
+        if terms:
+            # 「備考」の前に挿入するためのインデックスを取得
+            notes_index = -1
+            for i, item in enumerate(items):
+                if item["title"] == "備考":
+                    notes_index = i
+                    break
+            
+            # 契約文言を挿入
+            term_items = []
+            for term in terms:
+                term_items.append({"title": str(term.contract_clause), "text": str(term.contract_terms)})
+
+            if notes_index != -1:
+                items[notes_index:notes_index] = term_items
+            else:
+                # 備考が見つからない場合は末尾に追加
+                items.extend(term_items)
+
     # ステータスが30未満（下書き、確認中）の場合は透かしを入れる
     watermark = None
     # contract_status is a CharField, so we need to convert to int for comparison
@@ -599,6 +621,28 @@ def staff_contract_pdf(request, pk):
         {"title": "契約内容", "text": str(contract.description or "")},
         {"title": "備考", "text": str(contract.notes or "")},
     ]
+
+    # 契約パターンに紐づく契約文言を追加
+    if contract.contract_pattern:
+        terms = contract.contract_pattern.terms.all().order_by('display_order')
+        if terms:
+            # 「備考」の前に挿入するためのインデックスを取得
+            notes_index = -1
+            for i, item in enumerate(items):
+                if item["title"] == "備考":
+                    notes_index = i
+                    break
+            
+            # 契約文言を挿入
+            term_items = []
+            for term in terms:
+                term_items.append({"title": str(term.contract_clause), "text": str(term.contract_terms)})
+
+            if notes_index != -1:
+                items[notes_index:notes_index] = term_items
+            else:
+                # 備考が見つからない場合は末尾に追加
+                items.extend(term_items)
 
     # ステータスが30未満（下書き、確認中）の場合は透かしを入れる
     watermark = None

@@ -723,14 +723,7 @@ class JobCategory(MyModel):
     def __str__(self):
         return self.name
 
-    @property
-    def usage_count(self):
-        """この職種の利用件数"""
-        return 0
-
-    def get_usage_details(self):
-        """利用詳細を取得"""
-        return {'total_count': 0}
+    
 
 
 class Information(MyModel):

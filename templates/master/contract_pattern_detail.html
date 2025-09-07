@@ -84,4 +84,9 @@
     </div>
 </div>
 
+<!-- 変更履歴一覧 -->
+{% with change_logs=change_logs change_logs_count=change_logs_count history_url=None show_full_content=True %}
+    {% include 'common/_change_history_list.html' %}
+{% endwith %}
+
 {% endblock %}
