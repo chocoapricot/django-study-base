@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.urls import reverse
 from django.apps import apps
 from .models import (
@@ -712,6 +712,11 @@ def job_category_list(request):
 
     if search_query:
         job_categories = job_categories.filter(Q(name__icontains=search_query))
+
+    # 利用件数を事前に計算してアノテーション
+    job_categories = job_categories.annotate(
+        usage_count=Count("clientcontract", distinct=True) + Count("staffcontract", distinct=True)
+    )
 
     job_categories = job_categories.order_by("display_order", "name")
 
@@ -2202,6 +2207,11 @@ def contract_pattern_list(request):
     patterns = ContractPattern.objects.all()
     if search_query:
         patterns = patterns.filter(name__icontains=search_query)
+
+    # 利用件数を事前に計算してアノテーション
+    patterns = patterns.annotate(
+        usage_count=Count("clientcontract", distinct=True) + Count("staffcontract", distinct=True)
+    )
 
     patterns = patterns.order_by('display_order', 'name')
 

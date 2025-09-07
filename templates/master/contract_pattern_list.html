@@ -34,8 +34,9 @@
                     <tr>
                         <th>名称</th>
                         <th>契約種別</th>
-                        <th>表示順</th>
                         <th>状態</th>
+                        <th>表示順</th>
+                        <th>利用件数</th>
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -46,7 +47,6 @@
                             <a href="{% url 'master:contract_pattern_detail' pattern.pk %}">{{ pattern.name }}</a>
                         </td>
                         <td>{{ pattern.get_contract_type_display }}</td>
-                        <td>{{ pattern.display_order }}</td>
                         <td>
                             {% if pattern.is_active %}
                                 <span class="badge bg-success">有効</span>
@@ -54,6 +54,8 @@
                                 <span class="badge bg-secondary">無効</span>
                             {% endif %}
                         </td>
+                        <td>{{ pattern.display_order }}</td>
+                        <td>{{ pattern.usage_count }}</td>
                         <td>
                             <a href="{% url 'master:contract_pattern_update' pattern.pk %}" class="btn btn-dark btn-sm" title="編集">
                                 <i class="bi bi-pencil"></i>
@@ -65,7 +67,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="text-center">契約パターンが登録されていません。</td>
+                        <td colspan="6" class="text-center">契約パターンが登録されていません。</td>
                     </tr>
                     {% endfor %}
                 </tbody>
