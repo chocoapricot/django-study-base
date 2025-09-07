@@ -1,0 +1,62 @@
+[
+  {
+    "model": "master.jobcategory",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "name": "営業事務",
+      "display_order": 10,
+      "is_active": true,
+      "jobs_kourou": 240,
+      "jobs_soumu": 44
+    }
+  },
+  {
+    "model": "master.jobcategory",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "name": "一般事務",
+      "display_order": 20,
+      "is_active": true,
+      "jobs_kourou": 234,
+      "jobs_soumu": 41
+    }
+  },
+  {
+    "model": "master.jobcategory",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "name": "ソフトウェア開発",
+      "display_order": 30,
+      "is_active": true,
+      "jobs_kourou": 209,
+      "jobs_soumu": 26
+    }
+  },
+  {
+    "model": "master.jobcategory",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "name": "看護",
+      "display_order": 40,
+      "is_active": true,
+      "jobs_kourou": 223,
+      "jobs_soumu": 29
+    }
+  }
+]
