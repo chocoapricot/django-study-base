@@ -52,7 +52,7 @@ def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None)
 
     if table_data:
         # テーブルで罫線を表現
-        table = Table(table_data, colWidths=['25%', '75%'])
+        table = Table(table_data, colWidths=['20%', '80%'])
         table.setStyle(TableStyle([
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
