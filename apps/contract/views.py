@@ -546,7 +546,6 @@ def client_contract_pdf(request, pk):
         {"title": "契約金額", "text": f"{contract.contract_amount} 円" if contract.contract_amount else "N/A"},
         {"title": "支払サイト", "text": str(contract.payment_site.name if contract.payment_site else "N/A")},
         {"title": "自動更新", "text": "あり" if contract.auto_renewal else "なし"},
-        {"title": "ステータス", "text": str(contract.status)},
         {"title": "契約内容", "text": str(contract.description)},
         {"title": "備考", "text": str(contract.notes)},
     ]
@@ -617,7 +616,6 @@ def staff_contract_pdf(request, pk):
         {"title": "契約終了日", "text": str(contract.end_date or "N/A")},
         {"title": "契約金額", "text": f"{contract.contract_amount} 円" if contract.contract_amount else "N/A"},
         {"title": "自動更新", "text": "あり" if contract.auto_renewal else "なし"},
-        {"title": "ステータス", "text": str(contract.status)},
         {"title": "契約内容", "text": str(contract.description or "")},
         {"title": "備考", "text": str(contract.notes or "")},
     ]
