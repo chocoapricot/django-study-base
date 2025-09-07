@@ -11,6 +11,8 @@ from .models import (
     JobCategory,
     StaffAgreement,
     MailTemplate,
+    ContractPattern,
+    ContractTerms,
 )
 from apps.system.settings.models import Dropdowns
 
@@ -62,6 +64,33 @@ class JobCategoryForm(forms.ModelForm):
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
+
+class ContractPatternForm(forms.ModelForm):
+    """契約パターンフォーム"""
+    class Meta:
+        model = ContractPattern
+        fields = ['name', 'contract_type', 'display_order', 'is_active']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'contract_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+
+BaseContractTermsFormSet = forms.inlineformset_factory(
+    ContractPattern,
+    ContractTerms,
+    fields=('contract_clause', 'contract_terms', 'display_order'),
+    extra=1,
+    can_delete=True,
+    widgets={
+        'contract_clause': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
+        'contract_terms': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
+        'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+    }
+)
 
 
 class QualificationCategoryForm(forms.ModelForm):

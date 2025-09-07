@@ -17,6 +17,8 @@ from .models import (
     JobCategory,
     StaffAgreement,
     MailTemplate,
+    ContractPattern,
+    ContractTerms,
 )
 from .forms import (
     QualificationForm,
@@ -32,6 +34,8 @@ from .forms import (
     JobCategoryForm,
     StaffAgreementForm,
     MailTemplateForm,
+    ContractPatternForm,
+    BaseContractTermsFormSet,
 )
 from apps.company.models import Company
 from django.http import JsonResponse, HttpResponse
@@ -78,6 +82,14 @@ MASTER_CONFIGS = [
         "model": "master.JobCategory",
         "url_name": "master:job_category_list",
         "permission": "master.view_jobcategory",
+    },
+    {
+        "category": "契約",
+        "name": "契約パターン管理",
+        "description": "契約パターンと文言の管理",
+        "model": "master.ContractPattern",
+        "url_name": "master:contract_pattern_list",
+        "permission": "master.view_contractpattern",
     },
     {
         "category": "請求",
@@ -2179,3 +2191,68 @@ def staff_agreement_change_history_list(request):
             "model_name": "StaffAgreement",
         },
     )
+
+
+@login_required
+@permission_required("master.view_contractpattern", raise_exception=True)
+def contract_pattern_list(request):
+    """契約パターン一覧・編集"""
+    search_query = request.GET.get("search", "")
+    patterns = ContractPattern.objects.all()
+    if search_query:
+        patterns = patterns.filter(name__icontains=search_query)
+
+    patterns = patterns.order_by('display_order', 'name')
+
+    if request.method == 'POST':
+        pattern_id = request.POST.get('pattern_id')
+        if pattern_id: # 編集
+            instance = get_object_or_404(ContractPattern, pk=pattern_id)
+            form = ContractPatternForm(request.POST, instance=instance)
+            formset = BaseContractTermsFormSet(request.POST, instance=instance)
+        else: # 新規作成
+            form = ContractPatternForm(request.POST)
+            formset = BaseContractTermsFormSet(request.POST)
+
+        if form.is_valid() and formset.is_valid():
+            pattern = form.save()
+            formset.instance = pattern
+            formset.save()
+            messages.success(request, f"契約パターン「{pattern.name}」を保存しました。")
+            return redirect('master:contract_pattern_list')
+    else:
+        pattern_id = request.GET.get('pattern_id')
+        if pattern_id: # 編集フォーム
+            instance = get_object_or_404(ContractPattern, pk=pattern_id)
+            form = ContractPatternForm(instance=instance)
+            formset = BaseContractTermsFormSet(instance=instance)
+        else: # 新規作成フォーム
+            form = ContractPatternForm()
+            formset = BaseContractTermsFormSet()
+
+    context = {
+        'patterns': patterns,
+        'form': form,
+        'formset': formset,
+        'search_query': search_query,
+        'title': '契約パターン管理'
+    }
+    return render(request, 'master/contract_pattern_list.html', context)
+
+
+@login_required
+@permission_required("master.delete_contractpattern", raise_exception=True)
+def contract_pattern_delete(request, pk):
+    """契約パターン削除"""
+    pattern = get_object_or_404(ContractPattern, pk=pk)
+    if request.method == 'POST':
+        pattern_name = pattern.name
+        pattern.delete()
+        messages.success(request, f"契約パターン「{pattern_name}」を削除しました。")
+        return redirect('master:contract_pattern_list')
+
+    context = {
+        'pattern': pattern,
+        'title': f'契約パターン削除 - {pattern.name}'
+    }
+    return render(request, 'master/contract_pattern_confirm_delete.html', context)

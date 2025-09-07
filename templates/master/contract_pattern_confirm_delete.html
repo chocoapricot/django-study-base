@@ -1,0 +1,17 @@
+{% extends 'common/_base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>{{ title }}</h2>
+    <p>本当に契約パターン「{{ pattern.name }}」を削除しますか？</p>
+    <p>この操作は元に戻せません。</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">削除</button>
+        <a href="{% url 'master:contract_pattern_list' %}" class="btn btn-secondary">キャンセル</a>
+    </form>
+</div>
+{% endblock %}

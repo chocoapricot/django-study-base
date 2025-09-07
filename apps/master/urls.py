@@ -83,6 +83,10 @@ urlpatterns = [
     path('staff-agreement/<int:pk>/delete/', views.staff_agreement_delete, name='staff_agreement_delete'),
     path('staff-agreement/history/', views.staff_agreement_change_history_list, name='staff_agreement_change_history_list'),
 
+    # 契約パターン管理
+    path('contract-pattern/', views.contract_pattern_list, name='contract_pattern_list'),
+    path('contract-pattern/<int:pk>/delete/', views.contract_pattern_delete, name='contract_pattern_delete'),
+
     # メールテンプレート管理
     path('mail-template/', views.mail_template_list, name='mail_template_list'),
     path('mail-template/<int:pk>/', views.mail_template_detail, name='mail_template_detail'),
