@@ -560,3 +560,46 @@ def client_contract_pdf(request, pk):
     response.write(pdf)
 
     return response
+
+
+@login_required
+@permission_required('contract.view_staffcontract', raise_exception=True)
+def staff_contract_pdf(request, pk):
+    """スタッフ契約書のPDFを生成して返す"""
+    contract = get_object_or_404(StaffContract, pk=pk)
+
+    # レスポンスの準備
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="staff_contract_{pk}.pdf"'
+
+    # PDFドキュメントの作成
+    buffer = io.BytesIO()
+
+    # PDFのタイトルと前文
+    title = "雇用契約書"
+    intro_text = f"{contract.staff.name_last} {contract.staff.name_first} 様との間で、以下の通り雇用契約を締結します。"
+
+    # 表示項目の定義
+    items = [
+        {"title": "契約名", "text": str(contract.contract_name)},
+        {"title": "スタッフ名", "text": f"{contract.staff.name_last} {contract.staff.name_first}"},
+        {"title": "契約番号", "text": str(contract.contract_number or "")},
+        {"title": "契約種別", "text": str(contract.get_contract_type_display())},
+        {"title": "契約開始日", "text": str(contract.start_date)},
+        {"title": "契約終了日", "text": str(contract.end_date or "N/A")},
+        {"title": "契約金額", "text": f"{contract.contract_amount} 円" if contract.contract_amount else "N/A"},
+        {"title": "自動更新", "text": "あり" if contract.auto_renewal else "なし"},
+        {"title": "ステータス", "text": str(contract.status)},
+        {"title": "契約内容", "text": str(contract.description or "")},
+        {"title": "備考", "text": str(contract.notes or "")},
+    ]
+
+    # 共通関数を呼び出してPDFを生成
+    generate_contract_pdf(buffer, title, intro_text, items)
+
+    # レスポンスにPDFを書き込む
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
+
+    return response
