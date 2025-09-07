@@ -89,9 +89,9 @@ django-study-base/
 └── requirements.txt        # 依存関係
 ```
 
-## データベーステーブル一覧
+## データベーステーブル一覧（72テーブル）
 
-### 本アプリケーション独自テーブル
+### 本アプリケーション独自テーブル（57テーブル）
 
 | テーブル名 | 説明 |
 | --- | --- |
@@ -121,9 +121,12 @@ django-study-base/
 | `apps_master_bank_branch` | 銀行支店マスター |
 | `apps_master_bill_bank` | 会社銀行マスター |
 | `apps_master_bill_payment` | 支払条件マスター |
+| `apps_master_contract_pattern` | （自動追加） |
+| `apps_master_contract_terms` | （自動追加） |
 | `apps_master_information` | お知らせマスター |
 | `apps_master_information_file` | お知らせファイル |
 | `apps_master_job_category` | 職種マスター |
+| `apps_master_mail_template` | （自動追加） |
 | `apps_master_qualification` | 資格マスター（カテゴリと資格） |
 | `apps_master_skill` | 技能マスター（カテゴリと技能） |
 | `apps_master_staff_agreement` | スタッフ同意書マスター |
@@ -145,13 +148,14 @@ django-study-base/
 | `apps_staff_mynumber` | スタッフマイナンバー |
 | `apps_staff_qualification` | スタッフ保有資格 |
 | `apps_staff_skill` | スタッフ保有スキル |
+| `apps_system_access_log` | （自動追加） |
 | `apps_system_app_log` | アプリケーション操作ログ |
 | `apps_system_dropdowns` | ドロップダウン設定 |
 | `apps_system_mail_log` | メール送信ログ |
 | `apps_system_menu` | メニュー設定 |
 | `apps_system_parameter` | パラメータ設定 |
 
-### django-allauth関連テーブル
+### django-allauth関連テーブル（6テーブル）
 
 | テーブル名 | 説明 |
 | --- | --- |
@@ -162,7 +166,7 @@ django-study-base/
 | `socialaccount_socialapp_sites` | ソーシャルアプリとサイトの関連 |
 | `socialaccount_socialtoken` | ソーシャルアカウントトークン |
 
-### Django標準・その他テーブル
+### Django標準・その他テーブル（9テーブル）
 
 | テーブル名 | 説明 |
 | --- | --- |
