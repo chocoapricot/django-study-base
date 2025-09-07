@@ -63,35 +63,9 @@
             </div>
 
             <!-- ページネーション -->
-            {% if files.has_other_pages %}
-            <nav aria-label="ページネーション">
-                <ul class="pagination pagination-sm justify-content-center">
-                    {% if files.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ files.previous_page_number }}">前へ</a>
-                        </li>
-                    {% endif %}
-                    
-                    {% for num in files.paginator.page_range %}
-                        {% if files.number == num %}
-                            <li class="page-item active">
-                                <span class="page-link">{{ num }}</span>
-                            </li>
-                        {% else %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-                    
-                    {% if files.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ files.next_page_number }}">次へ</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            {% endif %}
+            <div class="d-flex justify-content-center">
+                {% include 'common/_pagination.html' with page_obj=files %}
+            </div>
 
         <!-- 戻るボタン -->
         <div class="d-flex justify-content-start">
