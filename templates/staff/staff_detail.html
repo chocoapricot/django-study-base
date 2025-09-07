@@ -593,17 +593,9 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if contract.status == '有効' %}
-                            <span class="badge bg-success">{{ contract.status }}</span>
-                        {% elif contract.status == '開始前' %}
-                            <span class="badge bg-warning">{{ contract.status }}</span>
-                        {% elif contract.status == '終了' %}
-                            <span class="badge bg-secondary">{{ contract.status }}</span>
-                        {% elif contract.status == '無効' %}
-                            <span class="badge bg-danger">{{ contract.status }}</span>
-                        {% else %}
-                            <span class="badge bg-light">{{ contract.status }}</span>
-                        {% endif %}
+                        <span class="badge {{ contract.contract_status|badge_class }}">
+                            {% my_name 'contract_status' contract.contract_status %}
+                        </span>
                     </td>
                     <td>
                         {% if contract.created_by.last_name or contract.created_by.first_name %}
