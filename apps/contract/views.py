@@ -15,6 +15,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import io
+from apps.common.pdf_utils import generate_contract_pdf
 
 
 # 契約管理トップページ
@@ -523,49 +524,37 @@ def client_contract_pdf(request, pk):
     """クライアント契約書のPDFを生成して返す"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
-    # フォントの登録
-    font_path = 'statics/fonts/ipag.ttf'
-    pdfmetrics.registerFont(TTFont('IPAG', font_path))
-
     # レスポンスの準備
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="client_contract_{pk}.pdf"'
 
     # PDFドキュメントの作成
     buffer = io.BytesIO()
-    p = canvas.Canvas(buffer, pagesize=letter)
-    p.setFont('IPAG', 12)
 
-    # PDFに内容を書き込む
-    p.drawString(50, 750, f"契約詳細: {contract.contract_name}")
-    y = 720
+    # PDFのタイトルと前文
+    title = "業務委託契約書"
+    intro_text = f"{contract.client.name} 様との間で、以下の通り業務委託契約を締結します。"
 
-    fields = {
-        "クライアント": contract.client.name,
-        "契約番号": contract.contract_number,
-        "契約種別": contract.get_contract_type_display(),
-        "契約開始日": contract.start_date,
-        "契約終了日": contract.end_date or "N/A",
-        "契約金額": f"{contract.contract_amount} 円" if contract.contract_amount else "N/A",
-        "支払いサイト": contract.payment_site.name if contract.payment_site else "N/A",
-        "自動更新": "はい" if contract.auto_renewal else "いいえ",
-        "ステータス": contract.status,
-        "契約内容": contract.description,
-        "備考": contract.notes,
-    }
+    # 表示項目の定義
+    items = [
+        {"title": "契約名", "text": str(contract.contract_name)},
+        {"title": "クライアント名", "text": str(contract.client.name)},
+        {"title": "契約番号", "text": str(contract.contract_number)},
+        {"title": "契約種別", "text": str(contract.get_contract_type_display())},
+        {"title": "契約開始日", "text": str(contract.start_date)},
+        {"title": "契約終了日", "text": str(contract.end_date or "N/A")},
+        {"title": "契約金額", "text": f"{contract.contract_amount} 円" if contract.contract_amount else "N/A"},
+        {"title": "支払サイト", "text": str(contract.payment_site.name if contract.payment_site else "N/A")},
+        {"title": "自動更新", "text": "あり" if contract.auto_renewal else "なし"},
+        {"title": "ステータス", "text": str(contract.status)},
+        {"title": "契約内容", "text": str(contract.description)},
+        {"title": "備考", "text": str(contract.notes)},
+    ]
 
-    for label, value in fields.items():
-        if y < 50:
-            p.showPage()
-            p.setFont('IPAG', 12)
-            y = 750
-        text = f"{label}: {value}"
-        p.drawString(60, y, text)
-        y -= 25
+    # 共通関数を呼び出してPDFを生成
+    generate_contract_pdf(buffer, title, intro_text, items)
 
-    p.showPage()
-    p.save()
-
+    # レスポンスにPDFを書き込む
     pdf = buffer.getvalue()
     buffer.close()
     response.write(pdf)
