@@ -25,6 +25,21 @@ class ClientContract(MyModel):
         verbose_name='クライアント'
     )
     contract_name = models.CharField('契約名', max_length=200)
+    job_category = models.ForeignKey(
+        'master.JobCategory',
+        on_delete=models.SET_NULL,
+        verbose_name='職種',
+        null=True,
+        blank=True,
+    )
+    contract_pattern = models.ForeignKey(
+        'master.ContractPattern',
+        on_delete=models.SET_NULL,
+        verbose_name='契約パターン',
+        null=True,
+        blank=True,
+        limit_choices_to={'contract_type': 'client'},
+    )
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
     contract_type = models.CharField('契約種別', max_length=20, choices=CONTRACT_TYPE_CHOICES, default='service')
     contract_status = models.CharField('契約状況', max_length=2, blank=True, null=True)
@@ -128,6 +143,21 @@ class StaffContract(MyModel):
         verbose_name='スタッフ'
     )
     contract_name = models.CharField('契約名', max_length=200)
+    job_category = models.ForeignKey(
+        'master.JobCategory',
+        on_delete=models.SET_NULL,
+        verbose_name='職種',
+        null=True,
+        blank=True,
+    )
+    contract_pattern = models.ForeignKey(
+        'master.ContractPattern',
+        on_delete=models.SET_NULL,
+        verbose_name='契約パターン',
+        null=True,
+        blank=True,
+        limit_choices_to={'contract_type': 'staff'},
+    )
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
     contract_type = models.CharField('契約種別', max_length=20, choices=CONTRACT_TYPE_CHOICES, default='full_time')
     contract_status = models.CharField('契約状況', max_length=2, blank=True, null=True)

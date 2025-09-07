@@ -28,13 +28,15 @@ class ClientContractForm(forms.ModelForm):
     class Meta:
         model = ClientContract
         fields = [
-            'client', 'contract_name', 'contract_number', 'contract_type', 'contract_status',
+            'client', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_type', 'contract_status',
             'start_date', 'end_date', 'contract_amount',
             'description', 'notes', 'payment_site', 'is_active'
         ]
         widgets = {
-            'client': forms.HiddenInput(),  # 隠しフィールドに変更
+            'client': forms.HiddenInput(),
             'contract_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'job_category': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'contract_pattern': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'contract_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
@@ -45,18 +47,14 @@ class ClientContractForm(forms.ModelForm):
             'payment_site': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        from apps.master.models import BillPayment
-        
-        # 終了日を必須にする
+        from apps.master.models import BillPayment, ContractPattern, JobCategory
+        self.fields['job_category'].queryset = JobCategory.objects.filter(is_active=True)
+        self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, contract_type='client')
         self.fields['end_date'].required = True
-        
-        # 支払条件の選択肢を設定（デフォルト）
         self.fields['payment_site'].queryset = BillPayment.get_active_list()
-        
-        #契約状況の選択肢を設定
         self.fields['contract_status'].choices = [(d.value, d.name) for d in Dropdowns.objects.filter(category='contract_status', active=True)]
 
         # クライアントを取得
@@ -155,13 +153,15 @@ class StaffContractForm(forms.ModelForm):
     class Meta:
         model = StaffContract
         fields = [
-            'staff', 'contract_name', 'contract_number', 'contract_type', 'contract_status',
+            'staff', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_type', 'contract_status',
             'start_date', 'end_date', 'contract_amount',
             'description', 'notes', 'is_active'
         ]
         widgets = {
-            'staff': forms.HiddenInput(),  # 隠しフィールドに変更
+            'staff': forms.HiddenInput(),
             'contract_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'job_category': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'contract_pattern': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'contract_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
@@ -171,14 +171,14 @@ class StaffContractForm(forms.ModelForm):
             'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # 編集時に選択されたスタッフ名を表示
+        from apps.master.models import ContractPattern, JobCategory
+        self.fields['job_category'].queryset = JobCategory.objects.filter(is_active=True)
+        self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, contract_type='staff')
         if self.instance and self.instance.pk and hasattr(self.instance, 'staff') and self.instance.staff:
             self.fields['staff_display'].initial = f"{self.instance.staff.name_last} {self.instance.staff.name_first}"
-
-        #契約状況の選択肢を設定
         self.fields['contract_status'].choices = [(d.value, d.name) for d in Dropdowns.objects.filter(category='contract_status', active=True)]
     
     def clean(self):

@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django import forms
 from apps.client.models import Client as ClientModel
 from apps.staff.models import Staff
+from apps.master.models import JobCategory, ContractPattern
 from ..models import ClientContract, StaffContract
 from ..forms import ClientContractForm, StaffContractForm
 from datetime import date
@@ -37,6 +38,64 @@ class ContractFormTest(TestCase):
             created_by=self.user,
             updated_by=self.user
         )
+
+        self.job_category = JobCategory.objects.create(name='エンジニア', is_active=True)
+        self.client_pattern = ContractPattern.objects.create(name='クライアント向け基本契約', contract_type='client', is_active=True)
+        self.staff_pattern = ContractPattern.objects.create(name='スタッフ向け雇用契約', contract_type='staff', is_active=True)
+
+    def test_client_contract_form_with_new_fields(self):
+        """クライアント契約フォーム（新しいフィールドあり）のテスト"""
+        form = ClientContractForm()
+        self.assertIn('job_category', form.fields)
+        self.assertIn('contract_pattern', form.fields)
+
+        # 契約パターンの選択肢がクライアント向けのものだけになっているか確認
+        patterns = form.fields['contract_pattern'].queryset
+        self.assertIn(self.client_pattern, patterns)
+        self.assertNotIn(self.staff_pattern, patterns)
+
+        form_data = {
+            'client': self.client_obj.pk,
+            'contract_name': 'フォームテスト契約',
+            'job_category': self.job_category.pk,
+            'contract_pattern': self.client_pattern.pk,
+            'contract_type': 'service',
+            'start_date': date(2024, 2, 1),
+            'end_date': date(2024, 12, 31),
+            'is_active': True,
+        }
+        form = ClientContractForm(data=form_data)
+        self.assertTrue(form.is_valid(), form.errors)
+        instance = form.save()
+        self.assertEqual(instance.job_category, self.job_category)
+        self.assertEqual(instance.contract_pattern, self.client_pattern)
+
+    def test_staff_contract_form_with_new_fields(self):
+        """スタッフ契約フォーム（新しいフィールドあり）のテスト"""
+        form = StaffContractForm()
+        self.assertIn('job_category', form.fields)
+        self.assertIn('contract_pattern', form.fields)
+
+        # 契約パターンの選択肢がスタッフ向けのものだけになっているか確認
+        patterns = form.fields['contract_pattern'].queryset
+        self.assertNotIn(self.client_pattern, patterns)
+        self.assertIn(self.staff_pattern, patterns)
+
+        form_data = {
+            'staff': self.staff.pk,
+            'contract_name': 'フォームテスト雇用契約',
+            'job_category': self.job_category.pk,
+            'contract_pattern': self.staff_pattern.pk,
+            'contract_type': 'full_time',
+            'start_date': date(2024, 5, 1),
+            'end_date': date(2024, 12, 31),
+            'is_active': True,
+        }
+        form = StaffContractForm(data=form_data)
+        self.assertTrue(form.is_valid(), form.errors)
+        instance = form.save()
+        self.assertEqual(instance.job_category, self.job_category)
+        self.assertEqual(instance.contract_pattern, self.staff_pattern)
     
     def test_client_contract_form_initial_display_new(self):
         """クライアント契約フォーム新規作成時の初期表示テスト"""
