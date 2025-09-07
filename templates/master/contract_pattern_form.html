@@ -1,0 +1,30 @@
+{% extends 'common/_base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>{{ title }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <hr>
+        <h5>契約文言</h5>
+        {{ formset.management_form }}
+        {% for term_form in formset %}
+            <div class="card mb-2">
+                <div class="card-body">
+                    {{ term_form.id }}
+                    {{ term_form.as_p }}
+                </div>
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary">保存</button>
+        <a href="{% url 'master:contract_pattern_list' %}" class="btn btn-secondary">キャンセル</a>
+    </form>
+</div>
+{% endblock %}

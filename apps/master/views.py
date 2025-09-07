@@ -2196,7 +2196,7 @@ def staff_agreement_change_history_list(request):
 @login_required
 @permission_required("master.view_contractpattern", raise_exception=True)
 def contract_pattern_list(request):
-    """契約パターン一覧・編集"""
+    """契約パターン一覧"""
     search_query = request.GET.get("search", "")
     patterns = ContractPattern.objects.all()
     if search_query:
@@ -2204,40 +2204,64 @@ def contract_pattern_list(request):
 
     patterns = patterns.order_by('display_order', 'name')
 
-    if request.method == 'POST':
-        pattern_id = request.POST.get('pattern_id')
-        if pattern_id: # 編集
-            instance = get_object_or_404(ContractPattern, pk=pattern_id)
-            form = ContractPatternForm(request.POST, instance=instance)
-            formset = BaseContractTermsFormSet(request.POST, instance=instance)
-        else: # 新規作成
-            form = ContractPatternForm(request.POST)
-            formset = BaseContractTermsFormSet(request.POST)
-
-        if form.is_valid() and formset.is_valid():
-            pattern = form.save()
-            formset.instance = pattern
-            formset.save()
-            messages.success(request, f"契約パターン「{pattern.name}」を保存しました。")
-            return redirect('master:contract_pattern_list')
-    else:
-        pattern_id = request.GET.get('pattern_id')
-        if pattern_id: # 編集フォーム
-            instance = get_object_or_404(ContractPattern, pk=pattern_id)
-            form = ContractPatternForm(instance=instance)
-            formset = BaseContractTermsFormSet(instance=instance)
-        else: # 新規作成フォーム
-            form = ContractPatternForm()
-            formset = BaseContractTermsFormSet()
-
     context = {
         'patterns': patterns,
-        'form': form,
-        'formset': formset,
         'search_query': search_query,
         'title': '契約パターン管理'
     }
     return render(request, 'master/contract_pattern_list.html', context)
+
+
+@login_required
+@permission_required("master.add_contractpattern", raise_exception=True)
+def contract_pattern_create(request):
+    """契約パターン作成"""
+    if request.method == 'POST':
+        form = ContractPatternForm(request.POST)
+        formset = BaseContractTermsFormSet(request.POST)
+        if form.is_valid() and formset.is_valid():
+            pattern = form.save()
+            formset.instance = pattern
+            formset.save()
+            messages.success(request, f"契約パターン「{pattern.name}」を作成しました。")
+            return redirect('master:contract_pattern_list')
+    else:
+        form = ContractPatternForm()
+        formset = BaseContractTermsFormSet()
+
+    context = {
+        'form': form,
+        'formset': formset,
+        'title': '契約パターン作成'
+    }
+    return render(request, 'master/contract_pattern_form.html', context)
+
+
+@login_required
+@permission_required("master.change_contractpattern", raise_exception=True)
+def contract_pattern_update(request, pk):
+    """契約パターン編集"""
+    pattern = get_object_or_404(ContractPattern, pk=pk)
+    if request.method == 'POST':
+        form = ContractPatternForm(request.POST, instance=pattern)
+        formset = BaseContractTermsFormSet(request.POST, instance=pattern)
+        if form.is_valid() and formset.is_valid():
+            pattern = form.save()
+            formset.instance = pattern
+            formset.save()
+            messages.success(request, f"契約パターン「{pattern.name}」を更新しました。")
+            return redirect('master:contract_pattern_list')
+    else:
+        form = ContractPatternForm(instance=pattern)
+        formset = BaseContractTermsFormSet(instance=pattern)
+
+    context = {
+        'form': form,
+        'formset': formset,
+        'pattern': pattern,
+        'title': f'契約パターン編集 - {pattern.name}'
+    }
+    return render(request, 'master/contract_pattern_form.html', context)
 
 
 @login_required
