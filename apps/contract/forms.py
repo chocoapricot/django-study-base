@@ -19,6 +19,12 @@ class ClientContractForm(forms.ModelForm):
         })
     )
     
+    contract_status = forms.ChoiceField(
+        label='契約状況',
+        widget=forms.Select(attrs={'class': 'form-control form-control-sm'}),
+        required=False,
+    )
+    
     class Meta:
         model = ClientContract
         fields = [
@@ -31,7 +37,6 @@ class ClientContractForm(forms.ModelForm):
             'contract_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-            'contract_status': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'contract_amount': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
@@ -140,6 +145,12 @@ class StaffContractForm(forms.ModelForm):
             'placeholder': 'スタッフを選択してください'
         })
     )
+
+    contract_status = forms.ChoiceField(
+        label='契約状況',
+        widget=forms.Select(attrs={'class': 'form-control form-control-sm'}),
+        required=False,
+    )
     
     class Meta:
         model = StaffContract
@@ -153,7 +164,6 @@ class StaffContractForm(forms.ModelForm):
             'contract_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-            'contract_status': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'contract_amount': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
