@@ -3006,5 +3006,80 @@
       "disp_seq": 99,
       "active": true
     }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 300,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "category": "contract_status",
+      "name": "作成中",
+      "value": "1",
+      "disp_seq": 1,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 301,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "category": "contract_status",
+      "name": "申請中",
+      "value": "2",
+      "disp_seq": 2,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 302,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "category": "contract_status",
+      "name": "承認済",
+      "value": "3",
+      "disp_seq": 3,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 303,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "category": "contract_status",
+      "name": "発行済",
+      "value": "4",
+      "disp_seq": 4,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 304,
+    "fields": {
+      "created_at": "2025-09-07T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-07T00:00:00Z",
+      "updated_by": 1,
+      "category": "contract_status",
+      "name": "契約済",
+      "value": "5",
+      "disp_seq": 5,
+      "active": true
+    }
   }
 ]
