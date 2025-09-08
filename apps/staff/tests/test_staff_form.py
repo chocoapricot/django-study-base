@@ -82,7 +82,6 @@ class StaffFormTest(TestCase):
             contract_name='テスト契約',
             start_date=date(2024, 1, 1),
             end_date=contract_end_date,
-            is_active=True,
             created_by=self.user,
             updated_by=self.user
         )
