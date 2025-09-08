@@ -192,7 +192,24 @@ class StaffContractForm(forms.ModelForm):
         self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, contract_type='staff')
         if self.instance and self.instance.pk and hasattr(self.instance, 'staff') and self.instance.staff:
             self.fields['staff_display'].initial = f"{self.instance.staff.name_last} {self.instance.staff.name_first}"
-        self.fields['contract_status'].choices = ClientContract.ContractStatus.choices
+        self.fields['contract_status'].choices = StaffContract.ContractStatus.choices
+
+        # 契約状況に応じたフォームの制御
+        if self.instance and self.instance.pk:
+            if self.instance.contract_status in [StaffContract.ContractStatus.APPROVED, StaffContract.ContractStatus.ISSUED]:
+                # 承認済・発行済の場合、契約状況以外は編集不可
+                for field_name, field in self.fields.items():
+                    if field_name != 'contract_status':
+                        field.widget.attrs['disabled'] = 'disabled'
+                        field.widget.attrs['readonly'] = True
+
+            if self.instance.contract_status == StaffContract.ContractStatus.ISSUED:
+                # 発行済の場合、ステータスは「作成中」「申請中」にしか変更できない
+                self.fields['contract_status'].choices = [
+                    (StaffContract.ContractStatus.DRAFT.value, StaffContract.ContractStatus.DRAFT.label),
+                    (StaffContract.ContractStatus.PENDING.value, StaffContract.ContractStatus.PENDING.label),
+                    (StaffContract.ContractStatus.ISSUED.value, StaffContract.ContractStatus.ISSUED.label),
+                ]
     
     def clean(self):
         cleaned_data = super().clean()
