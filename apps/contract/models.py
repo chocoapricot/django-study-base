@@ -22,6 +22,7 @@ class ClientContract(MyModel):
         related_name='contracts',
         verbose_name='クライアント'
     )
+    corporate_number = models.CharField('法人番号', max_length=13, blank=True, null=True)
     contract_name = models.CharField('契約名', max_length=200)
     job_category = models.ForeignKey(
         'master.JobCategory',
@@ -128,6 +129,7 @@ class StaffContract(MyModel):
         related_name='contracts',
         verbose_name='スタッフ'
     )
+    corporate_number = models.CharField('法人番号', max_length=13, blank=True, null=True)
     contract_name = models.CharField('契約名', max_length=200)
     job_category = models.ForeignKey(
         'master.JobCategory',
