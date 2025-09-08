@@ -83,15 +83,7 @@
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_type.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約種別</label>
-                <div class="col-sm-4">
-                    {{ form.contract_type }}
-                    {% if form.contract_type.errors %}
-                        <div class="text-danger small">{{ form.contract_type.errors.0 }}</div>
-                    {% endif %}
-                </div>
-            </div>
+            
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.start_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
