@@ -4,13 +4,12 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
-from .models import ClientContract, StaffContract
+from .models import ClientContract, StaffContract, ClientContractPrint
 from .forms import ClientContractForm, StaffContractForm
 from apps.system.logs.models import AppLog
 from apps.common.utils import fill_pdf_from_template
 from apps.client.models import Client
 from apps.staff.models import Staff
-from apps.system.settings.models import Dropdowns
 from apps.master.models import ContractPattern
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
@@ -80,7 +79,7 @@ def client_contract_list(request):
     contracts = contracts.order_by('-start_date', 'client__name')
 
     # 契約状況のドロップダウンリストを取得
-    contract_status_list = Dropdowns.objects.filter(category='contract_status', active=True)
+    contract_status_list = [{'value': v, 'name': n} for v, n in ClientContract.ContractStatus.choices]
     contract_pattern_list = ContractPattern.objects.filter(contract_type='client')
     
     # ページネーション
@@ -135,8 +134,12 @@ def client_contract_detail(request, pk):
         action__in=['create', 'update', 'delete', 'print']
     ).order_by('-timestamp')[:10]  # 最新10件
     
+    # 発行履歴を取得
+    print_history = ClientContractPrint.objects.filter(client_contract=contract).order_by('-printed_at')
+
     context = {
         'contract': contract,
+        'print_history': print_history,
         'change_logs': change_logs,
         'client_filter': client_filter,
         'from_client_detail': from_client_detail,
@@ -254,7 +257,7 @@ def staff_contract_list(request):
     contracts = contracts.order_by('-start_date', 'staff__name_last', 'staff__name_first')
 
     # 契約状況のドロップダウンリストを取得
-    contract_status_list = Dropdowns.objects.filter(category='contract_status', active=True)
+    contract_status_list = [{'value': v, 'name': n} for v, n in ClientContract.ContractStatus.choices]
     contract_pattern_list = ContractPattern.objects.filter(contract_type='staff')
     
     # ページネーション
@@ -518,9 +521,23 @@ def client_contract_pdf(request, pk):
     """クライアント契約書のPDFを生成して返す"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
+    # ファイル名
+    pdf_filename = f"client_contract_{pk}.pdf"
+
+    # 承認済の場合、ステータスを発行済に変更し、発行履歴を記録
+    if contract.contract_status == ClientContract.ContractStatus.APPROVED:
+        contract.contract_status = ClientContract.ContractStatus.ISSUED
+        contract.save()
+
+        ClientContractPrint.objects.create(
+            client_contract=contract,
+            printed_by=request.user,
+            pdf_file_path=pdf_filename,
+        )
+
     # レスポンスの準備
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="client_contract_{pk}.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
 
     # PDFドキュメントの作成
     buffer = io.BytesIO()
@@ -564,10 +581,9 @@ def client_contract_pdf(request, pk):
                 # 備考が見つからない場合は末尾に追加
                 items.extend(term_items)
 
-    # ステータスが30未満（下書き、確認中）の場合は透かしを入れる
+    # ステータスが承認済未満（下書き、申請中）の場合は透かしを入れる
     watermark = None
-    # contract_status is a CharField, so we need to convert to int for comparison
-    if contract.contract_status and int(contract.contract_status) < 30:
+    if contract.contract_status and int(contract.contract_status) < int(ClientContract.ContractStatus.APPROVED):
         watermark = 'DRAFT'
 
     # 共通関数を呼び出してPDFを生成

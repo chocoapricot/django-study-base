@@ -53,7 +53,7 @@ class ClientContractForm(forms.ModelForm):
         self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, contract_type='client')
         self.fields['end_date'].required = True
         self.fields['payment_site'].queryset = BillPayment.get_active_list()
-        self.fields['contract_status'].choices = [(d.value, d.name) for d in Dropdowns.objects.filter(category='contract_status', active=True)]
+        self.fields['contract_status'].choices = ClientContract.ContractStatus.choices
 
         # クライアントを取得
         client = None
@@ -83,6 +83,23 @@ class ClientContractForm(forms.ModelForm):
             self.fields['payment_site'].help_text = 'クライアントで設定された支払条件が適用されます'
             # 空の選択肢を削除
             self.fields['payment_site'].empty_label = None
+
+        # 契約状況に応じたフォームの制御
+        if self.instance and self.instance.pk:
+            if self.instance.contract_status in [ClientContract.ContractStatus.APPROVED, ClientContract.ContractStatus.ISSUED]:
+                # 承認済・発行済の場合、契約状況以外は編集不可
+                for field_name, field in self.fields.items():
+                    if field_name != 'contract_status':
+                        field.widget.attrs['disabled'] = 'disabled'
+                        field.widget.attrs['readonly'] = True
+
+            if self.instance.contract_status == ClientContract.ContractStatus.ISSUED:
+                # 発行済の場合、ステータスは「作成中」「申請中」にしか変更できない
+                self.fields['contract_status'].choices = [
+                    (ClientContract.ContractStatus.DRAFT.value, ClientContract.ContractStatus.DRAFT.label),
+                    (ClientContract.ContractStatus.PENDING.value, ClientContract.ContractStatus.PENDING.label),
+                    (ClientContract.ContractStatus.ISSUED.value, ClientContract.ContractStatus.ISSUED.label),
+                ]
     
     def clean(self):
         cleaned_data = super().clean()
@@ -175,7 +192,7 @@ class StaffContractForm(forms.ModelForm):
         self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, contract_type='staff')
         if self.instance and self.instance.pk and hasattr(self.instance, 'staff') and self.instance.staff:
             self.fields['staff_display'].initial = f"{self.instance.staff.name_last} {self.instance.staff.name_first}"
-        self.fields['contract_status'].choices = [(d.value, d.name) for d in Dropdowns.objects.filter(category='contract_status', active=True)]
+        self.fields['contract_status'].choices = ClientContract.ContractStatus.choices
     
     def clean(self):
         cleaned_data = super().clean()
