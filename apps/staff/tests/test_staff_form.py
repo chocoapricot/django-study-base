@@ -80,7 +80,6 @@ class StaffFormTest(TestCase):
         StaffContract.objects.create(
             staff=self.staff,
             contract_name='テスト契約',
-            contract_type='full_time',
             start_date=date(2024, 1, 1),
             end_date=contract_end_date,
             is_active=True,
@@ -118,7 +117,6 @@ class StaffFormTest(TestCase):
         StaffContract.objects.create(
             staff=self.staff,
             contract_name='テスト契約',
-            contract_type='full_time',
             start_date=date(2024, 1, 1),
             end_date=contract_end_date,
             is_active=True,
@@ -155,7 +153,6 @@ class StaffFormTest(TestCase):
         StaffContract.objects.create(
             staff=self.staff,
             contract_name='テスト契約',
-            contract_type='full_time',
             start_date=date(2024, 1, 1),
             end_date=contract_end_date,
             is_active=True,
@@ -192,7 +189,6 @@ class StaffFormTest(TestCase):
         StaffContract.objects.create(
             staff=self.staff,
             contract_name='テスト契約',
-            contract_type='full_time',
             start_date=date(2024, 1, 1),
             end_date=contract_end_date,
             is_active=False,  # 無効な契約
@@ -228,7 +224,6 @@ class StaffFormTest(TestCase):
         StaffContract.objects.create(
             staff=self.staff,
             contract_name='テスト契約',
-            contract_type='full_time',
             start_date=date(2024, 1, 1),
             end_date=None,  # 契約終了日なし
             is_active=True,
