@@ -30,7 +30,7 @@ class ClientContractForm(forms.ModelForm):
         fields = [
             'client', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
             'start_date', 'end_date', 'contract_amount',
-            'description', 'notes', 'payment_site', 'is_active'
+            'description', 'notes', 'payment_site'
         ]
         widgets = {
             'client': forms.HiddenInput(),
@@ -44,7 +44,6 @@ class ClientContractForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 4}),
             'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'payment_site': forms.Select(attrs={'class': 'form-select form-select-sm'}),
-            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -154,7 +153,7 @@ class StaffContractForm(forms.ModelForm):
         fields = [
             'staff', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
             'start_date', 'end_date', 'contract_amount',
-            'description', 'notes', 'is_active'
+            'description', 'notes'
         ]
         widgets = {
             'staff': forms.HiddenInput(),
@@ -167,7 +166,6 @@ class StaffContractForm(forms.ModelForm):
             'contract_amount': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
             'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 4}),
             'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
-            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
     def __init__(self, *args, **kwargs):

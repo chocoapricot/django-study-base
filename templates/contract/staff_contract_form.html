@@ -148,20 +148,6 @@
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center">
-                <div class="col-sm-2"></div>
-                <div class="col-sm-10">
-                    <div class="form-check">
-                        {{ form.is_active }}
-                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
-                            有効な契約
-                        </label>
-                        {% if form.is_active.errors %}
-                            <div class="text-danger small">{{ form.is_active.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
 
             <div class="row mt-3">
                 <div class="col text-left">

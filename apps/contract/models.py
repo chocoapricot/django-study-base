@@ -46,9 +46,6 @@ class ClientContract(MyModel):
         null=True,
         verbose_name='支払いサイト'
     )
-    auto_renewal = models.BooleanField('自動更新', default=False)
-    is_active = models.BooleanField('有効', default=True)
-    
     class Meta:
         db_table = 'apps_contract_client'
         verbose_name = 'クライアント契約'
@@ -58,7 +55,6 @@ class ClientContract(MyModel):
             models.Index(fields=['client']),
             models.Index(fields=['start_date']),
             models.Index(fields=['end_date']),
-            models.Index(fields=['is_active']),
         ]
     
     def __str__(self):
@@ -108,9 +104,6 @@ class StaffContract(MyModel):
     contract_amount = models.DecimalField('契約金額', max_digits=10, decimal_places=0, blank=True, null=True)
     description = models.TextField('契約内容', blank=True, null=True)
     notes = models.TextField('備考', blank=True, null=True)
-    auto_renewal = models.BooleanField('自動更新', default=False)
-    is_active = models.BooleanField('有効', default=True)
-    
     class Meta:
         db_table = 'apps_contract_staff'
         verbose_name = 'スタッフ契約'
@@ -120,7 +113,6 @@ class StaffContract(MyModel):
             models.Index(fields=['staff']),
             models.Index(fields=['start_date']),
             models.Index(fields=['end_date']),
-            models.Index(fields=['is_active']),
         ]
     
     def __str__(self):
