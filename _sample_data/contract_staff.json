@@ -17,9 +17,7 @@
       "end_date": null,
       "contract_amount": 6000000,
       "description": "システム開発部門での正社員としての雇用契約。プロジェクトマネージャーとしての業務を担当。",
-      "notes": "年俸制。賞与年2回支給。有給休暇20日/年。",
-      "auto_renewal": false,
-      "is_active": true
+      "notes": "年俸制。賞与年2回支給。有給休暇20日/年。"
     }
   },
   {
@@ -40,9 +38,7 @@
       "end_date": null,
       "contract_amount": 5400000,
       "description": "営業部門での正社員としての雇用契約。新規顧客開拓および既存顧客フォローを担当。",
-      "notes": "月給制。営業成績に応じたインセンティブあり。",
-      "auto_renewal": false,
-      "is_active": true
+      "notes": "月給制。営業成績に応じたインセンティブあり。"
     }
   },
   {
@@ -63,9 +59,7 @@
       "end_date": "2024-12-31",
       "contract_amount": 2400000,
       "description": "トヨタ自動車向けAI導入プロジェクトの専任契約。機械学習エンジニアとしての業務。",
-      "notes": "既存の正社員契約に追加する形での専任契約。プロジェクト完了まで。",
-      "auto_renewal": false,
-      "is_active": true
+      "notes": "既存の正社員契約に追加する形での専任契約。プロジェクト完了まで。"
     }
   },
   {
@@ -86,9 +80,7 @@
       "end_date": "2024-08-31",
       "contract_amount": 3600000,
       "description": "Webアプリケーション開発のフリーランス契約。React/Node.jsでのフロントエンド開発を担当。",
-      "notes": "リモートワーク中心。週2回のオフィス出社。成果物ベースでの評価。",
-      "auto_renewal": true,
-      "is_active": true
+      "notes": "リモートワーク中心。週2回のオフィス出社。成果物ベースでの評価。"
     }
   },
   {
@@ -109,9 +101,7 @@
       "end_date": "2025-03-31",
       "contract_amount": 1800000,
       "description": "事務業務のパートタイム契約。週3日勤務、1日6時間。データ入力・資料作成を担当。",
-      "notes": "時給2500円。交通費支給。有給休暇は労働日数に応じて付与。",
-      "auto_renewal": true,
-      "is_active": true
+      "notes": "時給2500円。交通費支給。有給休暇は労働日数に応じて付与。"
     }
   },
   {
@@ -132,9 +122,7 @@
       "end_date": "2024-08-31",
       "contract_amount": 300000,
       "description": "夏季インターンシップ契約。システム開発の実務経験を積む。メンター制度あり。",
-      "notes": "大学3年生。将来的な正社員採用を前提とした育成プログラム。",
-      "auto_renewal": false,
-      "is_active": true
+      "notes": "大学3年生。将来的な正社員採用を前提とした育成プログラム。"
     }
   },
   {
@@ -155,9 +143,7 @@
       "end_date": "2024-02-29",
       "contract_amount": 2000000,
       "description": "総務省向けシステム要件定義プロジェクトの短期契約。業務分析・要件整理を担当。",
-      "notes": "プロジェクト完了により契約終了。成果物は高評価を獲得。",
-      "auto_renewal": false,
-      "is_active": false
+      "notes": "プロジェクト完了により契約終了。成果物は高評価を獲得。"
     }
   }
 ]
