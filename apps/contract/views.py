@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
-from .models import ClientContract, StaffContract, ClientContractPrint
+from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint
 from .forms import ClientContractForm, StaffContractForm
 from apps.system.logs.models import AppLog
 from apps.common.utils import fill_pdf_from_template
@@ -257,7 +257,7 @@ def staff_contract_list(request):
     contracts = contracts.order_by('-start_date', 'staff__name_last', 'staff__name_first')
 
     # 契約状況のドロップダウンリストを取得
-    contract_status_list = [{'value': v, 'name': n} for v, n in ClientContract.ContractStatus.choices]
+    contract_status_list = [{'value': v, 'name': n} for v, n in StaffContract.ContractStatus.choices]
     contract_pattern_list = ContractPattern.objects.filter(contract_type='staff')
     
     # ページネーション
@@ -311,9 +311,13 @@ def staff_contract_detail(request, pk):
         object_id=str(contract.pk),
         action__in=['create', 'update', 'delete', 'print']
     ).order_by('-timestamp')[:10]  # 最新10件
+
+    # 発行履歴を取得
+    print_history = StaffContractPrint.objects.filter(staff_contract=contract).order_by('-printed_at')
     
     context = {
         'contract': contract,
+        'print_history': print_history,
         'change_logs': change_logs,
         'staff_filter': staff_filter,
         'from_staff_detail': from_staff_detail,
@@ -612,9 +616,23 @@ def staff_contract_pdf(request, pk):
     """スタッフ契約書のPDFを生成して返す"""
     contract = get_object_or_404(StaffContract, pk=pk)
 
+    # ファイル名
+    pdf_filename = f"staff_contract_{pk}.pdf"
+
+    # 承認済の場合、ステータスを発行済に変更し、発行履歴を記録
+    if contract.contract_status == StaffContract.ContractStatus.APPROVED:
+        contract.contract_status = StaffContract.ContractStatus.ISSUED
+        contract.save()
+
+        StaffContractPrint.objects.create(
+            staff_contract=contract,
+            printed_by=request.user,
+            pdf_file_path=pdf_filename,
+        )
+
     # レスポンスの準備
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="staff_contract_{pk}.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
 
     # PDFドキュメントの作成
     buffer = io.BytesIO()
@@ -657,9 +675,9 @@ def staff_contract_pdf(request, pk):
                 # 備考が見つからない場合は末尾に追加
                 items.extend(term_items)
 
-    # ステータスが30未満（下書き、確認中）の場合は透かしを入れる
+    # ステータスが承認済未満（下書き、申請中）の場合は透かしを入れる
     watermark = None
-    if contract.contract_status and int(contract.contract_status) < 30:
+    if contract.contract_status and int(contract.contract_status) < int(StaffContract.ContractStatus.APPROVED):
         watermark = 'DRAFT'
 
     # 共通関数を呼び出してPDFを生成

@@ -79,3 +79,28 @@ class ContractViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/pdf')
         self.assertEqual(response['Content-Disposition'], f'attachment; filename="staff_contract_{staff_contract.pk}.pdf"')
+
+    def test_staff_contract_pdf_approved_to_issued(self):
+        """承認済みのスタッフ契約書を印刷すると発行済になるテスト"""
+        from apps.staff.models import Staff
+        from ..models import StaffContractPrint
+        staff = Staff.objects.create(name_last='Test', name_first='Staff')
+        staff_contract = StaffContract.objects.create(
+            staff=staff,
+            contract_name='Test Staff Contract',
+            start_date=datetime.date.today(),
+            contract_status=StaffContract.ContractStatus.APPROVED,
+        )
+        self.assertEqual(StaffContractPrint.objects.count(), 0)
+        response = self.client.get(reverse('contract:staff_contract_pdf', kwargs={'pk': staff_contract.pk}))
+        self.assertEqual(response.status_code, 200)
+
+        # ステータスが発行済に変わっていることを確認
+        staff_contract.refresh_from_db()
+        self.assertEqual(staff_contract.contract_status, StaffContract.ContractStatus.ISSUED)
+
+        # 発行履歴が作成されていることを確認
+        self.assertEqual(StaffContractPrint.objects.count(), 1)
+        print_history = StaffContractPrint.objects.first()
+        self.assertEqual(print_history.staff_contract, staff_contract)
+        self.assertEqual(print_history.printed_by, self.user)

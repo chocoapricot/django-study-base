@@ -390,3 +390,108 @@ class ContractFormDisplayTest(TestCase):
         
         # staff_displayフィールドの初期値は空
         self.assertIsNone(form.fields['staff_display'].initial)
+
+
+class StaffContractFormStatusTest(TestCase):
+    """スタッフ契約フォームのステータス別制御のテスト"""
+    def setUp(self):
+        """テストデータの準備"""
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.staff = Staff.objects.create(
+            name_last='Test',
+            name_first='User',
+            hire_date=date(2024, 1, 1)
+        )
+        self.base_data = {
+            'staff': self.staff.pk,
+            'contract_name': 'Test Contract',
+            'start_date': date(2024, 1, 1),
+            'end_date': date(2024, 12, 31),
+        }
+
+    def test_form_approved_status_fields_disabled(self):
+        """ステータスが承認済の場合にフィールドが無効化されるかテスト"""
+        contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='Approved Contract',
+            start_date=date(2024, 1, 1),
+            contract_status=StaffContract.ContractStatus.APPROVED
+        )
+        form = StaffContractForm(instance=contract)
+        for field_name, field in form.fields.items():
+            if field_name != 'contract_status':
+                self.assertTrue(field.widget.attrs.get('disabled'))
+                self.assertTrue(field.widget.attrs.get('readonly'))
+            else:
+                self.assertFalse(field.widget.attrs.get('disabled'))
+
+    def test_form_issued_status_fields_disabled(self):
+        """ステータスが発行済の場合にフィールドが無効化されるかテスト"""
+        contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='Issued Contract',
+            start_date=date(2024, 1, 1),
+            contract_status=StaffContract.ContractStatus.ISSUED
+        )
+        form = StaffContractForm(instance=contract)
+        for field_name, field in form.fields.items():
+            if field_name != 'contract_status':
+                self.assertTrue(field.widget.attrs.get('disabled'))
+                self.assertTrue(field.widget.attrs.get('readonly'))
+            else:
+                self.assertFalse(field.widget.attrs.get('disabled'))
+
+    def test_form_issued_status_choices_limited(self):
+        """ステータスが発行済の場合に選択肢が制限されるかテスト"""
+        contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='Issued Contract',
+            start_date=date(2024, 1, 1),
+            contract_status=StaffContract.ContractStatus.ISSUED
+        )
+        form = StaffContractForm(instance=contract)
+        status_choices = [choice[0] for choice in form.fields['contract_status'].choices]
+        self.assertIn(StaffContract.ContractStatus.DRAFT, status_choices)
+        self.assertIn(StaffContract.ContractStatus.PENDING, status_choices)
+        self.assertIn(StaffContract.ContractStatus.ISSUED, status_choices)
+        self.assertNotIn(StaffContract.ContractStatus.APPROVED, status_choices)
+
+    def test_form_draft_status_fields_enabled(self):
+        """ステータスが作成中の場合にフィールドが有効かテスト"""
+        contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='Draft Contract',
+            start_date=date(2024, 1, 1),
+            contract_status=StaffContract.ContractStatus.DRAFT
+        )
+        form = StaffContractForm(instance=contract)
+        for field_name, field in form.fields.items():
+            self.assertIsNone(field.widget.attrs.get('disabled'))
+
+    def test_form_update_with_disabled_fields(self):
+        """無効化されたフィールドを持つフォームの更新テスト"""
+        contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='Approved Contract',
+            start_date=date(2024, 1, 1),
+            contract_status=StaffContract.ContractStatus.APPROVED
+        )
+        # フォームデータには無効化されたフィールドも（値が変わらないまま）POSTされることを想定
+        form_data = {
+            'staff': contract.staff.pk,
+            'contract_name': contract.contract_name,
+            'start_date': contract.start_date,
+            'contract_status': StaffContract.ContractStatus.PENDING,
+        }
+        form = StaffContractForm(data=form_data, instance=contract)
+
+        # フォームは有効であるべき
+        self.assertTrue(form.is_valid(), form.errors)
+
+        # 保存
+        updated_contract = form.save()
+
+        # ステータスは更新される
+        self.assertEqual(updated_contract.contract_status, StaffContract.ContractStatus.PENDING)
+        # 他のフィールドは変更されない
+        self.assertEqual(updated_contract.contract_name, 'Approved Contract')
