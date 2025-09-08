@@ -337,7 +337,7 @@
             <thead>
                 <tr>
                     <th>契約名</th>
-                    <th>契約種別</th>
+                    <th>契約パターン</th>
                     <th>契約期間</th>
                     <th>状況</th>
                     <th>作成者</th>
@@ -352,17 +352,7 @@
                         </a>
                     </td>
                     <td>
-                        {% if contract.contract_type == 'service' %}
-                            <span class="badge bg-primary">サービス契約</span>
-                        {% elif contract.contract_type == 'maintenance' %}
-                            <span class="badge bg-success">保守契約</span>
-                        {% elif contract.contract_type == 'development' %}
-                            <span class="badge bg-info">開発契約</span>
-                        {% elif contract.contract_type == 'consulting' %}
-                            <span class="badge bg-warning">コンサルティング契約</span>
-                        {% else %}
-                            <span class="badge bg-light">その他</span>
-                        {% endif %}
+                        {{ contract.contract_pattern.name|default:"-" }}
                     </td>
                     <td>
                         {{ contract.start_date|date:'Y/m/d' }}

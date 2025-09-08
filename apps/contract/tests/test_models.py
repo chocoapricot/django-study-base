@@ -74,7 +74,6 @@ class ContractModelTest(TestCase):
         contract = ClientContract.objects.create(
             client=self.client_obj,
             contract_name='テスト契約',
-            contract_type='service',
             start_date=timezone.now().date(),
             end_date=timezone.now().date() + timedelta(days=365),
             contract_amount=1000000,
@@ -91,7 +90,6 @@ class ContractModelTest(TestCase):
         contract = StaffContract.objects.create(
             staff=self.staff,
             contract_name='雇用契約',
-            contract_type='full_time',
             start_date=timezone.now().date(),
             end_date=timezone.now().date() + timedelta(days=365),
             contract_amount=300000,

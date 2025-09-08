@@ -11,6 +11,7 @@ from apps.common.utils import fill_pdf_from_template
 from apps.client.models import Client
 from apps.staff.models import Staff
 from apps.system.settings.models import Dropdowns
+from apps.master.models import ContractPattern
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
@@ -56,8 +57,9 @@ def client_contract_list(request):
     search_query = request.GET.get('q', '')
     status_filter = request.GET.get('status', '')
     client_filter = request.GET.get('client', '')  # クライアントフィルタを追加
+    contract_pattern_filter = request.GET.get('contract_pattern', '')
     
-    contracts = ClientContract.objects.select_related('client').all()
+    contracts = ClientContract.objects.select_related('client', 'contract_pattern').all()
     
     # クライアントフィルタを適用
     if client_filter:
@@ -75,10 +77,15 @@ def client_contract_list(request):
     if status_filter:
         contracts = contracts.filter(contract_status=status_filter)
 
+    # 契約パターンフィルタを適用
+    if contract_pattern_filter:
+        contracts = contracts.filter(contract_pattern_id=contract_pattern_filter)
+
     contracts = contracts.order_by('-start_date', 'client__name')
 
     # 契約状況のドロップダウンリストを取得
     contract_status_list = Dropdowns.objects.filter(category='contract_status', active=True)
+    contract_pattern_list = ContractPattern.objects.filter(is_active=True, contract_type='client')
     
     # ページネーション
     paginator = Paginator(contracts, 20)
@@ -101,6 +108,8 @@ def client_contract_list(request):
         'client_filter': client_filter,
         'filtered_client': filtered_client,
         'contract_status_list': contract_status_list,
+        'contract_pattern_filter': contract_pattern_filter,
+        'contract_pattern_list': contract_pattern_list,
     }
     return render(request, 'contract/client_contract_list.html', context)
 
@@ -221,8 +230,9 @@ def staff_contract_list(request):
     search_query = request.GET.get('q', '')
     status_filter = request.GET.get('status', '')
     staff_filter = request.GET.get('staff', '')  # スタッフフィルタを追加
+    contract_pattern_filter = request.GET.get('contract_pattern', '')
     
-    contracts = StaffContract.objects.select_related('staff').all()
+    contracts = StaffContract.objects.select_related('staff', 'contract_pattern').all()
     
     # スタッフフィルタを適用
     if staff_filter:
@@ -241,10 +251,15 @@ def staff_contract_list(request):
     if status_filter:
         contracts = contracts.filter(contract_status=status_filter)
 
+    # 契約パターンフィルタを適用
+    if contract_pattern_filter:
+        contracts = contracts.filter(contract_pattern_id=contract_pattern_filter)
+
     contracts = contracts.order_by('-start_date', 'staff__name_last', 'staff__name_first')
 
     # 契約状況のドロップダウンリストを取得
     contract_status_list = Dropdowns.objects.filter(category='contract_status', active=True)
+    contract_pattern_list = ContractPattern.objects.filter(is_active=True, contract_type='staff')
     
     # ページネーション
     paginator = Paginator(contracts, 20)
@@ -267,6 +282,8 @@ def staff_contract_list(request):
         'staff_filter': staff_filter,
         'filtered_staff': filtered_staff,
         'contract_status_list': contract_status_list,
+        'contract_pattern_filter': contract_pattern_filter,
+        'contract_pattern_list': contract_pattern_list,
     }
     return render(request, 'contract/staff_contract_list.html', context)
 
@@ -521,7 +538,6 @@ def client_contract_pdf(request, pk):
         {"title": "契約名", "text": str(contract.contract_name)},
         {"title": "クライアント名", "text": str(contract.client.name)},
         {"title": "契約番号", "text": str(contract.contract_number)},
-        {"title": "契約種別", "text": str(contract.get_contract_type_display())},
         {"title": "契約開始日", "text": str(contract.start_date)},
         {"title": "契約終了日", "text": str(contract.end_date or "N/A")},
         {"title": "契約金額", "text": f"{contract.contract_amount} 円" if contract.contract_amount else "N/A"},
@@ -601,7 +617,6 @@ def staff_contract_pdf(request, pk):
         {"title": "契約名", "text": str(contract.contract_name)},
         {"title": "スタッフ名", "text": f"{contract.staff.name_last} {contract.staff.name_first}"},
         {"title": "契約番号", "text": str(contract.contract_number or "")},
-        {"title": "契約種別", "text": str(contract.get_contract_type_display())},
         {"title": "契約開始日", "text": str(contract.start_date)},
         {"title": "契約終了日", "text": str(contract.end_date or "N/A")},
         {"title": "契約金額", "text": f"{contract.contract_amount} 円" if contract.contract_amount else "N/A"},
