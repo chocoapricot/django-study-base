@@ -83,7 +83,6 @@ class ContractModelTest(TestCase):
 
         self.assertEqual(contract.client, self.client_obj)
         self.assertEqual(contract.contract_name, 'テスト契約')
-        self.assertTrue(contract.is_active)
 
     def test_staff_contract_creation(self):
         """スタッフ契約の作成テスト"""
@@ -99,4 +98,3 @@ class ContractModelTest(TestCase):
 
         self.assertEqual(contract.staff, self.staff)
         self.assertEqual(contract.contract_name, '雇用契約')
-        self.assertTrue(contract.is_active)

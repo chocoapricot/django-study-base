@@ -26,17 +26,13 @@ def contract_index(request):
     """契約管理トップページ"""
     # クライアント契約の統計
     client_contract_count = ClientContract.objects.count()
-    current_client_contracts = ClientContract.objects.filter(is_active=True).count()
-    recent_client_contracts = ClientContract.objects.select_related('client').filter(
-        is_active=True
-    ).order_by('-created_at')[:5]
+    current_client_contracts = ClientContract.objects.count()
+    recent_client_contracts = ClientContract.objects.select_related('client').order_by('-created_at')[:5]
     
     # スタッフ契約の統計
     staff_contract_count = StaffContract.objects.count()
-    current_staff_contracts = StaffContract.objects.filter(is_active=True).count()
-    recent_staff_contracts = StaffContract.objects.select_related('staff').filter(
-        is_active=True
-    ).order_by('-created_at')[:5]
+    current_staff_contracts = StaffContract.objects.count()
+    recent_staff_contracts = StaffContract.objects.select_related('staff').order_by('-created_at')[:5]
     
     context = {
         'client_contract_count': client_contract_count,
@@ -85,7 +81,7 @@ def client_contract_list(request):
 
     # 契約状況のドロップダウンリストを取得
     contract_status_list = Dropdowns.objects.filter(category='contract_status', active=True)
-    contract_pattern_list = ContractPattern.objects.filter(is_active=True, contract_type='client')
+    contract_pattern_list = ContractPattern.objects.filter(contract_type='client')
     
     # ページネーション
     paginator = Paginator(contracts, 20)
@@ -259,7 +255,7 @@ def staff_contract_list(request):
 
     # 契約状況のドロップダウンリストを取得
     contract_status_list = Dropdowns.objects.filter(category='contract_status', active=True)
-    contract_pattern_list = ContractPattern.objects.filter(is_active=True, contract_type='staff')
+    contract_pattern_list = ContractPattern.objects.filter(contract_type='staff')
     
     # ページネーション
     paginator = Paginator(contracts, 20)
@@ -542,7 +538,6 @@ def client_contract_pdf(request, pk):
         {"title": "契約終了日", "text": str(contract.end_date or "N/A")},
         {"title": "契約金額", "text": f"{contract.contract_amount} 円" if contract.contract_amount else "N/A"},
         {"title": "支払サイト", "text": str(contract.payment_site.name if contract.payment_site else "N/A")},
-        {"title": "自動更新", "text": "あり" if contract.auto_renewal else "なし"},
         {"title": "契約内容", "text": str(contract.description)},
         {"title": "備考", "text": str(contract.notes)},
     ]
@@ -620,7 +615,6 @@ def staff_contract_pdf(request, pk):
         {"title": "契約開始日", "text": str(contract.start_date)},
         {"title": "契約終了日", "text": str(contract.end_date or "N/A")},
         {"title": "契約金額", "text": f"{contract.contract_amount} 円" if contract.contract_amount else "N/A"},
-        {"title": "自動更新", "text": "あり" if contract.auto_renewal else "なし"},
         {"title": "契約内容", "text": str(contract.description or "")},
         {"title": "備考", "text": str(contract.notes or "")},
     ]

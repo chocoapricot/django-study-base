@@ -61,7 +61,6 @@ class ContractFormTest(TestCase):
             'contract_pattern': self.client_pattern.pk,
             'start_date': date(2024, 2, 1),
             'end_date': date(2024, 12, 31),
-            'is_active': True,
         }
         form = ClientContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
@@ -87,7 +86,6 @@ class ContractFormTest(TestCase):
             'contract_pattern': self.staff_pattern.pk,
             'start_date': date(2024, 5, 1),
             'end_date': date(2024, 12, 31),
-            'is_active': True,
         }
         form = StaffContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
@@ -166,8 +164,7 @@ class ContractFormTest(TestCase):
             'contract_name': 'テスト契約',
             'start_date': date(2023, 12, 1),  # 基本契約締結日より前
             'end_date': date(2024, 12, 31),
-            'contract_amount': 1000000,
-            'is_active': True
+            'contract_amount': 1000000
         }
         
         form = ClientContractForm(data=form_data)
@@ -182,8 +179,7 @@ class ContractFormTest(TestCase):
             'contract_name': '雇用契約',
             'start_date': date(2024, 3, 1),  # 入社日より前
             'end_date': date(2024, 12, 31),
-            'contract_amount': 300000,
-            'is_active': True
+            'contract_amount': 300000
         }
         
         form = StaffContractForm(data=form_data)
@@ -198,8 +194,7 @@ class ContractFormTest(TestCase):
             'contract_name': 'テスト契約',
             'start_date': date(2024, 2, 1),  # 基本契約締結日以降
             'end_date': date(2024, 12, 31),
-            'contract_amount': 1000000,
-            'is_active': True
+            'contract_amount': 1000000
         }
         
         form = ClientContractForm(data=form_data)
@@ -212,8 +207,7 @@ class ContractFormTest(TestCase):
             'contract_name': '雇用契約',
             'start_date': date(2024, 4, 1),  # 入社日以降
             'end_date': date(2024, 12, 31),
-            'contract_amount': 300000,
-            'is_active': True
+            'contract_amount': 300000
         }
         
         form = StaffContractForm(data=form_data)
