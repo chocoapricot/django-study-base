@@ -99,10 +99,9 @@ class StaffForm(forms.ModelForm):
         if resignation_date and self.instance and self.instance.pk:
             from apps.contract.models import StaffContract
             
-            # このスタッフの有効な契約で、退職日より後に終了する契約があるかチェック
+            # このスタッフの契約で、退職日より後に終了する契約があるかチェック
             future_contracts = StaffContract.objects.filter(
                 staff=self.instance,
-                is_active=True,
                 end_date__isnull=False,
                 end_date__gt=resignation_date
             ).order_by('end_date')
