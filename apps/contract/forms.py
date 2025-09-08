@@ -3,9 +3,24 @@ from .models import ClientContract, StaffContract
 from apps.client.models import Client
 from apps.staff.models import Staff
 from apps.system.settings.models import Dropdowns
+from apps.company.models import Company
 
 
-class ClientContractForm(forms.ModelForm):
+class CorporateNumberMixin:
+    """契約に自社の法人番号を自動設定するMixin"""
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        company = Company.objects.first()
+        if company:
+            instance.corporate_number = company.corporate_number
+        if commit:
+            instance.save()
+            # many-to-manyフィールドを保存するために必要
+            self.save_m2m()
+        return instance
+
+
+class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
     """クライアント契約フォーム"""
     
     # 選択されたクライアント名を表示するための読み取り専用フィールド
@@ -145,7 +160,7 @@ class ClientContractForm(forms.ModelForm):
         return payment_site
 
 
-class StaffContractForm(forms.ModelForm):
+class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
     """スタッフ契約フォーム"""
     
     # 選択されたスタッフ名を表示するための読み取り専用フィールド
