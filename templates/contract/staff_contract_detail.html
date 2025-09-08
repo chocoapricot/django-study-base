@@ -133,35 +133,33 @@
 </div>
 
 <!-- 発行履歴 -->
+{% if print_history %}
 <div class="content-box card bg-light mt-2 mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         発行履歴
     </div>
     <div class="card-body">
-        {% if print_history %}
-            <table class="table table-sm table-striped">
-                <thead>
+        <table class="table table-sm table-striped">
+            <thead>
+                <tr>
+                    <th>発行日時</th>
+                    <th>発行者</th>
+                    <th>ファイル</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for print_item in print_history %}
                     <tr>
-                        <th>発行日時</th>
-                        <th>発行者</th>
-                        <th>ファイル</th>
+                        <td>{{ print_item.printed_at|date:"Y年m月d日 H:i" }}</td>
+                        <td>{{ print_item.printed_by.name|default:"-" }}</td>
+                        <td>{{ print_item.pdf_file_path }}</td>
                     </tr>
-                </thead>
-                <tbody>
-                    {% for print_item in print_history %}
-                        <tr>
-                            <td>{{ print_item.printed_at|date:"Y年m月d日 H:i" }}</td>
-                            <td>{{ print_item.printed_by.name|default:"-" }}</td>
-                            <td>{{ print_item.pdf_file_path }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>発行履歴はありません。</p>
-        {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
+{% endif %}
 
 <!-- 変更履歴（共通テンプレート使用） -->
 {% url 'contract:staff_contract_change_history_list' contract.pk as staff_contract_history_url %}
