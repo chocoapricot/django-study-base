@@ -1,0 +1,73 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+{% load humanize %}
+{% load dropdowns %}
+{% load badge_tags %}
+
+{% block title %}スタッフ契約確認{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        スタッフ契約確認
+    </div>
+    <div class="card-body">
+        <!-- 契約一覧テーブル -->
+        {% if contracts_with_status %}
+        <table class="table table-striped table-hover me-2 mt-2" style="border-top: 1px solid #ddd;">
+            <thead class="table-light">
+                <tr>
+                    <th>契約名</th>
+                    <th>契約期間</th>
+                    <th>PDF</th>
+                    <th>確認状況</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in contracts_with_status %}
+                <tr>
+                    <td>{{ item.contract.contract_name }}</td>
+                    <td>
+                        {{ item.contract.start_date|date:"Y/m/d" }}
+                        {% if item.contract.end_date %}
+                            ～ {{ item.contract.end_date|date:"Y/m/d" }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item.latest_pdf %}
+                            <a href="{% url 'contract:staff_contract_pdf' item.contract.pk %}" target="_blank" class="btn btn-sm btn-info">最新のPDFを開く</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item.is_agreed %}
+                            <span class="badge bg-success">確認済</span>
+                        {% else %}
+                            <span class="badge bg-warning">未確認</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if not item.is_agreed %}
+                            <form method="post" action="{% url 'contract:staff_contract_confirm_list' %}" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="contract_id" value="{{ item.contract.pk }}">
+                                <button type="submit" class="btn btn-sm btn-primary">確認</button>
+                            </form>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="text-center py-4">
+            <p class="text-muted">確認対象の契約が見つかりませんでした。</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

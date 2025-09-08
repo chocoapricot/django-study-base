@@ -10,7 +10,8 @@ from apps.system.logs.models import AppLog
 from apps.common.utils import fill_pdf_from_template
 from apps.client.models import Client
 from apps.staff.models import Staff
-from apps.master.models import ContractPattern
+from apps.master.models import ContractPattern, StaffAgreement
+from apps.connect.models import ConnectStaff, ConnectStaffAgree
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
@@ -608,6 +609,93 @@ def client_contract_pdf(request, pk):
     )
 
     return response
+
+
+@login_required
+def staff_contract_confirm_list(request):
+    """スタッフ契約確認一覧"""
+    user = request.user
+
+    if request.method == 'POST':
+        contract_id = request.POST.get('contract_id')
+        contract = get_object_or_404(StaffContract, pk=contract_id)
+
+        # スタッフ同意文言を取得
+        staff_agreement = StaffAgreement.objects.filter(
+            Q(corporation_number=contract.corporate_number) | Q(corporation_number__isnull=True) | Q(corporation_number=''),
+            is_active=True
+        ).order_by('-corporation_number', '-created_at').first()
+
+        if staff_agreement:
+            ConnectStaffAgree.objects.update_or_create(
+                email=user.email,
+                corporate_number=contract.corporate_number,
+                staff_agreement=staff_agreement,
+                defaults={'is_agreed': True}
+            )
+            messages.success(request, f'契約「{contract.contract_name}」を確認しました。')
+        else:
+            messages.error(request, '確認可能な同意文言が見つかりませんでした。')
+
+        return redirect('contract:staff_contract_confirm_list')
+
+    try:
+        staff = Staff.objects.get(email=user.email)
+    except Staff.DoesNotExist:
+        staff = None
+
+    if not staff:
+        context = {
+            'contracts_with_status': [],
+            'title': 'スタッフ契約確認',
+        }
+        return render(request, 'contract/staff_contract_confirm_list.html', context)
+
+    # 接続許可されている法人番号を取得
+    approved_corporate_numbers = ConnectStaff.objects.filter(
+        email=user.email,
+        status='approved'
+    ).values_list('corporate_number', flat=True)
+
+    # 契約を取得
+    contracts = StaffContract.objects.filter(
+        staff=staff,
+        corporate_number__in=approved_corporate_numbers,
+        contract_status=StaffContract.ContractStatus.ISSUED
+    ).select_related('staff').order_by('-start_date')
+
+    # 同意状況とPDFの情報を追加
+    contracts_with_status = []
+    for contract in contracts:
+        # 同意文言の取得
+        staff_agreement = StaffAgreement.objects.filter(
+            Q(corporation_number=contract.corporate_number) | Q(corporation_number__isnull=True) | Q(corporation_number=''),
+            is_active=True
+        ).order_by('-corporation_number', '-created_at').first()
+
+        is_agreed = False
+        if staff_agreement:
+            is_agreed = ConnectStaffAgree.objects.filter(
+                email=user.email,
+                corporate_number=contract.corporate_number,
+                staff_agreement=staff_agreement,
+                is_agreed=True
+            ).exists()
+
+        # 最新のPDFを取得
+        latest_pdf = StaffContractPrint.objects.filter(staff_contract=contract).order_by('-printed_at').first()
+
+        contracts_with_status.append({
+            'contract': contract,
+            'is_agreed': is_agreed,
+            'latest_pdf': latest_pdf,
+        })
+
+    context = {
+        'contracts_with_status': contracts_with_status,
+        'title': 'スタッフ契約確認',
+    }
+    return render(request, 'contract/staff_contract_confirm_list.html', context)
 
 
 @login_required
