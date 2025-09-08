@@ -9,7 +9,13 @@ class ClientContract(MyModel):
     クライアント（取引先企業）との契約情報を管理するモデル。
     契約期間、金額、契約種別などを記録する。
     """
-    
+    class ContractStatus(models.TextChoices):
+        DRAFT = '1', '作成中'
+        PENDING = '20', '申請中'
+        APPROVED = '30', '承認済'
+        ISSUED = '40', '発行済'
+        CONTRACTED = '50', '契約済'
+
     client = models.ForeignKey(
         Client,
         on_delete=models.CASCADE,
@@ -33,7 +39,14 @@ class ClientContract(MyModel):
         limit_choices_to={'contract_type': 'client'},
     )
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
-    contract_status = models.CharField('契約状況', max_length=2, blank=True, null=True)
+    contract_status = models.CharField(
+        '契約状況',
+        max_length=2,
+        choices=ContractStatus.choices,
+        default=ContractStatus.DRAFT,
+        blank=True,
+        null=True
+    )
     start_date = models.DateField('契約開始日')
     end_date = models.DateField('契約終了日', blank=True, null=True)
     contract_amount = models.DecimalField('契約金額', max_digits=12, decimal_places=0, blank=True, null=True)
@@ -67,6 +80,35 @@ class ClientContract(MyModel):
         
         if self.start_date and self.end_date and self.start_date > self.end_date:
             raise ValidationError('契約開始日は終了日より前の日付を入力してください。')
+
+
+class ClientContractPrint(MyModel):
+    """
+    クライアント契約書の発行履歴を管理するモデル。
+    """
+    client_contract = models.ForeignKey(
+        ClientContract,
+        on_delete=models.CASCADE,
+        related_name='print_history',
+        verbose_name='クライアント契約'
+    )
+    printed_at = models.DateTimeField('発行日時', auto_now_add=True)
+    printed_by = models.ForeignKey(
+        'accounts.MyUser',
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name='発行者'
+    )
+    pdf_file_path = models.CharField('PDFファイル参照', max_length=255)
+
+    class Meta:
+        db_table = 'apps_contract_client_print'
+        verbose_name = 'クライアント契約書発行履歴'
+        verbose_name_plural = 'クライアント契約書発行履歴'
+        ordering = ['-printed_at']
+
+    def __str__(self):
+        return f"{self.client_contract} - {self.printed_at}"
 
 
 class StaffContract(MyModel):
