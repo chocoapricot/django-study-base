@@ -119,7 +119,6 @@ class StaffFormTest(TestCase):
             contract_name='テスト契約',
             start_date=date(2024, 1, 1),
             end_date=contract_end_date,
-            is_active=True,
             created_by=self.user,
             updated_by=self.user
         )
@@ -155,7 +154,6 @@ class StaffFormTest(TestCase):
             contract_name='テスト契約',
             start_date=date(2024, 1, 1),
             end_date=contract_end_date,
-            is_active=True,
             created_by=self.user,
             updated_by=self.user
         )
@@ -181,42 +179,7 @@ class StaffFormTest(TestCase):
         
         form = StaffForm(data=form_data, instance=self.staff)
         self.assertTrue(form.is_valid())
-    
-    def test_resignation_date_validation_with_inactive_contract(self):
-        """無効な契約は考慮されないことのテスト"""
-        # 無効なスタッフ契約を作成（退職予定日より後に終了するが無効）
-        contract_end_date = date(2024, 12, 31)
-        StaffContract.objects.create(
-            staff=self.staff,
-            contract_name='テスト契約',
-            start_date=date(2024, 1, 1),
-            end_date=contract_end_date,
-            is_active=False,  # 無効な契約
-            created_by=self.user,
-            updated_by=self.user
-        )
-        
-        # 契約終了日より前の退職日でフォームを作成
-        resignation_date = date(2024, 11, 30)
-        form_data = {
-            'regist_form_code': '1',
-            'employee_no': 'EMP001',
-            'name_last': '田中',
-            'name_first': '太郎',
-            'name_kana_last': 'タナカ',
-            'name_kana_first': 'タロウ',
-            'birth_date': date(1990, 1, 1),
-            'sex': '1',
-            'hire_date': date(2020, 4, 1),
-            'resignation_date': resignation_date,
-            'postal_code': '1000001',
-            'address1': '東京都千代田区千代田',
-            'phone': '03-1234-5678',
-            'email': 'tanaka@example.com'
-        }
-        
-        form = StaffForm(data=form_data, instance=self.staff)
-        self.assertTrue(form.is_valid())  # 無効な契約は考慮されないのでOK
+   
     
     def test_resignation_date_validation_with_no_end_date_contract(self):
         """契約終了日がない契約は考慮されないことのテスト"""
@@ -226,7 +189,6 @@ class StaffFormTest(TestCase):
             contract_name='テスト契約',
             start_date=date(2024, 1, 1),
             end_date=None,  # 契約終了日なし
-            is_active=True,
             created_by=self.user,
             updated_by=self.user
         )
