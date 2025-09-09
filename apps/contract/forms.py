@@ -105,8 +105,23 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
                 # 承認済・発行済の場合、契約状況以外は編集不可
                 for field_name, field in self.fields.items():
                     if field_name != 'contract_status':
-                        field.widget.attrs['disabled'] = 'disabled'
-                        field.widget.attrs['readonly'] = True
+                        if 'disabled' in field.widget.attrs:
+                            del field.widget.attrs['disabled']
+
+                        # payment_siteはクライアント設定でロックされている場合、そのスタイルを維持
+                        if field_name == 'payment_site' and 'data-client-locked' in field.widget.attrs:
+                            continue
+
+                        if isinstance(field.widget, forms.Select):
+                            # Selectはform-control-plaintextに対応していないため、クリックできないようにスタイルを設定
+                            field.widget.attrs['style'] = 'pointer-events: none; background-color: #e9ecef;'
+                        else:
+                            # テキストベースの入力項目にはform-control-plaintextを適用
+                            field.widget.attrs['readonly'] = True
+                            current_class = field.widget.attrs.get('class', '')
+                            if current_class:
+                                new_class = current_class.replace('form-control', 'form-control-plaintext')
+                                field.widget.attrs['class'] = new_class
 
             if self.instance.contract_status == ClientContract.ContractStatus.ISSUED:
                 # 発行済の場合、ステータスは「作成中」「申請中」にしか変更できない
@@ -215,8 +230,19 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
                 # 承認済・発行済の場合、契約状況以外は編集不可
                 for field_name, field in self.fields.items():
                     if field_name != 'contract_status':
-                        field.widget.attrs['disabled'] = 'disabled'
-                        field.widget.attrs['readonly'] = True
+                        if 'disabled' in field.widget.attrs:
+                            del field.widget.attrs['disabled']
+
+                        if isinstance(field.widget, forms.Select):
+                            # Selectはform-control-plaintextに対応していないため、クリックできないようにスタイルを設定
+                            field.widget.attrs['style'] = 'pointer-events: none; background-color: #e9ecef;'
+                        else:
+                            # テキストベースの入力項目にはform-control-plaintextを適用
+                            field.widget.attrs['readonly'] = True
+                            current_class = field.widget.attrs.get('class', '')
+                            if current_class:
+                                new_class = current_class.replace('form-control', 'form-control-plaintext')
+                                field.widget.attrs['class'] = new_class
 
             if self.instance.contract_status == StaffContract.ContractStatus.ISSUED:
                 # 発行済の場合、ステータスは「作成中」「申請中」にしか変更できない
