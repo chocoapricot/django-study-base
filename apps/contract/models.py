@@ -122,6 +122,7 @@ class StaffContract(MyModel):
         PENDING = '20', '申請中'
         APPROVED = '30', '承認済'
         ISSUED = '40', '発行済'
+        CONFIRMED = '50', '確認済'
 
     staff = models.ForeignKey(
         Staff,
@@ -160,6 +161,9 @@ class StaffContract(MyModel):
     contract_amount = models.DecimalField('契約金額', max_digits=10, decimal_places=0, blank=True, null=True)
     description = models.TextField('契約内容', blank=True, null=True)
     notes = models.TextField('備考', blank=True, null=True)
+    approved_at = models.DateTimeField('承認日時', blank=True, null=True)
+    issued_at = models.DateTimeField('発行日時', blank=True, null=True)
+    confirmed_at = models.DateTimeField('確認日時', blank=True, null=True)
     class Meta:
         db_table = 'apps_contract_staff'
         verbose_name = 'スタッフ契約'
