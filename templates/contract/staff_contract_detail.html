@@ -143,22 +143,22 @@
         <table class="table table-sm table-striped">
             <thead>
                 <tr>
-                    <th>発行日時</th>
-                    <th>発行者</th>
                     <th>ファイル</th>
+                    <th>発行者</th>
+                    <th>発行日時</th>
                 </tr>
             </thead>
             <tbody>
                 {% for print_item in print_history %}
                     <tr>
-                        <td>{{ print_item.printed_at|date:"Y年m月d日 H:i" }}</td>
-                        <td>{{ print_item.printed_by.name|default:"-" }}</td>
                         <td>
                             <a href="{% url 'contract:download_staff_contract_pdf' print_item.pk %}">
                                 <i class="bi bi-file-earmark-arrow-down-fill"></i>
                                 {{ print_item.pdf_file_path|basename }}
                             </a>
                         </td>
+                        <td>{{ print_item.printed_by.name|default:"-" }}</td>
+                        <td>{{ print_item.printed_at|date:"Y/m/d H:i:s" }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

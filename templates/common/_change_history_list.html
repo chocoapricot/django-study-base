@@ -90,6 +90,8 @@
                             <span class="badge bg-warning">編集</span>
                         {% elif log.action == 'delete' %}
                             <span class="badge bg-danger">削除</span>
+                        {% elif log.action == 'print' %}
+                            <span class="badge bg-info">印刷</span>
                         {% else %}
                             <span class="badge bg-secondary">{{ log.action|title }}</span>
                         {% endif %}
