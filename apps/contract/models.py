@@ -14,7 +14,7 @@ class ClientContract(MyModel):
         PENDING = '20', '申請中'
         APPROVED = '30', '承認済'
         ISSUED = '40', '発行済'
-        CONTRACTED = '50', '契約済'
+        CONFIRMED = '50', '確認済'
 
     client = models.ForeignKey(
         Client,
