@@ -3,6 +3,7 @@
 {% load humanize %}
 {% load dropdowns %}
 {% load badge_tags %}
+{% load query_tags %}
 
 {% block title %}クライアント契約詳細 - {{ contract.contract_name }}{% endblock %}
 
@@ -163,7 +164,12 @@
                     <tr>
                         <td>{{ item.printed_at|date:"Y年m月d日 H:i" }}</td>
                         <td>{{ item.printed_by.get_full_name|default:"-" }}</td>
-                        <td>{{ item.pdf_file_path }}</td>
+                        <td>
+                            <a href="{% url 'contract:download_client_contract_pdf' item.pk %}">
+                                <i class="bi bi-file-earmark-arrow-down-fill"></i>
+                                {{ item.pdf_file_path|basename }}
+                            </a>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

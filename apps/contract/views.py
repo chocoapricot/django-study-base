@@ -3,9 +3,12 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint
 from .forms import ClientContractForm, StaffContractForm
+from django.conf import settings
+from django.utils import timezone
+import os
 from apps.system.logs.models import AppLog
 from apps.common.utils import fill_pdf_from_template
 from apps.client.models import Client
@@ -527,18 +530,8 @@ def client_contract_pdf(request, pk):
     contract = get_object_or_404(ClientContract, pk=pk)
 
     # ファイル名
-    pdf_filename = f"client_contract_{pk}.pdf"
-
-    # 承認済の場合、ステータスを発行済に変更し、発行履歴を記録
-    if contract.contract_status == ClientContract.ContractStatus.APPROVED:
-        contract.contract_status = ClientContract.ContractStatus.ISSUED
-        contract.save()
-
-        ClientContractPrint.objects.create(
-            client_contract=contract,
-            printed_by=request.user,
-            pdf_file_path=pdf_filename,
-        )
+    timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
+    pdf_filename = f"client_contract_{pk}_{timestamp}.pdf"
 
     # レスポンスの準備
     response = HttpResponse(content_type='application/pdf')
@@ -599,6 +592,27 @@ def client_contract_pdf(request, pk):
     buffer.close()
     response.write(pdf)
 
+    # 承認済の場合、ステータスを発行済に変更し、発行履歴を記録
+    if contract.contract_status == ClientContract.ContractStatus.APPROVED:
+        contract.contract_status = ClientContract.ContractStatus.ISSUED
+        contract.save()
+
+        # PDFを保存
+        contract_dir = os.path.join(settings.MEDIA_ROOT, 'contracts', 'client', str(contract.pk))
+        os.makedirs(contract_dir, exist_ok=True)
+        file_path_on_disk = os.path.join(contract_dir, pdf_filename)
+        with open(file_path_on_disk, 'wb') as f:
+            f.write(pdf)
+
+        # DBに保存するパス
+        db_file_path = os.path.join('contracts', 'client', str(contract.pk), pdf_filename)
+
+        ClientContractPrint.objects.create(
+            client_contract=contract,
+            printed_by=request.user,
+            pdf_file_path=db_file_path,
+        )
+
     # AppLogに記録
     AppLog.objects.create(
         user=request.user,
@@ -609,6 +623,37 @@ def client_contract_pdf(request, pk):
     )
 
     return response
+
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def download_client_contract_pdf(request, pk):
+    """Downloads a previously generated client contract PDF."""
+    print_history = get_object_or_404(ClientContractPrint, pk=pk)
+
+    file_path = os.path.join(settings.MEDIA_ROOT, print_history.pdf_file_path)
+
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type="application/pdf")
+            response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'
+            return response
+    raise Http404
+
+@login_required
+@permission_required('contract.view_staffcontract', raise_exception=True)
+def download_staff_contract_pdf(request, pk):
+    """Downloads a previously generated staff contract PDF."""
+    print_history = get_object_or_404(StaffContractPrint, pk=pk)
+
+    file_path = os.path.join(settings.MEDIA_ROOT, print_history.pdf_file_path)
+
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type="application/pdf")
+            response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'
+            return response
+    raise Http404
 
 
 @login_required
@@ -705,18 +750,8 @@ def staff_contract_pdf(request, pk):
     contract = get_object_or_404(StaffContract, pk=pk)
 
     # ファイル名
-    pdf_filename = f"staff_contract_{pk}.pdf"
-
-    # 承認済の場合、ステータスを発行済に変更し、発行履歴を記録
-    if contract.contract_status == StaffContract.ContractStatus.APPROVED:
-        contract.contract_status = StaffContract.ContractStatus.ISSUED
-        contract.save()
-
-        StaffContractPrint.objects.create(
-            staff_contract=contract,
-            printed_by=request.user,
-            pdf_file_path=pdf_filename,
-        )
+    timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
+    pdf_filename = f"staff_contract_{pk}_{timestamp}.pdf"
 
     # レスポンスの準備
     response = HttpResponse(content_type='application/pdf')
@@ -775,6 +810,27 @@ def staff_contract_pdf(request, pk):
     pdf = buffer.getvalue()
     buffer.close()
     response.write(pdf)
+
+    # 承認済の場合、ステータスを発行済に変更し、発行履歴を記録
+    if contract.contract_status == StaffContract.ContractStatus.APPROVED:
+        contract.contract_status = StaffContract.ContractStatus.ISSUED
+        contract.save()
+
+        # PDFを保存
+        contract_dir = os.path.join(settings.MEDIA_ROOT, 'contracts', 'staff', str(contract.pk))
+        os.makedirs(contract_dir, exist_ok=True)
+        file_path_on_disk = os.path.join(contract_dir, pdf_filename)
+        with open(file_path_on_disk, 'wb') as f:
+            f.write(pdf)
+
+        # DBに保存するパス
+        db_file_path = os.path.join('contracts', 'staff', str(contract.pk), pdf_filename)
+
+        StaffContractPrint.objects.create(
+            staff_contract=contract,
+            printed_by=request.user,
+            pdf_file_path=db_file_path,
+        )
 
     # AppLogに記録
     AppLog.objects.create(
