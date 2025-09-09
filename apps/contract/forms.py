@@ -68,7 +68,17 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, contract_type='client')
         self.fields['end_date'].required = True
         self.fields['payment_site'].queryset = BillPayment.get_active_list()
-        self.fields['contract_status'].choices = ClientContract.ContractStatus.choices
+
+        # 編集画面では「作成中」「申請中」のみ選択可能にする
+        choices = [
+            (ClientContract.ContractStatus.DRAFT.value, ClientContract.ContractStatus.DRAFT.label),
+            (ClientContract.ContractStatus.PENDING.value, ClientContract.ContractStatus.PENDING.label),
+        ]
+        if self.instance and self.instance.pk and self.instance.contract_status:
+            current_choice = (self.instance.contract_status, self.instance.get_contract_status_display())
+            if current_choice not in choices:
+                choices.append(current_choice)
+        self.fields['contract_status'].choices = choices
 
         # クライアントを取得
         client = None

@@ -1,0 +1,61 @@
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        状況
+    </div>
+    <div class="card-body">
+        {# 承認スイッチ #}
+        <form method="post" id="approve-form" action="{% url 'contract:client_contract_approve' contract.pk %}" class="mb-3">
+            {% csrf_token %}
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="approvalSwitch" name="is_approved"
+                       onchange="this.form.submit()"
+                       {% if contract.contract_status == contract.ContractStatus.APPROVED or contract.contract_status == contract.ContractStatus.ISSUED or contract.contract_status == contract.ContractStatus.CONTRACTED %}checked{% endif %}
+                       {% if contract.contract_status == contract.ContractStatus.DRAFT %}disabled{% endif %}>
+                <label class="form-check-label" for="approvalSwitch">
+                    <i class="bi bi-check-circle" style="font-size: 20px; color: #17a2b8;"></i>
+                    契約承認
+                    {% if contract.approved_at %}
+                        <span class="text-muted small">（{{ contract.approved_at|date:"Y/m/d H:i:s" }}）</span>
+                    {% endif %}
+                </label>
+            </div>
+        </form>
+
+        {# 発行スイッチ #}
+        <form method="post" id="issue-form" action="{% url 'contract:client_contract_issue' contract.pk %}" class="mb-3">
+            {% csrf_token %}
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="issueSwitch" name="is_issued"
+                       onchange="this.form.submit()"
+                       {% if contract.contract_status == contract.ContractStatus.ISSUED or contract.contract_status == contract.ContractStatus.CONTRACTED %}checked{% endif %}
+                       {% if contract.contract_status != contract.ContractStatus.APPROVED %}disabled{% endif %}
+                       {% if contract.contract_status == contract.ContractStatus.ISSUED %}disabled{% endif %}>
+                <label class="form-check-label" for="issueSwitch">
+                    <i class="bi bi-filetype-pdf" style="font-size: 20px; color: #17a2b8;"></i>
+                    契約書発行
+                    {% if contract.issued_at %}
+                        <span class="text-muted small">（{{ contract.issued_at|date:"Y/m/d H:i:s" }}）</span>
+                    {% endif %}
+                </label>
+            </div>
+        </form>
+
+        {# 確認スイッチ #}
+        <form method="post" id="confirm-form" action="{% url 'contract:client_contract_confirm' contract.pk %}" class="mb-3">
+            {% csrf_token %}
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="confirmSwitch" name="is_confirmed"
+                       onchange="this.form.submit()"
+                       {% if contract.contract_status == contract.ContractStatus.CONTRACTED %}checked{% endif %}
+                       {% if contract.contract_status != contract.ContractStatus.ISSUED %}disabled{% endif %}>
+                <label class="form-check-label" for="confirmSwitch">
+                    <i class="bi bi-link" style="font-size: 20px; color: #17a2b8;"></i>
+                    確認
+                    {% if contract.confirmed_at %}
+                        <span class="text-muted small">（{{ contract.confirmed_at|date:"Y/m/d H:i:s" }}）</span>
+                    {% endif %}
+                </label>
+            </div>
+        </form>
+    </div>
+</div>

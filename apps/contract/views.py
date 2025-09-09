@@ -188,6 +188,10 @@ def client_contract_update(request, pk):
     """クライアント契約更新"""
     contract = get_object_or_404(ClientContract, pk=pk)
     
+    if contract.contract_status not in [ClientContract.ContractStatus.DRAFT, ClientContract.ContractStatus.PENDING]:
+        messages.error(request, 'この契約は編集できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
     if request.method == 'POST':
         form = ClientContractForm(request.POST, instance=contract)
         if form.is_valid():
@@ -213,6 +217,10 @@ def client_contract_delete(request, pk):
     """クライアント契約削除"""
     contract = get_object_or_404(ClientContract, pk=pk)
     
+    if contract.contract_status not in [ClientContract.ContractStatus.DRAFT, ClientContract.ContractStatus.PENDING]:
+        messages.error(request, 'この契約は削除できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
     if request.method == 'POST':
         contract_name = contract.contract_name
         contract.delete()
@@ -626,6 +634,56 @@ def client_contract_pdf(request, pk):
 
 
 @login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def client_contract_approve(request, pk):
+    """クライアント契約の承認ステータスを更新する"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+    if request.method == 'POST':
+        is_approved = request.POST.get('is_approved')
+        if is_approved:
+            contract.contract_status = ClientContract.ContractStatus.APPROVED
+            contract.approved_at = timezone.now()
+            messages.success(request, f'契約「{contract.contract_name}」を承認済にしました。')
+        else:
+            contract.contract_status = ClientContract.ContractStatus.DRAFT
+            contract.approved_at = None
+            contract.issued_at = None
+            contract.confirmed_at = None
+            messages.success(request, f'契約「{contract.contract_name}」を作成中に戻しました。')
+        contract.save()
+    return redirect('contract:client_contract_detail', pk=contract.pk)
+
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def client_contract_issue(request, pk):
+    """クライアント契約を発行済にする"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+    if request.method == 'POST' and 'is_issued' in request.POST:
+        if contract.contract_status == ClientContract.ContractStatus.APPROVED:
+            # client_contract_pdfを呼び出してPDF生成とステータス更新を行う
+            # この関数はPDFレスポンスを返すが、ここではリダイレクトするため無視する
+            client_contract_pdf(request, pk)
+            # メッセージはclient_contract_pdf内では設定されないのでここで設定
+            messages.success(request, f'契約「{contract.contract_name}」を発行済にし、PDFを履歴に保存しました。')
+    return redirect('contract:client_contract_detail', pk=contract.pk)
+
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def client_contract_confirm(request, pk):
+    """クライアント契約を確認済にする"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+    if request.method == 'POST' and 'is_confirmed' in request.POST:
+        if contract.contract_status == ClientContract.ContractStatus.ISSUED:
+            contract.contract_status = ClientContract.ContractStatus.CONTRACTED
+            contract.confirmed_at = timezone.now()
+            contract.save()
+            messages.success(request, f'契約「{contract.contract_name}」を確認済にしました。')
+    return redirect('contract:client_contract_detail', pk=contract.pk)
+
+
+@login_required
 @permission_required('contract.change_staffcontract', raise_exception=True)
 def staff_contract_approve(request, pk):
     """スタッフ契約の承認ステータスを更新する"""
@@ -747,7 +805,7 @@ def staff_contract_confirm_list(request):
     contracts = StaffContract.objects.filter(
         staff=staff,
         corporate_number__in=approved_corporate_numbers,
-        contract_status=StaffContract.ContractStatus.ISSUED
+        contract_status__in=[StaffContract.ContractStatus.ISSUED, StaffContract.ContractStatus.CONFIRMED]
     ).select_related('staff').order_by('-start_date')
 
     # 同意状況とPDFの情報を追加
