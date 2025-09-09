@@ -20,7 +20,8 @@
                     <th>契約名</th>
                     <th>契約期間</th>
                     <th>PDF</th>
-                    <th>確認状況</th>
+                    <th>契約ステータス</th>
+                    <th>確認日時</th>
                     <th>操作</th>
                 </tr>
             </thead>
@@ -42,18 +43,25 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if item.is_agreed %}
-                            <span class="badge bg-success">確認済</span>
-                        {% else %}
-                            <span class="badge bg-warning">未確認</span>
-                        {% endif %}
+                        <span class="badge {{ item.contract.contract_status|badge_class }}">{{ item.contract.get_contract_status_display }}</span>
                     </td>
                     <td>
-                        {% if not item.is_agreed %}
+                        {{ item.contract.confirmed_at|date:"Y/m/d H:i"|default:"-" }}
+                    </td>
+                    <td>
+                        {% if item.contract.contract_status == '40' %} {# ISSUED #}
                             <form method="post" action="{% url 'contract:staff_contract_confirm_list' %}" class="d-inline">
                                 {% csrf_token %}
                                 <input type="hidden" name="contract_id" value="{{ item.contract.pk }}">
+                                <input type="hidden" name="action" value="confirm">
                                 <button type="submit" class="btn btn-sm btn-primary">確認</button>
+                            </form>
+                        {% elif item.contract.contract_status == '50' %} {# CONFIRMED #}
+                            <form method="post" action="{% url 'contract:staff_contract_confirm_list' %}" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="contract_id" value="{{ item.contract.pk }}">
+                                <input type="hidden" name="action" value="unconfirm">
+                                <button type="submit" class="btn btn-sm btn-secondary">未確認に戻す</button>
                             </form>
                         {% else %}
                             -
