@@ -43,6 +43,7 @@ def main():
         "_sample_data/master_information.json",
         "_sample_data/master_mail_template.json",
         "_sample_data/master_job_category.json",
+        "_sample_data/minimum_pay.json",
         "_sample_data/master_contract_pattern.json",
         "_sample_data/master_contract_terms.json",
         "_sample_data/company.json",
@@ -86,6 +87,7 @@ def main():
         ("python manage.py loaddata _sample_data/master_information.json", "お知らせマスタデータ"),
         ("python manage.py loaddata _sample_data/master_mail_template.json", "メールテンプレートマスタデータ"),
         ("python manage.py loaddata _sample_data/master_job_category.json", "職種マスタデータ"),
+        ("python manage.py loaddata _sample_data/minimum_pay.json", "最低賃金マスタデータ"),
         ("python manage.py loaddata _sample_data/master_contract_pattern.json", "契約パターンマスタデータ"),
         ("python manage.py loaddata _sample_data/master_contract_terms.json", "契約文言マスタデータ"),
         ("python manage.py loaddata _sample_data/company.json", "会社データ"),
@@ -122,6 +124,7 @@ def main():
     print("- お知らせマスタ")
     print("- メールテンプレートマスタ")
     print("- 職種マスタ")
+    print("- 最低賃金マスタ")
     print("- 契約パターンマスタ")
     print("- 契約文言マスタ")
     print("- 会社データ")
