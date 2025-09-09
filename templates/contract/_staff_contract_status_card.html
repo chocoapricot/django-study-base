@@ -1,5 +1,5 @@
-<div class="card bg-light mt-2 mb-4">
-    <div class="card-header">
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
         状況
     </div>
     <div class="card-body">
@@ -11,11 +11,14 @@
                        onchange="this.form.submit()"
                        {% if contract.contract_status == '30' or contract.contract_status == '40' or contract.contract_status == '50' %}checked{% endif %}
                        {% if contract.contract_status == '1' %}disabled{% endif %}>
-                <label class="form-check-label" for="approvalSwitch">承認</label>
+                <label class="form-check-label" for="approvalSwitch">
+                    <i class="bi bi-check-circle" style="font-size: 20px; color: #17a2b8;"></i>
+                    契約承認
+                    {% if contract.approved_at %}
+                        <span class="text-muted small">（{{ contract.approved_at|date:"Y/m/d H:i:s" }}）</span>
+                    {% endif %}
+                </label>
             </div>
-            {% if contract.approved_at %}
-                <div class="text-muted small ps-4 ms-2">承認日時: {{ contract.approved_at|date:"Y/m/d H:i" }}</div>
-            {% endif %}
         </form>
 
         {# 発行スイッチ #}
@@ -26,11 +29,14 @@
                        onchange="this.form.submit()"
                        {% if contract.contract_status == '40' or contract.contract_status == '50' %}checked{% endif %}
                        {% if contract.contract_status != '30' %}disabled{% endif %}>
-                <label class="form-check-label" for="issueSwitch">発行</label>
+                <label class="form-check-label" for="issueSwitch">
+                    <i class="bi bi-filetype-pdf" style="font-size: 20px; color: #17a2b8;"></i>
+                    契約書発行
+                    {% if contract.issued_at %}
+                        <span class="text-muted small">（{{ contract.issued_at|date:"Y/m/d H:i:s" }}）</span>
+                    {% endif %}
+                </label>
             </div>
-            {% if contract.issued_at %}
-                <div class="text-muted small ps-4 ms-2">発行日時: {{ contract.issued_at|date:"Y/m/d H:i" }}</div>
-            {% endif %}
         </form>
 
         {# 確認スイッチ #}
@@ -39,11 +45,14 @@
                 <input class="form-check-input" type="checkbox" id="confirmSwitch"
                        {% if contract.contract_status == '50' %}checked{% endif %}
                        disabled>
-                <label class="form-check-label" for="confirmSwitch">確認</label>
+                <label class="form-check-label" for="confirmSwitch">
+                    <i class="bi bi-link" style="font-size: 20px; color: #17a2b8;"></i>
+                    スタッフ確認
+                    {% if contract.confirmed_at %}
+                        <span class="text-muted small">（{{ contract.confirmed_at|date:"Y/m/d H:i:s" }}）</span>
+                    {% endif %}
+                </label>
             </div>
-            {% if contract.confirmed_at %}
-                <div class="text-muted small ps-4 ms-2">確認日時: {{ contract.confirmed_at|date:"Y/m/d H:i" }}</div>
-            {% endif %}
         </div>
     </div>
 </div>

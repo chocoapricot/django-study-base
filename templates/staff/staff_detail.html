@@ -275,7 +275,7 @@
                                     <i class="bi bi-link" style="font-size: 20px;color:#17a2b8;"></i>
                                     スタッフに接続依頼
                                     {% if connect_request %}
-                                        （{{ connect_request.created_at|date:"Y/m/d H:i:s" }}）
+                                        <span class="text-muted small">（{{ connect_request.created_at|date:"Y/m/d H:i:s" }}）</span>
                                     {% endif %}
                                 </label>
                             </div>
@@ -296,7 +296,7 @@
                                 {% endif %}
                                 スタッフが接続承認
                                 {% if connect_request and connect_request.is_approved %}
-                                    （{{ connect_request.approved_at|date:"Y/m/d H:i:s" }}）
+                                    <span class="text-muted small">（{{ connect_request.approved_at|date:"Y/m/d H:i:s" }}）</span>
                                 {% endif %}
                             </label>
                         </div>
@@ -310,7 +310,7 @@
                     <div class="col-sm-11">
                         <i class="bi bi-clock-history" style="font-size: 20px; color: #17a2b8;"></i>
                         最終ログイン:{{ last_login|timesince }}前
-                        （{{ last_login|date:"Y/m/d H:i:s" }}）
+                        <span class="text-muted small">（{{ last_login|date:"Y/m/d H:i:s" }}）</span>
                     </div>
                 </div>
                 {% endif %}
