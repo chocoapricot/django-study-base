@@ -64,7 +64,7 @@ class ContractViewTest(TestCase):
         response = self.client.get(reverse('contract:client_contract_pdf', kwargs={'pk': self.client_contract.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/pdf')
-        self.assertEqual(response['Content-Disposition'], f'attachment; filename="client_contract_{self.client_contract.pk}.pdf"')
+        self.assertTrue(response['Content-Disposition'].startswith(f'attachment; filename="client_contract_{self.client_contract.pk}_'))
 
     def test_staff_contract_pdf_view(self):
         """スタッフ契約PDFビューのテスト"""
@@ -78,7 +78,7 @@ class ContractViewTest(TestCase):
         response = self.client.get(reverse('contract:staff_contract_pdf', kwargs={'pk': staff_contract.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/pdf')
-        self.assertEqual(response['Content-Disposition'], f'attachment; filename="staff_contract_{staff_contract.pk}.pdf"')
+        self.assertTrue(response['Content-Disposition'].startswith(f'attachment; filename="staff_contract_{staff_contract.pk}_'))
 
     def test_staff_contract_pdf_approved_to_issued(self):
         """承認済みのスタッフ契約書を印刷すると発行済になるテスト"""
@@ -104,3 +104,40 @@ class ContractViewTest(TestCase):
         print_history = StaffContractPrint.objects.first()
         self.assertEqual(print_history.staff_contract, staff_contract)
         self.assertEqual(print_history.printed_by, self.user)
+
+    def test_download_pdf_views(self):
+        """PDFダウンロードビューのテスト"""
+        from ..models import ClientContractPrint
+        import os
+        from django.conf import settings
+
+        # クライアント契約のテスト
+        self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
+        self.client_contract.save()
+        self.client.get(reverse('contract:client_contract_pdf', kwargs={'pk': self.client_contract.pk}))
+        print_history = ClientContractPrint.objects.first()
+        self.assertIsNotNone(print_history)
+
+        response = self.client.get(reverse('contract:download_client_contract_pdf', kwargs={'pk': print_history.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertTrue(response['Content-Disposition'].startswith(f'attachment; filename="'))
+
+        # staff契約のテスト
+        from apps.staff.models import Staff
+        from ..models import StaffContractPrint
+        staff = Staff.objects.create(name_last='Test', name_first='Staff')
+        staff_contract = StaffContract.objects.create(
+            staff=staff,
+            contract_name='Test Staff Contract',
+            start_date=datetime.date.today(),
+            contract_status=StaffContract.ContractStatus.APPROVED,
+        )
+        self.client.get(reverse('contract:staff_contract_pdf', kwargs={'pk': staff_contract.pk}))
+        print_history = StaffContractPrint.objects.filter(staff_contract=staff_contract).first()
+        self.assertIsNotNone(print_history)
+
+        response = self.client.get(reverse('contract:download_staff_contract_pdf', kwargs={'pk': print_history.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertTrue(response['Content-Disposition'].startswith(f'attachment; filename="'))

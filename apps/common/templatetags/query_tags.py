@@ -21,3 +21,8 @@ def query_transform(context, **kwargs):
 
     # URLエンコードして返す
     return query_params.urlencode()
+
+@register.filter
+def basename(value):
+    import os
+    return os.path.basename(value)

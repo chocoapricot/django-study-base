@@ -3,6 +3,7 @@
 {% load humanize %}
 {% load dropdowns %}
 {% load badge_tags %}
+{% load query_tags %}
 
 {% block title %}スタッフ契約詳細 - {{ contract.contract_name }}{% endblock %}
 
@@ -152,7 +153,12 @@
                     <tr>
                         <td>{{ print_item.printed_at|date:"Y年m月d日 H:i" }}</td>
                         <td>{{ print_item.printed_by.name|default:"-" }}</td>
-                        <td>{{ print_item.pdf_file_path }}</td>
+                        <td>
+                            <a href="{% url 'contract:download_staff_contract_pdf' print_item.pk %}">
+                                <i class="bi bi-file-earmark-arrow-down-fill"></i>
+                                {{ print_item.pdf_file_path|basename }}
+                            </a>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
