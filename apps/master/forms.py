@@ -13,6 +13,7 @@ from .models import (
     MailTemplate,
     ContractPattern,
     ContractTerms,
+    MinimumPay,
 )
 from apps.system.settings.models import Dropdowns
 
@@ -64,6 +65,33 @@ class JobCategoryForm(forms.ModelForm):
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
+
+class MinimumPayForm(forms.ModelForm):
+    """最低賃金フォーム"""
+    class Meta:
+        model = MinimumPay
+        fields = ['pref', 'start_date', 'hourly_wage', 'is_active', 'display_order']
+        widgets = {
+            'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'hourly_wage': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        pref_choices = [
+            ('', '選択してください')
+        ]
+        pref_choices.extend([
+            (d.value, d.name) for d in Dropdowns.objects.filter(category='pref', active=True).order_by('disp_seq')
+        ])
+        self.fields['pref'] = forms.ChoiceField(
+            choices=pref_choices,
+            label='都道府県',
+            widget=forms.Select(attrs={'class': 'form-control form-control-sm'})
+        )
 
 
 class ContractPatternForm(forms.ModelForm):

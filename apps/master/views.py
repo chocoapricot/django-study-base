@@ -19,6 +19,7 @@ from .models import (
     MailTemplate,
     ContractPattern,
     ContractTerms,
+    MinimumPay,
 )
 from .forms import (
     QualificationForm,
@@ -36,6 +37,7 @@ from .forms import (
     MailTemplateForm,
     ContractPatternForm,
     ContractTermForm,
+    MinimumPayForm,
 )
 from apps.company.models import Company
 from django.http import JsonResponse, HttpResponse
@@ -91,6 +93,14 @@ MASTER_CONFIGS = [
         "model": "master.ContractPattern",
         "url_name": "master:contract_pattern_list",
         "permission": "master.view_contractpattern",
+    },
+    {
+        "category": "契約",
+        "name": "最低賃金マスタ",
+        "description": "都道府県別の最低賃金を管理",
+        "model": "master.MinimumPay",
+        "url_name": "master:minimum_pay_list",
+        "permission": "master.view_minimumpay",
     },
     {
         "category": "請求",
@@ -2429,3 +2439,101 @@ def contract_term_delete(request, pk):
         'title': '契約文言削除'
     }
     return render(request, 'master/contract_term_confirm_delete.html', context)
+
+
+# 最低賃金管理ビュー
+@login_required
+@permission_required("master.view_minimumpay", raise_exception=True)
+def minimum_pay_list(request):
+    """最低賃金一覧"""
+    search_query = request.GET.get("search", "")
+    pref_filter = request.GET.get("pref", "")
+
+    minimum_pays = MinimumPay.objects.all()
+
+    if search_query:
+        minimum_pays = minimum_pays.filter(
+            Q(hourly_wage__icontains=search_query)
+        )
+
+    if pref_filter:
+        minimum_pays = minimum_pays.filter(pref=pref_filter)
+
+    minimum_pays = minimum_pays.order_by("display_order", "pref", "-start_date")
+
+    paginator = Paginator(minimum_pays, 20)
+    page = request.GET.get("page")
+    minimum_pays_page = paginator.get_page(page)
+
+    from apps.system.settings.models import Dropdowns
+    pref_choices = Dropdowns.objects.filter(category='pref', active=True).order_by('disp_seq')
+
+    context = {
+        "minimum_pays": minimum_pays_page,
+        "search_query": search_query,
+        "pref_filter": pref_filter,
+        "pref_choices": pref_choices,
+    }
+    return render(request, "master/minimum_pay_list.html", context)
+
+
+@login_required
+@permission_required("master.add_minimumpay", raise_exception=True)
+def minimum_pay_create(request):
+    """最低賃金作成"""
+    if request.method == "POST":
+        form = MinimumPayForm(request.POST)
+        if form.is_valid():
+            minimum_pay = form.save()
+            messages.success(request, f"最低賃金「{minimum_pay}」を作成しました。")
+            return redirect("master:minimum_pay_list")
+    else:
+        form = MinimumPayForm()
+
+    context = {
+        "form": form,
+        "title": "最低賃金作成",
+    }
+    return render(request, "master/minimum_pay_form.html", context)
+
+
+@login_required
+@permission_required("master.change_minimumpay", raise_exception=True)
+def minimum_pay_update(request, pk):
+    """最低賃金編集"""
+    minimum_pay = get_object_or_404(MinimumPay, pk=pk)
+
+    if request.method == "POST":
+        form = MinimumPayForm(request.POST, instance=minimum_pay)
+        if form.is_valid():
+            minimum_pay = form.save()
+            messages.success(request, f"最低賃金「{minimum_pay}」を更新しました。")
+            return redirect("master:minimum_pay_list")
+    else:
+        form = MinimumPayForm(instance=minimum_pay)
+
+    context = {
+        "form": form,
+        "minimum_pay": minimum_pay,
+        "title": f"最低賃金編集 - {minimum_pay}",
+    }
+    return render(request, "master/minimum_pay_form.html", context)
+
+
+@login_required
+@permission_required("master.delete_minimumpay", raise_exception=True)
+def minimum_pay_delete(request, pk):
+    """最低賃金削除"""
+    minimum_pay = get_object_or_404(MinimumPay, pk=pk)
+
+    if request.method == "POST":
+        minimum_pay_name = str(minimum_pay)
+        minimum_pay.delete()
+        messages.success(request, f"最低賃金「{minimum_pay_name}」を削除しました。")
+        return redirect("master:minimum_pay_list")
+
+    context = {
+        "object": minimum_pay,
+        "title": f"最低賃金削除 - {minimum_pay}",
+    }
+    return render(request, "master/minimum_pay_confirm_delete.html", context)
