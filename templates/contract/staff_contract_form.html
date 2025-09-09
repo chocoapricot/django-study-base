@@ -60,14 +60,12 @@
                     {{ form.staff }}
                     <div id="staff-display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057;">
                         <span id="staff-display-text">未選択</span>　
-                        {% if form.instance.contract_status != '40' %}
                         <a href="{% url 'contract:staff_select' %}?return_url={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-secondary me-2">
                             選択
                         </a>
                         <button type="button" class="btn btn-sm btn-secondary" onclick="clearStaff()">
                             クリア
                         </button>
-                        {% endif %}
                     </div>
                     {% if form.staff.errors %}
                         <div class="text-danger small">{{ form.staff.errors.0 }}</div>
@@ -109,11 +107,9 @@
                     {% endif %}
                 </div>
                 <div class="col-sm-2">
-                    {% if form.instance.contract_status != '40' %}
                     <button type="button" class="btn btn-sm btn-outline-secondary me-1" onclick="setEndDate(1)">1ヶ月</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary me-1" onclick="setEndDate(3)">3ヶ月</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setEndDate(6)">6ヶ月</button>
-                    {% endif %}
                 </div>
             </div>
 
