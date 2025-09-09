@@ -3081,5 +3081,710 @@
       "disp_seq": 5,
       "active": true
     }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 305,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "北海道",
+      "value": "01",
+      "disp_seq": 1,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 306,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "青森県",
+      "value": "02",
+      "disp_seq": 2,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 307,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "岩手県",
+      "value": "03",
+      "disp_seq": 3,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 308,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "宮城県",
+      "value": "04",
+      "disp_seq": 4,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 309,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "秋田県",
+      "value": "05",
+      "disp_seq": 5,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 310,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "山形県",
+      "value": "06",
+      "disp_seq": 6,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 311,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "福島県",
+      "value": "07",
+      "disp_seq": 7,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 312,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "茨城県",
+      "value": "08",
+      "disp_seq": 8,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 313,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "栃木県",
+      "value": "09",
+      "disp_seq": 9,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 314,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "群馬県",
+      "value": "10",
+      "disp_seq": 10,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 315,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "埼玉県",
+      "value": "11",
+      "disp_seq": 11,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 316,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "千葉県",
+      "value": "12",
+      "disp_seq": 12,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 317,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "東京都",
+      "value": "13",
+      "disp_seq": 13,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 318,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "神奈川県",
+      "value": "14",
+      "disp_seq": 14,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 319,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "新潟県",
+      "value": "15",
+      "disp_seq": 15,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 320,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "富山県",
+      "value": "16",
+      "disp_seq": 16,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 321,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "石川県",
+      "value": "17",
+      "disp_seq": 17,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 322,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "福井県",
+      "value": "18",
+      "disp_seq": 18,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 323,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "山梨県",
+      "value": "19",
+      "disp_seq": 19,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 324,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "長野県",
+      "value": "20",
+      "disp_seq": 20,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 325,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "岐阜県",
+      "value": "21",
+      "disp_seq": 21,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 326,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "静岡県",
+      "value": "22",
+      "disp_seq": 22,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 327,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "愛知県",
+      "value": "23",
+      "disp_seq": 23,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 328,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "三重県",
+      "value": "24",
+      "disp_seq": 24,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 329,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "滋賀県",
+      "value": "25",
+      "disp_seq": 25,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 330,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "京都府",
+      "value": "26",
+      "disp_seq": 26,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 331,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "大阪府",
+      "value": "27",
+      "disp_seq": 27,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 332,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "兵庫県",
+      "value": "28",
+      "disp_seq": 28,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 333,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "奈良県",
+      "value": "29",
+      "disp_seq": 29,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 334,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "和歌山県",
+      "value": "30",
+      "disp_seq": 30,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 335,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "鳥取県",
+      "value": "31",
+      "disp_seq": 31,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 336,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "島根県",
+      "value": "32",
+      "disp_seq": 32,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 337,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "岡山県",
+      "value": "33",
+      "disp_seq": 33,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 338,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "広島県",
+      "value": "34",
+      "disp_seq": 34,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 339,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "山口県",
+      "value": "35",
+      "disp_seq": 35,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 340,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "徳島県",
+      "value": "36",
+      "disp_seq": 36,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 341,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "香川県",
+      "value": "37",
+      "disp_seq": 37,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 342,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "愛媛県",
+      "value": "38",
+      "disp_seq": 38,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 343,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "高知県",
+      "value": "39",
+      "disp_seq": 39,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 344,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "福岡県",
+      "value": "40",
+      "disp_seq": 40,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 345,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "佐賀県",
+      "value": "41",
+      "disp_seq": 41,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 346,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "長崎県",
+      "value": "42",
+      "disp_seq": 42,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 347,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "熊本県",
+      "value": "43",
+      "disp_seq": 43,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 348,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "大分県",
+      "value": "44",
+      "disp_seq": 44,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 349,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "宮崎県",
+      "value": "45",
+      "disp_seq": 45,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 350,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "鹿児島県",
+      "value": "46",
+      "disp_seq": 46,
+      "active": true
+    }
+  },
+  {
+    "model": "settings.dropdowns",
+    "pk": 351,
+    "fields": {
+      "created_at": "2025-09-09T00:00:00Z",
+      "created_by": 1,
+      "updated_at": "2025-09-09T00:00:00Z",
+      "updated_by": 1,
+      "category": "pref",
+      "name": "沖縄県",
+      "value": "47",
+      "disp_seq": 47,
+      "active": true
+    }
   }
 ]
