@@ -1,0 +1,29 @@
+<div class="card bg-light mt-2 mb-4">
+    <div class="card-header">
+        状況
+    </div>
+    <div class="card-body">
+        <form method="post" id="approve-form" action="{% url 'contract:staff_contract_approve' contract.pk %}">
+            {% csrf_token %}
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="approvalSwitch" name="is_approved"
+                       onchange="this.form.submit()"
+                       {% if contract.contract_status == '30' or contract.contract_status == '40' %}checked{% endif %}
+                       {% if contract.contract_status == '40' %}disabled{% endif %}>
+                <label class="form-check-label" for="approvalSwitch">承認</label>
+            </div>
+        </form>
+
+        {% if contract.contract_status == '30' %}
+            <hr>
+            <form method="post" id="issue-form" action="{% url 'contract:staff_contract_issue' contract.pk %}">
+                {% csrf_token %}
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="issueSwitch" name="is_issued"
+                           onchange="this.form.submit()">
+                    <label class="form-check-label" for="issueSwitch">発行</label>
+                </div>
+            </form>
+        {% endif %}
+    </div>
+</div>

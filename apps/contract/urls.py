@@ -27,6 +27,8 @@ urlpatterns = [
     path('staff/<int:pk>/pdf/', views.staff_contract_pdf, name='staff_contract_pdf'),
     path('staff/<int:pk>/change_history/', views.staff_contract_change_history_list, name='staff_contract_change_history_list'),
     path('staff/print/<int:pk>/download/', views.download_staff_contract_pdf, name='download_staff_contract_pdf'),
+    path('staff/<int:pk>/approve/', views.staff_contract_approve, name='staff_contract_approve'),
+    path('staff/<int:pk>/issue/', views.staff_contract_issue, name='staff_contract_issue'),
     
     # 選択用画面
     path('client-select/', views.client_select, name='client_select'),
