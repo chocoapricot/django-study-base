@@ -99,6 +99,7 @@ urlpatterns = [
     path('minimum-pay/create/', views.minimum_pay_create, name='minimum_pay_create'),
     path('minimum-pay/<int:pk>/update/', views.minimum_pay_update, name='minimum_pay_update'),
     path('minimum-pay/<int:pk>/delete/', views.minimum_pay_delete, name='minimum_pay_delete'),
+    path('minimum-pay/history/', views.minimum_pay_change_history_list, name='minimum_pay_change_history_list'),
 
     # メールテンプレート管理
     path('mail-template/', views.mail_template_list, name='mail_template_list'),
