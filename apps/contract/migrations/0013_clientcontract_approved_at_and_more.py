@@ -28,4 +28,22 @@ class Migration(migrations.Migration):
             name="issued_at",
             field=models.DateTimeField(blank=True, null=True, verbose_name="発行日時"),
         ),
+        migrations.AlterField(
+            model_name="clientcontract",
+            name="contract_status",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("1", "作成中"),
+                    ("20", "申請中"),
+                    ("30", "承認済"),
+                    ("40", "発行済"),
+                    ("50", "確認済"),
+                ],
+                default="1",
+                max_length=2,
+                null=True,
+                verbose_name="契約状況",
+            ),
+        ),
     ]
