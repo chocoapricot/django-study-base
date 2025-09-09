@@ -11,10 +11,10 @@ from django.utils import timezone
 import os
 from apps.system.logs.models import AppLog
 from apps.common.utils import fill_pdf_from_template
-from apps.client.models import Client
+from apps.client.models import Client, ClientUser
 from apps.staff.models import Staff
 from apps.master.models import ContractPattern, StaffAgreement
-from apps.connect.models import ConnectStaff, ConnectStaffAgree
+from apps.connect.models import ConnectStaff, ConnectStaffAgree, ConnectClient
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
@@ -788,6 +788,74 @@ def staff_contract_confirm_list(request):
         'title': 'スタッフ契約確認',
     }
     return render(request, 'contract/staff_contract_confirm_list.html', context)
+
+
+@login_required
+def client_contract_confirm_list(request):
+    """クライアント契約確認一覧"""
+    user = request.user
+
+    if request.method == 'POST':
+        contract_id = request.POST.get('contract_id')
+        action = request.POST.get('action')
+        contract = get_object_or_404(ClientContract, pk=contract_id)
+
+        if action == 'confirm':
+            contract.contract_status = ClientContract.ContractStatus.CONFIRMED
+            contract.confirmed_at = timezone.now()
+            contract.save()
+            messages.success(request, f'契約「{contract.contract_name}」を確認しました。')
+
+        elif action == 'unconfirm':
+            contract.contract_status = ClientContract.ContractStatus.ISSUED
+            contract.confirmed_at = None
+            contract.save()
+            messages.success(request, f'契約「{contract.contract_name}」を未確認に戻しました。')
+
+        return redirect('contract:client_contract_confirm_list')
+
+    try:
+        client_user = ClientUser.objects.get(email=user.email)
+        client = client_user.client
+    except ClientUser.DoesNotExist:
+        client = None
+
+    if not client:
+        context = {
+            'contracts_with_status': [],
+            'title': 'クライアント契約確認',
+        }
+        return render(request, 'contract/client_contract_confirm_list.html', context)
+
+    # 接続許可されている法人番号を取得
+    approved_corporate_numbers = ConnectClient.objects.filter(
+        email=user.email,
+        status='approved'
+    ).values_list('corporate_number', flat=True)
+
+    # 契約を取得
+    contracts = ClientContract.objects.filter(
+        client=client,
+        corporate_number__in=approved_corporate_numbers,
+        contract_status__in=[ClientContract.ContractStatus.ISSUED, ClientContract.ContractStatus.CONFIRMED]
+    ).select_related('client').order_by('-start_date')
+
+    # PDFの情報を追加
+    contracts_with_status = []
+    for contract in contracts:
+        # 最新のPDFを取得
+        latest_pdf = ClientContractPrint.objects.filter(client_contract=contract).order_by('-printed_at').first()
+
+        contracts_with_status.append({
+            'contract': contract,
+            'latest_pdf': latest_pdf,
+        })
+
+    context = {
+        'contracts_with_status': contracts_with_status,
+        'title': 'クライアント契約確認',
+    }
+    return render(request, 'contract/client_contract_confirm_list.html', context)
 
 
 @login_required

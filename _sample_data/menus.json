@@ -460,5 +460,26 @@
         "disp_seq": 53,
         "active": true
     }
+},
+{
+    "model": "settings.menu",
+    "pk": 24,
+    "fields": {
+        "version": 1756651531500577,
+        "created_at": "2025-09-09T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-09T00:00:00Z",
+        "updated_by": 1,
+        "name": "クライアント契約確認",
+        "url": "/contract/client/confirm/",
+        "icon": "bi-check-square",
+        "icon_style": "color:#17a2b8;",
+        "parent": 11,
+        "level": 1,
+        "exact_match": true,
+        "required_permission": "contract.view_clientcontract",
+        "disp_seq": 54,
+        "active": true
+    }
 }
 ]

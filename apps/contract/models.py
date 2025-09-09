@@ -14,7 +14,7 @@ class ClientContract(MyModel):
         PENDING = '20', '申請中'
         APPROVED = '30', '承認済'
         ISSUED = '40', '発行済'
-        CONTRACTED = '50', '契約済'
+        CONFIRMED = '50', '確認済'
 
     client = models.ForeignKey(
         Client,
@@ -60,6 +60,7 @@ class ClientContract(MyModel):
         null=True,
         verbose_name='支払いサイト'
     )
+    confirmed_at = models.DateTimeField('確認日時', blank=True, null=True)
     class Meta:
         db_table = 'apps_contract_client'
         verbose_name = 'クライアント契約'
