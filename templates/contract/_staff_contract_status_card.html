@@ -3,27 +3,47 @@
         状況
     </div>
     <div class="card-body">
-        <form method="post" id="approve-form" action="{% url 'contract:staff_contract_approve' contract.pk %}">
+        {# 承認スイッチ #}
+        <form method="post" id="approve-form" action="{% url 'contract:staff_contract_approve' contract.pk %}" class="mb-3">
             {% csrf_token %}
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="approvalSwitch" name="is_approved"
                        onchange="this.form.submit()"
-                       {% if contract.contract_status == '30' or contract.contract_status == '40' %}checked{% endif %}
-                       {% if contract.contract_status == '40' %}disabled{% endif %}>
+                       {% if contract.contract_status == '30' or contract.contract_status == '40' or contract.contract_status == '50' %}checked{% endif %}
+                       {% if contract.contract_status == '1' %}disabled{% endif %}>
                 <label class="form-check-label" for="approvalSwitch">承認</label>
             </div>
+            {% if contract.approved_at %}
+                <div class="text-muted small ps-4 ms-2">承認日時: {{ contract.approved_at|date:"Y/m/d H:i" }}</div>
+            {% endif %}
         </form>
 
-        {% if contract.contract_status == '30' %}
-            <hr>
-            <form method="post" id="issue-form" action="{% url 'contract:staff_contract_issue' contract.pk %}">
-                {% csrf_token %}
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="issueSwitch" name="is_issued"
-                           onchange="this.form.submit()">
-                    <label class="form-check-label" for="issueSwitch">発行</label>
-                </div>
-            </form>
-        {% endif %}
+        {# 発行スイッチ #}
+        <form method="post" id="issue-form" action="{% url 'contract:staff_contract_issue' contract.pk %}" class="mb-3">
+            {% csrf_token %}
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="issueSwitch" name="is_issued"
+                       onchange="this.form.submit()"
+                       {% if contract.contract_status == '40' or contract.contract_status == '50' %}checked{% endif %}
+                       {% if contract.contract_status != '30' %}disabled{% endif %}>
+                <label class="form-check-label" for="issueSwitch">発行</label>
+            </div>
+            {% if contract.issued_at %}
+                <div class="text-muted small ps-4 ms-2">発行日時: {{ contract.issued_at|date:"Y/m/d H:i" }}</div>
+            {% endif %}
+        </form>
+
+        {# 確認スイッチ #}
+        <div class="mb-3">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="confirmSwitch"
+                       {% if contract.contract_status == '50' %}checked{% endif %}
+                       disabled>
+                <label class="form-check-label" for="confirmSwitch">確認</label>
+            </div>
+            {% if contract.confirmed_at %}
+                <div class="text-muted small ps-4 ms-2">確認日時: {{ contract.confirmed_at|date:"Y/m/d H:i" }}</div>
+            {% endif %}
+        </div>
     </div>
 </div>

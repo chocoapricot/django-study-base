@@ -634,9 +634,13 @@ def staff_contract_approve(request, pk):
         is_approved = request.POST.get('is_approved')
         if is_approved:
             contract.contract_status = StaffContract.ContractStatus.APPROVED
+            contract.approved_at = timezone.now()
             messages.success(request, f'契約「{contract.contract_name}」を承認済にしました。')
         else:
             contract.contract_status = StaffContract.ContractStatus.DRAFT
+            contract.approved_at = None
+            contract.issued_at = None
+            contract.confirmed_at = None
             messages.success(request, f'契約「{contract.contract_name}」を作成中に戻しました。')
         contract.save()
     return redirect('contract:staff_contract_detail', pk=contract.pk)
@@ -647,7 +651,7 @@ def staff_contract_approve(request, pk):
 def staff_contract_issue(request, pk):
     """スタッフ契約を発行済にする"""
     contract = get_object_or_404(StaffContract, pk=pk)
-    if request.method == 'POST':
+    if request.method == 'POST' and 'is_issued' in request.POST:
         if contract.contract_status == StaffContract.ContractStatus.APPROVED:
             # staff_contract_pdfを呼び出してPDF生成とステータス更新を行う
             # この関数はPDFレスポンスを返すが、ここではリダイレクトするため無視する
@@ -710,6 +714,11 @@ def staff_contract_confirm_list(request):
                 staff_agreement=staff_agreement,
                 defaults={'is_agreed': True}
             )
+
+            contract.contract_status = StaffContract.ContractStatus.CONFIRMED
+            contract.confirmed_at = timezone.now()
+            contract.save()
+
             messages.success(request, f'契約「{contract.contract_name}」を確認しました。')
         else:
             messages.error(request, '確認可能な同意文言が見つかりませんでした。')
@@ -846,6 +855,7 @@ def staff_contract_pdf(request, pk):
     # 承認済の場合、ステータスを発行済に変更し、発行履歴を記録
     if contract.contract_status == StaffContract.ContractStatus.APPROVED:
         contract.contract_status = StaffContract.ContractStatus.ISSUED
+        contract.issued_at = timezone.now()
         contract.save()
 
         # PDFを保存
