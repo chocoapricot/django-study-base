@@ -699,29 +699,35 @@ def staff_contract_confirm_list(request):
 
     if request.method == 'POST':
         contract_id = request.POST.get('contract_id')
+        action = request.POST.get('action')
         contract = get_object_or_404(StaffContract, pk=contract_id)
 
-        # スタッフ同意文言を取得
-        staff_agreement = StaffAgreement.objects.filter(
-            Q(corporation_number=contract.corporate_number) | Q(corporation_number__isnull=True) | Q(corporation_number=''),
-            is_active=True
-        ).order_by('-corporation_number', '-created_at').first()
+        if action == 'confirm':
+            # スタッフ同意文言を取得
+            staff_agreement = StaffAgreement.objects.filter(
+                Q(corporation_number=contract.corporate_number) | Q(corporation_number__isnull=True) | Q(corporation_number=''),
+                is_active=True
+            ).order_by('-corporation_number', '-created_at').first()
 
-        if staff_agreement:
-            ConnectStaffAgree.objects.update_or_create(
-                email=user.email,
-                corporate_number=contract.corporate_number,
-                staff_agreement=staff_agreement,
-                defaults={'is_agreed': True}
-            )
+            if staff_agreement:
+                ConnectStaffAgree.objects.update_or_create(
+                    email=user.email,
+                    corporate_number=contract.corporate_number,
+                    staff_agreement=staff_agreement,
+                    defaults={'is_agreed': True}
+                )
+                contract.contract_status = StaffContract.ContractStatus.CONFIRMED
+                contract.confirmed_at = timezone.now()
+                contract.save()
+                messages.success(request, f'契約「{contract.contract_name}」を確認しました。')
+            else:
+                messages.error(request, '確認可能な同意文言が見つかりませんでした。')
 
-            contract.contract_status = StaffContract.ContractStatus.CONFIRMED
-            contract.confirmed_at = timezone.now()
+        elif action == 'unconfirm':
+            contract.contract_status = StaffContract.ContractStatus.ISSUED
+            contract.confirmed_at = None
             contract.save()
-
-            messages.success(request, f'契約「{contract.contract_name}」を確認しました。')
-        else:
-            messages.error(request, '確認可能な同意文言が見つかりませんでした。')
+            messages.success(request, f'契約「{contract.contract_name}」を未確認に戻しました。')
 
         return redirect('contract:staff_contract_confirm_list')
 
@@ -747,7 +753,7 @@ def staff_contract_confirm_list(request):
     contracts = StaffContract.objects.filter(
         staff=staff,
         corporate_number__in=approved_corporate_numbers,
-        contract_status=StaffContract.ContractStatus.ISSUED
+        contract_status__in=[StaffContract.ContractStatus.ISSUED, StaffContract.ContractStatus.CONFIRMED]
     ).select_related('staff').order_by('-start_date')
 
     # 同意状況とPDFの情報を追加

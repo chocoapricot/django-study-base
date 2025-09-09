@@ -52,14 +52,14 @@ class StaffContractConfirmTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'スタッフ契約確認')
         self.assertContains(response, 'Test Contract')
-        self.assertContains(response, '未確認')
+        self.assertContains(response, '発行済')
 
     def test_staff_contract_confirm_list_post(self):
         """
         Test POST request to staff_contract_confirm_list view to confirm a contract.
         """
         self.client.login(email='testuser@example.com', password='password')
-        response = self.client.post(reverse('contract:staff_contract_confirm_list'), {'contract_id': self.contract.id})
+        response = self.client.post(reverse('contract:staff_contract_confirm_list'), {'contract_id': self.contract.id, 'action': 'confirm'})
         self.assertEqual(response.status_code, 302) # Should redirect
 
         # Check if the agreement was created
@@ -71,8 +71,20 @@ class StaffContractConfirmTest(TestCase):
                 is_agreed=True
             ).exists()
         )
+        self.contract.refresh_from_db()
+        self.assertEqual(self.contract.contract_status, '50') # Confirmed
 
-        # Check the page content after redirect
-        response = self.client.get(reverse('contract:staff_contract_confirm_list'))
-        self.assertContains(response, '確認済')
-        self.assertNotContains(response, '未確認')
+    def test_staff_contract_unconfirm(self):
+        """
+        Test POST request to staff_contract_confirm_list view to un-confirm a contract.
+        """
+        # First, confirm the contract
+        self.contract.contract_status = '50' # Confirmed
+        self.contract.save()
+
+        self.client.login(email='testuser@example.com', password='password')
+        response = self.client.post(reverse('contract:staff_contract_confirm_list'), {'contract_id': self.contract.id, 'action': 'unconfirm'})
+        self.assertEqual(response.status_code, 302) # Should redirect
+
+        self.contract.refresh_from_db()
+        self.assertEqual(self.contract.contract_status, '40') # Issued
