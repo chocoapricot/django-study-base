@@ -94,6 +94,12 @@ urlpatterns = [
     path('contract-term/<int:pk>/update/', views.contract_term_update, name='contract_term_update'),
     path('contract-term/<int:pk>/delete/', views.contract_term_delete, name='contract_term_delete'),
 
+    # 最低賃金管理
+    path('minimum-pay/', views.minimum_pay_list, name='minimum_pay_list'),
+    path('minimum-pay/create/', views.minimum_pay_create, name='minimum_pay_create'),
+    path('minimum-pay/<int:pk>/update/', views.minimum_pay_update, name='minimum_pay_update'),
+    path('minimum-pay/<int:pk>/delete/', views.minimum_pay_delete, name='minimum_pay_delete'),
+
     # メールテンプレート管理
     path('mail-template/', views.mail_template_list, name='mail_template_list'),
     path('mail-template/<int:pk>/', views.mail_template_detail, name='mail_template_detail'),

@@ -1,0 +1,80 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        {{ title }}
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.pref.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">都道府県 <span class="text-danger">*</span></label>
+                <div class="col-sm-4">
+                    {{ form.pref }}
+                    {% if form.pref.errors %}
+                        <div class="text-danger small">{{ form.pref.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.start_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">開始日 <span class="text-danger">*</span></label>
+                <div class="col-sm-4">
+                    {{ form.start_date }}
+                    {% if form.start_date.errors %}
+                        <div class="text-danger small">{{ form.start_date.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.hourly_wage.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">最低時給 <span class="text-danger">*</span></label>
+                <div class="col-sm-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">¥</span>
+                        {{ form.hourly_wage }}
+                    </div>
+                    {% if form.hourly_wage.errors %}
+                        <div class="text-danger small">{{ form.hourly_wage.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">表示順</label>
+                <div class="col-sm-3">
+                    {{ form.display_order }}
+                    {% if form.display_order.errors %}
+                        <div class="text-danger small">{{ form.display_order.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-6">
+                    <div class="form-check">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                            有効
+                        </label>
+                    </div>
+                    {% if form.is_active.errors %}
+                        <div class="text-danger small">{{ form.is_active.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
+                <a href="{% url 'master:minimum_pay_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

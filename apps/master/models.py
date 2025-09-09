@@ -297,7 +297,7 @@ class BillPayment(MyModel):
     
     def __str__(self):
         return self.name
-    
+
     @property
     def closing_day_display(self):
         """締め日の表示用文字列"""
@@ -305,7 +305,7 @@ class BillPayment(MyModel):
             return "月末"
         else:
             return f"{self.closing_day}日"
-    
+
     @property
     def invoice_schedule_display(self):
         """請求書スケジュールの表示用文字列"""
@@ -313,7 +313,7 @@ class BillPayment(MyModel):
             return f"当月{self.invoice_day}日まで"
         else:
             return f"{self.invoice_months_after}か月後{self.invoice_day}日まで"
-    
+
     @property
     def payment_schedule_display(self):
         """支払いスケジュールの表示用文字列"""
@@ -321,59 +321,59 @@ class BillPayment(MyModel):
             return f"当月{self.payment_day}日"
         else:
             return f"{self.payment_months_after}か月後{self.payment_day}日"
-    
+
     @property
     def full_schedule_display(self):
         """完全なスケジュール表示"""
         return f"{self.closing_day_display}締め → {self.invoice_schedule_display}請求書必着 → {self.payment_schedule_display}支払い"
-    
+
     def clean(self):
         """バリデーション"""
         from django.core.exceptions import ValidationError
-        
+
         # 締め日のバリデーション
         if not (1 <= self.closing_day <= 31):
             raise ValidationError('締め日は1-31の範囲で入力してください。')
-        
+
         # 請求書必着日のバリデーション
         if not (1 <= self.invoice_day <= 31):
             raise ValidationError('請求書必着日は1-31の範囲で入力してください。')
-        
+
         # 支払い日のバリデーション
         if not (1 <= self.payment_day <= 31):
             raise ValidationError('支払い日は1-31の範囲で入力してください。')
-        
+
         # 月数のバリデーション
         if self.invoice_months_after < 0:
             raise ValidationError('請求書提出月数は0以上で入力してください。')
-        
+
         if self.payment_months_after < 0:
             raise ValidationError('支払い月数は0以上で入力してください。')
-    
+
     @property
     def usage_count(self):
         """この支払条件の利用件数（クライアント + クライアント契約）"""
         # クライアントでの利用件数
         from apps.client.models import Client
         client_count = Client.objects.filter(payment_site=self).count()
-        
+
         # クライアント契約での利用件数
         from apps.contract.models import ClientContract
         contract_count = ClientContract.objects.filter(payment_site=self).count()
-        
+
         return client_count + contract_count
-    
+
     def get_usage_details(self):
         """利用詳細を取得"""
         from apps.client.models import Client
         from apps.contract.models import ClientContract
-        
+
         # クライアントでの利用
         clients = Client.objects.filter(payment_site=self).select_related()
-        
+
         # クライアント契約での利用
         contracts = ClientContract.objects.filter(payment_site=self).select_related('client')
-        
+
         return {
             'clients': clients,
             'contracts': contracts,
@@ -381,11 +381,47 @@ class BillPayment(MyModel):
             'contract_count': contracts.count(),
             'total_count': clients.count() + contracts.count()
         }
-    
+
     @classmethod
     def get_active_list(cls):
         """有効な支払条件一覧を取得"""
         return cls.objects.filter(is_active=True).order_by('display_order', 'name')
+
+
+class MinimumPay(MyModel):
+    """
+    最低賃金マスタ
+    """
+    pref = models.CharField('都道府県', max_length=10)
+    start_date = models.DateField('開始日')
+    hourly_wage = models.IntegerField('最低時給')
+    is_active = models.BooleanField('有効', default=True)
+    display_order = models.IntegerField('表示順', default=0)
+
+    class Meta:
+        db_table = 'apps_master_minimum_pay'
+        verbose_name = '最低賃金'
+        verbose_name_plural = '最低賃金'
+        ordering = ['display_order', 'pref', '-start_date']
+        indexes = [
+            models.Index(fields=['is_active']),
+            models.Index(fields=['display_order']),
+            models.Index(fields=['pref']),
+            models.Index(fields=['start_date']),
+        ]
+
+    def __str__(self):
+        from apps.system.settings.models import Dropdowns
+        d = Dropdowns.objects.filter(category='pref', value=self.pref).first()
+        pref_name = d.name if d else self.pref
+        return f"{pref_name} - {self.start_date.strftime('%Y/%m/%d')} - ¥{self.hourly_wage:,}"
+
+    @property
+    def pref_name(self):
+        """都道府県名"""
+        from apps.system.settings.models import Dropdowns
+        d = Dropdowns.objects.filter(category='pref', value=self.pref).first()
+        return d.name if d else self.pref
 
 
 class BillBank(MyModel):
