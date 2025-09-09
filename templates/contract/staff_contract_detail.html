@@ -8,125 +8,133 @@
 {% block title %}スタッフ契約詳細 - {{ contract.contract_name }}{% endblock %}
 
 {% block content %}
-<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        スタッフ契約詳細
-        <ul class="nav nav-pills">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">印刷</a>
-                <div class="dropdown-menu">
-                    <a href="{% url 'contract:staff_contract_pdf' contract.pk %}" class="dropdown-item"><i class="bi bi-filetype-pdf"></i>　雇用契約書　(PDF)</a>
+<div class="row">
+    <div class="col-md-8">
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                スタッフ契約詳細
+                <ul class="nav nav-pills">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">印刷</a>
+                        <div class="dropdown-menu">
+                            <a href="{% url 'contract:staff_contract_pdf' contract.pk %}" class="dropdown-item"><i class="bi bi-filetype-pdf"></i>　雇用契約書　(PDF)</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3">基本情報</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th class="w-25">契約名</th>
+                                <td>{{ contract.contract_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>スタッフ</th>
+                                <td>
+                                    <a href="{% url 'staff:staff_detail' contract.staff.pk %}" class="text-decoration-none">
+                                        {{ contract.staff.name_last }} {{ contract.staff.name_first }}
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>契約番号</th>
+                                <td>{{ contract.contract_number|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th>職種</th>
+                                <td>{{ contract.job_category.name|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th>契約状況</th>
+                                <td>
+                                    <span class="badge {{ contract.contract_status|badge_class }}">
+                                        {% my_name 'contract_status' contract.contract_status %}
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3">契約条件</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th class="w-25">契約期間</th>
+                                <td>
+                                    {{ contract.start_date|date:"Y年m月d日" }}
+                                    　～　
+                                    {% if contract.end_date %}
+                                        {{ contract.end_date|date:"Y年m月d日" }}
+                                    {% else %}
+                                        無期限
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>契約金額</th>
+                                <td>
+                                    {% if contract.contract_amount %}
+                                        ¥{{ contract.contract_amount|floatformat:0|intcomma }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>契約パターン</th>
+                                <td>{{ contract.contract_pattern.name|default:"-" }}</td>
+                            </tr>
+
+                        </table>
+                    </div>
                 </div>
-            </li>
-        </ul>
-    </div>
-    <div class="card-body">
-        <div class="row">
-                        <div class="col-md-6">
-                            <h6 class="text-muted mb-3">基本情報</h6>
-                            <table class="table table-sm">
-                                <tr>
-                                    <th class="w-25">契約名</th>
-                                    <td>{{ contract.contract_name }}</td>
-                                </tr>
-                                <tr>
-                                    <th>スタッフ</th>
-                                    <td>
-                                        <a href="{% url 'staff:staff_detail' contract.staff.pk %}" class="text-decoration-none">
-                                            {{ contract.staff.name_last }} {{ contract.staff.name_first }}
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>契約番号</th>
-                                    <td>{{ contract.contract_number|default:"-" }}</td>
-                                </tr>
-                                <tr>
-                                    <th>職種</th>
-                                    <td>{{ contract.job_category.name|default:"-" }}</td>
-                                </tr>
-                                <tr>
-                                    <th>契約状況</th>
-                                    <td>
-                                        <span class="badge {{ contract.contract_status|badge_class }}">
-                                            {% my_name 'contract_status' contract.contract_status %}
-                                        </span>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="text-muted mb-3">契約条件</h6>
-                            <table class="table table-sm">
-                                <tr>
-                                    <th class="w-25">契約期間</th>
-                                    <td>
-                                        {{ contract.start_date|date:"Y年m月d日" }}
-                                        　～　
-                                        {% if contract.end_date %}
-                                            {{ contract.end_date|date:"Y年m月d日" }}
-                                        {% else %}
-                                            無期限
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>契約金額</th>
-                                    <td>
-                                        {% if contract.contract_amount %}
-                                            ¥{{ contract.contract_amount|floatformat:0|intcomma }}
-                                        {% else %}
-                                            -
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>契約パターン</th>
-                                    <td>{{ contract.contract_pattern.name|default:"-" }}</td>
-                                </tr>
 
-                            </table>
+                {% if contract.description %}
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h6 class="text-muted mb-3">契約内容</h6>
+                        <div class="border rounded p-3 bg-light">
+                            {{ contract.description|linebreaks }}
                         </div>
                     </div>
-
-                    {% if contract.description %}
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <h6 class="text-muted mb-3">契約内容</h6>
-                            <div class="border rounded p-3 bg-light">
-                                {{ contract.description|linebreaks }}
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    {% if contract.notes %}
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <h6 class="text-muted mb-3">備考</h6>
-                            <div class="border rounded p-3 bg-light">
-                                {{ contract.notes|linebreaks }}
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-
-
-        <div class="row mt-3">
-            <div class="col text-left">
-                {% if not from_staff_detail %}
-                    <a href="{% url 'contract:staff_contract_update' contract.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
-                    <a href="{% url 'contract:staff_contract_delete' contract.pk %}" class="btn btn-sm btn-dark  me-2">削除</a>
+                </div>
                 {% endif %}
-                {% if from_staff_detail_direct %}
-                    <a href="{% url 'staff:staff_detail' staff_filter %}" class="btn btn-sm btn-secondary">戻る</a>
-                {% elif staff_filter %}
-                    <a href="{% url 'contract:staff_contract_list' %}?staff={{ staff_filter }}" class="btn btn-sm btn-secondary">戻る</a>
-                {% else %}
-                    <a href="{% url 'contract:staff_contract_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+
+                {% if contract.notes %}
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h6 class="text-muted mb-3">備考</h6>
+                        <div class="border rounded p-3 bg-light">
+                            {{ contract.notes|linebreaks }}
+                        </div>
+                    </div>
+                </div>
                 {% endif %}
+
+                <div class="row mt-3">
+                    <div class="col text-left">
+                        {% if contract.contract_status == '1' or contract.contract_status == '20' %}
+                            <a href="{% url 'contract:staff_contract_update' contract.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
+                            <a href="{% url 'contract:staff_contract_delete' contract.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+                        {% endif %}
+                        {% if from_staff_detail_direct %}
+                            <a href="{% url 'staff:staff_detail' staff_filter %}" class="btn btn-sm btn-secondary">戻る</a>
+                        {% elif staff_filter %}
+                            <a href="{% url 'contract:staff_contract_list' %}?staff={{ staff_filter }}" class="btn btn-sm btn-secondary">戻る</a>
+                        {% else %}
+                            <a href="{% url 'contract:staff_contract_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
+    <div class="col-md-4">
+        {% if contract.contract_status != '1' %}
+            {% include 'contract/_staff_contract_status_card.html' %}
+        {% endif %}
     </div>
 </div>
 

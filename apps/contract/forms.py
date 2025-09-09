@@ -222,7 +222,17 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, contract_type='staff')
         if self.instance and self.instance.pk and hasattr(self.instance, 'staff') and self.instance.staff:
             self.fields['staff_display'].initial = f"{self.instance.staff.name_last} {self.instance.staff.name_first}"
-        self.fields['contract_status'].choices = StaffContract.ContractStatus.choices
+
+        # 編集画面では「作成中」「申請中」のみ選択可能にする
+        choices = [
+            (StaffContract.ContractStatus.DRAFT.value, StaffContract.ContractStatus.DRAFT.label),
+            (StaffContract.ContractStatus.PENDING.value, StaffContract.ContractStatus.PENDING.label),
+        ]
+        if self.instance and self.instance.pk and self.instance.contract_status:
+            current_choice = (self.instance.contract_status, self.instance.get_contract_status_display())
+            if current_choice not in choices:
+                choices.append(current_choice)
+        self.fields['contract_status'].choices = choices
 
         # 契約状況に応じたフォームの制御
         if self.instance and self.instance.pk:
@@ -243,14 +253,6 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
                             if current_class:
                                 new_class = current_class.replace('form-control', 'form-control-plaintext')
                                 field.widget.attrs['class'] = new_class
-
-            if self.instance.contract_status == StaffContract.ContractStatus.ISSUED:
-                # 発行済の場合、ステータスは「作成中」「申請中」にしか変更できない
-                self.fields['contract_status'].choices = [
-                    (StaffContract.ContractStatus.DRAFT.value, StaffContract.ContractStatus.DRAFT.label),
-                    (StaffContract.ContractStatus.PENDING.value, StaffContract.ContractStatus.PENDING.label),
-                    (StaffContract.ContractStatus.ISSUED.value, StaffContract.ContractStatus.ISSUED.label),
-                ]
     
     def clean(self):
         cleaned_data = super().clean()

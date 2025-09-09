@@ -626,6 +626,38 @@ def client_contract_pdf(request, pk):
 
 
 @login_required
+@permission_required('contract.change_staffcontract', raise_exception=True)
+def staff_contract_approve(request, pk):
+    """スタッフ契約の承認ステータスを更新する"""
+    contract = get_object_or_404(StaffContract, pk=pk)
+    if request.method == 'POST':
+        is_approved = request.POST.get('is_approved')
+        if is_approved:
+            contract.contract_status = StaffContract.ContractStatus.APPROVED
+            messages.success(request, f'契約「{contract.contract_name}」を承認済にしました。')
+        else:
+            contract.contract_status = StaffContract.ContractStatus.DRAFT
+            messages.success(request, f'契約「{contract.contract_name}」を作成中に戻しました。')
+        contract.save()
+    return redirect('contract:staff_contract_detail', pk=contract.pk)
+
+
+@login_required
+@permission_required('contract.change_staffcontract', raise_exception=True)
+def staff_contract_issue(request, pk):
+    """スタッフ契約を発行済にする"""
+    contract = get_object_or_404(StaffContract, pk=pk)
+    if request.method == 'POST':
+        if contract.contract_status == StaffContract.ContractStatus.APPROVED:
+            # staff_contract_pdfを呼び出してPDF生成とステータス更新を行う
+            # この関数はPDFレスポンスを返すが、ここではリダイレクトするため無視する
+            staff_contract_pdf(request, pk)
+            # メッセージはstaff_contract_pdf内では設定されないのでここで設定
+            messages.success(request, f'契約「{contract.contract_name}」を発行済にし、PDFを履歴に保存しました。')
+    return redirect('contract:staff_contract_detail', pk=contract.pk)
+
+
+@login_required
 @permission_required('contract.view_clientcontract', raise_exception=True)
 def download_client_contract_pdf(request, pk):
     """Downloads a previously generated client contract PDF."""
