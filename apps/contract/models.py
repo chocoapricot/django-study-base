@@ -60,6 +60,9 @@ class ClientContract(MyModel):
         null=True,
         verbose_name='支払いサイト'
     )
+    approved_at = models.DateTimeField('承認日時', blank=True, null=True)
+    issued_at = models.DateTimeField('発行日時', blank=True, null=True)
+    confirmed_at = models.DateTimeField('確認日時', blank=True, null=True)
     class Meta:
         db_table = 'apps_contract_client'
         verbose_name = 'クライアント契約'
