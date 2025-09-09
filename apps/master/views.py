@@ -2468,11 +2468,24 @@ def minimum_pay_list(request):
     from apps.system.settings.models import Dropdowns
     pref_choices = Dropdowns.objects.filter(category='pref', active=True).order_by('disp_seq')
 
+    from apps.system.logs.models import AppLog
+
+    change_logs = AppLog.objects.filter(
+        model_name="MinimumPay", action__in=["create", "update", "delete"]
+    ).order_by("-timestamp")[:5]
+
+    change_logs_count = AppLog.objects.filter(
+        model_name="MinimumPay", action__in=["create", "update", "delete"]
+    ).count()
+
     context = {
         "minimum_pays": minimum_pays_page,
         "search_query": search_query,
         "pref_filter": pref_filter,
         "pref_choices": pref_choices,
+        "change_logs": change_logs,
+        "change_logs_count": change_logs_count,
+        "history_url_name": "master:minimum_pay_change_history_list",
     }
     return render(request, "master/minimum_pay_list.html", context)
 
@@ -2537,3 +2550,32 @@ def minimum_pay_delete(request, pk):
         "title": f"最低賃金削除 - {minimum_pay}",
     }
     return render(request, "master/minimum_pay_confirm_delete.html", context)
+
+
+@login_required
+@permission_required("master.view_minimumpay", raise_exception=True)
+def minimum_pay_change_history_list(request):
+    """最低賃金マスタ変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    from django.core.paginator import Paginator
+
+    # 最低賃金マスタの変更履歴を取得
+    logs = AppLog.objects.filter(
+        model_name="MinimumPay", action__in=["create", "update", "delete"]
+    ).order_by("-timestamp")
+
+    # ページネーション
+    paginator = Paginator(logs, 20)
+    page = request.GET.get("page")
+    logs_page = paginator.get_page(page)
+
+    return render(
+        request,
+        "master/master_change_history_list.html",
+        {
+            "logs": logs_page,
+            "title": "最低賃金マスタ変更履歴",
+            "list_url": "master:minimum_pay_list",
+            "model_name": "MinimumPay",
+        },
+    )

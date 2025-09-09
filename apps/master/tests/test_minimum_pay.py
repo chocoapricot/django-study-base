@@ -109,3 +109,20 @@ class MinimumPayViewTest(TestCase):
         self.assertFalse(
             MinimumPay.objects.filter(pk=self.minimum_pay.pk).exists()
         )
+
+    def test_minimum_pay_list_view_with_change_history(self):
+        """最低賃金一覧ビュー（変更履歴あり）のテスト"""
+        # 変更履歴を作成
+        from apps.system.logs.models import AppLog
+        AppLog.objects.create(
+            user=self.user,
+            action='create',
+            model_name='MinimumPay',
+            object_id=self.minimum_pay.pk,
+            object_repr=str(self.minimum_pay)
+        )
+
+        response = self.test_client.get(reverse('master:minimum_pay_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '変更履歴')
+        self.assertContains(response, 'testuser')
