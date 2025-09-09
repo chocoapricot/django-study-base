@@ -46,11 +46,6 @@
                                     <td>{{ contract.job_category.name|default:"-" }}</td>
                                 </tr>
                                 <tr>
-                                    <th>契約パターン</th>
-                                    <td>{{ contract.contract_pattern.name|default:"-" }}</td>
-                                </tr>
-                                
-                                <tr>
                                     <th>契約状況</th>
                                     <td>
                                         <span class="badge {{ contract.contract_status|badge_class }}">
@@ -64,12 +59,10 @@
                             <h6 class="text-muted mb-3">契約条件</h6>
                             <table class="table table-sm">
                                 <tr>
-                                    <th class="w-25">契約開始日</th>
-                                    <td>{{ contract.start_date|date:"Y年m月d日" }}</td>
-                                </tr>
-                                <tr>
-                                    <th>契約終了日</th>
+                                    <th class="w-25">契約期間</th>
                                     <td>
+                                        {{ contract.start_date|date:"Y年m月d日" }}
+                                        　～　
                                         {% if contract.end_date %}
                                             {{ contract.end_date|date:"Y年m月d日" }}
                                         {% else %}
@@ -87,7 +80,10 @@
                                         {% endif %}
                                     </td>
                                 </tr>
-
+                                <tr>
+                                    <th>契約パターン</th>
+                                    <td>{{ contract.contract_pattern.name|default:"-" }}</td>
+                                </tr>
                                 <tr>
                                     <th>支払条件</th>
                                     <td>
@@ -164,7 +160,6 @@
                     <tr>
                         <td>
                             <a href="{% url 'contract:download_client_contract_pdf' item.pk %}">
-                                <i class="bi bi-file-earmark-arrow-down-fill"></i>
                                 {{ item.pdf_file_path|basename }}
                             </a>
                         </td>
