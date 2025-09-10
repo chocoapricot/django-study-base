@@ -491,7 +491,7 @@
         "created_by": 1,
         "updated_at": "2025-09-10T00:00:00Z",
         "updated_by": 1,
-        "name": "(テーブル一覧)",
+        "name": "（テーブル一覧）",
         "url": "/system/tables/",
         "icon": "bi-table",
         "icon_style": "color:#6c757d;",
@@ -499,7 +499,7 @@
         "level": 0,
         "exact_match": true,
         "required_permission": "auth.view_user",
-        "disp_seq": 150,
+        "disp_seq": 1010,
         "active": true
     }
 }
