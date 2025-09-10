@@ -59,6 +59,14 @@
                             <span class="badge bg-success">担当者</span>
                         {% elif log.model_name == 'ClientContract' %}
                             <span class="badge bg-primary">契約情報</span>
+                        {% elif log.model_name == 'ContractPattern' %}
+                            <span class="badge bg-primary">契約パターン</span>
+                        {% elif log.model_name == 'ContractTerms' %}
+                            <span class="badge bg-info">契約文言</span>
+                        {% elif log.model_name == 'MinimumPay' %}
+                            <span class="badge bg-warning">最低賃金</span>
+                        {% elif log.model_name == 'MailTemplate' %}
+                            <span class="badge bg-primary">メールテンプレート</span>
                         {% elif log.model_name == 'StaffContract' %}
                             <span class="badge bg-success">契約情報</span>
                         {% elif log.model_name == 'BillPayment' %}
