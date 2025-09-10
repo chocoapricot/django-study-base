@@ -1,32 +1,30 @@
 {% extends "common/_base.html" %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="card">
-        <div class="card-header">
-            <h5 class="card-title mb-0">{{ page_title }}</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table id="sortable-table" class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col" style="cursor: pointer;">テーブル名</th>
-                            <th scope="col" style="cursor: pointer;">モデル名</th>
-                            <th scope="col" style="cursor: pointer;">説明</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for table in tables %}
-                        <tr>
-                            <td><a href="{% url 'system_tables:table_data' table_name=table.name %}">{{ table.name }}</a></td>
-                            <td>{{ table.model }}</td>
-                            <td>{{ table.description }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+       {{ page_title }}
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="sortable-table" class="table table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col" style="cursor: pointer;">テーブル名</th>
+                        <th scope="col" style="cursor: pointer;">モデル名</th>
+                        <th scope="col" style="cursor: pointer;">説明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for table in tables %}
+                    <tr>
+                        <td><a href="{% url 'system_tables:table_data' table_name=table.name %}">{{ table.name }}</a></td>
+                        <td>{{ table.model }}</td>
+                        <td>{{ table.description }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

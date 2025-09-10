@@ -62,6 +62,7 @@ class TableDataView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         from django.db import connection
+        from django.core.paginator import Paginator
 
         context = super().get_context_data(**kwargs)
         table_name = kwargs.get('table_name')
@@ -73,6 +74,7 @@ class TableDataView(LoginRequiredMixin, TemplateView):
 
         sort_by = self.request.GET.get('sort_by')
         order = self.request.GET.get('order', 'asc')
+        page_number = self.request.GET.get('page', 1)
 
         query = f'SELECT * FROM {table_name}'
 
@@ -90,12 +92,15 @@ class TableDataView(LoginRequiredMixin, TemplateView):
 
         with connection.cursor() as cursor:
             cursor.execute(query)
-            rows = cursor.fetchall()
+            all_rows = cursor.fetchall()
+
+        paginator = Paginator(all_rows, 20)
+        page_obj = paginator.get_page(page_number)
 
         context['page_title'] = f'テーブルデータ: {table_name}'
         context['table_name'] = table_name
         context['headers'] = headers
-        context['rows'] = rows
+        context['rows'] = page_obj
         context['active_menu'] = 'system_tables'
         context['sort_by'] = sort_by
         context['order'] = 'desc' if order == 'asc' else 'asc' # For toggling
