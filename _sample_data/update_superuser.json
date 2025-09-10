@@ -1,0 +1,10 @@
+[
+  {
+    "model": "accounts.myuser",
+    "pk": 1,
+    "fields": {
+      "last_name": "管理者",
+      "first_name": "太郎"
+    }
+  }
+]

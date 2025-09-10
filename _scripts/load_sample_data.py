@@ -102,7 +102,8 @@ def main():
         ("python manage.py loaddata _sample_data/client_contacted.json", "クライアント連絡履歴データ"),
         ("python manage.py loaddata _sample_data/connect_client.json", "クライアント接続データ"),
         ("python manage.py loaddata _sample_data/contract_client.json", "クライアント契約データ"),
-        ("python manage.py loaddata _sample_data/contract_staff.json", "スタッフ契約データ")
+        ("python manage.py loaddata _sample_data/contract_staff.json", "スタッフ契約データ"),
+        ("python manage.py loaddata _sample_data/update_superuser.json", "スーパーユーザー更新")
     ]
     
     for command, description in import_commands:
