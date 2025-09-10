@@ -1,0 +1,51 @@
+{% extends "common/_base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">{{ page_title }}</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="sortable-table" class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="cursor: pointer;">テーブル名</th>
+                            <th scope="col" style="cursor: pointer;">モデル名</th>
+                            <th scope="col" style="cursor: pointer;">説明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for table in tables %}
+                        <tr>
+                            <td><a href="{% url 'system_tables:table_data' table_name=table.name %}">{{ table.name }}</a></td>
+                            <td>{{ table.model }}</td>
+                            <td>{{ table.description }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
+
+    const comparer = (idx, asc) => (a, b) => ((v1, v2) =>
+        v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
+        )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+
+    document.querySelectorAll('#sortable-table th').forEach(th => th.addEventListener('click', (() => {
+        const table = th.closest('table');
+        const tbody = table.querySelector('tbody');
+        Array.from(tbody.querySelectorAll('tr'))
+            .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+            .forEach(tr => tbody.appendChild(tr) );
+    })));
+});
+</script>
+{% endblock %}

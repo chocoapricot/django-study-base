@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'apps.system.settings.templatetags',
 
     'apps.system.logs',
+    'apps.system.tables',
     'apps.api',
     'apps.staff',
     'apps.client',
