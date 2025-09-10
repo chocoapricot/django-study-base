@@ -41,7 +41,7 @@
     </ul>
     {% endif %}
     <div class="{% if page_obj.has_other_pages %}ms-3{% endif %}">
-        <span class="text-muted">（全{{ page_obj.paginator.count|intcomma }}件中 {{ page_obj.start_index|intcomma }}–{{ page_obj.end_index|intcomma }}件を表示）</span>
+        <span class="text-muted small">（全{{ page_obj.paginator.count|intcomma }}件中 {{ page_obj.start_index|intcomma }}–{{ page_obj.end_index|intcomma }}件を表示）</span>
     </div>
 </div>
 {% endif %}
