@@ -2356,7 +2356,7 @@ def contract_pattern_change_history_list(request):
     from django.core.paginator import Paginator
 
     logs = AppLog.objects.filter(
-        model_name="ContractPattern", action__in=["create", "update", "delete"]
+        model_name__in=["ContractPattern", "ContractTerms"], action__in=["create", "update", "delete"]
     ).order_by("-timestamp")
 
     paginator = Paginator(logs, 20)
