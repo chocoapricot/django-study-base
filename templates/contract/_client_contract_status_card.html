@@ -49,7 +49,7 @@
                        {% if contract.contract_status == contract.ContractStatus.CONTRACTED %}checked{% endif %}>
                 <label class="form-check-label" for="confirmSwitch">
                     <i class="bi bi-link" style="font-size: 20px; color: #17a2b8;"></i>
-                    確認
+                    クライアント確認
                     {% if contract.confirmed_at %}
                         <span class="text-muted small">（{{ contract.confirmed_at|date:"Y/m/d H:i:s" }}）</span>
                     {% endif %}
