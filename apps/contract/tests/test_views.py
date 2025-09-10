@@ -105,6 +105,26 @@ class ContractViewTest(TestCase):
         self.assertEqual(print_history.staff_contract, staff_contract)
         self.assertEqual(print_history.printed_by, self.user)
 
+    def test_client_contract_pdf_approved_to_issued(self):
+        """承認済みのクライアント契約書を印刷すると発行済になるテスト"""
+        from ..models import ClientContractPrint
+        self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
+        self.client_contract.save()
+
+        self.assertEqual(ClientContractPrint.objects.count(), 0)
+        response = self.client.get(reverse('contract:client_contract_pdf', kwargs={'pk': self.client_contract.pk}))
+        self.assertEqual(response.status_code, 200)
+
+        # ステータスが発行済に変わっていることを確認
+        self.client_contract.refresh_from_db()
+        self.assertEqual(self.client_contract.contract_status, ClientContract.ContractStatus.ISSUED)
+
+        # 発行履歴が作成されていることを確認
+        self.assertEqual(ClientContractPrint.objects.count(), 1)
+        print_history = ClientContractPrint.objects.first()
+        self.assertEqual(print_history.client_contract, self.client_contract)
+        self.assertEqual(print_history.printed_by, self.user)
+
     def test_download_pdf_views(self):
         """PDFダウンロードビューのテスト"""
         from ..models import ClientContractPrint

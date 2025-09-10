@@ -546,6 +546,14 @@ def staff_contract_change_history_list(request, pk):
 def client_contract_pdf(request, pk):
     """クライアント契約書のPDFを生成して返す"""
     contract = get_object_or_404(ClientContract, pk=pk)
+
+    # 承認済みの場合は発行済みに更新
+    if contract.contract_status == ClientContract.ContractStatus.APPROVED:
+        contract.contract_status = ClientContract.ContractStatus.ISSUED
+        contract.issued_at = timezone.now()
+        contract.save()
+        messages.success(request, f'契約「{contract.contract_name}」の契約書を発行しました。')
+
     pdf_content, pdf_filename = generate_and_save_contract_pdf(contract, request.user)
 
     if pdf_content:
@@ -875,6 +883,14 @@ def client_contract_confirm_list(request):
 def staff_contract_pdf(request, pk):
     """スタッフ契約書のPDFを生成して返す"""
     contract = get_object_or_404(StaffContract, pk=pk)
+
+    # 承認済みの場合は発行済みに更新
+    if contract.contract_status == StaffContract.ContractStatus.APPROVED:
+        contract.contract_status = StaffContract.ContractStatus.ISSUED
+        contract.issued_at = timezone.now()
+        contract.save()
+        messages.success(request, f'契約「{contract.contract_name}」の契約書を発行しました。')
+
     pdf_content, pdf_filename = generate_and_save_contract_pdf(contract, request.user)
 
     if pdf_content:
