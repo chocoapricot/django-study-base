@@ -69,7 +69,7 @@ def log_user_login_failed(sender, request, credentials, **kwargs):
         user=user,  # This can be None if the user is not found
         action='login_failed',
         model_name='User',
-        object_id=str(user.pk) if user else None,
+        object_id=str(user.pk) if user else '0',
         object_repr=f"'{username}' のログインに失敗 (IP: {ip_address})",
         version=None
     )
