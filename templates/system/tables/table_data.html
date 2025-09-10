@@ -1,0 +1,56 @@
+{% extends "common/_base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">{{ page_title }}</h5>
+        </div>
+        <div class="card-body">
+            {% if rows|length >= 1000 %}
+            <div class="alert alert-warning" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                データが1000件を超えています。最初の1000件のみ表示しています。
+            </div>
+            {% endif %}
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            {% for header in headers %}
+                            <th scope="col">
+                                <a href="{% url 'system_tables:table_data' table_name=table_name %}?sort_by={{ header }}&order={{ order }}">
+                                    {{ header }}
+                                    {% if sort_by == header %}
+                                        {% if order == 'desc' %}<i class="bi bi-arrow-down"></i>{% else %}<i class="bi bi-arrow-up"></i>{% endif %}
+                                    {% endif %}
+                                </a>
+                            </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                        <tr>
+                            {% for cell in row %}
+                            <td>{{ cell|default_if_none:""|truncatechars:100 }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="{{ headers|length }}" class="text-center">データがありません。</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <a href="{% url 'system_tables:table_list' %}" class="btn btn-sm btn-secondary">テーブル一覧に戻る</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

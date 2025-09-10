@@ -481,5 +481,26 @@
         "disp_seq": 54,
         "active": true
     }
+},
+{
+    "model": "settings.menu",
+    "pk": 25,
+    "fields": {
+        "version": 1756651531500578,
+        "created_at": "2025-09-10T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-10T00:00:00Z",
+        "updated_by": 1,
+        "name": "(テーブル一覧)",
+        "url": "/system/tables/",
+        "icon": "bi-table",
+        "icon_style": "color:#6c757d;",
+        "parent": null,
+        "level": 0,
+        "exact_match": true,
+        "required_permission": "auth.view_user",
+        "disp_seq": 150,
+        "active": true
+    }
 }
 ]
