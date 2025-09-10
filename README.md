@@ -64,21 +64,21 @@ django-study-base/
 ├── _scripts/               # 管理・運用スクリプト
 │
 ├── apps/                   # Djangoアプリケーション
-│   ├── system/             # システム管理
-│   │   ├── logs/           # ログ管理 (アプリログ、メールログ)
-│   │   └── settings/       # 設定管理 (ドロップダウン、メニュー、パラメータ)
 │   ├── accounts/           # ユーザー管理・認証
-│   ├── profile/            # プロフィール管理
-│   ├── master/             # マスター管理 (資格、スキル、銀行、支払条件)
-│   ├── staff/              # スタッフ管理
+│   ├── api/                # REST API
 │   ├── client/             # クライアント管理
-│   ├── contract/           # 契約管理
+│   ├── common/             # 共通機能
 │   ├── company/            # 会社・部署管理
 │   ├── connect/            # 接続管理 (スタッフ・クライアント接続申請)
-│   ├── common/             # 共通機能
-│   ├── home/               # ホームページ
+│   ├── contract/           # 契約管理
 │   ├── csstest/            # CSSテスト・開発
-│   └── api/                # REST API
+│   ├── home/               # ホームページ
+│   ├── master/             # マスター管理 (資格、スキル、銀行、支払条件)
+│   ├── profile/            # プロフィール管理
+│   ├── staff/              # スタッフ管理
+│   └── system/             # システム管理
+│       ├── logs/           # ログ管理 (アプリログ、メールログ)
+│       └── settings/       # 設定管理 (ドロップダウン、メニュー、パラメータ)
 ├── config/                 # プロジェクト設定
 ├── media/                  # アップロードされたファイル
 │   ├── client_files/       # クライアントアップロードファイル
@@ -86,75 +86,75 @@ django-study-base/
 │   └── staff_files/        # スタッフアップロードファイル
 │       └── {スタッフID}/
 ├── statics/                # 静的ファイル
-├── templates/              # HTMLテンプレート
-└── requirements.txt        # 依存関係
+└── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（72テーブル）
+## データベーステーブル一覧（75テーブル）
 
-### 本アプリケーション独自テーブル（57テーブル）
+### 本アプリケーション独自テーブル（60テーブル）
 
-| テーブル名 | 説明 |
-| --- | --- |
-| `accounts_myuser` | カスタムユーザー（メインテーブル） |
-| `accounts_myuser_groups` | ユーザーとグループの関連 |
-| `accounts_myuser_user_permissions` | ユーザーと権限の関連 |
-| `apps_client` | クライアント基本情報 |
-| `apps_client_contacted` | クライアント連絡履歴 |
-| `apps_client_department` | クライアント部署情報 |
-| `apps_client_file` | クライアントファイル |
-| `apps_client_user` | クライアント担当者 |
-| `apps_company` | 会社情報 |
-| `apps_company_department` | 部署情報 |
-| `apps_company_user` | 会社担当者 |
-| `apps_connect_bank_request` | 銀行口座変更申請 |
-| `apps_connect_client` | クライアント接続申請 |
-| `apps_connect_contact_request` | 連絡先変更申請 |
-| `apps_connect_disability_request` | 障害者情報変更申請 |
-| `apps_connect_international_request` | 国際情報変更申請 |
-| `apps_connect_mynumber_request` | マイナンバー接続申請 |
-| `apps_connect_profile_request` | プロフィール変更申請 |
-| `apps_connect_staff` | スタッフ接続申請 |
-| `apps_connect_staff_agree` | スタッフ同意 |
-| `apps_contract_client` | クライアント契約 |
-| `apps_contract_staff` | スタッフ契約 |
-| `apps_master_bank` | 銀行マスター |
-| `apps_master_bank_branch` | 銀行支店マスター（銀行に対して１：N） |
-| `apps_master_bill_bank` | 会社銀行マスター |
-| `apps_master_bill_payment` | 支払条件マスター |
-| `apps_master_contract_pattern` | 契約パターンマスター |
-| `apps_master_contract_terms` | 契約文言マスター（契約パターンに対して１：N） |
-| `apps_master_information` | お知らせマスター |
-| `apps_master_information_file` | お知らせファイル |
-| `apps_master_job_category` | 職種マスター |
-| `apps_master_mail_template` | （自動追加） |
-| `apps_master_qualification` | 資格マスター（カテゴリと資格） |
-| `apps_master_skill` | 技能マスター（カテゴリと技能） |
-| `apps_master_staff_agreement` | スタッフ同意書マスター |
-| `apps_profile_staff` | スタッフプロフィール |
-| `apps_profile_staff_bank` | プロフィール銀行口座 |
-| `apps_profile_staff_contacts` | プロフィール連絡先 |
-| `apps_profile_staff_disability` | プロフィール障害者情報 |
-| `apps_profile_staff_international` | プロフィール外国籍情報 |
-| `apps_profile_staff_mynumber` | プロフィールマイナンバー |
-| `apps_profile_staff_qualification` | プロフィール保有資格 |
-| `apps_profile_staff_skill` | プロフィール保有スキル |
-| `apps_staff` | スタッフ基本情報 |
-| `apps_staff_bank` | スタッフ銀行口座 |
-| `apps_staff_contacted` | スタッフ連絡履歴 |
-| `apps_staff_contacts` | スタッフ連絡先 |
-| `apps_staff_disability` | スタッフ障害者情報 |
-| `apps_staff_file` | スタッフファイル |
-| `apps_staff_international` | スタッフ外国籍情報 |
-| `apps_staff_mynumber` | スタッフマイナンバー |
-| `apps_staff_qualification` | スタッフ保有資格 |
-| `apps_staff_skill` | スタッフ保有スキル |
-| `apps_system_access_log` | アクセスログ集計用 |
-| `apps_system_app_log` | アプリケーション操作ログ |
-| `apps_system_dropdowns` | ドロップダウン設定 |
-| `apps_system_mail_log` | メール送信ログ |
-| `apps_system_menu` | メニュー設定 |
-| `apps_system_parameter` | パラメータ設定 |
+| テーブル名 | モデル名 | 説明 |
+| --- | --- | --- |
+| `accounts_myuser` | `MyUser` | カスタムユーザー（メインテーブル） |
+| `apps_client` | `Client` | クライアント基本情報 |
+| `apps_client_contacted` | `ClientContacted` | クライアント連絡履歴 |
+| `apps_client_department` | `ClientDepartment` | クライアント部署情報 |
+| `apps_client_file` | `ClientFile` | クライアントファイル |
+| `apps_client_user` | `ClientUser` | クライアント担当者 |
+| `apps_company` | `Company` | 会社情報 |
+| `apps_company_department` | `CompanyDepartment` | 部署情報 |
+| `apps_company_user` | `CompanyUser` | 会社担当者 |
+| `apps_connect_bank_request` | `BankRequest` | 銀行口座変更申請 |
+| `apps_connect_client` | `ConnectClient` | クライアント接続申請 |
+| `apps_connect_contact_request` | `ContactRequest` | 連絡先変更申請 |
+| `apps_connect_disability_request` | `DisabilityRequest` | 障害者情報変更申請 |
+| `apps_connect_international_request` | `ConnectInternationalRequest` | 国際情報変更申請 |
+| `apps_connect_mynumber_request` | `MynumberRequest` | マイナンバー接続申請 |
+| `apps_connect_profile_request` | `ProfileRequest` | プロフィール変更申請 |
+| `apps_connect_staff` | `ConnectStaff` | スタッフ接続申請 |
+| `apps_connect_staff_agree` | `ConnectStaffAgree` | スタッフ同意 |
+| `apps_contract_client` | `ClientContract` | クライアント契約 |
+| `apps_contract_staff` | `StaffContract` | スタッフ契約 |
+| `apps_contract_client_print` | `ClientContractPrint` | クライアント契約書発行履歴 |
+| `apps_contract_staff_print` | `StaffContractPrint` | スタッフ契約書発行履歴 |
+| `apps_master_bank` | `Bank` | 銀行マスター |
+| `apps_master_bank_branch` | `BankBranch` | 銀行支店マスター |
+| `apps_master_bill_bank` | `BillBank` | 会社銀行マスター |
+| `apps_master_bill_payment` | `BillPayment` | 支払条件マスター |
+| `apps_master_contract_pattern` | `ContractPattern` | 契約パターンマスター |
+| `apps_master_contract_terms` | `ContractTerms` | 契約文言マスター |
+| `apps_master_information` | `Information` | お知らせマスター |
+| `apps_master_information_file` | `InformationFile` | お知らせファイル |
+| `apps_master_job_category` | `JobCategory` | 職種マスター |
+| `apps_master_mail_template` | `MailTemplate` | メールテンプレート |
+| `apps_master_minimum_pay` | `MinimumPay` | 最低賃金マスター |
+| `apps_master_qualification` | `Qualification` | 資格マスター |
+| `apps_master_skill` | `Skill` | 技能マスター |
+| `apps_master_staff_agreement` | `StaffAgreement` | スタッフ同意書マスター |
+| `apps_profile_staff` | `StaffProfile` | スタッフプロフィール |
+| `apps_profile_staff_bank` | `StaffProfileBank` | プロフィール銀行口座 |
+| `apps_profile_staff_contacts` | `StaffProfileContact` | プロフィール連絡先 |
+| `apps_profile_staff_disability` | `StaffProfileDisability` | プロフィール障害者情報 |
+| `apps_profile_staff_international` | `StaffProfileInternational` | プロフィール外国籍情報 |
+| `apps_profile_staff_mynumber` | `StaffProfileMynumber` | プロフィールマイナンバー |
+| `apps_profile_staff_qualification` | `StaffProfileQualification` | プロフィール保有資格 |
+| `apps_profile_staff_skill` | `StaffProfileSkill` | プロフィール保有スキル |
+| `apps_staff` | `Staff` | スタッフ基本情報 |
+| `apps_staff_bank` | `StaffBank` | スタッフ銀行口座 |
+| `apps_staff_contacted` | `StaffContacted` | スタッフ連絡履歴 |
+| `apps_staff_contacts` | `StaffContact` | スタッフ連絡先 |
+| `apps_staff_disability` | `StaffDisability` | スタッフ障害者情報 |
+| `apps_staff_file` | `StaffFile` | スタッフファイル |
+| `apps_staff_international` | `StaffInternational` | スタッフ外国籍情報 |
+| `apps_staff_mynumber` | `StaffMynumber` | スタッフマイナンバー |
+| `apps_staff_qualification` | `StaffQualification` | スタッフ保有資格 |
+| `apps_staff_skill` | `StaffSkill` | スタッフ保有スキル |
+| `apps_system_access_log` | `AccessLog` | アクセスログ |
+| `apps_system_app_log` | `AppLog` | アプリケーション操作ログ |
+| `apps_system_dropdowns` | `Dropdowns` | ドロップダウン設定 |
+| `apps_system_mail_log` | `MailLog` | メール送信ログ |
+| `apps_system_menu` | `Menu` | メニュー設定 |
+| `apps_system_parameter` | `Parameter` | パラメータ設定 |
 
 ### django-allauth関連テーブル（6テーブル）
 
@@ -179,7 +179,7 @@ django-study-base/
 | `django_migrations` | マイグレーション履歴 |
 | `django_session` | セッション |
 | `django_site` | サイト設定 |
-| `sqlite_sequence`| シーケンス |
+| `concurrency_version` | バージョン管理 |
 
 ## 🚀 セットアップ
 
