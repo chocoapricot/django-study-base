@@ -102,14 +102,19 @@ def main():
         ("python manage.py loaddata _sample_data/client_contacted.json", "クライアント連絡履歴データ"),
         ("python manage.py loaddata _sample_data/connect_client.json", "クライアント接続データ"),
         ("python manage.py loaddata _sample_data/contract_client.json", "クライアント契約データ"),
-        ("python manage.py loaddata _sample_data/contract_staff.json", "スタッフ契約データ"),
-        ("python manage.py loaddata _sample_data/update_superuser.json", "スーパーユーザー更新")
+        ("python manage.py loaddata _sample_data/contract_staff.json", "スタッフ契約データ")
     ]
     
     for command, description in import_commands:
         if not run_command(command, description):
             print(f"❌ {description}のインポートでエラーが発生しました")
             sys.exit(1)
+
+    # スーパーユーザーの姓名を更新
+    update_superuser_command = "python manage.py update_superuser_name"
+    if not run_command(update_superuser_command, "スーパーユーザーの姓名を更新"):
+        print("❌ スーパーユーザーの姓名更新でエラーが発生しました")
+        sys.exit(1)
     
     print("\n🎉 サンプルデータのインポートが完了しました！")
     print("\n📈 インポートされたデータ:")

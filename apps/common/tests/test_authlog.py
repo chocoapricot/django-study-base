@@ -141,3 +141,37 @@ class AuthLogTest(TestCase):
         # 同じユーザーのログであることを確認
         self.assertEqual(login_log.user, self.user)
         self.assertEqual(logout_log.user, self.user)
+
+    def test_login_failed_log_for_nonexistent_user(self):
+        """存在しないユーザーでログイン失敗した際のログ記録をテスト"""
+        from django.contrib.auth.signals import user_login_failed
+        from django.test import RequestFactory
+
+        # ログイン失敗前のログ件数を確認
+        initial_count = AppLog.objects.filter(action='login_failed').count()
+
+        # リクエストを作成
+        factory = RequestFactory()
+        request = factory.post('/login/')
+        request.META['REMOTE_ADDR'] = '192.168.1.200'
+
+        # 存在しないユーザーの認証情報
+        credentials = {'username': 'nonexistentuser'}
+
+        # ログイン失敗シグナルを直接発火
+        user_login_failed.send(sender=User, request=request, credentials=credentials)
+
+        # ログイン失敗後のログ件数を確認
+        final_count = AppLog.objects.filter(action='login_failed').count()
+        self.assertEqual(final_count, initial_count + 1)
+
+        # 最新のログイン失敗ログを取得
+        failed_log = AppLog.objects.filter(action='login_failed').order_by('-timestamp').first()
+
+        # ログの内容を確認
+        self.assertIsNone(failed_log.user)
+        self.assertEqual(failed_log.action, 'login_failed')
+        self.assertEqual(failed_log.model_name, 'User')
+        self.assertEqual(failed_log.object_id, '0')
+        self.assertIn("'nonexistentuser' のログインに失敗", failed_log.object_repr)
+        self.assertIn('IP: 192.168.1.200', failed_log.object_repr)
