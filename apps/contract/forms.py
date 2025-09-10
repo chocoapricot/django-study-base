@@ -111,35 +111,24 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
 
         # 契約状況に応じたフォームの制御
         if self.instance and self.instance.pk:
-            if self.instance.contract_status in [ClientContract.ContractStatus.APPROVED, ClientContract.ContractStatus.ISSUED]:
-                # 承認済・発行済の場合、契約状況以外は編集不可
+            # 「作成中」「申請中」以外は全フィールドを編集不可にする
+            if self.instance.contract_status not in [ClientContract.ContractStatus.DRAFT, ClientContract.ContractStatus.PENDING]:
                 for field_name, field in self.fields.items():
-                    if field_name != 'contract_status':
-                        if 'disabled' in field.widget.attrs:
-                            del field.widget.attrs['disabled']
+                    # payment_siteはクライアント設定でロックされている場合、そのスタイルを維持
+                    if field_name == 'payment_site' and 'data-client-locked' in field.widget.attrs:
+                        continue
 
-                        # payment_siteはクライアント設定でロックされている場合、そのスタイルを維持
-                        if field_name == 'payment_site' and 'data-client-locked' in field.widget.attrs:
-                            continue
-
+                    if hasattr(field.widget, 'attrs'):
                         if isinstance(field.widget, forms.Select):
-                            # Selectはform-control-plaintextに対応していないため、クリックできないようにスタイルを設定
                             field.widget.attrs['style'] = 'pointer-events: none; background-color: #e9ecef;'
+                        elif isinstance(field.widget, forms.CheckboxInput):
+                             field.widget.attrs['disabled'] = True
                         else:
-                            # テキストベースの入力項目にはform-control-plaintextを適用
                             field.widget.attrs['readonly'] = True
                             current_class = field.widget.attrs.get('class', '')
-                            if current_class:
+                            if 'form-control' in current_class:
                                 new_class = current_class.replace('form-control', 'form-control-plaintext')
                                 field.widget.attrs['class'] = new_class
-
-            if self.instance.contract_status == ClientContract.ContractStatus.ISSUED:
-                # 発行済の場合、ステータスは「作成中」「申請中」にしか変更できない
-                self.fields['contract_status'].choices = [
-                    (ClientContract.ContractStatus.DRAFT.value, ClientContract.ContractStatus.DRAFT.label),
-                    (ClientContract.ContractStatus.PENDING.value, ClientContract.ContractStatus.PENDING.label),
-                    (ClientContract.ContractStatus.ISSUED.value, ClientContract.ContractStatus.ISSUED.label),
-                ]
     
     def clean(self):
         cleaned_data = super().clean()
@@ -246,21 +235,18 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
 
         # 契約状況に応じたフォームの制御
         if self.instance and self.instance.pk:
-            if self.instance.contract_status in [StaffContract.ContractStatus.APPROVED, StaffContract.ContractStatus.ISSUED]:
-                # 承認済・発行済の場合、契約状況以外は編集不可
+            # 「作成中」「申請中」以外は全フィールドを編集不可にする
+            if self.instance.contract_status not in [StaffContract.ContractStatus.DRAFT, StaffContract.ContractStatus.PENDING]:
                 for field_name, field in self.fields.items():
-                    if field_name != 'contract_status':
-                        if 'disabled' in field.widget.attrs:
-                            del field.widget.attrs['disabled']
-
+                    if hasattr(field.widget, 'attrs'):
                         if isinstance(field.widget, forms.Select):
-                            # Selectはform-control-plaintextに対応していないため、クリックできないようにスタイルを設定
                             field.widget.attrs['style'] = 'pointer-events: none; background-color: #e9ecef;'
+                        elif isinstance(field.widget, forms.CheckboxInput):
+                             field.widget.attrs['disabled'] = True
                         else:
-                            # テキストベースの入力項目にはform-control-plaintextを適用
                             field.widget.attrs['readonly'] = True
                             current_class = field.widget.attrs.get('class', '')
-                            if current_class:
+                            if 'form-control' in current_class:
                                 new_class = current_class.replace('form-control', 'form-control-plaintext')
                                 field.widget.attrs['class'] = new_class
     
