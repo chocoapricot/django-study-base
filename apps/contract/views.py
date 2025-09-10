@@ -132,11 +132,13 @@ def client_contract_detail(request, pk):
             from_client_detail_direct = True
     
     # AppLogから履歴を取得
-    change_logs = AppLog.objects.filter(
+    all_change_logs = AppLog.objects.filter(
         model_name='ClientContract',
         object_id=str(contract.pk),
         action__in=['create', 'update', 'delete', 'print']
-    ).order_by('-timestamp')[:10]  # 最新10件
+    ).order_by('-timestamp')
+    change_logs_count = all_change_logs.count()
+    change_logs = all_change_logs[:10]  # 最新10件
     
     # 発行履歴を取得
     print_history = ClientContractPrint.objects.filter(client_contract=contract).order_by('-printed_at')
@@ -145,6 +147,7 @@ def client_contract_detail(request, pk):
         'contract': contract,
         'print_history': print_history,
         'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
         'client_filter': client_filter,
         'from_client_detail': from_client_detail,
         'from_client_detail_direct': from_client_detail_direct,
@@ -318,11 +321,13 @@ def staff_contract_detail(request, pk):
             from_staff_detail_direct = True
     
     # AppLogから履歴を取得
-    change_logs = AppLog.objects.filter(
+    all_change_logs = AppLog.objects.filter(
         model_name='StaffContract',
         object_id=str(contract.pk),
         action__in=['create', 'update', 'delete', 'print']
-    ).order_by('-timestamp')[:10]  # 最新10件
+    ).order_by('-timestamp')
+    change_logs_count = all_change_logs.count()
+    change_logs = all_change_logs[:10]  # 最新10件
 
     # 発行履歴を取得
     print_history = StaffContractPrint.objects.filter(staff_contract=contract).order_by('-printed_at')
@@ -331,6 +336,7 @@ def staff_contract_detail(request, pk):
         'contract': contract,
         'print_history': print_history,
         'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
         'staff_filter': staff_filter,
         'from_staff_detail': from_staff_detail,
         'from_staff_detail_direct': from_staff_detail_direct,
