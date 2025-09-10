@@ -45,9 +45,8 @@
             {% csrf_token %}
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="confirmSwitch" name="is_confirmed"
-                       onchange="this.form.submit()"
-                       {% if contract.contract_status == contract.ContractStatus.CONTRACTED %}checked{% endif %}
-                       {% if contract.contract_status != contract.ContractStatus.ISSUED and contract.contract_status != contract.ContractStatus.CONTRACTED %}disabled{% endif %}>
+                       disabled
+                       {% if contract.contract_status == contract.ContractStatus.CONTRACTED %}checked{% endif %}>
                 <label class="form-check-label" for="confirmSwitch">
                     <i class="bi bi-link" style="font-size: 20px; color: #17a2b8;"></i>
                     確認
