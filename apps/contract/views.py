@@ -21,7 +21,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import io
 from apps.common.pdf_utils import generate_contract_pdf
-
+from .utils import generate_and_save_contract_pdf
 
 # 契約管理トップページ
 @login_required
@@ -546,102 +546,15 @@ def staff_contract_change_history_list(request, pk):
 def client_contract_pdf(request, pk):
     """クライアント契約書のPDFを生成して返す"""
     contract = get_object_or_404(ClientContract, pk=pk)
+    pdf_content, pdf_filename = generate_and_save_contract_pdf(contract, request.user)
 
-    # ファイル名
-    timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
-    pdf_filename = f"client_contract_{pk}_{timestamp}.pdf"
-
-    # レスポンスの準備
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
-
-    # PDFドキュメントの作成
-    buffer = io.BytesIO()
-
-    # PDFのタイトルと前文
-    title = "業務委託契約書"
-    intro_text = f"{contract.client.name} 様との間で、以下の通り業務委託契約を締結します。"
-
-    # 表示項目の定義
-    items = [
-        {"title": "契約名", "text": str(contract.contract_name)},
-        {"title": "クライアント名", "text": str(contract.client.name)},
-        {"title": "契約番号", "text": str(contract.contract_number)},
-        {"title": "契約開始日", "text": str(contract.start_date)},
-        {"title": "契約終了日", "text": str(contract.end_date or "N/A")},
-        {"title": "契約金額", "text": f"{contract.contract_amount} 円" if contract.contract_amount else "N/A"},
-        {"title": "支払サイト", "text": str(contract.payment_site.name if contract.payment_site else "N/A")},
-        {"title": "契約内容", "text": str(contract.description)},
-        {"title": "備考", "text": str(contract.notes)},
-    ]
-
-    # 契約パターンに紐づく契約文言を追加
-    if contract.contract_pattern:
-        terms = contract.contract_pattern.terms.all().order_by('display_order')
-        if terms:
-            # 「備考」の前に挿入するためのインデックスを取得
-            notes_index = -1
-            for i, item in enumerate(items):
-                if item["title"] == "備考":
-                    notes_index = i
-                    break
-            
-            # 契約文言を挿入
-            term_items = []
-            for term in terms:
-                term_items.append({"title": str(term.contract_clause), "text": str(term.contract_terms)})
-
-            if notes_index != -1:
-                items[notes_index:notes_index] = term_items
-            else:
-                # 備考が見つからない場合は末尾に追加
-                items.extend(term_items)
-
-    # ステータスが承認済未満（下書き、申請中）の場合は透かしを入れる
-    watermark = None
-    if contract.contract_status and int(contract.contract_status) < int(ClientContract.ContractStatus.APPROVED):
-        watermark = 'DRAFT'
-
-    # 共通関数を呼び出してPDFを生成
-    generate_contract_pdf(buffer, title, intro_text, items, watermark_text=watermark)
-
-    # レスポンスにPDFを書き込む
-    pdf = buffer.getvalue()
-    buffer.close()
-    response.write(pdf)
-
-    # 承認済の場合、ステータスを発行済に変更し、発行履歴を記録
-    if contract.contract_status == ClientContract.ContractStatus.APPROVED:
-        contract.contract_status = ClientContract.ContractStatus.ISSUED
-        contract.issued_at = timezone.now()
-        contract.save()
-
-        # PDFを保存
-        contract_dir = os.path.join(settings.MEDIA_ROOT, 'contracts', 'client', str(contract.pk))
-        os.makedirs(contract_dir, exist_ok=True)
-        file_path_on_disk = os.path.join(contract_dir, pdf_filename)
-        with open(file_path_on_disk, 'wb') as f:
-            f.write(pdf)
-
-        # DBに保存するパス
-        db_file_path = os.path.join('contracts', 'client', str(contract.pk), pdf_filename)
-
-        ClientContractPrint.objects.create(
-            client_contract=contract,
-            printed_by=request.user,
-            pdf_file_path=db_file_path,
-        )
-
-    # AppLogに記録
-    AppLog.objects.create(
-        user=request.user,
-        action='print',
-        model_name='ClientContract',
-        object_id=str(contract.pk),
-        object_repr=f'契約書PDF出力: {contract.contract_name}'
-    )
-
-    return response
+    if pdf_content:
+        response = HttpResponse(pdf_content, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
+        return response
+    else:
+        messages.error(request, "PDFの生成に失敗しました。")
+        return redirect('contract:client_contract_detail', pk=pk)
 
 
 @login_required
@@ -674,10 +587,14 @@ def client_contract_issue(request, pk):
         is_issued = 'is_issued' in request.POST
         if is_issued:
             if contract.contract_status == ClientContract.ContractStatus.APPROVED:
-                contract.contract_status = ClientContract.ContractStatus.ISSUED
-                contract.issued_at = timezone.now()
-                contract.save()
-                messages.success(request, f'契約「{contract.contract_name}」を発行済にしました。')
+                pdf_content, _ = generate_and_save_contract_pdf(contract, request.user)
+                if pdf_content:
+                    contract.contract_status = ClientContract.ContractStatus.ISSUED
+                    contract.issued_at = timezone.now()
+                    contract.save()
+                    messages.success(request, f'契約「{contract.contract_name}」の契約書を発行しました。')
+                else:
+                    messages.error(request, "契約書の発行に失敗しました。")
         else:
             if contract.contract_status == ClientContract.ContractStatus.ISSUED:
                 contract.contract_status = ClientContract.ContractStatus.APPROVED
@@ -688,7 +605,7 @@ def client_contract_issue(request, pk):
 
 
 @login_required
-@permission_required('contract.change_clientcontract', raise_exception=True)
+@permission_required('contract.confirm_clientcontract', raise_exception=True)
 def client_contract_confirm(request, pk):
     """クライアント契約を確認済にする"""
     contract = get_object_or_404(ClientContract, pk=pk)
@@ -739,10 +656,14 @@ def staff_contract_issue(request, pk):
         is_issued = 'is_issued' in request.POST
         if is_issued:
             if contract.contract_status == StaffContract.ContractStatus.APPROVED:
-                contract.contract_status = StaffContract.ContractStatus.ISSUED
-                contract.issued_at = timezone.now()
-                contract.save()
-                messages.success(request, f'契約「{contract.contract_name}」を発行済にしました。')
+                pdf_content, _ = generate_and_save_contract_pdf(contract, request.user)
+                if pdf_content:
+                    contract.contract_status = StaffContract.ContractStatus.ISSUED
+                    contract.issued_at = timezone.now()
+                    contract.save()
+                    messages.success(request, f'契約「{contract.contract_name}」の契約書を発行しました。')
+                else:
+                    messages.error(request, "契約書の発行に失敗しました。")
         else:
             if contract.contract_status == StaffContract.ContractStatus.ISSUED:
                 contract.contract_status = StaffContract.ContractStatus.APPROVED
@@ -954,98 +875,12 @@ def client_contract_confirm_list(request):
 def staff_contract_pdf(request, pk):
     """スタッフ契約書のPDFを生成して返す"""
     contract = get_object_or_404(StaffContract, pk=pk)
+    pdf_content, pdf_filename = generate_and_save_contract_pdf(contract, request.user)
 
-    # ファイル名
-    timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
-    pdf_filename = f"staff_contract_{pk}_{timestamp}.pdf"
-
-    # レスポンスの準備
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
-
-    # PDFドキュメントの作成
-    buffer = io.BytesIO()
-
-    # PDFのタイトルと前文
-    title = "雇用契約書"
-    intro_text = f"{contract.staff.name_last} {contract.staff.name_first} 様との間で、以下の通り雇用契約を締結します。"
-
-    # 表示項目の定義
-    items = [
-        {"title": "契約名", "text": str(contract.contract_name)},
-        {"title": "スタッフ名", "text": f"{contract.staff.name_last} {contract.staff.name_first}"},
-        {"title": "契約番号", "text": str(contract.contract_number or "")},
-        {"title": "契約開始日", "text": str(contract.start_date)},
-        {"title": "契約終了日", "text": str(contract.end_date or "N/A")},
-        {"title": "契約金額", "text": f"{contract.contract_amount} 円" if contract.contract_amount else "N/A"},
-        {"title": "契約内容", "text": str(contract.description or "")},
-        {"title": "備考", "text": str(contract.notes or "")},
-    ]
-
-    # 契約パターンに紐づく契約文言を追加
-    if contract.contract_pattern:
-        terms = contract.contract_pattern.terms.all().order_by('display_order')
-        if terms:
-            # 「備考」の前に挿入するためのインデックスを取得
-            notes_index = -1
-            for i, item in enumerate(items):
-                if item["title"] == "備考":
-                    notes_index = i
-                    break
-            
-            # 契約文言を挿入
-            term_items = []
-            for term in terms:
-                term_items.append({"title": str(term.contract_clause), "text": str(term.contract_terms)})
-
-            if notes_index != -1:
-                items[notes_index:notes_index] = term_items
-            else:
-                # 備考が見つからない場合は末尾に追加
-                items.extend(term_items)
-
-    # ステータスが承認済未満（下書き、申請中）の場合は透かしを入れる
-    watermark = None
-    if contract.contract_status and int(contract.contract_status) < int(StaffContract.ContractStatus.APPROVED):
-        watermark = 'DRAFT'
-
-    # 共通関数を呼び出してPDFを生成
-    generate_contract_pdf(buffer, title, intro_text, items, watermark_text=watermark)
-
-    # レスポンスにPDFを書き込む
-    pdf = buffer.getvalue()
-    buffer.close()
-    response.write(pdf)
-
-    # 承認済の場合、ステータスを発行済に変更し、発行履歴を記録
-    if contract.contract_status == StaffContract.ContractStatus.APPROVED:
-        contract.contract_status = StaffContract.ContractStatus.ISSUED
-        contract.issued_at = timezone.now()
-        contract.save()
-
-        # PDFを保存
-        contract_dir = os.path.join(settings.MEDIA_ROOT, 'contracts', 'staff', str(contract.pk))
-        os.makedirs(contract_dir, exist_ok=True)
-        file_path_on_disk = os.path.join(contract_dir, pdf_filename)
-        with open(file_path_on_disk, 'wb') as f:
-            f.write(pdf)
-
-        # DBに保存するパス
-        db_file_path = os.path.join('contracts', 'staff', str(contract.pk), pdf_filename)
-
-        StaffContractPrint.objects.create(
-            staff_contract=contract,
-            printed_by=request.user,
-            pdf_file_path=db_file_path,
-        )
-
-    # AppLogに記録
-    AppLog.objects.create(
-        user=request.user,
-        action='print',
-        model_name='StaffContract',
-        object_id=str(contract.pk),
-        object_repr=f'契約書PDF出力: {contract.contract_name}'
-    )
-
-    return response
+    if pdf_content:
+        response = HttpResponse(pdf_content, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
+        return response
+    else:
+        messages.error(request, "PDFの生成に失敗しました。")
+        return redirect('contract:staff_contract_detail', pk=pk)
