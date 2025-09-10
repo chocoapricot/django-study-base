@@ -85,7 +85,7 @@ class MinimumPayForm(forms.ModelForm):
             ('', '選択してください')
         ]
         pref_choices.extend([
-            (d.value, d.name) for d in Dropdowns.objects.filter(category='pref', active=True).order_by('disp_seq')
+            (d.value, f"{d.value}:{d.name}") for d in Dropdowns.objects.filter(category='pref', active=True).order_by('disp_seq')
         ])
         self.fields['pref'] = forms.ChoiceField(
             choices=pref_choices,

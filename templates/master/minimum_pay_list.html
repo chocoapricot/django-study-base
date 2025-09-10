@@ -25,7 +25,7 @@
                     <select name="pref" class="form-control form-control-sm">
                         <option value="">都道府県（全て）</option>
                         {% for choice in pref_choices %}
-                            <option value="{{ choice.value }}" {% if pref_filter == choice.value %}selected{% endif %}>{{ choice.name }}</option>
+                            <option value="{{ choice.value }}" {% if pref_filter == choice.value %}selected{% endif %}>{{ choice.value }}:{{ choice.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
