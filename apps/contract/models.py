@@ -73,6 +73,9 @@ class ClientContract(MyModel):
             models.Index(fields=['start_date']),
             models.Index(fields=['end_date']),
         ]
+        permissions = [
+            ('confirm_clientcontract', 'クライアント契約を確認できる'),
+        ]
     
     def __str__(self):
         return f"{self.client.name} - {self.contract_name}"
@@ -176,6 +179,9 @@ class StaffContract(MyModel):
             models.Index(fields=['staff']),
             models.Index(fields=['start_date']),
             models.Index(fields=['end_date']),
+        ]
+        permissions = [
+            ('confirm_staffcontract', 'スタッフ契約を確認できる'),
         ]
 
     def __str__(self):
