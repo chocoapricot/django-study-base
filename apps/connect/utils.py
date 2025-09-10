@@ -3,6 +3,7 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from .models import ConnectStaff, ConnectClient
 from apps.profile.models import StaffProfile, StaffProfileMynumber, StaffProfileBank, StaffProfileContact, StaffProfileInternational, StaffProfileDisability
+from apps.contract.models import StaffContract, ClientContract
 
 User = get_user_model()
 
@@ -156,5 +157,35 @@ def grant_client_permissions_on_connection_request(email):
     except User.DoesNotExist:
         return False
     except Exception as e:
-        print(f"[ERROR] クライアント接続依頼時の権限付与エラー: {e}")
+        print(f"[ERROR] クライアント接続依頼時の権限付付与エラー: {e}")
+        return False
+
+
+def grant_staff_contract_confirmation_permission(user):
+    """ユーザーにスタッフ契約確認の権限を付与"""
+    try:
+        content_type = ContentType.objects.get_for_model(StaffContract)
+        permission = Permission.objects.get(
+            content_type=content_type,
+            codename='confirm_staffcontract'
+        )
+        user.user_permissions.add(permission)
+        return True
+    except Exception as e:
+        print(f"[ERROR] スタッフ契約確認権限付与エラー: {e}")
+        return False
+
+
+def grant_client_contract_confirmation_permission(user):
+    """ユーザーにクライアント契約確認の権限を付与"""
+    try:
+        content_type = ContentType.objects.get_for_model(ClientContract)
+        permission = Permission.objects.get(
+            content_type=content_type,
+            codename='confirm_clientcontract'
+        )
+        user.user_permissions.add(permission)
+        return True
+    except Exception as e:
+        print(f"[ERROR] クライアント契約確認権限付与エラー: {e}")
         return False
