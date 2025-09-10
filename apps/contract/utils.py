@@ -10,7 +10,6 @@ def generate_and_save_contract_pdf(contract, user):
     """契約書PDFを生成し、保存する共通関数"""
     if isinstance(contract, ClientContract):
         contract_type = 'client'
-        PrintModel = ClientContractPrint
         pdf_title = "業務委託契約書"
         intro_text = f"{contract.client.name} 様との間で、以下の通り業務委託契約を締結します。"
         items = [
@@ -27,7 +26,6 @@ def generate_and_save_contract_pdf(contract, user):
         model_name = 'ClientContract'
     elif isinstance(contract, StaffContract):
         contract_type = 'staff'
-        PrintModel = StaffContractPrint
         pdf_title = "雇用契約書"
         intro_text = f"{contract.staff.name_last} {contract.staff.name_first} 様との間で、以下の通り雇用契約を締結します。"
         items = [
@@ -76,9 +74,18 @@ def generate_and_save_contract_pdf(contract, user):
     
     db_file_path = os.path.join('contracts', contract_type, str(contract.pk), pdf_filename)
     
-    print_instance = PrintModel.objects.create(
-        **{f'{contract_type}_contract': contract, 'printed_by': user, 'pdf_file_path': db_file_path}
-    )
+    if contract_type == 'client':
+        ClientContractPrint.objects.create(
+            client_contract=contract,
+            printed_by=user,
+            pdf_file_path=db_file_path
+        )
+    else:
+        StaffContractPrint.objects.create(
+            staff_contract=contract,
+            printed_by=user,
+            pdf_file_path=db_file_path
+        )
 
     AppLog.objects.create(
         user=user,
