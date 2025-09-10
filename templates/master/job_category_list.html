@@ -48,10 +48,18 @@
                             <a href="{% url 'master:job_category_update' job_category.pk %}">{{ job_category.name }}</a>
                         </td>
                         <td>
-                            {{ job_category.jobs_kourou.name|default:"-" }}
+                            {% if job_category.jobs_kourou %}
+                                {{ job_category.jobs_kourou.value }}:{{ job_category.jobs_kourou.name }}
+                            {% else %}
+                                -
+                            {% endif %}
                         </td>
                         <td>
-                            {{ job_category.jobs_soumu.name|default:"-" }}
+                            {% if job_category.jobs_soumu %}
+                                {{ job_category.jobs_soumu.value }}:{{ job_category.jobs_soumu.name }}
+                            {% else %}
+                                -
+                            {% endif %}
                         </td>
                         <td>
                             {% if job_category.is_active %}

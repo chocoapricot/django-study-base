@@ -411,17 +411,16 @@ class MinimumPay(MyModel):
         ]
 
     def __str__(self):
-        from apps.system.settings.models import Dropdowns
-        d = Dropdowns.objects.filter(category='pref', value=self.pref).first()
-        pref_name = d.name if d else self.pref
-        return f"{pref_name} - {self.start_date.strftime('%Y/%m/%d')} - ¥{self.hourly_wage:,}"
+        return f"{self.pref_name} - {self.start_date.strftime('%Y/%m/%d')} - ¥{self.hourly_wage:,}"
 
     @property
     def pref_name(self):
         """都道府県名"""
         from apps.system.settings.models import Dropdowns
         d = Dropdowns.objects.filter(category='pref', value=self.pref).first()
-        return d.name if d else self.pref
+        if d:
+            return f"{d.value}:{d.name}"
+        return self.pref
 
 
 class BillBank(MyModel):
