@@ -367,6 +367,10 @@ def staff_contract_update(request, pk):
     """スタッフ契約更新"""
     contract = get_object_or_404(StaffContract, pk=pk)
     
+    if contract.contract_status not in [StaffContract.ContractStatus.DRAFT, StaffContract.ContractStatus.PENDING]:
+        messages.error(request, 'この契約は編集できません。')
+        return redirect('contract:staff_contract_detail', pk=pk)
+
     if request.method == 'POST':
         form = StaffContractForm(request.POST, instance=contract)
         if form.is_valid():
