@@ -67,11 +67,6 @@ class Qualification(MyModel):
         return self.level == 1
     
     @property
-    def is_qualification(self):
-        """資格かどうか"""
-        return self.level == 2
-    
-    @property
     def level_display_name(self):
         """階層レベルの表示名"""
         return dict(self.LEVEL_CHOICES).get(self.level, self.level)
@@ -134,16 +129,6 @@ class Qualification(MyModel):
         else:  # 資格の場合は直接カウント
             return self.staffqualification_set.count()
     
-    def get_usage_details(self):
-        """利用詳細を取得"""
-        if self.level == 1:  # カテゴリの場合
-            from apps.staff.models import StaffQualification
-            child_qualifications = self.children.filter(is_active=True)
-            return StaffQualification.objects.filter(qualification__in=child_qualifications).select_related('staff')
-        else:  # 資格の場合
-            return self.staffqualification_set.select_related('staff')
-
-
 class Skill(MyModel):
     """
     技能（スキル）情報を管理するマスターデータモデル。
@@ -192,11 +177,6 @@ class Skill(MyModel):
     def is_category(self):
         """カテゴリかどうか"""
         return self.level == 1
-    
-    @property
-    def is_skill(self):
-        """技能かどうか"""
-        return self.level == 2
     
     @property
     def level_display_name(self):
@@ -261,16 +241,6 @@ class Skill(MyModel):
         else:  # 技能の場合は直接カウント
             return self.staffskill_set.count()
     
-    def get_usage_details(self):
-        """利用詳細を取得"""
-        if self.level == 1:  # カテゴリの場合
-            from apps.staff.models import StaffSkill
-            child_skills = self.children.filter(is_active=True)
-            return StaffSkill.objects.filter(skill__in=child_skills).select_related('staff')
-        else:  # 技能の場合
-            return self.staffskill_set.select_related('staff')
-
-
 class BillPayment(MyModel):
     """
     支払条件（締め日・支払日など）を管理するマスターデータモデル。
@@ -362,25 +332,6 @@ class BillPayment(MyModel):
         contract_count = ClientContract.objects.filter(payment_site=self).count()
 
         return client_count + contract_count
-
-    def get_usage_details(self):
-        """利用詳細を取得"""
-        from apps.client.models import Client
-        from apps.contract.models import ClientContract
-
-        # クライアントでの利用
-        clients = Client.objects.filter(payment_site=self).select_related()
-
-        # クライアント契約での利用
-        contracts = ClientContract.objects.filter(payment_site=self).select_related('client')
-
-        return {
-            'clients': clients,
-            'contracts': contracts,
-            'client_count': clients.count(),
-            'contract_count': contracts.count(),
-            'total_count': clients.count() + contracts.count()
-        }
 
     @classmethod
     def get_active_list(cls):
@@ -589,14 +540,6 @@ class Bank(MyModel):
         # 将来的に他のモデルで銀行が参照される場合のために準備
         return 0
     
-    def get_usage_details(self):
-        """利用詳細を取得"""
-        # 将来的に他のモデルで銀行が参照される場合のために準備
-        return {
-            'total_count': 0
-        }
-
-
 class ContractPattern(MyModel):
     """
     契約パターンマスタ
@@ -869,15 +812,6 @@ class BankBranch(MyModel):
             return f"{self.bank.name} {self.name}（{self.branch_code}）"
         return f"{self.bank.name} {self.name}"
     
-    @property
-    def bank_branch_info(self):
-        """銀行支店情報"""
-        bank_info = self.bank.full_name
-        branch_info = self.name
-        if self.branch_code:
-            branch_info += f"（{self.branch_code}）"
-        return f"{bank_info} {branch_info}"
-    
     def clean(self):
         """バリデーション"""
         from django.core.exceptions import ValidationError
@@ -900,20 +834,8 @@ class BankBranch(MyModel):
             branches = branches.filter(bank=bank)
         return branches.order_by('bank__name', 'name')
     
-    @classmethod
-    def get_by_bank(cls, bank):
-        """指定銀行の支店一覧を取得"""
-        return cls.objects.filter(bank=bank, is_active=True).order_by('name')
-    
     @property
     def usage_count(self):
         """この銀行支店の利用件数"""
         # 将来的に他のモデルで銀行支店が参照される場合のために準備
         return 0
-    
-    def get_usage_details(self):
-        """利用詳細を取得"""
-        # 将来的に他のモデルで銀行支店が参照される場合のために準備
-        return {
-            'total_count': 0
-        }

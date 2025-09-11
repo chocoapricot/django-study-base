@@ -165,40 +165,6 @@ class BillPaymentModelTest(TestCase):
         # 利用件数が2になることを確認（クライアント1 + 契約1）
         self.assertEqual(self.bill_payment.usage_count, 2)
     
-    def test_get_usage_details(self):
-        """利用詳細取得のテスト"""
-        from apps.client.models import Client
-        from apps.contract.models import ClientContract
-        from datetime import date
-        
-        # クライアントを作成
-        client = Client.objects.create(
-            name='テストクライアント',
-            corporate_number='1234567890123',
-            postal_code='1000001',
-            address='東京都千代田区千代田1-1',
-            payment_site=self.bill_payment
-        )
-        
-        # クライアント契約を作成
-        contract = ClientContract.objects.create(
-            client=client,
-            contract_name='テスト契約',
-            start_date=date.today(),
-            end_date=date(2025, 12, 31),
-            payment_site=self.bill_payment
-        )
-        
-        # 利用詳細を取得
-        details = self.bill_payment.get_usage_details()
-        
-        self.assertEqual(details['client_count'], 1)
-        self.assertEqual(details['contract_count'], 1)
-        self.assertEqual(details['total_count'], 2)
-        self.assertEqual(details['clients'].first(), client)
-        self.assertEqual(details['contracts'].first(), contract)
-
-
 class BillPaymentFormTest(TestCase):
     """支払条件フォームのテスト"""
     

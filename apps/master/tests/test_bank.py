@@ -115,18 +115,6 @@ class BankModelTest(TestCase):
         # 現在は他のモデルで参照されていないため0
         self.assertEqual(bank.usage_count, 0)
     
-    def test_get_usage_details(self):
-        """利用詳細取得のテスト"""
-        bank = Bank.objects.create(
-            name='テスト銀行',
-            bank_code='0095',
-            created_by=self.user,
-            updated_by=self.user
-        )
-        usage_details = bank.get_usage_details()
-        self.assertEqual(usage_details['total_count'], 0)
-
-
 class BankFormTest(TestCase):
     """銀行フォームのテスト"""
     

@@ -66,17 +66,6 @@ class BankBranchModelTest(TestCase):
         )
         self.assertEqual(branch_without_code.full_name, 'テスト銀行 支店')
     
-    def test_bank_branch_info(self):
-        """銀行支店情報のテスト"""
-        branch = BankBranch.objects.create(
-            bank=self.bank,
-            name='本店',
-            branch_code='001',
-            created_by=self.user,
-            updated_by=self.user
-        )
-        self.assertEqual(branch.bank_branch_info, 'テスト銀行（1234） 本店（001）')
-    
     def test_validation_branch_code(self):
         """支店コードバリデーションのテスト"""
         branch = BankBranch(
@@ -125,35 +114,6 @@ class BankBranchModelTest(TestCase):
         self.assertIn(active_branch, active_list)
         self.assertNotIn(inactive_branch, active_list)
     
-    def test_get_by_bank(self):
-        """指定銀行の支店一覧取得のテスト"""
-        # 別の銀行を作成
-        other_bank = Bank.objects.create(
-            name='別の銀行',
-            created_by=self.user,
-            updated_by=self.user
-        )
-        
-        # テスト銀行の支店
-        test_branch = BankBranch.objects.create(
-            bank=self.bank,
-            name='テスト支店',
-            created_by=self.user,
-            updated_by=self.user
-        )
-        
-        # 別の銀行の支店
-        other_branch = BankBranch.objects.create(
-            bank=other_bank,
-            name='別の支店',
-            created_by=self.user,
-            updated_by=self.user
-        )
-        
-        bank_branches = BankBranch.get_by_bank(self.bank)
-        self.assertIn(test_branch, bank_branches)
-        self.assertNotIn(other_branch, bank_branches)
-    
     def test_usage_count(self):
         """利用件数のテスト"""
         branch = BankBranch.objects.create(
@@ -164,17 +124,6 @@ class BankBranchModelTest(TestCase):
         )
         # 現在は他のモデルで参照されていないため0
         self.assertEqual(branch.usage_count, 0)
-    
-    def test_get_usage_details(self):
-        """利用詳細取得のテスト"""
-        branch = BankBranch.objects.create(
-            bank=self.bank,
-            name='テスト支店',
-            created_by=self.user,
-            updated_by=self.user
-        )
-        usage_details = branch.get_usage_details()
-        self.assertEqual(usage_details['total_count'], 0)
 
 
 class BankBranchFormTest(TestCase):

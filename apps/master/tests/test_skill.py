@@ -29,7 +29,6 @@ class SkillModelTest(TestCase):
         self.assertEqual(category.name, 'プログラミング言語')
         self.assertEqual(category.level, 1)
         self.assertTrue(category.is_category)
-        self.assertFalse(category.is_skill)
         self.assertEqual(str(category), '[カテゴリ] プログラミング言語')
 
     def test_skill_creation(self):
@@ -60,7 +59,6 @@ class SkillModelTest(TestCase):
         self.assertEqual(skill.level, 2)
         self.assertEqual(skill.parent, category)
         self.assertFalse(skill.is_category)
-        self.assertTrue(skill.is_skill)
         self.assertEqual(str(skill), 'プログラミング言語 > Java')
 
     def test_hierarchy_validation(self):
@@ -293,7 +291,6 @@ class SkillViewTest(TestCase):
         
         self.assertEqual(response.status_code, 302)  # リダイレクト
         new_skill = Skill.objects.get(name='新しい技能')
-        self.assertTrue(new_skill.is_skill)
         self.assertEqual(new_skill.parent, self.category)
 
     def test_skill_update_view(self):
