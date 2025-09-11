@@ -25,7 +25,7 @@ def company_detail(request):
     departments = CompanyDepartment.objects.all().order_by('display_order', 'name')[:5]
 
     # 担当者一覧も取得
-    company_users = CompanyUser.objects.filter(company=company)
+    company_users = CompanyUser.objects.filter(corporate_number=company.corporate_number)
 
     # 会社、部署、担当者の変更履歴を統合して取得
     company_logs = AppLog.objects.filter(
@@ -191,7 +191,7 @@ def change_history_list(request):
         action__in=['create', 'update', 'delete']
     )
     
-    company_users = CompanyUser.objects.filter(company=company)
+    company_users = CompanyUser.objects.filter(corporate_number=company.corporate_number)
     company_user_ids = [str(user.pk) for user in company_users]
     company_user_logs = AppLog.objects.filter(
         model_name='CompanyUser',
@@ -221,7 +221,7 @@ def company_user_create(request):
         form = CompanyUserForm(request.POST)
         if form.is_valid():
             company_user = form.save(commit=False)
-            company_user.company = company
+            company_user.corporate_number = company.corporate_number
             company_user.save()
             log_model_action(request.user, 'create', company_user)
             messages.success(request, '担当者を作成しました。')
@@ -229,7 +229,7 @@ def company_user_create(request):
     else:
         form = CompanyUserForm()
 
-    company_users = CompanyUser.objects.filter(company=company)
+    company_users = CompanyUser.objects.filter(corporate_number=company.corporate_number)
     return render(request, 'company/company_user_form.html', {
         'form': form,
         'company': company,
@@ -241,7 +241,7 @@ def company_user_create(request):
 @permission_required('company.change_companyuser', raise_exception=True)
 def company_user_edit(request, pk):
     company_user = get_object_or_404(CompanyUser, pk=pk)
-    company = company_user.company
+    company = Company.objects.filter(corporate_number=company_user.corporate_number).first()
 
     if request.method == 'POST':
         form = CompanyUserForm(request.POST, instance=company_user)
@@ -253,7 +253,7 @@ def company_user_edit(request, pk):
     else:
         form = CompanyUserForm(instance=company_user)
 
-    company_users = CompanyUser.objects.filter(company=company)
+    company_users = CompanyUser.objects.filter(corporate_number=company.corporate_number)
     return render(request, 'company/company_user_form.html', {
         'form': form,
         'company': company,
@@ -272,9 +272,10 @@ def company_user_delete(request, pk):
         messages.success(request, '担当者を削除しました。')
         return redirect('company:company_detail')
 
+    company = Company.objects.filter(corporate_number=company_user.corporate_number).first()
     return render(request, 'company/company_user_confirm_delete.html', {
         'company_user': company_user,
-        'company': company_user.company,
+        'company': company,
     })
 
 
@@ -283,10 +284,11 @@ def company_user_delete(request, pk):
 def company_user_detail(request, pk):
     company_user = get_object_or_404(CompanyUser, pk=pk)
     log_view_detail(request.user, company_user)
-    company_users = CompanyUser.objects.filter(company=company_user.company)
+    company = Company.objects.filter(corporate_number=company_user.corporate_number).first()
+    company_users = CompanyUser.objects.filter(corporate_number=company_user.corporate_number)
     return render(request, 'company/company_user_detail.html', {
         'object': company_user,
         'company_users': company_users,
         'current_company_user': company_user,
-        'company': company_user.company,
+        'company': company,
     })

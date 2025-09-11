@@ -9,6 +9,7 @@ class CompanyDepartment(MyModel):
     部署コードと有効期間に基づいた重複チェック機能を持つ。
     """
     name = models.CharField('部署名', max_length=100)
+    corporate_number = models.CharField('法人番号', max_length=13, blank=True, null=True, db_index=True)
     department_code = models.CharField('部署コード', max_length=20)
     accounting_code = models.CharField('会計コード', max_length=20, blank=True, null=True)
     display_order = models.PositiveIntegerField('表示順', default=0)
@@ -150,8 +151,8 @@ class Company(MyModel):
 
 class CompanyUser(MyModel):
     """自社の担当者情報を管理するモデル。"""
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='users', verbose_name='会社')
-    department = models.ForeignKey(CompanyDepartment, on_delete=models.SET_NULL, blank=True, null=True, related_name='users', verbose_name='所属部署')
+    corporate_number = models.CharField('法人番号', max_length=13, blank=True, null=True, db_index=True)
+    department_code = models.CharField('部署コード', max_length=20, blank=True, null=True, db_index=True)
     name_last = models.CharField('姓', max_length=50)
     name_first = models.CharField('名', max_length=50)
     position = models.CharField('役職', max_length=50, blank=True, null=True)
