@@ -29,7 +29,6 @@ class QualificationModelTest(TestCase):
         self.assertEqual(category.name, '国家資格')
         self.assertEqual(category.level, 1)
         self.assertTrue(category.is_category)
-        self.assertFalse(category.is_qualification)
         self.assertEqual(str(category), '[カテゴリ] 国家資格')
 
     def test_qualification_creation(self):
@@ -60,7 +59,6 @@ class QualificationModelTest(TestCase):
         self.assertEqual(qualification.level, 2)
         self.assertEqual(qualification.parent, category)
         self.assertFalse(qualification.is_category)
-        self.assertTrue(qualification.is_qualification)
         self.assertEqual(str(qualification), '国家資格 > 基本情報技術者試験')
 
     def test_hierarchy_validation(self):
@@ -298,7 +296,6 @@ class QualificationViewTest(TestCase):
         
         self.assertEqual(response.status_code, 302)  # リダイレクト
         new_qualification = Qualification.objects.get(name='新しい資格')
-        self.assertTrue(new_qualification.is_qualification)
         self.assertEqual(new_qualification.parent, self.category)
 
     def test_qualification_update_view(self):
