@@ -295,6 +295,14 @@ def company_user_detail(request, pk):
     company = Company.objects.filter(corporate_number=company_user.corporate_number).first()
     company_users = CompanyUser.objects.filter(corporate_number=company_user.corporate_number)
 
+    # 全部署を取得し、コードをキーにした辞書を作成
+    all_departments = CompanyDepartment.objects.filter(corporate_number=company.corporate_number)
+    department_map = {d.department_code: d.name for d in all_departments}
+
+    # 各担当者に部署名を追加
+    for user in company_users:
+        user.department_name = department_map.get(user.department_code, '未設定')
+
     # 担当者の部署情報を取得
     department = None
     if company_user.department_code:
