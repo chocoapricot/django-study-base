@@ -18,10 +18,10 @@
             {% endif %}
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.department.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.department.label }}</label>
+                <label for="{{ form.department_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.department_code.label }}</label>
                 <div class="col-sm-8">
-                    {{ form.department }}
-                    {% if form.department.errors %}<div class="text-danger">{{ form.department.errors }}</div>{% endif %}
+                    {{ form.department_code }}
+                    {% if form.department_code.errors %}<div class="text-danger">{{ form.department_code.errors }}</div>{% endif %}
                 </div>
             </div>
 
