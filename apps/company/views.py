@@ -33,7 +33,7 @@ def company_detail(request):
 
     # 各担当者に部署名を追加
     for user in company_users:
-        user.department_name = department_map.get(user.department_code, '') # 存在しないコードの場合は空文字
+        user.department_name = department_map.get(user.department_code, '未設定') # 存在しないコードの場合は'未設定'
 
     # 会社、部署、担当者の変更履歴を統合して取得
     company_logs = AppLog.objects.filter(
