@@ -161,7 +161,7 @@
                                 {{ print_item.pdf_file_path|basename }}
                             </a>
                         </td>
-                        <td>{{ print_item.printed_by.name|default:"-" }}</td>
+                        <td>{{ print_item.printed_by.get_full_name_japanese|default:"-" }}</td>
                         <td>{{ print_item.printed_at|date:"Y/m/d H:i:s" }}</td>
                     </tr>
                 {% endfor %}
