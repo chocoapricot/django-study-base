@@ -25,3 +25,9 @@ class MyUser(AbstractUser):
 					profile.save(update_fields=['name_first', 'name_last'])
 		except Exception:
 			pass
+
+	def get_full_name_japanese(self):
+		"""
+		姓・名の順でフルネームを返す。
+		"""
+		return f"{self.last_name} {self.first_name}"
