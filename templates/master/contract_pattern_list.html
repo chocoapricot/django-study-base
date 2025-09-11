@@ -46,7 +46,15 @@
                         <td>
                             <a href="{% url 'master:contract_pattern_detail' pattern.pk %}">{{ pattern.name }}</a>
                         </td>
-                        <td>{{ pattern.get_contract_type_display }}</td>
+                        <td>
+                            {% if pattern.contract_type == 'staff' %}
+                                <span class="badge bg-primary">{{ pattern.get_contract_type_display }}</span>
+                            {% elif pattern.contract_type == 'client' %}
+                                <span class="badge bg-info">{{ pattern.get_contract_type_display }}</span>
+                            {% else %}
+                                {{ pattern.get_contract_type_display }}
+                            {% endif %}
+                        </td>
                         <td>
                             {% if pattern.is_active %}
                                 <span class="badge bg-success">有効</span>

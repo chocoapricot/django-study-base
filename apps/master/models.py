@@ -602,8 +602,8 @@ class ContractPattern(MyModel):
     契約パターンマスタ
     """
     CONTRACT_TYPE_CHOICES = [
-        ('staff', 'スタッフ契約'),
-        ('client', 'クライアント契約'),
+        ('staff', 'スタッフ'),
+        ('client', 'クライアント'),
     ]
     name = models.CharField('名称', max_length=100)
     contract_type = models.CharField(
