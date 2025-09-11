@@ -29,10 +29,11 @@ jobs:
       run: |
         coverage run manage.py test --verbosity=1
         coverage report -m
+        coverage html
     - name: Save artifacts
       uses: actions/upload-artifact@v4
       with:
         name: coverage-report
-        path: htmlconv
+        path: htmlcov
 
         
