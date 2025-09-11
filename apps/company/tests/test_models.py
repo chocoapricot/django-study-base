@@ -30,6 +30,7 @@ class CompanyDepartmentModelTest(TestCase):
     def setUp(self):
         self.department = CompanyDepartment.objects.create(
             name="開発部",
+            corporate_number="1234567890123",
             department_code="DEV001",
             accounting_code="ACC001",
             display_order=1
@@ -48,12 +49,17 @@ class CompanyDepartmentModelTest(TestCase):
         from datetime import date
         from django.core.exceptions import ValidationError
 
+        self.department.valid_from = date(2024, 1, 1)
+        self.department.valid_to = date(2024, 12, 31)
+        self.department.save()
+
         # 同じ部署コードで期間重複する部署を作成しようとする
         overlapping_dept = CompanyDepartment(
             name="開発部2",
+            corporate_number="1234567890123",
             department_code="DEV001",  # 同じ部署コード
-            valid_from=date(2024, 1, 1),
-            valid_to=date(2024, 12, 31)
+            valid_from=date(2024, 6, 1),
+            valid_to=date(2025, 5, 31)
         )
 
         with self.assertRaises(ValidationError):
@@ -66,6 +72,7 @@ class CompanyDepartmentModelTest(TestCase):
         # 有効期限付きの部署を作成
         dept_with_period = CompanyDepartment.objects.create(
             name="期間限定部署",
+            corporate_number="1234567890123",
             department_code="TEMP001",
             valid_from=date(2024, 1, 1),
             valid_to=date(2024, 12, 31)
@@ -87,6 +94,7 @@ class CompanyDepartmentModelTest(TestCase):
         # 期間限定部署を作成
         CompanyDepartment.objects.create(
             name="期間限定部署",
+            corporate_number="1234567890123",
             department_code="TEMP001",
             valid_from=date(2024, 1, 1),
             valid_to=date(2024, 12, 31)
@@ -105,11 +113,15 @@ class CompanyUserModelTest(TestCase):
     """自社担当者モデルのテスト"""
 
     def setUp(self):
-        self.company = Company.objects.create(name="テスト株式会社")
-        self.department = CompanyDepartment.objects.create(name="テスト部署")
+        self.company = Company.objects.create(name="テスト株式会社", corporate_number="1112223334445")
+        self.department = CompanyDepartment.objects.create(
+            name="テスト部署",
+            corporate_number="1112223334445",
+            department_code="TEST_DEPT"
+        )
         self.company_user = CompanyUser.objects.create(
-            company=self.company,
-            department=self.department,
+            corporate_number="1112223334445",
+            department_code="TEST_DEPT",
             name_last="山田",
             name_first="太郎",
             position="部長",
@@ -122,8 +134,6 @@ class CompanyUserModelTest(TestCase):
         """自社担当者の作成テスト"""
         self.assertEqual(self.company_user.name, "山田 太郎")
         self.assertEqual(self.company_user.position, "部長")
+        self.assertEqual(self.company_user.corporate_number, "1112223334445")
+        self.assertEqual(self.company_user.department_code, "TEST_DEPT")
         self.assertEqual(str(self.company_user), "山田 太郎")
-
-    def test_company_user_department_relation(self):
-        """部署とのリレーションテスト"""
-        self.assertEqual(self.company_user.department.name, "テスト部署")

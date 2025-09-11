@@ -75,6 +75,7 @@ class DepartmentViewTest(TestCase):
         self.user.save()
         self.department = CompanyDepartment.objects.create(
             name="開発部",
+            corporate_number="1234567890123",
             department_code="DEV001",
             display_order=1
         )
@@ -100,9 +101,10 @@ class DepartmentViewTest(TestCase):
         self.client.login(username='testuser', password='testpass123')
         response = self.client.post(reverse('company:department_create'), {
             'name': '営業部',
+            'corporate_number': '1234567890123',
             'department_code': 'SALES001',
             'display_order': 2,
-            'valid_from': '',  # 新しいフィールドを追加
+            'valid_from': '',
             'valid_to': '',
             'accounting_code': '',
             'postal_code': '',
@@ -142,13 +144,14 @@ class DepartmentViewTest(TestCase):
         # 既存のデータと同じ内容でPOST
         response = self.client.post(reverse('company:department_edit', kwargs={'pk': self.department.pk}), {
             'name': self.department.name,
+            'corporate_number': self.department.corporate_number or '',
             'department_code': self.department.department_code,
             'accounting_code': self.department.accounting_code or '',
             'display_order': self.department.display_order,
             'postal_code': self.department.postal_code or '',
             'address': self.department.address or '',
             'phone_number': self.department.phone_number or '',
-            'valid_from': self.department.valid_from or '',  # 新しいフィールドを追加
+            'valid_from': self.department.valid_from or '',
             'valid_to': self.department.valid_to or ''
         })
         self.assertEqual(response.status_code, 302)  # リダイレクト
@@ -166,10 +169,15 @@ class CompanyUserViewTest(TestCase):
         )
         self.client.login(username='testuser', password='testpassword')
 
-        self.company = Company.objects.create(name="テスト株式会社")
-        self.department = CompanyDepartment.objects.create(name="テスト部署")
+        self.company = Company.objects.create(name="テスト株式会社", corporate_number="1112223334445")
+        self.department = CompanyDepartment.objects.create(
+            name="テスト部署",
+            corporate_number="1112223334445",
+            department_code="TEST_DEPT"
+        )
         self.company_user = CompanyUser.objects.create(
-            company=self.company,
+            corporate_number="1112223334445",
+            department_code="TEST_DEPT",
             name_last="山田",
             name_first="太郎",
         )
@@ -187,7 +195,7 @@ class CompanyUserViewTest(TestCase):
     def test_create_view_post(self):
         """作成ビューのPOST"""
         data = {
-            'department': self.department.pk,
+            'department_code': self.department.department_code,
             'name_last': '鈴木',
             'name_first': '一郎',
             'position': '係長',
@@ -206,7 +214,7 @@ class CompanyUserViewTest(TestCase):
     def test_edit_view_post(self):
         """編集ビューのPOST"""
         data = {
-            'department': self.department.pk,
+            'department_code': self.department.department_code,
             'name_last': '山田',
             'name_first': '太郎',
             'position': '本部長', # Change position
