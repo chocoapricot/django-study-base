@@ -20,7 +20,7 @@
                     {% for company_user in company_users %}
                     <tr{% if current_company_user and company_user.pk == current_company_user.pk %} class="table-warning"{% endif %}>
                         <td><a href="{% url 'company:company_user_detail' company_user.pk %}">{{ company_user.name }}</a></td>
-                        <td>{{ company_user.department_name|default:"" }}</td>
+                        <td>{{ company_user.department_name }}</td>
                         <td>{{ company_user.position|default:"" }}</td>
                         <td>{{ company_user.phone_number|default:"" }}</td>
                         <td>{{ company_user.email|default:"" }}</td>
