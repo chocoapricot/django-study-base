@@ -29,6 +29,8 @@ pip install pymupdf
 pip install django-concurrency
 # 認証
 pip install django-allauth
+# カバレッジ
+pip install coverage
 
 パンくずリスト
 django-sitetree,django-bootstrap-breadcrumbs,django-breadcrumbs、django-view-breadcrumbsはNG。
