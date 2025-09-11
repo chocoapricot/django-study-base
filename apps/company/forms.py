@@ -108,6 +108,37 @@ class CompanyDepartmentForm(forms.ModelForm):
 from apps.common.forms.fields import to_fullwidth_katakana, validate_kana
 
 class CompanyUserForm(forms.ModelForm):
+    department_code = forms.ChoiceField(
+        label='部署',
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-control form-control-sm'})
+    )
+
+    def __init__(self, *args, **kwargs):
+        corporate_number = kwargs.pop('corporate_number', None)
+        super().__init__(*args, **kwargs)
+
+        choices = [('', '---------')]
+        if corporate_number:
+            # 有効な部署一覧を取得
+            valid_departments = CompanyDepartment.get_valid_departments().filter(corporate_number=corporate_number)
+            choices += [(d.department_code, d.name) for d in valid_departments]
+
+            # もし編集中のユーザーが部署に所属していて、その部署が有効リストにない場合、追加する
+            if self.instance and self.instance.pk and self.instance.department_code:
+                current_dept_code = self.instance.department_code
+                is_in_choices = any(choice[0] == current_dept_code for choice in choices)
+                if not is_in_choices:
+                    try:
+                        # 部署の有効期限が切れていても、選択肢には表示する
+                        current_dept = CompanyDepartment.objects.get(department_code=current_dept_code, corporate_number=corporate_number)
+                        choices.append((current_dept.department_code, f"{current_dept.name}（現在設定中）"))
+                    except CompanyDepartment.DoesNotExist:
+                        # 念のため、存在しない部署コードが設定されていた場合のケア
+                        choices.append((current_dept_code, f"不明な部署({current_dept_code})"))
+
+        self.fields['department_code'].choices = choices
+
     def clean_phone_number(self):
         value = self.cleaned_data.get('phone_number', '')
         import re
@@ -122,7 +153,6 @@ class CompanyUserForm(forms.ModelForm):
             'position', 'phone_number', 'email', 'display_order'
         ]
         widgets = {
-            'department_code': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'name_last': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'name_first': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'position': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
