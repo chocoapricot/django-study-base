@@ -27,6 +27,14 @@ def company_detail(request):
     # 担当者一覧も取得
     company_users = CompanyUser.objects.filter(corporate_number=company.corporate_number)
 
+    # 全部署を取得し、コードをキーにした辞書を作成
+    all_departments = CompanyDepartment.objects.filter(corporate_number=company.corporate_number)
+    department_map = {d.department_code: d.name for d in all_departments}
+
+    # 各担当者に部署名を追加
+    for user in company_users:
+        user.department_name = department_map.get(user.department_code, '') # 存在しないコードの場合は空文字
+
     # 会社、部署、担当者の変更履歴を統合して取得
     company_logs = AppLog.objects.filter(
         model_name='Company',
@@ -218,7 +226,7 @@ def company_user_create(request):
         return redirect('company:company_detail')
 
     if request.method == 'POST':
-        form = CompanyUserForm(request.POST)
+        form = CompanyUserForm(request.POST, corporate_number=company.corporate_number)
         if form.is_valid():
             company_user = form.save(commit=False)
             company_user.corporate_number = company.corporate_number
@@ -227,7 +235,7 @@ def company_user_create(request):
             messages.success(request, '担当者を作成しました。')
             return redirect('company:company_detail')
     else:
-        form = CompanyUserForm()
+        form = CompanyUserForm(corporate_number=company.corporate_number)
 
     company_users = CompanyUser.objects.filter(corporate_number=company.corporate_number)
     return render(request, 'company/company_user_form.html', {
@@ -244,14 +252,14 @@ def company_user_edit(request, pk):
     company = Company.objects.filter(corporate_number=company_user.corporate_number).first()
 
     if request.method == 'POST':
-        form = CompanyUserForm(request.POST, instance=company_user)
+        form = CompanyUserForm(request.POST, instance=company_user, corporate_number=company.corporate_number)
         if form.is_valid():
             form.save()
             log_model_action(request.user, 'update', company_user)
             messages.success(request, '担当者情報を更新しました。')
             return redirect('company:company_detail')
     else:
-        form = CompanyUserForm(instance=company_user)
+        form = CompanyUserForm(instance=company_user, corporate_number=company.corporate_number)
 
     company_users = CompanyUser.objects.filter(corporate_number=company.corporate_number)
     return render(request, 'company/company_user_form.html', {
@@ -286,9 +294,23 @@ def company_user_detail(request, pk):
     log_view_detail(request.user, company_user)
     company = Company.objects.filter(corporate_number=company_user.corporate_number).first()
     company_users = CompanyUser.objects.filter(corporate_number=company_user.corporate_number)
+
+    # 担当者の部署情報を取得
+    department = None
+    if company_user.department_code:
+        try:
+            department = CompanyDepartment.objects.get(
+                corporate_number=company_user.corporate_number,
+                department_code=company_user.department_code
+            )
+        except CompanyDepartment.DoesNotExist:
+            # 部署が存在しない場合
+            pass
+
     return render(request, 'company/company_user_detail.html', {
         'object': company_user,
         'company_users': company_users,
         'current_company_user': company_user,
         'company': company,
+        'department': department, # 部署情報をテンプレートに渡す
     })
