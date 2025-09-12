@@ -66,8 +66,8 @@
             <tbody>
                 {% for term in terms %}
                 <tr>
-                    <td>{{ term.contract_clause|linebreaksbr }}</td>
-                    <td>{{ term.contract_terms|linebreaksbr }}</td>
+                    <td style="max-width: 25vw; white-space: pre-wrap; word-break: break-all;">{{ term.contract_clause|linebreaksbr }}</td>
+                    <td style="max-width: 55vw; white-space: pre-wrap; word-break: break-all;">{{ term.contract_terms|linebreaksbr }}</td>
                     <td>{{ term.display_order }}</td>
                     <td>
                         <a href="{% url 'master:contract_term_update' term.pk %}" class="btn btn-dark btn-sm" title="編集"><i class="bi bi-pencil"></i></a>
