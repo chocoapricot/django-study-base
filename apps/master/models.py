@@ -562,7 +562,7 @@ class ContractPattern(MyModel):
         db_table = 'apps_master_contract_pattern'
         verbose_name = '契約パターン'
         verbose_name_plural = '契約パターン'
-        ordering = ['display_order', 'name']
+        ordering = ['contract_type', 'display_order']
         indexes = [
             models.Index(fields=['is_active']),
             models.Index(fields=['display_order']),
@@ -584,6 +584,7 @@ class ContractTerms(MyModel):
     )
     contract_clause = models.TextField('契約条項')
     contract_terms = models.TextField('契約文言')
+    memo = models.CharField('メモ', max_length=255, blank=True, null=True)
     display_order = models.IntegerField('表示順', default=0)
 
     class Meta:

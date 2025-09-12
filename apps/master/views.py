@@ -2224,7 +2224,7 @@ def contract_pattern_list(request):
         usage_count=Count("clientcontract", distinct=True) + Count("staffcontract", distinct=True)
     )
 
-    patterns = patterns.order_by('display_order', 'name')
+    patterns = patterns.order_by('contract_type', 'display_order')
 
     paginator = Paginator(patterns, 20)
     page = request.GET.get("page")
