@@ -62,6 +62,8 @@ python manage.py dumpdata settings.menu       --format=json --indent=4 > _sample
 python manage.py dumpdata settings.parameters --format=json --indent=4 > _sample_data/parameters.json
 python manage.py dumpdata staff               --format=json --indent=4 > _sample_data/staff.json
 python manage.py dumpdata client              --format=json --indent=4 > _sample_data/client.json
+python manage.py dumpdata master.contractterms --format=json --indent=4 > _sample_data/master_contract_terms.json
+
 #   UTF16からUTF8に変更してから取り込む必要あり
 
 # データベースアクセス

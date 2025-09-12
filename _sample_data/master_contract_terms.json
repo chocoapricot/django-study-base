@@ -1,156 +1,482 @@
 [
-  {
+{
     "model": "master.contractterms",
     "pk": 1,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "contract_pattern": 1,
-      "contract_clause": "第1条（目的）",
-      "contract_terms": "本契約は、甲と乙の間の雇用関係を定めるものである。",
-      "display_order": 10
+        "version": 1757697562731499,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_by": 1,
+        "contract_pattern": 1,
+        "contract_clause": "第1条（目的）",
+        "contract_terms": "本契約は、甲と乙の間の雇用関係を定めるものである。",
+        "memo": null,
+        "display_order": 10
     }
-  },
-  {
+},
+{
     "model": "master.contractterms",
     "pk": 2,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "contract_pattern": 1,
-      "contract_clause": "第2条（業務内容）",
-      "contract_terms": "乙は、甲の指示に従い、誠実に業務を遂行するものとする。",
-      "display_order": 20
+        "version": 1757697562736773,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_by": 1,
+        "contract_pattern": 1,
+        "contract_clause": "第2条（業務内容）",
+        "contract_terms": "乙は、甲の指示に従い、誠実に業務を遂行するものとする。",
+        "memo": null,
+        "display_order": 20
     }
-  },
-  {
+},
+{
     "model": "master.contractterms",
     "pk": 3,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "contract_pattern": 2,
-      "contract_clause": "第1条（契約期間）",
-      "contract_terms": "本契約の期間は、YYYY年MM月DD日からYYYY年MM月DD日までとする。",
-      "display_order": 10
+        "version": 1757697562739152,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_by": 1,
+        "contract_pattern": 2,
+        "contract_clause": "第1条（契約期間）",
+        "contract_terms": "本契約の期間は、YYYY年MM月DD日からYYYY年MM月DD日までとする。",
+        "memo": null,
+        "display_order": 10
     }
-  },
-  {
+},
+{
     "model": "master.contractterms",
     "pk": 4,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "contract_pattern": 2,
-      "contract_clause": "第2条（更新）",
-      "contract_terms": "本契約は、期間満了の1ヶ月前までに甲乙いずれかから申し出がない限り、同一条件で1年間更新されるものとする。",
-      "display_order": 20
+        "version": 1757697562741413,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_by": 1,
+        "contract_pattern": 2,
+        "contract_clause": "第2条（更新）",
+        "contract_terms": "本契約は、期間満了の1ヶ月前までに甲乙いずれかから申し出がない限り、同一条件で1年間更新されるものとする。",
+        "memo": null,
+        "display_order": 20
     }
-  },
-  {
+},
+{
     "model": "master.contractterms",
     "pk": 5,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "contract_pattern": 3,
-      "contract_clause": "第1条（派遣基本契約）",
-      "contract_terms": "甲は乙に対し、労働者派遣法に基づき、労働者を派遣する。",
-      "display_order": 10
+        "version": 1757697562743694,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_by": 1,
+        "contract_pattern": 3,
+        "contract_clause": "第1条（派遣基本契約）",
+        "contract_terms": "甲は乙に対し、労働者派遣法に基づき、労働者を派遣する。",
+        "memo": null,
+        "display_order": 10
     }
-  },
-  {
+},
+{
     "model": "master.contractterms",
     "pk": 6,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "contract_pattern": 4,
-      "contract_clause": "第1条（紹介予定派遣）",
-      "contract_terms": "甲は乙に対し、紹介予定派遣として労働者を派遣する。",
-      "display_order": 10
+        "version": 1757697562746889,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_by": 1,
+        "contract_pattern": 4,
+        "contract_clause": "第1条（紹介予定派遣）",
+        "contract_terms": "甲は乙に対し、紹介予定派遣として労働者を派遣する。",
+        "memo": null,
+        "display_order": 10
     }
-  },
-  {
+},
+{
     "model": "master.contractterms",
     "pk": 7,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "contract_pattern": 5,
-      "contract_clause": "第1条（業務委託）",
-      "contract_terms": "甲は乙に対し、本件業務を委託し、乙はこれを受託する。",
-      "display_order": 10
+        "version": 1757698468476123,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T17:50:15.128Z",
+        "updated_by": 1,
+        "contract_pattern": 5,
+        "contract_clause": "契約目的",
+        "contract_terms": "本契約は、甲が乙に対し、別紙仕様書に定める業務（以下「本業務」という）を委託し、乙がこれを請け負うことを目的とする。但し、本契約に定めのない事項については、乙の合理的裁量に委ねられるものとする。",
+        "memo": null,
+        "display_order": 10
     }
-  },
-  {
+},
+{
     "model": "master.contractterms",
     "pk": 8,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "contract_pattern": 5,
-      "contract_clause": "第2条（成果物）",
-      "contract_terms": "乙は、甲に対し、本件業務の成果物を納入するものとする。",
-      "display_order": 20
+        "version": 1757698482588802,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T17:50:29.241Z",
+        "updated_by": 1,
+        "contract_pattern": 5,
+        "contract_clause": "業務内容・仕様",
+        "contract_terms": "本業務の範囲、内容及び成果物の仕様は、別紙仕様書に定めるものとする。甲が仕様変更を求める場合、乙と協議の上、報酬額・納期を別途合意する。",
+        "memo": null,
+        "display_order": 20
     }
-  },
-  {
+},
+{
     "model": "master.contractterms",
     "pk": 9,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "contract_pattern": 6,
-      "contract_clause": "第1条（業務委託）",
-      "contract_terms": "甲は乙に対し、本件業務を委託し、乙はこれを受託する。",
-      "display_order": 10
+        "version": 1757698958179308,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T17:58:24.831Z",
+        "updated_by": 1,
+        "contract_pattern": 6,
+        "contract_clause": "契約目的",
+        "contract_terms": "本契約は、甲が乙に対し、別紙業務内容に定める作業（以下「本業務」という）の遂行を委任し、乙がこれを受託することを目的とする。",
+        "memo": null,
+        "display_order": 10
     }
-  },
-  {
+},
+{
     "model": "master.contractterms",
     "pk": 10,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "contract_pattern": 6,
-      "contract_clause": "第2条（善管注意義務）",
-      "contract_terms": "乙は、善良なる管理者の注意をもって、本件業務を遂行するものとする。",
-      "display_order": 20
+        "version": 1757698973136869,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T17:58:39.789Z",
+        "updated_by": 1,
+        "contract_pattern": 6,
+        "contract_clause": "業務内容",
+        "contract_terms": "本業務は、乙が有する知識・経験・能力をもって善良なる管理者の注意義務を尽くし遂行するものであり、成果物の完成を保証するものではない。",
+        "memo": null,
+        "display_order": 20
     }
-  },
-  {
+},
+{
     "model": "master.contractterms",
     "pk": 11,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "contract_pattern": 7,
-      "contract_clause": "第1条（派遣基本契約）",
-      "contract_terms": "甲は乙に対し、労働者派遣法に基づき、労働者を派遣する。",
-      "display_order": 10
+        "version": 1757697562758663,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_by": 1,
+        "contract_pattern": 7,
+        "contract_clause": "第1条（派遣基本契約）",
+        "contract_terms": "甲は乙に対し、労働者派遣法に基づき、労働者を派遣する。",
+        "memo": null,
+        "display_order": 10
     }
-  }
+},
+{
+    "model": "master.contractterms",
+    "pk": 12,
+    "fields": {
+        "version": 1757698505180704,
+        "created_at": "2025-09-12T17:46:35.466Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T17:50:51.833Z",
+        "updated_by": 1,
+        "contract_pattern": 5,
+        "contract_clause": "成果物の納品・検収",
+        "contract_terms": "乙は、本業務の成果物を甲に納入する。甲は納入後30日以内に検収を行い、当該期間内に不具合の指摘がない場合、成果物は検収合格とみなす。",
+        "memo": null,
+        "display_order": 30
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 13,
+    "fields": {
+        "version": 1757698535790291,
+        "created_at": "2025-09-12T17:46:54.472Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T17:51:22.442Z",
+        "updated_by": 1,
+        "contract_pattern": 5,
+        "contract_clause": "報酬・支払条件",
+        "contract_terms": "甲は乙に対し、本業務の対価として金〇〇円（消費税別途）を支払う。支払期日は検収合格日から30日以内とし、支払遅延が生じた場合は年14.6％の遅延損害金を付す。",
+        "memo": null,
+        "display_order": 40
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 14,
+    "fields": {
+        "version": 1757698556761071,
+        "created_at": "2025-09-12T17:47:28.634Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T17:51:43.413Z",
+        "updated_by": 1,
+        "contract_pattern": 5,
+        "contract_clause": "契約期間",
+        "contract_terms": "本契約の有効期間は、契約締結日から令和〇年〇月〇日までとする。但し、やむを得ない事由により乙が納期の延長を求めた場合、甲は合理的な範囲でこれを認める。",
+        "memo": null,
+        "display_order": 50
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 15,
+    "fields": {
+        "version": 1757698567062094,
+        "created_at": "2025-09-12T17:47:50.232Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T17:51:53.714Z",
+        "updated_by": 1,
+        "contract_pattern": 5,
+        "contract_clause": "秘密保持",
+        "contract_terms": "乙は、甲の秘密情報を善良なる管理者の注意をもって取り扱う。但し、乙が独自に保有する情報、公開されている情報、または第三者から適法に取得した情報は秘密保持義務の対象外とする。",
+        "memo": null,
+        "display_order": 60
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 16,
+    "fields": {
+        "version": 1757698580498456,
+        "created_at": "2025-09-12T17:48:08.683Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T17:52:07.150Z",
+        "updated_by": 1,
+        "contract_pattern": 5,
+        "contract_clause": "著作権・知的財産権の帰属",
+        "contract_terms": "本業務により作成された成果物の著作権等の知的財産権は原則乙に帰属する。但し、甲が本成果物を利用するために必要な範囲での使用権を甲に許諾する。",
+        "memo": null,
+        "display_order": 70
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 17,
+    "fields": {
+        "version": 1757698596219990,
+        "created_at": "2025-09-12T17:48:52.401Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T17:52:22.872Z",
+        "updated_by": 1,
+        "contract_pattern": 5,
+        "contract_clause": "再委託",
+        "contract_terms": "乙は、本業務の遂行に必要な範囲で第三者に再委託できるものとする。但し、乙は当該第三者の行為について責任を負う。",
+        "memo": null,
+        "display_order": 80
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 18,
+    "fields": {
+        "version": 1757698610185258,
+        "created_at": "2025-09-12T17:49:59.743Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T17:52:36.837Z",
+        "updated_by": 1,
+        "contract_pattern": 5,
+        "contract_clause": "損害賠償責任",
+        "contract_terms": "乙は、故意または重大な過失による場合を除き、甲に対する損害賠償責任を負わない。損害賠償額は本契約に基づく報酬総額を上限とする。",
+        "memo": null,
+        "display_order": 90
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 19,
+    "fields": {
+        "version": 1757698659499095,
+        "created_at": "2025-09-12T17:53:26.151Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T17:53:26.151Z",
+        "updated_by": 1,
+        "contract_pattern": 5,
+        "contract_clause": "契約解除",
+        "contract_terms": "甲または乙が本契約に違反し、相手方からの催告後30日以内に是正しない場合、相手方は本契約を解除できる。但し、乙による軽微な違反については解除事由とならない。",
+        "memo": null,
+        "display_order": 100
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 20,
+    "fields": {
+        "version": 1757698679700233,
+        "created_at": "2025-09-12T17:53:46.352Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T17:53:46.352Z",
+        "updated_by": 1,
+        "contract_pattern": 5,
+        "contract_clause": "不可抗力",
+        "contract_terms": "天災地変、法令の制定改廃、公的規制その他乙の合理的支配を超える不可抗力事由により履行が困難となった場合、乙は責任を負わない。この場合、納期は当該期間分延長される。",
+        "memo": null,
+        "display_order": 110
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 21,
+    "fields": {
+        "version": 1757698699291262,
+        "created_at": "2025-09-12T17:54:05.943Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T17:54:05.943Z",
+        "updated_by": 1,
+        "contract_pattern": 5,
+        "contract_clause": "準拠法・合意管轄",
+        "contract_terms": "本契約は日本法に準拠する。本契約に関して紛争が生じた場合、乙の本店所在地を管轄する地方裁判所を第一審の専属的合意管轄裁判所とする。",
+        "memo": null,
+        "display_order": 120
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 22,
+    "fields": {
+        "version": 1757698988704356,
+        "created_at": "2025-09-12T17:58:55.356Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T17:58:55.356Z",
+        "updated_by": 1,
+        "contract_pattern": 6,
+        "contract_clause": "報酬・支払条件",
+        "contract_terms": "甲は乙に対し、本業務遂行の対価として、月額〇〇円（消費税別途）を支払う。  \r\n支払期日は翌月末日とする。  \r\n本業務遂行の有無・成果物の完成に関わらず、乙が業務を遂行した期間に応じて報酬が発生する。",
+        "memo": null,
+        "display_order": 30
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 23,
+    "fields": {
+        "version": 1757699016463623,
+        "created_at": "2025-09-12T17:59:23.116Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T17:59:23.116Z",
+        "updated_by": 1,
+        "contract_pattern": 6,
+        "contract_clause": "契約期間",
+        "contract_terms": "本契約の有効期間は、契約締結日から令和〇年〇月〇日までとする。但し、双方の合意により更新できる。",
+        "memo": null,
+        "display_order": 40
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 24,
+    "fields": {
+        "version": 1757699041479984,
+        "created_at": "2025-09-12T17:59:48.132Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T17:59:48.132Z",
+        "updated_by": 1,
+        "contract_pattern": 6,
+        "contract_clause": "再委託",
+        "contract_terms": "乙は、本業務遂行のために必要な範囲で第三者に再委託できる。但し、乙は当該第三者の行為について責任を負う。",
+        "memo": null,
+        "display_order": 50
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 25,
+    "fields": {
+        "version": 1757699057218944,
+        "created_at": "2025-09-12T18:00:03.871Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T18:00:03.871Z",
+        "updated_by": 1,
+        "contract_pattern": 6,
+        "contract_clause": "秘密保持",
+        "contract_terms": "乙は、甲から開示された秘密情報を本業務遂行の目的以外に使用または第三者に漏洩してはならない。但し、乙が既に保有していた情報、公知の情報、または正当に第三者から取得した情報は秘密情報に含まれない。",
+        "memo": null,
+        "display_order": 60
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 26,
+    "fields": {
+        "version": 1757699077167814,
+        "created_at": "2025-09-12T18:00:23.820Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T18:00:23.820Z",
+        "updated_by": 1,
+        "contract_pattern": 6,
+        "contract_clause": "著作権・知的財産権の帰属",
+        "contract_terms": "本業務遂行の過程で乙が独自に作成したノウハウ・プログラム・資料等の知的財産権は乙に帰属する。但し、甲が業務遂行の目的で利用する範囲においては使用を許諾する。",
+        "memo": null,
+        "display_order": 70
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 27,
+    "fields": {
+        "version": 1757699098860258,
+        "created_at": "2025-09-12T18:00:45.512Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T18:00:45.512Z",
+        "updated_by": 1,
+        "contract_pattern": 6,
+        "contract_clause": "損害賠償責任",
+        "contract_terms": "乙は、故意または重大な過失によって甲に損害を与えた場合に限り、その賠償責任を負う。賠償額は本契約に基づく直近3か月分の報酬額を上限とする。",
+        "memo": null,
+        "display_order": 80
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 28,
+    "fields": {
+        "version": 1757699211915818,
+        "created_at": "2025-09-12T18:02:38.568Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T18:02:38.568Z",
+        "updated_by": 1,
+        "contract_pattern": 6,
+        "contract_clause": "契約解除",
+        "contract_terms": "甲または乙は、相手方が本契約に違反し、相当期間を定めて是正を催告したにもかかわらず是正されない場合、本契約を解除できる。  \r\nなお、甲が任意に契約を解除する場合、解除日までの業務遂行に応じた報酬を乙に支払うものとする。",
+        "memo": null,
+        "display_order": 90
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 29,
+    "fields": {
+        "version": 1757699228882207,
+        "created_at": "2025-09-12T18:02:55.534Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T18:02:55.534Z",
+        "updated_by": 1,
+        "contract_pattern": 6,
+        "contract_clause": "不可抗力",
+        "contract_terms": "天災地変、法令の改正、通信障害その他不可抗力により業務遂行が困難となった場合、乙はその責任を負わない。",
+        "memo": null,
+        "display_order": 100
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 30,
+    "fields": {
+        "version": 1757699246250017,
+        "created_at": "2025-09-12T18:03:12.902Z",
+        "created_by": 1,
+        "updated_at": "2025-09-12T18:03:12.902Z",
+        "updated_by": 1,
+        "contract_pattern": 6,
+        "contract_clause": "準拠法・合意管轄",
+        "contract_terms": "本契約は日本法に準拠する。本契約に関して紛争が生じた場合、乙の本店所在地を管轄する地方裁判所を第一審の専属的合意管轄裁判所とする。",
+        "memo": null,
+        "display_order": 110
+    }
+}
 ]
