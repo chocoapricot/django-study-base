@@ -32,8 +32,8 @@
             <table class="table table-sm table-hover">
                 <thead>
                     <tr>
-                        <th>名称</th>
                         <th>契約種別</th>
+                        <th>名称</th>
                         <th>状態</th>
                         <th>表示順</th>
                         <th>利用件数</th>
@@ -44,9 +44,6 @@
                     {% for pattern in patterns %}
                     <tr>
                         <td>
-                            <a href="{% url 'master:contract_pattern_detail' pattern.pk %}">{{ pattern.name }}</a>
-                        </td>
-                        <td>
                             {% if pattern.contract_type == 'staff' %}
                                 <span class="badge bg-primary">{{ pattern.get_contract_type_display }}</span>
                             {% elif pattern.contract_type == 'client' %}
@@ -54,6 +51,9 @@
                             {% else %}
                                 {{ pattern.get_contract_type_display }}
                             {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'master:contract_pattern_detail' pattern.pk %}">{{ pattern.name }}</a>
                         </td>
                         <td>
                             {% if pattern.is_active %}

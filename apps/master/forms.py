@@ -111,10 +111,11 @@ class ContractTermForm(forms.ModelForm):
     """契約文言フォーム"""
     class Meta:
         model = ContractTerms
-        fields = ['contract_clause', 'contract_terms', 'display_order']
+        fields = ['contract_clause', 'contract_terms', 'memo', 'display_order']
         widgets = {
             'contract_clause': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_terms': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
+            'memo': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
         }
 
