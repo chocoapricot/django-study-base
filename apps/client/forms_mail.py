@@ -90,6 +90,8 @@ class ClientUserMailForm(forms.Form):
             if self.client_user and self.client_user.client:
                 ClientContacted.objects.create(
                     client=self.client_user.client,
+                    department=self.client_user.department,
+                    user=self.client_user,
                     contacted_at=timezone.now(),
                     content=f"メール送信（{self.client_user.name}宛）: {subject}",
                     detail=body,
