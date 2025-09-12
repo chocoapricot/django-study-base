@@ -7,7 +7,7 @@
       "created_by": 1,
       "updated_at": "2025-09-07T00:00:00Z",
       "updated_by": 1,
-      "name": "正社員用文言",
+      "name": "正社員",
       "contract_type": "staff",
       "display_order": 10,
       "is_active": true
@@ -21,7 +21,7 @@
       "created_by": 1,
       "updated_at": "2025-09-07T00:00:00Z",
       "updated_by": 1,
-      "name": "契約社員用文言",
+      "name": "契約社員",
       "contract_type": "staff",
       "display_order": 20,
       "is_active": true
