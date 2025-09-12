@@ -231,7 +231,7 @@ class StaffForm(forms.ModelForm):
                 'autocomplete': 'off',
             }),
             'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
-            'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'memo': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             # 'regist_form_code': forms.Select(attrs={'class': 'form-control form-control-sm form-select-sm'}),
         }
 
