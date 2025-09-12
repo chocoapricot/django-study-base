@@ -22,6 +22,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 import io
 from apps.common.pdf_utils import generate_contract_pdf
 from .utils import generate_and_save_contract_pdf
+from .resources import ClientContractResource, StaffContractResource
 
 # 契約管理トップページ
 @login_required
@@ -900,3 +901,94 @@ def staff_contract_pdf(request, pk):
     else:
         messages.error(request, "PDFの生成に失敗しました。")
         return redirect('contract:staff_contract_detail', pk=pk)
+
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def client_contract_export(request):
+    """クライアント契約データのエクスポート（CSV/Excel）"""
+    search_query = request.GET.get('q', '')
+    status_filter = request.GET.get('status', '')
+    client_filter = request.GET.get('client', '')
+    contract_pattern_filter = request.GET.get('contract_pattern', '')
+    format_type = request.GET.get('format', 'csv')
+
+    contracts = ClientContract.objects.select_related('client', 'contract_pattern').all()
+
+    if client_filter:
+        contracts = contracts.filter(client_id=client_filter)
+    if search_query:
+        contracts = contracts.filter(
+            Q(contract_name__icontains=search_query) |
+            Q(client__name__icontains=search_query) |
+            Q(contract_number__icontains=search_query)
+        )
+    if status_filter:
+        contracts = contracts.filter(contract_status=status_filter)
+    if contract_pattern_filter:
+        contracts = contracts.filter(contract_pattern_id=contract_pattern_filter)
+
+    contracts = contracts.order_by('-start_date', 'client__name')
+
+    resource = ClientContractResource()
+    dataset = resource.export(contracts)
+
+    timestamp = timezone.now().strftime('%Y%m%d_%H%M%S')
+    if format_type == 'excel':
+        response = HttpResponse(
+            dataset.xlsx,
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename="client_contracts_{timestamp}.xlsx"'
+    else:
+        csv_data = '\ufeff' + dataset.csv
+        response = HttpResponse(csv_data, content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="client_contracts_{timestamp}.csv"'
+
+    return response
+
+
+@login_required
+@permission_required('contract.view_staffcontract', raise_exception=True)
+def staff_contract_export(request):
+    """スタッフ契約データのエクスポート（CSV/Excel）"""
+    search_query = request.GET.get('q', '')
+    status_filter = request.GET.get('status', '')
+    staff_filter = request.GET.get('staff', '')
+    contract_pattern_filter = request.GET.get('contract_pattern', '')
+    format_type = request.GET.get('format', 'csv')
+
+    contracts = StaffContract.objects.select_related('staff', 'contract_pattern').all()
+
+    if staff_filter:
+        contracts = contracts.filter(staff_id=staff_filter)
+    if search_query:
+        contracts = contracts.filter(
+            Q(contract_name__icontains=search_query) |
+            Q(staff__name_last__icontains=search_query) |
+            Q(staff__name_first__icontains=search_query) |
+            Q(contract_number__icontains=search_query)
+        )
+    if status_filter:
+        contracts = contracts.filter(contract_status=status_filter)
+    if contract_pattern_filter:
+        contracts = contracts.filter(contract_pattern_id=contract_pattern_filter)
+
+    contracts = contracts.order_by('-start_date', 'staff__name_last', 'staff__name_first')
+
+    resource = StaffContractResource()
+    dataset = resource.export(contracts)
+
+    timestamp = timezone.now().strftime('%Y%m%d_%H%M%S')
+    if format_type == 'excel':
+        response = HttpResponse(
+            dataset.xlsx,
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename="staff_contracts_{timestamp}.xlsx"'
+    else:
+        csv_data = '\ufeff' + dataset.csv
+        response = HttpResponse(csv_data, content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="staff_contracts_{timestamp}.csv"'
+
+    return response

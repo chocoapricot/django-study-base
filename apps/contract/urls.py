@@ -20,6 +20,7 @@ urlpatterns = [
     path('client/<int:pk>/approve/', views.client_contract_approve, name='client_contract_approve'),
     path('client/<int:pk>/issue/', views.client_contract_issue, name='client_contract_issue'),
     path('client/<int:pk>/confirm/', views.client_contract_confirm, name='client_contract_confirm'),
+    path('client/export/', views.client_contract_export, name='client_contract_export'),
     
     # スタッフ契約
     path('staff/', views.staff_contract_list, name='staff_contract_list'),
@@ -33,6 +34,7 @@ urlpatterns = [
     path('staff/print/<int:pk>/download/', views.download_staff_contract_pdf, name='download_staff_contract_pdf'),
     path('staff/<int:pk>/approve/', views.staff_contract_approve, name='staff_contract_approve'),
     path('staff/<int:pk>/issue/', views.staff_contract_issue, name='staff_contract_issue'),
+    path('staff/export/', views.staff_contract_export, name='staff_contract_export'),
     
     # 選択用画面
     path('client-select/', views.client_select, name='client_select'),

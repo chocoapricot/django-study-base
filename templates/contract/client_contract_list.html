@@ -61,20 +61,61 @@
                     {% endfor %}
                 </select>
             </div>
-            <button class="btn btn-primary btn-sm me-2 mb-2" type="submit">検索</button>
+            <div class="btn-group me-2 mb-2" role="group">
+                <button class="btn btn-primary btn-sm" type="submit">検索</button>
+                <button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" onclick="exportData('csv')"><i class="bi bi-filetype-csv"></i> CSV出力</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="exportData('excel')"><i class="bi bi-file-earmark-excel"></i> Excel出力</a></li>
+                </ul>
+            </div>
             <button class="btn btn-secondary btn-sm mb-2" type="button" onclick="resetForm()">リセット</button>
         </form>
 
         <script>
-        function resetForm() {
-            document.querySelector('input[name=q]').value = '';
-            document.querySelector('select[name=status]').value = '';
-            {% if client_filter %}
-                window.location.href = '{% url "contract:client_contract_list" %}?client={{ client_filter }}';
-            {% else %}
-                window.location.href = '{% url "contract:client_contract_list" %}';
-            {% endif %}
-        }
+            function resetForm() {
+                document.querySelector('input[name=q]').value = '';
+                document.querySelector('select[name=status]').value = '';
+                document.querySelector('select[name=contract_pattern]').value = '';
+                {% if client_filter %}
+                    window.location.href = '{% url "contract:client_contract_list" %}?client={{ client_filter }}';
+                {% else %}
+                    window.location.href = '{% url "contract:client_contract_list" %}';
+                {% endif %}
+            }
+
+            function exportData(format) {
+                const message = format === 'csv' ? 'CSV形式でデータを出力しますか？' : 'Excel形式でデータを出力しますか？';
+                if (confirm(message)) {
+                    const params = new URLSearchParams();
+
+                    const queryInput = document.querySelector('input[name="q"]');
+                    if (queryInput && queryInput.value.trim()) {
+                        params.append('q', queryInput.value.trim());
+                    }
+
+                    const statusSelect = document.querySelector('select[name="status"]');
+                    if (statusSelect && statusSelect.value) {
+                        params.append('status', statusSelect.value);
+                    }
+
+                    const patternSelect = document.querySelector('select[name="contract_pattern"]');
+                    if (patternSelect && patternSelect.value) {
+                        params.append('contract_pattern', patternSelect.value);
+                    }
+
+                    if ('{{ client_filter }}') {
+                        params.append('client', '{{ client_filter }}');
+                    }
+
+                    params.append('format', format);
+
+                    const exportUrl = "{% url 'contract:client_contract_export' %}" + '?' + params.toString();
+                    window.location.href = exportUrl;
+                }
+            }
         </script>
 
         <!-- 契約一覧テーブル -->
