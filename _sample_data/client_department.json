@@ -549,24 +549,5 @@
         "valid_from": "2024-01-01",
         "valid_to": null
     }
-},
-{
-    "model": "client.clientdepartment",
-    "pk": 30,
-    "fields": {
-        "created_at": "2024-11-21T00:00:00.000Z",
-        "created_by": 1,
-        "updated_at": "2024-11-21T00:00:00.000Z",
-        "updated_by": 1,
-        "client": 28,
-        "name": "本社",
-        "department_code": "HQ",
-        "postal_code": "1000001",
-        "address": "東京都千代田区千代田１－１",
-        "phone_number": "",
-        "display_order": 1,
-        "valid_from": "2024-01-01",
-        "valid_to": null
-    }
 }
 ]

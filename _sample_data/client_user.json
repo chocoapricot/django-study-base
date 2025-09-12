@@ -628,26 +628,5 @@
             "memo": "自動追加データ",
             "display_order": 1
         }
-    },
-    {
-        "model": "client.clientuser",
-        "pk": 31,
-        "fields": {
-            "created_at": "2024-11-21T02:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2024-11-21T02:00:00.000Z",
-            "updated_by": 1,
-            "client": 28,
-            "department": 30,
-            "name_last": "ダルビッシュ",
-            "name_first": "有",
-            "name_kana_last": "ダルビッシュ",
-            "name_kana_first": "ユウ",
-            "position": "担当者",
-            "phone_number": "",
-            "email": "user.28@example.com",
-            "memo": "自動追加データ",
-            "display_order": 1
-        }
     }
 ]
