@@ -129,7 +129,7 @@
                                     <i class="bi bi-link" style="font-size: 20px;color:#17a2b8;"></i>
                                     クライアントに接続依頼
                                     {% if connect_request %}
-                                        （{{ connect_request.created_at|date:"Y/m/d H:i:s" }}）
+                                        <span class="text-muted small">（{{ connect_request.created_at|date:"Y/m/d H:i:s" }}）</span>
                                     {% endif %}
                                 </label>
                             </div>
@@ -146,7 +146,7 @@
                                 <i class="bi bi-link" style="font-size: 20px;color:#17a2b8;"></i>
                                 クライアントが接続承認
                                 {% if connect_request and connect_request.is_approved %}
-                                    （{{ connect_request.approved_at|date:"Y/m/d H:i:s" }}）
+                                    <span class="text-muted small">（{{ connect_request.approved_at|date:"Y/m/d H:i:s" }}）</span>
                                 {% endif %}
                             </label>
                         </div>
