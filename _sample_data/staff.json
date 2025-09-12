@@ -150,7 +150,8 @@
             "employee_no": null,
             "hire_date": null,
             "resignation_date": null,
-            "department_code": null
+            "department_code": null,
+            "employment_type": null
         }
     },
     {
@@ -212,7 +213,7 @@
             "hire_date": "2019-06-01",
             "resignation_date": null,
             "department_code": "SOMU",
-            "employment_type": "10"
+            "employment_type": "20"
         }
     },
     {
@@ -242,7 +243,8 @@
             "employee_no": null,
             "hire_date": null,
             "resignation_date": null,
-            "department_code": null
+            "department_code": null,
+            "employment_type": null
         }
     },
     {
@@ -272,7 +274,8 @@
             "employee_no": null,
             "hire_date": null,
             "resignation_date": null,
-            "department_code": null
+            "department_code": null,
+            "employment_type": null
         }
     },
     {
@@ -303,7 +306,7 @@
             "hire_date": "2021-11-01",
             "resignation_date": null,
             "department_code": "SOMU",
-            "employment_type": "10"
+            "employment_type": "30"
         }
     },
     {
@@ -365,7 +368,7 @@
             "hire_date": "2020-02-01",
             "resignation_date": null,
             "department_code": "DEV",
-            "employment_type": "10"
+            "employment_type": "20"
         }
     },
     {
@@ -396,7 +399,7 @@
             "hire_date": "2021-08-01",
             "resignation_date": null,
             "department_code": "SOMU",
-            "employment_type": "10"
+            "employment_type": "30"
         }
     },
     {
@@ -488,7 +491,7 @@
             "hire_date": "2020-07-01",
             "resignation_date": null,
             "department_code": "SOMU",
-            "employment_type": "10"
+            "employment_type": "20"
         }
     },
     {
@@ -518,7 +521,8 @@
             "employee_no": null,
             "hire_date": null,
             "resignation_date": null,
-            "department_code": null
+            "department_code": null,
+            "employment_type": null
         }
     },
     {
@@ -578,7 +582,8 @@
             "employee_no": null,
             "hire_date": null,
             "resignation_date": null,
-            "department_code": null
+            "department_code": null,
+            "employment_type": null
         }
     },
     {
@@ -609,7 +614,7 @@
             "hire_date": "2020-10-01",
             "resignation_date": null,
             "department_code": "EIGYO",
-            "employment_type": "10"
+            "employment_type": "30"
         }
     },
     {
@@ -670,7 +675,8 @@
             "employee_no": null,
             "hire_date": null,
             "resignation_date": null,
-            "department_code": null
+            "department_code": null,
+            "employment_type": null
         }
     },
     {
@@ -700,7 +706,8 @@
             "employee_no": null,
             "hire_date": null,
             "resignation_date": null,
-            "department_code": null
+            "department_code": null,
+            "employment_type": null
         }
     },
     {
@@ -731,7 +738,7 @@
             "hire_date": "2021-12-01",
             "resignation_date": null,
             "department_code": "DEV",
-            "employment_type": "10"
+            "employment_type": "20"
         }
     },
     {
@@ -762,7 +769,7 @@
             "hire_date": "2020-01-01",
             "resignation_date": null,
             "department_code": "SOMU",
-            "employment_type": "10"
+            "employment_type": "30"
         }
     },
     {
@@ -824,7 +831,7 @@
             "hire_date": "2023-07-01",
             "resignation_date": null,
             "department_code": "DEV",
-            "employment_type": "10"
+            "employment_type": "20"
         }
     },
     {
@@ -850,11 +857,12 @@
             "address3": "築山タワー５１１",
             "phone": "090-6543-2109",
             "email": "tsukiyama-gozen@staff.jp",
-            "regist_form_code": 1,
+            "regist_form_code": 10,
             "employee_no": null,
             "hire_date": null,
             "resignation_date": null,
-            "department_code": null
+            "department_code": null,
+            "employment_type": null
         }
     },
     {
@@ -884,7 +892,8 @@
             "employee_no": null,
             "hire_date": null,
             "resignation_date": null,
-            "department_code": null
+            "department_code": null,
+            "employment_type": null
         }
     },
     {
@@ -915,7 +924,7 @@
             "hire_date": "2023-11-01",
             "resignation_date": null,
             "department_code": "DEV",
-            "employment_type": "10"
+            "employment_type": "30"
         }
     },
     {
@@ -945,7 +954,8 @@
             "employee_no": null,
             "hire_date": null,
             "resignation_date": null,
-            "department_code": null
+            "department_code": null,
+            "employment_type": null
         }
     },
     {
@@ -975,7 +985,8 @@
             "employee_no": null,
             "hire_date": null,
             "resignation_date": null,
-            "department_code": null
+            "department_code": null,
+            "employment_type": null
         }
     },
     {
