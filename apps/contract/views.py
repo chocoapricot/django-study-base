@@ -552,6 +552,7 @@ def client_contract_pdf(request, pk):
     if contract.contract_status == ClientContract.ContractStatus.APPROVED:
         contract.contract_status = ClientContract.ContractStatus.ISSUED
         contract.issued_at = timezone.now()
+        contract.issued_by = request.user
         contract.save()
         messages.success(request, f'契約「{contract.contract_name}」の契約書を発行しました。')
 
@@ -576,11 +577,14 @@ def client_contract_approve(request, pk):
         if is_approved:
             contract.contract_status = ClientContract.ContractStatus.APPROVED
             contract.approved_at = timezone.now()
+            contract.approved_by = request.user
             messages.success(request, f'契約「{contract.contract_name}」を承認済にしました。')
         else:
             contract.contract_status = ClientContract.ContractStatus.DRAFT
             contract.approved_at = None
+            contract.approved_by = None
             contract.issued_at = None
+            contract.issued_by = None
             contract.confirmed_at = None
             messages.success(request, f'契約「{contract.contract_name}」を作成中に戻しました。')
         contract.save()
@@ -600,6 +604,7 @@ def client_contract_issue(request, pk):
                 if pdf_content:
                     contract.contract_status = ClientContract.ContractStatus.ISSUED
                     contract.issued_at = timezone.now()
+                    contract.issued_by = request.user
                     contract.save()
                     messages.success(request, f'契約「{contract.contract_name}」の契約書を発行しました。')
                 else:
@@ -608,6 +613,7 @@ def client_contract_issue(request, pk):
             if contract.contract_status == ClientContract.ContractStatus.ISSUED:
                 contract.contract_status = ClientContract.ContractStatus.APPROVED
                 contract.issued_at = None
+                contract.issued_by = None
                 contract.save()
                 messages.success(request, f'契約「{contract.contract_name}」を承認済に戻しました。')
     return redirect('contract:client_contract_detail', pk=contract.pk)
@@ -645,11 +651,14 @@ def staff_contract_approve(request, pk):
         if is_approved:
             contract.contract_status = StaffContract.ContractStatus.APPROVED
             contract.approved_at = timezone.now()
+            contract.approved_by = request.user
             messages.success(request, f'契約「{contract.contract_name}」を承認済にしました。')
         else:
             contract.contract_status = StaffContract.ContractStatus.DRAFT
             contract.approved_at = None
+            contract.approved_by = None
             contract.issued_at = None
+            contract.issued_by = None
             contract.confirmed_at = None
             messages.success(request, f'契約「{contract.contract_name}」を作成中に戻しました。')
         contract.save()
@@ -669,6 +678,7 @@ def staff_contract_issue(request, pk):
                 if pdf_content:
                     contract.contract_status = StaffContract.ContractStatus.ISSUED
                     contract.issued_at = timezone.now()
+                    contract.issued_by = request.user
                     contract.save()
                     messages.success(request, f'契約「{contract.contract_name}」の契約書を発行しました。')
                 else:
@@ -677,6 +687,7 @@ def staff_contract_issue(request, pk):
             if contract.contract_status == StaffContract.ContractStatus.ISSUED:
                 contract.contract_status = StaffContract.ContractStatus.APPROVED
                 contract.issued_at = None
+                contract.issued_by = None
                 contract.save()
                 messages.success(request, f'契約「{contract.contract_name}」を承認済に戻しました。')
     return redirect('contract:staff_contract_detail', pk=contract.pk)
@@ -889,6 +900,7 @@ def staff_contract_pdf(request, pk):
     if contract.contract_status == StaffContract.ContractStatus.APPROVED:
         contract.contract_status = StaffContract.ContractStatus.ISSUED
         contract.issued_at = timezone.now()
+        contract.issued_by = request.user
         contract.save()
         messages.success(request, f'契約「{contract.contract_name}」の契約書を発行しました。')
 

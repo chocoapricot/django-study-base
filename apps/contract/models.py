@@ -2,7 +2,9 @@ from django.db import models
 from apps.common.models import MyModel
 from apps.client.models import Client
 from apps.staff.models import Staff
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 class ClientContract(MyModel):
     """
@@ -61,7 +63,23 @@ class ClientContract(MyModel):
         verbose_name='支払いサイト'
     )
     approved_at = models.DateTimeField('承認日時', blank=True, null=True)
+    approved_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='approved_client_contracts',
+        verbose_name='承認者'
+    )
     issued_at = models.DateTimeField('発行日時', blank=True, null=True)
+    issued_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='issued_client_contracts',
+        verbose_name='発行者'
+    )
     confirmed_at = models.DateTimeField('確認日時', blank=True, null=True)
     class Meta:
         db_table = 'apps_contract_client'
@@ -168,7 +186,23 @@ class StaffContract(MyModel):
     description = models.TextField('契約内容', blank=True, null=True)
     notes = models.TextField('備考', blank=True, null=True)
     approved_at = models.DateTimeField('承認日時', blank=True, null=True)
+    approved_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='approved_staff_contracts',
+        verbose_name='承認者'
+    )
     issued_at = models.DateTimeField('発行日時', blank=True, null=True)
+    issued_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='issued_staff_contracts',
+        verbose_name='発行者'
+    )
     confirmed_at = models.DateTimeField('確認日時', blank=True, null=True)
     class Meta:
         db_table = 'apps_contract_staff'

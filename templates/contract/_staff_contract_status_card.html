@@ -15,7 +15,7 @@
                     <i class="bi bi-check-circle" style="font-size: 20px; color: #17a2b8;"></i>
                     契約承認
                     {% if contract.approved_at %}
-                        <span class="text-muted small">（{{ contract.approved_at|date:"Y/m/d H:i:s" }}）</span>
+                        <span class="text-muted small">（{{ contract.approved_at|date:"Y/m/d H:i:s" }}　{{ contract.approved_by.get_full_name_japanese|default:'' }}）</span>
                     {% endif %}
                 </label>
             </div>
@@ -33,7 +33,7 @@
                     <i class="bi bi-filetype-pdf" style="font-size: 20px; color: #17a2b8;"></i>
                     契約書発行
                     {% if contract.issued_at %}
-                        <span class="text-muted small">（{{ contract.issued_at|date:"Y/m/d H:i:s" }}）</span>
+                        <span class="text-muted small">（{{ contract.issued_at|date:"Y/m/d H:i:s" }}　{{ contract.issued_by.get_full_name_japanese|default:'' }}）</span>
                     {% endif %}
                 </label>
             </div>
