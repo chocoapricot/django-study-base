@@ -4058,7 +4058,7 @@
         "updated_by": 1,
         "category": "contract_type",
         "name": "準委任",
-        "value": "2",
+        "value": "10",
         "disp_seq": 2,
         "active": true
     }
@@ -4074,7 +4074,7 @@
         "updated_by": 1,
         "category": "contract_type",
         "name": "派遣",
-        "value": "3",
+        "value": "20",
         "disp_seq": 3,
         "active": true
     }
