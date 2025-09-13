@@ -30,4 +30,4 @@ class MyUser(AbstractUser):
 		"""
 		姓・名の順でフルネームを返す。
 		"""
-		return f"{self.last_name} {self.first_name}"
+		return f"{self.last_name}{self.first_name}"
