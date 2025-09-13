@@ -6,6 +6,12 @@
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">{{ title }}</div>
     <div class="card-body">
+        {% if is_copy %}
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle-fill"></i>
+            契約パターン「{{ form.initial.name }}」をコピーして新規作成します。保存時に契約文言もコピーされます。
+        </div>
+        {% endif %}
         <form method="post">
             {% csrf_token %}
 
