@@ -35,15 +35,6 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.basic_contract_date_haken.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
-                    {{ form.basic_contract_date_haken.label }}
-                </label>
-                <div class="col-sm-4">
-                    {{ form.basic_contract_date_haken }}
-                </div>
-            </div>
-
-            <div class="row mb-3 align-items-center">
                 <label for="{{ form.regist_form_client.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.regist_form_client.label }}</label>
                 <div class="col-sm-8">
                     {{ form.regist_form_client }}
@@ -95,10 +86,18 @@
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.basic_contract_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
                     {{ form.basic_contract_date.label }}
-                    {% my_help_preset "basic_contract_date" %}
                 </label>
                 <div class="col-sm-4">
                     {{ form.basic_contract_date }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.basic_contract_date_haken.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                    {{ form.basic_contract_date_haken.label }}
+                </label>
+                <div class="col-sm-4">
+                    {{ form.basic_contract_date_haken }}
                 </div>
             </div>
 
