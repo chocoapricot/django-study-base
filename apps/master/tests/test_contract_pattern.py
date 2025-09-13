@@ -70,3 +70,60 @@ class ContractPatternCopyTest(TestCase):
         # Check that the original pattern still exists and has its terms
         self.pattern.refresh_from_db()
         self.assertEqual(self.pattern.terms.count(), 2)
+
+
+class ContractPatternMemoTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_superuser(username='testuser2', password='password', email='test2@test.com')
+        self.client.login(username='testuser2', password='password')
+
+        self.pattern = ContractPattern.objects.create(
+            name='Test Pattern with Memo',
+            contract_type='client',
+            memo='This is a test memo.',
+        )
+        self.create_url = reverse('master:contract_pattern_create')
+        self.update_url = reverse('master:contract_pattern_update', kwargs={'pk': self.pattern.pk})
+        self.detail_url = reverse('master:contract_pattern_detail', kwargs={'pk': self.pattern.pk})
+
+    def test_create_with_memo(self):
+        """
+        Test creating a contract pattern with a memo.
+        """
+        post_data = {
+            'name': 'New Pattern with Memo',
+            'contract_type': 'staff',
+            'memo': 'This is a new memo.',
+            'display_order': '20',
+            'is_active': 'on',
+        }
+        response = self.client.post(self.create_url, post_data, follow=True)
+        self.assertRedirects(response, reverse('master:contract_pattern_list'))
+        self.assertTrue(ContractPattern.objects.filter(name='New Pattern with Memo').exists())
+        new_pattern = ContractPattern.objects.get(name='New Pattern with Memo')
+        self.assertEqual(new_pattern.memo, 'This is a new memo.')
+
+    def test_update_memo(self):
+        """
+        Test updating the memo of a contract pattern.
+        """
+        post_data = {
+            'name': self.pattern.name,
+            'contract_type': self.pattern.contract_type,
+            'memo': 'This is an updated memo.',
+            'display_order': self.pattern.display_order,
+            'is_active': 'on' if self.pattern.is_active else '',
+        }
+        response = self.client.post(self.update_url, post_data, follow=True)
+        self.assertRedirects(response, reverse('master:contract_pattern_list'))
+        self.pattern.refresh_from_db()
+        self.assertEqual(self.pattern.memo, 'This is an updated memo.')
+
+    def test_memo_in_detail_view(self):
+        """
+        Test that the memo is displayed in the detail view.
+        """
+        response = self.client.get(self.detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'This is a test memo.')
