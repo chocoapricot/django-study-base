@@ -8,7 +8,30 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
+from reportlab.pdfgen import canvas
+
+class NumberedCanvas(canvas.Canvas):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._saved_page_states = []
+
+    def showPage(self):
+        self._saved_page_states.append(dict(self.__dict__))
+        super().showPage()
+
+    def save(self):
+        """add page info to each page (page x of y)"""
+        num_pages = len(self._saved_page_states)
+        for state in self._saved_page_states:
+            self.__dict__.update(state)
+            self.draw_page_number(num_pages)
+            super().showPage()
+        super().save()
+
+    def draw_page_number(self, page_count):
+        self.setFont("IPAPGothic", 9)
+        self.drawRightString(A4[0] - 20, 20, f"{self.getPageNumber()} / {page_count}")
 
 def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None):
     """
@@ -32,7 +55,7 @@ def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None)
     styles.add(ParagraphStyle(name='ItemText', fontName='IPAPGothic', fontSize=11, leading=14))
 
     # ドキュメントテンプレートの作成
-    doc = SimpleDocTemplate(buffer, pagesize=A4, leftMargin=30, rightMargin=30, topMargin=30, bottomMargin=30)
+    doc = SimpleDocTemplate(buffer, pagesize=A4, leftMargin=30, rightMargin=30, topMargin=30, bottomMargin=40)
 
     story = []
 
@@ -62,18 +85,17 @@ def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None)
         story.append(Spacer(1, 10))
 
     # 透かしを描画する内部関数
-    def watermark_canvas(canvas, doc):
-        canvas.saveState()
-        canvas.setFont('IPAPGothic', 100)
-        canvas.setFillColor(colors.lightgrey, alpha=0.3)
-        # ページの中心に回転させて描画
-        canvas.translate(A4[0] / 2, A4[1] / 2)
-        canvas.rotate(45)
-        canvas.drawCentredString(0, 0, watermark_text)
-        canvas.restoreState()
+    def watermark_canvas_func(canvas, doc):
+        if watermark_text:
+            canvas.saveState()
+            canvas.setFont('IPAPGothic', 100)
+            canvas.setFillColor(colors.lightgrey, alpha=0.3)
+            # ページの中心に回転させて描画
+            canvas.translate(A4[0] / 2, A4[1] / 2)
+            canvas.rotate(45)
+            canvas.drawCentredString(0, 0, watermark_text)
+            canvas.restoreState()
 
     # PDFのビルド
-    if watermark_text:
-        doc.build(story, onFirstPage=watermark_canvas, onLaterPages=watermark_canvas)
-    else:
-        doc.build(story)
+    doc.canvasmaker = NumberedCanvas
+    doc.build(story, onFirstPage=watermark_canvas_func, onLaterPages=watermark_canvas_func)
