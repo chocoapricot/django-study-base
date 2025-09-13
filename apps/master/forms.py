@@ -98,10 +98,11 @@ class ContractPatternForm(forms.ModelForm):
     """契約パターンフォーム"""
     class Meta:
         model = ContractPattern
-        fields = ['name', 'contract_type', 'display_order', 'is_active']
+        fields = ['name', 'contract_type', 'memo', 'display_order', 'is_active']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_type': forms.RadioSelect(),
+            'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }

@@ -555,6 +555,7 @@ class ContractPattern(MyModel):
         choices=CONTRACT_TYPE_CHOICES,
         default='staff',
     )
+    memo = models.TextField('メモ', blank=True, null=True)
     display_order = models.IntegerField('表示順', default=0)
     is_active = models.BooleanField('有効', default=True)
 
