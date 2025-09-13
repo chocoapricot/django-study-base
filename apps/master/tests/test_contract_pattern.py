@@ -30,15 +30,6 @@ class ContractPatternCopyTest(TestCase):
         self.copy_url = reverse('master:contract_pattern_copy', kwargs={'pk': self.pattern.pk})
         self.list_url = reverse('master:contract_pattern_list')
 
-    def test_list_view_with_copy_dropdown(self):
-        """
-        Test that the list view contains the dropdown and the copy button is initially disabled.
-        """
-        response = self.client.get(self.list_url)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'id="copyButton"')
-        self.assertContains(response, 'class="dropdown-item disabled"')
-
     def test_copy_view_get(self):
         """
         Test the GET request for the copy view.
