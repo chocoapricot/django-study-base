@@ -3,7 +3,7 @@
     "model": "master.contractterms",
     "pk": 1,
     "fields": {
-        "version": 1757697562731499,
+        "version": 1757775344867203,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -19,7 +19,7 @@
     "model": "master.contractterms",
     "pk": 2,
     "fields": {
-        "version": 1757697562736773,
+        "version": 1757775344879000,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -35,7 +35,7 @@
     "model": "master.contractterms",
     "pk": 3,
     "fields": {
-        "version": 1757697562739152,
+        "version": 1757775344881815,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -51,7 +51,7 @@
     "model": "master.contractterms",
     "pk": 4,
     "fields": {
-        "version": 1757697562741413,
+        "version": 1757775344885497,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -67,7 +67,7 @@
     "model": "master.contractterms",
     "pk": 5,
     "fields": {
-        "version": 1757697562743694,
+        "version": 1757775344888248,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -83,7 +83,7 @@
     "model": "master.contractterms",
     "pk": 6,
     "fields": {
-        "version": 1757697562746889,
+        "version": 1757775344890482,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -99,7 +99,7 @@
     "model": "master.contractterms",
     "pk": 7,
     "fields": {
-        "version": 1757698468476123,
+        "version": 1757775344893013,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:50:15.128Z",
@@ -115,7 +115,7 @@
     "model": "master.contractterms",
     "pk": 8,
     "fields": {
-        "version": 1757698482588802,
+        "version": 1757775344895318,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:50:29.241Z",
@@ -131,7 +131,7 @@
     "model": "master.contractterms",
     "pk": 9,
     "fields": {
-        "version": 1757698958179308,
+        "version": 1757775344897728,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:58:24.831Z",
@@ -147,7 +147,7 @@
     "model": "master.contractterms",
     "pk": 10,
     "fields": {
-        "version": 1757698973136869,
+        "version": 1757775344899990,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:58:39.789Z",
@@ -163,14 +163,14 @@
     "model": "master.contractterms",
     "pk": 11,
     "fields": {
-        "version": 1757697562758663,
+        "version": 1757776171796561,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
-        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_at": "2025-09-13T15:25:18.448Z",
         "updated_by": 1,
         "contract_pattern": 7,
-        "contract_clause": "第1条（派遣基本契約）",
-        "contract_terms": "甲は乙に対し、労働者派遣法に基づき、労働者を派遣する。",
+        "contract_clause": "契約目的",
+        "contract_terms": "本契約は、乙が雇用する労働者（以下「派遣労働者」という）を、労働者派遣法に基づき甲に派遣し、甲の指揮命令の下で就業させることを目的とする。",
         "memo": null,
         "display_order": 10
     }
@@ -179,7 +179,7 @@
     "model": "master.contractterms",
     "pk": 12,
     "fields": {
-        "version": 1757698505180704,
+        "version": 1757775344905497,
         "created_at": "2025-09-12T17:46:35.466Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:50:51.833Z",
@@ -195,7 +195,7 @@
     "model": "master.contractterms",
     "pk": 13,
     "fields": {
-        "version": 1757698535790291,
+        "version": 1757775344907711,
         "created_at": "2025-09-12T17:46:54.472Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:51:22.442Z",
@@ -211,7 +211,7 @@
     "model": "master.contractterms",
     "pk": 14,
     "fields": {
-        "version": 1757698556761071,
+        "version": 1757775344909902,
         "created_at": "2025-09-12T17:47:28.634Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:51:43.413Z",
@@ -227,7 +227,7 @@
     "model": "master.contractterms",
     "pk": 15,
     "fields": {
-        "version": 1757698567062094,
+        "version": 1757775344912100,
         "created_at": "2025-09-12T17:47:50.232Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:51:53.714Z",
@@ -243,7 +243,7 @@
     "model": "master.contractterms",
     "pk": 16,
     "fields": {
-        "version": 1757698580498456,
+        "version": 1757775344914287,
         "created_at": "2025-09-12T17:48:08.683Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:52:07.150Z",
@@ -259,7 +259,7 @@
     "model": "master.contractterms",
     "pk": 17,
     "fields": {
-        "version": 1757698596219990,
+        "version": 1757775344916502,
         "created_at": "2025-09-12T17:48:52.401Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:52:22.872Z",
@@ -275,7 +275,7 @@
     "model": "master.contractterms",
     "pk": 18,
     "fields": {
-        "version": 1757698610185258,
+        "version": 1757775344918777,
         "created_at": "2025-09-12T17:49:59.743Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:52:36.837Z",
@@ -291,7 +291,7 @@
     "model": "master.contractterms",
     "pk": 19,
     "fields": {
-        "version": 1757698659499095,
+        "version": 1757775344921120,
         "created_at": "2025-09-12T17:53:26.151Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:53:26.151Z",
@@ -307,7 +307,7 @@
     "model": "master.contractterms",
     "pk": 20,
     "fields": {
-        "version": 1757698679700233,
+        "version": 1757775344926813,
         "created_at": "2025-09-12T17:53:46.352Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:53:46.352Z",
@@ -323,7 +323,7 @@
     "model": "master.contractterms",
     "pk": 21,
     "fields": {
-        "version": 1757698699291262,
+        "version": 1757775344929070,
         "created_at": "2025-09-12T17:54:05.943Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:54:05.943Z",
@@ -339,7 +339,7 @@
     "model": "master.contractterms",
     "pk": 22,
     "fields": {
-        "version": 1757698988704356,
+        "version": 1757775344931258,
         "created_at": "2025-09-12T17:58:55.356Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:58:55.356Z",
@@ -355,7 +355,7 @@
     "model": "master.contractterms",
     "pk": 23,
     "fields": {
-        "version": 1757699016463623,
+        "version": 1757775344933786,
         "created_at": "2025-09-12T17:59:23.116Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:59:23.116Z",
@@ -371,7 +371,7 @@
     "model": "master.contractterms",
     "pk": 24,
     "fields": {
-        "version": 1757699041479984,
+        "version": 1757775344936092,
         "created_at": "2025-09-12T17:59:48.132Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:59:48.132Z",
@@ -387,7 +387,7 @@
     "model": "master.contractterms",
     "pk": 25,
     "fields": {
-        "version": 1757699057218944,
+        "version": 1757775344938419,
         "created_at": "2025-09-12T18:00:03.871Z",
         "created_by": 1,
         "updated_at": "2025-09-12T18:00:03.871Z",
@@ -403,7 +403,7 @@
     "model": "master.contractterms",
     "pk": 26,
     "fields": {
-        "version": 1757699077167814,
+        "version": 1757775344940630,
         "created_at": "2025-09-12T18:00:23.820Z",
         "created_by": 1,
         "updated_at": "2025-09-12T18:00:23.820Z",
@@ -419,7 +419,7 @@
     "model": "master.contractterms",
     "pk": 27,
     "fields": {
-        "version": 1757699098860258,
+        "version": 1757775344942833,
         "created_at": "2025-09-12T18:00:45.512Z",
         "created_by": 1,
         "updated_at": "2025-09-12T18:00:45.512Z",
@@ -435,7 +435,7 @@
     "model": "master.contractterms",
     "pk": 28,
     "fields": {
-        "version": 1757699211915818,
+        "version": 1757775344945076,
         "created_at": "2025-09-12T18:02:38.568Z",
         "created_by": 1,
         "updated_at": "2025-09-12T18:02:38.568Z",
@@ -451,7 +451,7 @@
     "model": "master.contractterms",
     "pk": 29,
     "fields": {
-        "version": 1757699228882207,
+        "version": 1757775344947293,
         "created_at": "2025-09-12T18:02:55.534Z",
         "created_by": 1,
         "updated_at": "2025-09-12T18:02:55.534Z",
@@ -467,7 +467,7 @@
     "model": "master.contractterms",
     "pk": 30,
     "fields": {
-        "version": 1757699246250017,
+        "version": 1757775344949822,
         "created_at": "2025-09-12T18:03:12.902Z",
         "created_by": 1,
         "updated_at": "2025-09-12T18:03:12.902Z",
@@ -477,6 +477,198 @@
         "contract_terms": "本契約は日本法に準拠する。本契約に関して紛争が生じた場合、乙の本店所在地を管轄する地方裁判所を第一審の専属的合意管轄裁判所とする。",
         "memo": null,
         "display_order": 110
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 31,
+    "fields": {
+        "version": 1757776228637436,
+        "created_at": "2025-09-13T15:25:48.795Z",
+        "created_by": 1,
+        "updated_at": "2025-09-13T15:26:15.289Z",
+        "updated_by": 1,
+        "contract_pattern": 7,
+        "contract_clause": "業務内容・就業場所",
+        "contract_terms": "1.派遣労働者の業務内容は、別紙「業務内容明細書」に定めるものとする。\r\n2.就業場所は、甲の事業所（東京都千代田区○○）のうち、システム開発部門とする。\r\n3.甲は派遣労働者に対し、業務範囲を逸脱する指示を行ってはならない。",
+        "memo": null,
+        "display_order": 20
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 32,
+    "fields": {
+        "version": 1757776246771762,
+        "created_at": "2025-09-13T15:26:33.424Z",
+        "created_by": 1,
+        "updated_at": "2025-09-13T15:26:33.424Z",
+        "updated_by": 1,
+        "contract_pattern": 7,
+        "contract_clause": "人数",
+        "contract_terms": "派遣労働者の人数は1名とする。",
+        "memo": null,
+        "display_order": 30
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 33,
+    "fields": {
+        "version": 1757776264836616,
+        "created_at": "2025-09-13T15:26:51.489Z",
+        "created_by": 1,
+        "updated_at": "2025-09-13T15:26:51.489Z",
+        "updated_by": 1,
+        "contract_pattern": 7,
+        "contract_clause": "派遣期間",
+        "contract_terms": "派遣期間は、令和○年○月○日から令和○年○月○日までとする。\r\n契約の更新は、労働者派遣法の定める上限を超えない範囲で、甲乙協議のうえ行う。",
+        "memo": null,
+        "display_order": 40
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 34,
+    "fields": {
+        "version": 1757776295040843,
+        "created_at": "2025-09-13T15:27:21.693Z",
+        "created_by": 1,
+        "updated_at": "2025-09-13T15:27:21.693Z",
+        "updated_by": 1,
+        "contract_pattern": 7,
+        "contract_clause": "就業日・就業時間",
+        "contract_terms": "1.就業日は月曜日から金曜日までとし、休日は土日祝日および年末年始とする。\r\n2.就業時間は9時00分から18時00分まで、休憩時間は12時00分から13時00分までとする。\r\n3.時間外労働、休日労働、深夜労働については、労働基準法等に基づき、甲の要請および乙の同意の上で行う。",
+        "memo": null,
+        "display_order": 50
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 35,
+    "fields": {
+        "version": 1757776322252924,
+        "created_at": "2025-09-13T15:27:48.905Z",
+        "created_by": 1,
+        "updated_at": "2025-09-13T15:27:48.905Z",
+        "updated_by": 1,
+        "contract_pattern": 7,
+        "contract_clause": "派遣料金",
+        "contract_terms": "1.派遣料金は、派遣労働者1名につき時間単価○○円（消費税別途）とする。\r\n2.派遣料金は、派遣労働者の出勤簿に基づき算定し、乙の請求書により翌月末日までに乙指定口座に振込支払いとする。\r\n3.甲が支払を遅延した場合、年14.6％の割合による遅延損害金を付す。",
+        "memo": null,
+        "display_order": 60
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 36,
+    "fields": {
+        "version": 1757776348407408,
+        "created_at": "2025-09-13T15:28:15.059Z",
+        "created_by": 1,
+        "updated_at": "2025-09-13T15:28:15.059Z",
+        "updated_by": 1,
+        "contract_pattern": 7,
+        "contract_clause": "安全衛生・労務管理",
+        "contract_terms": "1.甲は、派遣労働者に対し、安全衛生管理上必要な措置を講ずるものとする。\r\n2.乙は、雇用主として労働条件の明示、給与の支払、社会保険の適用等を行う。\r\n3.安全衛生に関する具体的な指導・教育は、甲が責任をもって実施する。",
+        "memo": null,
+        "display_order": 70
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 37,
+    "fields": {
+        "version": 1757776373678168,
+        "created_at": "2025-09-13T15:28:40.330Z",
+        "created_by": 1,
+        "updated_at": "2025-09-13T15:28:40.330Z",
+        "updated_by": 1,
+        "contract_pattern": 7,
+        "contract_clause": "苦情処理",
+        "contract_terms": "派遣労働者に関する苦情が発生した場合、原則として乙が窓口となり対応する。但し、甲の業務環境や指揮命令に起因する苦情については甲の責任で対応する。",
+        "memo": null,
+        "display_order": 80
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 38,
+    "fields": {
+        "version": 1757776387093465,
+        "created_at": "2025-09-13T15:28:53.745Z",
+        "created_by": 1,
+        "updated_at": "2025-09-13T15:28:53.745Z",
+        "updated_by": 1,
+        "contract_pattern": 7,
+        "contract_clause": "秘密保持",
+        "contract_terms": "派遣労働者および乙は、就業中に知り得た甲の秘密情報を第三者に漏洩しない。ただし、公知の情報、乙が独自に有する情報、正当に第三者から取得した情報は除く。",
+        "memo": null,
+        "display_order": 90
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 39,
+    "fields": {
+        "version": 1757776414518894,
+        "created_at": "2025-09-13T15:29:21.171Z",
+        "created_by": 1,
+        "updated_at": "2025-09-13T15:29:21.171Z",
+        "updated_by": 1,
+        "contract_pattern": 7,
+        "contract_clause": "損害賠償責任",
+        "contract_terms": "1.派遣労働者の故意または重大な過失により甲に損害が生じた場合、乙は雇用主として相応の責任を負う。\r\n2.損害賠償額は、直近1か月分の派遣料金を上限とする。\r\n3.通常の業務遂行に伴う損耗・ミス等については、乙は責任を負わない。",
+        "memo": null,
+        "display_order": 100
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 40,
+    "fields": {
+        "version": 1757776446717710,
+        "created_at": "2025-09-13T15:29:53.370Z",
+        "created_by": 1,
+        "updated_at": "2025-09-13T15:29:53.370Z",
+        "updated_by": 1,
+        "contract_pattern": 7,
+        "contract_clause": "契約解除",
+        "contract_terms": "1.甲または乙が本契約に違反し、相当期間を定めて是正を催告したにもかかわらず是正されない場合、本契約を解除できる。\r\n2.甲が業務量減少その他の理由により契約を中途解除する場合、解除日までの派遣料金を乙に支払うものとする。\r\n3.甲が予告なく解除した場合、30日分の派遣料金相当額を違約金として乙に支払うものとする。",
+        "memo": null,
+        "display_order": 110
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 41,
+    "fields": {
+        "version": 1757776470057019,
+        "created_at": "2025-09-13T15:30:16.709Z",
+        "created_by": 1,
+        "updated_at": "2025-09-13T15:30:16.709Z",
+        "updated_by": 1,
+        "contract_pattern": 7,
+        "contract_clause": "不可抗力",
+        "contract_terms": "天災地変、法令の改廃、通信障害その他不可抗力により業務遂行が困難となった場合、乙はその責任を負わない。",
+        "memo": null,
+        "display_order": 120
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 42,
+    "fields": {
+        "version": 1757776484906479,
+        "created_at": "2025-09-13T15:30:31.558Z",
+        "created_by": 1,
+        "updated_at": "2025-09-13T15:30:31.558Z",
+        "updated_by": 1,
+        "contract_pattern": 7,
+        "contract_clause": "準拠法・管轄",
+        "contract_terms": "本契約は日本法に準拠する。\r\n本契約に関する紛争は、乙の本店所在地を管轄する地方裁判所を第一審の専属的合意管轄裁判所とする。",
+        "memo": null,
+        "display_order": 130
     }
 }
 ]
