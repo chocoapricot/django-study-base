@@ -818,6 +818,7 @@ def staff_contract_confirm_list(request):
     context = {
         'contracts_with_status': contracts_with_status,
         'title': 'スタッフ契約確認',
+        'ContractStatus': StaffContract.ContractStatus,
     }
     return render(request, 'contract/staff_contract_confirm_list.html', context)
 
