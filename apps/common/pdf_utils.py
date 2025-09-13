@@ -8,34 +8,12 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
-from reportlab.pdfgen import canvas
-
-class NumberedCanvas(canvas.Canvas):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._saved_page_states = []
-
-    def showPage(self):
-        self._saved_page_states.append(dict(self.__dict__))
-        self._startPage()
-
-    def save(self):
-        """add page info to each page (page x of y)"""
-        num_pages = len(self._saved_page_states)
-        for state in self._saved_page_states:
-            self.__dict__.update(state)
-            self.draw_page_number(num_pages)
-            super().showPage()
-        super().save()
-
-    def draw_page_number(self, page_count):
-        self.setFont("IPAPGothic", 9)
-        self.drawRightString(A4[0] - 20, 20, f"{self._pageNumber} / {page_count}")
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 
 def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None):
     """
-    契約書形式のPDFを生成する共通関数
+    契約書形式のPDFを生成する共通関数。
+    2パス処理を行い、フッターに総ページ数付きのページ番号を印字する。
 
     :param buffer: PDFを書き込むためのBytesIOなどのバッファ
     :param title: 帳票のメインタイトル
@@ -44,7 +22,7 @@ def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None)
     :param watermark_text: 透かしとして表示する文字列（オプショナル）
     """
     # 日本語フォントの登録
-    font_path = 'statics/fonts/ipagp.ttf'  # プロポーショナルフォントを使用
+    font_path = 'statics/fonts/ipagp.ttf'
     pdfmetrics.registerFont(TTFont('IPAPGothic', font_path))
 
     # スタイルシートの準備
@@ -54,48 +32,61 @@ def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None)
     styles.add(ParagraphStyle(name='ItemTitle', fontName='IPAPGothic', fontSize=12, leading=14))
     styles.add(ParagraphStyle(name='ItemText', fontName='IPAPGothic', fontSize=11, leading=14))
 
-    # ドキュメントテンプレートの作成
-    doc = SimpleDocTemplate(buffer, pagesize=A4, leftMargin=30, rightMargin=30, topMargin=30, bottomMargin=40)
+    def build_story():
+        """PDFの内容(Story)を構築する"""
+        story = []
+        # 1. 帳票タイトル
+        story.append(Paragraph(title, styles['MainTitle']))
 
-    story = []
+        # 2. 前文
+        if intro_text:
+            story.append(Paragraph(intro_text, styles['IntroText']))
 
-    # 1. 帳票タイトル
-    story.append(Paragraph(title, styles['MainTitle']))
+        # 3. 各項目の表示
+        table_data = []
+        for item in items:
+            item_title = Paragraph(item.get('title', ''), styles['ItemTitle'])
+            item_text = Paragraph(item.get('text', '').replace('\n', '<br/>'), styles['ItemText'])
+            table_data.append([item_title, item_text])
 
-    # 2. 前文
-    if intro_text:
-        story.append(Paragraph(intro_text, styles['IntroText']))
+        if table_data:
+            table = Table(table_data, colWidths=['20%', '80%'])
+            table.setStyle(TableStyle([
+                ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ('PADDING', (0, 0), (-1, -1), 6),
+            ]))
+            story.append(table)
+            story.append(Spacer(1, 10))
+        return story
 
-    # 3. 各項目の表示
-    table_data = []
-    for item in items:
-        item_title = Paragraph(item.get('title', ''), styles['ItemTitle'])
-        item_text = Paragraph(item.get('text', '').replace('\n', '<br/>'), styles['ItemText'])
-        table_data.append([item_title, item_text])
+    # --- パス1: 総ページ数を数える ---
+    story1 = build_story()
+    pass1_buffer = io.BytesIO()
+    doc1 = SimpleDocTemplate(pass1_buffer, pagesize=A4, leftMargin=30, rightMargin=30, topMargin=30, bottomMargin=40)
+    doc1.build(story1)
+    total_pages = doc1.page
 
-    if table_data:
-        # テーブルで罫線を表現
-        table = Table(table_data, colWidths=['20%', '80%'])
-        table.setStyle(TableStyle([
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
-            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('PADDING', (0, 0), (-1, -1), 6),
-        ]))
-        story.append(table)
-        story.append(Spacer(1, 10))
+    # --- パス2: 実際に描画する ---
+    story2 = build_story()
+    doc2 = SimpleDocTemplate(buffer, pagesize=A4, leftMargin=30, rightMargin=30, topMargin=30, bottomMargin=40)
 
-    # 透かしを描画する内部関数
-    def watermark_canvas_func(canvas, doc):
+    def on_page_with_total(canvas, doc):
+        """ページ描画のコールバック関数"""
+        # 透かし
         if watermark_text:
             canvas.saveState()
             canvas.setFont('IPAPGothic', 100)
             canvas.setFillColor(colors.lightgrey, alpha=0.3)
-            # ページの中心に回転させて描画
             canvas.translate(A4[0] / 2, A4[1] / 2)
             canvas.rotate(45)
             canvas.drawCentredString(0, 0, watermark_text)
             canvas.restoreState()
 
-    # PDFのビルド
-    doc.canvasmaker = NumberedCanvas
-    doc.build(story, onFirstPage=watermark_canvas_func, onLaterPages=watermark_canvas_func)
+        # ページ番号
+        canvas.saveState()
+        canvas.setFont("IPAPGothic", 9)
+        canvas.drawCentredString(A4[0] / 2, 20, f"{doc.page} / {total_pages}")
+        canvas.restoreState()
+
+    doc2.build(story2, onFirstPage=on_page_with_total, onLaterPages=on_page_with_total)

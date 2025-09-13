@@ -65,8 +65,13 @@ def generate_and_save_contract_pdf(contract, user):
     timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
     pdf_filename = f"{contract_type}_contract_{contract.pk}_{timestamp}.pdf"
     
+    # 透かしのテキストを決定
+    watermark_text = None
+    if contract.contract_status in [contract.ContractStatus.DRAFT, contract.ContractStatus.PENDING]:
+        watermark_text = "DRAFT"
+
     buffer = io.BytesIO()
-    generate_contract_pdf(buffer, pdf_title, intro_text, items)
+    generate_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text)
     pdf_content = buffer.getvalue()
     buffer.close()
 
