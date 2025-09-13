@@ -18,7 +18,7 @@ class NumberedCanvas(canvas.Canvas):
 
     def showPage(self):
         self._saved_page_states.append(dict(self.__dict__))
-        super().showPage()
+        self._startPage()
 
     def save(self):
         """add page info to each page (page x of y)"""
@@ -31,7 +31,7 @@ class NumberedCanvas(canvas.Canvas):
 
     def draw_page_number(self, page_count):
         self.setFont("IPAPGothic", 9)
-        self.drawRightString(A4[0] - 20, 20, f"{self.getPageNumber()} / {page_count}")
+        self.drawRightString(A4[0] - 20, 20, f"{self._pageNumber} / {page_count}")
 
 def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None):
     """
