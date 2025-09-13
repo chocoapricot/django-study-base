@@ -9,7 +9,7 @@
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="approvalSwitch" name="is_approved"
                        onchange="this.form.submit()"
-                       {% if contract.contract_status == contract.ContractStatus.APPROVED or contract.contract_status == contract.ContractStatus.ISSUED or contract.contract_status == contract.ContractStatus.CONTRACTED %}checked{% endif %}
+                       {% if contract.contract_status == contract.ContractStatus.APPROVED or contract.contract_status == contract.ContractStatus.ISSUED or contract.contract_status == contract.ContractStatus.CONFIRMED %}checked{% endif %}
                        {% if contract.contract_status == contract.ContractStatus.DRAFT %}disabled{% endif %}>
                 <label class="form-check-label" for="approvalSwitch">
                     <i class="bi bi-check-circle" style="font-size: 20px; color: #17a2b8;"></i>
@@ -27,7 +27,7 @@
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="issueSwitch" name="is_issued"
                        onchange="this.form.submit()"
-                       {% if contract.contract_status == contract.ContractStatus.ISSUED or contract.contract_status == contract.ContractStatus.CONTRACTED %}checked{% endif %}
+                       {% if contract.contract_status == contract.ContractStatus.ISSUED or contract.contract_status == contract.ContractStatus.CONFIRMED %}checked{% endif %}
                        {% if contract.contract_status != contract.ContractStatus.APPROVED %}disabled{% endif %}
                        {% if contract.contract_status == contract.ContractStatus.ISSUED %}disabled{% endif %}>
                 <label class="form-check-label" for="issueSwitch">
@@ -46,7 +46,7 @@
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="confirmSwitch" name="is_confirmed"
                        disabled
-                       {% if contract.contract_status == contract.ContractStatus.CONTRACTED %}checked{% endif %}>
+                       {% if contract.contract_status == contract.ContractStatus.CONFIRMED %}checked{% endif %}>
                 <label class="form-check-label" for="confirmSwitch">
                     <i class="bi bi-link" style="font-size: 20px; color: #17a2b8;"></i>
                     クライアント確認

@@ -628,12 +628,12 @@ def client_contract_confirm(request, pk):
         is_confirmed = 'is_confirmed' in request.POST
         if is_confirmed:
             if contract.contract_status == ClientContract.ContractStatus.ISSUED:
-                contract.contract_status = ClientContract.ContractStatus.CONTRACTED
+                contract.contract_status = ClientContract.ContractStatus.CONFIRMED
                 contract.confirmed_at = timezone.now()
                 contract.save()
                 messages.success(request, f'契約「{contract.contract_name}」を確認済にしました。')
         else:
-            if contract.contract_status == ClientContract.ContractStatus.CONTRACTED:
+            if contract.contract_status == ClientContract.ContractStatus.CONFIRMED:
                 contract.contract_status = ClientContract.ContractStatus.ISSUED
                 contract.confirmed_at = None
                 contract.save()

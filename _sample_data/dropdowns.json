@@ -3032,7 +3032,7 @@
       "updated_by": 1,
       "category": "contract_status",
       "name": "申請中",
-      "value": "20",
+      "value": "5",
       "disp_seq": 2,
       "active": true
     }
@@ -3047,7 +3047,7 @@
       "updated_by": 1,
       "category": "contract_status",
       "name": "承認済",
-      "value": "30",
+      "value": "10",
       "disp_seq": 3,
       "active": true
     }
@@ -3062,7 +3062,7 @@
       "updated_by": 1,
       "category": "contract_status",
       "name": "発行済",
-      "value": "40",
+      "value": "20",
       "disp_seq": 4,
       "active": true
     }
@@ -3077,7 +3077,7 @@
       "updated_by": 1,
       "category": "contract_status",
       "name": "契約済",
-      "value": "50",
+      "value": "30",
       "disp_seq": 5,
       "active": true
     }

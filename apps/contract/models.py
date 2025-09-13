@@ -13,10 +13,10 @@ class ClientContract(MyModel):
     """
     class ContractStatus(models.TextChoices):
         DRAFT = '1', '作成中'
-        PENDING = '20', '申請中'
-        APPROVED = '30', '承認済'
-        ISSUED = '40', '発行済'
-        CONFIRMED = '50', '確認済'
+        PENDING = '5', '申請中'
+        APPROVED = '10', '承認済'
+        ISSUED = '20', '発行済'
+        CONFIRMED = '30', '確認済'
 
     client = models.ForeignKey(
         Client,
@@ -143,10 +143,10 @@ class StaffContract(MyModel):
     """
     class ContractStatus(models.TextChoices):
         DRAFT = '1', '作成中'
-        PENDING = '20', '申請中'
-        APPROVED = '30', '承認済'
-        ISSUED = '40', '発行済'
-        CONFIRMED = '50', '確認済'
+        PENDING = '5', '申請中'
+        APPROVED = '10', '承認済'
+        ISSUED = '20', '発行済'
+        CONFIRMED = '30', '確認済'
 
     staff = models.ForeignKey(
         Staff,
