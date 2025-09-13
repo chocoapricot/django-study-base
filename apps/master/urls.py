@@ -86,6 +86,7 @@ urlpatterns = [
     # 契約パターン管理
     path('contract-pattern/', views.contract_pattern_list, name='contract_pattern_list'),
     path('contract-pattern/create/', views.contract_pattern_create, name='contract_pattern_create'),
+    path('contract-pattern/<int:pk>/copy/', views.contract_pattern_copy, name='contract_pattern_copy'),
     path('contract-pattern/<int:pk>/detail/', views.contract_pattern_detail, name='contract_pattern_detail'),
     path('contract-pattern/<int:pk>/update/', views.contract_pattern_update, name='contract_pattern_update'),
     path('contract-pattern/<int:pk>/delete/', views.contract_pattern_delete, name='contract_pattern_delete'),

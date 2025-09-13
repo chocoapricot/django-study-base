@@ -2269,6 +2269,50 @@ def contract_pattern_create(request):
 
 
 @login_required
+@permission_required("master.add_contractpattern", raise_exception=True)
+def contract_pattern_copy(request, pk):
+    """契約パターンをコピーして新規作成"""
+    original_pattern = get_object_or_404(ContractPattern, pk=pk)
+
+    if request.method == 'POST':
+        form = ContractPatternForm(request.POST)
+        if form.is_valid():
+            # 新しい契約パターンを作成
+            new_pattern = form.save()
+
+            # 元の契約パターンの契約文言をコピー
+            original_terms = original_pattern.terms.all()
+            for term in original_terms:
+                ContractTerms.objects.create(
+                    contract_pattern=new_pattern,
+                    contract_clause=term.contract_clause,
+                    contract_terms=term.contract_terms,
+                    memo=term.memo,
+                    display_order=term.display_order,
+                )
+
+            messages.success(request, f"契約パターン「{original_pattern.name}」をコピーして「{new_pattern.name}」を作成しました。")
+            return redirect('master:contract_pattern_list')
+    else:
+        # GETリクエストの場合、元のデータでフォームを初期化
+        initial_data = {
+            'name': f"{original_pattern.name}のコピー",
+            'contract_type': original_pattern.contract_type,
+            'display_order': original_pattern.display_order,
+            'is_active': original_pattern.is_active,
+        }
+        form = ContractPatternForm(initial=initial_data)
+
+    context = {
+        'form': form,
+        'title': '契約パターンコピー作成',
+        'is_copy': True,
+        'original_id': pk,
+    }
+    return render(request, 'master/contract_pattern_form.html', context)
+
+
+@login_required
 @permission_required("master.change_contractpattern", raise_exception=True)
 def contract_pattern_update(request, pk):
     """契約パターン編集"""

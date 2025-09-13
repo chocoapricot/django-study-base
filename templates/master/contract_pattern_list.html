@@ -7,10 +7,17 @@
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         {{ title }}
-        <div>
+        <div class="btn-group">
             <a href="{% url 'master:contract_pattern_create' %}" class="btn btn-sm btn-primary">
                 新規作成
             </a>
+            <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'master:contract_pattern_create' %}">新規作成</a></li>
+                <li><a id="copyButton" class="dropdown-item disabled" href="#">コピー作成</a></li>
+            </ul>
         </div>
     </div>
     <div class="card-body mb-0">
@@ -32,6 +39,7 @@
             <table class="table table-sm table-hover">
                 <thead>
                     <tr>
+                        <th></th>
                         <th>契約種別</th>
                         <th>名称</th>
                         <th>状態</th>
@@ -43,6 +51,9 @@
                 <tbody>
                     {% for pattern in patterns %}
                     <tr>
+                        <td>
+                            <input class="form-check-input" type="radio" name="patternSelection" id="pattern{{ pattern.pk }}" value="{{ pattern.pk }}">
+                        </td>
                         <td>
                             {% if pattern.contract_type == 'staff' %}
                                 <span class="badge bg-primary">{{ pattern.get_contract_type_display }}</span>
@@ -75,7 +86,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center">契約パターンが登録されていません。</td>
+                        <td colspan="7" class="text-center">契約パターンが登録されていません。</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -126,4 +137,21 @@
 {% endwith %}
 
 <script src="{% static 'js/form_utils.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const copyButton = document.getElementById('copyButton');
+    const radioButtons = document.querySelectorAll('input[name="patternSelection"]');
+
+    radioButtons.forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                const patternId = this.value;
+                const url = "{% url 'master:contract_pattern_copy' 0 %}".replace('0', patternId);
+                copyButton.href = url;
+                copyButton.classList.remove('disabled');
+            }
+        });
+    });
+});
+</script>
 {% endblock %}
