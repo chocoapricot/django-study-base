@@ -12,13 +12,15 @@ def generate_and_save_contract_pdf(contract, user):
         contract_type = 'client'
         pdf_title = "業務委託契約書"
         intro_text = f"{contract.client.name} 様との間で、以下の通り業務委託契約を締結します。"
+        start_date_str = contract.start_date.strftime('%Y年%m月%d日')
+        end_date_str = contract.end_date.strftime('%Y年%m月%d日') if contract.end_date else "無期限"
+        contract_period = f"{start_date_str}　～　{end_date_str}"
         items = [
             {"title": "契約名", "text": str(contract.contract_name)},
             {"title": "クライアント名", "text": str(contract.client.name)},
             {"title": "契約番号", "text": str(contract.contract_number)},
-            {"title": "契約開始日", "text": str(contract.start_date)},
-            {"title": "契約終了日", "text": str(contract.end_date or "N/A")},
-            {"title": "契約金額", "text": f"{contract.contract_amount} 円" if contract.contract_amount else "N/A"},
+            {"title": "契約期間", "text": contract_period},
+            {"title": "契約金額", "text": f"{contract.contract_amount:,} 円" if contract.contract_amount else "N/A"},
             {"title": "支払サイト", "text": str(contract.payment_site.name if contract.payment_site else "N/A")},
             {"title": "契約内容", "text": str(contract.description)},
             {"title": "備考", "text": str(contract.notes)},
@@ -28,13 +30,15 @@ def generate_and_save_contract_pdf(contract, user):
         contract_type = 'staff'
         pdf_title = "雇用契約書"
         intro_text = f"{contract.staff.name_last} {contract.staff.name_first} 様との間で、以下の通り雇用契約を締結します。"
+        start_date_str = contract.start_date.strftime('%Y年%m月%d日')
+        end_date_str = contract.end_date.strftime('%Y年%m月%d日') if contract.end_date else "無期限"
+        contract_period = f"{start_date_str}　～　{end_date_str}"
         items = [
             {"title": "契約名", "text": str(contract.contract_name)},
             {"title": "スタッフ名", "text": f"{contract.staff.name_last} {contract.staff.name_first}"},
             {"title": "契約番号", "text": str(contract.contract_number or "")},
-            {"title": "契約開始日", "text": str(contract.start_date)},
-            {"title": "契約終了日", "text": str(contract.end_date or "N/A")},
-            {"title": "契約金額", "text": f"{contract.contract_amount} 円" if contract.contract_amount else "N/A"},
+            {"title": "契約期間", "text": contract_period},
+            {"title": "契約金額", "text": f"{contract.contract_amount:,} 円" if contract.contract_amount else "N/A"},
             {"title": "契約内容", "text": str(contract.description or "")},
             {"title": "備考", "text": str(contract.notes or "")},
         ]
