@@ -27,7 +27,8 @@ class Client(MyModel):
     
     memo = models.TextField('メモ',blank=True, null=True)
     regist_form_client = models.IntegerField('登録区分',blank=True, null=True)
-    basic_contract_date = models.DateField('基本契約締結日', blank=True, null=True)
+    basic_contract_date = models.DateField('基本契約締結日(業務委託)', blank=True, null=True)
+    basic_contract_date_haken = models.DateField('基本契約締結日(派遣)', blank=True, null=True)
     payment_site = models.ForeignKey(
         'master.BillPayment',
         on_delete=models.SET_NULL,
