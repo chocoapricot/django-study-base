@@ -9,8 +9,8 @@
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="approvalSwitch" name="is_approved"
                        onchange="this.form.submit()"
-                       {% if contract.contract_status == '30' or contract.contract_status == '40' or contract.contract_status == '50' %}checked{% endif %}
-                       {% if contract.contract_status == '1' %}disabled{% endif %}>
+                       {% if contract.contract_status == contract.ContractStatus.APPROVED or contract.contract_status == contract.ContractStatus.ISSUED or contract.contract_status == contract.ContractStatus.CONFIRMED %}checked{% endif %}
+                       {% if contract.contract_status == contract.ContractStatus.DRAFT %}disabled{% endif %}>
                 <label class="form-check-label" for="approvalSwitch">
                     <i class="bi bi-check-circle" style="font-size: 20px; color: #17a2b8;"></i>
                     契約承認
@@ -27,8 +27,9 @@
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="issueSwitch" name="is_issued"
                        onchange="this.form.submit()"
-                       {% if contract.contract_status == '40' or contract.contract_status == '50' %}checked{% endif %}
-                       {% if contract.contract_status != '30' %}disabled{% endif %}>
+                       {% if contract.contract_status == contract.ContractStatus.ISSUED or contract.contract_status == contract.ContractStatus.CONFIRMED %}checked{% endif %}
+                       {% if contract.contract_status != contract.ContractStatus.APPROVED %}disabled{% endif %}
+                       {% if contract.contract_status == contract.ContractStatus.ISSUED %}disabled{% endif %}>
                 <label class="form-check-label" for="issueSwitch">
                     <i class="bi bi-filetype-pdf" style="font-size: 20px; color: #17a2b8;"></i>
                     契約書発行
@@ -42,9 +43,9 @@
         {# 確認スイッチ #}
         <div class="mb-3">
             <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="confirmSwitch"
-                       {% if contract.contract_status == '50' %}checked{% endif %}
-                       disabled>
+                <input class="form-check-input" type="checkbox" id="confirmSwitch" name="is_confirmed"
+                       disabled
+                       {% if contract.contract_status == contract.ContractStatus.CONFIRMED %}checked{% endif %}>
                 <label class="form-check-label" for="confirmSwitch">
                     <i class="bi bi-link" style="font-size: 20px; color: #17a2b8;"></i>
                     スタッフ確認
