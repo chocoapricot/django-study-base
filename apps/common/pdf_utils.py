@@ -76,11 +76,18 @@ def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None)
         # 透かし
         if watermark_text:
             canvas.saveState()
-            canvas.setFont('IPAPGothic', 100)
-            canvas.setFillColor(colors.lightgrey, alpha=0.3)
-            canvas.translate(A4[0] / 2, A4[1] / 2)
-            canvas.rotate(45)
-            canvas.drawCentredString(0, 0, watermark_text)
+            canvas.setFont('IPAPGothic', 60)
+            canvas.setFillColor(colors.lightgrey, alpha=0.2)
+
+            # ページ全体にタイル状に描画
+            for x in range(0, int(A4[0]) + 200, 250):
+                for y in range(0, int(A4[1]) + 200, 250):
+                    canvas.saveState()
+                    canvas.translate(x, y)
+                    canvas.rotate(45)
+                    canvas.drawCentredString(0, 0, watermark_text)
+                    canvas.restoreState()
+            
             canvas.restoreState()
 
         # ページ番号
