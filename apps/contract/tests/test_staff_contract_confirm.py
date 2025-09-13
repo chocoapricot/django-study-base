@@ -39,7 +39,7 @@ class StaffContractConfirmTest(TestCase):
             staff=self.staff,
             corporate_number=self.company.corporate_number,
             contract_name='Test Contract',
-            contract_status='40', # Issued
+            contract_status=StaffContract.ContractStatus.ISSUED,
             start_date='2025-01-01',
         )
 
@@ -72,14 +72,14 @@ class StaffContractConfirmTest(TestCase):
             ).exists()
         )
         self.contract.refresh_from_db()
-        self.assertEqual(self.contract.contract_status, '50') # Confirmed
+        self.assertEqual(self.contract.contract_status, StaffContract.ContractStatus.CONFIRMED)
 
     def test_staff_contract_unconfirm(self):
         """
         Test POST request to staff_contract_confirm_list view to un-confirm a contract.
         """
         # First, confirm the contract
-        self.contract.contract_status = '50' # Confirmed
+        self.contract.contract_status = StaffContract.ContractStatus.CONFIRMED
         self.contract.save()
 
         self.client.login(email='testuser@example.com', password='password')
@@ -87,4 +87,4 @@ class StaffContractConfirmTest(TestCase):
         self.assertEqual(response.status_code, 302) # Should redirect
 
         self.contract.refresh_from_db()
-        self.assertEqual(self.contract.contract_status, '40') # Issued
+        self.assertEqual(self.contract.contract_status, StaffContract.ContractStatus.ISSUED)
