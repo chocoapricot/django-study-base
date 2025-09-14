@@ -386,11 +386,13 @@ def connect_index(request):
     if type_filter == 'staff' or not type_filter:
         for conn in staff_connections:
             conn.type = 'staff'
+            conn.domain_value = 1
             all_connections.append(conn)
 
     if type_filter == 'client' or not type_filter:
         for conn in client_connections:
             conn.type = 'client'
+            conn.domain_value = 10
             all_connections.append(conn)
 
     # 作成日時で降順にソート

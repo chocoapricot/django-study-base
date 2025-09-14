@@ -1,5 +1,5 @@
 {% extends 'common/_base.html' %}
-{% load connect_tags %}
+{% load connect_tags badge_tags dropdowns %}
 
 {% block title %}接続管理{% endblock %}
 
@@ -123,11 +123,7 @@
                     </td>
                     <td>{{ connection.corporate_number }}</td>
                     <td>
-                        {% if connection.type == 'staff' %}
-                            <span class="badge bg-primary">スタッフ</span>
-                        {% elif connection.type == 'client' %}
-                            <span class="badge bg-info">クライアント</span>
-                        {% endif %}
+                        <span class="badge {{ connection.domain_value|badge_class }}">{% my_name 'domain' connection.domain_value %}</span>
                     </td>
                     <td>{{ connection.email }}</td>
                     <td>{{ connection.created_at|date:"Y/m/d H:i" }}</td>
