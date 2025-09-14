@@ -85,7 +85,7 @@ def client_contract_list(request):
 
     # 契約状況のドロップダウンリストを取得
     contract_status_list = [{'value': v, 'name': n} for v, n in ClientContract.ContractStatus.choices]
-    contract_pattern_list = ContractPattern.objects.filter(contract_type='client')
+    contract_pattern_list = ContractPattern.objects.filter(domain='10')
     
     # ページネーション
     paginator = Paginator(contracts, 20)
@@ -274,7 +274,7 @@ def staff_contract_list(request):
 
     # 契約状況のドロップダウンリストを取得
     contract_status_list = [{'value': v, 'name': n} for v, n in StaffContract.ContractStatus.choices]
-    contract_pattern_list = ContractPattern.objects.filter(contract_type='staff')
+    contract_pattern_list = ContractPattern.objects.filter(domain='1')
     
     # ページネーション
     paginator = Paginator(contracts, 20)

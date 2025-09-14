@@ -65,7 +65,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         from apps.master.models import BillPayment, ContractPattern, JobCategory
         self.fields['job_category'].queryset = JobCategory.objects.filter(is_active=True)
-        self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, contract_type='client')
+        self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, domain='10')
         self.fields['end_date'].required = True
         self.fields['payment_site'].queryset = BillPayment.get_active_list()
 
@@ -218,7 +218,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         from apps.master.models import ContractPattern, JobCategory
         self.fields['job_category'].queryset = JobCategory.objects.filter(is_active=True)
-        self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, contract_type='staff')
+        self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, domain='1')
         if self.instance and self.instance.pk and hasattr(self.instance, 'staff') and self.instance.staff:
             self.fields['staff_display'].initial = f"{self.instance.staff.name_last} {self.instance.staff.name_first}"
 
