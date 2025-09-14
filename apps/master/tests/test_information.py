@@ -38,11 +38,18 @@ class InformationModelTest(TestCase):
         self.assertEqual(information.created_by, self.user)
 
 
+from apps.system.settings.models import Dropdowns
+
 class InformationFormTest(TestCase):
+    def setUp(self):
+        Dropdowns.objects.create(category='domain', name='スタッフ', value='1', disp_seq=1)
+        Dropdowns.objects.create(category='domain', name='クライアント', value='10', disp_seq=2)
+        Dropdowns.objects.create(category='domain', name='会社', value='20', disp_seq=3)
+
     def test_information_form_valid(self):
         """お知らせフォーム有効データテスト"""
         form_data = {
-            'target': 'company',
+            'target': '20',
             'subject': 'Test Subject',
             'content': 'Test Content',
         }
@@ -64,6 +71,9 @@ class InformationViewTest(TestCase):
             password='testpass123',
             is_staff=True
         )
+        Dropdowns.objects.create(category='domain', name='スタッフ', value='1', disp_seq=1)
+        Dropdowns.objects.create(category='domain', name='クライアント', value='10', disp_seq=2)
+        Dropdowns.objects.create(category='domain', name='会社', value='20', disp_seq=3)
         # 必要な権限を付与
         from django.contrib.auth.models import Permission
         permissions = Permission.objects.filter(
@@ -112,7 +122,7 @@ class InformationViewTest(TestCase):
     def test_information_create_post(self):
         """お知らせ作成POSTのテスト"""
         form_data = {
-            'target': 'staff',
+            'target': '1',
             'subject': 'New Information',
             'content': 'This is a new information.',
         }
@@ -136,7 +146,7 @@ class InformationViewTest(TestCase):
     def test_information_update_post(self):
         """お知らせ更新POSTのテスト"""
         form_data = {
-            'target': 'client',
+            'target': '10',
             'subject': 'Updated Subject',
             'content': 'Updated Content',
         }
@@ -174,7 +184,7 @@ class InformationViewTest(TestCase):
         file2 = SimpleUploadedFile("file2.txt", b"content2")
         
         form_data = {
-            'target': 'company',
+            'target': '20',
             'subject': 'New Info with Files',
             'content': 'Some content',
         }
@@ -200,7 +210,7 @@ class InformationViewTest(TestCase):
         file2 = SimpleUploadedFile("file2.txt", b"content2")
         
         form_data = {
-            'target': 'company',
+            'target': '20',
             'subject': 'Updated Subject',
             'content': 'Updated content',
             'delete_attachments': [info_file1.pk]

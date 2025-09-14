@@ -17,12 +17,7 @@
             <div class="row mb-3 align-items-center">
                 <label class="col-sm-2 col-form-label" style="text-align:right;">{{ form.target.label }}</label>
                 <div class="col-sm-10">
-                    {% for radio in form.target %}
-                    <div class="form-check form-check-inline">
-                        {{ radio.tag }}
-                        <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
-                    </div>
-                    {% endfor %}
+                    {{ form.target }}
                 </div>
             </div>
 

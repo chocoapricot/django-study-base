@@ -37,7 +37,7 @@ class MailTemplateForm(forms.ModelForm):
 
 class CustomModelChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
-        return f"{obj.value}：{obj.name}"
+        return obj.name
 
 
 class JobCategoryForm(forms.ModelForm):
@@ -413,16 +413,28 @@ class CSVImportForm(forms.Form):
 
 class InformationForm(forms.ModelForm):
     """お知らせ情報フォーム"""
+    target = forms.ChoiceField(
+        label='対象',
+        widget=forms.RadioSelect(),
+        choices=()
+    )
+
     class Meta:
         model = Information
         fields = ['target', 'subject', 'content', 'start_date', 'end_date']
         widgets = {
-            'target': forms.RadioSelect(),
             'subject': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
             'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['target'].choices = [(d.value, d.name) for d in Dropdowns.objects.filter(category='domain', active=True)]
+        if not self.instance.pk:
+            self.fields['target'].widget = forms.Select(attrs={'class': 'form-control form-control-sm'})
+            self.fields['target'].choices.insert(0, ('', '選択してください'))
 
 
 class StaffAgreementForm(forms.ModelForm):

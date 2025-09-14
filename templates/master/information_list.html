@@ -1,5 +1,5 @@
 {% extends 'common/_base.html' %}
-{% load dropdowns %}
+{% load dropdowns badge_tags %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4">
@@ -21,7 +21,9 @@
             <tbody>
                 {% for info in information_list %}
                 <tr>
-                    <td>{% my_name 'information_target' info.target %}</td>
+                    <td>
+                        <span class="badge {{ info.target|badge_class }}">{% my_name 'domain' info.target %}</span>
+                    </td>
                     <td>
                         <a href="{% url 'master:information_detail' info.pk %}">{{ info.subject }}</a>
                     </td>

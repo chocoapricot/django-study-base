@@ -42,15 +42,15 @@ def get_filtered_informations(user):
 
     # 会社向けお知らせ
     if company_info:
-        filter_conditions |= Q(target='company', corporation_number=company_info.corporate_number)
+        filter_conditions |= Q(target='20', corporation_number=company_info.corporate_number)
 
     # スタッフ向けお知らせ
     if approved_staff_corporate_numbers:
-        filter_conditions |= Q(target='staff', corporation_number__in=list(approved_staff_corporate_numbers))
+        filter_conditions |= Q(target='1', corporation_number__in=list(approved_staff_corporate_numbers))
 
     # クライアント向けお知らせ
     if approved_client_corporate_numbers:
-        filter_conditions |= Q(target='client', corporation_number__in=list(approved_client_corporate_numbers)) 
+        filter_conditions |= Q(target='10', corporation_number__in=list(approved_client_corporate_numbers))
 
     return base_query.filter(filter_conditions)
 
