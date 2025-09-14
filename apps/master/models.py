@@ -710,17 +710,10 @@ class Information(MyModel):
     お知らせ情報を管理するマスターデータモデル。
     """
 
-    TARGET_CHOICES = [
-        ('company', '会社'),
-        ('staff', 'スタッフ'),
-        ('client', 'クライアント'),
-    ]
-
     target = models.CharField(
         '対象',
         max_length=10,
-        choices=TARGET_CHOICES,
-        default='company',
+        default='1',
     )
     subject = models.CharField('件名', max_length=200)
     content = models.TextField('内容')
