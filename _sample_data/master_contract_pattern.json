@@ -8,7 +8,7 @@
       "updated_at": "2025-09-07T00:00:00Z",
       "updated_by": 1,
       "name": "正社員",
-      "contract_type": "staff",
+      "domain": "1",
       "display_order": 10,
       "is_active": true
     }
@@ -22,7 +22,7 @@
       "updated_at": "2025-09-07T00:00:00Z",
       "updated_by": 1,
       "name": "契約社員",
-      "contract_type": "staff",
+      "domain": "1",
       "display_order": 20,
       "is_active": true
     }
@@ -36,7 +36,7 @@
       "updated_at": "2025-09-07T00:00:00Z",
       "updated_by": 1,
       "name": "派遣契約",
-      "contract_type": "staff",
+      "domain": "1",
       "display_order": 30,
       "is_active": true
     }
@@ -50,7 +50,7 @@
       "updated_at": "2025-09-07T00:00:00Z",
       "updated_by": 1,
       "name": "紹介予定派遣",
-      "contract_type": "staff",
+      "domain": "1",
       "display_order": 40,
       "is_active": true
     }
@@ -64,7 +64,7 @@
       "updated_at": "2025-09-07T00:00:00Z",
       "updated_by": 1,
       "name": "請負契約",
-      "contract_type": "client",
+      "domain": "10",
       "display_order": 10,
       "is_active": true
     }
@@ -78,7 +78,7 @@
       "updated_at": "2025-09-07T00:00:00Z",
       "updated_by": 1,
       "name": "準委任契約",
-      "contract_type": "client",
+      "domain": "10",
       "display_order": 20,
       "is_active": true
     }
@@ -92,7 +92,7 @@
       "updated_at": "2025-09-07T00:00:00Z",
       "updated_by": 1,
       "name": "派遣契約",
-      "contract_type": "client",
+      "domain": "10",
       "display_order": 30,
       "is_active": true
     }
