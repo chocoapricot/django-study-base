@@ -2224,7 +2224,7 @@ def contract_pattern_list(request):
         usage_count=Count("clientcontract", distinct=True) + Count("staffcontract", distinct=True)
     )
 
-    patterns = patterns.order_by('contract_type', 'display_order')
+    patterns = patterns.order_by('domain', 'display_order')
 
     paginator = Paginator(patterns, 20)
     page = request.GET.get("page")
@@ -2297,7 +2297,7 @@ def contract_pattern_copy(request, pk):
         # GETリクエストの場合、元のデータでフォームを初期化
         initial_data = {
             'name': f"{original_pattern.name}のコピー",
-            'contract_type': original_pattern.contract_type,
+            'domain': original_pattern.domain,
             'display_order': original_pattern.display_order,
             'is_active': original_pattern.is_active,
         }
