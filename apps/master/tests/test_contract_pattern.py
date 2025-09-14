@@ -13,7 +13,7 @@ class ContractPatternCopyTest(TestCase):
 
         self.pattern = ContractPattern.objects.create(
             name='Original Pattern',
-            contract_type='staff',
+            domain='1',
         )
         self.term1 = ContractTerms.objects.create(
             contract_pattern=self.pattern,
@@ -48,7 +48,7 @@ class ContractPatternCopyTest(TestCase):
         new_pattern_name = 'Copied Pattern'
         post_data = {
             'name': new_pattern_name,
-            'contract_type': 'staff',
+            'domain': '1',
             'display_order': '10',
             'is_active': 'on',
         }
@@ -80,7 +80,7 @@ class ContractPatternMemoTest(TestCase):
 
         self.pattern = ContractPattern.objects.create(
             name='Test Pattern with Memo',
-            contract_type='client',
+            domain='10',
             memo='This is a test memo.',
         )
         self.create_url = reverse('master:contract_pattern_create')
@@ -93,7 +93,7 @@ class ContractPatternMemoTest(TestCase):
         """
         post_data = {
             'name': 'New Pattern with Memo',
-            'contract_type': 'staff',
+            'domain': '1',
             'memo': 'This is a new memo.',
             'display_order': '20',
             'is_active': 'on',
@@ -110,7 +110,7 @@ class ContractPatternMemoTest(TestCase):
         """
         post_data = {
             'name': self.pattern.name,
-            'contract_type': self.pattern.contract_type,
+            'domain': self.pattern.domain,
             'memo': 'This is an updated memo.',
             'display_order': self.pattern.display_order,
             'is_active': 'on' if self.pattern.is_active else '',

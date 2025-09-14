@@ -40,8 +40,8 @@ class ContractFormTest(TestCase):
         )
 
         self.job_category = JobCategory.objects.create(name='エンジニア', is_active=True)
-        self.client_pattern = ContractPattern.objects.create(name='クライアント向け基本契約', contract_type='client', is_active=True)
-        self.staff_pattern = ContractPattern.objects.create(name='スタッフ向け雇用契約', contract_type='staff', is_active=True)
+        self.client_pattern = ContractPattern.objects.create(name='クライアント向け基本契約', domain='10', is_active=True)
+        self.staff_pattern = ContractPattern.objects.create(name='スタッフ向け雇用契約', domain='1', is_active=True)
 
     def test_client_contract_form_with_new_fields(self):
         """クライアント契約フォーム（新しいフィールドあり）のテスト"""
