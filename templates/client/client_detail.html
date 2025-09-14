@@ -62,11 +62,23 @@
 
             <div class="row mb-3 align-items-center">
                 <div class="col-sm-2 text-start text-md-end">
-                    <strong>基本契約締結日</strong>
+                    <strong>基本契約締結日(業務委託)</strong>
                 </div>
                 <div class="col-sm-4">
                     {% if client.basic_contract_date %}
                         {{ client.basic_contract_date|date:'Y年m月d日' }}
+                    {% else %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-2 text-start text-md-end">
+                    <strong>基本契約締結日(派遣)</strong>
+                </div>
+                <div class="col-sm-4">
+                    {% if client.basic_contract_date_haken %}
+                        {{ client.basic_contract_date_haken|date:'Y年m月d日' }}
                     {% else %}
                     {% endif %}
                 </div>
