@@ -18,7 +18,7 @@ class InformationViewsTest(TestCase):
             Information.objects.create(
                 subject=f'Test Info {i}',
                 content=f'Content for info {i}',
-                target='staff',
+                target='1',
                 corporation_number=self.company.corporate_number,
                 start_date=datetime.date.today() - datetime.timedelta(days=1)
             )
