@@ -415,7 +415,7 @@ class InformationForm(forms.ModelForm):
     """お知らせ情報フォーム"""
     target = forms.ChoiceField(
         label='対象',
-        widget=forms.RadioSelect(),
+        widget=forms.RadioSelect,
         choices=()
     )
 
@@ -432,9 +432,6 @@ class InformationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['target'].choices = [(d.value, d.name) for d in Dropdowns.objects.filter(category='domain', active=True)]
-        if not self.instance.pk:
-            self.fields['target'].widget = forms.Select(attrs={'class': 'form-control form-control-sm'})
-            self.fields['target'].choices.insert(0, ('', '選択してください'))
 
 
 class StaffAgreementForm(forms.ModelForm):
