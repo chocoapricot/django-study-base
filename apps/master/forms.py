@@ -107,13 +107,6 @@ class ContractPatternForm(forms.ModelForm):
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['domain'].choices = [
-            (d.value, d.name) for d in Dropdowns.objects.filter(category='domain', active=True, value__in=['1', '10'])
-        ]
-        self.fields['domain'].label = "対象"
-
 
 class ContractTermForm(forms.ModelForm):
     """契約文言フォーム"""

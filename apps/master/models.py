@@ -540,9 +540,6 @@ class Bank(MyModel):
         # 将来的に他のモデルで銀行が参照される場合のために準備
         return 0
     
-from apps.system.settings.models import Dropdowns
-
-
 class ContractPattern(MyModel):
     """
     契約パターンマスタ
@@ -550,7 +547,8 @@ class ContractPattern(MyModel):
     name = models.CharField('名称', max_length=100)
     domain = models.CharField(
         '対象',
-        max_length=10,
+        max_length=2,
+        choices=[('1', 'スタッフ'), ('10', 'クライアント')],
         default='1',
     )
     memo = models.TextField('メモ', blank=True, null=True)
@@ -569,11 +567,6 @@ class ContractPattern(MyModel):
 
     def __str__(self):
         return self.name
-
-    @property
-    def domain_dropdown(self):
-        """対象のDropdownsオブジェクトを返す"""
-        return Dropdowns.objects.filter(category='domain', value=self.domain).first()
 
 
 class ContractTerms(MyModel):

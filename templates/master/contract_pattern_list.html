@@ -1,5 +1,5 @@
 {% extends 'common/_base.html' %}
-{% load static badge_tags %}
+{% load static %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -32,7 +32,7 @@
             <table class="table table-sm table-hover">
                 <thead>
                     <tr>
-                        <th>対象</th>
+                        <th>契約種別</th>
                         <th>名称</th>
                         <th>状態</th>
                         <th>表示順</th>
@@ -44,7 +44,13 @@
                     {% for pattern in patterns %}
                     <tr>
                         <td>
-                            <span class="badge {{ pattern.domain|badge_class }}">{{ pattern.domain_dropdown.name }}</span>
+                            {% if pattern.contract_type == 'staff' %}
+                                <span class="badge bg-primary">{{ pattern.get_contract_type_display }}</span>
+                            {% elif pattern.contract_type == 'client' %}
+                                <span class="badge bg-info">{{ pattern.get_contract_type_display }}</span>
+                            {% else %}
+                                {{ pattern.get_contract_type_display }}
+                            {% endif %}
                         </td>
                         <td>
                             <a href="{% url 'master:contract_pattern_detail' pattern.pk %}">{{ pattern.name }}</a>
