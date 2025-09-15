@@ -58,7 +58,7 @@ def client_list(request):
     
     # 登録区分のドロップダウンデータを取得
     from apps.system.settings.models import Dropdowns
-    regist_form_options = Dropdowns.objects.filter(
+    regist_status_options = Dropdowns.objects.filter(
         category='client_regist_status', 
         active=True
     ).order_by('disp_seq')
@@ -96,7 +96,7 @@ def client_list(request):
         'clients': clients_pages, 
         'query': query,
         'client_regist_status': client_regist_status,
-        'regist_form_options': regist_form_options
+        'regist_status_options': regist_status_options
     })
 
 

@@ -40,14 +40,14 @@ class StaffFormTest(TestCase):
         
         # 登録区分のドロップダウン
         Dropdowns.objects.create(
-            category='regist_form',
+            category='regist_status',
             value='1',
             name='正社員',
             disp_seq=1,
             active=True
         )
         Dropdowns.objects.create(
-            category='regist_form',
+            category='regist_status',
             value='2',
             name='契約社員',
             disp_seq=2,
@@ -56,7 +56,7 @@ class StaffFormTest(TestCase):
         
         # テスト用スタッフを作成
         self.staff = Staff.objects.create(
-            regist_form_code=1,  # 数値で指定
+            regist_status_code=1,  # 数値で指定
             employee_no='EMP001',
             name_last='田中',
             name_first='太郎',
@@ -89,7 +89,7 @@ class StaffFormTest(TestCase):
         # 契約終了日より前の退職日でフォームを作成
         resignation_date = date(2024, 11, 30)
         form_data = {
-            'regist_form_code': '1',
+            'regist_status_code': '1',
             'employee_no': 'EMP001',
             'name_last': '田中',
             'name_first': '太郎',
@@ -125,7 +125,7 @@ class StaffFormTest(TestCase):
         # 契約終了日と同日の退職日でフォームを作成
         resignation_date = contract_end_date
         form_data = {
-            'regist_form_code': '1',
+            'regist_status_code': '1',
             'employee_no': 'EMP001',
             'name_last': '田中',
             'name_first': '太郎',
@@ -160,7 +160,7 @@ class StaffFormTest(TestCase):
         # 契約終了日より後の退職日でフォームを作成
         resignation_date = date(2024, 12, 31)
         form_data = {
-            'regist_form_code': '1',
+            'regist_status_code': '1',
             'employee_no': 'EMP001',
             'name_last': '田中',
             'name_first': '太郎',
@@ -195,7 +195,7 @@ class StaffFormTest(TestCase):
         # 退職日でフォームを作成
         resignation_date = date(2024, 11, 30)
         form_data = {
-            'regist_form_code': '1',
+            'regist_status_code': '1',
             'employee_no': 'EMP001',
             'name_last': '田中',
             'name_first': '太郎',
@@ -218,7 +218,7 @@ class StaffFormTest(TestCase):
         """新規スタッフ作成時は契約チェックが実行されないことのテスト"""
         # 新規スタッフ作成時のフォーム
         form_data = {
-            'regist_form_code': '1',
+            'regist_status_code': '1',
             'employee_no': 'EMP002',
             'name_last': '佐藤',
             'name_first': '花子',
@@ -241,7 +241,7 @@ class StaffFormTest(TestCase):
         """入社日と社員番号のセット入力バリデーションテスト"""
         # 入社日のみ入力、社員番号なし
         form_data = {
-            'regist_form_code': '1',
+            'regist_status_code': '1',
             'employee_no': '',  # 社員番号なし
             'name_last': '田中',
             'name_first': '太郎',
@@ -263,7 +263,7 @@ class StaffFormTest(TestCase):
     def test_employee_no_hire_date_validation_both_required(self):
         """社員番号のみ入力、入社日なしのバリデーションテスト"""
         form_data = {
-            'regist_form_code': '1',
+            'regist_status_code': '1',
             'employee_no': 'EMP001',  # 社員番号あり
             'name_last': '田中',
             'name_first': '太郎',
@@ -285,7 +285,7 @@ class StaffFormTest(TestCase):
     def test_resignation_date_without_hire_date_validation(self):
         """入社日なしに退職日入力のバリデーションテスト"""
         form_data = {
-            'regist_form_code': '1',
+            'regist_status_code': '1',
             'employee_no': '',
             'name_last': '田中',
             'name_first': '太郎',
@@ -308,7 +308,7 @@ class StaffFormTest(TestCase):
     def test_valid_both_empty_hire_date_employee_no(self):
         """入社日・社員番号ともに空白の場合は有効（契約なしスタッフ）"""
         form_data = {
-            'regist_form_code': '1',
+            'regist_status_code': '1',
             'employee_no': '',  # 社員番号なし
             'name_last': '佐藤',
             'name_first': '花子',
@@ -331,7 +331,7 @@ class StaffFormTest(TestCase):
     def test_valid_both_filled_hire_date_employee_no(self):
         """入社日・社員番号ともに入力済みの場合は有効（正社員スタッフ）"""
         form_data = {
-            'regist_form_code': '1',
+            'regist_status_code': '1',
             'employee_no': 'EMP002',  # 異なる社員番号
             'name_last': '鈴木',
             'name_first': '一郎',
@@ -354,7 +354,7 @@ class StaffFormTest(TestCase):
     def test_valid_resignation_date_with_hire_date(self):
         """入社日入力後の退職日入力は有効"""
         form_data = {
-            'regist_form_code': '1',
+            'regist_status_code': '1',
             'employee_no': 'EMP003',
             'name_last': '高橋',
             'name_first': '美咲',
@@ -378,7 +378,7 @@ class StaffFormTest(TestCase):
     def test_hire_date_after_resignation_date_validation(self):
         """入社日が退職日より後の場合のバリデーションテスト（既存テスト）"""
         form_data = {
-            'regist_form_code': '1',
+            'regist_status_code': '1',
             'employee_no': 'EMP004',
             'name_last': '山田',
             'name_first': '次郎',

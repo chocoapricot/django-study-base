@@ -308,7 +308,7 @@ apps/staff/tests/
 ├── test_staff_qualification.py
 ├── test_staff_skill.py
 ├── test_staff_sorting.py
-└── test_regist_form_filter.py
+└── test_regist_status_filter.py
 ```
 
 ### ❌ 悪い例（非推奨）

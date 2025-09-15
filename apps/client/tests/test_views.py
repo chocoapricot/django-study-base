@@ -141,7 +141,7 @@ class ClientViewsTest(TestCase):
         self.assertEqual(clients_on_page[0].name, 'Client 01')
         self.assertEqual(clients_on_page[1].name, 'Client 02')
 
-    def test_client_list_regist_form_filter(self):
+    def test_client_list_regist_status_filter(self):
         """クライアント一覧で登録区分による絞り込み機能をテスト"""
         from apps.system.settings.models import Dropdowns
         
@@ -227,9 +227,9 @@ class ClientViewsTest(TestCase):
         # 6. ドロップダウンオプションがテンプレートに渡されていることを確認
         response = self.client.get(reverse('client:client_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertIn('regist_form_options', response.context)
-        regist_form_options = response.context['regist_form_options']
-        self.assertTrue(regist_form_options.count() >= 3)  # 最低3つのオプションがあることを確認
+        self.assertIn('regist_status_options', response.context)
+        regist_status_options = response.context['regist_status_options']
+        self.assertTrue(regist_status_options.count() >= 3)  # 最低3つのオプションがあることを確認
 
         # 6. 検索クエリとソート条件を組み合わせてテスト (例: 'Client 0'で検索し、名前昇順ソート)
         response = self.client.get(reverse('client:client_list'), {'sort': 'name', 'q': 'Client 0', 'page': 1})

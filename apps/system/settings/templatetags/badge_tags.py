@@ -5,7 +5,7 @@ from django import template
 
 register = template.Library()
 
-# regist_form_codeや文字列の値に応じてバッジのクラス名を返すフィルタ
+# regist_status_codeや文字列の値に応じてバッジのクラス名を返すフィルタ
 @register.filter
 def badge_class(value):
     # 値がNoneの場合はデフォルト

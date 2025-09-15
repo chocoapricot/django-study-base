@@ -44,7 +44,7 @@ class Staff(MyModel):
     address3 = models.TextField('住所３',blank=True, null=True)
     phone = models.TextField('電話番号',blank=True, null=True)
     email = models.CharField('E-MAIL',max_length=255, unique=True, blank=True, null=True)
-    regist_form_code = models.IntegerField('登録区分', blank=True, null=True)
+    regist_status_code = models.IntegerField('登録区分', blank=True, null=True)
     employment_type = models.CharField('雇用形態', max_length=10, blank=True, null=True, help_text='dropdowns employment_type')
     employee_no = models.CharField('社員番号', max_length=10, unique=True, blank=True, null=True, help_text='半角英数字10文字まで')
     # 入社・退職・所属情報

@@ -64,7 +64,7 @@ class ClientExportTest(TestCase):
         self.assertIn('株式会社テスト', content)
         self.assertNotIn('サンプル商事', content)
 
-    def test_client_export_with_regist_form_filter(self):
+    def test_client_export_with_regist_status_filter(self):
         """Test exporting with client_regist_status filter."""
         url = reverse('client:client_export') + '?format=csv&client_regist_status=1'
         response = self.test_client.get(url)

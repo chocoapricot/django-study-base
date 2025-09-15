@@ -30,7 +30,7 @@ class StaffMailTest(TestCase):
             name_kana_last='タナカ',
             name_kana_first='タロウ',
             email='tanaka@example.com',
-            regist_form_code=1,
+            regist_status_code=1,
             created_by=self.user,
             updated_by=self.user
         )
@@ -40,7 +40,7 @@ class StaffMailTest(TestCase):
             name_first='花子',
             name_kana_last='サトウ',
             name_kana_first='ハナコ',
-            regist_form_code=1,
+            regist_status_code=1,
             created_by=self.user,
             updated_by=self.user
         )

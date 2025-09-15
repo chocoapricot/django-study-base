@@ -24,7 +24,7 @@
             <div class="input-group me-2 mb-2" style="width: 12em;">
                 <select name="client_regist_status" class="form-select form-select-sm">
                     <option value="">登録区分（全て）</option>
-                    {% for option in regist_form_options %}
+                    {% for option in regist_status_options %}
                         <option value="{{ option.value }}" {% if client_regist_status == option.value|stringformat:"s" %}selected{% endif %}>
                             {{ option.name }}
                         </option>

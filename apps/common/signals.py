@@ -33,7 +33,7 @@ def get_display_name(instance, field_name):
     dropdown_mappings = {
         'Staff': {
             'sex': 'sex',
-            'regist_form_code': 'regist_form'
+            'regist_status_code': 'regist_status'
         },
         'StaffContacted': {
             'contact_type': 'contact_type'

@@ -49,7 +49,7 @@ class StaffFileTestCase(TestCase):
         )
         
         Dropdowns.objects.create(
-            category='regist_form',
+            category='regist_status',
             value='1',
             name='正社員',
             active=True,
@@ -63,7 +63,7 @@ class StaffFileTestCase(TestCase):
             name_kana_last='テスト',
             name_kana_first='タロウ',
             sex=1,
-            regist_form_code=1,
+            regist_status_code=1,
             email='staff@example.com'
         )
         

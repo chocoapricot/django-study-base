@@ -87,7 +87,7 @@ class ClientForm(forms.ModelForm):
             'basic_contract_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'basic_contract_date_haken': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'payment_site': forms.Select(attrs={'class': 'form-select form-select-sm'}),
-            # 'regist_form_code': forms.Select(attrs={'class': 'form-control form-control-sm form-select-sm'}),
+            # 'regist_status_code': forms.Select(attrs={'class': 'form-control form-control-sm form-select-sm'}),
         }
 
 

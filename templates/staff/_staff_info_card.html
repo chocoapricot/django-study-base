@@ -7,7 +7,7 @@
         <div class="row mb-2 align-items-center">
             <div class="col">
                 <div class="col-sm mb-2 d-flex align-items-center">
-                    <span class="badge {{ staff.regist_form_code|badge_class }}" style="font-size:12px">{% my_name 'regist_form' staff.regist_form_code %}</span>
+                    <span class="badge {{ staff.regist_status_code|badge_class }}" style="font-size:12px">{% my_name 'regist_status' staff.regist_status_code %}</span>
                     {% if staff.employment_type %}
                         <span class="badge {{ staff.employment_type|badge_class }} ms-2" style="font-size:15px">{% my_name 'employment_type' staff.employment_type %}</span>
                     {% endif %}
