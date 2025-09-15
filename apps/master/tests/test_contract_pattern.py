@@ -77,6 +77,81 @@ class ContractPatternCopyTest(TestCase):
         self.assertEqual(self.pattern.terms.count(), 2)
 
 
+class ContractPatternContractTypeTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_superuser(username='testuser3', password='password', email='test3@test.com')
+        self.client.login(username='testuser3', password='password')
+
+        Dropdowns.objects.create(category='domain', value='1', name='スタッフ')
+        Dropdowns.objects.create(category='domain', value='10', name='クライアント')
+        Dropdowns.objects.create(category='client_contract_type', value='01', name='基本契約')
+        Dropdowns.objects.create(category='client_contract_type', value='02', name='個別契約')
+
+        self.create_url = reverse('master:contract_pattern_create')
+
+    def test_create_client_pattern_with_contract_type(self):
+        """
+        Test creating a client contract pattern with a contract_type_code.
+        """
+        post_data = {
+            'name': 'Client Pattern with Type',
+            'domain': '10',
+            'contract_type_code': '01',
+            'display_order': '30',
+            'is_active': 'on',
+        }
+        response = self.client.post(self.create_url, post_data, follow=True)
+        self.assertRedirects(response, reverse('master:contract_pattern_list'))
+        self.assertTrue(ContractPattern.objects.filter(name='Client Pattern with Type').exists())
+        new_pattern = ContractPattern.objects.get(name='Client Pattern with Type')
+        self.assertEqual(new_pattern.contract_type_code, '01')
+
+    def test_create_client_pattern_without_contract_type(self):
+        """
+        Test creating a client contract pattern without a contract_type_code.
+        """
+        post_data = {
+            'name': 'Client Pattern without Type',
+            'domain': '10',
+            'contract_type_code': '',
+            'display_order': '40',
+            'is_active': 'on',
+        }
+        response = self.client.post(self.create_url, post_data, follow=True)
+        self.assertRedirects(response, reverse('master:contract_pattern_list'))
+        self.assertTrue(ContractPattern.objects.filter(name='Client Pattern without Type').exists())
+        new_pattern = ContractPattern.objects.get(name='Client Pattern without Type')
+        self.assertIsNone(new_pattern.contract_type_code)
+
+    def test_create_staff_pattern_ignores_contract_type(self):
+        """
+        Test that contract_type_code is ignored when creating a staff contract pattern.
+        """
+        post_data = {
+            'name': 'Staff Pattern with Type',
+            'domain': '1',
+            'contract_type_code': '01', # This should be ignored
+            'display_order': '50',
+            'is_active': 'on',
+        }
+        response = self.client.post(self.create_url, post_data, follow=True)
+        self.assertRedirects(response, reverse('master:contract_pattern_list'))
+        self.assertTrue(ContractPattern.objects.filter(name='Staff Pattern with Type').exists())
+        new_pattern = ContractPattern.objects.get(name='Staff Pattern with Type')
+        self.assertIsNone(new_pattern.contract_type_code)
+
+    def test_form_choices_are_correct(self):
+        """
+        Test that the choices for contract_type_code are correctly populated in the form.
+        """
+        response = self.client.get(self.create_url)
+        self.assertEqual(response.status_code, 200)
+        form = response.context['form']
+        expected_choices = [('', '---------'), ('01', '基本契約'), ('02', '個別契約')]
+        self.assertListEqual(list(form.fields['contract_type_code'].choices), expected_choices)
+
+
 class ContractPatternMemoTest(TestCase):
     def setUp(self):
         self.client = Client()
