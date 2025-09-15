@@ -50,14 +50,6 @@
                                 <td>{{ contract.job_category.name|default:"-" }}</td>
                             </tr>
                             <tr>
-                                <th>契約種別</th>
-                                <td>
-                                    <span class="badge bg-info">
-                                        {% my_name 'client_contract_type' contract.client_contract_type_code %}
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
                                 <th>契約状況</th>
                                 <td>
                                     <span class="badge {{ contract.contract_status|badge_class }}">
@@ -93,8 +85,13 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th>契約パターン</th>
-                                <td>{{ contract.contract_pattern.name|default:"-" }}</td>
+                                <th>契約種別</th>
+                                <td>
+                                    <span class="badge bg-info">
+                                        {% my_name 'client_contract_type' contract.client_contract_type_code %}
+                                    </span>
+                                    {{ contract.contract_pattern.name|default:"-" }}
+                                </td>
                             </tr>
                             <tr>
                                 <th>支払条件</th>
