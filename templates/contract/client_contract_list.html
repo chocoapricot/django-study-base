@@ -18,9 +18,9 @@
             <div class="btn-group me-2 mb-2" role="group">
                 <button class="btn btn-primary btn-sm dropdown-toggle show" type="button"  data-bs-toggle="dropdown" aria-expanded="true">新規作成</button>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{% url 'contract:client_contract_create' %}">請負</a></li>
-                    <li><a class="dropdown-item" href="{% url 'contract:client_contract_create' %}">準委任</a></li>
-                    <li><a class="dropdown-item" href="{% url 'contract:client_contract_create' %}">派遣</a></li>
+                    <li><a class="dropdown-item" href="{% url 'contract:client_contract_create' %}?client_contract_type_code=1">請負</a></li>
+                    <li><a class="dropdown-item" href="{% url 'contract:client_contract_create' %}?client_contract_type_code=10">準委任</a></li>
+                    <li><a class="dropdown-item" href="{% url 'contract:client_contract_create' %}?client_contract_type_code=20">派遣</a></li>
                 </ul>
             </div>
         {% endif %}
@@ -132,6 +132,7 @@
                                 <tr>
                                     <th>契約名</th>
                                     <th>クライアント</th>
+                                    <th>契約種別</th>
                                     <th>契約パターン</th>
                                     <th>契約番号</th>
                                     <th>契約期間</th>
@@ -149,6 +150,11 @@
                                         </a>
                                     </td>
                                     <td>{{ contract.client.name }}</td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            {% my_name 'client_contract_type' contract.client_contract_type_code %}
+                                        </span>
+                                    </td>
                                     <td>{{ contract.contract_pattern.name|default:"-" }}</td>
                                     <td>{{ contract.contract_number|default:"-" }}</td>
                                     <td>

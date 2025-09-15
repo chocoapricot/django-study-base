@@ -160,8 +160,9 @@ def client_contract_detail(request, pk):
 @permission_required('contract.add_clientcontract', raise_exception=True)
 def client_contract_create(request):
     """クライアント契約作成"""
-    # URLパラメータからクライアントIDを取得
+    # URLパラメータからクライアントIDと契約種別を取得
     selected_client_id = request.GET.get('selected_client_id')
+    client_contract_type_code = request.GET.get('client_contract_type_code')
     
     if request.method == 'POST':
         form = ClientContractForm(request.POST)
@@ -169,6 +170,8 @@ def client_contract_create(request):
             contract = form.save(commit=False)
             contract.created_by = request.user
             contract.updated_by = request.user
+            # フォームにない契約種別をここで設定
+            contract.client_contract_type_code = form.initial.get('client_contract_type_code')
             contract.save()
             messages.success(request, f'クライアント契約「{contract.contract_name}」を作成しました。')
             return redirect('contract:client_contract_detail', pk=contract.pk)
@@ -177,6 +180,8 @@ def client_contract_create(request):
         initial_data = {}
         if selected_client_id:
             initial_data['client'] = selected_client_id
+        if client_contract_type_code:
+            initial_data['client_contract_type_code'] = client_contract_type_code
         form = ClientContractForm(initial=initial_data)
     
     context = {
