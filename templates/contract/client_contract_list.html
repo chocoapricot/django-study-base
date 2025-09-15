@@ -15,7 +15,14 @@
             クライアント契約一覧
         {% endif %}
         {% if not client_filter %}
-            <a href="{% url 'contract:client_contract_create' %}" class="btn btn-sm btn-primary me-2">新規作成</a>
+            <div class="btn-group me-2 mb-2" role="group">
+                <button class="btn btn-primary btn-sm dropdown-toggle show" type="button"  data-bs-toggle="dropdown" aria-expanded="true">新規作成</button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'contract:client_contract_create' %}">請負</a></li>
+                    <li><a class="dropdown-item" href="{% url 'contract:client_contract_create' %}">準委任</a></li>
+                    <li><a class="dropdown-item" href="{% url 'contract:client_contract_create' %}">派遣</a></li>
+                </ul>
+            </div>
         {% endif %}
     </div>
     <div class="card-body">
