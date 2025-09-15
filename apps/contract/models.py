@@ -39,6 +39,7 @@ class ClientContract(MyModel):
         verbose_name='契約パターン',
         null=True,
         blank=True,
+        limit_choices_to={'domain': '10'},
     )
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
     contract_status = models.CharField(
@@ -168,6 +169,7 @@ class StaffContract(MyModel):
         verbose_name='契約パターン',
         null=True,
         blank=True,
+        limit_choices_to={'domain': '1'},
     )
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
     contract_status = models.CharField(
