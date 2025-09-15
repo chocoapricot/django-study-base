@@ -26,7 +26,9 @@
         <div class="row mb-3">
             <label class="col-sm-2 col-form-label text-start text-md-end"><strong>本文</strong></label>
             <div class="col-sm-10">
-                <pre class="form-control-plaintext">{{ mail_template.body }}</pre>
+                <div class="border rounded p-3 bg-light">
+                    <pre class="mb-0" style="white-space: pre-wrap; word-wrap: break-word;">{{ mail_template.body }}</pre>
+                </div>
             </div>
         </div>
 
