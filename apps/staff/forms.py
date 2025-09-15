@@ -124,7 +124,7 @@ class StaffForm(forms.ModelForm):
         widget=forms.RadioSelect  # ここでラジオボタンを指定(⇒立て並びにしかできない！)
     )
 
-    regist_status_code = forms.ChoiceField(
+    staff_regist_status_code = forms.ChoiceField(
         choices=[],
         label='登録区分',  # 日本語ラベル
         widget=forms.Select(attrs={'class':'form-select form-select-sm'}) ,
@@ -150,9 +150,9 @@ class StaffForm(forms.ModelForm):
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='sex').order_by('disp_seq')
         ]
-        self.fields['regist_status_code'].choices = [
+        self.fields['staff_regist_status_code'].choices = [
             (opt.value, opt.name)
-            for opt in Dropdowns.objects.filter(active=True, category='regist_status').order_by('disp_seq')
+            for opt in Dropdowns.objects.filter(active=True, category='staff_regist_status').order_by('disp_seq')
         ]
 
         self.fields['employment_type'].choices = [
@@ -196,7 +196,7 @@ class StaffForm(forms.ModelForm):
     class Meta:
         model = Staff
         fields = [
-            'regist_status_code',
+            'staff_regist_status_code',
             'employment_type',
             'employee_no',
             'name_last','name_first','name_kana_last','name_kana_first',
@@ -232,7 +232,7 @@ class StaffForm(forms.ModelForm):
             }),
             'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
             'memo': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            # 'regist_status_code': forms.Select(attrs={'class': 'form-control form-control-sm form-select-sm'}),
+            # 'staff_regist_status_code': forms.Select(attrs={'class': 'form-control form-control-sm form-select-sm'}),
         }
 
 

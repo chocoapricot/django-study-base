@@ -33,7 +33,7 @@ class StaffExportTest(TestCase):
             name_kana_last='スズキ',
             name_kana_first='ハナコ',
             email='hanako@example.com',
-            regist_status_code=1 # Example filter value
+            staff_regist_status_code=1 # Example filter value
         )
 
     def test_staff_export_csv(self):
@@ -68,9 +68,9 @@ class StaffExportTest(TestCase):
         self.assertIn('山田', content)
         self.assertNotIn('鈴木', content)
 
-    def test_staff_export_with_regist_status_filter(self):
-        """Test exporting with regist_status filter."""
-        url = reverse('staff:staff_export') + '?format=csv&regist_status=1'
+    def test_staff_export_with_staff_regist_status_filter(self):
+        """Test exporting with staff_regist_status filter."""
+        url = reverse('staff:staff_export') + '?format=csv&staff_regist_status=1'
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)

@@ -31,7 +31,7 @@ def staff_export(request):
     """スタッフデータのエクスポート（CSV/Excel）"""
     # フィルタリングロジックをstaff_listからコピー
     query = request.GET.get('q', '').strip()
-    regist_status_filter = request.GET.get('regist_status', '').strip()
+    staff_regist_status_filter = request.GET.get('staff_regist_status', '').strip()
     department_filter = request.GET.get('department', '').strip()
     employment_type_filter = request.GET.get('employment_type', '').strip()
     has_request_filter = request.GET.get('has_request', '')
@@ -74,8 +74,8 @@ def staff_export(request):
             Q(employee_no__icontains=query)
         )
 
-    if regist_status_filter:
-        staffs = staffs.filter(regist_status_code=regist_status_filter)
+    if staff_regist_status_filter:
+        staffs = staffs.filter(staff_regist_status_code=staff_regist_status_filter)
     if department_filter:
         staffs = staffs.filter(department_code=department_filter)
     if employment_type_filter:
@@ -156,7 +156,7 @@ def staff_contacted_delete(request, pk):
 def staff_list(request):
     sort = request.GET.get('sort', 'pk')  # デフォルトソートをpkに設定
     query = request.GET.get('q', '').strip()
-    regist_status_filter = request.GET.get('regist_status', '').strip()  # 登録区分フィルター
+    staff_regist_status_filter = request.GET.get('staff_regist_status', '').strip()  # 登録区分フィルター
     department_filter = request.GET.get('department', '').strip()  # 所属部署フィルター
     employment_type_filter = request.GET.get('employment_type', '').strip()  # 雇用形態フィルター
     has_request_filter = request.GET.get('has_request', '')
@@ -215,8 +215,8 @@ def staff_list(request):
         )
     
     # 登録区分での絞り込み
-    if regist_status_filter:
-        staffs = staffs.filter(regist_status_code=regist_status_filter)
+    if staff_regist_status_filter:
+        staffs = staffs.filter(staff_regist_status_code=staff_regist_status_filter)
     # 所属部署での絞り込み
     if department_filter:
         staffs = staffs.filter(department_code=department_filter)
@@ -249,13 +249,13 @@ def staff_list(request):
         staffs = staffs.order_by('pk') # 不正なソート指定の場合はpkでソート
 
     # 登録区分の選択肢を取得
-    regist_status_options = Dropdowns.objects.filter(
-        category='regist_status', 
+    staff_regist_status_options = Dropdowns.objects.filter(
+        category='staff_regist_status', 
         active=True
     ).order_by('disp_seq')
     # 各オプションに選択状態を追加
-    for option in regist_status_options:
-        option.is_selected = (regist_status_filter == option.value)
+    for option in staff_regist_status_options:
+        option.is_selected = (staff_regist_status_filter == option.value)
 
     # 雇用形態の選択肢を取得
     employment_type_options = Dropdowns.objects.filter(
@@ -347,8 +347,8 @@ def staff_list(request):
         'staffs': staffs_pages, 
         'query': query, 
         'sort': sort,
-        'regist_status_filter': regist_status_filter,
-        'regist_status_options': regist_status_options,
+        'staff_regist_status_filter': staff_regist_status_filter,
+        'staff_regist_status_options': staff_regist_status_options,
         'department_filter': department_filter,
         'department_options': department_options,
         'employment_type_filter': employment_type_filter,

@@ -41,7 +41,7 @@ class StaffLogsTestCase(TestCase):
         )
         
         Dropdowns.objects.create(
-            category='regist_status',
+            category='staff_regist_status',
             value='1',
             name='正社員',
             active=True,
@@ -55,7 +55,7 @@ class StaffLogsTestCase(TestCase):
             name_kana_last='テスト',
             name_kana_first='タロウ',
             sex=1,
-            regist_status_code=1,
+            staff_regist_status_code=1,
             email='staff@example.com'
         )
         

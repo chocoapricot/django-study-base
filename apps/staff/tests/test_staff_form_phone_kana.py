@@ -7,7 +7,7 @@ class StaffFormPhoneKanaTest(TestCase):
     def test_phone_rejects_zenkaku(self):
         # 電話番号に全角数字が含まれる場合はバリデーションエラー
         form = StaffForm(data={
-            'regist_status_code': '1',
+            'staff_regist_status_code': '1',
             'employee_no': 'EMP008',
             'name_last': '山田',
             'name_first': '太郎',
@@ -24,12 +24,12 @@ class StaffFormPhoneKanaTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('phone', form.errors)
     def setUp(self):
-        Dropdowns.objects.create(category='regist_status', value='1', name='正社員', disp_seq=1, active=True)
+        Dropdowns.objects.create(category='staff_regist_status', value='1', name='正社員', disp_seq=1, active=True)
         Dropdowns.objects.create(category='sex', value='1', name='男性', disp_seq=1, active=True)
     def test_phone_rejects_alpha(self):
         # 電話番号に英字が含まれる場合はバリデーションエラー
         form = StaffForm(data={
-            'regist_status_code': '1',
+            'staff_regist_status_code': '1',
             'employee_no': 'EMP005',
             'name_last': '山田',
             'name_first': '太郎',
@@ -49,7 +49,7 @@ class StaffFormPhoneKanaTest(TestCase):
     def test_kana_validation_and_conversion(self):
         # ひらがな・半角カナ→全角カナに変換される（エラーにならない）
         form = StaffForm(data={
-            'regist_status_code': '1',
+            'staff_regist_status_code': '1',
             'employee_no': 'EMP006',
             'name_last': '山田',
             'name_first': '太郎',
@@ -72,7 +72,7 @@ class StaffFormPhoneKanaTest(TestCase):
         ひらがな入力時にカタカナへ変換される
         """
         form_data = {
-            'regist_status_code': '1',
+            'staff_regist_status_code': '1',
             'employee_no': 'EMP007',
             'name_last': '山田',
             'name_first': '太郎',

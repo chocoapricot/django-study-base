@@ -20,7 +20,7 @@ class StaffQualificationModelTest(TestCase):
             name_first='太郎',
             birth_date=date(1990, 1, 1),
             sex=1,
-            regist_status_code=20,
+            staff_regist_status_code=20,
             created_by=self.user,
             updated_by=self.user
         )
@@ -146,7 +146,7 @@ class StaffQualificationFormTest(TestCase):
             name_first='太郎',
             birth_date=date(1990, 1, 1),
             sex=1,
-            regist_status_code=20,
+            staff_regist_status_code=20,
             created_by=self.user,
             updated_by=self.user
         )
@@ -269,7 +269,7 @@ class StaffQualificationViewTest(TestCase):
             name_first='太郎',
             birth_date=date(1990, 1, 1),
             sex=1,
-            regist_status_code=20,
+            staff_regist_status_code=20,
             created_by=self.user,
             updated_by=self.user
         )

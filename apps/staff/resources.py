@@ -7,9 +7,9 @@ from django.utils import timezone
 class StaffResource(resources.ModelResource):
     """スタッフデータのエクスポート用リソース"""
 
-    regist_status_display = fields.Field(
+    staff_regist_status_display = fields.Field(
         column_name='登録区分',
-        attribute='regist_status_code',
+        attribute='staff_regist_status_code',
         readonly=True
     )
     employment_type_display = fields.Field(
@@ -48,7 +48,7 @@ class StaffResource(resources.ModelResource):
             'email',
             'hire_date',
             'resignation_date',
-            'regist_status_display',
+            'staff_regist_status_display',
             'employment_type_display',
             'department_display',
             'memo',
@@ -57,18 +57,18 @@ class StaffResource(resources.ModelResource):
         )
         export_order = fields
 
-    def dehydrate_regist_status_display(self, staff):
+    def dehydrate_staff_regist_status_display(self, staff):
         """登録区分の表示名を取得"""
-        if staff.regist_status_code:
+        if staff.staff_regist_status_code:
             try:
                 dropdown = Dropdowns.objects.get(
-                    category='regist_status',
-                    value=staff.regist_status_code,
+                    category='staff_regist_status',
+                    value=staff.staff_regist_status_code,
                     active=True
                 )
                 return dropdown.name
             except Dropdowns.DoesNotExist:
-                return str(staff.regist_status_code)
+                return str(staff.staff_regist_status_code)
         return ''
 
     def dehydrate_employment_type_display(self, staff):

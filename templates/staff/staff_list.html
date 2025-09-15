@@ -43,9 +43,9 @@
                 </span>
             </div>
             <div class="input-group me-2 mb-2" style="width: 12em;">
-                <select name="regist_status" class="form-select form-select-sm">
+                <select name="staff_regist_status" class="form-select form-select-sm">
                     <option value="">登録区分（全て）</option>
-                    {% for option in regist_status_options %}
+                    {% for option in staff_regist_status_options %}
                         <option value="{{ option.value }}" {% if option.is_selected %}selected{% endif %}>{{ option.name }}</option>
                     {% endfor %}
                 </select>
@@ -83,7 +83,7 @@
         function resetForm() {
             var form = document.getElementById('staff-filter-form');
             form.querySelector('input[name=q]').value = '';
-            form.querySelector('select[name=regist_status]').value = '';
+            form.querySelector('select[name=staff_regist_status]').value = '';
             form.querySelector('select[name=employment_type]').value = '';
             form.querySelector('select[name=department]').value = '';
             form.submit();
@@ -100,9 +100,9 @@
                     params.append('q', queryInput.value.trim());
                 }
 
-                const registFormSelect = form.querySelector('select[name="regist_status"]');
+                const registFormSelect = form.querySelector('select[name="staff_regist_status"]');
                 if (registFormSelect && registFormSelect.value) {
-                    params.append('regist_status', registFormSelect.value);
+                    params.append('staff_regist_status', registFormSelect.value);
                 }
 
                 const employmentTypeSelect = form.querySelector('select[name="employment_type"]');
@@ -140,28 +140,28 @@
                 <tr>
                     <th><i class="bi bi-person-fill"></i></th>
                     <th>
-                        <a href="?sort={% if request.GET.sort == 'employee_no' %}-employee_no{% else %}employee_no{% endif %}&q={{ query }}&regist_status={{ regist_status_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}&has_international={{ has_international_filter }}&has_disability={{ has_disability_filter }}"
+                        <a href="?sort={% if request.GET.sort == 'employee_no' %}-employee_no{% else %}employee_no{% endif %}&q={{ query }}&staff_regist_status={{ staff_regist_status_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}&has_international={{ has_international_filter }}&has_disability={{ has_disability_filter }}"
                            class="no-link-style">
                             社員番号
                             {% if request.GET.sort == 'employee_no' %}↓{% elif request.GET.sort == '-employee_no' %}↑{% endif %}
                         </a>
                     </th>
                     <th>
-                        <a href="?sort={% if request.GET.sort == 'name_last' %}-name_last{% else %}name_last{% endif %}&q={{ query }}&regist_status={{ regist_status_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}&has_international={{ has_international_filter }}&has_disability={{ has_disability_filter }}"
+                        <a href="?sort={% if request.GET.sort == 'name_last' %}-name_last{% else %}name_last{% endif %}&q={{ query }}&staff_regist_status={{ staff_regist_status_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}&has_international={{ has_international_filter }}&has_disability={{ has_disability_filter }}"
                            class="no-link-style">
                             氏名
                             {% if request.GET.sort == 'name_last' %}↓{% elif request.GET.sort == '-name_last' %}↑{% endif %}
                         </a>
                     </th>
                     <th class="d-none d-lg-table-cell">
-                        <a href="?sort={% if request.GET.sort == 'address1' %}-address1{% else %}address1{% endif %}&q={{ query }}&regist_status={{ regist_status_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}&has_international={{ has_international_filter }}&has_disability={{ has_disability_filter }}"
+                        <a href="?sort={% if request.GET.sort == 'address1' %}-address1{% else %}address1{% endif %}&q={{ query }}&staff_regist_status={{ staff_regist_status_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}&has_international={{ has_international_filter }}&has_disability={{ has_disability_filter }}"
                            class="no-link-style">
                             住所
                             {% if request.GET.sort == 'address1' %}↓{% elif request.GET.sort == '-address1' %}↑{% endif %}
                         </a>
                     </th>
                     <th>
-                        <a href="?sort={% if request.GET.sort == 'age' %}-age{% else %}age{% endif %}&q={{ query }}&regist_status={{ regist_status_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}&has_international={{ has_international_filter }}&has_disability={{ has_disability_filter }}"
+                        <a href="?sort={% if request.GET.sort == 'age' %}-age{% else %}age{% endif %}&q={{ query }}&staff_regist_status={{ staff_regist_status_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}&has_international={{ has_international_filter }}&has_disability={{ has_disability_filter }}"
                            class="no-link-style">
                             年齢
                             {% if request.GET.sort == 'age' %}↓{% elif request.GET.sort == '-age' %}↑{% endif %}
@@ -207,7 +207,7 @@
                     <td class="d-none d-lg-table-cell">{{ staff.address1 }}</td>
                     <td>{{ staff.age }}歳</td>
                     <td>
-                        <span class="badge {{ staff.regist_status_code|badge_class }}" style="font-size:13px">{% my_name 'regist_status' staff.regist_status_code %}</span>
+                        <span class="badge {{ staff.staff_regist_status_code|badge_class }}" style="font-size:13px">{% my_name 'staff_regist_status' staff.staff_regist_status_code %}</span>
                     </td>
                     <td>
                         {% if staff.employment_type %}

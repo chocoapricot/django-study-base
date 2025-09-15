@@ -46,9 +46,9 @@ class StaffViewsTest(TestCase):
         # Create necessary Dropdowns for StaffForm
         Dropdowns.objects.create(category='sex', value='1', name='男性', active=True, disp_seq=1)
         Dropdowns.objects.create(category='sex', value='2', name='女性', active=True, disp_seq=2)
-        Dropdowns.objects.create(category='regist_status', value='1', name='正社員', active=True, disp_seq=1)
-        Dropdowns.objects.create(category='regist_status', value='2', name='契約社員', active=True, disp_seq=2)
-        Dropdowns.objects.create(category='regist_status', value='10', name='派遣社員', active=True, disp_seq=3)
+        Dropdowns.objects.create(category='staff_regist_status', value='1', name='正社員', active=True, disp_seq=1)
+        Dropdowns.objects.create(category='staff_regist_status', value='2', name='契約社員', active=True, disp_seq=2)
+        Dropdowns.objects.create(category='staff_regist_status', value='10', name='派遣社員', active=True, disp_seq=3)
         # Create necessary Dropdowns for StaffContactedForm
         Dropdowns.objects.create(category='contact_type', value='1', name='電話', active=True, disp_seq=1)
         Dropdowns.objects.create(category='contact_type', value='2', name='メール', active=True, disp_seq=2)
@@ -61,7 +61,7 @@ class StaffViewsTest(TestCase):
             name_kana_first='タロウ',
             birth_date=date(1990, 1, 1),
             sex=1,
-            regist_status_code=1,  # 正社員
+            staff_regist_status_code=1,  # 正社員
             employee_no='EMP001',
             hire_date=date(2020, 4, 1)  # 入社日を追加
         )
@@ -73,7 +73,7 @@ class StaffViewsTest(TestCase):
             name_kana_first='ハナコ',
             birth_date=date(1985, 5, 15),
             sex=2,
-            regist_status_code=2,  # 契約社員
+            staff_regist_status_code=2,  # 契約社員
             employee_no='EMP002',
             hire_date=date(2021, 4, 1)  # 入社日を追加
         )
@@ -85,7 +85,7 @@ class StaffViewsTest(TestCase):
             name_kana_first='ジロウ',
             birth_date=date(1992, 8, 20),
             sex=1,
-            regist_status_code=10,  # 派遣社員
+            staff_regist_status_code=10,  # 派遣社員
             employee_no='EMP003',
             hire_date=date(2022, 4, 1)  # 入社日を追加
         )
@@ -97,7 +97,7 @@ class StaffViewsTest(TestCase):
             name_kana_first='スタッフ',
             birth_date=date(1990, 1, 1),
             sex=1,
-            regist_status_code=1,
+            staff_regist_status_code=1,
             employee_no='ZEMP000', # ソート順で最後にくるように変更
             hire_date=date(2019, 4, 1),  # 入社日を追加
             email='test@example.com',
@@ -113,7 +113,7 @@ class StaffViewsTest(TestCase):
                 name_kana_first='テスト',
                 birth_date=date(1990, 1, 1),
                 sex=1,
-                regist_status_code=1,
+                staff_regist_status_code=1,
                 employee_no=f'EMP{i:03d}',
                 hire_date=date(2020, 4, i),  # 入社日を追加（日付を変える）
                 email=f'staff{i:02d}@example.com',
@@ -127,10 +127,10 @@ class StaffViewsTest(TestCase):
         self.assertTemplateUsed(response, 'staff/staff_list.html')
         self.assertContains(response, 'テスト')
 
-    def test_staff_list_regist_status_filter(self):
+    def test_staff_list_staff_regist_status_filter(self):
         """登録区分での絞り込み機能をテスト"""
         # 1. 正社員のみを絞り込み
-        response = self.client.get(reverse('staff:staff_list'), {'regist_status': '1'})
+        response = self.client.get(reverse('staff:staff_list'), {'staff_regist_status': '1'})
         self.assertEqual(response.status_code, 200)
         
         # 正社員のスタッフが表示されることを確認
@@ -139,7 +139,7 @@ class StaffViewsTest(TestCase):
         self.assertNotContains(response, '鈴木')  # staff3 (派遣社員)
         
         # 2. 契約社員のみを絞り込み
-        response = self.client.get(reverse('staff:staff_list'), {'regist_status': '2'})
+        response = self.client.get(reverse('staff:staff_list'), {'staff_regist_status': '2'})
         self.assertEqual(response.status_code, 200)
         
         # 契約社員のスタッフが表示されることを確認
@@ -148,7 +148,7 @@ class StaffViewsTest(TestCase):
         self.assertNotContains(response, '鈴木')  # staff3 (派遣社員)
         
         # 3. 派遣社員のみを絞り込み
-        response = self.client.get(reverse('staff:staff_list'), {'regist_status': '10'})
+        response = self.client.get(reverse('staff:staff_list'), {'staff_regist_status': '10'})
         self.assertEqual(response.status_code, 200)
         
         # 派遣社員のスタッフが表示されることを確認
@@ -170,7 +170,7 @@ class StaffViewsTest(TestCase):
         # 1. 「田中」で検索 + 正社員フィルター
         response = self.client.get(reverse('staff:staff_list'), {
             'q': '田中',
-            'regist_status': '1'
+            'staff_regist_status': '1'
         })
         self.assertEqual(response.status_code, 200)
         
@@ -182,7 +182,7 @@ class StaffViewsTest(TestCase):
         # 2. 「田中」で検索 + 契約社員フィルター（該当なし）
         response = self.client.get(reverse('staff:staff_list'), {
             'q': '田中',
-            'regist_status': '2'
+            'staff_regist_status': '2'
         })
         self.assertEqual(response.status_code, 200)
         
@@ -201,7 +201,7 @@ class StaffViewsTest(TestCase):
         self.assertNotIn('佐藤', tbody_content)
         self.assertNotIn('鈴木', tbody_content)
 
-    def test_staff_list_regist_status_options(self):
+    def test_staff_list_staff_regist_status_options(self):
         """登録区分の選択肢が正しく表示されることをテスト"""
         response = self.client.get(reverse('staff:staff_list'))
         self.assertEqual(response.status_code, 200)
@@ -213,10 +213,10 @@ class StaffViewsTest(TestCase):
         self.assertContains(response, '派遣社員')
         
         # selectタグが存在することを確認
-        self.assertContains(response, '<select name="regist_status"')
+        self.assertContains(response, '<select name="staff_regist_status"')
         self.assertContains(response, 'スタッフ')
 
-    def test_regist_status_filter_ui_elements(self):
+    def test_staff_regist_status_filter_ui_elements(self):
         """登録区分フィルターのUI要素が正しく表示されることをテスト"""
         response = self.client.get(reverse('staff:staff_list'))
         self.assertEqual(response.status_code, 200)
@@ -256,7 +256,7 @@ class StaffViewsTest(TestCase):
             'name_kana_first': 'スタッフ',
             'birth_date': '1995-05-05',
             'sex': 2,
-            'regist_status_code': 2,
+            'staff_regist_status_code': 2,
             'employee_no': 'EMP999',
             'hire_date': '2024-04-01',  # 社員番号と入社日をセットで設定
             'email': 'newstaff@example.com'
@@ -287,7 +287,7 @@ class StaffViewsTest(TestCase):
             'name_kana_first': 'スタッフ',
             'birth_date': '1990-01-01',
             'sex': 1,
-            'regist_status_code': 1,
+            'staff_regist_status_code': 1,
             'employee_no': 'EMP998',
             'hire_date': '2020-04-01',  # 社員番号と入社日をセットで設定
             'email': 'test@example.com'

@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
                 ('address3', models.TextField(blank=True, null=True, verbose_name='住所３')),
                 ('phone', models.TextField(blank=True, null=True, verbose_name='電話番号')),
                 ('email', models.CharField(blank=True, max_length=255, null=True, verbose_name='E-MAIL')),
-                ('regist_status_code', models.IntegerField(blank=True, null=True, verbose_name='登録区分')),
+                ('staff_regist_status_code', models.IntegerField(blank=True, null=True, verbose_name='登録区分')),
                 ('created_by', django_currentuser.db.models.fields.CurrentUserField(default=django_currentuser.middleware.get_current_authenticated_user, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='created_%(class)s_set', to=settings.AUTH_USER_MODEL, verbose_name='作成者')),
                 ('updated_by', django_currentuser.db.models.fields.CurrentUserField(default=django_currentuser.middleware.get_current_authenticated_user, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='updated_%(class)s_set', to=settings.AUTH_USER_MODEL, verbose_name='更新者')),
             ],
