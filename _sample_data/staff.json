@@ -27,7 +27,7 @@
             "hire_date": "2020-04-01",
             "resignation_date": null,
             "department_code": "SOMU",
-            "employment_type": "10",
+            "employment_type": "15",
             "memo": "楽市楽座による経済活性化、および長篠の戦いでの戦術的勝利。"
         }
     },
@@ -187,7 +187,7 @@
             "hire_date": "2021-03-01",
             "resignation_date": null,
             "department_code": "DEV",
-            "employment_type": "10",
+            "employment_type": "15",
             "memo": "奥州地域での勢力拡大と、仙台藩の礎を築いた。外交手腕も評価が高い。"
         }
     },
@@ -347,7 +347,7 @@
             "hire_date": "2019-05-01",
             "resignation_date": "2023-12-31",
             "department_code": "EIGYO",
-            "employment_type": "10",
+            "employment_type": "15",
             "memo": "一乗谷文化の発展に貢献。領内の安定統治に努めた。"
         }
     },
@@ -443,7 +443,7 @@
             "hire_date": "2022-04-01",
             "resignation_date": null,
             "department_code": "EIGYO",
-            "employment_type": "10",
+            "employment_type": "15",
             "memo": "高天神城の攻略など、武田家の最大版図を築いた実績を持つ。"
         }
     },
@@ -665,7 +665,7 @@
             "hire_date": "2021-05-01",
             "resignation_date": null,
             "department_code": "DEV",
-            "employment_type": "10",
+            "employment_type": "15",
             "memo": "関ヶ原の戦いで先鋒を務め、徳川軍の勝利に大きく貢献。彦根藩の初代藩主。"
         }
     },
@@ -825,7 +825,7 @@
             "hire_date": "2023-04-01",
             "resignation_date": null,
             "department_code": "EIGYO",
-            "employment_type": "10",
+            "employment_type": "15",
             "memo": "ラテン語に堪能で、西洋文化の知識が豊富。多様な価値観の橋渡し役を担う。"
         }
     },
@@ -1049,7 +1049,7 @@
             "hire_date": "2020-05-01",
             "resignation_date": null,
             "department_code": "DEV",
-            "employment_type": "10",
+            "employment_type": "15",
             "memo": "外交顧問として幕府に仕え、航海術や造船技術を伝えた。日英間の架け橋となった。"
         }
     }
