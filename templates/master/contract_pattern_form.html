@@ -25,6 +25,16 @@
                 </div>
             </div>
 
+            <div id="contract_type_code_row" class="row mb-3 align-items-center">
+                <label for="{{ form.contract_type_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約種別</label>
+                <div class="col-sm-6">
+                    {{ form.contract_type_code }}
+                    {% if form.contract_type_code.errors %}
+                        <div class="text-danger small">{{ form.contract_type_code.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">メモ</label>
                 <div class="col-sm-10">
@@ -88,4 +98,28 @@
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const domainRadios = document.querySelectorAll('input[name="domain"]');
+    const contractTypeRow = document.getElementById('contract_type_code_row');
+
+    function toggleContractTypeRow() {
+        const selectedDomain = document.querySelector('input[name="domain"]:checked').value;
+        if (selectedDomain === '10') { // 10 is for 'クライアント'
+            contractTypeRow.style.display = '';
+        } else {
+            contractTypeRow.style.display = 'none';
+        }
+    }
+
+    // Initial check
+    toggleContractTypeRow();
+
+    // Add event listener to each radio button
+    domainRadios.forEach(function(radio) {
+        radio.addEventListener('change', toggleContractTypeRow);
+    });
+});
+</script>
 {% endblock %}

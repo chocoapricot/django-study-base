@@ -98,14 +98,29 @@ class ContractPatternForm(forms.ModelForm):
     """契約パターンフォーム"""
     class Meta:
         model = ContractPattern
-        fields = ['name', 'domain', 'memo', 'display_order', 'is_active']
+        fields = ['name', 'domain', 'contract_type_code', 'memo', 'display_order', 'is_active']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'domain': forms.RadioSelect(),
+            'contract_type_code': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['contract_type_code'].choices = [('', '---------')] + [
+            (d.value, d.name) for d in Dropdowns.objects.filter(category='client_contract_type', active=True)
+        ]
+        self.fields['contract_type_code'].required = False
+
+    def clean(self):
+        cleaned_data = super().clean()
+        domain = cleaned_data.get('domain')
+        if domain != '10':
+            cleaned_data['contract_type_code'] = None
+        return cleaned_data
 
 
 class ContractTermForm(forms.ModelForm):

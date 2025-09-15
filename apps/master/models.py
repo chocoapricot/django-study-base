@@ -2,6 +2,7 @@ import os
 from uuid import uuid4
 from django.db import models
 from apps.common.models import MyModel
+from apps.system.settings.models import Dropdowns
 
 
 def information_file_path(instance, filename):
@@ -551,6 +552,7 @@ class ContractPattern(MyModel):
         choices=[('1', 'スタッフ'), ('10', 'クライアント')],
         default='1',
     )
+    contract_type_code = models.CharField('契約種別', max_length=2, blank=True, null=True)
     memo = models.TextField('メモ', blank=True, null=True)
     display_order = models.IntegerField('表示順', default=0)
     is_active = models.BooleanField('有効', default=True)
