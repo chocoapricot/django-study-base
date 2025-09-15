@@ -33,6 +33,12 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
             'placeholder': 'クライアントを選択してください'
         })
     )
+
+    client_contract_type_display = forms.CharField(
+        label='契約種別',
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control form-control-sm', 'readonly': True})
+    )
     
     contract_status = forms.ChoiceField(
         label='契約状況',
@@ -94,6 +100,20 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
                 self.fields['client_display'].initial = client.name
             except Client.DoesNotExist:
                 pass
+
+        # 契約種別の表示を設定
+        contract_type_code = None
+        if self.instance and self.instance.pk:
+            contract_type_code = self.instance.client_contract_type_code
+        elif 'client_contract_type_code' in self.initial:
+            contract_type_code = self.initial['client_contract_type_code']
+
+        if contract_type_code:
+            try:
+                dropdown = Dropdowns.objects.get(category='client_contract_type', value=contract_type_code)
+                self.fields['client_contract_type_display'].initial = dropdown.name
+            except Dropdowns.DoesNotExist:
+                self.fields['client_contract_type_display'].initial = '未設定'
         
         # クライアントに支払条件が設定されている場合の処理
         if client and client.payment_site:

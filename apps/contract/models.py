@@ -24,6 +24,12 @@ class ClientContract(MyModel):
         related_name='contracts',
         verbose_name='クライアント'
     )
+    client_contract_type_code = models.CharField(
+        '契約種別',
+        max_length=2,
+        blank=True,
+        null=True
+    )
     corporate_number = models.CharField('法人番号', max_length=13, blank=True, null=True)
     contract_name = models.CharField('契約名', max_length=200)
     job_category = models.ForeignKey(
