@@ -57,9 +57,8 @@ def client_contract_list(request):
     search_query = request.GET.get('q', '')
     status_filter = request.GET.get('status', '')
     client_filter = request.GET.get('client', '')  # クライアントフィルタを追加
-    contract_pattern_filter = request.GET.get('contract_pattern', '')
     
-    contracts = ClientContract.objects.select_related('client', 'contract_pattern').all()
+    contracts = ClientContract.objects.select_related('client').all()
     
     # クライアントフィルタを適用
     if client_filter:
@@ -77,15 +76,10 @@ def client_contract_list(request):
     if status_filter:
         contracts = contracts.filter(contract_status=status_filter)
 
-    # 契約パターンフィルタを適用
-    if contract_pattern_filter:
-        contracts = contracts.filter(contract_pattern_id=contract_pattern_filter)
-
     contracts = contracts.order_by('-start_date', 'client__name')
 
     # 契約状況のドロップダウンリストを取得
     contract_status_list = [{'value': v, 'name': n} for v, n in ClientContract.ContractStatus.choices]
-    contract_pattern_list = ContractPattern.objects.filter(domain='10')
     
     # ページネーション
     paginator = Paginator(contracts, 20)
@@ -108,8 +102,6 @@ def client_contract_list(request):
         'client_filter': client_filter,
         'filtered_client': filtered_client,
         'contract_status_list': contract_status_list,
-        'contract_pattern_filter': contract_pattern_filter,
-        'contract_pattern_list': contract_pattern_list,
     }
     return render(request, 'contract/client_contract_list.html', context)
 
