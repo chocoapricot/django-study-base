@@ -32,7 +32,7 @@
             <table class="table table-sm table-hover">
                 <thead>
                     <tr>
-                        <th>契約種別</th>
+                        <th>対象</th>
                         <th>名称</th>
                         <th>状態</th>
                         <th>表示順</th>
@@ -44,12 +44,12 @@
                     {% for pattern in patterns %}
                     <tr>
                         <td>
-                            {% if pattern.contract_type == 'staff' %}
-                                <span class="badge bg-primary">{{ pattern.get_contract_type_display }}</span>
-                            {% elif pattern.contract_type == 'client' %}
-                                <span class="badge bg-info">{{ pattern.get_contract_type_display }}</span>
+                            {% if pattern.domain == '1' %}
+                                <span class="badge bg-primary">{{ pattern.get_domain_display }}</span>
+                            {% elif pattern.domain == '10' %}
+                                <span class="badge bg-info">{{ pattern.get_domain_display }}</span>
                             {% else %}
-                                {{ pattern.get_contract_type_display }}
+                                {{ pattern.get_domain_display }}
                             {% endif %}
                         </td>
                         <td>
