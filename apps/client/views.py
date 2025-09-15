@@ -30,7 +30,7 @@ def client_contacted_detail(request, pk):
 def client_list(request):
     sort = request.GET.get('sort', 'corporate_number')
     query = request.GET.get('q', '').strip()
-    regist_form_client = request.GET.get('regist_form_client', '').strip()
+    client_regist_status = request.GET.get('client_regist_status', '').strip()
     
     clients = Client.objects.all()
     
@@ -44,8 +44,8 @@ def client_list(request):
         )
     
     # 登録区分での絞り込み
-    if regist_form_client:
-        clients = clients.filter(regist_form_client=regist_form_client)
+    if client_regist_status:
+        clients = clients.filter(client_regist_status=client_regist_status)
     
     # ソート可能なフィールドを追加
     sortable_fields = [
@@ -59,7 +59,7 @@ def client_list(request):
     # 登録区分のドロップダウンデータを取得
     from apps.system.settings.models import Dropdowns
     regist_form_options = Dropdowns.objects.filter(
-        category='regist_form_client', 
+        category='client_regist_status', 
         active=True
     ).order_by('disp_seq')
     
@@ -95,7 +95,7 @@ def client_list(request):
     return render(request, 'client/client_list.html', {
         'clients': clients_pages, 
         'query': query,
-        'regist_form_client': regist_form_client,
+        'client_regist_status': client_regist_status,
         'regist_form_options': regist_form_options
     })
 
@@ -110,7 +110,7 @@ def client_export(request):
     
     # 検索条件を取得（client_listと同じロジック）
     query = request.GET.get('q', '').strip()
-    regist_form_client = request.GET.get('regist_form_client', '').strip()
+    client_regist_status = request.GET.get('client_regist_status', '').strip()
     format_type = request.GET.get('format', 'csv')
     
     clients = Client.objects.all()
@@ -125,10 +125,10 @@ def client_export(request):
         )
     
     # 登録区分での絞り込み
-    if regist_form_client:
+    if client_regist_status:
         try:
-            regist_form_client_int = int(regist_form_client)
-            clients = clients.filter(regist_form_client=regist_form_client_int)
+            client_regist_status_int = int(client_regist_status)
+            clients = clients.filter(client_regist_status=client_regist_status_int)
         except ValueError:
             pass  # 無効な値の場合はフィルタリングしない
     

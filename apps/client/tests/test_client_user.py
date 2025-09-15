@@ -16,7 +16,7 @@ class ClientUserModelTest(TestCase):
         self.client_obj = Client.objects.create(
             name='テスト会社',
             name_furigana='テストガイシャ',
-            regist_form_client=10
+            client_regist_status=10
         )
         self.department = ClientDepartment.objects.create(
             client=self.client_obj,
@@ -105,7 +105,7 @@ class ClientUserFormTest(TestCase):
         self.client_obj = Client.objects.create(
             name='テスト会社',
             name_furigana='テストガイシャ',
-            regist_form_client=10
+            client_regist_status=10
         )
         self.department = ClientDepartment.objects.create(
             client=self.client_obj,
@@ -174,7 +174,7 @@ class ClientUserFormTest(TestCase):
         other_client = Client.objects.create(
             name='他の会社',
             name_furigana='ホカノガイシャ',
-            regist_form_client=10
+            client_regist_status=10
         )
         other_department = ClientDepartment.objects.create(
             client=other_client,
@@ -230,7 +230,7 @@ class ClientUserViewTest(TestCase):
         self.client_obj = Client.objects.create(
             name='テスト会社',
             name_furigana='テストガイシャ',
-            regist_form_client=10
+            client_regist_status=10
         )
         self.department = ClientDepartment.objects.create(
             client=self.client_obj,

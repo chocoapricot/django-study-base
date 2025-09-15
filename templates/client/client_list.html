@@ -22,10 +22,10 @@
                 </span>
             </div>
             <div class="input-group me-2 mb-2" style="width: 12em;">
-                <select name="regist_form_client" class="form-select form-select-sm">
+                <select name="client_regist_status" class="form-select form-select-sm">
                     <option value="">登録区分（全て）</option>
                     {% for option in regist_form_options %}
-                        <option value="{{ option.value }}" {% if regist_form_client == option.value|stringformat:"s" %}selected{% endif %}>
+                        <option value="{{ option.value }}" {% if client_regist_status == option.value|stringformat:"s" %}selected{% endif %}>
                             {{ option.name }}
                         </option>
                     {% endfor %}
@@ -62,9 +62,9 @@
                 }
                 
                 // 登録区分
-                const registFormSelect = document.querySelector('select[name="regist_form_client"]');
+                const registFormSelect = document.querySelector('select[name="client_regist_status"]');
                 if (registFormSelect && registFormSelect.value) {
-                    params.append('regist_form_client', registFormSelect.value);
+                    params.append('client_regist_status', registFormSelect.value);
                 }
                 
                 // 出力形式を追加
@@ -81,21 +81,21 @@
             <thead>
                 <tr>
                     <th>
-                        <a href="?sort={% if request.GET.sort == 'corporate_number' %}-corporate_number{% else %}corporate_number{% endif %}&q={{ query }}&regist_form_client={{ regist_form_client }}"
+                        <a href="?sort={% if request.GET.sort == 'corporate_number' %}-corporate_number{% else %}corporate_number{% endif %}&q={{ query }}&client_regist_status={{ client_regist_status }}"
                            class="no-link-style">
                             法人番号
                             {% if request.GET.sort == 'corporate_number' %}↓{% elif request.GET.sort == '-corporate_number' %}↑{% endif %}
                         </a>
                     </th>
                     <th>
-                        <a href="?sort={% if request.GET.sort == 'name' %}-name{% else %}name{% endif %}&q={{ query }}&regist_form_client={{ regist_form_client }}"
+                        <a href="?sort={% if request.GET.sort == 'name' %}-name{% else %}name{% endif %}&q={{ query }}&client_regist_status={{ client_regist_status }}"
                            class="no-link-style">
                             会社名
                             {% if request.GET.sort == 'name' %}↓{% elif request.GET.sort == '-name' %}↑{% endif %}
                         </a>
                     </th>
                     <th>
-                        <a href="?sort={% if request.GET.sort == 'address' %}-address{% else %}address{% endif %}&q={{ query }}&regist_form_client={{ regist_form_client }}"
+                        <a href="?sort={% if request.GET.sort == 'address' %}-address{% else %}address{% endif %}&q={{ query }}&client_regist_status={{ client_regist_status }}"
                            class="no-link-style">
                             住所
                             {% if request.GET.sort == 'address' %}↓{% elif request.GET.sort == '-address' %}↑{% endif %}
@@ -126,7 +126,7 @@
                         {{ client.address |truncatechars:20 }}
                     </td>
                     <td>
-                        <span class="badge {{ client.regist_form_client|badge_class }}" style="font-size:13px">{% my_name 'regist_form_client' client.regist_form_client %}</span>
+                        <span class="badge {{ client.client_regist_status|badge_class }}" style="font-size:13px">{% my_name 'client_regist_status' client.client_regist_status %}</span>
                     </td>
                     <td>
                         <!-- 編集アイコン -->

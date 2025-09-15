@@ -26,7 +26,7 @@ class ClientForm(forms.ModelForm):
             raise ValidationError(f'法人番号が正しくありません: {e}')
         return corporate_number
 
-    regist_form_client = forms.ChoiceField(
+    client_regist_status = forms.ChoiceField(
         choices=[],
         label='登録区分',  # 日本語ラベル
         widget=forms.Select(attrs={'class':'form-select form-select-sm'}) ,
@@ -38,9 +38,9 @@ class ClientForm(forms.ModelForm):
         from apps.system.settings.models import Dropdowns
         from apps.master.models import BillPayment
         
-        self.fields['regist_form_client'].choices = [
+        self.fields['client_regist_status'].choices = [
             (opt.value, opt.name)
-            for opt in Dropdowns.objects.filter(active=True, category='regist_form_client').order_by('disp_seq')
+            for opt in Dropdowns.objects.filter(active=True, category='client_regist_status').order_by('disp_seq')
         ]
         
         # 支払いサイトの選択肢を設定
@@ -72,7 +72,7 @@ class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
         fields = ['corporate_number','name','name_furigana',
-                  'postal_code','address',  'memo', 'regist_form_client', 'basic_contract_date', 'basic_contract_date_haken', 'payment_site']
+                  'postal_code','address',  'memo', 'client_regist_status', 'basic_contract_date', 'basic_contract_date_haken', 'payment_site']
         widgets = {
             'corporate_number': forms.TextInput(attrs={'class': 'form-control form-control-sm',
                 'pattern': '[0-9]{13}', 'inputmode': 'numeric', 'maxlength': '13', 'style': 'ime-mode:disabled;', 'autocomplete': 'off'}),

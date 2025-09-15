@@ -30,7 +30,7 @@ class ClientLogsTestCase(TestCase):
         
         # テスト用ドロップダウン作成
         Dropdowns.objects.create(
-            category='regist_form_client',
+            category='client_regist_status',
             value='1',
             name='優良企業',
             active=True,
@@ -42,7 +42,7 @@ class ClientLogsTestCase(TestCase):
             name='テスト株式会社',
             name_furigana='テストカブシキガイシャ',
             corporate_number='1234567890123',
-            regist_form_client=1
+            client_regist_status=1
         )
         
         self.client = Client()

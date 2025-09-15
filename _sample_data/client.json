@@ -14,7 +14,7 @@
             "address_kana": null,
             "address": "愛知県豊田市トヨタ町１番地",
             "memo": "自動車事業および金融その他の事業",
-            "regist_form_client": 20,
+            "client_regist_status": 20,
             "basic_contract_date": "2024-01-15"
         }
     },
@@ -33,7 +33,7 @@
             "address_kana": null,
             "address": "東京都中央区日本橋本町２丁目５番１号",
             "memo": "医薬品の製造・販売および輸出入",
-            "regist_form_client": 20,
+            "client_regist_status": 20,
             "basic_contract_date": "2024-02-01"
         }
     },
@@ -52,7 +52,7 @@
             "address_kana": null,
             "address": "東京都千代田区霞が関２丁目１－２中央合同庁舎第２号館",
             "memo": "",
-            "regist_form_client": 20,
+            "client_regist_status": 20,
             "basic_contract_date": "2024-03-01"
         }
     },
@@ -71,7 +71,7 @@
             "address_kana": null,
             "address": "京都府京都市南区上鳥羽鉾立町１１番地１",
             "memo": "家庭用レジャー機器の製造・販売",
-            "regist_form_client": 20,
+            "client_regist_status": 20,
             "basic_contract_date": "2024-04-01"
         }
     },
@@ -90,7 +90,7 @@
             "address_kana": null,
             "address": "東京都目黒区下目黒１丁目８番１号",
             "memo": "",
-            "regist_form_client": 2,
+            "client_regist_status": 2,
             "basic_contract_date": "2024-05-01"
         }
     },
@@ -109,7 +109,7 @@
             "address_kana": null,
             "address": "東京都品川区上大崎３丁目１番１号",
             "memo": "",
-            "regist_form_client": 1,
+            "client_regist_status": 1,
             "basic_contract_date": "2024-06-01"
         }
     },
@@ -128,7 +128,7 @@
             "address_kana": null,
             "address": "東京都練馬区豊玉北６丁目１２－１",
             "memo": "",
-            "regist_form_client": 10,
+            "client_regist_status": 10,
             "basic_contract_date": "2024-07-01"
         }
     },
@@ -147,7 +147,7 @@
             "address_kana": null,
             "address": "東京都葛飾区立石５丁目１３－１",
             "memo": "",
-            "regist_form_client": 1,
+            "client_regist_status": 1,
             "basic_contract_date": "2024-08-01"
         }
     },
@@ -166,7 +166,7 @@
             "address_kana": null,
             "address": "東京都新宿区西新宿２丁目８－１",
             "memo": "",
-            "regist_form_client": 20,
+            "client_regist_status": 20,
             "basic_contract_date": "2024-09-01"
         }
     },
@@ -185,7 +185,7 @@
             "address_kana": null,
             "address": "神奈川県横浜市神奈川区宝町２番地",
             "memo": "輸送用機器製造",
-            "regist_form_client": 1,
+            "client_regist_status": 1,
             "basic_contract_date": "2024-10-01"
         }
     },
@@ -204,7 +204,7 @@
             "address_kana": null,
             "address": "東京都千代田区二番町８番地８",
             "memo": "コンビニエンスストアのフランチャイズチェーン本部",
-            "regist_form_client": 1,
+            "client_regist_status": 1,
             "basic_contract_date": "2024-11-01"
         }
     },
@@ -223,7 +223,7 @@
             "address_kana": null,
             "address": "東京都品川区大崎１丁目１１番２号",
             "memo": "コンビニエンスストア「ローソン」のフランチャイズチェーン展開",
-            "regist_form_client": 1,
+            "client_regist_status": 1,
             "basic_contract_date": "2024-12-01"
         }
     },
@@ -242,7 +242,7 @@
             "address_kana": null,
             "address": "東京都千代田区霞が関１丁目２－２",
             "memo": "",
-            "regist_form_client": 1,
+            "client_regist_status": 1,
             "basic_contract_date": "2023-01-15"
         }
     },
@@ -261,7 +261,7 @@
             "address_kana": null,
             "address": "神奈川県横浜市中区日本大通１",
             "memo": "",
-            "regist_form_client": 1,
+            "client_regist_status": 1,
             "basic_contract_date": "2023-02-15"
         }
     },
@@ -280,7 +280,7 @@
             "address_kana": null,
             "address": "大阪府門真市大字門真１００６番地",
             "memo": "",
-            "regist_form_client": 1,
+            "client_regist_status": 1,
             "basic_contract_date": "2023-03-15"
         }
     },
@@ -299,7 +299,7 @@
             "address_kana": null,
             "address": "神奈川県川崎市中原区上小田中４丁目１番１号",
             "memo": "通信システム、情報処理システムおよび電子デバイスの製造・販売ならびにこれらに関するサービスの提供",
-            "regist_form_client": 1,
+            "client_regist_status": 1,
             "basic_contract_date": "2023-04-15"
         }
     },
@@ -318,7 +318,7 @@
             "address_kana": null,
             "address": "兵庫県姫路市飾東町庄２６６番地の１",
             "memo": "ベビー・子ども用品の専門店チェーン",
-            "regist_form_client": 1,
+            "client_regist_status": 1,
             "basic_contract_date": "2023-05-15"
         }
     },
@@ -337,7 +337,7 @@
             "address_kana": null,
             "address": "東京都港区港南１丁目７番１号",
             "memo": "",
-            "regist_form_client": 1,
+            "client_regist_status": 1,
             "basic_contract_date": "2023-06-15"
         }
     },
@@ -356,7 +356,7 @@
             "address_kana": null,
             "address": "大阪府大阪市淀川区西宮原２丁目２番２２号",
             "memo": "スーパーマーケット",
-            "regist_form_client": 10,
+            "client_regist_status": 10,
             "basic_contract_date": "2023-07-15"
         }
     },
@@ -375,7 +375,7 @@
             "address_kana": null,
             "address": "東京都豊島区高田３丁目２３番２３号",
             "memo": "",
-            "regist_form_client": 10,
+            "client_regist_status": 10,
             "basic_contract_date": "2023-08-15"
         }
     },
@@ -394,7 +394,7 @@
             "address_kana": null,
             "address": "東京都新宿区新宿５丁目３番１号",
             "memo": "",
-            "regist_form_client": 1,
+            "client_regist_status": 1,
             "basic_contract_date": "2023-09-15"
         }
     },
@@ -413,7 +413,7 @@
             "address_kana": null,
             "address": "東京都文京区関口２丁目１０番８号",
             "memo": "ホテル・旅館・飲食店業他",
-            "regist_form_client": 1,
+            "client_regist_status": 1,
             "basic_contract_date": "2023-10-15"
         }
     }

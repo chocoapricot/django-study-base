@@ -13,7 +13,7 @@
                         {{ client.name }}<rt>{{ client.name_furigana }}</rt>
                     </ruby>
                 </h4>
-                <span class="badge {{ client.regist_form_client|badge_class }}" style="font-size:15px">{% my_name 'regist_form_client' client.regist_form_client %}</span>
+                <span class="badge {{ client.client_regist_status|badge_class }}" style="font-size:15px">{% my_name 'client_regist_status' client.client_regist_status %}</span>
             </div>
         </div>
     </div>

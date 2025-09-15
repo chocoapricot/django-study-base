@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('client', '0004_client_regist_form_client'),
+        ('client', '0004_client_client_regist_status'),
     ]
 
     operations = [

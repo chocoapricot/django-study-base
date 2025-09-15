@@ -29,7 +29,7 @@ class ClientExportTest(TestCase):
             name='サンプル商事',
             name_furigana='サンプルショウジ',
             address='大阪府サンプル市',
-            regist_form_client=1 # Example filter value
+            client_regist_status=1 # Example filter value
         )
 
     def test_client_export_csv(self):
@@ -65,8 +65,8 @@ class ClientExportTest(TestCase):
         self.assertNotIn('サンプル商事', content)
 
     def test_client_export_with_regist_form_filter(self):
-        """Test exporting with regist_form_client filter."""
-        url = reverse('client:client_export') + '?format=csv&regist_form_client=1'
+        """Test exporting with client_regist_status filter."""
+        url = reverse('client:client_export') + '?format=csv&client_regist_status=1'
         response = self.test_client.get(url)
 
         self.assertEqual(response.status_code, 200)

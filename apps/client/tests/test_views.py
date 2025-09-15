@@ -55,7 +55,7 @@ class ClientViewsTest(TestCase):
 
         from apps.system.settings.models import Dropdowns
         # Create necessary Dropdowns for ClientForm
-        Dropdowns.objects.create(category='regist_form_client', value='1', name='Test Regist Form', active=True, disp_seq=1)
+        Dropdowns.objects.create(category='client_regist_status', value='1', name='Test Regist Form', active=True, disp_seq=1)
         # Create necessary Dropdowns for ClientContactedForm
         Dropdowns.objects.create(category='contact_type', value='1', name='Test Contact Type 1', active=True, disp_seq=1)
         Dropdowns.objects.create(category='contact_type', value='2', name='Test Contact Type 2', active=True, disp_seq=2)
@@ -66,7 +66,7 @@ class ClientViewsTest(TestCase):
         #     corporate_number='9999999999999', # より大きな値に設定
         #     name='Test Client',
         #     name_furigana='テストクライアント',
-        #     regist_form_client=1
+        #     client_regist_status=1
         # )
         # ソートテスト用のクライアントデータを作成 (12件)
         for i in range(1, 13):
@@ -74,13 +74,13 @@ class ClientViewsTest(TestCase):
                 corporate_number=f'10000000000{i:02d}', # 衝突しないように調整
                 name=f'Client {i:02d}',
                 name_furigana=f'クライアント{i:02d}',
-                regist_form_client=1
+                client_regist_status=1
             )
         self.client_obj = Client.objects.create(
             corporate_number='9999999999999', # より大きな値に設定
             name='Z_Test Client', # ソート順で最後にくるように変更
             name_furigana='ゼットテストクライアント',
-            regist_form_client=1
+            client_regist_status=1
         )
 
         self.client_user_obj = ClientUser.objects.create(
@@ -146,27 +146,27 @@ class ClientViewsTest(TestCase):
         from apps.system.settings.models import Dropdowns
         
         # 追加の登録区分データを作成
-        Dropdowns.objects.create(category='regist_form_client', value='10', name='登録済', active=True, disp_seq=2)
-        Dropdowns.objects.create(category='regist_form_client', value='20', name='商談中', active=True, disp_seq=3)
+        Dropdowns.objects.create(category='client_regist_status', value='10', name='登録済', active=True, disp_seq=2)
+        Dropdowns.objects.create(category='client_regist_status', value='20', name='商談中', active=True, disp_seq=3)
         
         # 異なる登録区分のクライアントを作成
         client1 = Client.objects.create(
             corporate_number='1111111111111',
             name='登録中クライアント',
             name_furigana='トウロクチュウクライアント',
-            regist_form_client=1
+            client_regist_status=1
         )
         client2 = Client.objects.create(
             corporate_number='2222222222222',
             name='登録済クライアント',
             name_furigana='トウロクズミクライアント',
-            regist_form_client=10
+            client_regist_status=10
         )
         client3 = Client.objects.create(
             corporate_number='3333333333333',
             name='商談中クライアント',
             name_furigana='ショウダンチュウクライアント',
-            regist_form_client=20
+            client_regist_status=20
         )
         
         # 1. 全件表示（フィルタなし）
@@ -185,12 +185,12 @@ class ClientViewsTest(TestCase):
         self.assertIn('商談中クライアント', all_content)
         
         # 2. 登録区分「1」（登録中）で絞り込み
-        response = self.client.get(reverse('client:client_list'), {'regist_form_client': '1'})
+        response = self.client.get(reverse('client:client_list'), {'client_regist_status': '1'})
         self.assertEqual(response.status_code, 200)
         content = response.content.decode()
         # ページネーションがある場合は全ページをチェック
         if '登録中クライアント' not in content:
-            response_page2 = self.client.get(reverse('client:client_list'), {'regist_form_client': '1', 'page': 2})
+            response_page2 = self.client.get(reverse('client:client_list'), {'client_regist_status': '1', 'page': 2})
             content += response_page2.content.decode()
         
         self.assertIn('登録中クライアント', content)
@@ -198,7 +198,7 @@ class ClientViewsTest(TestCase):
         self.assertNotIn('商談中クライアント', content)
         
         # 3. 登録区分「10」（登録済）で絞り込み
-        response = self.client.get(reverse('client:client_list'), {'regist_form_client': '10'})
+        response = self.client.get(reverse('client:client_list'), {'client_regist_status': '10'})
         self.assertEqual(response.status_code, 200)
         content = response.content.decode()
         self.assertNotIn('登録中クライアント', content)
@@ -206,7 +206,7 @@ class ClientViewsTest(TestCase):
         self.assertNotIn('商談中クライアント', content)
         
         # 4. 登録区分「20」（商談中）で絞り込み
-        response = self.client.get(reverse('client:client_list'), {'regist_form_client': '20'})
+        response = self.client.get(reverse('client:client_list'), {'client_regist_status': '20'})
         self.assertEqual(response.status_code, 200)
         content = response.content.decode()
         self.assertNotIn('登録中クライアント', content)
@@ -216,7 +216,7 @@ class ClientViewsTest(TestCase):
         # 5. キーワード検索と登録区分の組み合わせ
         response = self.client.get(reverse('client:client_list'), {
             'q': '登録済',
-            'regist_form_client': '10'
+            'client_regist_status': '10'
         })
         self.assertEqual(response.status_code, 200)
         content = response.content.decode()
@@ -279,7 +279,7 @@ class ClientViewsTest(TestCase):
             'corporate_number': '5835678256246', # stdnumが有効と判断する法人番号
             'name': 'New Client',
             'name_furigana': 'ニュークライアントカキクケコ',
-            'regist_form_client': 1,
+            'client_regist_status': 1,
             'basic_contract_date': '2024-01-15'
         }
         response = self.client.post(reverse('client:client_create'), data)
@@ -305,7 +305,7 @@ class ClientViewsTest(TestCase):
             'corporate_number': self.client_obj.corporate_number, # corporate_numberはuniqueなので既存のものを利用
             'name': 'Updated Client',
             'name_furigana': 'アップデートクライアントサシスセソ',
-            'regist_form_client': 1,
+            'client_regist_status': 1,
             'basic_contract_date': '2024-02-20'
         }
         response = self.client.post(reverse('client:client_update', args=[self.client_obj.pk]), data)

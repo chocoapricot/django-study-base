@@ -42,7 +42,7 @@ class ClientFileTestCase(TestCase):
         
         # テスト用ドロップダウン作成
         Dropdowns.objects.create(
-            category='regist_form_client',
+            category='client_regist_status',
             value='1',
             name='正社員',
             active=True,
@@ -54,7 +54,7 @@ class ClientFileTestCase(TestCase):
             corporate_number='1234567890123',
             name='テストクライアント',
             name_furigana='テストクライアント',
-            regist_form_client=1,
+            client_regist_status=1,
             basic_contract_date='2024-01-15'
         )
         

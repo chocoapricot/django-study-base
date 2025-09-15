@@ -17,7 +17,7 @@ class ClientDepartmentModelTest(TestCase):
         self.client_obj = Client.objects.create(
             name='テスト会社',
             name_furigana='テストガイシャ',
-            regist_form_client=10
+            client_regist_status=10
         )
 
     def test_client_department_creation(self):
@@ -60,7 +60,7 @@ class ClientDepartmentFormTest(TestCase):
         self.client_obj = Client.objects.create(
             name='テスト会社',
             name_furigana='テストガイシャ',
-            regist_form_client=10
+            client_regist_status=10
         )
 
     def test_valid_form(self):
@@ -153,7 +153,7 @@ class ClientDepartmentViewTest(TestCase):
         self.client_obj = Client.objects.create(
             name='テスト会社',
             name_furigana='テストガイシャ',
-            regist_form_client=10
+            client_regist_status=10
         )
         self.department = ClientDepartment.objects.create(
             client=self.client_obj,

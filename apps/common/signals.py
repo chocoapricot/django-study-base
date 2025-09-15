@@ -39,7 +39,7 @@ def get_display_name(instance, field_name):
             'contact_type': 'contact_type'
         },
         'Client': {
-            'regist_form_client': 'regist_form_client'
+            'client_regist_status': 'client_regist_status'
         },
         'ClientContacted': {
             'contact_type': 'contact_type'

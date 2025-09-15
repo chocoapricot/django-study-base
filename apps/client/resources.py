@@ -9,9 +9,9 @@ class ClientResource(resources.ModelResource):
     """クライアントデータのインポート/エクスポート用リソース"""
     
     # 登録区分の表示名を取得
-    regist_form_client_display = fields.Field(
+    client_regist_status_display = fields.Field(
         column_name='Registration Type',
-        attribute='regist_form_client',
+        attribute='client_regist_status',
         readonly=True
     )
     
@@ -33,7 +33,7 @@ class ClientResource(resources.ModelResource):
             'address_kana',
             'address',
             'memo',
-            'regist_form_client_display',
+            'client_regist_status_display',
             'basic_contract_date',
             'payment_site_display',
             'created_at',
@@ -48,23 +48,23 @@ class ClientResource(resources.ModelResource):
             'address_kana',
             'address',
             'memo',
-            'regist_form_client_display',
+            'client_regist_status_display',
             'basic_contract_date',
             'payment_site_display',
             'created_at',
             'updated_at',
         )
     
-    def dehydrate_regist_form_client_display(self, client):
+    def dehydrate_client_regist_status_display(self, client):
         """登録区分の表示名を取得"""
-        if client.regist_form_client:
+        if client.client_regist_status:
             try:
                 dropdown = Dropdowns.objects.get(
-                    category='regist_form_client',
-                    value=client.regist_form_client,
+                    category='client_regist_status',
+                    value=client.client_regist_status,
                     active=True
                 )
                 return dropdown.name
             except Dropdowns.DoesNotExist:
-                return str(client.regist_form_client)
+                return str(client.client_regist_status)
         return ''
