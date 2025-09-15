@@ -60,14 +60,6 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="input-group me-2 mb-2" style="width: 12em;">
-                <select name="contract_pattern" class="form-select form-select-sm">
-                    <option value="">契約パターン（全て）</option>
-                    {% for pattern in contract_pattern_list %}
-                    <option value="{{ pattern.pk }}" {% if contract_pattern_filter == pattern.pk|stringformat:"s" %}selected{% endif %}>{{ pattern.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
             <div class="btn-group me-2 mb-2" role="group">
                 <button class="btn btn-primary btn-sm" type="submit">検索</button>
                 <button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
@@ -133,7 +125,6 @@
                                     <th>契約名</th>
                                     <th>クライアント</th>
                                     <th>契約種別</th>
-                                    <th>契約パターン</th>
                                     <th>契約番号</th>
                                     <th>契約期間</th>
                                     <th class="text-end">契約金額</th>
@@ -155,7 +146,6 @@
                                             {% my_name 'client_contract_type' contract.client_contract_type_code %}
                                         </span>
                                     </td>
-                                    <td>{{ contract.contract_pattern.name|default:"-" }}</td>
                                     <td>{{ contract.contract_number|default:"-" }}</td>
                                     <td>
                                         {{ contract.start_date|date:"Y/m/d" }}
