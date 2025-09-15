@@ -75,6 +75,10 @@ def main():
     
     # インポート順序（依存関係を考慮）
     import_commands = [
+        ("python manage.py create_initial_superuser", "初期スーパーユーザー作成"),
+        ("python manage.py loaddata _sample_data/company.json", "会社データ"),
+        ("python manage.py loaddata _sample_data/company_department.json", "部署データ"),
+        ("python manage.py loaddata _sample_data/company_user.json", "自社担当者データ"),
         ("python manage.py loaddata _sample_data/dropdowns.json", "ドロップダウンデータ"),
         ("python manage.py loaddata _sample_data/parameters.json", "パラメータデータ"),
         ("python manage.py loaddata _sample_data/menus.json", "メニューデータ"),
@@ -91,9 +95,6 @@ def main():
         ("python manage.py loaddata _sample_data/minimum_pay.json", "最低賃金マスタデータ"),
         ("python manage.py loaddata _sample_data/master_contract_pattern.json", "契約パターンマスタデータ"),
         ("python manage.py loaddata _sample_data/master_contract_terms.json", "契約文言マスタデータ"),
-        ("python manage.py loaddata _sample_data/company.json", "会社データ"),
-        ("python manage.py loaddata _sample_data/company_department.json", "部署データ"),
-        ("python manage.py loaddata _sample_data/company_user.json", "自社担当者データ"),
         ("python manage.py loaddata _sample_data/staff.json", "スタッフデータ"),
         ("python manage.py loaddata _sample_data/staff_international.json", "スタッフ外国籍情報データ"),
         ("python manage.py loaddata _sample_data/staff_contacted.json", "スタッフ連絡履歴データ"),
