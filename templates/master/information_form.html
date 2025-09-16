@@ -22,7 +22,7 @@
                     <div class="form-check form-check-inline">
                         {{ radio.tag }}
                         <label class="form-check-label" for="{{ radio.id_for_label }}">
-                            <span class="badge {{ radio.choice_value|badge_class }}">{{ radio.choice_label }}</span>
+                            <span class="badge {{ radio.data.value|badge_class }}">{{ radio.choice_label }}</span>
                         </label>
                     </div>
                     {% endfor %}
