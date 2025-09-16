@@ -41,7 +41,7 @@
                         <div class="text-danger small">{{ form.domain.errors.0 }}</div>
                     {% endif %}
                 </div>
-                <div class="col-sm-3">
+                <div class="col-sm-3" id="contract_type_code_dropdowns">
                     {{ form.contract_type_code }}
                     {% if form.contract_type_code.errors %}
                         <div class="text-danger small">{{ form.contract_type_code.errors.0 }}</div>
@@ -104,14 +104,14 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const domainRadios = document.querySelectorAll('input[name="domain"]');
-    const contractTypeRow = document.getElementById('contract_type_code_row');
+    const contractTypeRow = document.getElementById('contract_type_code_dropdowns');
 
     function toggleContractTypeRow() {
         const selectedDomain = document.querySelector('input[name="domain"]:checked').value;
         if (selectedDomain === '10') { // 10 is for 'クライアント'
             contractTypeRow.style.display = '';
         } else {
-            contractTypeRow.style.display = '';//'none';
+            contractTypeRow.style.display = 'none';
         }
     }
 
