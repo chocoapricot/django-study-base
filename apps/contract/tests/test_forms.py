@@ -40,12 +40,12 @@ class ContractFormTest(TestCase):
         )
 
         self.job_category = JobCategory.objects.create(name='エンジニア', is_active=True)
-        self.client_pattern = ContractPattern.objects.create(name='クライアント向け基本契約', domain='10', is_active=True)
+        self.client_pattern = ContractPattern.objects.create(name='クライアント向け基本契約', domain='10', contract_type_code='10', is_active=True)
         self.staff_pattern = ContractPattern.objects.create(name='スタッフ向け雇用契約', domain='1', is_active=True)
 
     def test_client_contract_form_with_new_fields(self):
         """クライアント契約フォーム（新しいフィールドあり）のテスト"""
-        form = ClientContractForm()
+        form = ClientContractForm(initial={'client_contract_type_code': self.client_pattern.contract_type_code})
         self.assertIn('job_category', form.fields)
         self.assertIn('contract_pattern', form.fields)
 
@@ -61,6 +61,7 @@ class ContractFormTest(TestCase):
             'contract_pattern': self.client_pattern.pk,
             'start_date': date(2024, 2, 1),
             'end_date': date(2024, 12, 31),
+            'client_contract_type_code': self.client_pattern.contract_type_code,
         }
         form = ClientContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
@@ -113,7 +114,8 @@ class ContractFormTest(TestCase):
             end_date=date(2024, 12, 31),
             contract_amount=1000000,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            contract_pattern=self.client_pattern
         )
         
         # 編集用フォームを作成
@@ -164,7 +166,10 @@ class ContractFormTest(TestCase):
             'contract_name': 'テスト契約',
             'start_date': date(2023, 12, 1),  # 基本契約締結日より前
             'end_date': date(2024, 12, 31),
-            'contract_amount': 1000000
+            'contract_amount': 1000000,
+            'contract_pattern': self.client_pattern.pk,
+            'job_category': self.job_category.pk,
+            'client_contract_type_code': self.client_pattern.contract_type_code,
         }
         
         form = ClientContractForm(data=form_data)
@@ -194,11 +199,13 @@ class ContractFormTest(TestCase):
             'contract_name': 'テスト契約',
             'start_date': date(2024, 2, 1),  # 基本契約締結日以降
             'end_date': date(2024, 12, 31),
-            'contract_amount': 1000000
+            'contract_amount': 1000000,
+            'contract_pattern': self.client_pattern.pk,
+            'client_contract_type_code': self.client_pattern.contract_type_code,
         }
         
         form = ClientContractForm(data=form_data)
-        self.assertTrue(form.is_valid())
+        self.assertTrue(form.is_valid(), form.errors)
     
     def test_staff_contract_form_valid_data(self):
         """スタッフ契約フォームの正常データテスト"""
@@ -274,6 +281,7 @@ class ContractFormDisplayTest(TestCase):
     def test_client_contract_form_edit_display_initialization(self):
         """クライアント契約フォーム編集時の表示初期化テスト"""
         # 既存の契約を作成
+        self.client_pattern = ContractPattern.objects.create(name='クライアント向け基本契約', domain='10', contract_type_code='10', is_active=True)
         contract = ClientContract.objects.create(
             client=self.client_obj,
             contract_name='表示テスト契約',
@@ -281,7 +289,8 @@ class ContractFormDisplayTest(TestCase):
             end_date=date(2024, 12, 31),
             contract_amount=500000,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            contract_pattern=self.client_pattern
         )
         
         # 編集用フォームを作成
@@ -333,6 +342,7 @@ class ContractFormDisplayTest(TestCase):
             updated_by=self.user
         )
         
+        self.client_pattern = ContractPattern.objects.create(name='クライアント向け基本契約', domain='10', contract_type_code='10', is_active=True)
         contract = ClientContract.objects.create(
             client=special_client,
             contract_name='特殊文字テスト契約',
@@ -340,7 +350,8 @@ class ContractFormDisplayTest(TestCase):
             end_date=date(2024, 12, 31),
             contract_amount=100000,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            contract_pattern=self.client_pattern
         )
         
         form = ClientContractForm(instance=contract)

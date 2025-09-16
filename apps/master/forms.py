@@ -115,7 +115,9 @@ class ContractPatternForm(forms.ModelForm):
         ]
         self.fields['contract_type_code'] = forms.ChoiceField(
             label='契約種別',
-            choices=choices,
+            choices=[('', '---------')] + [
+                (d.value, d.name) for d in Dropdowns.objects.filter(category='client_contract_type', active=True)
+            ],
             required=False,
             widget=forms.Select(attrs={'class': 'form-control form-control-sm'})
         )

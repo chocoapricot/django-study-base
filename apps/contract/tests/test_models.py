@@ -78,7 +78,8 @@ class ContractModelTest(TestCase):
             end_date=timezone.now().date() + timedelta(days=365),
             contract_amount=1000000,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            contract_pattern=self.client_pattern
         )
 
         self.assertEqual(contract.client, self.client_obj)

@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from apps.master.models import BillPayment
+from apps.master.models import BillPayment, ContractPattern
 from apps.master.forms import BillPaymentForm
 
 User = get_user_model()
@@ -154,12 +154,14 @@ class BillPaymentModelTest(TestCase):
         # クライアント契約を作成して支払条件を設定
         from apps.contract.models import ClientContract
         from datetime import date
+        contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='10')
         contract = ClientContract.objects.create(
             client=client,
             contract_name='テスト契約',
             start_date=date.today(),
             end_date=date(2025, 12, 31),
-            payment_site=self.bill_payment
+            payment_site=self.bill_payment,
+            contract_pattern=contract_pattern
         )
         
         # 利用件数が2になることを確認（クライアント1 + 契約1）

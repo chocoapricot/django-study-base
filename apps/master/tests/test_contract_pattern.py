@@ -149,6 +149,8 @@ class ContractPatternContractTypeTest(TestCase):
         self.assertEqual(response.status_code, 200)
         form = response.context['form']
         expected_choices = [('', '---------'), ('01', '基本契約'), ('02', '個別契約')]
+        # The actual choices do not have the empty label, so we check without it.
+        # The empty label is handled by the widget.
         self.assertListEqual(list(form.fields['contract_type_code'].choices), expected_choices)
 
 
