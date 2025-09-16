@@ -12,7 +12,7 @@ class CompanyForm(forms.ModelForm):
         return value
     class Meta:
         model = Company
-        fields = ['name', 'corporate_number', 'representative', 'postal_code', 'address', 'phone_number']
+        fields = ['name', 'corporate_number', 'representative', 'postal_code', 'address', 'phone_number', 'haken_permit_number', 'shokai_permit_number']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'corporate_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
@@ -20,6 +20,8 @@ class CompanyForm(forms.ModelForm):
             'postal_code': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'address': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'haken_permit_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'shokai_permit_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
         }
     
     def clean_corporate_number(self):

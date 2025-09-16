@@ -23,6 +23,32 @@
         </div>
         {% endif %}
 
+        {% if company.haken_permit_number %}
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>派遣許可番号</strong>
+            </div>
+            <div class="col-sm-4">
+                <span class="copy-target">{{ company.haken_permit_number }}</span>
+                <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
+                <span class="copy-message">コピーしました!</span>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if company.shokai_permit_number %}
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>職業紹介許可番号</strong>
+            </div>
+            <div class="col-sm-4">
+                <span class="copy-target">{{ company.shokai_permit_number }}</span>
+                <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
+                <span class="copy-message">コピーしました!</span>
+            </div>
+        </div>
+        {% endif %}
+
         <div class="row mb-3 align-items-center">
             <div class="col-sm-2 text-start text-md-end">
                 <strong>代表者</strong>
