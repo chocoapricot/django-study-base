@@ -32,16 +32,6 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約パターン</label>
-                <div class="col-sm-4">
-                    {{ form.contract_pattern }}
-                    {% if form.contract_pattern.errors %}
-                        <div class="text-danger small">{{ form.contract_pattern.errors.0 }}</div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="row mb-3 align-items-center">
                 <label for="{{ form.contract_status.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約状況</label>
                 <div class="col-sm-4">
                     {{ form.contract_status }}
@@ -55,6 +45,16 @@
                 <label for="{{ form.client_contract_type_display.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約種別</label>
                 <div class="col-sm-4">
                     {{ form.client_contract_type_display }}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.contract_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約パターン</label>
+                <div class="col-sm-4">
+                    {{ form.contract_pattern }}
+                    {% if form.contract_pattern.errors %}
+                        <div class="text-danger small">{{ form.contract_pattern.errors.0 }}</div>
+                    {% endif %}
                 </div>
             </div>
 

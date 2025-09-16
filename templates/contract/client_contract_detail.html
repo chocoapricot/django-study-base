@@ -87,7 +87,7 @@
                             <tr>
                                 <th>契約種別</th>
                                 <td>
-                                    <span class="badge bg-info">
+                                    <span class="badge {{contract.client_contract_type_code|badge_class}}">
                                         {% my_name 'client_contract_type' contract.client_contract_type_code %}
                                     </span>
                                     {{ contract.contract_pattern.name|default:"-" }}
