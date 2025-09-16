@@ -6,14 +6,25 @@ from .models import ClientContract, StaffContract, ClientContractPrint, StaffCon
 from apps.common.pdf_utils import generate_contract_pdf
 from apps.system.logs.models import AppLog
 
+def get_contract_pdf_title(contract):
+    """
+    契約書の種類に応じてPDFのタイトルを決定する。
+    """
+    if isinstance(contract, ClientContract):
+        if contract.contract_pattern and contract.contract_pattern.contract_type_code == '20':
+            return "労働者派遣個別契約書"
+        else:
+            return "業務委託契約書"
+    elif isinstance(contract, StaffContract):
+        return "雇用契約書"
+    return "契約書"
+
 def generate_and_save_contract_pdf(contract, user):
     """契約書PDFを生成し、保存する共通関数"""
+    pdf_title = get_contract_pdf_title(contract)
+
     if isinstance(contract, ClientContract):
         contract_type = 'client'
-        if contract.contract_pattern and contract.contract_pattern.contract_type_code == '20':
-            pdf_title = "労働者派遣個別契約書"
-        else:
-            pdf_title = "業務委託契約書"
         intro_text = f"{contract.client.name} 様との間で、以下の通り業務委託契約を締結します。"
         start_date_str = contract.start_date.strftime('%Y年%m月%d日')
         end_date_str = contract.end_date.strftime('%Y年%m月%d日') if contract.end_date else "無期限"
@@ -31,7 +42,6 @@ def generate_and_save_contract_pdf(contract, user):
         model_name = 'ClientContract'
     elif isinstance(contract, StaffContract):
         contract_type = 'staff'
-        pdf_title = "雇用契約書"
         intro_text = f"{contract.staff.name_last} {contract.staff.name_first} 様との間で、以下の通り雇用契約を締結します。"
         start_date_str = contract.start_date.strftime('%Y年%m月%d日')
         end_date_str = contract.end_date.strftime('%Y年%m月%d日') if contract.end_date else "無期限"

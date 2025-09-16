@@ -1,4 +1,6 @@
 from django.test import TestCase
+
+from apps.contract.utils import get_contract_pdf_title
 from unittest.mock import patch
 from apps.contract.utils import generate_and_save_contract_pdf
 from apps.contract.models import ClientContract
