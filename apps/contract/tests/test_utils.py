@@ -1,6 +1,5 @@
 from django.test import TestCase
 
-from apps.contract.utils import get_contract_pdf_title
 from unittest.mock import patch
 from apps.contract.utils import generate_and_save_contract_pdf
 from apps.contract.models import ClientContract
@@ -74,21 +73,3 @@ class ContractUtilsTest(TestCase):
         args, kwargs = mock_generate_pdf.call_args
         self.assertEqual(args[1], "業務委託契約書")
 
-    @patch('apps.contract.utils.generate_contract_pdf')
-    def test_contract_with_no_pattern_pdf_title(self, mock_generate_pdf):
-        """
-        Test that a contract with no pattern defaults to '業務委託契約書'.
-        """
-        no_pattern_contract = ClientContract.objects.create(
-            client=self.client,
-            contract_name='Test No Pattern Contract',
-            contract_pattern=None,
-            start_date=datetime.date.today(),
-            payment_site=self.payment_site,
-        )
-
-        generate_and_save_contract_pdf(no_pattern_contract, self.user)
-
-        mock_generate_pdf.assert_called_once()
-        args, kwargs = mock_generate_pdf.call_args
-        self.assertEqual(args[1], "業務委託契約書")

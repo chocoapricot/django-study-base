@@ -44,8 +44,6 @@ class ClientContract(MyModel):
         on_delete=models.PROTECT,
         verbose_name='契約パターン',
         limit_choices_to={'domain': '10'},
-        null=True,
-        blank=True,
     )
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
     contract_status = models.CharField(
