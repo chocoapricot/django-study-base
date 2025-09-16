@@ -1,100 +1,121 @@
 [
-  {
+{
     "model": "master.contractpattern",
     "pk": 1,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "name": "正社員",
-      "domain": "1",
-      "display_order": 10,
-      "is_active": true
+        "version": 1758030461926832,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_by": 1,
+        "name": "正社員",
+        "domain": "1",
+        "contract_type_code": null,
+        "memo": null,
+        "display_order": 10,
+        "is_active": true
     }
-  },
-  {
+},
+{
     "model": "master.contractpattern",
     "pk": 2,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "name": "契約社員",
-      "domain": "1",
-      "display_order": 20,
-      "is_active": true
+        "version": 1758030461931334,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_by": 1,
+        "name": "契約社員",
+        "domain": "1",
+        "contract_type_code": null,
+        "memo": null,
+        "display_order": 20,
+        "is_active": true
     }
-  },
-  {
+},
+{
     "model": "master.contractpattern",
     "pk": 3,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "name": "派遣契約",
-      "domain": "1",
-      "display_order": 30,
-      "is_active": true
+        "version": 1758030461933353,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_by": 1,
+        "name": "派遣契約",
+        "domain": "1",
+        "contract_type_code": null,
+        "memo": null,
+        "display_order": 30,
+        "is_active": true
     }
-  },
-  {
+},
+{
     "model": "master.contractpattern",
     "pk": 4,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "name": "紹介予定派遣",
-      "domain": "1",
-      "display_order": 40,
-      "is_active": true
+        "version": 1758030461935227,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_by": 1,
+        "name": "紹介予定派遣",
+        "domain": "1",
+        "contract_type_code": null,
+        "memo": null,
+        "display_order": 40,
+        "is_active": true
     }
-  },
-  {
+},
+{
     "model": "master.contractpattern",
     "pk": 5,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "name": "請負契約",
-      "domain": "10",
-      "display_order": 10,
-      "is_active": true
+        "version": 1758030551234655,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-16T14:04:57.887Z",
+        "updated_by": 1,
+        "name": "請負契約",
+        "domain": "10",
+        "contract_type_code": "1",
+        "memo": "",
+        "display_order": 10,
+        "is_active": true
     }
-  },
-  {
+},
+{
     "model": "master.contractpattern",
     "pk": 6,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "name": "準委任契約",
-      "domain": "10",
-      "display_order": 20,
-      "is_active": true
+        "version": 1758030559777546,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-16T14:05:06.429Z",
+        "updated_by": 1,
+        "name": "準委任契約",
+        "domain": "10",
+        "contract_type_code": "10",
+        "memo": "",
+        "display_order": 20,
+        "is_active": true
     }
-  },
-  {
+},
+{
     "model": "master.contractpattern",
     "pk": 7,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "name": "派遣契約",
-      "domain": "10",
-      "display_order": 30,
-      "is_active": true
+        "version": 1758030567182668,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-16T14:05:13.835Z",
+        "updated_by": 1,
+        "name": "派遣契約",
+        "domain": "10",
+        "contract_type_code": "20",
+        "memo": "",
+        "display_order": 30,
+        "is_active": true
     }
-  }
+}
 ]
