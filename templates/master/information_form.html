@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load help_tags %}
+{% load badge_tags %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4">
@@ -21,7 +22,7 @@
                     <div class="form-check form-check-inline">
                         {{ radio.tag }}
                         <label class="form-check-label" for="{{ radio.id_for_label }}">
-                            <span class="badge bg-secondary">{{ radio.choice_label }}</span>
+                            <span class="badge {{ radio.choice_value|badge_class }}">{{ radio.choice_label }}</span>
                         </label>
                     </div>
                     {% endfor %}
