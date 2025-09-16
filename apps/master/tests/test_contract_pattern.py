@@ -122,7 +122,7 @@ class ContractPatternContractTypeTest(TestCase):
         self.assertRedirects(response, reverse('master:contract_pattern_list'))
         self.assertTrue(ContractPattern.objects.filter(name='Client Pattern without Type').exists())
         new_pattern = ContractPattern.objects.get(name='Client Pattern without Type')
-        self.assertIsNone(new_pattern.contract_type_code)
+        self.assertEqual(new_pattern.contract_type_code, '')
 
     def test_create_staff_pattern_ignores_contract_type(self):
         """
