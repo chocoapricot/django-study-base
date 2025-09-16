@@ -5,6 +5,7 @@ from apps.client.models import Client, ClientUser
 from apps.company.models import Company
 from apps.connect.models import ConnectClient
 from apps.contract.models import ClientContract
+from apps.master.models import ContractPattern
 from django.utils import timezone
 
 from django.test import Client as TestClient
@@ -33,12 +34,18 @@ class ClientContractConfirmTest(TestCase):
             status='approved'
         )
 
+        self.contract_pattern = ContractPattern.objects.create(
+            name='Test Pattern',
+            domain='10',
+            contract_type_code='10'
+        )
         self.contract = ClientContract.objects.create(
             client=self.client_model_instance,
             corporate_number=self.company.corporate_number,
             contract_name='Test Contract',
             start_date=timezone.now().date(),
-            contract_status=ClientContract.ContractStatus.ISSUED
+            contract_status=ClientContract.ContractStatus.ISSUED,
+            contract_pattern=self.contract_pattern
         )
         self.client = TestClient()
 

@@ -41,10 +41,8 @@ class ClientContract(MyModel):
     )
     contract_pattern = models.ForeignKey(
         'master.ContractPattern',
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         verbose_name='契約パターン',
-        null=True,
-        blank=True,
         limit_choices_to={'domain': '10'},
     )
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)

@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from ..models import ClientContract, StaffContract
 from apps.client.models import Client as TestClient
+from apps.master.models import ContractPattern
 import datetime
 
 User = get_user_model()
@@ -38,10 +39,12 @@ class ContractViewTest(TestCase):
             name_furigana='テストクライアント',
             address='Test Address'
         )
+        self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='10')
         self.client_contract = ClientContract.objects.create(
             client=self.test_client,
             contract_name='Test Contract',
-            start_date=datetime.date.today()
+            start_date=datetime.date.today(),
+            contract_pattern=self.contract_pattern
         )
 
         self.client = Client()
@@ -70,10 +73,12 @@ class ContractViewTest(TestCase):
         """スタッフ契約PDFビューのテスト"""
         from apps.staff.models import Staff
         staff = Staff.objects.create(name_last='Test', name_first='Staff')
+        staff_pattern = ContractPattern.objects.create(name='Staff Pattern', domain='1')
         staff_contract = StaffContract.objects.create(
             staff=staff,
             contract_name='Test Staff Contract',
-            start_date=datetime.date.today()
+            start_date=datetime.date.today(),
+            contract_pattern=staff_pattern
         )
         response = self.client.get(reverse('contract:staff_contract_pdf', kwargs={'pk': staff_contract.pk}))
         self.assertEqual(response.status_code, 200)
@@ -85,11 +90,13 @@ class ContractViewTest(TestCase):
         from apps.staff.models import Staff
         from ..models import StaffContractPrint
         staff = Staff.objects.create(name_last='Test', name_first='Staff')
+        staff_pattern = ContractPattern.objects.create(name='Staff Pattern', domain='1')
         staff_contract = StaffContract.objects.create(
             staff=staff,
             contract_name='Test Staff Contract',
             start_date=datetime.date.today(),
             contract_status=StaffContract.ContractStatus.APPROVED,
+            contract_pattern=staff_pattern
         )
         self.assertEqual(StaffContractPrint.objects.count(), 0)
         response = self.client.get(reverse('contract:staff_contract_pdf', kwargs={'pk': staff_contract.pk}))
@@ -147,11 +154,13 @@ class ContractViewTest(TestCase):
         from apps.staff.models import Staff
         from ..models import StaffContractPrint
         staff = Staff.objects.create(name_last='Test', name_first='Staff')
+        staff_pattern = ContractPattern.objects.create(name='Staff Pattern', domain='1')
         staff_contract = StaffContract.objects.create(
             staff=staff,
             contract_name='Test Staff Contract',
             start_date=datetime.date.today(),
             contract_status=StaffContract.ContractStatus.APPROVED,
+            contract_pattern=staff_pattern
         )
         self.client.get(reverse('contract:staff_contract_pdf', kwargs={'pk': staff_contract.pk}))
         print_history = StaffContractPrint.objects.filter(staff_contract=staff_contract).first()

@@ -49,12 +49,13 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
     class Meta:
         model = ClientContract
         fields = [
-            'client', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
+            'client', 'client_contract_type_code', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
             'start_date', 'end_date', 'contract_amount',
             'description', 'notes', 'payment_site'
         ]
         widgets = {
             'client': forms.HiddenInput(),
+            'client_contract_type_code': forms.HiddenInput(),
             'contract_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'job_category': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'contract_pattern': forms.Select(attrs={'class': 'form-select form-select-sm'}),
@@ -71,9 +72,30 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         from apps.master.models import BillPayment, ContractPattern, JobCategory
         self.fields['job_category'].queryset = JobCategory.objects.filter(is_active=True)
-        self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, domain='10')
+        self.fields['contract_pattern'].required = True
+        self.fields['contract_pattern'].empty_label = '契約パターンを選択してください'
         self.fields['end_date'].required = True
         self.fields['payment_site'].queryset = BillPayment.get_active_list()
+
+        contract_type_code = None
+        if self.is_bound and 'client_contract_type_code' in self.data:
+            contract_type_code = self.data.get('client_contract_type_code')
+        elif self.instance and self.instance.pk:
+            contract_type_code = self.instance.client_contract_type_code
+        elif self.initial and 'client_contract_type_code' in self.initial:
+            contract_type_code = self.initial.get('client_contract_type_code')
+
+        if contract_type_code:
+            self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(
+                is_active=True, domain='10', contract_type_code=contract_type_code
+            )
+            try:
+                dropdown = Dropdowns.objects.get(category='client_contract_type', value=contract_type_code)
+                self.fields['client_contract_type_display'].initial = dropdown.name
+            except Dropdowns.DoesNotExist:
+                self.fields['client_contract_type_display'].initial = '未設定'
+        else:
+            self.fields['contract_pattern'].queryset = ContractPattern.objects.none()
 
         # 編集画面では「作成中」「申請中」のみ選択可能にする
         choices = [
@@ -100,20 +122,6 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
                 self.fields['client_display'].initial = client.name
             except Client.DoesNotExist:
                 pass
-
-        # 契約種別の表示を設定
-        contract_type_code = None
-        if self.instance and self.instance.pk:
-            contract_type_code = self.instance.client_contract_type_code
-        elif 'client_contract_type_code' in self.initial:
-            contract_type_code = self.initial['client_contract_type_code']
-
-        if contract_type_code:
-            try:
-                dropdown = Dropdowns.objects.get(category='client_contract_type', value=contract_type_code)
-                self.fields['client_contract_type_display'].initial = dropdown.name
-            except Dropdowns.DoesNotExist:
-                self.fields['client_contract_type_display'].initial = '未設定'
         
         # クライアントに支払条件が設定されている場合の処理
         if client and client.payment_site:

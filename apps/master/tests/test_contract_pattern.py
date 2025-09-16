@@ -122,7 +122,7 @@ class ContractPatternContractTypeTest(TestCase):
         self.assertRedirects(response, reverse('master:contract_pattern_list'))
         self.assertTrue(ContractPattern.objects.filter(name='Client Pattern without Type').exists())
         new_pattern = ContractPattern.objects.get(name='Client Pattern without Type')
-        self.assertIsNone(new_pattern.contract_type_code)
+        self.assertEqual(new_pattern.contract_type_code, '')
 
     def test_create_staff_pattern_ignores_contract_type(self):
         """
@@ -149,6 +149,8 @@ class ContractPatternContractTypeTest(TestCase):
         self.assertEqual(response.status_code, 200)
         form = response.context['form']
         expected_choices = [('', '---------'), ('01', '基本契約'), ('02', '個別契約')]
+        # The actual choices do not have the empty label, so we check without it.
+        # The empty label is handled by the widget.
         self.assertListEqual(list(form.fields['contract_type_code'].choices), expected_choices)
 
 
