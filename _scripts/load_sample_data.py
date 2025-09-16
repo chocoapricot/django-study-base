@@ -75,7 +75,6 @@ def main():
     
     # インポート順序（依存関係を考慮）
     import_commands = [
-        ("python manage.py create_initial_superuser", "初期スーパーユーザー作成"),
         ("python manage.py loaddata _sample_data/company.json", "会社データ"),
         ("python manage.py loaddata _sample_data/company_department.json", "部署データ"),
         ("python manage.py loaddata _sample_data/company_user.json", "自社担当者データ"),
