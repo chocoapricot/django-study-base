@@ -10,7 +10,10 @@ def generate_and_save_contract_pdf(contract, user):
     """契約書PDFを生成し、保存する共通関数"""
     if isinstance(contract, ClientContract):
         contract_type = 'client'
-        pdf_title = "業務委託契約書"
+        if contract.contract_pattern and contract.contract_pattern.contract_type_code == '20':
+            pdf_title = "労働者派遣個別契約書"
+        else:
+            pdf_title = "業務委託契約書"
         intro_text = f"{contract.client.name} 様との間で、以下の通り業務委託契約を締結します。"
         start_date_str = contract.start_date.strftime('%Y年%m月%d日')
         end_date_str = contract.end_date.strftime('%Y年%m月%d日') if contract.end_date else "無期限"

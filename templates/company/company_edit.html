@@ -80,7 +80,26 @@
                     {% endif %}
                 </div>
             </div>
-            
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.haken_permit_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.haken_permit_number.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.haken_permit_number }}
+                    {% if form.haken_permit_number.errors %}
+                        <div class="text-danger">{{ form.haken_permit_number.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.shokai_permit_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.shokai_permit_number.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.shokai_permit_number }}
+                    {% if form.shokai_permit_number.errors %}
+                        <div class="text-danger">{{ form.shokai_permit_number.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
             
             
             <div class="mt-4">
