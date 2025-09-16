@@ -110,10 +110,14 @@ class ContractPatternForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['contract_type_code'].choices = [('', '---------')] + [
-            (d.value, d.name) for d in Dropdowns.objects.filter(category='client_contract_type', active=True)
-        ]
-        self.fields['contract_type_code'].required = False
+        self.fields['contract_type_code'] = forms.ChoiceField(
+            label='契約種別',
+            choices=[
+                (d.value, d.name) for d in Dropdowns.objects.filter(category='client_contract_type', active=True)
+            ],
+            required=False,
+            widget=forms.Select(attrs={'class': 'form-control form-control-sm'})
+        )
 
     def clean(self):
         cleaned_data = super().clean()
