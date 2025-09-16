@@ -1,4 +1,5 @@
 {% extends 'common/_base.html' %}
+{% load badge_tags %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -25,14 +26,30 @@
                 </div>
             </div>
 
-            <div id="contract_type_code_row" class="row mb-3 align-items-center">
-                <label for="{{ form.contract_type_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約種別</label>
-                <div class="col-sm-6">
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.domain.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">対象</label>
+                <div class="col-sm-3">
+                    {% for radio in form.domain %}
+                    <div class="form-check form-check-inline">
+                        {{ radio.tag }}
+                        <label class="form-check-label" for="{{ radio.id_for_label }}">
+                            <span class="badge {{ radio.data.value|badge_class }}">{{ radio.choice_label }}</span>
+                        </label>
+                    </div>
+                    {% endfor %}
+                    {% if form.domain.errors %}
+                        <div class="text-danger small">{{ form.domain.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm-3">
                     {{ form.contract_type_code }}
                     {% if form.contract_type_code.errors %}
                         <div class="text-danger small">{{ form.contract_type_code.errors.0 }}</div>
                     {% endif %}
                 </div>
+            </div>
+
+            <div id="contract_type_code_row" class="row mb-3 align-items-center">
             </div>
 
             <div class="row mb-3 align-items-center">
@@ -41,21 +58,6 @@
                     {{ form.memo }}
                     {% if form.memo.errors %}
                         <div class="text-danger small">{{ form.memo.errors.0 }}</div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.domain.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">対象</label>
-                <div class="col-sm-10">
-                    {% for radio in form.domain %}
-                    <div class="form-check form-check-inline">
-                        {{ radio.tag }}
-                        <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
-                    </div>
-                    {% endfor %}
-                    {% if form.domain.errors %}
-                        <div class="text-danger small">{{ form.domain.errors.0 }}</div>
                     {% endif %}
                 </div>
             </div>
@@ -109,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selectedDomain === '10') { // 10 is for 'クライアント'
             contractTypeRow.style.display = '';
         } else {
-            contractTypeRow.style.display = 'none';
+            contractTypeRow.style.display = '';//'none';
         }
     }
 

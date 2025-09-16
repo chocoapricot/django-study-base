@@ -1,4 +1,5 @@
 {% extends 'common/_base.html' %}
+{% load dropdowns badge_tags %}
 {% load static %}
 
 {% block title %}{{ title }}{% endblock %}
@@ -44,13 +45,7 @@
                     {% for pattern in patterns %}
                     <tr>
                         <td>
-                            {% if pattern.domain == '1' %}
-                                <span class="badge bg-primary">{{ pattern.get_domain_display }}</span>
-                            {% elif pattern.domain == '10' %}
-                                <span class="badge bg-info">{{ pattern.get_domain_display }}</span>
-                            {% else %}
-                                {{ pattern.get_domain_display }}
-                            {% endif %}
+                            <span class="badge {{ pattern.domain|badge_class }}">{% my_name 'domain' pattern.domain %}</span>
                         </td>
                         <td>
                             <a href="{% url 'master:contract_pattern_detail' pattern.pk %}">{{ pattern.name }}</a>

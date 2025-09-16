@@ -1,4 +1,5 @@
 {% extends 'common/_base.html' %}
+{% load dropdowns badge_tags %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -19,8 +20,8 @@
         </div>
         <div class="row">
             <label class="col-sm-2 col-form-label text-start text-md-end"><strong>対象</strong></label>
-            <div class="col-sm-10">
-                <p class="form-control-plaintext">{{ pattern.get_domain_display }}</p>
+            <div class="col-sm-5">
+                <span class="badge {{ pattern.domain|badge_class }}">{% my_name 'domain' pattern.domain %}</span>
             </div>
         </div>
         <div class="row">
