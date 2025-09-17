@@ -52,24 +52,26 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.staff_display.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.staff.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
                     スタッフ
                     {% my_help_preset "staff_selection" %}
                 </label>
-                <div class="col-sm-10">
+                <div class="col-sm-6">
                     {{ form.staff }}
+                    {% if form.staff.errors %}
+                        <div class="text-danger small">{{ form.staff.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm-4">
                     <div id="staff-display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057;">
                         <span id="staff-display-text">未選択</span>　
-                        <button type="button" class="btn btn-sm btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#staffSelectModal">
+                        <button type="button" class="btn btn-sm btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#staffSelectModal" id="staffSelectButton">
                             選択
                         </button>
                         <button type="button" class="btn btn-sm btn-secondary" onclick="clearStaff()">
                             クリア
                         </button>
                     </div>
-                    {% if form.staff.errors %}
-                        <div class="text-danger small">{{ form.staff.errors.0 }}</div>
-                    {% endif %}
                 </div>
             </div>
 
@@ -160,7 +162,7 @@
 </div>
 
 <!-- Staff Selection Modal -->
-<div class="modal fade" id="staffSelectModal" tabindex="-1" aria-labelledby="staffSelectModalLabel" aria-hidden="true">
+<div class="modal fade" id="staffSelectModal" tabindex="-1" aria-labelledby="staffSelectModalLabel" aria-hidden="true" style="z-index: 9999;">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
@@ -168,18 +170,55 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Content will be loaded here -->
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">読み込み中...</span>
+                    </div>
+                    <p class="mt-2">読み込み中...</p>
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">閉じる</button>
             </div>
         </div>
     </div>
 </div>
 
+<style>
+/* モーダルデバッグ用スタイル */
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    z-index: 9998 !important;
+}
+
+.modal {
+    z-index: 9999 !important;
+}
+
+.modal.show {
+    display: block !important;
+}
+
+/* デバッグ用：モーダルが見えない場合の強制表示 */
+#staffSelectModal.debug-show {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999 !important;
+}
+</style>
+
 <script>
 // ページ読み込み時に選択されたスタッフ情報を処理
 document.addEventListener('DOMContentLoaded', function() {
+    // Bootstrap JSが読み込まれているかチェック
+    if (typeof bootstrap === 'undefined') {
+        console.error('Bootstrap JSが読み込まれていません');
+        return;
+    }
     // ツールチップを有効化
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -199,10 +238,104 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Modal event listener
     const staffSelectModal = document.getElementById('staffSelectModal');
-    staffSelectModal.addEventListener('show.bs.modal', function (event) {
-        loadModalContent(event, 1);
-    });
+    if (staffSelectModal) {
+        staffSelectModal.addEventListener('show.bs.modal', function (event) {
+            loadModalContent(event, 1);
+        });
+    }
+
+    // ボタンクリックイベントを手動で追加（Bootstrap属性が効かない場合の対策）
+    const staffSelectButton = document.getElementById('staffSelectButton');
+    if (staffSelectButton) {
+        staffSelectButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            const modalElement = document.getElementById('staffSelectModal');
+            if (modalElement) {
+                
+                // 既存のモーダルインスタンスを確認
+                let modal = bootstrap.Modal.getInstance(modalElement);
+                if (!modal) {
+                    modal = new bootstrap.Modal(modalElement, {
+                        backdrop: true,
+                        keyboard: true,
+                        focus: true
+                    });
+                }
+                
+                modal.show();
+                
+                // 1秒後にモーダルが表示されているかチェック
+                setTimeout(function() {
+                    const isVisible = modalElement.classList.contains('show');
+                    const displayStyle = window.getComputedStyle(modalElement).display;
+                    
+                    if (!isVisible || displayStyle === 'none') {
+                        // 強制表示
+                        modalElement.style.display = 'block';
+                        modalElement.classList.add('show', 'debug-show');
+                        document.body.classList.add('modal-open');
+                        
+                        // 背景を手動で追加
+                        let backdrop = document.querySelector('.modal-backdrop');
+                        if (!backdrop) {
+                            backdrop = document.createElement('div');
+                            backdrop.className = 'modal-backdrop fade show';
+                            document.body.appendChild(backdrop);
+                        }
+                        
+                        // 強制表示の場合の閉じるボタンイベントを追加
+                        setupManualModalClose(modalElement, backdrop);
+                    }
+                }, 1000);
+                
+                // モーダルイベントリスナーを追加
+                modalElement.addEventListener('show.bs.modal', function () {
+                    loadModalContent(null, 1);
+                });
+                
+            } else {
+                console.error('モーダル要素が見つかりません');
+            }
+        });
+    }
 });
+
+// 手動でモーダルを閉じる関数
+function setupManualModalClose(modalElement, backdrop) {
+    // 閉じるボタンのイベントリスナー
+    const closeButtons = modalElement.querySelectorAll('[data-bs-dismiss="modal"], .btn-close');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            closeModalManually(modalElement, backdrop);
+        });
+    });
+    
+    // 背景クリックで閉じる
+    if (backdrop) {
+        backdrop.addEventListener('click', function() {
+            closeModalManually(modalElement, backdrop);
+        });
+    }
+    
+    // ESCキーで閉じる
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modalElement.classList.contains('show')) {
+            closeModalManually(modalElement, backdrop);
+        }
+    });
+}
+
+function closeModalManually(modalElement, backdrop) {
+    // モーダルを隠す
+    modalElement.style.display = 'none';
+    modalElement.classList.remove('show', 'debug-show');
+    document.body.classList.remove('modal-open');
+    
+    // 背景を削除
+    if (backdrop && backdrop.parentNode) {
+        backdrop.parentNode.removeChild(backdrop);
+    }
+}
 
 function clearStaff() {
     document.getElementById('{{ form.staff.id_for_label }}').value = '';
@@ -212,8 +345,18 @@ function clearStaff() {
 function selectStaff(staffId, staffName) {
     document.getElementById('{{ form.staff.id_for_label }}').value = staffId;
     document.getElementById('staff-display-text').textContent = staffName;
-    var modal = bootstrap.Modal.getInstance(document.getElementById('staffSelectModal'));
-    modal.hide();
+    
+    const modalElement = document.getElementById('staffSelectModal');
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    
+    if (modal) {
+        // Bootstrap モーダルインスタンスがある場合
+        modal.hide();
+    } else if (modalElement.classList.contains('debug-show')) {
+        // 手動表示されたモーダルの場合
+        const backdrop = document.querySelector('.modal-backdrop');
+        closeModalManually(modalElement, backdrop);
+    }
 }
 
 function loadModalContent(event, page, clearSearch = false) {
