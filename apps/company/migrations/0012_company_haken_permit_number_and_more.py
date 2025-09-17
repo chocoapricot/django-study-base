@@ -14,14 +14,14 @@ class Migration(migrations.Migration):
             model_name="company",
             name="haken_permit_number",
             field=models.CharField(
-                blank=True, max_length=100, null=True, verbose_name="派遣許可番号"
+                blank=True, max_length=100, null=True, verbose_name="許可番号(人材派遣)"
             ),
         ),
         migrations.AddField(
             model_name="company",
             name="shokai_permit_number",
             field=models.CharField(
-                blank=True, max_length=100, null=True, verbose_name="職業紹介許可番号"
+                blank=True, max_length=100, null=True, verbose_name="許可番号(職業紹介)"
             ),
         ),
     ]

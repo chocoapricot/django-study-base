@@ -53,10 +53,15 @@
 
             <div class="row mb-3 align-items-center">
                 <div class="col-sm-2 text-start text-md-end">
-                    <strong>メモ</strong>
+                    <strong>支払条件</strong>
                 </div>
-                <div class="col-sm-10">
-                    {{ client.memo }}
+                <div class="col-sm-6">
+                    {% if client.payment_site %}
+                        {{ client.payment_site.name }}
+                        <small class="text-muted">（{{ client.payment_site.full_schedule_display }}）</small>
+                    {% else %}
+                        <span class="text-muted">未設定</span>
+                    {% endif %}
                 </div>
             </div>
 
@@ -74,7 +79,7 @@
 
             <div class="row mb-3 align-items-center">
                 <div class="col-sm-2 text-start text-md-end">
-                    <strong>基本契約締結日(派遣)</strong>
+                    <strong>基本契約締結日(人材派遣)</strong>
                 </div>
                 <div class="col-sm-4">
                     {% if client.basic_contract_date_haken %}
@@ -86,15 +91,10 @@
 
             <div class="row mb-3 align-items-center">
                 <div class="col-sm-2 text-start text-md-end">
-                    <strong>支払条件</strong>
+                    <strong>メモ</strong>
                 </div>
-                <div class="col-sm-6">
-                    {% if client.payment_site %}
-                        {{ client.payment_site.name }}
-                        <small class="text-muted">（{{ client.payment_site.full_schedule_display }}）</small>
-                    {% else %}
-                        <span class="text-muted">未設定</span>
-                    {% endif %}
+                <div class="col-sm-10">
+                    {{ client.memo }}
                 </div>
             </div>
 

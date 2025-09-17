@@ -138,8 +138,8 @@ class Company(MyModel):
     postal_code = models.CharField('郵便番号', max_length=7, blank=True, null=True)
     address = models.CharField('住所', max_length=500, blank=True, null=True)
     phone_number = models.CharField('電話番号', max_length=20, blank=True, null=True)
-    haken_permit_number = models.CharField('派遣許可番号', max_length=100, blank=True, null=True)
-    shokai_permit_number = models.CharField('職業紹介許可番号', max_length=100, blank=True, null=True)
+    haken_permit_number = models.CharField('許可番号(人材派遣)', max_length=100, blank=True, null=True)
+    shokai_permit_number = models.CharField('許可番号(職業紹介)', max_length=100, blank=True, null=True)
 
 
     class Meta:

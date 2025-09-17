@@ -71,7 +71,7 @@
                 </div>
             </div>
             
-            <div class="row align-items-center">
+            <div class="row mb-3 align-items-center">
                 <label for="{{ form.phone_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.phone_number.label }} {% my_help_preset "phone_number" %}</label>
                 <div class="col-sm-6">
                     {{ form.phone_number }}
@@ -81,9 +81,9 @@
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center">
+            <div class="row align-items-center">
                 <label for="{{ form.haken_permit_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.haken_permit_number.label }}</label>
-                <div class="col-sm-6">
+                <div class="col-sm-2">
                     {{ form.haken_permit_number }}
                     {% if form.haken_permit_number.errors %}
                         <div class="text-danger">{{ form.haken_permit_number.errors }}</div>
@@ -93,7 +93,7 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.shokai_permit_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.shokai_permit_number.label }}</label>
-                <div class="col-sm-6">
+                <div class="col-sm-2">
                     {{ form.shokai_permit_number }}
                     {% if form.shokai_permit_number.errors %}
                         <div class="text-danger">{{ form.shokai_permit_number.errors }}</div>

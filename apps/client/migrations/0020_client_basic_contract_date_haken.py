@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
             model_name="client",
             name="basic_contract_date_haken",
             field=models.DateField(
-                blank=True, null=True, verbose_name="基本契約締結日(派遣)"
+                blank=True, null=True, verbose_name="基本契約締結日(人材派遣)"
             ),
         ),
     ]
