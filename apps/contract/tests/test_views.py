@@ -150,6 +150,50 @@ class ContractViewTest(TestCase):
         self.assertEqual(response['Content-Type'], 'application/pdf')
         self.assertTrue(response['Content-Disposition'].startswith(f'attachment; filename="'))
 
+    def test_client_contract_create_view_post_invalid_data_persists(self):
+        """POSTリクエストで無効なデータを送信した際に、入力データが維持されることをテスト"""
+        create_url = reverse('contract:client_contract_create')
+
+        # 無効なデータを作成（契約名が長すぎる）
+        invalid_data = {
+            'client_contract_type_code': '10',
+            'contract_name': 'a' * 256, # models.ClientContract.contract_name is CharField(max_length=255)
+            'start_date': '2025-01-01',
+            'end_date': '2025-12-31',
+        }
+
+        response = self.client.post(create_url, data=invalid_data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '契約名') # Check if form is rendered
+        self.assertContains(response, 'a' * 256) # Check if the invalid data is in the response
+        self.assertIn('form', response.context)
+        self.assertTrue(response.context['form'].errors)
+
+    def test_client_contract_create_view_client_selection_persists_data(self):
+        """クライアント選択後もフォームデータが維持されることをテスト"""
+        create_url = reverse('contract:client_contract_create')
+
+        # データを作成
+        form_data = {
+            'client_contract_type_code': '10',
+            'contract_name': 'Test Contract Name',
+            'start_date': '2025-02-01',
+            'end_date': '2026-01-31',
+            'client': self.test_client.pk,
+        }
+
+        # GETリクエストをシミュレート
+        response = self.client.get(create_url, data=form_data)
+        self.assertEqual(response.status_code, 200)
+
+        # データが維持されているか確認
+        self.assertContains(response, 'Test Contract Name')
+        form = response.context['form']
+        self.assertEqual(form.initial['contract_name'], 'Test Contract Name')
+        self.assertEqual(form.initial['start_date'], '2025-02-01')
+        self.assertEqual(str(form.initial['client']), str(self.test_client.pk))
+
     def test_client_contract_update_preserves_contract_type(self):
         """契約更新時に契約種別が維持されることをテスト"""
         from apps.system.settings.models import Dropdowns

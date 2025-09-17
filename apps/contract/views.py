@@ -152,30 +152,28 @@ def client_contract_detail(request, pk):
 @permission_required('contract.add_clientcontract', raise_exception=True)
 def client_contract_create(request):
     """クライアント契約作成"""
-    # URLパラメータからクライアントIDと契約種別を取得
-    selected_client_id = request.GET.get('selected_client_id')
-    client_contract_type_code = request.GET.get('client_contract_type_code')
-    
     if request.method == 'POST':
-        form = ClientContractForm(request.POST)
+        form = ClientContractForm(request.POST, request=request)
         if form.is_valid():
             contract = form.save(commit=False)
             contract.created_by = request.user
             contract.updated_by = request.user
-            # フォームにない契約種別をここで設定
-            contract.client_contract_type_code = form.cleaned_data.get('client_contract_type_code')
             contract.save()
             messages.success(request, f'クライアント契約「{contract.contract_name}」を作成しました。')
             return redirect('contract:client_contract_detail', pk=contract.pk)
+        else:
+            # フォームが無効な場合でも契約種別をコンテキストに渡す
+            client_contract_type_code = request.POST.get('client_contract_type_code')
     else:
-        # 初期値を設定
-        initial_data = {}
+        # GETリクエストの場合
+        initial_data = request.GET.dict()
+        selected_client_id = initial_data.get('selected_client_id')
         if selected_client_id:
             initial_data['client'] = selected_client_id
-        if client_contract_type_code:
-            initial_data['client_contract_type_code'] = client_contract_type_code
-        form = ClientContractForm(initial=initial_data)
-    
+
+        form = ClientContractForm(initial=initial_data, request=request)
+        client_contract_type_code = initial_data.get('client_contract_type_code')
+
     context = {
         'form': form,
         'title': 'クライアント契約作成',

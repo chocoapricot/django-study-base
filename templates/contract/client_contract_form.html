@@ -68,9 +68,9 @@
                     {{ form.client }}
                     <div id="client-display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057;">
                         <span id="client-display-text">未選択</span>　
-                        <a href="{% url 'contract:client_select' %}?return_url={{ request.get_full_path|urlencode }}&client_contract_type_code={{ client_contract_type_code }}" class="btn btn-sm btn-secondary me-2">
+                        <button type="button" id="selectClientBtn" class="btn btn-sm btn-secondary me-2">
                             選択
-                        </a>
+                        </button>
                         <button type="button" class="btn btn-sm btn-secondary" onclick="clearClient()">
                             クリア
                         </button>
@@ -215,6 +215,24 @@ document.addEventListener('DOMContentLoaded', function() {
         currentUrl.searchParams.delete('selected_client_name');
         window.history.replaceState({}, document.title, currentUrl.href);
     }
+
+    document.getElementById('selectClientBtn').addEventListener('click', function() {
+        const form = document.querySelector('form');
+        const formData = new FormData(form);
+        const params = new URLSearchParams();
+        for (const pair of formData) {
+            if (pair[0] !== 'csrfmiddlewaretoken') {
+                params.append(pair[0], pair[1]);
+            }
+        }
+
+        const returnUrl = `{% url 'contract:client_contract_create' %}?${params.toString()}`;
+        const clientContractTypeCode = document.querySelector('[name="client_contract_type_code"]').value;
+
+        let selectUrl = `{% url 'contract:client_select' %}?return_url=${encodeURIComponent(returnUrl)}&client_contract_type_code=${clientContractTypeCode}`;
+
+        window.location.href = selectUrl;
+    });
 });
 
 function clearClient() {
