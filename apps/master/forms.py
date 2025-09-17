@@ -125,8 +125,15 @@ class ContractPatternForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         domain = cleaned_data.get('domain')
-        if domain != '10':
+        contract_type_code = cleaned_data.get('contract_type_code')
+
+        if domain == '10':
+            if not contract_type_code:
+                self.add_error('contract_type_code', 'クライアントが対象の場合、契約種別は必須です。')
+        else:
+            # If domain is not client, clear the contract_type_code
             cleaned_data['contract_type_code'] = None
+
         return cleaned_data
 
 
