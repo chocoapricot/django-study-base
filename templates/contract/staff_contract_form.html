@@ -188,8 +188,25 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>これは標準的なBootstrapモーダルです。</p>
-                <p>data-bs-toggle属性で開かれています。</p>
+                <h6>スタッフ一覧（空のテーブル）</h6>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>スタッフ名</th>
+                                <th>社員番号</th>
+                                <th>入社日</th>
+                                <th>部署</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">スタッフデータがありません</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
@@ -256,6 +273,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+
+
     // ボタンクリックイベントを手動で追加（Bootstrap属性が効かない場合の対策）
     const staffSelectButton = document.getElementById('staffSelectButton');
     if (staffSelectButton) {
@@ -274,6 +293,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
                 
+                // aria-hidden を事前に修正
+                modalElement.setAttribute('aria-hidden', 'false');
                 modal.show();
                 
                 // 1秒後にモーダルが表示されているかチェック
@@ -285,6 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // 強制表示
                         modalElement.style.display = 'block';
                         modalElement.classList.add('show', 'debug-show');
+                        modalElement.setAttribute('aria-hidden', 'false'); // aria-hidden を修正
                         document.body.classList.add('modal-open');
                         
                         // 背景を手動で追加
@@ -341,6 +363,7 @@ function closeModalManually(modalElement, backdrop) {
     // モーダルを隠す
     modalElement.style.display = 'none';
     modalElement.classList.remove('show', 'debug-show');
+    modalElement.setAttribute('aria-hidden', 'true'); // aria-hidden を元に戻す
     document.body.classList.remove('modal-open');
     
     // 背景を削除
@@ -371,6 +394,8 @@ function selectStaff(staffId, staffName) {
     }
 }
 
+
+
 function loadModalContent(event, page, clearSearch = false) {
     if (event) {
         event.preventDefault();
@@ -395,6 +420,8 @@ function loadModalContent(event, page, clearSearch = false) {
             modalBody.innerHTML = '<p>コンテンツの読み込みに失敗しました。</p>';
         });
 }
+
+
 
 function setEndDate(months) {
     const startDateInput = document.getElementById('{{ form.start_date.id_for_label }}');
