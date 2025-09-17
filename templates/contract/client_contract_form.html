@@ -67,7 +67,7 @@
                     {{ form.client }}
                     <div id="client-display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057;">
                         <span id="client-display-text">未選択</span>　
-                        <a href="{% url 'contract:client_select' %}?return_url={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-secondary me-2">
+                        <a href="{% url 'contract:client_select' %}?return_url={{ request.get_full_path|urlencode }}&client_contract_type_code={{ client_contract_type_code }}" class="btn btn-sm btn-secondary me-2">
                             選択
                         </a>
                         <button type="button" class="btn btn-sm btn-secondary" onclick="clearClient()">

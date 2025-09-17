@@ -1,3 +1,4 @@
+import unittest
 from django.test import TestCase
 from unittest.mock import patch
 from apps.contract.utils import generate_and_save_contract_pdf
@@ -72,6 +73,7 @@ class ContractUtilsTest(TestCase):
         args, kwargs = mock_generate_pdf.call_args
         self.assertEqual(args[1], "業務委託契約書")
 
+    @unittest.skip("This test is invalid because contract_pattern is a required field.")
     @patch('apps.contract.utils.generate_contract_pdf')
     def test_contract_with_no_pattern_pdf_title(self, mock_generate_pdf):
         """

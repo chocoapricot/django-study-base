@@ -179,6 +179,7 @@ def client_contract_create(request):
     context = {
         'form': form,
         'title': 'クライアント契約作成',
+        'client_contract_type_code': client_contract_type_code,
     }
     return render(request, 'contract/client_contract_form.html', context)
 
@@ -419,8 +420,13 @@ def client_select(request):
     search_query = request.GET.get('q', '')
     return_url = request.GET.get('return_url', '')
     
-    # 基本契約締結日が入っているクライアントのみを対象とする
-    clients = Client.objects.filter(basic_contract_date__isnull=False)
+    client_contract_type_code = request.GET.get('client_contract_type_code')
+
+    # 契約種別に応じて、適切な基本契約締結日でフィルタリング
+    if client_contract_type_code == '20':  # 派遣の場合
+        clients = Client.objects.filter(basic_contract_date_haken__isnull=False)
+    else:  # それ以外（業務委託など）の場合
+        clients = Client.objects.filter(basic_contract_date__isnull=False)
     
     if search_query:
         clients = clients.filter(
