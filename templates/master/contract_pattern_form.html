@@ -105,13 +105,16 @@
 document.addEventListener('DOMContentLoaded', function() {
     const domainRadios = document.querySelectorAll('input[name="domain"]');
     const contractTypeRow = document.getElementById('contract_type_code_dropdowns');
+    const contractTypeCodeSelect = document.getElementById('{{ form.contract_type_code.id_for_label }}');
 
     function toggleContractTypeRow() {
         const selectedDomain = document.querySelector('input[name="domain"]:checked').value;
         if (selectedDomain === '10') { // 10 is for 'クライアント'
             contractTypeRow.style.display = '';
+            contractTypeCodeSelect.required = true;
         } else {
             contractTypeRow.style.display = 'none';
+            contractTypeCodeSelect.required = false;
         }
     }
 
