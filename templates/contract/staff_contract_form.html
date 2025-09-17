@@ -71,6 +71,10 @@
                         <button type="button" class="btn btn-sm btn-secondary" onclick="clearStaff()">
                             クリア
                         </button>
+                        <!-- テスト用標準モーダルボタン -->
+                        <button type="button" class="btn btn-sm btn-warning ms-2" data-bs-toggle="modal" data-bs-target="#standardTestModal">
+                            標準テスト
+                        </button>
                     </div>
                 </div>
             </div>
@@ -161,8 +165,41 @@
     </div>
 </div>
 
+
+<style>
+/* デバッグ用：モーダルが見えない場合の強制表示 */
+#staffSelectModal.debug-show {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999 !important;
+}
+</style>
+
+<!-- Standard Test Modal -->
+<div class="modal fade" id="standardTestModal" tabindex="-1" aria-labelledby="standardTestModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="standardTestModalLabel">標準テストモーダル</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>これは標準的なBootstrapモーダルです。</p>
+                <p>data-bs-toggle属性で開かれています。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Staff Selection Modal -->
-<div class="modal fade" id="staffSelectModal" tabindex="-1" aria-labelledby="staffSelectModalLabel" aria-hidden="true" style="z-index: 9999;">
+<div class="modal fade" id="staffSelectModal" tabindex="-1" aria-labelledby="staffSelectModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
@@ -184,32 +221,7 @@
     </div>
 </div>
 
-<style>
-/* モーダルデバッグ用スタイル */
-.modal-backdrop {
-    background-color: rgba(0, 0, 0, 0.5) !important;
-    z-index: 9998 !important;
-}
 
-.modal {
-    z-index: 9999 !important;
-}
-
-.modal.show {
-    display: block !important;
-}
-
-/* デバッグ用：モーダルが見えない場合の強制表示 */
-#staffSelectModal.debug-show {
-    display: block !important;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 9999 !important;
-}
-</style>
 
 <script>
 // ページ読み込み時に選択されたスタッフ情報を処理
@@ -293,12 +305,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     loadModalContent(null, 1);
                 });
                 
-            } else {
-                console.error('モーダル要素が見つかりません');
             }
         });
     }
 });
+
+
 
 // 手動でモーダルを閉じる関数
 function setupManualModalClose(modalElement, backdrop) {

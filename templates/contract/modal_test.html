@@ -1,0 +1,123 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block title %}モーダルテスト{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Bootstrap モーダルテスト</h2>
+    
+    <!-- 標準的なBootstrapモーダルボタン -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#testModal">
+        標準モーダルを開く
+    </button>
+    
+    <!-- JavaScriptでモーダルを開くボタン -->
+    <button type="button" class="btn btn-secondary" id="jsModalButton">
+        JavaScriptでモーダルを開く
+    </button>
+    
+    <!-- Bootstrap情報表示 -->
+    <div class="mt-4">
+        <h4>Bootstrap情報</h4>
+        <div id="bootstrap-info"></div>
+    </div>
+</div>
+
+<!-- テスト用モーダル -->
+<div class="modal fade" id="testModal" tabindex="-1" aria-labelledby="testModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="testModalLabel">テストモーダル</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>これはテスト用のモーダルです。</p>
+                <p>Bootstrap標準機能で表示されています。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Bootstrap情報を表示
+    const infoDiv = document.getElementById('bootstrap-info');
+    
+    if (typeof bootstrap !== 'undefined') {
+        infoDiv.innerHTML = `
+            <div class="alert alert-success">
+                <strong>Bootstrap JS:</strong> 正常に読み込まれています<br>
+                <strong>バージョン:</strong> ${bootstrap.Tooltip.VERSION || 'バージョン情報なし'}<br>
+                <strong>Modal クラス:</strong> ${typeof bootstrap.Modal !== 'undefined' ? '利用可能' : '利用不可'}
+            </div>
+        `;
+    } else {
+        infoDiv.innerHTML = `
+            <div class="alert alert-danger">
+                <strong>Bootstrap JS:</strong> 読み込まれていません
+            </div>
+        `;
+    }
+    
+    // JavaScriptでモーダルを開くテスト
+    const jsButton = document.getElementById('jsModalButton');
+    jsButton.addEventListener('click', function() {
+        console.log('JavaScriptボタンがクリックされました');
+        
+        const modalElement = document.getElementById('testModal');
+        console.log('モーダル要素:', modalElement);
+        
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            console.log('Bootstrap.Modalを使用してモーダルを開きます');
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+            
+            // モーダルイベントをリスン
+            modalElement.addEventListener('shown.bs.modal', function() {
+                console.log('モーダルが表示されました (shown.bs.modal)');
+            });
+            
+            modalElement.addEventListener('show.bs.modal', function() {
+                console.log('モーダル表示開始 (show.bs.modal)');
+            });
+            
+        } else {
+            console.error('Bootstrap.Modalが利用できません');
+        }
+    });
+    
+    // 標準ボタンのクリックイベントも監視
+    const standardButton = document.querySelector('[data-bs-toggle="modal"]');
+    if (standardButton) {
+        standardButton.addEventListener('click', function() {
+            console.log('標準ボタンがクリックされました');
+        });
+    }
+    
+    // モーダル要素のイベントを監視
+    const testModal = document.getElementById('testModal');
+    if (testModal) {
+        testModal.addEventListener('show.bs.modal', function() {
+            console.log('標準モーダル表示開始');
+        });
+        
+        testModal.addEventListener('shown.bs.modal', function() {
+            console.log('標準モーダルが表示されました');
+        });
+        
+        testModal.addEventListener('hide.bs.modal', function() {
+            console.log('標準モーダル非表示開始');
+        });
+        
+        testModal.addEventListener('hidden.bs.modal', function() {
+            console.log('標準モーダルが非表示になりました');
+        });
+    }
+});
+</script>
+{% endblock %}
