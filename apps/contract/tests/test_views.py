@@ -150,6 +150,68 @@ class ContractViewTest(TestCase):
         self.assertEqual(response['Content-Type'], 'application/pdf')
         self.assertTrue(response['Content-Disposition'].startswith(f'attachment; filename="'))
 
+    def test_client_contract_update_preserves_contract_type(self):
+        """契約更新時に契約種別が維持されることをテスト"""
+        from apps.system.settings.models import Dropdowns
+        from apps.master.models import ContractPattern
+
+        # 契約種別を作成
+        contract_type = Dropdowns.objects.create(
+            category='client_contract_type',
+            name='テスト契約種別',
+            value='TS',
+            disp_seq=1,
+        )
+
+        self.contract_pattern.contract_type_code = contract_type.value
+        self.contract_pattern.save()
+
+        self.test_client.basic_contract_date = '2025-01-01'
+        self.test_client.save()
+
+        # クライアント契約を作成
+        contract = ClientContract.objects.create(
+            client=self.test_client,
+            contract_name='Initial Contract',
+            client_contract_type_code=contract_type.value,
+            contract_pattern=self.contract_pattern,
+            start_date='2025-01-01',
+            end_date='2025-12-31',
+        )
+
+        self.client.login(username='testuser', password='testpass123')
+
+        update_url = reverse('contract:client_contract_update', kwargs={'pk': contract.pk})
+
+        post_data = {
+            'client': self.test_client.pk,
+            'client_contract_type_code': contract_type.value,
+            'contract_name': 'Updated Contract Name',
+            'job_category': '',
+            'contract_pattern': self.contract_pattern.pk,
+            'contract_number': '',
+            'contract_status': ClientContract.ContractStatus.DRAFT,
+            'start_date': '2025-01-01',
+            'end_date': '2025-12-31',
+            'contract_amount': '',
+            'payment_site': '',
+            'description': '',
+            'notes': '',
+        }
+
+        response = self.client.post(update_url, data=post_data)
+
+        # リダイレクトを検証
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': contract.pk}))
+
+        # 契約が更新されていることを確認
+        updated_contract = ClientContract.objects.get(pk=contract.pk)
+        self.assertEqual(updated_contract.contract_name, 'Updated Contract Name')
+
+        # 契約種別が維持されていることを確認
+        self.assertEqual(updated_contract.client_contract_type_code, contract_type.value)
+
         # staff契約のテスト
         from apps.staff.models import Staff
         from ..models import StaffContractPrint
