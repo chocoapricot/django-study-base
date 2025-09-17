@@ -110,17 +110,20 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
 
         # クライアントを取得
         client = None
-        if self.instance and self.instance.pk and hasattr(self.instance, 'client') and self.instance.client:
-            # 編集時
-            client = self.instance.client
-            self.fields['client_display'].initial = client.name
-        elif hasattr(self, 'initial') and 'client' in self.initial:
-            # 新規作成時にクライアントが指定されている場合
+        client_id = None
+
+        if self.is_bound:
+            client_id = self.data.get('client')
+        elif self.instance and self.instance.pk:
+            client_id = self.instance.client_id
+        elif 'client' in self.initial:
+            client_id = self.initial.get('client')
+
+        if client_id:
             try:
-                client = Client.objects.get(pk=self.initial['client'])
-                # クライアント表示名も設定
+                client = Client.objects.get(pk=client_id)
                 self.fields['client_display'].initial = client.name
-            except Client.DoesNotExist:
+            except (Client.DoesNotExist, ValueError):
                 pass
         
         # クライアントに支払条件が設定されている場合の処理

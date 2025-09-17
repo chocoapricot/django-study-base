@@ -209,9 +209,11 @@ document.addEventListener('DOMContentLoaded', function() {
         clientField.value = selectedClientId;
         clientDisplayText.textContent = selectedClientName;
         
-        // URLからパラメータを削除
-        const newUrl = window.location.pathname;
-        window.history.replaceState({}, document.title, newUrl);
+        // URLから選択用パラメータのみを削除し、他のパラメータは維持する
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.delete('selected_client_id');
+        currentUrl.searchParams.delete('selected_client_name');
+        window.history.replaceState({}, document.title, currentUrl.href);
     }
 });
 

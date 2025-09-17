@@ -49,7 +49,7 @@
                         </td>
                         <td>{{ client.address|default:"-"|truncatechars:30 }}</td>
                         <td>
-                            <a href="{{ return_url }}?selected_client_id={{ client.pk }}&selected_client_name={{ client.name|urlencode }}" class="btn btn-sm btn-primary">
+                            <a href="{{ return_url }}{% if '?' in return_url %}&{% else %}?{% endif %}selected_client_id={{ client.pk }}&selected_client_name={{ client.name|urlencode }}" class="btn btn-sm btn-primary">
                                 選択
                             </a>
                         </td>
