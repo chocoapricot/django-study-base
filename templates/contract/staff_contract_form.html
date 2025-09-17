@@ -181,35 +181,22 @@
 
 <!-- Standard Test Modal -->
 <div class="modal fade" id="standardTestModal" tabindex="-1" aria-labelledby="standardTestModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="standardTestModalLabel">標準テストモーダル</h5>
+                <div class="modal-title" id="standardTestModalLabel">標準テストモーダルで試す</div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <h6>スタッフ一覧（空のテーブル）</h6>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>スタッフ名</th>
-                                <th>社員番号</th>
-                                <th>入社日</th>
-                                <th>部署</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="5" class="text-center text-muted">スタッフデータがありません</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">読み込み中...</span>
+                    </div>
+                    <p class="mt-2">読み込み中...のふりなので動きません</p>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">閉じる</button>
             </div>
         </div>
     </div>
