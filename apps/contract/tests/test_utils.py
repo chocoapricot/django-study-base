@@ -1,3 +1,4 @@
+import unittest
 from django.test import TestCase
 
 from unittest.mock import patch
@@ -72,4 +73,3 @@ class ContractUtilsTest(TestCase):
         mock_generate_pdf.assert_called_once()
         args, kwargs = mock_generate_pdf.call_args
         self.assertEqual(args[1], "業務委託契約書")
-

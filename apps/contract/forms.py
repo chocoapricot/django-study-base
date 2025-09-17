@@ -175,9 +175,13 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         
         # クライアントの基本契約締結日との関係チェック
         if client and start_date:
-            # 基本契約締結日より前の開始日はエラー
-            if client.basic_contract_date and start_date < client.basic_contract_date:
-                self.add_error('start_date', f'契約開始日は基本契約締結日（{client.basic_contract_date}）以降の日付を入力してください。')
+            contract_type_code = self.cleaned_data.get('client_contract_type_code')
+            if contract_type_code == '20':  # 派遣契約の場合
+                if client.basic_contract_date_haken and start_date < client.basic_contract_date_haken:
+                    self.add_error('start_date', f'契約開始日は基本契約締結日（派遣）（{client.basic_contract_date_haken}）以降の日付を入力してください。')
+            else:  # 業務委託などの場合
+                if client.basic_contract_date and start_date < client.basic_contract_date:
+                    self.add_error('start_date', f'契約開始日は基本契約締結日（業務委託）（{client.basic_contract_date}）以降の日付を入力してください。')
         
         # 支払条件のバリデーション
         if client:
