@@ -1,0 +1,110 @@
+{% load help_tags %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        スタッフ選択
+        <small class="text-muted">※社員番号・入社日が登録されているスタッフのみ表示されます</small>
+    </div>
+    <div class="card-body">
+        <!-- 検索フォーム -->
+        <form id="staff-search-form" method="get" class="mb-3" onsubmit="loadModalContent(event, 1)">
+            <div class="row">
+                <div class="col-md-8">
+                    <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-sm" placeholder="スタッフ名、社員番号で検索">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-sm btn-primary me-2">検索</button>
+                    <a href="#" onclick="loadModalContent(event, 1, true)" class="btn btn-sm btn-secondary">クリア</a>
+                </div>
+            </div>
+        </form>
+
+        <!-- スタッフ一覧 -->
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>スタッフ名</th>
+                        <th>
+                            社員番号
+                            {% my_help_preset "staff_employee_no" %}
+                        </th>
+                        <th>
+                            入社日
+                            {% my_help_preset "staff_hire_date" %}
+                        </th>
+                        <th>部署</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for staff in staff_list %}
+                    <tr>
+                        <td>{{ staff.name_last }} {{ staff.name_first }}</td>
+                        <td>
+                            <strong>{{ staff.employee_no }}</strong>
+                        </td>
+                        <td>
+                            <strong>{{ staff.hire_date }}</strong>
+                            {% if staff.resignation_date %}
+                                <br><small class="text-muted">退職日: {{ staff.resignation_date }}</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ staff.department_code|default:"-" }}</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-primary" onclick="selectStaff('{{ staff.pk }}', '{{ staff.name_last|escapejs }} {{ staff.name_first|escapejs }}')">
+                                選択
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">該当するスタッフが見つかりません</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ページネーション -->
+        {% if staff_list.has_other_pages %}
+        <nav aria-label="ページネーション">
+            <ul class="pagination pagination-sm justify-content-center">
+                {% if staff_list.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="loadModalContent(event, {{ staff_list.previous_page_number }})">前へ</a>
+                    </li>
+                {% endif %}
+
+                {% for num in staff_list.paginator.page_range %}
+                    {% if staff_list.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > staff_list.number|add:'-3' and num < staff_list.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="#" onclick="loadModalContent(event, {{ num }})">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if staff_list.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="loadModalContent(event, {{ staff_list.next_page_number }})">次へ</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// ツールチップを有効化
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>

@@ -60,9 +60,9 @@
                     {{ form.staff }}
                     <div id="staff-display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057;">
                         <span id="staff-display-text">未選択</span>　
-                        <a href="{% url 'contract:staff_select' %}?return_url={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-secondary me-2">
+                        <button type="button" class="btn btn-sm btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#staffSelectModal">
                             選択
-                        </a>
+                        </button>
                         <button type="button" class="btn btn-sm btn-secondary" onclick="clearStaff()">
                             クリア
                         </button>
@@ -159,6 +159,24 @@
     </div>
 </div>
 
+<!-- Staff Selection Modal -->
+<div class="modal fade" id="staffSelectModal" tabindex="-1" aria-labelledby="staffSelectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staffSelectModalLabel">スタッフ選択</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 // ページ読み込み時に選択されたスタッフ情報を処理
 document.addEventListener('DOMContentLoaded', function() {
@@ -178,25 +196,49 @@ document.addEventListener('DOMContentLoaded', function() {
             staffDisplayText.textContent = '{{ contract.staff.name_last|escapejs }} {{ contract.staff.name_first|escapejs }}';
         {% endif %}
     }
-    
-    // URL パラメータからの選択処理（新規作成時の選択画面からの戻り）
-    const urlParams = new URLSearchParams(window.location.search);
-    const selectedStaffId = urlParams.get('selected_staff_id');
-    const selectedStaffName = urlParams.get('selected_staff_name');
-    
-    if (selectedStaffId && selectedStaffName) {
-        staffField.value = selectedStaffId;
-        staffDisplayText.textContent = selectedStaffName;
-        
-        // URLからパラメータを削除
-        const newUrl = window.location.pathname;
-        window.history.replaceState({}, document.title, newUrl);
-    }
+
+    // Modal event listener
+    const staffSelectModal = document.getElementById('staffSelectModal');
+    staffSelectModal.addEventListener('show.bs.modal', function (event) {
+        loadModalContent(event, 1);
+    });
 });
 
 function clearStaff() {
     document.getElementById('{{ form.staff.id_for_label }}').value = '';
     document.getElementById('staff-display-text').textContent = '未選択';
+}
+
+function selectStaff(staffId, staffName) {
+    document.getElementById('{{ form.staff.id_for_label }}').value = staffId;
+    document.getElementById('staff-display-text').textContent = staffName;
+    var modal = bootstrap.Modal.getInstance(document.getElementById('staffSelectModal'));
+    modal.hide();
+}
+
+function loadModalContent(event, page, clearSearch = false) {
+    if (event) {
+        event.preventDefault();
+    }
+
+    const modalBody = document.querySelector('#staffSelectModal .modal-body');
+    const searchForm = document.getElementById('staff-search-form');
+    let searchQuery = '';
+    if (searchForm && !clearSearch) {
+        searchQuery = new FormData(searchForm).get('q');
+    }
+
+    const url = `{% url 'contract:staff_select' %}?from_modal=1&page=${page}&q=${encodeURIComponent(searchQuery)}`;
+
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            modalBody.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error loading modal content:', error);
+            modalBody.innerHTML = '<p>コンテンツの読み込みに失敗しました。</p>';
+        });
 }
 
 function setEndDate(months) {

@@ -456,7 +456,8 @@ def staff_select(request):
     """スタッフ選択画面"""
     search_query = request.GET.get('q', '')
     return_url = request.GET.get('return_url', '')
-    
+    from_modal = request.GET.get('from_modal')
+
     # 社員番号と入社日が入っているスタッフのみを対象とする
     staff_list = Staff.objects.filter(
         employee_no__isnull=False,
@@ -482,7 +483,11 @@ def staff_select(request):
         'search_query': search_query,
         'return_url': return_url,
     }
-    return render(request, 'contract/staff_select.html', context)
+
+    if from_modal:
+        return render(request, 'contract/staff_select_modal.html', context)
+    else:
+        return render(request, 'contract/staff_select.html', context)
 
 
 # 変更履歴ビュー
