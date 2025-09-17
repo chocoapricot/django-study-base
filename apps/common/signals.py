@@ -43,6 +43,9 @@ def get_display_name(instance, field_name):
         },
         'ClientContacted': {
             'contact_type': 'contact_type'
+        },
+        'ContractPattern': {
+            'contract_type_code': 'client_contract_type',
         }
     }
 
