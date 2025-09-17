@@ -69,6 +69,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
         from apps.master.models import BillPayment, ContractPattern, JobCategory
         self.fields['job_category'].queryset = JobCategory.objects.filter(is_active=True)
