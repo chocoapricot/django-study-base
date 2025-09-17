@@ -107,9 +107,9 @@ class ContractPatternContractTypeTest(TestCase):
         new_pattern = ContractPattern.objects.get(name='Client Pattern with Type')
         self.assertEqual(new_pattern.contract_type_code, '01')
 
-    def test_create_client_pattern_without_contract_type(self):
+    def test_create_client_pattern_without_contract_type_fails(self):
         """
-        Test creating a client contract pattern without a contract_type_code.
+        Test that creating a client contract pattern without a contract_type_code fails.
         """
         post_data = {
             'name': 'Client Pattern without Type',
@@ -118,11 +118,10 @@ class ContractPatternContractTypeTest(TestCase):
             'display_order': '40',
             'is_active': 'on',
         }
-        response = self.client.post(self.create_url, post_data, follow=True)
-        self.assertRedirects(response, reverse('master:contract_pattern_list'))
-        self.assertTrue(ContractPattern.objects.filter(name='Client Pattern without Type').exists())
-        new_pattern = ContractPattern.objects.get(name='Client Pattern without Type')
-        self.assertEqual(new_pattern.contract_type_code, '')
+        response = self.client.post(self.create_url, post_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'クライアントが対象の場合、契約種別は必須です。')
+        self.assertFalse(ContractPattern.objects.filter(name='Client Pattern without Type').exists())
 
     def test_create_staff_pattern_ignores_contract_type(self):
         """
@@ -163,10 +162,12 @@ class ContractPatternMemoTest(TestCase):
         Dropdowns.objects.create(category='domain', value='1', name='スタッフ')
         Dropdowns.objects.create(category='domain', value='10', name='クライアント')
 
+        Dropdowns.objects.create(category='client_contract_type', value='01', name='基本契約')
         self.pattern = ContractPattern.objects.create(
             name='Test Pattern with Memo',
             domain='10',
             memo='This is a test memo.',
+            contract_type_code='01',
         )
         self.create_url = reverse('master:contract_pattern_create')
         self.update_url = reverse('master:contract_pattern_update', kwargs={'pk': self.pattern.pk})
@@ -196,6 +197,7 @@ class ContractPatternMemoTest(TestCase):
         post_data = {
             'name': self.pattern.name,
             'domain': self.pattern.domain,
+            'contract_type_code': self.pattern.contract_type_code,
             'memo': 'This is an updated memo.',
             'display_order': self.pattern.display_order,
             'is_active': 'on' if self.pattern.is_active else '',
