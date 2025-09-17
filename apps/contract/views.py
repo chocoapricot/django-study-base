@@ -163,7 +163,7 @@ def client_contract_create(request):
             contract.created_by = request.user
             contract.updated_by = request.user
             # フォームにない契約種別をここで設定
-            contract.client_contract_type_code = form.initial.get('client_contract_type_code')
+            contract.client_contract_type_code = form.cleaned_data.get('client_contract_type_code')
             contract.save()
             messages.success(request, f'クライアント契約「{contract.contract_name}」を作成しました。')
             return redirect('contract:client_contract_detail', pk=contract.pk)
@@ -199,6 +199,7 @@ def client_contract_update(request, pk):
         if form.is_valid():
             contract = form.save(commit=False)
             contract.updated_by = request.user
+            contract.client_contract_type_code = form.cleaned_data.get('client_contract_type_code')
             contract.save()
             messages.success(request, f'クライアント契約「{contract.contract_name}」を更新しました。')
             return redirect('contract:client_contract_detail', pk=contract.pk)
