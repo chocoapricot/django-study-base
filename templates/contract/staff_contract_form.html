@@ -65,15 +65,11 @@
                 <div class="col-sm-4">
                     <div id="staff-display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057;">
                         <span id="staff-display-text">未選択</span>　
-                        <button type="button" class="btn btn-sm btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#staffSelectModal" id="staffSelectButton">
+                        <button type="button" class="btn btn-sm btn-secondary me-2" id="staffSelectFetchButton">
                             選択
                         </button>
                         <button type="button" class="btn btn-sm btn-secondary" onclick="clearStaff()">
                             クリア
-                        </button>
-                        <!-- テスト用標準モーダルボタン -->
-                        <button type="button" class="btn btn-sm btn-warning ms-2" id="standardTestFetchButton">
-                            標準テスト
                         </button>
                     </div>
                 </div>
@@ -257,6 +253,38 @@
 <script>
 // ページ読み込み時に選択されたスタッフ情報を処理
 document.addEventListener('DOMContentLoaded', function() {
+    // 「選択」ボタンもfetchで標準テストモーダルと同じ動きに
+    const staffSelectFetchButton = document.getElementById('staffSelectFetchButton');
+    if (staffSelectFetchButton) {
+        staffSelectFetchButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            fetch('{% url "contract:staff_select" %}?from_modal=1')
+                .then(response => response.text())
+                .then(html => {
+                    // モーダルbodyにHTMLを挿入
+                    const modalBody = document.querySelector('#standardTestModal .modal-body');
+                    if (modalBody) {
+                        modalBody.innerHTML = html;
+                    }
+                    // モーダルを開く
+                    const modalElement = document.getElementById('standardTestModal');
+                    if (modalElement) {
+                        let modal = bootstrap.Modal.getInstance(modalElement);
+                        if (!modal) {
+                            modal = new bootstrap.Modal(modalElement, {
+                                backdrop: true,
+                                keyboard: true,
+                                focus: true
+                            });
+                        }
+                        modal.show();
+                    }
+                })
+                .catch(error => {
+                    alert('取得失敗: ' + error);
+                });
+        });
+    }
     // 標準テストfetchボタン
     const standardTestFetchButton = document.getElementById('standardTestFetchButton');
     if (standardTestFetchButton) {
