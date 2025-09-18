@@ -253,6 +253,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (clientField.value) {
         {% if contract and contract.client %}
             clientDisplayText.textContent = '{{ contract.client.name|escapejs }}';
+        {% elif selected_client %}
+            clientDisplayText.textContent = '{{ selected_client.name|escapejs }}';
         {% endif %}
     }
 });
