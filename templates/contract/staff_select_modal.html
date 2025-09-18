@@ -1,3 +1,4 @@
+<script>window.parentModalType = window.parentModalType || 'standardTestModal';</script>
 {% load help_tags %}
 
         <small class="text-muted">※社員番号・入社日が登録されているスタッフのみ表示されます</small>
@@ -9,7 +10,7 @@
                 </div>
                 <div class="col-md-4">
                     <button type="submit" class="btn btn-sm btn-primary me-2">検索</button>
-                    <a href="#" onclick="loadModalContent(event, 1, true)" class="btn btn-sm btn-secondary">クリア</a>
+                    <a href="#" onclick="var q=document.querySelector('input[name=\'q\']');if(q){q.value='';}if(window.parentModalType){loadModalContent(event, 1, true, window.parentModalType);}else{loadModalContent(event, 1, true);} return false;" class="btn btn-sm btn-secondary">クリア</a>
                 </div>
             </div>
         </form>
