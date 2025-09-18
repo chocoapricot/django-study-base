@@ -412,10 +412,6 @@ function closeModalManually(modalElement, backdrop) {
     }
 }
 
-function clearStaff() {
-    document.getElementById('{{ form.staff.id_for_label }}').value = '';
-    document.getElementById('staff-display-text').textContent = '未選択';
-}
 
 function selectStaff(staffId, staffName) {
     document.getElementById('{{ form.staff.id_for_label }}').value = staffId;
