@@ -426,19 +426,24 @@ function clearStaff() {
 function selectStaff(staffId, staffName) {
     document.getElementById('{{ form.staff.id_for_label }}').value = staffId;
     document.getElementById('staff-display-text').textContent = staffName;
-    
-    const modalElement = document.getElementById('staffSelectModal');
-    const modal = bootstrap.Modal.getInstance(modalElement);
-    
-    if (modal) {
-        // Bootstrap モーダルインスタンスがある場合
-        modal.hide();
-    } else if (modalElement.classList.contains('debug-show')) {
-        // 手動表示されたモーダルの場合
-        const backdrop = document.querySelector('.modal-backdrop');
-        closeModalManually(modalElement, backdrop);
+
+    // どちらのモーダルからでも閉じる
+    const modalIds = ['staffSelectModal', 'standardTestModal'];
+    for (const id of modalIds) {
+        const modalElement = document.getElementById(id);
+        if (modalElement) {
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            } else if (modalElement.classList.contains('debug-show')) {
+                const backdrop = document.querySelector('.modal-backdrop');
+                closeModalManually(modalElement, backdrop);
+            }
+        }
     }
 }
+// グローバル公開
+window.selectStaff = selectStaff;
 
 
 
