@@ -247,6 +247,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // 既存のスタッフが選択されている場合（編集時）
         {% if contract and contract.staff %}
             staffDisplayText.textContent = '{{ contract.staff.name_last|escapejs }} {{ contract.staff.name_first|escapejs }}';
+        {% elif staff %}
+            staffDisplayText.textContent = '{{ staff.name_last|escapejs }} {{ staff.name_first|escapejs }}';
         {% endif %}
     }
 
