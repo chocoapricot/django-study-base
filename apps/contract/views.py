@@ -152,9 +152,10 @@ def client_contract_detail(request, pk):
 @permission_required('contract.add_clientcontract', raise_exception=True)
 def client_contract_create(request):
     """クライアント契約作成"""
-    # URLパラメータからクライアントIDと契約種別を取得
-    selected_client_id = request.GET.get('selected_client_id')
+    selected_client_id_from_get = request.GET.get('selected_client_id')
     client_contract_type_code = request.GET.get('client_contract_type_code')
+
+    selected_client = None
 
     if request.method == 'POST':
         form = ClientContractForm(request.POST)
@@ -162,16 +163,25 @@ def client_contract_create(request):
             contract = form.save(commit=False)
             contract.created_by = request.user
             contract.updated_by = request.user
-            # フォームにない契約種別をここで設定
             contract.client_contract_type_code = form.cleaned_data.get('client_contract_type_code')
             contract.save()
             messages.success(request, f'クライアント契約「{contract.contract_name}」を作成しました。')
             return redirect('contract:client_contract_detail', pk=contract.pk)
+        else:
+            client_id = request.POST.get('client')
+            if client_id:
+                try:
+                    selected_client = Client.objects.get(pk=client_id)
+                except (Client.DoesNotExist, ValueError):
+                    pass
     else:
-        # 初期値を設定
         initial_data = {}
-        if selected_client_id:
-            initial_data['client'] = selected_client_id
+        if selected_client_id_from_get:
+            initial_data['client'] = selected_client_id_from_get
+            try:
+                selected_client = Client.objects.get(pk=selected_client_id_from_get)
+            except (Client.DoesNotExist, ValueError):
+                pass
         if client_contract_type_code:
             initial_data['client_contract_type_code'] = client_contract_type_code
         form = ClientContractForm(initial=initial_data)
@@ -180,6 +190,7 @@ def client_contract_create(request):
         'form': form,
         'title': 'クライアント契約作成',
         'client_contract_type_code': client_contract_type_code,
+        'selected_client': selected_client,
     }
     return render(request, 'contract/client_contract_form.html', context)
 
