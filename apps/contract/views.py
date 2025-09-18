@@ -420,6 +420,7 @@ def client_select(request):
     """クライアント選択画面"""
     search_query = request.GET.get('q', '')
     return_url = request.GET.get('return_url', '')
+    from_modal = request.GET.get('from_modal')
     
     client_contract_type_code = request.GET.get('client_contract_type_code')
 
@@ -432,8 +433,7 @@ def client_select(request):
     if search_query:
         clients = clients.filter(
             Q(name__icontains=search_query) |
-            Q(corporate_number__icontains=search_query) |
-            Q(address__icontains=search_query)
+            Q(corporate_number__icontains=search_query)
         )
     
     clients = clients.order_by('name')
@@ -447,8 +447,13 @@ def client_select(request):
         'clients': clients_page,
         'search_query': search_query,
         'return_url': return_url,
+        'client_contract_type_code': client_contract_type_code,
     }
-    return render(request, 'contract/client_select.html', context)
+
+    if from_modal:
+        return render(request, 'contract/_client_select_modal.html', context)
+    else:
+        return render(request, 'contract/client_select.html', context)
 
 
 @login_required
