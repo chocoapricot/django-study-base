@@ -251,38 +251,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         });
     }
-    // 標準テストfetchボタン
-    const standardTestFetchButton = document.getElementById('standardTestFetchButton');
-    if (standardTestFetchButton) {
-        standardTestFetchButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            fetch('{% url "contract:staff_select" %}?from_modal=1')
-                .then(response => response.text())
-                .then(html => {
-                    // モーダルbodyにHTMLを挿入
-                    const modalBody = document.querySelector('#standardTestModal .modal-body');
-                    if (modalBody) {
-                        modalBody.innerHTML = html;
-                    }
-                    // モーダルを開く
-                    const modalElement = document.getElementById('standardTestModal');
-                    if (modalElement) {
-                        let modal = bootstrap.Modal.getInstance(modalElement);
-                        if (!modal) {
-                            modal = new bootstrap.Modal(modalElement, {
-                                backdrop: true,
-                                keyboard: true,
-                                focus: true
-                            });
-                        }
-                        modal.show();
-                    }
-                })
-                .catch(error => {
-                    alert('取得失敗: ' + error);
-                });
-        });
-    }
     // Bootstrap JSが読み込まれているかチェック
     if (typeof bootstrap === 'undefined') {
         console.error('Bootstrap JSが読み込まれていません');
@@ -314,103 +282,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-
-    // ボタンクリックイベントを手動で追加（Bootstrap属性が効かない場合の対策）
-    const staffSelectButton = document.getElementById('staffSelectButton');
-    if (staffSelectButton) {
-        staffSelectButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            const modalElement = document.getElementById('staffSelectModal');
-            if (modalElement) {
-                
-                // 既存のモーダルインスタンスを確認
-                let modal = bootstrap.Modal.getInstance(modalElement);
-                if (!modal) {
-                    modal = new bootstrap.Modal(modalElement, {
-                        backdrop: true,
-                        keyboard: true,
-                        focus: true
-                    });
-                }
-                
-                // aria-hidden を事前に修正
-                modalElement.setAttribute('aria-hidden', 'false');
-                modal.show();
-                
-                // 1秒後にモーダルが表示されているかチェック
-                setTimeout(function() {
-                    const isVisible = modalElement.classList.contains('show');
-                    const displayStyle = window.getComputedStyle(modalElement).display;
-                    
-                    if (!isVisible || displayStyle === 'none') {
-                        // 強制表示
-                        modalElement.style.display = 'block';
-                        modalElement.classList.add('show', 'debug-show');
-                        modalElement.setAttribute('aria-hidden', 'false'); // aria-hidden を修正
-                        document.body.classList.add('modal-open');
-                        
-                        // 背景を手動で追加
-                        let backdrop = document.querySelector('.modal-backdrop');
-                        if (!backdrop) {
-                            backdrop = document.createElement('div');
-                            backdrop.className = 'modal-backdrop fade show';
-                            document.body.appendChild(backdrop);
-                        }
-                        
-                        // 強制表示の場合の閉じるボタンイベントを追加
-                        setupManualModalClose(modalElement, backdrop);
-                    }
-                }, 1000);
-                
-                // モーダルイベントリスナーを追加
-                modalElement.addEventListener('show.bs.modal', function () {
-                    loadModalContent(null, 1);
-                });
-                
-            }
-        });
-    }
 });
 
 
 
-// 手動でモーダルを閉じる関数
-function setupManualModalClose(modalElement, backdrop) {
-    // 閉じるボタンのイベントリスナー
-    const closeButtons = modalElement.querySelectorAll('[data-bs-dismiss="modal"], .btn-close');
-    closeButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            closeModalManually(modalElement, backdrop);
-        });
-    });
-    
-    // 背景クリックで閉じる
-    if (backdrop) {
-        backdrop.addEventListener('click', function() {
-            closeModalManually(modalElement, backdrop);
-        });
-    }
-    
-    // ESCキーで閉じる
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modalElement.classList.contains('show')) {
-            closeModalManually(modalElement, backdrop);
-        }
-    });
-}
 
-function closeModalManually(modalElement, backdrop) {
-    // モーダルを隠す
-    modalElement.style.display = 'none';
-    modalElement.classList.remove('show', 'debug-show');
-    modalElement.setAttribute('aria-hidden', 'true'); // aria-hidden を元に戻す
-    document.body.classList.remove('modal-open');
-    
-    // 背景を削除
-    if (backdrop && backdrop.parentNode) {
-        backdrop.parentNode.removeChild(backdrop);
-    }
-}
 
 
 function selectStaff(staffId, staffName) {
