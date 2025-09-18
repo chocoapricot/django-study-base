@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from ..models import ClientContract, StaffContract
 from apps.client.models import Client as TestClient
+from apps.staff.models import Staff
 from apps.master.models import ContractPattern
 import datetime
 
@@ -47,8 +48,36 @@ class ContractViewTest(TestCase):
             contract_pattern=self.contract_pattern
         )
 
+        self.staff = Staff.objects.create(
+            name_last='Test',
+            name_first='Staff',
+            employee_no='S001',
+            hire_date=datetime.date(2024, 1, 1),
+        )
+        self.staff_pattern = ContractPattern.objects.create(name='Staff Pattern', domain='1', is_active=True)
+
         self.client = Client()
         self.client.login(username='testuser', password='testpass123')
+
+    def test_staff_contract_create_post_invalid_retains_staff_display(self):
+        """POSTリクエストでフォームが無効な場合に、スタッフの表示が維持されるかテスト"""
+        # 無効なデータを作成（契約名が空）
+        invalid_data = {
+            'staff': self.staff.pk,
+            'contract_name': '', # Invalid
+            'start_date': datetime.date(2024, 4, 1),
+            'end_date': datetime.date(2024, 12, 31),
+            'contract_pattern': self.staff_pattern.pk,
+        }
+
+        response = self.client.post(reverse('contract:staff_contract_create'), data=invalid_data)
+
+        # フォームが再表示されることを確認
+        self.assertEqual(response.status_code, 200)
+
+        # スタッフ名がHTMLに含まれていることを確認
+        expected_text = f'{self.staff.name_last} {self.staff.name_first}'
+        self.assertContains(response, expected_text)
 
     def test_client_contract_list_view(self):
         """クライアント契約一覧ビューのテスト"""

@@ -348,6 +348,7 @@ def staff_contract_detail(request, pk):
 @permission_required('contract.add_staffcontract', raise_exception=True)
 def staff_contract_create(request):
     """スタッフ契約作成"""
+    staff = None
     if request.method == 'POST':
         form = StaffContractForm(request.POST)
         if form.is_valid():
@@ -357,12 +358,21 @@ def staff_contract_create(request):
             contract.save()
             messages.success(request, f'スタッフ契約「{contract.contract_name}」を作成しました。')
             return redirect('contract:staff_contract_detail', pk=contract.pk)
+        else:
+            # フォームが無効な場合、選択されたスタッフ情報を取得
+            staff_id = request.POST.get('staff')
+            if staff_id:
+                try:
+                    staff = Staff.objects.get(pk=staff_id)
+                except (Staff.DoesNotExist, ValueError):
+                    staff = None
     else:
         form = StaffContractForm()
-    
+
     context = {
         'form': form,
         'title': 'スタッフ契約作成',
+        'staff': staff,
     }
     return render(request, 'contract/staff_contract_form.html', context)
 
