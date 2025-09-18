@@ -56,13 +56,11 @@
                     スタッフ
                     {% my_help_preset "staff_selection" %}
                 </label>
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                     {{ form.staff }}
                     {% if form.staff.errors %}
                         <div class="text-danger small">{{ form.staff.errors.0 }}</div>
                     {% endif %}
-                </div>
-                <div class="col-sm-4">
                     <div id="staff-display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057;">
                         <span id="staff-display-text">未選択</span>　
                         <button type="button" class="btn btn-sm btn-secondary me-2" id="staffSelectFetchButton">
@@ -168,7 +166,7 @@
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title" id="standardTestModalLabel">標準テストモーダルで試す</div>
+                <div class="modal-title" id="standardTestModalLabel">スタッフ選択</div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -178,33 +176,12 @@
                         <button type="submit" class="btn btn-sm btn-primary">検索</button>
                     </div>
                 </form>
-                {% if staff_list %}
-                    <table class="table table-hover table-sm">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>氏名</th>
-                                <th>社員番号</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for staff in staff_list %}
-                            <tr>
-                                <td>{{ staff.id }}</td>
-                                <td>{{ staff.name_last }} {{ staff.name_first }}</td>
-                                <td>{{ staff.employee_no }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
                 <div class="text-center">
                     <div class="spinner-border" role="status">
                         <span class="visually-hidden">読み込み中...</span>
                     </div>
-                    <p class="mt-2">読み込み中...のふりなので動きません</p>
+                    <p class="mt-2">読み込み中...</p>
                 </div>
-                {% endif %}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">閉じる</button>
@@ -294,7 +271,7 @@ function selectStaff(staffId, staffName) {
     document.getElementById('staff-display-text').textContent = staffName;
 
     // どちらのモーダルからでも閉じる
-    const modalIds = ['staffSelectModal', 'standardTestModal'];
+    const modalIds = [ 'standardTestModal'];
     for (const id of modalIds) {
         const modalElement = document.getElementById(id);
         if (modalElement) {
@@ -337,13 +314,6 @@ window.selectStaff = selectStaff;
                     modalBody.innerHTML = '<p>コンテンツの読み込みに失敗しました。</p>';
                 }
             });
-    }
-    // Modal event listener
-    const staffSelectModal = document.getElementById('staffSelectModal');
-    if (staffSelectModal) {
-        staffSelectModal.addEventListener('show.bs.modal', function (event) {
-            loadModalContent(event, 1, false, 'staffSelectModal');
-        });
     }
     // 標準テストモーダルの検索フォームにも対応
     const standardTestModal = document.getElementById('standardTestModal');
