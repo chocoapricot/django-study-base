@@ -39,7 +39,5 @@ urlpatterns = [
     # 選択用画面
     path('client-select/', views.client_select, name='client_select'),
     path('staff-select/', views.staff_select, name='staff_select'),
-    
-    # テスト用
-    path('modal-test/', views.modal_test, name='modal_test'),
+
 ]
