@@ -1015,10 +1015,3 @@ def staff_contract_export(request):
 
     return response
 
-# テスト用ビュー
-@login_required
-def modal_test(request):
-    """モーダルテスト画面"""
-    return render(request, 'contract/modal_test.html', {
-        'title': 'Bootstrap モーダルテスト'
-    })
