@@ -25,7 +25,7 @@
                                 <input type="text" name="search" class="form-control form-control-sm" placeholder="銀行名、銀行コードで検索" value="{{ search_query }}">
                                 <button class="btn btn-sm btn-primary" type="submit">検索</button>
                                 {% if search_query %}
-                                    <a href="{% url 'master:bank_management' %}" class="btn btn-sm btn-outline-secondary">クリア</a>
+                                    <a href="{% url 'master:bank_management' %}" class="btn btn-sm btn-secondary">クリア</a>
                                 {% endif %}
                             </div>
                         </div>
