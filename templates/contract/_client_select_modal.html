@@ -40,11 +40,10 @@
                     <strong>{{ client.corporate_number|default:"-" }}</strong>
                 </td>
                 <td>
-                    {% if client.basic_contract_date %}
-                        <strong>{{ client.basic_contract_date }}</strong> (基本)
-                    {% endif %}
-                    {% if client.basic_contract_date_haken %}
-                        <br><strong>{{ client.basic_contract_date_haken }}</strong> (派遣)
+                    {% if client_contract_type_code == '20' %}
+                        <strong>{{ client.basic_contract_date_haken|default:"-" }}</strong>
+                    {% else %}
+                        <strong>{{ client.basic_contract_date|default:"-" }}</strong>
                     {% endif %}
                 </td>
                 <td>
