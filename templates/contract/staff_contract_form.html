@@ -447,30 +447,47 @@ window.selectStaff = selectStaff;
 
 
 
-function loadModalContent(event, page, clearSearch = false) {
-    if (event) {
-        event.preventDefault();
+    function loadModalContent(event, page, clearSearch = false, modalType = 'staffSelectModal') {
+        if (event) {
+            event.preventDefault();
+        }
+        // モーダルbodyの取得
+        const modalBody = document.querySelector(`#${modalType} .modal-body`);
+        const searchForm = document.getElementById('staff-search-form');
+        let searchQuery = '';
+        if (searchForm && !clearSearch) {
+            searchQuery = new FormData(searchForm).get('q');
+        }
+        const url = `{% url 'contract:staff_select' %}?from_modal=1&page=${page}&q=${encodeURIComponent(searchQuery)}`;
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                if (modalBody) {
+                    modalBody.innerHTML = html;
+                }
+            })
+            .catch(error => {
+                if (modalBody) {
+                    modalBody.innerHTML = '<p>コンテンツの読み込みに失敗しました。</p>';
+                }
+            });
     }
-
-    const modalBody = document.querySelector('#staffSelectModal .modal-body');
-    const searchForm = document.getElementById('staff-search-form');
-    let searchQuery = '';
-    if (searchForm && !clearSearch) {
-        searchQuery = new FormData(searchForm).get('q');
-    }
-
-    const url = `{% url 'contract:staff_select' %}?from_modal=1&page=${page}&q=${encodeURIComponent(searchQuery)}`;
-
-    fetch(url)
-        .then(response => response.text())
-        .then(html => {
-            modalBody.innerHTML = html;
-        })
-        .catch(error => {
-            console.error('Error loading modal content:', error);
-            modalBody.innerHTML = '<p>コンテンツの読み込みに失敗しました。</p>';
+    // Modal event listener
+    const staffSelectModal = document.getElementById('staffSelectModal');
+    if (staffSelectModal) {
+        staffSelectModal.addEventListener('show.bs.modal', function (event) {
+            loadModalContent(event, 1, false, 'staffSelectModal');
         });
-}
+    }
+    // 標準テストモーダルの検索フォームにも対応
+    const standardTestModal = document.getElementById('standardTestModal');
+    if (standardTestModal) {
+        standardTestModal.addEventListener('submit', function(e) {
+            if (e.target && e.target.id === 'staff-search-form') {
+                loadModalContent(e, 1, false, 'standardTestModal');
+            }
+        });
+    }
 
 
 
