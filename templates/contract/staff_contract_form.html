@@ -72,7 +72,7 @@
                             クリア
                         </button>
                         <!-- テスト用標準モーダルボタン -->
-                        <button type="button" class="btn btn-sm btn-warning ms-2" data-bs-toggle="modal" data-bs-target="#standardTestModal">
+                        <button type="button" class="btn btn-sm btn-warning ms-2" id="standardTestFetchButton">
                             標準テスト
                         </button>
                     </div>
@@ -188,12 +188,39 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <form method="get" class="mb-2" style="max-width:400px;" id="staff-search-form">
+                    <div class="input-group input-group-sm">
+                        <input type="text" name="q" class="form-control" placeholder="氏名・社員番号で検索" value="{{ request.GET.q|default:'' }}">
+                        <button type="submit" class="btn btn-sm btn-primary">検索</button>
+                    </div>
+                </form>
+                {% if staff_list %}
+                    <table class="table table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>氏名</th>
+                                <th>社員番号</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for staff in staff_list %}
+                            <tr>
+                                <td>{{ staff.id }}</td>
+                                <td>{{ staff.name_last }} {{ staff.name_first }}</td>
+                                <td>{{ staff.employee_no }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
                 <div class="text-center">
                     <div class="spinner-border" role="status">
                         <span class="visually-hidden">読み込み中...</span>
                     </div>
                     <p class="mt-2">読み込み中...のふりなので動きません</p>
                 </div>
+                {% endif %}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">閉じる</button>
@@ -230,6 +257,38 @@
 <script>
 // ページ読み込み時に選択されたスタッフ情報を処理
 document.addEventListener('DOMContentLoaded', function() {
+    // 標準テストfetchボタン
+    const standardTestFetchButton = document.getElementById('standardTestFetchButton');
+    if (standardTestFetchButton) {
+        standardTestFetchButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            fetch('{% url "contract:staff_select" %}?from_modal=1')
+                .then(response => response.text())
+                .then(html => {
+                    // モーダルbodyにHTMLを挿入
+                    const modalBody = document.querySelector('#standardTestModal .modal-body');
+                    if (modalBody) {
+                        modalBody.innerHTML = html;
+                    }
+                    // モーダルを開く
+                    const modalElement = document.getElementById('standardTestModal');
+                    if (modalElement) {
+                        let modal = bootstrap.Modal.getInstance(modalElement);
+                        if (!modal) {
+                            modal = new bootstrap.Modal(modalElement, {
+                                backdrop: true,
+                                keyboard: true,
+                                focus: true
+                            });
+                        }
+                        modal.show();
+                    }
+                })
+                .catch(error => {
+                    alert('取得失敗: ' + error);
+                });
+        });
+    }
     // Bootstrap JSが読み込まれているかチェック
     if (typeof bootstrap === 'undefined') {
         console.error('Bootstrap JSが読み込まれていません');
