@@ -485,7 +485,7 @@ def staff_select(request):
     }
 
     if from_modal:
-        return render(request, 'contract/staff_select_modal.html', context)
+        return render(request, 'contract/_staff_select_modal.html', context)
     else:
         return render(request, 'contract/staff_select.html', context)
 
