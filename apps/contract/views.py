@@ -465,7 +465,7 @@ def client_select(request):
     clients_page = paginator.get_page(page)
     
     context = {
-        'clients': clients_page,
+        'page_obj': clients_page,
         'search_query': search_query,
         'return_url': return_url,
         'client_contract_type_code': client_contract_type_code,
@@ -505,7 +505,7 @@ def staff_select(request):
     staff_page = paginator.get_page(page)
     
     context = {
-        'staff_list': staff_page,
+        'page_obj': staff_page,
         'search_query': search_query,
         'return_url': return_url,
     }

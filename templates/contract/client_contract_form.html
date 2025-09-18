@@ -305,6 +305,21 @@ if (standardTestModal) {
             loadClientModalContent(e, 1, false, 'standardTestModal');
         }
     });
+
+    const modalBody = standardTestModal.querySelector('.modal-body');
+    if (modalBody) {
+        modalBody.addEventListener('click', function(e) {
+            const target = e.target;
+            if (target.classList.contains('page-link')) {
+                e.preventDefault();
+                const url = new URL(target.href);
+                const page = url.searchParams.get('page');
+                if (page) {
+                    loadClientModalContent(null, page, false, 'standardTestModal');
+                }
+            }
+        });
+    }
 }
 
 function clearClient() {

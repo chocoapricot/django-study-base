@@ -34,7 +34,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for staff in staff_list %}
+                    {% for staff in page_obj.object_list %}
                     <tr>
                         <td>{{ staff.name_last }} {{ staff.name_first }}</td>
                         <td>
@@ -62,36 +62,7 @@
             </table>
         </div>
 
-        <!-- ページネーション -->
-        {% if staff_list.has_other_pages %}
-        <nav aria-label="ページネーション">
-            <ul class="pagination pagination-sm justify-content-center">
-                {% if staff_list.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="#" onclick="loadModalContent(event, {{ staff_list.previous_page_number }})">前へ</a>
-                    </li>
-                {% endif %}
-
-                {% for num in staff_list.paginator.page_range %}
-                    {% if staff_list.number == num %}
-                        <li class="page-item active">
-                            <span class="page-link">{{ num }}</span>
-                        </li>
-                    {% elif num > staff_list.number|add:'-3' and num < staff_list.number|add:'3' %}
-                        <li class="page-item">
-                            <a class="page-link" href="#" onclick="loadModalContent(event, {{ num }})">{{ num }}</a>
-                        </li>
-                    {% endif %}
-                {% endfor %}
-
-                {% if staff_list.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="#" onclick="loadModalContent(event, {{ staff_list.next_page_number }})">次へ</a>
-                    </li>
-                {% endif %}
-            </ul>
-        </nav>
-        {% endif %}
+        {% include 'common/_pagination.html' %}
 
 <script>
 // ツールチップを有効化

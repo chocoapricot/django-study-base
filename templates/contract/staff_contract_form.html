@@ -318,13 +318,27 @@ window.selectStaff = selectStaff;
             });
     }
     // 標準テストモーダルの検索フォームにも対応
-    const standardTestModal = document.getElementById('standardTestModal');
     if (standardTestModal) {
         standardTestModal.addEventListener('submit', function(e) {
             if (e.target && e.target.id === 'staff-search-form') {
                 loadModalContent(e, 1, false, 'standardTestModal');
             }
         });
+
+        const modalBody = standardTestModal.querySelector('.modal-body');
+        if (modalBody) {
+            modalBody.addEventListener('click', function(e) {
+                const target = e.target;
+                if (target.classList.contains('page-link')) {
+                    e.preventDefault();
+                    const url = new URL(target.href);
+                    const page = url.searchParams.get('page');
+                    if (page) {
+                        loadModalContent(null, page, false, 'standardTestModal');
+                    }
+                }
+            });
+        }
     }
 
 
