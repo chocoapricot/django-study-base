@@ -14,13 +14,13 @@ def get_contract_pdf_title(contract):
         if contract.contract_pattern and contract.contract_pattern.contract_type_code == '20':
             return "労働者派遣個別契約書"
         else:
-            return "業務委託個別契約書"
+            return "業務委託契約書"
     elif isinstance(contract, StaffContract):
         return "雇用契約書"
     return "契約書"
 
-def generate_and_save_contract_pdf(contract, user):
-    """契約書PDFを生成し、保存する共通関数"""
+def generate_contract_pdf_content(contract):
+    """契約書PDFのコンテンツを生成して返す"""
     pdf_title = get_contract_pdf_title(contract)
 
     if isinstance(contract, ClientContract):
@@ -39,7 +39,6 @@ def generate_and_save_contract_pdf(contract, user):
             {"title": "契約内容", "text": str(contract.description)},
             {"title": "備考", "text": str(contract.notes)},
         ]
-        model_name = 'ClientContract'
     elif isinstance(contract, StaffContract):
         contract_type = 'staff'
         intro_text = f"{contract.staff.name_last} {contract.staff.name_first} 様との間で、以下の通り雇用契約を締結します。"
@@ -55,7 +54,6 @@ def generate_and_save_contract_pdf(contract, user):
             {"title": "契約内容", "text": str(contract.description or "")},
             {"title": "備考", "text": str(contract.notes or "")},
         ]
-        model_name = 'StaffContract'
     else:
         return None, None
 
@@ -78,7 +76,6 @@ def generate_and_save_contract_pdf(contract, user):
     timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
     pdf_filename = f"{contract_type}_contract_{contract.pk}_{timestamp}.pdf"
     
-    # 透かしのテキストを決定
     watermark_text = None
     if contract.contract_status in [contract.ContractStatus.DRAFT, contract.ContractStatus.PENDING]:
         watermark_text = "DRAFT"
@@ -88,33 +85,32 @@ def generate_and_save_contract_pdf(contract, user):
     pdf_content = buffer.getvalue()
     buffer.close()
 
-    contract_dir = os.path.join(settings.MEDIA_ROOT, 'contracts', contract_type, str(contract.pk))
-    os.makedirs(contract_dir, exist_ok=True)
-    file_path_on_disk = os.path.join(contract_dir, pdf_filename)
-    with open(file_path_on_disk, 'wb') as f:
-        f.write(pdf_content)
-    
-    db_file_path = os.path.join('contracts', contract_type, str(contract.pk), pdf_filename)
-    
-    if contract_type == 'client':
-        ClientContractPrint.objects.create(
-            client_contract=contract,
-            printed_by=user,
-            pdf_file_path=db_file_path
-        )
-    else:
-        StaffContractPrint.objects.create(
-            staff_contract=contract,
-            printed_by=user,
-            pdf_file_path=db_file_path
-        )
+    return pdf_content, pdf_filename
 
-    AppLog.objects.create(
-        user=user,
-        action='print',
-        model_name=model_name,
-        object_id=str(contract.pk),
-        object_repr=f'契約書PDF出力: {contract.contract_name}'
-    )
+
+def generate_quotation_pdf(contract):
+    """見積書PDFを生成する"""
+    pdf_title = "御見積書"
+
+    intro_text = f"{contract.client.name} 様"
+    
+    start_date_str = contract.start_date.strftime('%Y年%m月%d日')
+    end_date_str = contract.end_date.strftime('%Y年%m月%d日') if contract.end_date else "無期限"
+    contract_period = f"{start_date_str}　～　{end_date_str}"
+    
+    items = [
+        {"title": "件名", "text": str(contract.contract_name)},
+        {"title": "契約期間", "text": contract_period},
+        {"title": "お見積金額", "text": f"{contract.contract_amount:,} 円" if contract.contract_amount else "別途ご相談"},
+        {"title": "支払条件", "text": str(contract.payment_site.name if contract.payment_site else "別途ご相談")},
+    ]
+
+    timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
+    pdf_filename = f"quotation_{contract.pk}_{timestamp}.pdf"
+
+    buffer = io.BytesIO()
+    generate_contract_pdf(buffer, pdf_title, intro_text, items)
+    pdf_content = buffer.getvalue()
+    buffer.close()
 
     return pdf_content, pdf_filename

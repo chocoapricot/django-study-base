@@ -19,6 +19,7 @@ urlpatterns = [
     path('client/confirm/', views.client_contract_confirm_list, name='client_contract_confirm_list'),
     path('client/<int:pk>/approve/', views.client_contract_approve, name='client_contract_approve'),
     path('client/<int:pk>/issue/', views.client_contract_issue, name='client_contract_issue'),
+    path('client/<int:pk>/issue_quotation/', views.issue_quotation, name='issue_quotation'),
     path('client/<int:pk>/confirm/', views.client_contract_confirm, name='client_contract_confirm'),
     path('client/export/', views.client_contract_export, name='client_contract_export'),
     

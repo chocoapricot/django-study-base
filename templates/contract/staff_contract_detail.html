@@ -16,7 +16,7 @@
                 {% if contract.contract_status == '1' or contract.contract_status == '20' %}
                 <ul class="nav nav-pills">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">ドラフト印刷</a>
+                        <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">印刷</a>
                         <div class="dropdown-menu">
                             <a href="{% url 'contract:staff_contract_pdf' contract.pk %}" class="dropdown-item"><i class="bi bi-filetype-pdf"></i>　雇用契約書　(PDF)</a>
                         </div>
