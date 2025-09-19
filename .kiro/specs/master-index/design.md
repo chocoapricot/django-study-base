@@ -44,23 +44,26 @@ def master_index_list(request):
 
 **マスタ定義**:
 ```python
+# 実際には、資格や技能だけでなく、職種、支払条件、銀行など、
+# 多数のマスタがカテゴリ別に定義されている。
 MASTER_CONFIGS = [
     {
-        'name': '資格管理',
-        'description': '資格・免許・認定等の管理',
-        'model': 'master.Qualification',
-        'url_name': 'master:qualification_list',
-        'icon': 'bi-award',
-        'permission': 'master.view_qualification'
+        "category": "スタッフ",
+        "name": "資格管理",
+        "description": "資格・免許・認定等の管理",
+        "model": "master.Qualification",
+        "url_name": "master:qualification_list",
+        "permission": "master.view_qualification",
     },
     {
-        'name': '技能管理', 
-        'description': 'スキル・技術・能力等の管理',
-        'model': 'master.Skill',
-        'url_name': 'master:skill_list',
-        'icon': 'bi-tools',
-        'permission': 'master.view_skill'
-    }
+        "category": "スタッフ",
+        "name": "技能管理",
+        "description": "スキル・技術・能力等の管理",
+        "model": "master.Skill",
+        "url_name": "master:skill_list",
+        "permission": "master.view_skill",
+    },
+    # ... 他にも多数のマスタが定義されている
 ]
 ```
 
@@ -85,6 +88,9 @@ def get_data_count(model_class):
 **master_index_list.html**:
 ```html
 {% extends 'common/_base.html' %}
+{% load static %}
+
+{% block title %}マスタ管理{% endblock %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4">
@@ -92,36 +98,39 @@ def get_data_count(model_class):
         <h5>マスタ管理</h5>
     </div>
     <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-sm table-hover">
-                <thead>
-                    <tr>
-                        <th>マスタ名</th>
-                        <th>説明</th>
-                        <th>カテゴリ数</th>
-                        <th>データ数</th>
-                        <th>総件数</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for master in masters %}
-                    <tr>
-                        <td>{{ master.name }}</td>
-                        <td>{{ master.description }}</td>
-                        <td>{{ master.category_count }}件</td>
-                        <td>{{ master.data_count }}件</td>
-                        <td>{{ master.total_count }}件</td>
-                        <td>
-                            <a href="{{ master.url }}" class="btn btn-sm btn-primary">
-                                <i class="{{ master.icon }}"></i> 管理
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        {% for category, masters in masters_by_category.items %}
+        <div class="mb-4">
+            <h6 class="text border-bottom pb-2">
+                <i class="bi bi-folder me-2"></i>{{ category }}
+            </h6>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th width="30%">マスタ名</th>
+                            <th width="50%">説明</th>
+                            <th width="20%">データ数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for master in masters %}
+                        <tr>
+                            <td>
+                                <a href="{{ master.url }}">{{ master.name }}</a>
+                            </td>
+                            <td>{{ master.description }}</td>
+                            <td>{{ master.data_count }}件</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
+        {% empty %}
+        <div class="text-center">
+            <p>利用可能なマスタがありません。</p>
+        </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}
