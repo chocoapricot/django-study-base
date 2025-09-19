@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, Http404
+from django.core.files.base import ContentFile
 from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint
 from .forms import ClientContractForm, StaffContractForm
 from django.conf import settings
@@ -22,7 +23,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import io
 from apps.common.pdf_utils import generate_contract_pdf
-from .utils import generate_and_save_contract_pdf
+from .utils import generate_contract_pdf_content, generate_quotation_pdf
 from .resources import ClientContractResource, StaffContractResource
 
 # 契約管理トップページ
@@ -135,11 +136,14 @@ def client_contract_detail(request, pk):
     change_logs = all_change_logs[:10]  # 最新10件
     
     # 発行履歴を取得
-    print_history = ClientContractPrint.objects.filter(client_contract=contract).order_by('-printed_at')
+    all_prints = ClientContractPrint.objects.filter(client_contract=contract).order_by('-printed_at')
+    contract_prints = all_prints.filter(print_type=ClientContractPrint.PrintType.CONTRACT)
+    quotation_prints = all_prints.filter(print_type=ClientContractPrint.PrintType.QUOTATION)
 
     context = {
         'contract': contract,
-        'print_history': print_history,
+        'contract_prints': contract_prints,
+        'quotation_prints': quotation_prints,
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
         'client_filter': client_filter,
@@ -648,9 +652,24 @@ def client_contract_pdf(request, pk):
         contract.save()
         messages.success(request, f'契約「{contract.contract_name}」の契約書を発行しました。')
 
-    pdf_content, pdf_filename = generate_and_save_contract_pdf(contract, request.user)
+    pdf_content, pdf_filename = generate_contract_pdf_content(contract)
 
     if pdf_content:
+        new_print = ClientContractPrint(
+            client_contract=contract,
+            printed_by=request.user,
+            print_type=ClientContractPrint.PrintType.CONTRACT
+        )
+        new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
+
+        AppLog.objects.create(
+            user=request.user,
+            action='print',
+            model_name='ClientContract',
+            object_id=str(contract.pk),
+            object_repr=f'契約書PDF出力: {contract.contract_name}'
+        )
+
         response = HttpResponse(pdf_content, content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
         return response
@@ -709,6 +728,40 @@ def client_contract_issue(request, pk):
                 contract.save()
                 messages.success(request, f'契約「{contract.contract_name}」を承認済に戻しました。')
     return redirect('contract:client_contract_detail', pk=contract.pk)
+
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def issue_quotation(request, pk):
+    """クライアント契約の見積書を発行する"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+
+    if contract.contract_status != ClientContract.ContractStatus.PENDING:
+        messages.error(request, 'この契約の見積書は発行できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
+    pdf_content, pdf_filename = generate_quotation_pdf(contract)
+
+    if pdf_content:
+        new_print = ClientContractPrint(
+            client_contract=contract,
+            printed_by=request.user,
+            print_type=ClientContractPrint.PrintType.QUOTATION
+        )
+        new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
+
+        AppLog.objects.create(
+            user=request.user,
+            action='quotation_issue',
+            model_name='ClientContract',
+            object_id=str(contract.pk),
+            object_repr=f'見積書PDF出力: {contract.contract_name}'
+        )
+        messages.success(request, f'契約「{contract.contract_name}」の見積書を発行しました。')
+    else:
+        messages.error(request, "見積書のPDFの生成に失敗しました。")
+
+    return redirect('contract:client_contract_detail', pk=pk)
 
 
 @login_required
@@ -791,13 +844,11 @@ def download_client_contract_pdf(request, pk):
     """Downloads a previously generated client contract PDF."""
     print_history = get_object_or_404(ClientContractPrint, pk=pk)
 
-    file_path = os.path.join(settings.MEDIA_ROOT, print_history.pdf_file_path)
+    if print_history.pdf_file:
+        response = HttpResponse(print_history.pdf_file.read(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{os.path.basename(print_history.pdf_file.name)}"'
+        return response
 
-    if os.path.exists(file_path):
-        with open(file_path, 'rb') as fh:
-            response = HttpResponse(fh.read(), content_type="application/pdf")
-            response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'
-            return response
     raise Http404
 
 @login_required
@@ -806,13 +857,11 @@ def download_staff_contract_pdf(request, pk):
     """Downloads a previously generated staff contract PDF."""
     print_history = get_object_or_404(StaffContractPrint, pk=pk)
 
-    file_path = os.path.join(settings.MEDIA_ROOT, print_history.pdf_file_path)
+    if print_history.pdf_file:
+        response = HttpResponse(print_history.pdf_file.read(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{os.path.basename(print_history.pdf_file.name)}"'
+        return response
 
-    if os.path.exists(file_path):
-        with open(file_path, 'rb') as fh:
-            response = HttpResponse(fh.read(), content_type="application/pdf")
-            response['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'
-            return response
     raise Http404
 
 
@@ -997,9 +1046,23 @@ def staff_contract_pdf(request, pk):
         contract.save()
         messages.success(request, f'契約「{contract.contract_name}」の契約書を発行しました。')
 
-    pdf_content, pdf_filename = generate_and_save_contract_pdf(contract, request.user)
+    pdf_content, pdf_filename = generate_contract_pdf_content(contract)
 
     if pdf_content:
+        new_print = StaffContractPrint(
+            staff_contract=contract,
+            printed_by=request.user,
+        )
+        new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
+
+        AppLog.objects.create(
+            user=request.user,
+            action='print',
+            model_name='StaffContract',
+            object_id=str(contract.pk),
+            object_repr=f'契約書PDF出力: {contract.contract_name}'
+        )
+
         response = HttpResponse(pdf_content, content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
         return response

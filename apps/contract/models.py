@@ -115,11 +115,21 @@ class ClientContractPrint(MyModel):
     """
     クライアント契約書の発行履歴を管理するモデル。
     """
+    class PrintType(models.TextChoices):
+        CONTRACT = '10', '契約書'
+        QUOTATION = '20', '見積書'
+
     client_contract = models.ForeignKey(
         ClientContract,
         on_delete=models.CASCADE,
         related_name='print_history',
         verbose_name='クライアント契約'
+    )
+    print_type = models.CharField(
+        '種別',
+        max_length=2,
+        choices=PrintType.choices,
+        default=PrintType.CONTRACT,
     )
     printed_at = models.DateTimeField('発行日時', auto_now_add=True)
     printed_by = models.ForeignKey(
@@ -128,8 +138,7 @@ class ClientContractPrint(MyModel):
         null=True,
         verbose_name='発行者'
     )
-    document_title = models.CharField('契約書タイトル', max_length=100, blank=True, null=True)
-    pdf_file_path = models.CharField('PDFファイル参照', max_length=255)
+    pdf_file = models.FileField('PDFファイル', upload_to='client_prints/', null=True, blank=True)
 
     class Meta:
         db_table = 'apps_contract_client_print'
@@ -138,7 +147,7 @@ class ClientContractPrint(MyModel):
         ordering = ['-printed_at']
 
     def __str__(self):
-        return f"{self.client_contract} - {self.printed_at}"
+        return f"{self.client_contract} - {self.get_print_type_display()} - {self.printed_at}"
 
 
 class StaffContract(MyModel):
@@ -252,8 +261,7 @@ class StaffContractPrint(MyModel):
         null=True,
         verbose_name='発行者'
     )
-    document_title = models.CharField('契約書タイトル', max_length=100, blank=True, null=True)
-    pdf_file_path = models.CharField('PDFファイル参照', max_length=255)
+    pdf_file = models.FileField('PDFファイル', upload_to='staff_prints/', null=True, blank=True)
 
     class Meta:
         db_table = 'apps_contract_staff_print'

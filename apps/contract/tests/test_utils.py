@@ -2,7 +2,7 @@ import unittest
 from django.test import TestCase
 
 from unittest.mock import patch
-from apps.contract.utils import generate_and_save_contract_pdf
+from apps.contract.utils import generate_contract_pdf_content
 from apps.contract.models import ClientContract
 from apps.master.models import ContractPattern, BillPayment
 from apps.client.models import Client
@@ -49,7 +49,7 @@ class ContractUtilsTest(TestCase):
             payment_site=self.payment_site,
         )
 
-        generate_and_save_contract_pdf(haken_contract, self.user)
+        generate_contract_pdf_content(haken_contract)
 
         mock_generate_pdf.assert_called_once()
         args, kwargs = mock_generate_pdf.call_args
@@ -68,7 +68,7 @@ class ContractUtilsTest(TestCase):
             payment_site=self.payment_site,
         )
 
-        generate_and_save_contract_pdf(ukeoi_contract, self.user)
+        generate_contract_pdf_content(ukeoi_contract)
 
         mock_generate_pdf.assert_called_once()
         args, kwargs = mock_generate_pdf.call_args

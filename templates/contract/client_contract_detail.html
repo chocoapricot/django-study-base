@@ -16,9 +16,12 @@
                 {% if contract.contract_status == contract.ContractStatus.DRAFT or contract.contract_status == contract.ContractStatus.PENDING %}
                 <ul class="nav nav-pills">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">ドラフト印刷</a>
+                        <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">印刷</a>
                         <div class="dropdown-menu">
-                            <a href="{% url 'contract:client_contract_pdf' contract.pk %}" class="dropdown-item"><i class="bi bi-filetype-pdf"></i>　個別契約書　(PDF)</a>
+                            <a href="{% url 'contract:client_contract_pdf' contract.pk %}" class="dropdown-item"><i class="bi bi-filetype-pdf"></i>　個別契約書（ドラフト）</a>
+                            {% if contract.contract_status == contract.ContractStatus.PENDING %}
+                                <a href="{% url 'contract:issue_quotation' contract.pk %}" class="dropdown-item"><i class="bi bi-filetype-text"></i>　見積書発行</a>
+                            {% endif %}
                         </div>
                     </li>
                 </ul>
@@ -155,11 +158,11 @@
     </div>
 </div>
 
-<!-- 発行履歴 -->
-{% if print_history %}
+<!-- 見積書発行履歴 -->
+{% if quotation_prints %}
 <div class="content-box card bg-light mt-2 mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
-        発行履歴
+        見積書発行履歴
     </div>
     <div class="card-body">
         <table class="table table-sm table-striped">
@@ -171,11 +174,44 @@
                 </tr>
             </thead>
             <tbody>
-                {% for item in print_history %}
+                {% for item in quotation_prints %}
                     <tr>
                         <td>
                             <a href="{% url 'contract:download_client_contract_pdf' item.pk %}">
-                                {{ item.document_title|default:item.pdf_file_path|basename }}
+                                {{ item.pdf_file.name|basename }}
+                            </a>
+                        </td>
+                        <td>{{ item.printed_by.get_full_name_japanese|default:"-" }}</td>
+                        <td>{{ item.printed_at|date:"Y/m/d H:i:s" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- 契約書発行履歴 -->
+{% if contract_prints %}
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        契約書発行履歴
+    </div>
+    <div class="card-body">
+        <table class="table table-sm table-striped">
+            <thead>
+                <tr>
+                    <th>ファイル</th>
+                    <th>発行者</th>
+                    <th>発行日時</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in contract_prints %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'contract:download_client_contract_pdf' item.pk %}">
+                                {{ item.pdf_file.name|basename }}
                             </a>
                         </td>
                         <td>{{ item.printed_by.get_full_name_japanese|default:"-" }}</td>
