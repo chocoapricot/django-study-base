@@ -96,51 +96,6 @@ def client_contract_list(request):
         except Client.DoesNotExist:
             pass
     
-    # 会社の法人番号を取得
-    company = Company.objects.first()
-    corporate_number = company.corporate_number if company else None
-
-    if corporate_number:
-        # ページ内のスタッフのメールアドレスリストを作成
-        staff_emails = [contract.staff.email for contract in contracts_page if contract.staff and contract.staff.email]
-
-        # 関連データを一括で取得
-        connect_staff_map = {cs.email: cs for cs in ConnectStaff.objects.filter(corporate_number=corporate_number, email__in=staff_emails)}
-
-        approved_connect_staff_ids = [cs.id for cs in connect_staff_map.values() if cs.status == 'approved']
-
-        pending_requests = {
-            'mynumber': set(MynumberRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
-            'profile': set(ProfileRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
-            'bank': set(BankRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
-            'contact': set(ContactRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
-            'international': set(ConnectInternationalRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
-            'disability': set(DisabilityRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
-        }
-
-        # 各契約のスタッフに情報を付与
-        for contract in contracts_page:
-            staff = contract.staff
-            staff.is_connected_approved = False
-            staff.has_pending_connection_request = False
-
-            connect_request = connect_staff_map.get(staff.email)
-            if connect_request:
-                staff.is_connected_approved = connect_request.status == 'approved'
-                staff.has_pending_connection_request = connect_request.status == 'pending'
-
-                if staff.is_connected_approved:
-                    staff.has_pending_mynumber_request = staff.email in pending_requests['mynumber']
-                    staff.has_pending_profile_request = staff.email in pending_requests['profile']
-                    staff.has_pending_bank_request = staff.email in pending_requests['bank']
-                    staff.has_pending_contact_request = staff.email in pending_requests['contact']
-                    staff.has_pending_international_request = staff.email in pending_requests['international']
-                    staff.has_pending_disability_request = staff.email in pending_requests['disability']
-
-            # has_internationalはモデルのプロパティで処理
-            staff.has_international_info = hasattr(staff, 'international')
-
-
     context = {
         'contracts': contracts_page,
         'search_query': search_query,
@@ -345,6 +300,62 @@ def staff_contract_list(request):
             filtered_staff = Staff.objects.get(pk=staff_filter)
         except Staff.DoesNotExist:
             pass
+
+    # 各スタッフの接続情報などを効率的に取得
+    company = Company.objects.first()
+    corporate_number = company.corporate_number if company else None
+
+    staff_emails = [contract.staff.email for contract in contracts_page if contract.staff and contract.staff.email]
+    connect_staff_map = {}
+    pending_requests = {}
+
+    if corporate_number and staff_emails:
+        connect_staff_qs = ConnectStaff.objects.filter(
+            corporate_number=corporate_number,
+            email__in=staff_emails
+        )
+        connect_staff_map = {cs.email: cs for cs in connect_staff_qs}
+
+        approved_connect_staff_ids = [
+            cs.id for cs in connect_staff_map.values() if cs.status == 'approved'
+        ]
+
+        if approved_connect_staff_ids:
+            pending_requests = {
+                'mynumber': set(MynumberRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
+                'profile': set(ProfileRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
+                'bank': set(BankRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
+                'contact': set(ContactRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
+                'international': set(ConnectInternationalRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
+                'disability': set(DisabilityRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
+            }
+
+    # 各契約のスタッフに情報を付与
+    for contract in contracts_page:
+        staff = contract.staff
+        staff.is_connected_approved = False
+        staff.has_pending_connection_request = False
+        staff.has_pending_mynumber_request = False
+        staff.has_pending_profile_request = False
+        staff.has_pending_bank_request = False
+        staff.has_pending_contact_request = False
+        staff.has_pending_international_request = False
+        staff.has_pending_disability_request = False
+
+        connect_request = connect_staff_map.get(staff.email)
+        if connect_request:
+            staff.is_connected_approved = connect_request.status == 'approved'
+            staff.has_pending_connection_request = connect_request.status == 'pending'
+            if staff.is_connected_approved:
+                staff.has_pending_mynumber_request = staff.email in pending_requests.get('mynumber', set())
+                staff.has_pending_profile_request = staff.email in pending_requests.get('profile', set())
+                staff.has_pending_bank_request = staff.email in pending_requests.get('bank', set())
+                staff.has_pending_contact_request = staff.email in pending_requests.get('contact', set())
+                staff.has_pending_international_request = staff.email in pending_requests.get('international', set())
+                staff.has_pending_disability_request = staff.email in pending_requests.get('disability', set())
+
+        # has_internationalはモデルのプロパティで処理
+        staff.has_international_info = hasattr(staff, 'international')
     
     context = {
         'contracts': contracts_page,
