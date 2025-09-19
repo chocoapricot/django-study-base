@@ -125,6 +125,7 @@
                                 <tr>
                                     <th>契約名</th>
                                     <th>スタッフ</th>
+                                    <th>社員番号</th>
                                     <th>契約パターン</th>
                                     <th>契約番号</th>
                                     <th>契約期間</th>
@@ -141,7 +142,24 @@
                                             {{ contract.contract_name }}
                                         </a>
                                     </td>
-                                    <td>{{ contract.staff.name_last }} {{ contract.staff.name_first }}</td>
+                                    <td>
+                                        {{ contract.staff.name_last }} {{ contract.staff.name_first }}
+                                        {% if contract.staff.has_international %}
+                                            <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ contract.staff.employee_no|default:"" }}
+                                        {% if contract.staff.has_pending_connection_request %}
+                                            <i class="bi bi-arrow-up-circle" style="color:#17a2b8;" title="接続申請中"></i>
+                                        {% elif contract.staff.is_connected_approved %}
+                                            {% if contract.staff.has_pending_profile_request or contract.staff.has_pending_mynumber_request or contract.staff.has_pending_bank_request or contract.staff.has_pending_contact_request or contract.staff.has_pending_international_request or contract.staff.has_pending_disability_request %}
+                                                <i class="bi bi-arrow-down-circle" style="color:#17a2b8;" title="変更あり"></i>
+                                            {% else %}
+                                                <i class="bi bi-link" style="color:#17a2b8;" title="接続承認済み"></i>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
                                     <td>{{ contract.contract_pattern.name|default:"-" }}</td>
                                     <td>{{ contract.contract_number|default:"-" }}</td>
                                     <td>
@@ -179,36 +197,8 @@
             </tbody>
         </table>
 
-                    <!-- ページネーション -->
-                    {% if contracts.has_other_pages %}
-                    <nav aria-label="ページネーション">
-                        <ul class="pagination pagination-sm justify-content-center">
-                            {% if contracts.has_previous %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ contracts.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if staff_filter %}&staff={{ staff_filter }}{% endif %}">前へ</a>
-                                </li>
-                            {% endif %}
-                            
-                            {% for num in contracts.paginator.page_range %}
-                                {% if contracts.number == num %}
-                                    <li class="page-item active">
-                                        <span class="page-link">{{ num }}</span>
-                                    </li>
-                                {% else %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if staff_filter %}&staff={{ staff_filter }}{% endif %}">{{ num }}</a>
-                                    </li>
-                                {% endif %}
-                            {% endfor %}
-                            
-                            {% if contracts.has_next %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ contracts.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if staff_filter %}&staff={{ staff_filter }}{% endif %}">次へ</a>
-                                </li>
-                            {% endif %}
-            </ul>
-        </nav>
-        {% endif %}
+        <!-- ページネーション -->
+        {% include 'common/_pagination.html' with page_obj=contracts %}
 
         {% if filtered_staff %}
         <div class="row mt-3">
