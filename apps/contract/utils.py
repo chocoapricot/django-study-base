@@ -35,7 +35,7 @@ def generate_and_save_contract_pdf(contract, user):
             {"title": "契約番号", "text": str(contract.contract_number)},
             {"title": "契約期間", "text": contract_period},
             {"title": "契約金額", "text": f"{contract.contract_amount:,} 円" if contract.contract_amount else "N/A"},
-            {"title": "支払サイト", "text": str(contract.payment_site.name if contract.payment_site else "N/A")},
+            {"title": "支払条件", "text": str(contract.payment_site.name if contract.payment_site else "N/A")},
             {"title": "契約内容", "text": str(contract.description)},
             {"title": "備考", "text": str(contract.notes)},
         ]
