@@ -72,4 +72,4 @@ class ContractUtilsTest(TestCase):
 
         mock_generate_pdf.assert_called_once()
         args, kwargs = mock_generate_pdf.call_args
-        self.assertEqual(args[1], "業務委託契約書")
+        self.assertEqual(args[1], "業務委託個別契約書")

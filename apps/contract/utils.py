@@ -100,13 +100,15 @@ def generate_and_save_contract_pdf(contract, user):
         ClientContractPrint.objects.create(
             client_contract=contract,
             printed_by=user,
-            pdf_file_path=db_file_path
+            pdf_file_path=db_file_path,
+            document_title=pdf_title
         )
     else:
         StaffContractPrint.objects.create(
             staff_contract=contract,
             printed_by=user,
-            pdf_file_path=db_file_path
+            pdf_file_path=db_file_path,
+            document_title=pdf_title
         )
 
     AppLog.objects.create(
