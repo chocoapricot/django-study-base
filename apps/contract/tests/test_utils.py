@@ -58,7 +58,7 @@ class ContractUtilsTest(TestCase):
     @patch('apps.contract.utils.generate_contract_pdf')
     def test_generate_ukeoi_contract_pdf_title(self, mock_generate_pdf):
         """
-        Test that the title for a 'ukeoi' (contracting) contract is '業務委託契約書'.
+        Test that the title for a 'ukeoi' (contracting) contract is '業務委託個別契約書'.
         """
         ukeoi_contract = ClientContract.objects.create(
             client=self.client,
@@ -72,4 +72,4 @@ class ContractUtilsTest(TestCase):
 
         mock_generate_pdf.assert_called_once()
         args, kwargs = mock_generate_pdf.call_args
-        self.assertEqual(args[1], "業務委託契約書")
+        self.assertEqual(args[1], "業務委託個別契約書")
