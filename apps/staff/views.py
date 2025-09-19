@@ -279,61 +279,56 @@ def staff_list(request):
     page_number = request.GET.get('page')  # URLからページ番号を取得
     staffs_pages = paginator.get_page(page_number)
 
-    # 各スタッフが接続承認済みかどうか、またマイナンバーやプロフィールの申請があるかを判定し、オブジェクトに属性を付与
+    # 各スタッフの接続情報などを効率的に取得
     from apps.connect.models import ConnectStaff, MynumberRequest, ProfileRequest, BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
-    if corporate_number:
-        for staff in staffs_pages:
-            staff.is_connected_approved = False
-            staff.has_pending_mynumber_request = False
-            staff.has_pending_profile_request = False
-            staff.has_pending_connection_request = False
-            staff.has_pending_bank_request = False
-            staff.has_pending_contact_request = False
-            staff.has_pending_international_request = False
-            staff.has_pending_disability_request = False
-            if staff.email:
-                connect_request = ConnectStaff.objects.filter(
-                    corporate_number=corporate_number,
-                    email=staff.email
-                ).first()
-                if connect_request:
-                    staff.is_connected_approved = connect_request.status == 'approved'
-                    staff.has_pending_connection_request = connect_request.status == 'pending'
-                    if staff.is_connected_approved:
-                        staff.has_pending_mynumber_request = MynumberRequest.objects.filter(
-                            connect_staff=connect_request,
-                            status='pending'
-                        ).exists()
-                        staff.has_pending_profile_request = ProfileRequest.objects.filter(
-                            connect_staff=connect_request,
-                            status='pending'
-                        ).exists()
-                        staff.has_pending_bank_request = BankRequest.objects.filter(
-                            connect_staff=connect_request,
-                            status='pending'
-                        ).exists()
-                        staff.has_pending_contact_request = ContactRequest.objects.filter(
-                            connect_staff=connect_request,
-                            status='pending'
-                        ).exists()
-                        staff.has_pending_international_request = ConnectInternationalRequest.objects.filter(
-                            connect_staff=connect_request,
-                            status='pending'
-                        ).exists()
-                        staff.has_pending_disability_request = DisabilityRequest.objects.filter(
-                            connect_staff=connect_request,
-                            status='pending'
-                        ).exists()
-    else:
-        for staff in staffs_pages:
-            staff.is_connected_approved = False
-            staff.has_pending_mynumber_request = False
-            staff.has_pending_profile_request = False
-            staff.has_pending_connection_request = False
-            staff.has_pending_bank_request = False
-            staff.has_pending_contact_request = False
-            staff.has_pending_international_request = False
-            staff.has_pending_disability_request = False
+
+    staff_emails = [staff.email for staff in staffs_pages if staff.email]
+    connect_staff_map = {}
+    pending_requests = {}
+
+    if corporate_number and staff_emails:
+        connect_staff_qs = ConnectStaff.objects.filter(
+            corporate_number=corporate_number,
+            email__in=staff_emails
+        )
+        connect_staff_map = {cs.email: cs for cs in connect_staff_qs}
+
+        approved_connect_staff_ids = [
+            cs.id for cs in connect_staff_map.values() if cs.status == 'approved'
+        ]
+
+        if approved_connect_staff_ids:
+            pending_requests = {
+                'mynumber': set(MynumberRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
+                'profile': set(ProfileRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
+                'bank': set(BankRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
+                'contact': set(ContactRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
+                'international': set(ConnectInternationalRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
+                'disability': set(DisabilityRequest.objects.filter(connect_staff_id__in=approved_connect_staff_ids, status='pending').values_list('connect_staff__email', flat=True)),
+            }
+
+    # 各スタッフに情報を付与
+    for staff in staffs_pages:
+        staff.is_connected_approved = False
+        staff.has_pending_connection_request = False
+        staff.has_pending_mynumber_request = False
+        staff.has_pending_profile_request = False
+        staff.has_pending_bank_request = False
+        staff.has_pending_contact_request = False
+        staff.has_pending_international_request = False
+        staff.has_pending_disability_request = False
+
+        connect_request = connect_staff_map.get(staff.email)
+        if connect_request:
+            staff.is_connected_approved = connect_request.status == 'approved'
+            staff.has_pending_connection_request = connect_request.status == 'pending'
+            if staff.is_connected_approved:
+                staff.has_pending_mynumber_request = staff.email in pending_requests.get('mynumber', set())
+                staff.has_pending_profile_request = staff.email in pending_requests.get('profile', set())
+                staff.has_pending_bank_request = staff.email in pending_requests.get('bank', set())
+                staff.has_pending_contact_request = staff.email in pending_requests.get('contact', set())
+                staff.has_pending_international_request = staff.email in pending_requests.get('international', set())
+                staff.has_pending_disability_request = staff.email in pending_requests.get('disability', set())
 
     # 各スタッフの外国籍情報登録状況を判定
     for staff in staffs_pages:
