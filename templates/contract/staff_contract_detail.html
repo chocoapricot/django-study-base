@@ -158,7 +158,7 @@
                     <tr>
                         <td>
                             <a href="{% url 'contract:download_staff_contract_pdf' print_item.pk %}">
-                                {{ print_item.pdf_file_path|basename }}
+                                {{ print_item.document_title|default:print_item.pdf_file_path|basename }}
                             </a>
                         </td>
                         <td>{{ print_item.printed_by.get_full_name_japanese|default:"-" }}</td>

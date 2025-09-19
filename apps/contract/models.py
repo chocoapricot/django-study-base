@@ -128,6 +128,7 @@ class ClientContractPrint(MyModel):
         null=True,
         verbose_name='発行者'
     )
+    document_title = models.CharField('契約書タイトル', max_length=100, blank=True, null=True)
     pdf_file_path = models.CharField('PDFファイル参照', max_length=255)
 
     class Meta:
@@ -251,6 +252,7 @@ class StaffContractPrint(MyModel):
         null=True,
         verbose_name='発行者'
     )
+    document_title = models.CharField('契約書タイトル', max_length=100, blank=True, null=True)
     pdf_file_path = models.CharField('PDFファイル参照', max_length=255)
 
     class Meta:
