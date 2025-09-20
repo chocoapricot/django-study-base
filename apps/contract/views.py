@@ -755,9 +755,14 @@ def issue_quotation(request, pk):
     """クライアント契約の見積書を発行する"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
-    if contract.contract_status != ClientContract.ContractStatus.PENDING:
+    if int(contract.contract_status) < int(ClientContract.ContractStatus.APPROVED):
         messages.error(request, 'この契約の見積書は発行できません。')
         return redirect('contract:client_contract_detail', pk=pk)
+
+    # 見積書発行時に発行者・発行日時を更新
+    contract.issued_at = timezone.now()
+    contract.issued_by = request.user
+    contract.save()
 
     pdf_content, pdf_filename, document_title = generate_quotation_pdf(contract)
 

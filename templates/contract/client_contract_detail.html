@@ -13,19 +13,6 @@
         <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
             <div class="card-header d-flex justify-content-between align-items-center">
                 クライアント契約詳細
-                {% if contract.contract_status == contract.ContractStatus.DRAFT or contract.contract_status == contract.ContractStatus.PENDING %}
-                <ul class="nav nav-pills">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">印刷</a>
-                        <div class="dropdown-menu">
-                            <a href="{% url 'contract:client_contract_pdf' contract.pk %}" class="dropdown-item"><i class="bi bi-filetype-pdf"></i>　個別契約書（ドラフト）</a>
-                            {% if contract.contract_status == contract.ContractStatus.PENDING %}
-                                <a href="{% url 'contract:issue_quotation' contract.pk %}" class="dropdown-item"><i class="bi bi-filetype-text"></i>　見積書発行</a>
-                            {% endif %}
-                        </div>
-                    </li>
-                </ul>
-                {% endif %}
             </div>
             <div class="card-body">
                 <div class="row">
