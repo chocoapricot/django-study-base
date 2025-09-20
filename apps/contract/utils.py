@@ -85,7 +85,7 @@ def generate_contract_pdf_content(contract):
     pdf_content = buffer.getvalue()
     buffer.close()
 
-    return pdf_content, pdf_filename
+    return pdf_content, pdf_filename, pdf_title
 
 
 def generate_quotation_pdf(contract):
@@ -113,4 +113,4 @@ def generate_quotation_pdf(contract):
     pdf_content = buffer.getvalue()
     buffer.close()
 
-    return pdf_content, pdf_filename
+    return pdf_content, pdf_filename, pdf_title

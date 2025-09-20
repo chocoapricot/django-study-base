@@ -137,13 +137,11 @@ def client_contract_detail(request, pk):
     
     # 発行履歴を取得
     all_prints = ClientContractPrint.objects.filter(client_contract=contract).order_by('-printed_at')
-    contract_prints = all_prints.filter(print_type=ClientContractPrint.PrintType.CONTRACT)
-    quotation_prints = all_prints.filter(print_type=ClientContractPrint.PrintType.QUOTATION)
+    issue_history = all_prints
 
     context = {
         'contract': contract,
-        'contract_prints': contract_prints,
-        'quotation_prints': quotation_prints,
+        'issue_history': issue_history,
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
         'client_filter': client_filter,
@@ -652,13 +650,14 @@ def client_contract_pdf(request, pk):
         contract.save()
         messages.success(request, f'契約「{contract.contract_name}」の契約書を発行しました。')
 
-    pdf_content, pdf_filename = generate_contract_pdf_content(contract)
+    pdf_content, pdf_filename, document_title = generate_contract_pdf_content(contract)
 
     if pdf_content:
         new_print = ClientContractPrint(
             client_contract=contract,
             printed_by=request.user,
-            print_type=ClientContractPrint.PrintType.CONTRACT
+            print_type=ClientContractPrint.PrintType.CONTRACT,
+            document_title=document_title
         )
         new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
 
@@ -711,8 +710,23 @@ def client_contract_issue(request, pk):
         is_issued = 'is_issued' in request.POST
         if is_issued:
             if contract.contract_status == ClientContract.ContractStatus.APPROVED:
-                pdf_content, _ = generate_and_save_contract_pdf(contract, request.user)
+                pdf_content, pdf_filename, document_title = generate_contract_pdf_content(contract)
                 if pdf_content:
+                    new_print = ClientContractPrint(
+                        client_contract=contract,
+                        printed_by=request.user,
+                        print_type=ClientContractPrint.PrintType.CONTRACT,
+                        document_title=document_title
+                    )
+                    new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
+
+                    AppLog.objects.create(
+                        user=request.user,
+                        action='print',
+                        model_name='ClientContract',
+                        object_id=str(contract.pk),
+                        object_repr=f'契約書PDF出力: {contract.contract_name}'
+                    )
                     contract.contract_status = ClientContract.ContractStatus.ISSUED
                     contract.issued_at = timezone.now()
                     contract.issued_by = request.user
@@ -740,13 +754,14 @@ def issue_quotation(request, pk):
         messages.error(request, 'この契約の見積書は発行できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
-    pdf_content, pdf_filename = generate_quotation_pdf(contract)
+    pdf_content, pdf_filename, document_title = generate_quotation_pdf(contract)
 
     if pdf_content:
         new_print = ClientContractPrint(
             client_contract=contract,
             printed_by=request.user,
-            print_type=ClientContractPrint.PrintType.QUOTATION
+            print_type=ClientContractPrint.PrintType.QUOTATION,
+            document_title=document_title
         )
         new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
 
@@ -819,8 +834,22 @@ def staff_contract_issue(request, pk):
         is_issued = 'is_issued' in request.POST
         if is_issued:
             if contract.contract_status == StaffContract.ContractStatus.APPROVED:
-                pdf_content, _ = generate_and_save_contract_pdf(contract, request.user)
+                pdf_content, pdf_filename, document_title = generate_contract_pdf_content(contract)
                 if pdf_content:
+                    new_print = StaffContractPrint(
+                        staff_contract=contract,
+                        printed_by=request.user,
+                        document_title=document_title
+                    )
+                    new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
+
+                    AppLog.objects.create(
+                        user=request.user,
+                        action='print',
+                        model_name='StaffContract',
+                        object_id=str(contract.pk),
+                        object_repr=f'契約書PDF出力: {contract.contract_name}'
+                    )
                     contract.contract_status = StaffContract.ContractStatus.ISSUED
                     contract.issued_at = timezone.now()
                     contract.issued_by = request.user
@@ -1046,12 +1075,13 @@ def staff_contract_pdf(request, pk):
         contract.save()
         messages.success(request, f'契約「{contract.contract_name}」の契約書を発行しました。')
 
-    pdf_content, pdf_filename = generate_contract_pdf_content(contract)
+    pdf_content, pdf_filename, document_title = generate_contract_pdf_content(contract)
 
     if pdf_content:
         new_print = StaffContractPrint(
             staff_contract=contract,
             printed_by=request.user,
+            document_title=document_title
         )
         new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
 

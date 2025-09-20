@@ -158,60 +158,37 @@
     </div>
 </div>
 
-<!-- 見積書発行履歴 -->
-{% if quotation_prints %}
+<!-- 発行履歴 -->
+{% if issue_history %}
 <div class="content-box card bg-light mt-2 mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
-        見積書発行履歴
+        発行履歴
     </div>
     <div class="card-body">
         <table class="table table-sm table-striped">
             <thead>
                 <tr>
+                    <th>種別</th>
                     <th>ファイル</th>
                     <th>発行者</th>
                     <th>発行日時</th>
                 </tr>
             </thead>
             <tbody>
-                {% for item in quotation_prints %}
+                {% for item in issue_history %}
                     <tr>
                         <td>
-                            <a href="{% url 'contract:download_client_contract_pdf' item.pk %}">
-                                {{ item.pdf_file.name|basename }}
-                            </a>
+                            {% if item.print_type == item.PrintType.CONTRACT %}
+                                <span class="badge bg-primary">契約書</span>
+                            {% elif item.print_type == item.PrintType.QUOTATION %}
+                                <span class="badge bg-info">見積書</span>
+                            {% else %}
+                                <span class="badge bg-secondary">その他</span>
+                            {% endif %}
                         </td>
-                        <td>{{ item.printed_by.get_full_name_japanese|default:"-" }}</td>
-                        <td>{{ item.printed_at|date:"Y/m/d H:i:s" }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-{% endif %}
-
-<!-- 契約書発行履歴 -->
-{% if contract_prints %}
-<div class="content-box card bg-light mt-2 mb-4">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        契約書発行履歴
-    </div>
-    <div class="card-body">
-        <table class="table table-sm table-striped">
-            <thead>
-                <tr>
-                    <th>ファイル</th>
-                    <th>発行者</th>
-                    <th>発行日時</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in contract_prints %}
-                    <tr>
                         <td>
                             <a href="{% url 'contract:download_client_contract_pdf' item.pk %}">
-                                {{ item.pdf_file.name|basename }}
+                                {{ item.document_title }}
                             </a>
                         </td>
                         <td>{{ item.printed_by.get_full_name_japanese|default:"-" }}</td>

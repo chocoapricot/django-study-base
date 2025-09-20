@@ -139,6 +139,7 @@ class ClientContractPrint(MyModel):
         verbose_name='発行者'
     )
     pdf_file = models.FileField('PDFファイル', upload_to='client_prints/', null=True, blank=True)
+    document_title = models.CharField('タイトル', max_length=255, blank=True, null=True)
 
     class Meta:
         db_table = 'apps_contract_client_print'
@@ -262,6 +263,7 @@ class StaffContractPrint(MyModel):
         verbose_name='発行者'
     )
     pdf_file = models.FileField('PDFファイル', upload_to='staff_prints/', null=True, blank=True)
+    document_title = models.CharField('タイトル', max_length=255, blank=True, null=True)
 
     class Meta:
         db_table = 'apps_contract_staff_print'
