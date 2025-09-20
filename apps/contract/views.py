@@ -410,6 +410,7 @@ def staff_contract_detail(request, pk):
         'staff_filter': staff_filter,
         'from_staff_detail': from_staff_detail,
         'from_staff_detail_direct': from_staff_detail_direct,
+        'ContractStatus': StaffContract.ContractStatus,
     }
     return render(request, 'contract/staff_contract_detail.html', context)
 
@@ -481,6 +482,10 @@ def staff_contract_update(request, pk):
 def staff_contract_delete(request, pk):
     """スタッフ契約削除"""
     contract = get_object_or_404(StaffContract, pk=pk)
+
+    if contract.contract_status not in [StaffContract.ContractStatus.DRAFT, StaffContract.ContractStatus.PENDING]:
+        messages.error(request, 'この契約は削除できません。')
+        return redirect('contract:staff_contract_detail', pk=pk)
     
     if request.method == 'POST':
         contract_name = contract.contract_name
