@@ -88,7 +88,7 @@ def generate_contract_pdf_content(contract):
     return pdf_content, pdf_filename, pdf_title
 
 
-def generate_quotation_pdf(contract, user, issued_at):
+def generate_quotation_pdf(contract, user, issued_at, watermark_text=None):
     """見積書PDFを生成する"""
     pdf_title = "御見積書"
 
@@ -111,7 +111,7 @@ def generate_quotation_pdf(contract, user, issued_at):
     pdf_filename = f"quotation_{contract.pk}_{timestamp}.pdf"
 
     buffer = io.BytesIO()
-    generate_contract_pdf(buffer, pdf_title, intro_text, items)
+    generate_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text)
     pdf_content = buffer.getvalue()
     buffer.close()
 

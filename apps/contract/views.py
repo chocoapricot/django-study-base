@@ -1154,6 +1154,58 @@ def client_contract_export(request):
 
 
 @login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def client_contract_draft_pdf(request, pk):
+    """クライアント契約書のドラフトPDFを生成して返す"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+    pdf_content, pdf_filename, document_title = generate_contract_pdf_content(contract)
+
+    if pdf_content:
+        response = HttpResponse(pdf_content, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
+        return response
+    else:
+        messages.error(request, "PDFの生成に失敗しました。")
+        return redirect('contract:client_contract_detail', pk=pk)
+
+
+@login_required
+@permission_required('contract.view_staffcontract', raise_exception=True)
+def staff_contract_draft_pdf(request, pk):
+    """スタッフ契約書のドラフトPDFを生成して返す"""
+    contract = get_object_or_404(StaffContract, pk=pk)
+    pdf_content, pdf_filename, document_title = generate_contract_pdf_content(contract)
+
+    if pdf_content:
+        response = HttpResponse(pdf_content, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
+        return response
+    else:
+        messages.error(request, "PDFの生成に失敗しました。")
+        return redirect('contract:staff_contract_detail', pk=pk)
+
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def client_contract_draft_quotation(request, pk):
+    """クライアント契約の見積書のドラフトPDFを生成して返す"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+
+    issued_at = timezone.now()
+    pdf_content, pdf_filename, document_title = generate_quotation_pdf(
+        contract, request.user, issued_at, watermark_text="DRAFT"
+    )
+
+    if pdf_content:
+        response = HttpResponse(pdf_content, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
+        return response
+    else:
+        messages.error(request, "見積書のPDFの生成に失敗しました。")
+        return redirect('contract:client_contract_detail', pk=pk)
+
+
+@login_required
 @permission_required('contract.view_staffcontract', raise_exception=True)
 def staff_contract_export(request):
     """スタッフ契約データのエクスポート（CSV/Excel）"""
