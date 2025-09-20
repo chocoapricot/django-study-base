@@ -103,6 +103,8 @@ def generate_quotation_pdf(contract):
         {"title": "契約期間", "text": contract_period},
         {"title": "お見積金額", "text": f"{contract.contract_amount:,} 円" if contract.contract_amount else "別途ご相談"},
         {"title": "支払条件", "text": str(contract.payment_site.name if contract.payment_site else "別途ご相談")},
+        {"title": "発行日", "text": contract.issued_at.strftime('%Y年%m月%d日') if contract.issued_at else ""},
+        {"title": "発行者", "text": contract.issued_by.get_full_name_japanese() if contract.issued_by else ""},
     ]
 
     timestamp = timezone.now().strftime('%Y%m%d%H%M%S')

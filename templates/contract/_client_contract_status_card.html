@@ -21,6 +21,18 @@
             </div>
         </form>
 
+        {# 見積書発行ボタン #}
+        {% if contract.contract_status >= contract.ContractStatus.APPROVED %}
+        <div class="mb-3">
+            <a href="{% url 'contract:issue_quotation' contract.pk %}" class="btn btn-sm btn-info">
+                <i class="bi bi-file-text"></i> 見積書発行
+            </a>
+            {% if contract.issued_at %}
+                <span class="text-muted small">（{{ contract.issued_at|date:"Y/m/d H:i:s" }}　{{ contract.issued_by.get_full_name_japanese|default:'' }}）</span>
+            {% endif %}
+        </div>
+        {% endif %}
+
         {# 発行スイッチ #}
         <form method="post" id="issue-form" action="{% url 'contract:client_contract_issue' contract.pk %}" class="mb-3">
             {% csrf_token %}
