@@ -759,17 +759,14 @@ def issue_quotation(request, pk):
         messages.error(request, 'この契約の見積書は発行できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
-    # 見積書発行時に発行者・発行日時を更新
-    contract.issued_at = timezone.now()
-    contract.issued_by = request.user
-    contract.save()
-
-    pdf_content, pdf_filename, document_title = generate_quotation_pdf(contract)
+    issued_at = timezone.now()
+    pdf_content, pdf_filename, document_title = generate_quotation_pdf(contract, request.user, issued_at)
 
     if pdf_content:
         new_print = ClientContractPrint(
             client_contract=contract,
             printed_by=request.user,
+            printed_at=issued_at,
             print_type=ClientContractPrint.PrintType.QUOTATION,
             document_title=document_title
         )

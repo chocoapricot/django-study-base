@@ -88,7 +88,7 @@ def generate_contract_pdf_content(contract):
     return pdf_content, pdf_filename, pdf_title
 
 
-def generate_quotation_pdf(contract):
+def generate_quotation_pdf(contract, user, issued_at):
     """見積書PDFを生成する"""
     pdf_title = "御見積書"
 
@@ -103,11 +103,11 @@ def generate_quotation_pdf(contract):
         {"title": "契約期間", "text": contract_period},
         {"title": "お見積金額", "text": f"{contract.contract_amount:,} 円" if contract.contract_amount else "別途ご相談"},
         {"title": "支払条件", "text": str(contract.payment_site.name if contract.payment_site else "別途ご相談")},
-        {"title": "発行日", "text": contract.issued_at.strftime('%Y年%m月%d日') if contract.issued_at else ""},
-        {"title": "発行者", "text": contract.issued_by.get_full_name_japanese() if contract.issued_by else ""},
+        {"title": "発行日", "text": issued_at.strftime('%Y年%m月%d日')},
+        {"title": "発行者", "text": user.get_full_name_japanese()},
     ]
 
-    timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
+    timestamp = issued_at.strftime('%Y%m%d%H%M%S')
     pdf_filename = f"quotation_{contract.pk}_{timestamp}.pdf"
 
     buffer = io.BytesIO()
