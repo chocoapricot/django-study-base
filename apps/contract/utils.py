@@ -14,7 +14,7 @@ def get_contract_pdf_title(contract):
         if contract.contract_pattern and contract.contract_pattern.contract_type_code == '20':
             return "労働者派遣個別契約書"
         else:
-            return "業務委託契約書"
+            return "業務委託個別契約書"
     elif isinstance(contract, StaffContract):
         return "雇用契約書"
     return "契約書"
