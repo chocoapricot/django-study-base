@@ -133,7 +133,13 @@
                 <div class="row mt-3">
                     <div class="col text-left">
                         {% if not from_client_detail %}
-                            {% if contract.contract_status == '1' or contract.contract_status == '5' %}
+                            {% if contract.contract_status == contract.ContractStatus.DRAFT %}
+                                <form method="post" action="{% url 'contract:client_contract_request_approval' contract.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-info me-2">承認申請</button>
+                                </form>
+                            {% endif %}
+                            {% if contract.contract_status == contract.ContractStatus.DRAFT or contract.contract_status == contract.ContractStatus.PENDING %}
                                 <a href="{% url 'contract:client_contract_update' contract.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
                                 <a href="{% url 'contract:client_contract_delete' contract.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
                             {% endif %}

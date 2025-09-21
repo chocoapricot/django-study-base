@@ -17,6 +17,7 @@ urlpatterns = [
     path('client/<int:pk>/change_history/', views.client_contract_change_history_list, name='client_contract_change_history_list'),
     path('client/print/<int:pk>/download/', views.download_client_contract_pdf, name='download_client_contract_pdf'),
     path('client/confirm/', views.client_contract_confirm_list, name='client_contract_confirm_list'),
+    path('client/<int:pk>/request_approval/', views.client_contract_request_approval, name='client_contract_request_approval'),
     path('client/<int:pk>/approve/', views.client_contract_approve, name='client_contract_approve'),
     path('client/<int:pk>/issue/', views.client_contract_issue, name='client_contract_issue'),
     path('client/<int:pk>/issue_quotation/', views.issue_quotation, name='issue_quotation'),
