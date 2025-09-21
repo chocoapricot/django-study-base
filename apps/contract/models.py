@@ -103,6 +103,16 @@ class ClientContract(MyModel):
         return f"{self.client.name} - {self.contract_name}"
     
     
+    @property
+    def is_approved_or_later(self):
+        """承認済、またはそれ以降のステータスかどうかを判定する"""
+        return int(self.contract_status) >= int(self.ContractStatus.APPROVED)
+
+    @property
+    def is_issued_or_later(self):
+        """発行済、またはそれ以降のステータスかどうかを判定する"""
+        return int(self.contract_status) >= int(self.ContractStatus.ISSUED)
+
     def clean(self):
         """バリデーション"""
         from django.core.exceptions import ValidationError

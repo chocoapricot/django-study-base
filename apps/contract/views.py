@@ -756,7 +756,7 @@ def client_contract_issue(request, pk):
         else:
             messages.error(request, "この契約は発行できません。")
 
-    return redirect('contract:client_contract_detail', pk=contract.pk)
+    return redirect('contract:client_contract_detail', pk=pk)
 
 
 @login_required

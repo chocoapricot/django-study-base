@@ -10,7 +10,7 @@
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="approvalSwitch" name="is_approved"
                        onchange="this.form.submit()"
-                       {% if contract.contract_status >= contract.ContractStatus.APPROVED %}checked{% endif %}
+                       {% if contract.is_approved_or_later %}checked{% endif %}
                        {% if contract.contract_status == contract.ContractStatus.DRAFT %}disabled{% endif %}>
                 <label class="form-check-label" for="approvalSwitch">
                     <i class="bi bi-check-circle" style="font-size: 20px; color: #17a2b8;"></i>
@@ -23,24 +23,24 @@
         </form>
 
         {# 見積書発行スイッチ #}
-        {% with latest_quotation=issue_history|get_latest_quotation %}
         <form method="post" id="issue-quotation-form" action="{% url 'contract:issue_quotation' contract.pk %}" class="mb-3">
             {% csrf_token %}
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="issueQuotationSwitch" name="is_issued"
                        onchange="this.form.submit()"
-                       {% if latest_quotation %}checked disabled{% endif %}
-                       {% if contract.contract_status < contract.ContractStatus.APPROVED %}disabled{% endif %}>
+                       {% with latest_quotation=issue_history|get_latest_quotation %}{% if latest_quotation %}checked{% endif %}{% endwith %}
+                       {% with latest_quotation=issue_history|get_latest_quotation %}{% if latest_quotation or not contract.is_approved_or_later %}disabled{% endif %}{% endwith %}>
                 <label class="form-check-label" for="issueQuotationSwitch">
                     <i class="bi bi-file-text" style="font-size: 20px; color: #17a2b8;"></i>
                     見積書発行
-                    {% if latest_quotation %}
-                        <span class="text-muted small">（{{ latest_quotation.printed_at|date:"Y/m/d H:i:s" }}　{{ latest_quotation.printed_by.get_full_name_japanese|default:'' }}）</span>
-                    {% endif %}
+                    {% with latest_quotation=issue_history|get_latest_quotation %}
+                        {% if latest_quotation %}
+                            <span class="text-muted small">（{{ latest_quotation.printed_at|date:"Y/m/d H:i:s" }}　{{ latest_quotation.printed_by.get_full_name_japanese|default:'' }}）</span>
+                        {% endif %}
+                    {% endwith %}
                 </label>
             </div>
         </form>
-        {% endwith %}
 
         {# 発行スイッチ #}
         <form method="post" id="issue-form" action="{% url 'contract:client_contract_issue' contract.pk %}" class="mb-3">
@@ -48,7 +48,7 @@
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="issueSwitch" name="is_issued"
                        onchange="this.form.submit()"
-                       {% if contract.contract_status >= contract.ContractStatus.ISSUED %}checked disabled{% endif %}
+                       {% if contract.is_issued_or_later %}checked disabled{% endif %}
                        {% if contract.contract_status != contract.ContractStatus.APPROVED %}disabled{% endif %}>
                 <label class="form-check-label" for="issueSwitch">
                     <i class="bi bi-filetype-pdf" style="font-size: 20px; color: #17a2b8;"></i>
