@@ -684,25 +684,60 @@ def client_contract_pdf(request, pk):
 
 @login_required
 @permission_required('contract.change_clientcontract', raise_exception=True)
+def client_contract_request_approval(request, pk):
+    """クライアント契約の承認申請を行う"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+    if request.method == 'POST':
+        if contract.contract_status == ClientContract.ContractStatus.DRAFT:
+            contract.contract_status = ClientContract.ContractStatus.PENDING
+            contract.save()
+            messages.success(request, f'契約「{contract.contract_name}」を承認申請しました。')
+        else:
+            messages.error(request, 'この契約は承認申請できません。')
+    return redirect('contract:client_contract_detail', pk=pk)
+
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
 def client_contract_approve(request, pk):
     """クライアント契約の承認ステータスを更新する"""
     contract = get_object_or_404(ClientContract, pk=pk)
     if request.method == 'POST':
         is_approved = request.POST.get('is_approved')
         if is_approved:
-            contract.contract_status = ClientContract.ContractStatus.APPROVED
-            contract.approved_at = timezone.now()
-            contract.approved_by = request.user
-            messages.success(request, f'契約「{contract.contract_name}」を承認済にしました。')
+            # 「承認する」アクション
+            if contract.contract_status == ClientContract.ContractStatus.PENDING:
+                contract.contract_status = ClientContract.ContractStatus.APPROVED
+                contract.approved_at = timezone.now()
+                contract.approved_by = request.user
+                contract.save()
+                messages.success(request, f'契約「{contract.contract_name}」を承認済にしました。')
+            else:
+                messages.error(request, 'この契約は承認できません。')
         else:
-            contract.contract_status = ClientContract.ContractStatus.DRAFT
-            contract.approved_at = None
-            contract.approved_by = None
-            contract.issued_at = None
-            contract.issued_by = None
-            contract.confirmed_at = None
-            messages.success(request, f'契約「{contract.contract_name}」を作成中に戻しました。')
-        contract.save()
+            # 「承認解除」アクション
+            if contract.contract_status in [
+                ClientContract.ContractStatus.APPROVED,
+                ClientContract.ContractStatus.ISSUED,
+                ClientContract.ContractStatus.CONFIRMED
+            ]:
+                # 関連する発行履歴（契約書・見積書）を削除
+                for print_history in contract.print_history.all():
+                    if print_history.pdf_file:
+                        print_history.pdf_file.delete(save=False)
+                    print_history.delete()
+
+                contract.contract_status = ClientContract.ContractStatus.DRAFT
+                contract.approved_at = None
+                contract.approved_by = None
+                contract.issued_at = None
+                contract.issued_by = None
+                contract.confirmed_at = None
+                contract.save()
+                messages.success(request, f'契約「{contract.contract_name}」を作成中に戻しました。')
+            else:
+                messages.error(request, 'この契約の承認は解除できません。')
+
     return redirect('contract:client_contract_detail', pk=contract.pk)
 
 
@@ -712,40 +747,34 @@ def client_contract_issue(request, pk):
     """クライアント契約を発行済にする"""
     contract = get_object_or_404(ClientContract, pk=pk)
     if request.method == 'POST':
-        is_issued = 'is_issued' in request.POST
-        if is_issued:
-            if contract.contract_status == ClientContract.ContractStatus.APPROVED:
-                pdf_content, pdf_filename, document_title = generate_contract_pdf_content(contract)
-                if pdf_content:
-                    new_print = ClientContractPrint(
-                        client_contract=contract,
-                        printed_by=request.user,
-                        print_type=ClientContractPrint.PrintType.CONTRACT,
-                        document_title=document_title
-                    )
-                    new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
+        if contract.contract_status == ClientContract.ContractStatus.APPROVED:
+            pdf_content, pdf_filename, document_title = generate_contract_pdf_content(contract)
+            if pdf_content:
+                new_print = ClientContractPrint(
+                    client_contract=contract,
+                    printed_by=request.user,
+                    print_type=ClientContractPrint.PrintType.CONTRACT,
+                    document_title=document_title
+                )
+                new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
 
-                    AppLog.objects.create(
-                        user=request.user,
-                        action='print',
-                        model_name='ClientContract',
-                        object_id=str(contract.pk),
-                        object_repr=f'契約書PDF出力: {contract.contract_name}'
-                    )
-                    contract.contract_status = ClientContract.ContractStatus.ISSUED
-                    contract.issued_at = timezone.now()
-                    contract.issued_by = request.user
-                    contract.save()
-                    messages.success(request, f'契約「{contract.contract_name}」の契約書を発行しました。')
-                else:
-                    messages.error(request, "契約書の発行に失敗しました。")
-        else:
-            if contract.contract_status == ClientContract.ContractStatus.ISSUED:
-                contract.contract_status = ClientContract.ContractStatus.APPROVED
-                contract.issued_at = None
-                contract.issued_by = None
+                AppLog.objects.create(
+                    user=request.user,
+                    action='print',
+                    model_name='ClientContract',
+                    object_id=str(contract.pk),
+                    object_repr=f'契約書PDF出力: {contract.contract_name}'
+                )
+                contract.contract_status = ClientContract.ContractStatus.ISSUED
+                contract.issued_at = timezone.now()
+                contract.issued_by = request.user
                 contract.save()
-                messages.success(request, f'契約「{contract.contract_name}」を承認済に戻しました。')
+                messages.success(request, f'契約「{contract.contract_name}」の契約書を発行しました。')
+            else:
+                messages.error(request, "契約書の発行に失敗しました。")
+        else:
+            messages.error(request, "この契約は発行できません。")
+
     return redirect('contract:client_contract_detail', pk=contract.pk)
 
 
@@ -757,6 +786,11 @@ def issue_quotation(request, pk):
 
     if int(contract.contract_status) < int(ClientContract.ContractStatus.APPROVED):
         messages.error(request, 'この契約の見積書は発行できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
+    # 既に発行済みの場合はエラー
+    if ClientContractPrint.objects.filter(client_contract=contract, print_type=ClientContractPrint.PrintType.QUOTATION).exists():
+        messages.error(request, 'この契約の見積書は既に発行済みです。')
         return redirect('contract:client_contract_detail', pk=pk)
 
     issued_at = timezone.now()
