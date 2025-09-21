@@ -3,7 +3,7 @@
     "model": "master.contractterms",
     "pk": 1,
     "fields": {
-        "version": 1757775344867203,
+        "version": 1758471492947868,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -20,7 +20,7 @@
     "model": "master.contractterms",
     "pk": 2,
     "fields": {
-        "version": 1757775344879000,
+        "version": 1758471492960040,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -37,7 +37,7 @@
     "model": "master.contractterms",
     "pk": 3,
     "fields": {
-        "version": 1757775344881815,
+        "version": 1758471492966408,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -54,7 +54,7 @@
     "model": "master.contractterms",
     "pk": 4,
     "fields": {
-        "version": 1757775344885497,
+        "version": 1758471492969030,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -71,7 +71,7 @@
     "model": "master.contractterms",
     "pk": 5,
     "fields": {
-        "version": 1757775344888248,
+        "version": 1758471492973286,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -88,7 +88,7 @@
     "model": "master.contractterms",
     "pk": 6,
     "fields": {
-        "version": 1757775344890482,
+        "version": 1758471492975701,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -105,7 +105,7 @@
     "model": "master.contractterms",
     "pk": 7,
     "fields": {
-        "version": 1757775344893013,
+        "version": 1758471492978246,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:50:15.128Z",
@@ -122,7 +122,7 @@
     "model": "master.contractterms",
     "pk": 8,
     "fields": {
-        "version": 1757775344895318,
+        "version": 1758471492980581,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:50:29.241Z",
@@ -139,7 +139,7 @@
     "model": "master.contractterms",
     "pk": 9,
     "fields": {
-        "version": 1757775344897728,
+        "version": 1758471492983302,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:58:24.831Z",
@@ -156,7 +156,7 @@
     "model": "master.contractterms",
     "pk": 10,
     "fields": {
-        "version": 1757775344899990,
+        "version": 1758471492985782,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:58:39.789Z",
@@ -173,7 +173,7 @@
     "model": "master.contractterms",
     "pk": 11,
     "fields": {
-        "version": 1757776171796561,
+        "version": 1758471492990651,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:25:18.448Z",
@@ -190,7 +190,7 @@
     "model": "master.contractterms",
     "pk": 12,
     "fields": {
-        "version": 1757775344905497,
+        "version": 1758471492993101,
         "created_at": "2025-09-12T17:46:35.466Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:50:51.833Z",
@@ -207,7 +207,7 @@
     "model": "master.contractterms",
     "pk": 13,
     "fields": {
-        "version": 1757775344907711,
+        "version": 1758471492995484,
         "created_at": "2025-09-12T17:46:54.472Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:51:22.442Z",
@@ -224,7 +224,7 @@
     "model": "master.contractterms",
     "pk": 14,
     "fields": {
-        "version": 1757775344909902,
+        "version": 1758471492997805,
         "created_at": "2025-09-12T17:47:28.634Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:51:43.413Z",
@@ -241,7 +241,7 @@
     "model": "master.contractterms",
     "pk": 15,
     "fields": {
-        "version": 1757775344912100,
+        "version": 1758471493000576,
         "created_at": "2025-09-12T17:47:50.232Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:51:53.714Z",
@@ -258,7 +258,7 @@
     "model": "master.contractterms",
     "pk": 16,
     "fields": {
-        "version": 1757775344914287,
+        "version": 1758471493007077,
         "created_at": "2025-09-12T17:48:08.683Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:52:07.150Z",
@@ -275,7 +275,7 @@
     "model": "master.contractterms",
     "pk": 17,
     "fields": {
-        "version": 1757775344916502,
+        "version": 1758471493016872,
         "created_at": "2025-09-12T17:48:52.401Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:52:22.872Z",
@@ -292,7 +292,7 @@
     "model": "master.contractterms",
     "pk": 18,
     "fields": {
-        "version": 1757775344918777,
+        "version": 1758471493023108,
         "created_at": "2025-09-12T17:49:59.743Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:52:36.837Z",
@@ -309,7 +309,7 @@
     "model": "master.contractterms",
     "pk": 19,
     "fields": {
-        "version": 1757775344921120,
+        "version": 1758471493026168,
         "created_at": "2025-09-12T17:53:26.151Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:53:26.151Z",
@@ -326,7 +326,7 @@
     "model": "master.contractterms",
     "pk": 20,
     "fields": {
-        "version": 1757775344926813,
+        "version": 1758471493028559,
         "created_at": "2025-09-12T17:53:46.352Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:53:46.352Z",
@@ -343,7 +343,7 @@
     "model": "master.contractterms",
     "pk": 21,
     "fields": {
-        "version": 1757775344929070,
+        "version": 1758471493030933,
         "created_at": "2025-09-12T17:54:05.943Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:54:05.943Z",
@@ -360,7 +360,7 @@
     "model": "master.contractterms",
     "pk": 22,
     "fields": {
-        "version": 1757775344931258,
+        "version": 1758471493033745,
         "created_at": "2025-09-12T17:58:55.356Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:58:55.356Z",
@@ -377,7 +377,7 @@
     "model": "master.contractterms",
     "pk": 23,
     "fields": {
-        "version": 1757775344933786,
+        "version": 1758471493037867,
         "created_at": "2025-09-12T17:59:23.116Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:59:23.116Z",
@@ -394,7 +394,7 @@
     "model": "master.contractterms",
     "pk": 24,
     "fields": {
-        "version": 1757775344936092,
+        "version": 1758471493043262,
         "created_at": "2025-09-12T17:59:48.132Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:59:48.132Z",
@@ -411,7 +411,7 @@
     "model": "master.contractterms",
     "pk": 25,
     "fields": {
-        "version": 1757775344938419,
+        "version": 1758471493048224,
         "created_at": "2025-09-12T18:00:03.871Z",
         "created_by": 1,
         "updated_at": "2025-09-12T18:00:03.871Z",
@@ -428,7 +428,7 @@
     "model": "master.contractterms",
     "pk": 26,
     "fields": {
-        "version": 1757775344940630,
+        "version": 1758471493052073,
         "created_at": "2025-09-12T18:00:23.820Z",
         "created_by": 1,
         "updated_at": "2025-09-12T18:00:23.820Z",
@@ -445,7 +445,7 @@
     "model": "master.contractterms",
     "pk": 27,
     "fields": {
-        "version": 1757775344942833,
+        "version": 1758471493058875,
         "created_at": "2025-09-12T18:00:45.512Z",
         "created_by": 1,
         "updated_at": "2025-09-12T18:00:45.512Z",
@@ -462,7 +462,7 @@
     "model": "master.contractterms",
     "pk": 28,
     "fields": {
-        "version": 1757775344945076,
+        "version": 1758471493061548,
         "created_at": "2025-09-12T18:02:38.568Z",
         "created_by": 1,
         "updated_at": "2025-09-12T18:02:38.568Z",
@@ -479,7 +479,7 @@
     "model": "master.contractterms",
     "pk": 29,
     "fields": {
-        "version": 1757775344947293,
+        "version": 1758471493064004,
         "created_at": "2025-09-12T18:02:55.534Z",
         "created_by": 1,
         "updated_at": "2025-09-12T18:02:55.534Z",
@@ -496,7 +496,7 @@
     "model": "master.contractterms",
     "pk": 30,
     "fields": {
-        "version": 1757775344949822,
+        "version": 1758471493066805,
         "created_at": "2025-09-12T18:03:12.902Z",
         "created_by": 1,
         "updated_at": "2025-09-12T18:03:12.902Z",
@@ -513,7 +513,7 @@
     "model": "master.contractterms",
     "pk": 31,
     "fields": {
-        "version": 1757776228637436,
+        "version": 1758471493069203,
         "created_at": "2025-09-13T15:25:48.795Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:26:15.289Z",
@@ -530,7 +530,7 @@
     "model": "master.contractterms",
     "pk": 32,
     "fields": {
-        "version": 1757776246771762,
+        "version": 1758471493075329,
         "created_at": "2025-09-13T15:26:33.424Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:26:33.424Z",
@@ -547,7 +547,7 @@
     "model": "master.contractterms",
     "pk": 33,
     "fields": {
-        "version": 1757776264836616,
+        "version": 1758471493078071,
         "created_at": "2025-09-13T15:26:51.489Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:26:51.489Z",
@@ -564,7 +564,7 @@
     "model": "master.contractterms",
     "pk": 34,
     "fields": {
-        "version": 1757776295040843,
+        "version": 1758471493080431,
         "created_at": "2025-09-13T15:27:21.693Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:27:21.693Z",
@@ -581,7 +581,7 @@
     "model": "master.contractterms",
     "pk": 35,
     "fields": {
-        "version": 1757776322252924,
+        "version": 1758471493083203,
         "created_at": "2025-09-13T15:27:48.905Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:27:48.905Z",
@@ -598,7 +598,7 @@
     "model": "master.contractterms",
     "pk": 36,
     "fields": {
-        "version": 1757776348407408,
+        "version": 1758471493085784,
         "created_at": "2025-09-13T15:28:15.059Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:28:15.059Z",
@@ -615,7 +615,7 @@
     "model": "master.contractterms",
     "pk": 37,
     "fields": {
-        "version": 1757776373678168,
+        "version": 1758471493091910,
         "created_at": "2025-09-13T15:28:40.330Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:28:40.330Z",
@@ -632,7 +632,7 @@
     "model": "master.contractterms",
     "pk": 38,
     "fields": {
-        "version": 1757776387093465,
+        "version": 1758471493094585,
         "created_at": "2025-09-13T15:28:53.745Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:28:53.745Z",
@@ -649,7 +649,7 @@
     "model": "master.contractterms",
     "pk": 39,
     "fields": {
-        "version": 1757776414518894,
+        "version": 1758471493096906,
         "created_at": "2025-09-13T15:29:21.171Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:29:21.171Z",
@@ -666,7 +666,7 @@
     "model": "master.contractterms",
     "pk": 40,
     "fields": {
-        "version": 1757776446717710,
+        "version": 1758471493099480,
         "created_at": "2025-09-13T15:29:53.370Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:29:53.370Z",
@@ -683,7 +683,7 @@
     "model": "master.contractterms",
     "pk": 41,
     "fields": {
-        "version": 1757776470057019,
+        "version": 1758471493102139,
         "created_at": "2025-09-13T15:30:16.709Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:30:16.709Z",
@@ -700,7 +700,7 @@
     "model": "master.contractterms",
     "pk": 42,
     "fields": {
-        "version": 1757776484906479,
+        "version": 1758471493107080,
         "created_at": "2025-09-13T15:30:31.558Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:30:31.558Z",
@@ -711,6 +711,108 @@
         "display_position": 2,
         "memo": null,
         "display_order": 130
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 43,
+    "fields": {
+        "version": 1758471717821957,
+        "created_at": "2025-09-21T16:37:44.474Z",
+        "created_by": 1,
+        "updated_at": "2025-09-21T16:37:44.474Z",
+        "updated_by": 1,
+        "contract_pattern": 5,
+        "contract_clause": "（前文）",
+        "contract_terms": "株式会社Ａ（以下「甲」という。）と、株式会社Ｂ（以下「乙」という。）は、\r\n甲乙間で締結済みの基本契約（業務委託基本契約）に基づき、本個別契約を次のとおり締結する。",
+        "display_position": 1,
+        "memo": null,
+        "display_order": 0
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 44,
+    "fields": {
+        "version": 1758471755694310,
+        "created_at": "2025-09-21T16:38:22.346Z",
+        "created_by": 1,
+        "updated_at": "2025-09-21T16:38:22.346Z",
+        "updated_by": 1,
+        "contract_pattern": 5,
+        "contract_clause": "（末文）",
+        "contract_terms": "本契約の成立を証するため、本書を２通作成し、甲乙各自署名又は記名押印のうえ、各１通を保有する。",
+        "display_position": 3,
+        "memo": null,
+        "display_order": 999
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 45,
+    "fields": {
+        "version": 1758471785844791,
+        "created_at": "2025-09-21T16:38:52.497Z",
+        "created_by": 1,
+        "updated_at": "2025-09-21T16:38:52.497Z",
+        "updated_by": 1,
+        "contract_pattern": 6,
+        "contract_clause": "（前文）",
+        "contract_terms": "株式会社Ａ（以下「甲」という。）と、株式会社Ｂ（以下「乙」という。）は、\r\n甲乙間で締結済みの基本契約（業務委託基本契約）に基づき、本個別契約を次のとおり締結する。",
+        "display_position": 1,
+        "memo": null,
+        "display_order": 0
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 46,
+    "fields": {
+        "version": 1758471803695172,
+        "created_at": "2025-09-21T16:39:10.347Z",
+        "created_by": 1,
+        "updated_at": "2025-09-21T16:39:10.347Z",
+        "updated_by": 1,
+        "contract_pattern": 6,
+        "contract_clause": "（末文）",
+        "contract_terms": "本契約の成立を証するため、本書を２通作成し、甲乙各自署名又は記名押印のうえ、各１通を保有する。",
+        "display_position": 3,
+        "memo": null,
+        "display_order": 999
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 47,
+    "fields": {
+        "version": 1758471835442948,
+        "created_at": "2025-09-21T16:39:42.095Z",
+        "created_by": 1,
+        "updated_at": "2025-09-21T16:39:42.095Z",
+        "updated_by": 1,
+        "contract_pattern": 7,
+        "contract_clause": "（前文）",
+        "contract_terms": "株式会社Ａ（以下「甲」という。）と、株式会社Ｂ（以下「乙」という。）は、\r\n甲乙間で締結済みの基本契約（業務委託基本契約）に基づき、本個別契約を次のとおり締結する。",
+        "display_position": 1,
+        "memo": null,
+        "display_order": 0
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 48,
+    "fields": {
+        "version": 1758471847537041,
+        "created_at": "2025-09-21T16:39:54.189Z",
+        "created_by": 1,
+        "updated_at": "2025-09-21T16:39:54.189Z",
+        "updated_by": 1,
+        "contract_pattern": 7,
+        "contract_clause": "（末文）",
+        "contract_terms": "本契約の成立を証するため、本書を２通作成し、甲乙各自署名又は記名押印のうえ、各１通を保有する。",
+        "display_position": 3,
+        "memo": null,
+        "display_order": 999
     }
 }
 ]
