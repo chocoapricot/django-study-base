@@ -141,13 +141,15 @@
                                             {{ contract.contract_name }}
                                         </a>
                                     </td>
-                                    <td>{{ contract.client.corporate_number }}</td>
                                     <td>
+                                        {{ contract.client.corporate_number }}
                                         {% if contract.client.has_pending_connection_request %}
                                             <i class="bi bi-arrow-up-circle" style="color:#17a2b8;" title="接続申請中"></i>
                                         {% elif contract.client.has_connected_approved_user %}
                                             <i class="bi bi-link" style="color:#17a2b8;" title="接続承認済み"></i>
                                         {% endif %}
+                                    </td>
+                                    <td>
                                         {{ contract.client.name }}
                                     </td>
                                     <td>
