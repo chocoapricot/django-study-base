@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.contrib.auth.models import Permission
 from apps.client.models import Client
 from apps.contract.models import ClientContract, ClientContractPrint
-from apps.master.models import ContractPattern, BillPayment, JobCategory
+from apps.master.models import ContractPattern
 
 User = get_user_model()
 
@@ -48,17 +48,8 @@ class ClientContractStatusTest(TestCase):
         """初期ステータスが「作成中」であること"""
         self.assertEqual(self.contract.contract_status, ClientContract.ContractStatus.DRAFT)
 
-    def test_request_approval(self):
-        """承認申請アクションのテスト"""
-        url = reverse('contract:client_contract_request_approval', kwargs={'pk': self.contract.pk})
-        response = self.client.post(url)
-        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.contract.pk}))
-
-        self.contract.refresh_from_db()
-        self.assertEqual(self.contract.contract_status, ClientContract.ContractStatus.PENDING)
-
-    def test_approve_contract(self):
-        """契約承認アクションのテスト"""
+    def test_approve_contract_from_pending(self):
+        """契約承認アクションのテスト（申請中→承認済）"""
         self.contract.contract_status = ClientContract.ContractStatus.PENDING
         self.contract.save()
 
@@ -71,8 +62,8 @@ class ClientContractStatusTest(TestCase):
         self.assertIsNotNone(self.contract.approved_at)
         self.assertEqual(self.contract.approved_by, self.user)
 
-    def test_unapprove_contract(self):
-        """承認解除アクションのテスト"""
+    def test_unapprove_contract_from_approved(self):
+        """承認解除アクションのテスト（承認済→作成中）"""
         self.contract.contract_status = ClientContract.ContractStatus.APPROVED
         self.contract.approved_at = timezone.now()
         self.contract.approved_by = self.user
@@ -95,8 +86,8 @@ class ClientContractStatusTest(TestCase):
         # 発行履歴が削除されていることを確認
         self.assertEqual(self.contract.print_history.count(), 0)
 
-    def test_issue_contract(self):
-        """契約書発行アクションのテスト"""
+    def test_issue_contract_from_approved(self):
+        """契約書発行アクションのテスト（承認済→発行済）"""
         self.contract.contract_status = ClientContract.ContractStatus.APPROVED
         self.contract.save()
 
@@ -110,8 +101,8 @@ class ClientContractStatusTest(TestCase):
         self.assertEqual(self.contract.issued_by, self.user)
         self.assertTrue(self.contract.print_history.filter(print_type='10').exists())
 
-    def test_issue_quotation(self):
-        """見積書発行アクションのテスト"""
+    def test_issue_quotation_from_approved(self):
+        """見積書発行アクションのテスト（承認済から）"""
         self.contract.contract_status = ClientContract.ContractStatus.APPROVED
         self.contract.save()
 
@@ -131,6 +122,31 @@ class ClientContractStatusTest(TestCase):
         response = self.client.post(url)
         self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.contract.pk}))
 
-        # メッセージがエラーであることを確認（実際のメッセージ内容はテストしにくいので、ここでは省略）
         # 1つしか履歴がないことを確認
         self.assertEqual(self.contract.print_history.filter(print_type='20').count(), 1)
+
+    def test_cannot_approve_from_draft(self):
+        """作成中からは承認できないことのテスト"""
+        self.assertEqual(self.contract.contract_status, ClientContract.ContractStatus.DRAFT)
+        url = reverse('contract:client_contract_approve', kwargs={'pk': self.contract.pk})
+        response = self.client.post(url, {'is_approved': 'on'}, follow=True)
+        self.contract.refresh_from_db()
+        # ステータスが変わらないことを確認
+        self.assertEqual(self.contract.contract_status, ClientContract.ContractStatus.DRAFT)
+        # エラーメッセージが出ていることを確認
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'このステータスからは承認できません。')
+
+    def test_cannot_unapprove_from_pending(self):
+        """申請中からは承認解除できないことのテスト"""
+        self.contract.contract_status = ClientContract.ContractStatus.PENDING
+        self.contract.save()
+        url = reverse('contract:client_contract_approve', kwargs={'pk': self.contract.pk})
+        response = self.client.post(url, follow=True) # is_approvedなし
+        self.contract.refresh_from_db()
+        # ステータスが変わらないことを確認
+        self.assertEqual(self.contract.contract_status, ClientContract.ContractStatus.PENDING)
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'この契約の承認は解除できません。')

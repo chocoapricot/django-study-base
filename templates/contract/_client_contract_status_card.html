@@ -5,94 +5,76 @@
     </div>
     <div class="card-body">
         {# 承認スイッチ #}
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-4">
-                <i class="bi bi-check-circle" style="font-size: 20px; color: #17a2b8;"></i>
-                契約承認
+        <form method="post" id="approve-form" action="{% url 'contract:client_contract_approve' contract.pk %}" class="mb-3">
+            {% csrf_token %}
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="approvalSwitch" name="is_approved"
+                       onchange="this.form.submit()"
+                       {% if contract.contract_status >= contract.ContractStatus.APPROVED %}checked{% endif %}
+                       {% if contract.contract_status == contract.ContractStatus.DRAFT %}disabled{% endif %}>
+                <label class="form-check-label" for="approvalSwitch">
+                    <i class="bi bi-check-circle" style="font-size: 20px; color: #17a2b8;"></i>
+                    契約承認
+                    {% if contract.approved_at %}
+                        <span class="text-muted small">（{{ contract.approved_at|date:"Y/m/d H:i:s" }}　{{ contract.approved_by.get_full_name_japanese|default:'' }}）</span>
+                    {% endif %}
+                </label>
             </div>
-            <div class="col-sm-8">
-                <form method="post" id="approve-form" action="{% url 'contract:client_contract_approve' contract.pk %}" class="d-inline">
-                    {% csrf_token %}
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="approvalSwitch" name="is_approved"
-                               onchange="this.form.submit()"
-                               {% if contract.contract_status >= contract.ContractStatus.APPROVED %}checked{% endif %}
-                               {% if contract.contract_status == contract.ContractStatus.DRAFT or contract.contract_status == contract.ContractStatus.PENDING and not perms.contract.change_clientcontract %}disabled{% endif %}>
-                        <label class="form-check-label" for="approvalSwitch">
-                            {% if contract.approved_at %}
-                                <span class="text-muted small">（{{ contract.approved_at|date:"Y/m/d H:i:s" }}　{{ contract.approved_by.get_full_name_japanese|default:'' }}）</span>
-                            {% else %}
-                                {% if contract.contract_status == contract.ContractStatus.PENDING %}
-                                    承認待ち
-                                {% else %}
-                                    未承認
-                                {% endif %}
-                            {% endif %}
-                        </label>
-                    </div>
-                </form>
-            </div>
-        </div>
+        </form>
 
-        {# 見積書発行ボタン #}
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-4">
-                <i class="bi bi-file-text" style="font-size: 20px; color: #17a2b8;"></i>
-                見積書発行
-            </div>
-            <div class="col-sm-8">
-                {% with latest_quotation=issue_history|get_latest_quotation %}
+        {# 見積書発行スイッチ #}
+        {% with latest_quotation=issue_history|get_latest_quotation %}
+        <form method="post" id="issue-quotation-form" action="{% url 'contract:issue_quotation' contract.pk %}" class="mb-3">
+            {% csrf_token %}
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="issueQuotationSwitch" name="is_issued"
+                       onchange="this.form.submit()"
+                       {% if latest_quotation %}checked disabled{% endif %}
+                       {% if contract.contract_status < contract.ContractStatus.APPROVED %}disabled{% endif %}>
+                <label class="form-check-label" for="issueQuotationSwitch">
+                    <i class="bi bi-file-text" style="font-size: 20px; color: #17a2b8;"></i>
+                    見積書発行
                     {% if latest_quotation %}
-                        <span class="text-muted small">発行済み（{{ latest_quotation.printed_at|date:"Y/m/d H:i:s" }} {{ latest_quotation.printed_by.get_full_name_japanese|default:'' }}）</span>
-                    {% else %}
-                        {% if contract.contract_status >= contract.ContractStatus.APPROVED %}
-                            <form method="post" action="{% url 'contract:issue_quotation' contract.pk %}" class="d-inline">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-primary">見積書を発行</button>
-                            </form>
-                        {% else %}
-                            <span class="text-muted small">未発行</span>
-                        {% endif %}
+                        <span class="text-muted small">（{{ latest_quotation.printed_at|date:"Y/m/d H:i:s" }}　{{ latest_quotation.printed_by.get_full_name_japanese|default:'' }}）</span>
                     {% endif %}
-                {% endwith %}
+                </label>
             </div>
-        </div>
+        </form>
+        {% endwith %}
 
-        {# 契約書発行ボタン #}
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-4">
-                <i class="bi bi-filetype-pdf" style="font-size: 20px; color: #17a2b8;"></i>
-                契約書発行
-            </div>
-            <div class="col-sm-8">
-                {% if contract.contract_status >= contract.ContractStatus.ISSUED %}
-                    <span class="text-muted small">発行済み（{{ contract.issued_at|date:"Y/m/d H:i:s" }} {{ contract.issued_by.get_full_name_japanese|default:'' }}）</span>
-                {% else %}
-                    {% if contract.contract_status == contract.ContractStatus.APPROVED %}
-                        <form method="post" action="{% url 'contract:client_contract_issue' contract.pk %}" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-primary">契約書を発行</button>
-                        </form>
-                    {% else %}
-                        <span class="text-muted small">未発行</span>
+        {# 発行スイッチ #}
+        <form method="post" id="issue-form" action="{% url 'contract:client_contract_issue' contract.pk %}" class="mb-3">
+            {% csrf_token %}
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="issueSwitch" name="is_issued"
+                       onchange="this.form.submit()"
+                       {% if contract.contract_status >= contract.ContractStatus.ISSUED %}checked disabled{% endif %}
+                       {% if contract.contract_status != contract.ContractStatus.APPROVED %}disabled{% endif %}>
+                <label class="form-check-label" for="issueSwitch">
+                    <i class="bi bi-filetype-pdf" style="font-size: 20px; color: #17a2b8;"></i>
+                    契約書発行
+                    {% if contract.issued_at %}
+                        <span class="text-muted small">（{{ contract.issued_at|date:"Y/m/d H:i:s" }}　{{ contract.issued_by.get_full_name_japanese|default:'' }}）</span>
                     {% endif %}
-                {% endif %}
+                </label>
             </div>
-        </div>
+        </form>
 
-        {# クライアント確認 #}
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-4">
-                <i class="bi bi-link" style="font-size: 20px; color: #17a2b8;"></i>
-                クライアント確認
+        {# 確認スイッチ #}
+        <form method="post" id="confirm-form" action="{% url 'contract:client_contract_confirm' contract.pk %}" class="mb-3">
+            {% csrf_token %}
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="confirmSwitch" name="is_confirmed"
+                       disabled
+                       {% if contract.contract_status == contract.ContractStatus.CONFIRMED %}checked{% endif %}>
+                <label class="form-check-label" for="confirmSwitch">
+                    <i class="bi bi-link" style="font-size: 20px; color: #17a2b8;"></i>
+                    クライアント確認
+                    {% if contract.confirmed_at %}
+                        <span class="text-muted small">（{{ contract.confirmed_at|date:"Y/m/d H:i:s" }}）</span>
+                    {% endif %}
+                </label>
             </div>
-            <div class="col-sm-8">
-                {% if contract.confirmed_at %}
-                    <span class="text-muted small">確認済み（{{ contract.confirmed_at|date:"Y/m/d H:i:s" }}）</span>
-                {% else %}
-                    <span class="text-muted small">未確認</span>
-                {% endif %}
-            </div>
-        </div>
+        </form>
     </div>
 </div>
