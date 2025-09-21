@@ -123,6 +123,7 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>契約名</th>
+                                    <th>法人番号</th>
                                     <th>クライアント</th>
                                     <th>契約種別</th>
                                     <th>契約番号</th>
@@ -140,7 +141,15 @@
                                             {{ contract.contract_name }}
                                         </a>
                                     </td>
-                                    <td>{{ contract.client.name }}</td>
+                                    <td>{{ contract.client.corporate_number }}</td>
+                                    <td>
+                                        {% if contract.client.has_pending_connection_request %}
+                                            <i class="bi bi-arrow-up-circle" style="color:#17a2b8;" title="接続申請中"></i>
+                                        {% elif contract.client.has_connected_approved_user %}
+                                            <i class="bi bi-link" style="color:#17a2b8;" title="接続承認済み"></i>
+                                        {% endif %}
+                                        {{ contract.client.name }}
+                                    </td>
                                     <td>
                                         <span class="badge {{contract.client_contract_type_code|badge_class}}">
                                             {% my_name 'client_contract_type' contract.client_contract_type_code %}

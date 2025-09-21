@@ -96,6 +96,53 @@ def client_contract_list(request):
             filtered_client = Client.objects.get(pk=client_filter)
         except Client.DoesNotExist:
             pass
+
+    # 各クライアントに「接続承認済み担当者がいるか」「未承認の接続申請があるか」フラグを付与
+    company = Company.objects.first()
+    corporate_number = company.corporate_number if company else None
+
+    # ページ内の契約に関連するクライアントのメールアドレスを効率的に収集
+    client_user_emails = {}
+    for contract in contracts_page:
+        client = contract.client
+        if client and client.pk not in client_user_emails:
+            client_user_emails[client.pk] = list(client.users.values_list('email', flat=True))
+
+    if corporate_number:
+        # 承認済み・申請中の接続情報を一括で取得
+        all_emails = [email for emails in client_user_emails.values() for email in emails if email]
+
+        approved_connections = set(ConnectClient.objects.filter(
+            corporate_number=corporate_number,
+            email__in=all_emails,
+            status='approved'
+        ).values_list('email', flat=True))
+
+        pending_connections = set(ConnectClient.objects.filter(
+            corporate_number=corporate_number,
+            email__in=all_emails,
+            status='pending'
+        ).values_list('email', flat=True))
+
+        for contract in contracts_page:
+            client = contract.client
+            client.has_connected_approved_user = False
+            client.has_pending_connection_request = False
+
+            if client and client.pk in client_user_emails:
+                user_emails = set(client_user_emails[client.pk])
+                # 承認済みユーザーがいるか
+                if not approved_connections.isdisjoint(user_emails):
+                    client.has_connected_approved_user = True
+
+                # 未承認の申請があるか
+                if not pending_connections.isdisjoint(user_emails):
+                    client.has_pending_connection_request = True
+    else:
+        for contract in contracts_page:
+            client = contract.client
+            client.has_connected_approved_user = False
+            client.has_pending_connection_request = False
     
     context = {
         'contracts': contracts_page,
