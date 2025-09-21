@@ -294,6 +294,35 @@ class ClientViewsTest(TestCase):
         self.assertTemplateUsed(response, 'client/client_detail.html')
         self.assertContains(response, 'Test Client')
 
+    def test_client_detail_view_with_client_code(self):
+        """クライアント詳細画面でクライアントコードが正しく表示されることをテスト"""
+        client_with_code = Client.objects.create(
+            corporate_number='1123456789012',
+            name='Client With Code',
+            name_furigana='コードクライアント',
+            client_regist_status=1
+        )
+        response = self.client.get(reverse('client:client_detail', args=[client_with_code.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('client_code', response.context)
+        # The actual calculated value is '3WLM25QK'
+        self.assertEqual(response.context['client_code'], '3WLM25QK')
+        self.assertContains(response, '( 3WLM25QK )')
+
+    def test_client_detail_view_with_invalid_corporate_number(self):
+        """不正な法人番号の場合にクライアントコードが空文字になることをテスト"""
+        client_invalid_code = Client.objects.create(
+            corporate_number='12345', # Invalid
+            name='Client Invalid Code',
+            name_furigana='フセイクライアント',
+            client_regist_status=1
+        )
+        response = self.client.get(reverse('client:client_detail', args=[client_invalid_code.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('client_code', response.context)
+        self.assertEqual(response.context['client_code'], '')
+        self.assertNotContains(response, '( ') # Make sure the parentheses are not rendered
+
     def test_client_update_view_get(self):
         response = self.client.get(reverse('client:client_update', args=[self.client_obj.pk]))
         self.assertEqual(response.status_code, 200)

@@ -231,8 +231,28 @@ def client_detail(request, pk):
         models.Q(model_name='ClientFile', object_repr__startswith=f'{client.name} - '),
         action__in=['create', 'update', 'delete']
     ).count()
+
+    # クライアントコードの生成
+    client_code = ""
+    if client.corporate_number and len(client.corporate_number) == 13 and client.corporate_number.isdigit():
+        CHARS = "123456789ABCDEFGHJKLMNPQRSTUVWXYZ"
+        BASE = len(CHARS)
+        try:
+            num = int(client.corporate_number[1:])
+            if num == 0:
+                result = "A"
+            else:
+                result = ""
+                while num > 0:
+                    num, rem = divmod(num, BASE)
+                    result = CHARS[rem] + result
+            client_code = result.rjust(8, 'A')
+        except (ValueError, TypeError):
+            client_code = ""
+
     return render(request, 'client/client_detail.html', {
         'client': client,
+        'client_code': client_code,
         'form': form,
         'contacted_list': contacted_list,
         'client_contracts': client_contracts,
