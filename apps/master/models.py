@@ -583,6 +583,16 @@ class ContractTerms(MyModel):
     )
     contract_clause = models.TextField('契約条項')
     contract_terms = models.TextField('契約文言')
+    POSITION_CHOICES = [
+        (1, '前文'),
+        (2, '本文'),
+        (3, '末文'),
+    ]
+    display_position = models.IntegerField(
+        '表示場所',
+        choices=POSITION_CHOICES,
+        default=2,
+    )
     memo = models.CharField('メモ', max_length=255, blank=True, null=True)
     display_order = models.IntegerField('表示順', default=0)
 
@@ -590,8 +600,9 @@ class ContractTerms(MyModel):
         db_table = 'apps_master_contract_terms'
         verbose_name = '契約文言'
         verbose_name_plural = '契約文言'
-        ordering = ['display_order']
+        ordering = ['display_position', 'display_order']
         indexes = [
+            models.Index(fields=['display_position']),
             models.Index(fields=['display_order']),
         ]
 

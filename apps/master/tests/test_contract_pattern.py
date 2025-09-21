@@ -214,3 +214,107 @@ class ContractPatternMemoTest(TestCase):
         response = self.client.get(self.detail_url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'This is a test memo.')
+
+
+class ContractTermDisplayPositionTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_superuser(username='testuser4', password='password', email='test4@test.com')
+        self.client.login(username='testuser4', password='password')
+
+        self.pattern = ContractPattern.objects.create(name='Test Pattern')
+        self.create_url = reverse('master:contract_term_create', kwargs={'pattern_pk': self.pattern.pk})
+
+    def test_create_preamble_success(self):
+        """Test creating a single Preamble term is successful."""
+        post_data = {
+            'contract_clause': 'Preamble Clause',
+            'contract_terms': 'This is the preamble.',
+            'display_position': 1, # Preamble
+            'display_order': 5,
+        }
+        response = self.client.post(self.create_url, post_data, follow=True)
+        self.assertRedirects(response, reverse('master:contract_pattern_detail', kwargs={'pk': self.pattern.pk}))
+        self.assertTrue(self.pattern.terms.filter(display_position=1).exists())
+
+    def test_create_second_preamble_fails(self):
+        """Test creating a second Preamble term fails."""
+        ContractTerms.objects.create(
+            contract_pattern=self.pattern,
+            contract_clause='First Preamble',
+            contract_terms='First Preamble Terms',
+            display_position=1,
+            display_order=1,
+        )
+        post_data = {
+            'contract_clause': 'Second Preamble',
+            'contract_terms': 'Second Preamble Terms',
+            'display_position': 1, # Preamble
+            'display_order': 2,
+        }
+        response = self.client.post(self.create_url, post_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'この契約パターンにはすでに「前文」が登録されています。')
+        self.assertEqual(self.pattern.terms.filter(display_position=1).count(), 1)
+
+    def test_create_second_postscript_fails(self):
+        """Test creating a second Postscript term fails."""
+        ContractTerms.objects.create(
+            contract_pattern=self.pattern,
+            contract_clause='First Postscript',
+            contract_terms='First Postscript Terms',
+            display_position=3, # Postscript
+            display_order=100,
+        )
+        post_data = {
+            'contract_clause': 'Second Postscript',
+            'contract_terms': 'Second Postscript Terms',
+            'display_position': 3, # Postscript
+            'display_order': 110,
+        }
+        response = self.client.post(self.create_url, post_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'この契約パターンにはすでに「末文」が登録されています。')
+        self.assertEqual(self.pattern.terms.filter(display_position=3).count(), 1)
+
+    def test_create_multiple_body_terms_success(self):
+        """Test creating multiple Body terms is successful."""
+        post_data1 = {
+            'contract_clause': 'Body 1',
+            'contract_terms': 'Body Terms 1',
+            'display_position': 2, # Body
+            'display_order': 10,
+        }
+        self.client.post(self.create_url, post_data1)
+
+        post_data2 = {
+            'contract_clause': 'Body 2',
+            'contract_terms': 'Body Terms 2',
+            'display_position': 2, # Body
+            'display_order': 20,
+        }
+        self.client.post(self.create_url, post_data2)
+        self.assertEqual(self.pattern.terms.filter(display_position=2).count(), 2)
+
+    def test_update_to_conflicting_preamble_fails(self):
+        """Test updating a term to a conflicting Preamble position fails."""
+        preamble = ContractTerms.objects.create(
+            contract_pattern=self.pattern, display_position=1, contract_clause='Preamble'
+        )
+        body_term = ContractTerms.objects.create(
+            contract_pattern=self.pattern, display_position=2, contract_clause='Body'
+        )
+
+        update_url = reverse('master:contract_term_update', kwargs={'pk': body_term.pk})
+        post_data = {
+            'contract_clause': body_term.contract_clause,
+            'contract_terms': body_term.contract_terms,
+            'display_position': 1, # Attempt to change to Preamble
+            'display_order': body_term.display_order,
+        }
+
+        response = self.client.post(update_url, post_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'この契約パターンにはすでに「前文」が登録されています。')
+        body_term.refresh_from_db()
+        self.assertEqual(body_term.display_position, 2)
