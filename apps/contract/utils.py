@@ -57,21 +57,35 @@ def generate_contract_pdf_content(contract):
     else:
         return None, None
 
+    postamble_text = ""
     if contract.contract_pattern:
-        terms = contract.contract_pattern.terms.all().order_by('display_order')
-        if terms:
+        terms = contract.contract_pattern.terms.all().order_by('display_position', 'display_order')
+
+        preamble_terms = [term for term in terms if term.display_position == 1]
+        body_terms = [term for term in terms if term.display_position == 2]
+        postamble_terms = [term for term in terms if term.display_position == 3]
+
+        if preamble_terms:
+            preamble_text_parts = [f"{term.contract_clause}\n{term.contract_terms}" for term in preamble_terms]
+            intro_text = "\n\n".join(preamble_text_parts) + "\n\n" + intro_text
+
+        if body_terms:
             notes_index = -1
             for i, item in enumerate(items):
                 if item["title"] == "備考":
                     notes_index = i
                     break
-            term_items = []
-            for term in terms:
-                term_items.append({"title": str(term.contract_clause), "text": str(term.contract_terms)})
+
+            term_items = [{"title": str(term.contract_clause), "text": str(term.contract_terms)} for term in body_terms]
+
             if notes_index != -1:
                 items[notes_index:notes_index] = term_items
             else:
                 items.extend(term_items)
+
+        if postamble_terms:
+            postamble_text_parts = [f"{term.contract_clause}\n{term.contract_terms}" for term in postamble_terms]
+            postamble_text = "\n\n".join(postamble_text_parts)
 
     timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
     pdf_filename = f"{contract_type}_contract_{contract.pk}_{timestamp}.pdf"
@@ -81,7 +95,7 @@ def generate_contract_pdf_content(contract):
         watermark_text = "DRAFT"
 
     buffer = io.BytesIO()
-    generate_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text)
+    generate_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text, postamble_text=postamble_text)
     pdf_content = buffer.getvalue()
     buffer.close()
 

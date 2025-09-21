@@ -10,7 +10,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 
-def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None):
+def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None, postamble_text=None):
     """
     契約書形式のPDFを生成する共通関数。
     2パス処理を行い、フッターに総ページ数付きのページ番号を印字する。
@@ -20,6 +20,7 @@ def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None)
     :param intro_text: タイトルの下に表示する前文
     :param items: 罫線付きで表示する項目のリスト。各項目は {'title': '項目名', 'text': '内容'} の辞書。
     :param watermark_text: 透かしとして表示する文字列（オプショナル）
+    :param postamble_text: 末文
     """
     # 日本語フォントの登録
     font_path = 'statics/fonts/ipagp.ttf'
@@ -31,6 +32,7 @@ def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None)
     styles.add(ParagraphStyle(name='IntroText', fontName='IPAPGothic', fontSize=11, leading=16, spaceAfter=20))
     styles.add(ParagraphStyle(name='ItemTitle', fontName='IPAPGothic', fontSize=12, leading=14))
     styles.add(ParagraphStyle(name='ItemText', fontName='IPAPGothic', fontSize=11, leading=14))
+    styles.add(ParagraphStyle(name='PostambleText', fontName='IPAPGothic', fontSize=11, leading=16, spaceBefore=20))
 
     def build_story():
         """PDFの内容(Story)を構築する"""
@@ -40,7 +42,7 @@ def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None)
 
         # 2. 前文
         if intro_text:
-            story.append(Paragraph(intro_text, styles['IntroText']))
+            story.append(Paragraph(intro_text.replace('\n', '<br/>'), styles['IntroText']))
 
         # 3. 各項目の表示
         table_data = []
@@ -58,6 +60,11 @@ def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None)
             ]))
             story.append(table)
             story.append(Spacer(1, 10))
+
+        # 4. 末文
+        if postamble_text:
+            story.append(Paragraph(postamble_text.replace('\n', '<br/>'), styles['PostambleText']))
+
         return story
 
     # --- パス1: 総ページ数を数える ---
