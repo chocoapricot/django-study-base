@@ -66,7 +66,7 @@ def generate_contract_pdf_content(contract):
         postamble_terms = [term for term in terms if term.display_position == 3]
 
         if preamble_terms:
-            preamble_text_parts = [f"{term.contract_clause}\n{term.contract_terms}" for term in preamble_terms]
+            preamble_text_parts = [f"{term.contract_terms}" for term in preamble_terms]
             intro_text = "\n\n".join(preamble_text_parts) + "\n\n" + intro_text
 
         if body_terms:
@@ -84,7 +84,7 @@ def generate_contract_pdf_content(contract):
                 items.extend(term_items)
 
         if postamble_terms:
-            postamble_text_parts = [f"{term.contract_clause}\n{term.contract_terms}" for term in postamble_terms]
+            postamble_text_parts = [f"{term.contract_terms}" for term in postamble_terms]
             postamble_text = "\n\n".join(postamble_text_parts)
 
     timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
