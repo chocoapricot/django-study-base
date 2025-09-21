@@ -684,28 +684,13 @@ def client_contract_pdf(request, pk):
 
 @login_required
 @permission_required('contract.change_clientcontract', raise_exception=True)
-def client_contract_request_approval(request, pk):
-    """クライアント契約の承認申請を行う"""
-    contract = get_object_or_404(ClientContract, pk=pk)
-    if request.method == 'POST':
-        if contract.contract_status == ClientContract.ContractStatus.DRAFT:
-            contract.contract_status = ClientContract.ContractStatus.PENDING
-            contract.save()
-            messages.success(request, f'契約「{contract.contract_name}」を承認申請しました。')
-        else:
-            messages.error(request, 'この契約は承認申請できません。')
-    return redirect('contract:client_contract_detail', pk=pk)
-
-
-@login_required
-@permission_required('contract.change_clientcontract', raise_exception=True)
 def client_contract_approve(request, pk):
     """クライアント契約の承認ステータスを更新する"""
     contract = get_object_or_404(ClientContract, pk=pk)
     if request.method == 'POST':
         is_approved = request.POST.get('is_approved')
         if is_approved:
-            # 「承認する」アクション
+            # 「承認する」アクションは「申請中」からのみ可能
             if contract.contract_status == ClientContract.ContractStatus.PENDING:
                 contract.contract_status = ClientContract.ContractStatus.APPROVED
                 contract.approved_at = timezone.now()
@@ -713,14 +698,10 @@ def client_contract_approve(request, pk):
                 contract.save()
                 messages.success(request, f'契約「{contract.contract_name}」を承認済にしました。')
             else:
-                messages.error(request, 'この契約は承認できません。')
+                messages.error(request, 'このステータスからは承認できません。')
         else:
-            # 「承認解除」アクション
-            if contract.contract_status in [
-                ClientContract.ContractStatus.APPROVED,
-                ClientContract.ContractStatus.ISSUED,
-                ClientContract.ContractStatus.CONFIRMED
-            ]:
+            # 「承認解除」アクションは「承認済」以降からのみ可能
+            if int(contract.contract_status) >= int(ClientContract.ContractStatus.APPROVED):
                 # 関連する発行履歴（契約書・見積書）を削除
                 for print_history in contract.print_history.all():
                     if print_history.pdf_file:
