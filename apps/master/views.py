@@ -2342,7 +2342,7 @@ from apps.system.logs.models import AppLog
 def contract_pattern_detail(request, pk):
     """契約パターン詳細"""
     pattern = get_object_or_404(ContractPattern, pk=pk)
-    terms = pattern.terms.all().order_by('display_order')
+    terms = pattern.terms.all()
 
     # 契約パターンの変更履歴
     pattern_logs = AppLog.objects.filter(
