@@ -73,6 +73,7 @@
                 <tr>
                     <th>契約条項</th>
                     <th>契約文言</th>
+                    <th>表示場所</th>
                     <th>表示順</th>
                     <th>操作</th>
                 </tr>
@@ -81,7 +82,8 @@
                 {% for term in terms %}
                 <tr>
                     <td style="max-width: 25vw; white-space: pre-wrap; word-break: break-all;">{{ term.contract_clause|linebreaksbr }}</td>
-                    <td style="max-width: 55vw; white-space: pre-wrap; word-break: break-all;">{{ term.contract_terms|linebreaksbr }}</td>
+                    <td style="max-width: 45vw; white-space: pre-wrap; word-break: break-all;">{{ term.contract_terms|linebreaksbr }}</td>
+                    <td>{{ term.get_display_position_display }}</td>
                     <td>{{ term.display_order }}</td>
                     <td>
                         <a href="{% url 'master:contract_term_update' term.pk %}" class="btn btn-dark btn-sm" title="編集"><i class="bi bi-pencil"></i></a>
@@ -90,7 +92,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="text-center">契約文言が登録されていません。</td>
+                    <td colspan="5" class="text-center">契約文言が登録されていません。</td>
                 </tr>
                 {% endfor %}
             </tbody>

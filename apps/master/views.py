@@ -2425,7 +2425,7 @@ def contract_term_create(request, pattern_pk):
     """契約文言作成"""
     pattern = get_object_or_404(ContractPattern, pk=pattern_pk)
     if request.method == 'POST':
-        form = ContractTermForm(request.POST)
+        form = ContractTermForm(request.POST, contract_pattern=pattern)
         if form.is_valid():
             term = form.save(commit=False)
             term.contract_pattern = pattern
@@ -2433,7 +2433,7 @@ def contract_term_create(request, pattern_pk):
             messages.success(request, "契約文言を作成しました。")
             return redirect('master:contract_pattern_detail', pk=pattern_pk)
     else:
-        form = ContractTermForm()
+        form = ContractTermForm(contract_pattern=pattern)
 
     context = {
         'form': form,

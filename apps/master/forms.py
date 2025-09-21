@@ -139,15 +139,50 @@ class ContractPatternForm(forms.ModelForm):
 
 class ContractTermForm(forms.ModelForm):
     """契約文言フォーム"""
+    def __init__(self, *args, **kwargs):
+        # The validation logic needs the contract_pattern instance.
+        # It's passed from the view during form instantiation.
+        self.contract_pattern = kwargs.pop('contract_pattern', None)
+        super().__init__(*args, **kwargs)
+        # For update, the pattern is on the instance.
+        if self.instance and self.instance.pk:
+            self.contract_pattern = self.instance.contract_pattern
+
     class Meta:
         model = ContractTerms
-        fields = ['contract_clause', 'contract_terms', 'memo', 'display_order']
+        fields = ['contract_clause', 'contract_terms', 'display_position', 'memo', 'display_order']
         widgets = {
             'contract_clause': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_terms': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
+            'display_position': forms.RadioSelect,
             'memo': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        display_position = cleaned_data.get('display_position')
+
+        if not self.contract_pattern:
+            # This validation cannot proceed without the contract pattern.
+            # This can happen if the view doesn't pass it.
+            return cleaned_data
+
+        # Preamble (1) and Postscript (3) should be unique per contract pattern.
+        if display_position in [1, 3]:
+            query = ContractTerms.objects.filter(
+                contract_pattern=self.contract_pattern,
+                display_position=display_position
+            )
+            # When updating, exclude the current instance from the check.
+            if self.instance and self.instance.pk:
+                query = query.exclude(pk=self.instance.pk)
+
+            if query.exists():
+                position_name = dict(self.Meta.model.POSITION_CHOICES).get(display_position)
+                raise ValidationError(f'この契約パターンにはすでに「{position_name}」が登録されています。')
+
+        return cleaned_data
 
 
 class QualificationCategoryForm(forms.ModelForm):
