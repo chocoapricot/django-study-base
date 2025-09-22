@@ -2,11 +2,12 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, Http404
 from django.core.files.base import ContentFile
-from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint
-from .forms import ClientContractForm, StaffContractForm
+from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken
+from .forms import ClientContractForm, StaffContractForm, ClientContractHakenForm
 from django.conf import settings
 from django.utils import timezone
 import os
@@ -156,8 +157,9 @@ def client_contract_list(request):
 @permission_required('contract.view_clientcontract', raise_exception=True)
 def client_contract_detail(request, pk):
     """クライアント契約詳細"""
-    contract = get_object_or_404(ClientContract, pk=pk)
-    
+    contract = get_object_or_404(ClientContract.objects.select_related('client', 'job_category', 'contract_pattern', 'payment_site'), pk=pk)
+    haken_info = getattr(contract, 'haken_info', None)
+
     # クライアントフィルタ情報を取得
     client_filter = request.GET.get('client', '')
     from_client_detail = bool(client_filter)
@@ -165,10 +167,8 @@ def client_contract_detail(request, pk):
     # 遷移元を判定（リファラーから）
     referer = request.META.get('HTTP_REFERER', '')
     from_client_detail_direct = False
-    if client_filter and referer:
-        # クライアント詳細画面から直接遷移した場合
-        if f'/client/client/detail/{client_filter}/' in referer:
-            from_client_detail_direct = True
+    if client_filter and referer and f'/client/client/detail/{client_filter}/' in referer:
+        from_client_detail_direct = True
     
     # AppLogから履歴を取得
     all_change_logs = AppLog.objects.filter(
@@ -177,14 +177,14 @@ def client_contract_detail(request, pk):
         action__in=['create', 'update', 'delete', 'print']
     ).order_by('-timestamp')
     change_logs_count = all_change_logs.count()
-    change_logs = all_change_logs[:10]  # 最新10件
+    change_logs = all_change_logs[:10]
     
     # 発行履歴を取得
-    all_prints = ClientContractPrint.objects.filter(client_contract=contract).order_by('-printed_at')
-    issue_history = all_prints
+    issue_history = ClientContractPrint.objects.filter(client_contract=contract).order_by('-printed_at')
 
     context = {
         'contract': contract,
+        'haken_info': haken_info,
         'issue_history': issue_history,
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
@@ -199,44 +199,65 @@ def client_contract_detail(request, pk):
 @permission_required('contract.add_clientcontract', raise_exception=True)
 def client_contract_create(request):
     """クライアント契約作成"""
-    selected_client_id_from_get = request.GET.get('selected_client_id')
+    selected_client_id = request.GET.get('selected_client_id')
     client_contract_type_code = request.GET.get('client_contract_type_code')
+    is_haken = client_contract_type_code == '20'
 
     selected_client = None
+    if selected_client_id:
+        try:
+            selected_client = Client.objects.get(pk=selected_client_id)
+        except (Client.DoesNotExist, ValueError):
+            pass
 
     if request.method == 'POST':
         form = ClientContractForm(request.POST)
-        if form.is_valid():
-            contract = form.save(commit=False)
-            contract.created_by = request.user
-            contract.updated_by = request.user
-            contract.client_contract_type_code = form.cleaned_data.get('client_contract_type_code')
-            contract.save()
-            messages.success(request, f'クライアント契約「{contract.contract_name}」を作成しました。')
-            return redirect('contract:client_contract_detail', pk=contract.pk)
-        else:
-            client_id = request.POST.get('client')
-            if client_id:
-                try:
-                    selected_client = Client.objects.get(pk=client_id)
-                except (Client.DoesNotExist, ValueError):
-                    pass
-    else:
-        initial_data = {}
-        if selected_client_id_from_get:
-            initial_data['client'] = selected_client_id_from_get
+
+        # POST時にもis_hakenを判定
+        post_is_haken = request.POST.get('client_contract_type_code') == '20'
+
+        client_id = request.POST.get('client')
+        post_client = None
+        if client_id:
             try:
-                selected_client = Client.objects.get(pk=selected_client_id_from_get)
+                post_client = Client.objects.get(pk=client_id)
             except (Client.DoesNotExist, ValueError):
                 pass
+
+        haken_form = ClientContractHakenForm(request.POST, client=post_client) if post_is_haken else None
+
+        if form.is_valid() and (not post_is_haken or (haken_form and haken_form.is_valid())):
+            try:
+                with transaction.atomic():
+                    contract = form.save(commit=False)
+                    contract.created_by = request.user
+                    contract.updated_by = request.user
+                    contract.save()
+
+                    if post_is_haken and haken_form:
+                        haken_info = haken_form.save(commit=False)
+                        haken_info.client_contract = contract
+                        haken_info.save()
+
+                    messages.success(request, f'クライアント契約「{contract.contract_name}」を作成しました。')
+                    return redirect('contract:client_contract_detail', pk=contract.pk)
+            except Exception as e:
+                messages.error(request, f"保存中にエラーが発生しました: {e}")
+    else: # GET
+        initial_data = {}
+        if selected_client:
+            initial_data['client'] = selected_client.id
         if client_contract_type_code:
             initial_data['client_contract_type_code'] = client_contract_type_code
+
         form = ClientContractForm(initial=initial_data)
+        haken_form = ClientContractHakenForm(client=selected_client) if is_haken else None
 
     context = {
         'form': form,
+        'haken_form': haken_form if 'haken_form' in locals() else (ClientContractHakenForm(client=selected_client) if is_haken else None),
         'title': 'クライアント契約作成',
-        'client_contract_type_code': client_contract_type_code,
+        'is_haken': is_haken,
         'selected_client': selected_client,
     }
     return render(request, 'contract/client_contract_form.html', context)
@@ -247,27 +268,53 @@ def client_contract_create(request):
 def client_contract_update(request, pk):
     """クライアント契約更新"""
     contract = get_object_or_404(ClientContract, pk=pk)
+    haken_info = getattr(contract, 'haken_info', None)
     
     if contract.contract_status not in [ClientContract.ContractStatus.DRAFT, ClientContract.ContractStatus.PENDING]:
         messages.error(request, 'この契約は編集できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
+    post_is_haken = request.POST.get('client_contract_type_code') == '20'
+
     if request.method == 'POST':
         form = ClientContractForm(request.POST, instance=contract)
-        if form.is_valid():
-            contract = form.save(commit=False)
-            contract.updated_by = request.user
-            contract.client_contract_type_code = form.cleaned_data.get('client_contract_type_code')
-            contract.save()
-            messages.success(request, f'クライアント契約「{contract.contract_name}」を更新しました。')
-            return redirect('contract:client_contract_detail', pk=contract.pk)
-    else:
+        haken_form = ClientContractHakenForm(request.POST, instance=haken_info, client=contract.client) if post_is_haken else None
+
+        if form.is_valid() and (not post_is_haken or (haken_form and haken_form.is_valid())):
+            try:
+                with transaction.atomic():
+                    updated_contract = form.save()
+
+                    # 派遣契約の場合
+                    if post_is_haken:
+                        if haken_form:
+                            haken_info = haken_form.save(commit=False)
+                            haken_info.client_contract = updated_contract
+                            haken_info.save()
+                    # 派遣契約でなくなった場合
+                    elif haken_info:
+                        haken_info.delete()
+
+                    messages.success(request, f'クライアント契約「{contract.contract_name}」を更新しました。')
+                    return redirect('contract:client_contract_detail', pk=contract.pk)
+            except Exception as e:
+                messages.error(request, f"更新中にエラーが発生しました: {e}")
+    else: # GET
         form = ClientContractForm(instance=contract)
-    
+        is_haken = contract.client_contract_type_code == '20'
+        haken_form = ClientContractHakenForm(instance=haken_info, client=contract.client) if is_haken else None
+
+    # is_hakenをコンテキストに渡す
+    context_is_haken = contract.client_contract_type_code == '20'
+    if request.method == 'POST':
+        context_is_haken = post_is_haken
+
     context = {
         'form': form,
+        'haken_form': haken_form if 'haken_form' in locals() else (ClientContractHakenForm(instance=haken_info, client=contract.client) if context_is_haken else None),
         'contract': contract,
         'title': 'クライアント契約編集',
+        'is_haken': context_is_haken,
     }
     return render(request, 'contract/client_contract_form.html', context)
 
