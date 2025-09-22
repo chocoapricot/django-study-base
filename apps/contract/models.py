@@ -294,6 +294,7 @@ class ClientContractNumber(MyModel):
     client_code = models.CharField('クライアントコード', max_length=8, db_index=True)
     year_month = models.CharField('年月', max_length=6, db_index=True)
     last_number = models.PositiveIntegerField('最終番号', default=0)
+    corporate_number = models.CharField('法人番号', max_length=13, blank=True, null=True)
 
     class Meta:
         db_table = 'apps_contract_client_number'

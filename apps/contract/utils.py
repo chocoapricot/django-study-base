@@ -23,7 +23,10 @@ def generate_client_contract_number(contract: ClientContract) -> str:
         number_manager, created = ClientContractNumber.objects.select_for_update().get_or_create(
             client_code=client_code,
             year_month=year_month,
-            defaults={'last_number': 0}
+            defaults={
+                'last_number': 0,
+                'corporate_number': contract.client.corporate_number,
+            }
         )
 
         # 番号をインクリメント
