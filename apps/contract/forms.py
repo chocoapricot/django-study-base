@@ -1,9 +1,9 @@
 from django import forms
-from .models import ClientContract, StaffContract
-from apps.client.models import Client
+from .models import ClientContract, StaffContract, ClientContractHaken
+from apps.client.models import Client, ClientUser
 from apps.staff.models import Staff
 from apps.system.settings.models import Dropdowns
-from apps.company.models import Company
+from apps.company.models import Company, CompanyUser
 
 
 class CorporateNumberMixin:
@@ -214,6 +214,63 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
             return client.payment_site
         
         return payment_site
+
+
+class ClientContractHakenForm(forms.ModelForm):
+    """クライアント契約派遣情報フォーム"""
+    class Meta:
+        model = ClientContractHaken
+        exclude = ['client_contract']
+        widgets = {
+            'commander': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'complaint_officer_client': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'responsible_person_client': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'complaint_officer_company': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'responsible_person_company': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'limit_by_agreement': forms.RadioSelect,
+            'limit_indefinite_or_senior': forms.RadioSelect,
+        }
+
+    def __init__(self, *args, **kwargs):
+        client = kwargs.pop('client', None)
+        super().__init__(*args, **kwargs)
+
+        # 全てのフィールドを必須にする
+        for field_name, field in self.fields.items():
+            field.required = True
+            if isinstance(field, forms.ModelChoiceField):
+                field.empty_label = '選択してください'
+            # RadioSelectの必須エラーメッセージがデフォルトだと分かりにくいのでカスタム
+            if isinstance(field.widget, forms.RadioSelect):
+                field.error_messages['required'] = f'{field.label}を選択してください。'
+
+        # 派遣先関連のフィールドの選択肢をクライアントに紐づくユーザに限定
+        if client:
+            client_users = ClientUser.objects.filter(client=client, is_active=True)
+            self.fields['commander'].queryset = client_users
+            self.fields['complaint_officer_client'].queryset = client_users
+            self.fields['responsible_person_client'].queryset = client_users
+        else:
+            self.fields['commander'].queryset = ClientUser.objects.none()
+            self.fields['complaint_officer_client'].queryset = ClientUser.objects.none()
+            self.fields['responsible_person_client'].queryset = ClientUser.objects.none()
+
+        # 派遣元関連のフィールドの選択肢を自社ユーザに限定
+        company_users = CompanyUser.objects.filter(is_active=True)
+        self.fields['complaint_officer_company'].queryset = company_users
+        self.fields['responsible_person_company'].queryset = company_users
+
+        # 選択肢がない場合のラベルを設定
+        if not self.fields['commander'].queryset.exists():
+            self.fields['commander'].empty_label = '選択可能な担当者はいません'
+        if not self.fields['complaint_officer_client'].queryset.exists():
+            self.fields['complaint_officer_client'].empty_label = '選択可能な担当者はいません'
+        if not self.fields['responsible_person_client'].queryset.exists():
+            self.fields['responsible_person_client'].empty_label = '選択可能な担当者はいません'
+        if not self.fields['complaint_officer_company'].queryset.exists():
+            self.fields['complaint_officer_company'].empty_label = '選択可能な担当者はいません'
+        if not self.fields['responsible_person_company'].queryset.exists():
+            self.fields['responsible_person_company'].empty_label = '選択可能な担当者はいません'
 
 
 class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
