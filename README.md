@@ -90,9 +90,9 @@ django-study-base/
 └── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（78テーブル）
+## データベーステーブル一覧（79テーブル）
 
-### 本アプリケーション独自テーブル（61テーブル）
+### 本アプリケーション独自テーブル（62テーブル）
 
 | テーブル名 | モデル名 | 説明 |
 | --- | --- | --- |
@@ -115,6 +115,7 @@ django-study-base/
 | `apps_connect_staff` | `ConnectStaff` | スタッフ接続申請 |
 | `apps_connect_staff_agree` | `ConnectStaffAgree` | スタッフ同意 |
 | `apps_contract_client` | `ClientContract` | クライアント契約 |
+| `apps_contract_client_haken` | `ClientContractHaken` | クライアント契約派遣情報 |
 | `apps_contract_client_number` | `ClientContractNumber` | クライアント契約番号 |
 | `apps_contract_client_print` | `ClientContractPrint` | クライアント契約書発行履歴 |
 | `apps_contract_staff` | `StaffContract` | スタッフ契約 |
