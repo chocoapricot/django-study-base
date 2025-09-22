@@ -14,6 +14,8 @@ class ContractViewTest(TestCase):
 
     def setUp(self):
         """テストデータの準備"""
+        from django.conf import settings
+        settings.DROPDOWN_CLIENT_CONTRACT_TYPE = []
         from django.contrib.auth.models import Permission
         from django.contrib.contenttypes.models import ContentType
 

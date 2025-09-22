@@ -58,37 +58,36 @@ def client_contract_list(request):
     """クライアント契約一覧"""
     search_query = request.GET.get('q', '')
     status_filter = request.GET.get('status', '')
-    client_filter = request.GET.get('client', '')  # クライアントフィルタを追加
-    
+    client_filter = request.GET.get('client', '')
+    contract_type_filter = request.GET.get('contract_type', '')
+
     contracts = ClientContract.objects.select_related('client').all()
-    
-    # クライアントフィルタを適用
+
     if client_filter:
         contracts = contracts.filter(client_id=client_filter)
-    
-    # 検索条件を適用
+
     if search_query:
         contracts = contracts.filter(
             Q(contract_name__icontains=search_query) |
             Q(client__name__icontains=search_query) |
             Q(contract_number__icontains=search_query)
         )
-    
-    # ステータスフィルタを適用
+
     if status_filter:
         contracts = contracts.filter(contract_status=status_filter)
 
+    if contract_type_filter:
+        contracts = contracts.filter(client_contract_type_code=contract_type_filter)
+
     contracts = contracts.order_by('-start_date', 'client__name')
 
-    # 契約状況のドロップダウンリストを取得
     contract_status_list = [{'value': v, 'name': n} for v, n in ClientContract.ContractStatus.choices]
-    
-    # ページネーション
+    client_contract_type_list = [{'value': v, 'name': n} for v, n in settings.DROPDOWN_CLIENT_CONTRACT_TYPE]
+
     paginator = Paginator(contracts, 20)
     page = request.GET.get('page')
     contracts_page = paginator.get_page(page)
-    
-    # フィルタ対象のクライアント情報を取得（パンくずリスト用）
+
     filtered_client = None
     if client_filter:
         from apps.client.models import Client
@@ -97,11 +96,9 @@ def client_contract_list(request):
         except Client.DoesNotExist:
             pass
 
-    # 各クライアントに「接続承認済み担当者がいるか」「未承認の接続申請があるか」フラグを付与
     company = Company.objects.first()
     corporate_number = company.corporate_number if company else None
 
-    # ページ内の契約に関連するクライアントのメールアドレスを効率的に収集
     client_user_emails = {}
     for contract in contracts_page:
         client = contract.client
@@ -109,7 +106,6 @@ def client_contract_list(request):
             client_user_emails[client.pk] = list(client.users.values_list('email', flat=True))
 
     if corporate_number:
-        # 承認済み・申請中の接続情報を一括で取得
         all_emails = [email for emails in client_user_emails.values() for email in emails if email]
 
         approved_connections = set(ConnectClient.objects.filter(
@@ -131,11 +127,8 @@ def client_contract_list(request):
 
             if client and client.pk in client_user_emails:
                 user_emails = set(client_user_emails[client.pk])
-                # 承認済みユーザーがいるか
                 if not approved_connections.isdisjoint(user_emails):
                     client.has_connected_approved_user = True
-
-                # 未承認の申請があるか
                 if not pending_connections.isdisjoint(user_emails):
                     client.has_pending_connection_request = True
     else:
@@ -143,7 +136,7 @@ def client_contract_list(request):
             client = contract.client
             client.has_connected_approved_user = False
             client.has_pending_connection_request = False
-    
+
     context = {
         'contracts': contracts_page,
         'search_query': search_query,
@@ -151,6 +144,8 @@ def client_contract_list(request):
         'client_filter': client_filter,
         'filtered_client': filtered_client,
         'contract_status_list': contract_status_list,
+        'contract_type_filter': contract_type_filter,
+        'client_contract_type_list': client_contract_type_list,
     }
     return render(request, 'contract/client_contract_list.html', context)
 
