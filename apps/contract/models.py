@@ -1,8 +1,9 @@
 from django.db import models
 from apps.common.models import MyModel
-from apps.client.models import Client
+from apps.client.models import Client, ClientUser
 from apps.staff.models import Staff
 from django.contrib.auth import get_user_model
+from apps.company.models import CompanyUser
 
 User = get_user_model()
 
@@ -302,3 +303,73 @@ class ClientContractNumber(MyModel):
 
     def __str__(self):
         return f"{self.client_code}-{self.year_month}-{self.last_number}"
+
+
+class ClientContractHaken(MyModel):
+    """
+    クライアント契約派遣情報
+    """
+    client_contract = models.OneToOneField(
+        ClientContract,
+        on_delete=models.CASCADE,
+        related_name='haken_info',
+        verbose_name='クライアント契約'
+    )
+    # 派遣先
+    commander = models.ForeignKey(
+        ClientUser,
+        on_delete=models.SET_NULL,
+        related_name='haken_commanders',
+        verbose_name='派遣先指揮命令者',
+        null=True, blank=True,
+    )
+    complaint_officer_client = models.ForeignKey(
+        ClientUser,
+        on_delete=models.SET_NULL,
+        related_name='haken_complaint_officers_client',
+        verbose_name='派遣先苦情申出先',
+        null=True, blank=True,
+    )
+    responsible_person_client = models.ForeignKey(
+        ClientUser,
+        on_delete=models.SET_NULL,
+        related_name='haken_responsible_persons_client',
+        verbose_name='派遣先責任者',
+        null=True, blank=True,
+    )
+    # 派遣元
+    complaint_officer_company = models.ForeignKey(
+        CompanyUser,
+        on_delete=models.SET_NULL,
+        related_name='haken_complaint_officers_company',
+        verbose_name='派遣元苦情申出先',
+        null=True, blank=True,
+    )
+    responsible_person_company = models.ForeignKey(
+        CompanyUser,
+        on_delete=models.SET_NULL,
+        related_name='haken_responsible_persons_company',
+        verbose_name='派遣元責任者',
+        null=True, blank=True,
+    )
+    # 限定の別
+    limit_by_agreement = models.CharField(
+        '協定対象派遣労働者に限定するか否かの別',
+        max_length=1,
+        choices=[('0', '限定しない'), ('1', '限定する')],
+        null=True, blank=True,
+    )
+    limit_indefinite_or_senior = models.CharField(
+        '無期雇用派遣労働者又は60歳以上の者に限定するか否かの別',
+        max_length=1,
+        choices=[('0', '限定しない'), ('1', '限定する')],
+        null=True, blank=True,
+    )
+
+    class Meta:
+        db_table = 'apps_contract_client_haken'
+        verbose_name = 'クライアント契約派遣情報'
+        verbose_name_plural = 'クライアント契約派遣情報'
+
+    def __str__(self):
+        return f"{self.client_contract}"
