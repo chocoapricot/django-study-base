@@ -285,7 +285,7 @@ class StaffContractPrint(MyModel):
         return f"{self.staff_contract} - {self.printed_at}"
 
 
-class ClientContractNumber(models.Model):
+class ClientContractNumber(MyModel):
     """
     クライアント契約番号を管理するためのモデル。
     クライアントコードと年月をキーに、最新の連番を保持する。
