@@ -38,10 +38,10 @@
                     <tr>
                         <td>{{ staff.name_last }} {{ staff.name_first }}</td>
                         <td>
-                            <strong>{{ staff.employee_no }}</strong>
+                            {{ staff.employee_no }}
                         </td>
                         <td>
-                            <strong>{{ staff.hire_date }}</strong>
+                            {{ staff.hire_date }}
                             {% if staff.resignation_date %}
                                 <br><small class="text-muted">退職日: {{ staff.resignation_date }}</small>
                             {% endif %}
