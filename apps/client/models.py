@@ -44,6 +44,26 @@ class Client(MyModel):
     def __str__(self):
         return self.name
 
+    @property
+    def client_code(self):
+        """クライアントコードを生成する"""
+        if self.corporate_number and len(self.corporate_number) == 13 and self.corporate_number.isdigit():
+            CHARS = "123456789ABCDEFGHJKLMNPQRSTUVWXYZ"
+            BASE = len(CHARS)
+            try:
+                num = int(self.corporate_number[1:])
+                if num == 0:
+                    result = "A"
+                else:
+                    result = ""
+                    while num > 0:
+                        num, rem = divmod(num, BASE)
+                        result = CHARS[rem] + result
+                return result.rjust(8, 'A')
+            except (ValueError, TypeError):
+                return ""
+        return ""
+
 
 class ClientDepartment(MyModel):
     """クライアント企業内の組織（部署）情報を管理するモデル。"""

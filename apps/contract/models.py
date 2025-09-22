@@ -283,3 +283,22 @@ class StaffContractPrint(MyModel):
 
     def __str__(self):
         return f"{self.staff_contract} - {self.printed_at}"
+
+
+class ClientContractNumber(models.Model):
+    """
+    クライアント契約番号を管理するためのモデル。
+    クライアントコードと年月をキーに、最新の連番を保持する。
+    """
+    client_code = models.CharField('クライアントコード', max_length=8, db_index=True)
+    year_month = models.CharField('年月', max_length=6, db_index=True)
+    last_number = models.PositiveIntegerField('最終番号', default=0)
+
+    class Meta:
+        db_table = 'apps_contract_client_number'
+        verbose_name = 'クライアント契約番号管理'
+        verbose_name_plural = 'クライアント契約番号管理'
+        unique_together = ('client_code', 'year_month')
+
+    def __str__(self):
+        return f"{self.client_code}-{self.year_month}-{self.last_number}"

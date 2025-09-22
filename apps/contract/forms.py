@@ -77,6 +77,10 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         self.fields['end_date'].required = True
         self.fields['payment_site'].queryset = BillPayment.get_active_list()
 
+        # 契約番号フィールドを読み取り専用に
+        self.fields['contract_number'].widget.attrs['readonly'] = True
+        self.fields['contract_number'].required = False
+
         contract_type_code = None
         if self.is_bound and 'client_contract_type_code' in self.data:
             contract_type_code = self.data.get('client_contract_type_code')

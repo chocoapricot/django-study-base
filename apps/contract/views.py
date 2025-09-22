@@ -23,7 +23,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import io
 from apps.common.pdf_utils import generate_contract_pdf
-from .utils import generate_contract_pdf_content, generate_quotation_pdf
+from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number
 from .resources import ClientContractResource, StaffContractResource
 
 # 契約管理トップページ
@@ -734,11 +734,16 @@ def client_contract_approve(request, pk):
         if is_approved:
             # 「承認する」アクションは「申請中」からのみ可能
             if contract.contract_status == ClientContract.ContractStatus.PENDING:
-                contract.contract_status = ClientContract.ContractStatus.APPROVED
-                contract.approved_at = timezone.now()
-                contract.approved_by = request.user
-                contract.save()
-                messages.success(request, f'契約「{contract.contract_name}」を承認済にしました。')
+                try:
+                    # 契約番号を採番
+                    contract.contract_number = generate_client_contract_number(contract)
+                    contract.contract_status = ClientContract.ContractStatus.APPROVED
+                    contract.approved_at = timezone.now()
+                    contract.approved_by = request.user
+                    contract.save()
+                    messages.success(request, f'契約「{contract.contract_name}」を承認済にしました。契約番号: {contract.contract_number}')
+                except ValueError as e:
+                    messages.error(request, f'契約番号の採番に失敗しました。理由: {e}')
             else:
                 messages.error(request, 'このステータスからは承認できません。')
         else:
@@ -751,6 +756,7 @@ def client_contract_approve(request, pk):
                     print_history.delete()
 
                 contract.contract_status = ClientContract.ContractStatus.DRAFT
+                contract.contract_number = None  # 契約番号をクリア
                 contract.approved_at = None
                 contract.approved_by = None
                 contract.issued_at = None
