@@ -123,31 +123,20 @@
         <table class="table table-striped table-hover me-2 mt-2" style="border-top: 1px solid #ddd;">
                             <thead class="table-light">
                                 <tr>
-                                    <th>契約名</th>
-                                    <th>スタッフ</th>
                                     <th>社員番号</th>
+                                    <th>スタッフ</th>
+                                    <th>契約名</th>
                                     <th>契約パターン</th>
-                                    <th>契約番号</th>
                                     <th>契約期間</th>
                                     <th class="text-end">契約金額</th>
                                     <th>契約状況</th>
+                                    <th>契約番号</th>
                                     <th>操作</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for contract in contracts %}
                                 <tr>
-                                    <td>
-                                        <a href="{% url 'contract:staff_contract_detail' contract.pk %}{% if staff_filter %}?staff={{ staff_filter }}{% endif %}" class="text-decoration-none">
-                                            {{ contract.contract_name }}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        {{ contract.staff.name_last }} {{ contract.staff.name_first }}
-                                        {% if contract.staff.has_international %}
-                                            <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
-                                        {% endif %}
-                                    </td>
                                     <td>
                                         {{ contract.staff.employee_no|default:"" }}
                                         {% if contract.staff.has_pending_connection_request %}
@@ -160,8 +149,18 @@
                                             {% endif %}
                                         {% endif %}
                                     </td>
+                                    <td>
+                                        {{ contract.staff.name_last }} {{ contract.staff.name_first }}
+                                        {% if contract.staff.has_international %}
+                                            <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'contract:staff_contract_detail' contract.pk %}{% if staff_filter %}?staff={{ staff_filter }}{% endif %}" class="text-decoration-none">
+                                            {{ contract.contract_name }}
+                                        </a>
+                                    </td>
                                     <td>{{ contract.contract_pattern.name|default:"-" }}</td>
-                                    <td>{{ contract.contract_number|default:"-" }}</td>
                                     <td>
                                         {{ contract.start_date|date:"Y/m/d" }}
                                         {% if contract.end_date %}
@@ -180,6 +179,7 @@
                                             {% my_name 'contract_status' contract.contract_status %}
                                         </span>
                                     </td>
+                                    <td>{{ contract.contract_number|default:"-" }}</td>
                                     <td>
                                         {% if not staff_filter %}
                                         <a href="{% url 'contract:staff_contract_update' contract.pk %}" class="btn btn-dark btn-sm me-1" title="編集">
