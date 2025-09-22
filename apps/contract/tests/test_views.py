@@ -39,6 +39,7 @@ class ContractViewTest(TestCase):
 
         self.test_client = TestClient.objects.create(
             name='Test Client',
+            corporate_number='6000000000001',
             name_furigana='テストクライアント',
             address='Test Address'
         )

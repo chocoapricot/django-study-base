@@ -24,6 +24,14 @@ class ContractFormTest(TestCase):
         # テスト用クライアント（基本契約締結日あり）
         self.client_obj = ClientModel.objects.create(
             name='テストクライアント株式会社',
+            corporate_number='4000000000001',
+            basic_contract_date=date(2024, 1, 1),
+            created_by=self.user,
+            updated_by=self.user
+        )
+        self.client_without_cn = ClientModel.objects.create(
+            name='法人番号なしクライアント',
+            corporate_number=None,
             basic_contract_date=date(2024, 1, 1),
             created_by=self.user,
             updated_by=self.user
@@ -209,6 +217,22 @@ class ContractFormTest(TestCase):
     
     def test_staff_contract_form_valid_data(self):
         """スタッフ契約フォームの正常データテスト"""
+
+    def test_client_contract_form_validation_for_client_without_corporate_number(self):
+        """法人番号のないクライアントを選択した場合のバリデーションテスト"""
+        form_data = {
+            'client': self.client_without_cn.pk,
+            'contract_name': '法人番号なしテスト契約',
+            'job_category': self.job_category.pk,
+            'contract_pattern': self.client_pattern.pk,
+            'start_date': date(2024, 2, 1),
+            'end_date': date(2024, 12, 31),
+            'client_contract_type_code': self.client_pattern.contract_type_code,
+        }
+        form = ClientContractForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('client', form.errors)
+        self.assertEqual(form.errors['client'][0], '法人番号が設定されていないクライアントは選択できません。')
         form_data = {
             'staff': self.staff.pk,
             'contract_name': '雇用契約',
@@ -235,6 +259,7 @@ class ContractFormDisplayTest(TestCase):
         # テスト用クライアント（基本契約締結日あり）
         self.client_obj = ClientModel.objects.create(
             name='株式会社テストクライアント',
+            corporate_number='4000000000002',
             basic_contract_date=date(2024, 1, 1),
             created_by=self.user,
             updated_by=self.user
@@ -337,6 +362,7 @@ class ContractFormDisplayTest(TestCase):
         # 特殊文字を含むクライアント名
         special_client = ClientModel.objects.create(
             name='株式会社"テスト&クライアント"<script>',
+            corporate_number='4000000000003',
             basic_contract_date=date(2024, 1, 1),
             created_by=self.user,
             updated_by=self.user

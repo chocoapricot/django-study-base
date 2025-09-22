@@ -558,6 +558,9 @@ def client_select(request):
         clients = Client.objects.filter(basic_contract_date_haken__isnull=False)
     else:  # それ以外（業務委託など）の場合
         clients = Client.objects.filter(basic_contract_date__isnull=False)
+
+    # 法人番号が設定されているクライアントのみを対象とする
+    clients = clients.exclude(corporate_number__isnull=True).exclude(corporate_number__exact='')
     
     if search_query:
         clients = clients.filter(

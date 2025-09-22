@@ -13,7 +13,7 @@ class ContractCorporateNumberTest(TestCase):
             name="テスト株式会社",
             corporate_number="1112223334445"
         )
-        self.client = Client.objects.create(name="テストクライアント")
+        self.client = Client.objects.create(name="テストクライアント", corporate_number="5000000000001")
         self.staff = Staff.objects.create(name_last="山田", name_first="太郎")
 
     def test_client_contract_sets_corporate_number(self):
