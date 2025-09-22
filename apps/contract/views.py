@@ -17,6 +17,7 @@ from apps.staff.models import Staff
 from apps.master.models import ContractPattern, StaffAgreement
 from apps.connect.models import ConnectStaff, ConnectStaffAgree, ConnectClient, MynumberRequest, ProfileRequest, BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
 from apps.company.models import Company
+from apps.system.settings.models import Dropdowns
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
@@ -82,7 +83,8 @@ def client_contract_list(request):
     contracts = contracts.order_by('-start_date', 'client__name')
 
     contract_status_list = [{'value': v, 'name': n} for v, n in ClientContract.ContractStatus.choices]
-    client_contract_type_list = [{'value': v, 'name': n} for v, n in settings.DROPDOWN_CLIENT_CONTRACT_TYPE]
+    client_contract_type_list = [{'value': d.value, 'name': d.name} for d in Dropdowns.objects.filter(category='client_contract_type', active=True).order_by('disp_seq')]
+
 
     paginator = Paginator(contracts, 20)
     page = request.GET.get('page')
