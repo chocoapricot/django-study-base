@@ -180,6 +180,9 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         if start_date and end_date and start_date > end_date:
             raise forms.ValidationError('契約開始日は終了日より前の日付を入力してください。')
         
+        if client and not client.corporate_number:
+            self.add_error('client', '法人番号が設定されていないクライアントは選択できません。')
+
         # クライアントの基本契約締結日との関係チェック
         if client and start_date:
             contract_type_code = self.cleaned_data.get('client_contract_type_code')
