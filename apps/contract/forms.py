@@ -246,7 +246,7 @@ class ClientContractHakenForm(forms.ModelForm):
 
         # 派遣先関連のフィールドの選択肢をクライアントに紐づくユーザに限定
         if client:
-            client_users = ClientUser.objects.filter(client=client, is_active=True)
+            client_users = ClientUser.objects.filter(client=client)
             self.fields['commander'].queryset = client_users
             self.fields['complaint_officer_client'].queryset = client_users
             self.fields['responsible_person_client'].queryset = client_users
