@@ -243,6 +243,8 @@ class ClientContractHakenForm(forms.ModelForm):
             # RadioSelectの必須エラーメッセージがデフォルトだと分かりにくいのでカスタム
             if isinstance(field.widget, forms.RadioSelect):
                 field.error_messages['required'] = f'{field.label}を選択してください。'
+                if field_name in ['limit_by_agreement', 'limit_indefinite_or_senior']:
+                    field.choices = [choice for choice in field.choices if choice[0]]
 
         # 派遣先関連のフィールドの選択肢をクライアントに紐づくユーザに限定
         if client:

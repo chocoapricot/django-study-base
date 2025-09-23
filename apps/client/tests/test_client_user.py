@@ -45,7 +45,7 @@ class ClientUserModelTest(TestCase):
         self.assertEqual(client_user.name_last, '田中')
         self.assertEqual(client_user.name_first, '太郎')
         self.assertEqual(client_user.name, '田中 太郎')
-        self.assertEqual(str(client_user), 'テスト会社 - 田中 太郎')
+        self.assertEqual(str(client_user), '営業部 - 課長 - 田中 太郎')
 
     def test_client_user_without_department(self):
         """部署なしのClientUserテスト"""
