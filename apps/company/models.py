@@ -172,5 +172,17 @@ class CompanyUser(MyModel):
     def name(self):
         return f"{self.name_last} {self.name_first}"
 
+    @property
+    def department(self):
+        if self.department_code:
+            return CompanyDepartment.get_valid_departments().filter(department_code=self.department_code).first()
+        return None
+
     def __str__(self):
-        return self.name
+        parts = []
+        if self.department:
+            parts.append(self.department.name)
+        if self.position:
+            parts.append(self.position)
+        parts.append(self.name)
+        return ' - '.join(parts)

@@ -143,7 +143,13 @@ class ClientUser(MyModel):
         return f"{self.name_last} {self.name_first}"
 
     def __str__(self):
-        return f"{self.client.name} - {self.name}"
+        parts = []
+        if self.department:
+            parts.append(self.department.name)
+        if self.position:
+            parts.append(self.position)
+        parts.append(self.name)
+        return ' - '.join(parts)
 
 
 class ClientContacted(MyModel):

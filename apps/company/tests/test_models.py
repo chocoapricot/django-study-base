@@ -136,4 +136,4 @@ class CompanyUserModelTest(TestCase):
         self.assertEqual(self.company_user.position, "部長")
         self.assertEqual(self.company_user.corporate_number, "1112223334445")
         self.assertEqual(self.company_user.department_code, "TEST_DEPT")
-        self.assertEqual(str(self.company_user), "山田 太郎")
+        self.assertEqual(str(self.company_user), "テスト部署 - 部長 - 山田 太郎")
