@@ -112,12 +112,10 @@
                 <div class="row mt-4">
                     <div class="col-12">
                         <h6 class="text-muted mb-3">派遣情報</h6>
-                        <table class="table table-sm table-bordered">
+                        <table class="table table-sm ">
                             <tr>
                                 <th class="w-25 bg-light">派遣先指揮命令者</th>
-                                <td>{{ haken_info.commander.name|default:"-" }}</td>
-                                <th class="w-25 bg-light">派遣元責任者</th>
-                                <td>{{ haken_info.responsible_person_company.name|default:"-" }}</td>
+                                <td colspan="3">{{ haken_info.commander.name|default:"-" }}</td>
                             </tr>
                             <tr>
                                 <th class="bg-light">派遣先苦情申出先</th>
@@ -127,7 +125,9 @@
                             </tr>
                             <tr>
                                 <th class="bg-light">派遣先責任者</th>
-                                <td colspan="3">{{ haken_info.responsible_person_client.name|default:"-" }}</td>
+                                <td>{{ haken_info.responsible_person_client.name|default:"-" }}</td>
+                                <th class="w-25 bg-light">派遣元責任者</th>
+                                <td>{{ haken_info.responsible_person_company.name|default:"-" }}</td>
                             </tr>
                             <tr>
                                 <th class="bg-light">協定対象派遣労働者に限定するか否かの別</th>
