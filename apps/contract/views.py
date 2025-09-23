@@ -25,7 +25,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import io
 from apps.common.pdf_utils import generate_contract_pdf
-from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number
+from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number
 from .resources import ClientContractResource, StaffContractResource
 
 # 契約管理トップページ
@@ -958,19 +958,37 @@ def staff_contract_approve(request, pk):
     if request.method == 'POST':
         is_approved = request.POST.get('is_approved')
         if is_approved:
-            contract.contract_status = StaffContract.ContractStatus.APPROVED
-            contract.approved_at = timezone.now()
-            contract.approved_by = request.user
-            messages.success(request, f'契約「{contract.contract_name}」を承認済にしました。')
+            if contract.contract_status == StaffContract.ContractStatus.PENDING:
+                try:
+                    contract.contract_number = generate_staff_contract_number(contract)
+                    contract.contract_status = StaffContract.ContractStatus.APPROVED
+                    contract.approved_at = timezone.now()
+                    contract.approved_by = request.user
+                    contract.save()
+                    messages.success(request, f'契約「{contract.contract_name}」を承認済にしました。契約番号: {contract.contract_number}')
+                except ValueError as e:
+                    messages.error(request, f'契約番号の採番に失敗しました。理由: {e}')
+            else:
+                messages.error(request, 'このステータスからは承認できません。')
         else:
-            contract.contract_status = StaffContract.ContractStatus.DRAFT
-            contract.approved_at = None
-            contract.approved_by = None
-            contract.issued_at = None
-            contract.issued_by = None
-            contract.confirmed_at = None
-            messages.success(request, f'契約「{contract.contract_name}」を作成中に戻しました。')
-        contract.save()
+            if int(contract.contract_status) >= int(StaffContract.ContractStatus.APPROVED):
+                for print_history in contract.print_history.all():
+                    if print_history.pdf_file:
+                        print_history.pdf_file.delete(save=False)
+                    print_history.delete()
+
+                contract.contract_status = StaffContract.ContractStatus.DRAFT
+                contract.contract_number = None
+                contract.approved_at = None
+                contract.approved_by = None
+                contract.issued_at = None
+                contract.issued_by = None
+                contract.confirmed_at = None
+                contract.save()
+                messages.success(request, f'契約「{contract.contract_name}」を作成中に戻しました。')
+            else:
+                messages.error(request, 'この契約の承認は解除できません。')
+
     return redirect('contract:staff_contract_detail', pk=contract.pk)
 
 
