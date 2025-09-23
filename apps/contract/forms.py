@@ -1,9 +1,11 @@
 from django import forms
+from django.db.models import Subquery, OuterRef
+from django.utils import timezone
 from .models import ClientContract, StaffContract, ClientContractHaken
 from apps.client.models import Client, ClientUser
 from apps.staff.models import Staff
 from apps.system.settings.models import Dropdowns
-from apps.company.models import Company, CompanyUser
+from apps.company.models import Company, CompanyUser, CompanyDepartment
 
 
 class CorporateNumberMixin:
@@ -258,7 +260,16 @@ class ClientContractHakenForm(forms.ModelForm):
             self.fields['responsible_person_client'].queryset = ClientUser.objects.none()
 
         # 派遣元関連のフィールドの選択肢を自社ユーザに限定
-        company_users = CompanyUser.objects.all()
+        # 部署の表示順 -> 担当者の表示順でソート
+        valid_departments = CompanyDepartment.get_valid_departments(timezone.now().date())
+        department_display_order = valid_departments.filter(
+            department_code=OuterRef('department_code')
+        ).values('display_order')[:1]
+
+        company_users = CompanyUser.objects.annotate(
+            department_display_order=Subquery(department_display_order)
+        ).order_by('department_display_order', 'display_order')
+
         self.fields['complaint_officer_company'].queryset = company_users
         self.fields['responsible_person_company'].queryset = company_users
 
