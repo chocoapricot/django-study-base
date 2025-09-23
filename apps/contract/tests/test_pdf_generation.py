@@ -103,13 +103,13 @@ class ContractPdfGenerationTest(TestCase):
 
         # Assertions
         self.assertIn("派遣先指揮命令者", items_dict)
-        self.assertEqual(items_dict["派遣先指揮命令者"], "Client Div Leader Hakensaki Tantou")
+        self.assertEqual(items_dict["派遣先指揮命令者"], "Client Div　Leader　Hakensaki Tantou")
 
         self.assertIn("派遣先苦情申出先", items_dict)
-        self.assertEqual(items_dict["派遣先苦情申出先"], "Client Div Leader Hakensaki Tantou 電話番号：03-3333-4444")
+        self.assertEqual(items_dict["派遣先苦情申出先"], "Client Div　Leader　Hakensaki Tantou 電話番号：03-3333-4444")
 
         self.assertIn("派遣元責任者", items_dict)
-        self.assertEqual(items_dict["派遣元責任者"], "Test Div Manager Hakenmoto Tantou 電話番号：03-1111-2222")
+        self.assertEqual(items_dict["派遣元責任者"], "Test Div　Manager　Hakenmoto Tantou 電話番号：03-1111-2222")
 
         self.assertIn("協定対象派遣労働者に限定するか否かの別", items_dict)
         self.assertEqual(items_dict["協定対象派遣労働者に限定するか否かの別"], "限定する")
