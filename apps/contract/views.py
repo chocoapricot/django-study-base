@@ -171,12 +171,25 @@ def client_contract_detail(request, pk):
         from_client_detail_direct = True
     
     # AppLogから履歴を取得
-    all_change_logs = AppLog.objects.filter(
+    from itertools import chain
+    contract_logs = AppLog.objects.filter(
         model_name='ClientContract',
         object_id=str(contract.pk),
         action__in=['create', 'update', 'delete', 'print']
-    ).order_by('-timestamp')
-    change_logs_count = all_change_logs.count()
+    )
+
+    haken_logs = AppLog.objects.filter(
+        model_name='ClientContractHaken',
+        object_repr=str(contract),
+        action__in=['create', 'update', 'delete']
+    )
+
+    all_change_logs = sorted(
+        chain(contract_logs, haken_logs),
+        key=lambda log: log.timestamp,
+        reverse=True
+    )
+    change_logs_count = len(all_change_logs)
     change_logs = all_change_logs[:10]
     
     # 発行履歴を取得
