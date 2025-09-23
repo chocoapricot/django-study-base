@@ -71,6 +71,73 @@ def generate_contract_pdf_content(contract):
             {"title": "契約内容", "text": str(contract.description)},
             {"title": "備考", "text": str(contract.notes)},
         ]
+
+        # 派遣契約の場合、追加情報を挿入
+        if contract.contract_pattern and contract.contract_pattern.contract_type_code == '20' and hasattr(contract, 'haken_info'):
+            from apps.company.models import CompanyDepartment
+            haken_info = contract.haken_info
+            haken_items = []
+
+            # Helper to format user info
+            def format_client_user(user, with_phone=False):
+                if not user:
+                    return "N/A"
+                parts = []
+                if user.department:
+                    parts.append(user.department.name)
+                if user.position:
+                    parts.append(user.position)
+                parts.append(user.name)
+
+                base_info = ' '.join(filter(None, parts))
+
+                if with_phone and user.phone_number:
+                    return f"{base_info} 電話番号：{user.phone_number}"
+                return base_info
+
+            def format_company_user(user, with_phone=False):
+                if not user:
+                    return "N/A"
+                parts = []
+                department = CompanyDepartment.objects.filter(department_code=user.department_code).first() if user.department_code else None
+                if department:
+                    parts.append(department.name)
+                if user.position:
+                    parts.append(user.position)
+                parts.append(user.name)
+
+                base_info = ' '.join(filter(None, parts))
+
+                if with_phone and user.phone_number:
+                    return f"{base_info} 電話番号：{user.phone_number}"
+                return base_info
+
+            # 派遣先
+            haken_items.append({"title": "派遣先指揮命令者", "text": format_client_user(haken_info.commander)})
+            haken_items.append({"title": "派遣先苦情申出先", "text": format_client_user(haken_info.complaint_officer_client, with_phone=True)})
+            haken_items.append({"title": "派遣先責任者", "text": format_client_user(haken_info.responsible_person_client, with_phone=True)})
+
+            # 派遣元
+            haken_items.append({"title": "派遣元苦情申出先", "text": format_company_user(haken_info.complaint_officer_company, with_phone=True)})
+            haken_items.append({"title": "派遣元責任者", "text": format_company_user(haken_info.responsible_person_company, with_phone=True)})
+
+            # 限定の別
+            limit_by_agreement_display = haken_info.get_limit_by_agreement_display() if haken_info.limit_by_agreement else "N/A"
+            limit_indefinite_or_senior_display = haken_info.get_limit_indefinite_or_senior_display() if haken_info.limit_indefinite_or_senior else "N/A"
+            haken_items.append({"title": "協定対象派遣労働者に限定するか否かの別", "text": limit_by_agreement_display})
+            haken_items.append({"title": "無期雇用派遣労働者又は60歳以上の者に限定するか否かの別", "text": limit_indefinite_or_senior_display})
+
+            # itemsリストに挿入
+            notes_index = -1
+            for i, item in enumerate(items):
+                if item["title"] == "備考":
+                    notes_index = i
+                    break
+
+            if notes_index != -1:
+                items[notes_index:notes_index] = haken_items
+            else:
+                items.extend(haken_items)
     elif isinstance(contract, StaffContract):
         contract_type = 'staff'
         intro_text = f"{contract.staff.name_last} {contract.staff.name_first} 様との間で、以下の通り雇用契約を締結します。"
