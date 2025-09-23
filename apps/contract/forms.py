@@ -333,6 +333,10 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         if self.instance and self.instance.pk and hasattr(self.instance, 'staff') and self.instance.staff:
             self.fields['staff_display'].initial = f"{self.instance.staff.name_last} {self.instance.staff.name_first}"
 
+        # 契約番号フィールドを読み取り専用に
+        self.fields['contract_number'].widget.attrs['readonly'] = True
+        self.fields['contract_number'].required = False
+
         # 編集画面では「作成中」「申請中」のみ選択可能にする
         choices = [
             (StaffContract.ContractStatus.DRAFT.value, StaffContract.ContractStatus.DRAFT.label),

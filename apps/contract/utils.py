@@ -3,7 +3,7 @@ import io
 from django.conf import settings
 from django.utils import timezone
 from django.db import transaction
-from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractNumber
+from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractNumber, StaffContractNumber
 from apps.common.pdf_utils import generate_contract_pdf
 from apps.system.logs.models import AppLog
 
@@ -36,6 +36,37 @@ def generate_client_contract_number(contract: ClientContract) -> str:
 
     # 契約番号をフォーマット
     return f"{client_code}-{year_month}-{new_number:04d}"
+
+
+def generate_staff_contract_number(contract: StaffContract) -> str:
+    """
+    スタッフ契約番号を採番する。
+    フォーマット: {社員番号}-{契約開始年月}-{2桁連番}
+    """
+    employee_no = contract.staff.employee_no
+    if not employee_no:
+        raise ValueError("社員番号が設定されていません。スタッフ情報を確認してください。")
+
+    year_month = contract.start_date.strftime('%Y%m')
+
+    with transaction.atomic():
+        # 行をロックして取得、なければ作成
+        number_manager, created = StaffContractNumber.objects.select_for_update().get_or_create(
+            employee_no=employee_no,
+            year_month=year_month,
+            defaults={
+                'last_number': 0,
+                'corporate_number': contract.corporate_number,
+            }
+        )
+
+        # 番号をインクリメント
+        new_number = number_manager.last_number + 1
+        number_manager.last_number = new_number
+        number_manager.save()
+
+    # 契約番号をフォーマット
+    return f"{employee_no}-{year_month}-{new_number:02d}"
 
 
 def get_contract_pdf_title(contract):
