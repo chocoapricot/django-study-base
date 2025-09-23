@@ -180,7 +180,7 @@ def client_contract_detail(request, pk):
 
     haken_logs = AppLog.objects.filter(
         model_name='ClientContractHaken',
-        object_repr=str(contract),
+        object_repr__contains=str(contract),
         action__in=['create', 'update', 'delete']
     )
 
