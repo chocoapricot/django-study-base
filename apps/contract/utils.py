@@ -89,7 +89,7 @@ def generate_contract_pdf_content(contract):
                     parts.append(user.position)
                 parts.append(user.name)
 
-                base_info = ' '.join(filter(None, parts))
+                base_info = '　'.join(filter(None, parts))
 
                 if with_phone and user.phone_number:
                     return f"{base_info} 電話番号：{user.phone_number}"
@@ -106,7 +106,7 @@ def generate_contract_pdf_content(contract):
                     parts.append(user.position)
                 parts.append(user.name)
 
-                base_info = ' '.join(filter(None, parts))
+                base_info = '　'.join(filter(None, parts))
 
                 if with_phone and user.phone_number:
                     return f"{base_info} 電話番号：{user.phone_number}"
