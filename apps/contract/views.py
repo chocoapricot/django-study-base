@@ -178,11 +178,13 @@ def client_contract_detail(request, pk):
         action__in=['create', 'update', 'delete', 'print']
     )
 
-    haken_logs = AppLog.objects.filter(
-        model_name='ClientContractHaken',
-        object_repr__contains=str(contract),
-        action__in=['create', 'update', 'delete']
-    )
+    haken_logs = AppLog.objects.none()
+    if haken_info:
+        haken_logs = AppLog.objects.filter(
+            model_name='ClientContractHaken',
+            object_id=str(haken_info.pk),
+            action__in=['create', 'update', 'delete']
+        )
 
     all_change_logs = sorted(
         chain(contract_logs, haken_logs),
