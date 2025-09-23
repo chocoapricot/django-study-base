@@ -30,8 +30,8 @@
                         <h6 class="text-muted mb-3">基本情報</h6>
                         <table class="table table-sm">
                             <tr>
-                                <th class="w-25">契約名</th>
-                                <td>{{ contract.contract_name }}</td>
+                                <th>契約番号</th>
+                                <td>{{ contract.contract_number|default:"-" }}</td>
                             </tr>
                             <tr>
                                 <th>スタッフ</th>
@@ -42,8 +42,8 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th>契約番号</th>
-                                <td>{{ contract.contract_number|default:"-" }}</td>
+                                <th class="w-25">契約名</th>
+                                <td>{{ contract.contract_name }}</td>
                             </tr>
                             <tr>
                                 <th>職種</th>
