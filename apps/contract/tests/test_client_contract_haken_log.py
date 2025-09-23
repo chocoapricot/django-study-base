@@ -74,6 +74,7 @@ class ClientContractHakenLogTest(TestCase):
             'client_contract_type_code': '20',
             'contract_name': self.contract.contract_name,
             'contract_pattern': self.pattern.pk,
+            'contract_number': self.contract.contract_number or '',
             'start_date': self.contract.start_date.strftime('%Y-%m-%d'),
             'end_date': (self.contract.start_date + datetime.timedelta(days=365)).strftime('%Y-%m-%d'),
             'commander': self.client_user.pk,
@@ -121,6 +122,7 @@ class ClientContractHakenLogTest(TestCase):
             'client_contract_type_code': '20',
             'contract_name': self.contract.contract_name,
             'contract_pattern': self.pattern.pk,
+            'contract_number': self.contract.contract_number or '',
             'start_date': self.contract.start_date.strftime('%Y-%m-%d'),
             'end_date': (self.contract.start_date + datetime.timedelta(days=365)).strftime('%Y-%m-%d'),
             'commander': new_client_user.pk, # 更新
@@ -155,6 +157,7 @@ class ClientContractHakenLogTest(TestCase):
             'client_contract_type_code': '10', # 派遣以外に変更
             'contract_name': self.contract.contract_name,
             'contract_pattern': self.non_haken_pattern.pk,
+            'contract_number': self.contract.contract_number or '',
             'start_date': self.contract.start_date.strftime('%Y-%m-%d'),
             'end_date': (self.contract.start_date + datetime.timedelta(days=365)).strftime('%Y-%m-%d'),
         }
