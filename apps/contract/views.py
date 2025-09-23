@@ -290,6 +290,9 @@ def client_contract_update(request, pk):
                         if haken_form:
                             haken_info = haken_form.save(commit=False)
                             haken_info.client_contract = updated_contract
+                            if not haken_info.pk:
+                                haken_info.created_by = request.user
+                            haken_info.updated_by = request.user
                             haken_info.save()
                     # 派遣契約でなくなった場合
                     elif haken_info:
@@ -299,6 +302,15 @@ def client_contract_update(request, pk):
                     return redirect('contract:client_contract_detail', pk=contract.pk)
             except Exception as e:
                 messages.error(request, f"更新中にエラーが発生しました: {e}")
+        else:
+            if not form.is_valid():
+                messages.error(request, "入力内容に誤りがあります。各項目をご確認ください。")
+            if post_is_haken and haken_form and not haken_form.is_valid():
+                messages.error(request, "派遣情報に入力エラーがあります。")
+                for field, errors in haken_form.errors.items():
+                    for error in errors:
+                        label = haken_form.fields[field].label if field != '__all__' else '派遣情報'
+                        messages.warning(request, f"{label}: {error}")
     else: # GET
         form = ClientContractForm(instance=contract)
         is_haken = contract.client_contract_type_code == '20'

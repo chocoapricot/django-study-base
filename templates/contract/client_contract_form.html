@@ -10,14 +10,22 @@
     <div class="card-body">
         <form method="post">
             {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
             
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.contract_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約名</label>
                 <div class="col-sm-6">
                     {{ form.contract_name }}
-                    {% if form.contract_name.errors %}
-                        <div class="text-danger small">{{ form.contract_name.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in form.contract_name.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -25,9 +33,9 @@
                 <label for="{{ form.job_category.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">職種</label>
                 <div class="col-sm-4">
                     {{ form.job_category }}
-                    {% if form.job_category.errors %}
-                        <div class="text-danger small">{{ form.job_category.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in form.job_category.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -35,9 +43,9 @@
                 <label for="{{ form.contract_status.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約状況</label>
                 <div class="col-sm-4">
                     {{ form.contract_status }}
-                    {% if form.contract_status.errors %}
-                        <div class="text-danger small">{{ form.contract_status.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in form.contract_status.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -46,6 +54,9 @@
                 <div class="col-sm-4">
                     {{ form.client_contract_type_display }}
                     {{ form.client_contract_type_code }}
+                    {% for error in form.client_contract_type_code.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -53,9 +64,9 @@
                 <label for="{{ form.contract_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約パターン</label>
                 <div class="col-sm-4">
                     {{ form.contract_pattern }}
-                    {% if form.contract_pattern.errors %}
-                        <div class="text-danger small">{{ form.contract_pattern.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in form.contract_pattern.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -75,9 +86,9 @@
                             クリア
                         </button>
                     </div>
-                    {% if form.client.errors %}
-                        <div class="text-danger small">{{ form.client.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in form.client.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -85,9 +96,9 @@
                 <label for="{{ form.contract_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約番号</label>
                 <div class="col-sm-4">
                     {{ form.contract_number }}
-                    {% if form.contract_number.errors %}
-                        <div class="text-danger small">{{ form.contract_number.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in form.contract_number.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -100,18 +111,18 @@
                 </label>
                 <div class="col-sm-3">
                     {{ form.start_date }}
-                    {% if form.start_date.errors %}
-                        <div class="text-danger small">{{ form.start_date.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in form.start_date.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
                 <label for="{{ form.end_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
                     契約終了日
                 </label>
                 <div class="col-sm-3">
                     {{ form.end_date }}
-                    {% if form.end_date.errors %}
-                        <div class="text-danger small">{{ form.end_date.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in form.end_date.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
                 <div class="col-sm-2">
                     <button type="button" class="btn btn-sm btn-secondary me-1" onclick="setEndDate(1)">1ヶ月</button>
@@ -124,9 +135,9 @@
                 <label for="{{ form.contract_amount.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約金額</label>
                 <div class="col-sm-4">
                     {{ form.contract_amount }}
-                    {% if form.contract_amount.errors %}
-                        <div class="text-danger small">{{ form.contract_amount.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in form.contract_amount.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
                 <div class="col-sm-6">
                     <small class="text-muted">円（税抜）</small>
@@ -142,9 +153,9 @@
                     {% if form.payment_site.help_text %}
                         <small class="text-muted">{{ form.payment_site.help_text }}</small>
                     {% endif %}
-                    {% if form.payment_site.errors %}
-                        <div class="text-danger small">{{ form.payment_site.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in form.payment_site.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -154,7 +165,9 @@
 
             {% if haken_form.non_field_errors %}
                 <div class="alert alert-danger">
-                    {{ haken_form.non_field_errors }}
+                    {% for error in haken_form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
                 </div>
             {% endif %}
 
@@ -162,27 +175,27 @@
                 <label for="{{ haken_form.commander.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.commander.label }}</label>
                 <div class="col-sm-4">
                     {{ haken_form.commander }}
-                    {% if haken_form.commander.errors %}
-                        <div class="text-danger small">{{ haken_form.commander.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in haken_form.commander.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
             </div>
             <div class="row mb-3 align-items-center">
                 <label for="{{ haken_form.complaint_officer_client.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.complaint_officer_client.label }}</label>
                 <div class="col-sm-4">
                     {{ haken_form.complaint_officer_client }}
-                    {% if haken_form.complaint_officer_client.errors %}
-                        <div class="text-danger small">{{ haken_form.complaint_officer_client.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in haken_form.complaint_officer_client.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
             </div>
             <div class="row mb-3 align-items-center">
                 <label for="{{ haken_form.responsible_person_client.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.responsible_person_client.label }}</label>
                 <div class="col-sm-4">
                     {{ haken_form.responsible_person_client }}
-                    {% if haken_form.responsible_person_client.errors %}
-                        <div class="text-danger small">{{ haken_form.responsible_person_client.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in haken_form.responsible_person_client.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -190,18 +203,18 @@
                 <label for="{{ haken_form.complaint_officer_company.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.complaint_officer_company.label }}</label>
                 <div class="col-sm-4">
                     {{ haken_form.complaint_officer_company }}
-                    {% if haken_form.complaint_officer_company.errors %}
-                        <div class="text-danger small">{{ haken_form.complaint_officer_company.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in haken_form.complaint_officer_company.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
             </div>
             <div class="row mb-3 align-items-center">
                 <label for="{{ haken_form.responsible_person_company.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.responsible_person_company.label }}</label>
                 <div class="col-sm-4">
                     {{ haken_form.responsible_person_company }}
-                    {% if haken_form.responsible_person_company.errors %}
-                        <div class="text-danger small">{{ haken_form.responsible_person_company.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in haken_form.responsible_person_company.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -209,18 +222,18 @@
                 <label class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.limit_by_agreement.label }}</label>
                 <div class="col-sm-10">
                     {{ haken_form.limit_by_agreement }}
-                    {% if haken_form.limit_by_agreement.errors %}
-                        <div class="text-danger small">{{ haken_form.limit_by_agreement.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in haken_form.limit_by_agreement.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
             </div>
             <div class="row mb-3 align-items-center">
                 <label class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.limit_indefinite_or_senior.label }}</label>
                 <div class="col-sm-10">
                     {{ haken_form.limit_indefinite_or_senior }}
-                    {% if haken_form.limit_indefinite_or_senior.errors %}
-                        <div class="text-danger small">{{ haken_form.limit_indefinite_or_senior.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in haken_form.limit_indefinite_or_senior.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
             </div>
             <hr>
@@ -229,9 +242,9 @@
                 <label for="{{ form.description.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約内容</label>
                 <div class="col-sm-10">
                     {{ form.description }}
-                    {% if form.description.errors %}
-                        <div class="text-danger small">{{ form.description.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in form.description.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -239,9 +252,9 @@
                 <label for="{{ form.notes.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">備考</label>
                 <div class="col-sm-10">
                     {{ form.notes }}
-                    {% if form.notes.errors %}
-                        <div class="text-danger small">{{ form.notes.errors.0 }}</div>
-                    {% endif %}
+                    {% for error in form.notes.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
                 </div>
             </div>
 

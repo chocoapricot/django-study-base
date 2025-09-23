@@ -220,7 +220,7 @@ class ClientContractHakenForm(forms.ModelForm):
     """クライアント契約派遣情報フォーム"""
     class Meta:
         model = ClientContractHaken
-        exclude = ['client_contract']
+        exclude = ['client_contract', 'version', 'created_at', 'created_by', 'updated_at', 'updated_by']
         widgets = {
             'commander': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'complaint_officer_client': forms.Select(attrs={'class': 'form-select form-select-sm'}),
