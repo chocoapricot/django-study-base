@@ -62,9 +62,9 @@ def generate_contract_pdf_content(contract):
         end_date_str = contract.end_date.strftime('%Y年%m月%d日') if contract.end_date else "無期限"
         contract_period = f"{start_date_str}　～　{end_date_str}"
         items = [
-            {"title": "契約名", "text": str(contract.contract_name)},
-            {"title": "クライアント名", "text": str(contract.client.name)},
             {"title": "契約番号", "text": str(contract.contract_number)},
+            {"title": "クライアント名", "text": str(contract.client.name)},
+            {"title": "契約名", "text": str(contract.contract_name)},
             {"title": "契約期間", "text": contract_period},
             {"title": "契約金額", "text": f"{contract.contract_amount:,} 円" if contract.contract_amount else "N/A"},
             {"title": "支払条件", "text": str(contract.payment_site.name if contract.payment_site else "N/A")},
@@ -89,7 +89,7 @@ def generate_contract_pdf_content(contract):
                     parts.append(user.position)
                 parts.append(user.name)
 
-                base_info = '　'.join(filter(None, parts))
+                base_info = ' '.join(filter(None, parts))
 
                 if with_phone and user.phone_number:
                     return f"{base_info} 電話番号：{user.phone_number}"
@@ -106,7 +106,7 @@ def generate_contract_pdf_content(contract):
                     parts.append(user.position)
                 parts.append(user.name)
 
-                base_info = '　'.join(filter(None, parts))
+                base_info = ' '.join(filter(None, parts))
 
                 if with_phone and user.phone_number:
                     return f"{base_info} 電話番号：{user.phone_number}"
