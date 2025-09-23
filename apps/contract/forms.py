@@ -256,7 +256,7 @@ class ClientContractHakenForm(forms.ModelForm):
             self.fields['responsible_person_client'].queryset = ClientUser.objects.none()
 
         # 派遣元関連のフィールドの選択肢を自社ユーザに限定
-        company_users = CompanyUser.objects.filter(is_active=True)
+        company_users = CompanyUser.objects.all()
         self.fields['complaint_officer_company'].queryset = company_users
         self.fields['responsible_person_company'].queryset = company_users
 
