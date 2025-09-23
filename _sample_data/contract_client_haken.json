@@ -1,0 +1,38 @@
+[
+    {
+        "model": "contract.clientcontracthaken",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-01-15T09:00:00Z",
+            "created_by": 1,
+            "updated_at": "2024-01-15T09:00:00Z",
+            "updated_by": 1,
+            "client_contract": 1,
+            "commander": 1,
+            "complaint_officer_client": 2,
+            "responsible_person_client": 3,
+            "complaint_officer_company": 1,
+            "responsible_person_company": 2,
+            "limit_by_agreement": "0",
+            "limit_indefinite_or_senior": "0"
+        }
+    },
+    {
+        "model": "contract.clientcontracthaken",
+        "pk": 2,
+        "fields": {
+            "created_at": "2024-02-01T10:30:00Z",
+            "created_by": 1,
+            "updated_at": "2024-02-01T10:30:00Z",
+            "updated_by": 1,
+            "client_contract": 2,
+            "commander": 4,
+            "complaint_officer_client": 5,
+            "responsible_person_client": 4,
+            "complaint_officer_company": 3,
+            "responsible_person_company": 4,
+            "limit_by_agreement": "1",
+            "limit_indefinite_or_senior": "0"
+        }
+    }
+]
