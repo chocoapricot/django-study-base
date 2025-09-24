@@ -17,7 +17,7 @@ from apps.client.models import Client, ClientUser
 from apps.staff.models import Staff
 from apps.master.models import ContractPattern, StaffAgreement
 from apps.connect.models import ConnectStaff, ConnectStaffAgree, ConnectClient, MynumberRequest, ProfileRequest, BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
-from apps.company.models import Company, CompanyDepartment
+from apps.company.models import Company
 from apps.system.settings.models import Dropdowns
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
@@ -689,26 +689,9 @@ def staff_select(request):
     page = request.GET.get('page')
     staff_page = paginator.get_page(page)
 
-    # 部署名を取得してスタッフオブジェクトに付与
-    department_codes = [staff.department_code for staff in staff_page if staff.department_code]
-    if department_codes:
-        today = timezone.now().date()
-
-        valid_departments = CompanyDepartment.objects.filter(
-            department_code__in=set(department_codes)
-        ).filter(
-            Q(valid_from__isnull=True) | Q(valid_from__lte=today)
-        ).filter(
-            Q(valid_to__isnull=True) | Q(valid_to__gte=today)
-        )
-
-        department_map = {dep.department_code: dep.name for dep in valid_departments}
-
-        for staff in staff_page:
-            staff.department_name = department_map.get(staff.department_code)
 
     context = {
-        'staff_list': staff_page,
+        'page_obj': staff_page,
         'search_query': search_query,
         'return_url': return_url,
     }
