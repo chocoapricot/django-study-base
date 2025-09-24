@@ -46,7 +46,7 @@
                                 <br><small class="text-muted">退職日: {{ staff.resignation_date }}</small>
                             {% endif %}
                         </td>
-                        <td>{{ staff.department_code|default:"-" }}</td>
+                        <td>{{ staff.department_name|default:"-" }}</td>
                         <td>
                             <button type="button" class="btn btn-sm btn-primary" onclick="selectStaff('{{ staff.pk }}', '{{ staff.name_last|escapejs }} {{ staff.name_first|escapejs }}')">
                                 選択
