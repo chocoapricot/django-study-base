@@ -55,7 +55,7 @@
                                 <br><small class="text-muted">退職日: {{ staff.resignation_date }}</small>
                             {% endif %}
                         </td>
-                        <td>{{ staff.get_current_department_name|default:"-" }}</td>
+                        <td>{{ staff.department_name|default:"-" }}</td>
                         <td>
                             <a href="{{ return_url }}?selected_staff_id={{ staff.pk }}&selected_staff_name={{ staff.name_last|urlencode }}%20{{ staff.name_first|urlencode }}" class="btn btn-sm btn-primary">
                                 選択
