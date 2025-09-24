@@ -359,20 +359,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function clearDispatchFields() {
-    const fieldsToClear = [
-        'commander',
-        'complaint_officer_client',
-        'responsible_person_client'
-    ];
-    fieldsToClear.forEach(fieldName => {
-        const field = document.getElementById(`id_${fieldName}`);
-        if (field) {
-            field.value = ''; // 選択をクリア
-        }
-    });
-}
-
 function selectClient(clientId, clientName) {
     document.getElementById('{{ form.client.id_for_label }}').value = clientId;
     document.getElementById('client-display-text').textContent = clientName;
@@ -384,10 +370,55 @@ function selectClient(clientId, clientName) {
         }
     }
 
-    // 派遣契約の場合、関連フィールドをクリア
+    // 派遣契約の場合、関連フィールドを更新
     if (document.getElementById('{{ form.client_contract_type_code.id_for_label }}').value === '20') {
-        clearDispatchFields();
+        updateDispatchFields(clientId);
     }
+}
+
+function updateDispatchFields(clientId) {
+    const fields = [
+        'commander',
+        'complaint_officer_client',
+        'responsible_person_client'
+    ];
+
+    // まずはすべてのフィールドをクリア
+    fields.forEach(fieldName => {
+        const select = document.getElementById(`id_${fieldName}`);
+        if (select) {
+            select.innerHTML = '<option value="">選択してください</option>';
+        }
+    });
+
+    if (!clientId) {
+        return;
+    }
+
+    // APIを叩いて担当者リストを取得
+    fetch(`/api/client/${clientId}/users/`)
+        .then(response => response.json())
+        .then(users => {
+            fields.forEach(fieldName => {
+                const select = document.getElementById(`id_${fieldName}`);
+                if (select) {
+                    users.forEach(user => {
+                        const option = new Option(user.name, user.id);
+                        select.add(option);
+                    });
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching client users:', error);
+            // エラー時にもフィールドをクリアした状態を維持
+            fields.forEach(fieldName => {
+                const select = document.getElementById(`id_${fieldName}`);
+                if (select) {
+                    select.innerHTML = '<option value="">クライアント担当者の取得に失敗しました</option>';
+                }
+            });
+        });
 }
 window.selectClient = selectClient;
 
@@ -446,7 +477,7 @@ function clearClient() {
     document.getElementById('client-display-text').textContent = '未選択';
     // 派遣関連フィールドもクリア
     if (document.getElementById('{{ form.client_contract_type_code.id_for_label }}').value === '20') {
-        clearDispatchFields();
+        updateDispatchFields(null);
     }
 }
 
