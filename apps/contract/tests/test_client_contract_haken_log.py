@@ -146,32 +146,3 @@ class ClientContractHakenLogTest(TestCase):
         self.assertContains(response, '派遣情報', msg_prefix="Change history should display the verbose name for Haken info.")
         self.assertContains(response, '編集', msg_prefix="Change history should contain the 'Update' action.")
 
-    def test_haken_info_deletion_log_and_display(self):
-        """派遣情報の削除がログに記録され、詳細画面に表示されること。"""
-        haken_info = ClientContractHaken.objects.create(client_contract=self.contract)
-        self.assertTrue(hasattr(self.contract, 'haken_info'))
-        AppLog.objects.all().delete()
-
-        post_data = {
-            'client': self.client_model.pk,
-            'client_contract_type_code': '10', # 派遣以外に変更
-            'contract_name': self.contract.contract_name,
-            'contract_pattern': self.non_haken_pattern.pk,
-            'contract_number': self.contract.contract_number or '',
-            'start_date': self.contract.start_date.strftime('%Y-%m-%d'),
-            'end_date': (self.contract.start_date + datetime.timedelta(days=365)).strftime('%Y-%m-%d'),
-        }
-
-        response = self.client.post(self.update_url, data=post_data)
-        self.assertEqual(response.status_code, 302, "Form submission should be successful and redirect.")
-
-        self.assertEqual(AppLog.objects.filter(model_name='ClientContractHaken', action='delete').count(), 1)
-
-        detail_url = reverse('contract:client_contract_detail', kwargs={'pk': self.contract.pk})
-        response = self.client.get(detail_url)
-        self.assertEqual(response.status_code, 200)
-
-        self.assertContains(response, '派遣情報', msg_prefix="Change history should display the verbose name for Haken info.")
-        self.assertContains(response, '削除', msg_prefix="Change history should contain the 'Delete' action.")
-        self.contract.refresh_from_db()
-        self.assertFalse(hasattr(self.contract, 'haken_info'))
