@@ -160,8 +160,8 @@ def generate_contract_pdf_content(contract):
 
             # 許可番号
             company = Company.objects.first()
-            permit_number = company.haken_permit_number if company else "N/A"
-            haken_items.append({"title": "許可番号", "text": permit_number})
+            if company and company.haken_permit_number:
+                haken_items.append({"title": "許可番号(人材派遣)", "text": company.haken_permit_number})
 
             # itemsリストに挿入
             notes_index = -1
