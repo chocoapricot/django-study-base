@@ -105,7 +105,7 @@ def generate_contract_pdf_content(contract):
 
         # 派遣契約の場合、追加情報を挿入
         if contract.contract_pattern and contract.contract_pattern.contract_type_code == '20' and hasattr(contract, 'haken_info'):
-            from apps.company.models import CompanyDepartment
+            from apps.company.models import Company, CompanyDepartment
             haken_info = contract.haken_info
             haken_items = []
 
@@ -151,6 +151,11 @@ def generate_contract_pdf_content(contract):
             # 派遣元
             haken_items.append({"title": "派遣元苦情申出先", "text": format_company_user(haken_info.complaint_officer_company, with_phone=True)})
             haken_items.append({"title": "派遣元責任者", "text": format_company_user(haken_info.responsible_person_company, with_phone=True)})
+
+            # 許可番号
+            company = Company.objects.first()
+            permit_number = company.haken_permit_number if company else "N/A"
+            haken_items.append({"title": "許可番号(人材派遣)", "text": permit_number})
 
             # 限定の別
             limit_by_agreement_display = haken_info.get_limit_by_agreement_display() if haken_info.limit_by_agreement else "N/A"
