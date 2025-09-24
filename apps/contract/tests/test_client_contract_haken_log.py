@@ -1,4 +1,3 @@
-import unittest
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -145,7 +144,6 @@ class ClientContractHakenLogTest(TestCase):
         self.assertContains(response, '派遣情報', msg_prefix="Change history should display the verbose name for Haken info.")
         self.assertContains(response, '編集', msg_prefix="Change history should contain the 'Update' action.")
 
-    @unittest.skip("Skipping due to pre-existing bug that I will address in a separate task.")
     def test_haken_info_deletion_log_and_display(self):
         """派遣情報の削除がログに記録され、詳細画面に表示されること。"""
         haken_info = ClientContractHaken.objects.create(client_contract=self.contract)
