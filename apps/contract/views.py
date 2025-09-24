@@ -1429,4 +1429,3 @@ def staff_contract_export(request):
         response['Content-Disposition'] = f'attachment; filename="staff_contracts_{timestamp}.csv"'
 
     return response
-

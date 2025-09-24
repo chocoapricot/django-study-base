@@ -64,13 +64,8 @@ def get_client_users(request, client_id):
     """指定されたクライアントIDに紐づく担当者リストを返す"""
     from apps.client.models import ClientUser
     try:
-        users = ClientUser.objects.filter(client_id=client_id).annotate(
-            full_name=Concat('name_last', Value(' '), 'name_first')
-        ).values('id', 'full_name')
-
-        # 'full_name' を 'name' にリネームしてフロントエンドの期待に合わせる
-        user_list = [{'id': user['id'], 'name': user['full_name']} for user in users]
-
+        users = ClientUser.objects.filter(client_id=client_id).select_related('department')
+        user_list = [{'id': user.id, 'name': str(user)} for user in users]
         return JsonResponse(user_list, safe=False)
     except Exception as e:
         logger.error(f"Error fetching client users for client_id {client_id}: {e}")

@@ -1,7 +1,7 @@
 from django.test import TestCase, Client as TestClient
 from django.urls import reverse
 from apps.accounts.models import MyUser
-from apps.client.models import Client, ClientUser
+from apps.client.models import Client, ClientUser, ClientDepartment
 
 class ApiViewsTest(TestCase):
     def setUp(self):
@@ -11,7 +11,8 @@ class ApiViewsTest(TestCase):
         self.client.login(email='testuser@example.com', password='password123')
 
         self.test_client1 = Client.objects.create(name='Test Client 1', corporate_number='1111111111111')
-        self.client_user1 = ClientUser.objects.create(client=self.test_client1, name_last='User', name_first='1')
+        department = ClientDepartment.objects.create(client=self.test_client1, name='Test Department')
+        self.client_user1 = ClientUser.objects.create(client=self.test_client1, department=department, position='Manager', name_last='User', name_first='1')
         self.client_user2 = ClientUser.objects.create(client=self.test_client1, name_last='User', name_first='2')
 
         self.test_client2 = Client.objects.create(name='Test Client 2', corporate_number='2222222222222')
@@ -22,9 +23,13 @@ class ApiViewsTest(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()), 2)
-        self.assertEqual(response.json()[0]['name'], self.client_user1.name)
-        self.assertEqual(response.json()[1]['name'], self.client_user2.name)
+        json_response = response.json()
+        self.assertEqual(len(json_response), 2)
+
+        # Check for the __str__ format
+        self.assertEqual(json_response[0]['name'], str(self.client_user1))
+        self.assertEqual(json_response[1]['name'], str(self.client_user2))
+        self.assertEqual(json_response[0]['name'], 'Test Department - Manager - User 1')
 
     def test_get_client_users_no_users(self):
         """ユーザーがいないクライアントの場合に空のリストが返されることを確認"""
