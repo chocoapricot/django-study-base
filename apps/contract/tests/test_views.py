@@ -1,8 +1,8 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from ..models import ClientContract, StaffContract
-from apps.client.models import Client as TestClient
+from ..models import ClientContract, StaffContract, ClientContractHaken
+from apps.client.models import Client as TestClient, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from apps.master.models import ContractPattern
 import datetime
@@ -31,6 +31,10 @@ class ContractViewTest(TestCase):
         client_permissions = Permission.objects.filter(content_type=content_type_client)
         all_permissions.extend(client_permissions)
 
+        content_type_haken = ContentType.objects.get_for_model(ClientContractHaken)
+        haken_permissions = Permission.objects.filter(content_type=content_type_haken)
+        all_permissions.extend(haken_permissions)
+
         content_type_staff = ContentType.objects.get_for_model(StaffContract)
         staff_permissions = Permission.objects.filter(content_type=content_type_staff)
         all_permissions.extend(staff_permissions)
@@ -43,12 +47,14 @@ class ContractViewTest(TestCase):
             name_furigana='テストクライアント',
             address='Test Address'
         )
-        self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='10')
+        self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='10', contract_type_code='20')
         self.client_contract = ClientContract.objects.create(
             client=self.test_client,
             contract_name='Test Contract',
             start_date=datetime.date.today(),
-            contract_pattern=self.contract_pattern
+            end_date=datetime.date.today() + datetime.timedelta(days=30),
+            contract_pattern=self.contract_pattern,
+            client_contract_type_code='20'
         )
 
         self.staff = Staff.objects.create(
@@ -201,6 +207,109 @@ class ContractViewTest(TestCase):
         self.assertEqual(haken_form.fields['commander'].queryset.count(), 0)
         self.assertEqual(haken_form.fields['complaint_officer_client'].queryset.count(), 0)
         self.assertEqual(haken_form.fields['responsible_person_client'].queryset.count(), 0)
+
+    def test_client_contract_create_haken_successful_post(self):
+        """派遣契約の新規作成が正常に成功することを確認"""
+        from apps.company.models import CompanyUser
+        commander = ClientUser.objects.create(client=self.test_client, name_last='Commander', name_first='Test')
+        company_user = CompanyUser.objects.create(name_last='Company', name_first='User')
+
+        create_url = reverse('contract:client_contract_create')
+
+        post_data = {
+            'client': self.test_client.pk,
+            'client_contract_type_code': '20',
+            'contract_name': 'New Haken Contract',
+            'contract_pattern': self.contract_pattern.pk,
+            'start_date': datetime.date.today(),
+            'end_date': datetime.date.today() + datetime.timedelta(days=30),
+            'contract_status': ClientContract.ContractStatus.DRAFT,
+            # Haken form data
+            'commander': commander.pk,
+            'complaint_officer_client': commander.pk,
+            'responsible_person_client': commander.pk,
+            'complaint_officer_company': company_user.pk,
+            'responsible_person_company': company_user.pk,
+            'limit_by_agreement': '0',
+            'limit_indefinite_or_senior': '0',
+        }
+
+        response = self.client.post(create_url, data=post_data)
+
+        if response.status_code != 302:
+            form_errors = response.context.get('form', {}).errors
+            haken_form_errors = response.context.get('haken_form', {}).errors
+            self.fail(f"POST failed with status {response.status_code}. Form errors: {form_errors}, Haken form errors: {haken_form_errors}")
+
+        self.assertEqual(ClientContract.objects.count(), 2)
+        self.assertEqual(ClientContractHaken.objects.count(), 1)
+        new_contract = ClientContract.objects.latest('id')
+        self.assertEqual(new_contract.contract_name, 'New Haken Contract')
+        self.assertTrue(hasattr(new_contract, 'haken_info'))
+        self.assertEqual(new_contract.haken_info.commander, commander)
+
+    def test_client_contract_update_haken_successful_post(self):
+        """派遣契約の更新が正常に成功することを確認"""
+        from apps.company.models import CompanyUser
+        # Haken Info と関連オブジェクトを作成
+        commander = ClientUser.objects.create(client=self.test_client, name_last='Commander', name_first='Test')
+        complaint_officer = ClientUser.objects.create(client=self.test_client, name_last='Complaint', name_first='Officer')
+        responsible_person = ClientUser.objects.create(client=self.test_client, name_last='Responsible', name_first='Person')
+
+        company_user = CompanyUser.objects.create(name_last='Company', name_first='User')
+
+        haken_info = ClientContractHaken.objects.create(
+            client_contract=self.client_contract,
+            commander=commander,
+            complaint_officer_client=complaint_officer,
+            responsible_person_client=responsible_person,
+            complaint_officer_company=company_user,
+            responsible_person_company=company_user,
+            limit_by_agreement='0',
+            limit_indefinite_or_senior='0'
+        )
+
+        # 更新用の新しい担当者
+        new_commander = ClientUser.objects.create(client=self.test_client, name_last='NewCommander', name_first='Test')
+
+        update_url = reverse('contract:client_contract_update', kwargs={'pk': self.client_contract.pk})
+
+        post_data = {
+            'client': self.test_client.pk,
+            'client_contract_type_code': '20',
+            'contract_name': 'Updated Haken Contract',
+            'contract_pattern': self.contract_pattern.pk,
+            'start_date': self.client_contract.start_date,
+            'end_date': self.client_contract.end_date,
+            'contract_status': ClientContract.ContractStatus.DRAFT,
+            # Haken form data
+            'commander': new_commander.pk,
+            'complaint_officer_client': complaint_officer.pk,
+            'responsible_person_client': responsible_person.pk,
+            'complaint_officer_company': company_user.pk,
+            'responsible_person_company': company_user.pk,
+            'limit_by_agreement': '1',
+            'limit_indefinite_or_senior': '1',
+        }
+
+        response = self.client.post(update_url, data=post_data)
+
+        # 最初にステータスコードをチェックし、失敗した場合のみエラー詳細を出力
+        if response.status_code != 302:
+            form_errors = response.context.get('form', {}).errors
+            haken_form_errors = response.context.get('haken_form', {}).errors
+            self.fail(f"POST failed with status {response.status_code}. Form errors: {form_errors}, Haken form errors: {haken_form_errors}")
+
+        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract.pk}))
+
+        # 契約が更新されていることを確認
+        updated_contract = ClientContract.objects.get(pk=self.client_contract.pk)
+        self.assertEqual(updated_contract.contract_name, 'Updated Haken Contract')
+
+        # 派遣情報が更新されていることを確認
+        haken_info.refresh_from_db()
+        self.assertEqual(haken_info.commander, new_commander)
+        self.assertEqual(haken_info.limit_by_agreement, '1')
 
     def test_client_contract_update_preserves_contract_type(self):
         """契約更新時に契約種別が維持されることをテスト"""
