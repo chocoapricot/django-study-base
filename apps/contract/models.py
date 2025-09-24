@@ -306,6 +306,26 @@ class ClientContractNumber(MyModel):
         return f"{self.client_code}-{self.year_month}-{self.last_number}"
 
 
+class StaffContractNumber(MyModel):
+    """
+    スタッフ契約番号を管理するためのモデル。
+    社員番号と年月をキーに、最新の連番を保持する。
+    """
+    employee_no = models.CharField('社員番号', max_length=10, db_index=True)
+    year_month = models.CharField('年月', max_length=6, db_index=True)
+    last_number = models.PositiveIntegerField('最終番号', default=0)
+    corporate_number = models.CharField('法人番号', max_length=13, blank=True, null=True)
+
+    class Meta:
+        db_table = 'apps_contract_staff_number'
+        verbose_name = 'スタッフ契約番号管理'
+        verbose_name_plural = 'スタッフ契約番号管理'
+        unique_together = ('employee_no', 'year_month')
+
+    def __str__(self):
+        return f"{self.employee_no}-{self.year_month}-{self.last_number}"
+
+
 class ClientContractHaken(MyModel):
     """
     クライアント契約派遣情報
