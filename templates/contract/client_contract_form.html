@@ -359,6 +359,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+function clearDispatchFields() {
+    const fieldsToClear = [
+        'haken-commander',
+        'haken-complaint_officer_client',
+        'haken-responsible_person_client'
+    ];
+    fieldsToClear.forEach(fieldName => {
+        const field = document.getElementById(`id_${fieldName}`);
+        if (field) {
+            field.value = ''; // 選択をクリア
+        }
+    });
+}
+
 function selectClient(clientId, clientName) {
     document.getElementById('{{ form.client.id_for_label }}').value = clientId;
     document.getElementById('client-display-text').textContent = clientName;
@@ -368,6 +382,11 @@ function selectClient(clientId, clientName) {
         if (modal) {
             modal.hide();
         }
+    }
+
+    // 派遣契約の場合、関連フィールドをクリア
+    if (document.getElementById('{{ form.client_contract_type_code.id_for_label }}').value === '20') {
+        clearDispatchFields();
     }
 }
 window.selectClient = selectClient;
@@ -425,6 +444,10 @@ if (standardTestModal) {
 function clearClient() {
     document.getElementById('{{ form.client.id_for_label }}').value = '';
     document.getElementById('client-display-text').textContent = '未選択';
+    // 派遣関連フィールドもクリア
+    if (document.getElementById('{{ form.client_contract_type_code.id_for_label }}').value === '20') {
+        clearDispatchFields();
+    }
 }
 
 function setEndDate(months) {
