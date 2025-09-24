@@ -152,16 +152,16 @@ def generate_contract_pdf_content(contract):
             haken_items.append({"title": "派遣元苦情申出先", "text": format_company_user(haken_info.complaint_officer_company, with_phone=True)})
             haken_items.append({"title": "派遣元責任者", "text": format_company_user(haken_info.responsible_person_company, with_phone=True)})
 
-            # 許可番号
-            company = Company.objects.first()
-            permit_number = company.haken_permit_number if company else "N/A"
-            haken_items.append({"title": "許可番号(人材派遣)", "text": permit_number})
-
             # 限定の別
             limit_by_agreement_display = haken_info.get_limit_by_agreement_display() if haken_info.limit_by_agreement else "N/A"
             limit_indefinite_or_senior_display = haken_info.get_limit_indefinite_or_senior_display() if haken_info.limit_indefinite_or_senior else "N/A"
             haken_items.append({"title": "協定対象派遣労働者に限定するか否かの別", "text": limit_by_agreement_display})
             haken_items.append({"title": "無期雇用派遣労働者又は60歳以上の者に限定するか否かの別", "text": limit_indefinite_or_senior_display})
+
+            # 許可番号
+            company = Company.objects.first()
+            permit_number = company.haken_permit_number if company else "N/A"
+            haken_items.append({"title": "許可番号", "text": permit_number})
 
             # itemsリストに挿入
             notes_index = -1
