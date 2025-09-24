@@ -73,3 +73,33 @@ class ContractUtilsTest(TestCase):
         mock_generate_pdf.assert_called_once()
         args, kwargs = mock_generate_pdf.call_args
         self.assertEqual(args[1], "業務委託個別契約書")
+
+    @patch('apps.contract.utils.generate_contract_pdf')
+    def test_haken_contract_includes_permit_number(self, mock_generate_pdf):
+        """
+        Test that the haken permit number is included in the PDF content for a dispatch contract.
+        """
+        from apps.company.models import Company
+        from apps.contract.models import ClientContractHaken
+
+        Company.objects.create(name='Test Company', haken_permit_number='派13-123456')
+
+        haken_contract = ClientContract.objects.create(
+            client=self.client,
+            contract_name='Test Haken Contract',
+            contract_pattern=self.haken_pattern,
+            start_date=datetime.date.today(),
+            payment_site=self.payment_site,
+        )
+
+        ClientContractHaken.objects.create(client_contract=haken_contract)
+
+        generate_contract_pdf_content(haken_contract)
+
+        mock_generate_pdf.assert_called_once()
+        args, kwargs = mock_generate_pdf.call_args
+        items = args[3]
+
+        permit_number_item = next((item for item in items if item['title'] == '許可番号(人材派遣)'), None)
+        self.assertIsNotNone(permit_number_item)
+        self.assertEqual(permit_number_item['text'], '派13-123456')
