@@ -259,6 +259,12 @@ class ClientContractHakenForm(forms.ModelForm):
                 except (Client.DoesNotExist, ValueError):
                     pass
 
+        # クライアント情報を保存（バリデーション時に使用）
+        self._client = client
+        self._setup_field_choices(client)
+
+    def _setup_field_choices(self, client):
+        """フィールドの選択肢を設定する共通メソッド"""
         # 派遣先関連のフィールドの選択肢をクライアントに紐づくユーザに限定
         client_users_qs = ClientUser.objects.none()
         if client:
@@ -287,6 +293,91 @@ class ClientContractHakenForm(forms.ModelForm):
         if not company_users.exists():
             self.fields['complaint_officer_company'].empty_label = '選択可能な担当者はいません'
             self.fields['responsible_person_company'].empty_label = '選択可能な担当者はいません'
+
+    def _get_current_client(self):
+        """現在のクライアントを取得する"""
+        client_id = None
+        if self.is_bound:
+            client_id = self.data.get('client')
+        elif self.instance and self.instance.pk and hasattr(self.instance, 'client_contract'):
+            client_id = self.instance.client_contract.client_id
+        
+        if client_id:
+            try:
+                return Client.objects.get(pk=client_id)
+            except (Client.DoesNotExist, ValueError):
+                pass
+        return None
+
+    def clean_commander(self):
+        """派遣先指揮命令者のバリデーション"""
+        commander = self.cleaned_data.get('commander')
+        if not commander:
+            return commander
+        
+        client = self._get_current_client()
+        if client:
+            # 動的に選択肢を更新してからバリデーション
+            client_users_qs = ClientUser.objects.filter(client=client)
+            self.fields['commander'].queryset = client_users_qs
+            
+            # 選択された値がクライアントのユーザーに含まれているかチェック
+            if not client_users_qs.filter(id=commander.id).exists():
+                raise forms.ValidationError('選択された派遣先指揮命令者は、指定されたクライアントに属していません。')
+        
+        return commander
+
+    def clean_complaint_officer_client(self):
+        """苦情申出先（クライアント）のバリデーション"""
+        complaint_officer_client = self.cleaned_data.get('complaint_officer_client')
+        if not complaint_officer_client:
+            return complaint_officer_client
+        
+        client = self._get_current_client()
+        if client:
+            # 動的に選択肢を更新してからバリデーション
+            client_users_qs = ClientUser.objects.filter(client=client)
+            self.fields['complaint_officer_client'].queryset = client_users_qs
+            
+            # 選択された値がクライアントのユーザーに含まれているかチェック
+            if not client_users_qs.filter(id=complaint_officer_client.id).exists():
+                raise forms.ValidationError('選択された苦情申出先は、指定されたクライアントに属していません。')
+        
+        return complaint_officer_client
+
+    def clean_responsible_person_client(self):
+        """責任者（クライアント）のバリデーション"""
+        responsible_person_client = self.cleaned_data.get('responsible_person_client')
+        if not responsible_person_client:
+            return responsible_person_client
+        
+        client = self._get_current_client()
+        if client:
+            # 動的に選択肢を更新してからバリデーション
+            client_users_qs = ClientUser.objects.filter(client=client)
+            self.fields['responsible_person_client'].queryset = client_users_qs
+            
+            # 選択された値がクライアントのユーザーに含まれているかチェック
+            if not client_users_qs.filter(id=responsible_person_client.id).exists():
+                raise forms.ValidationError('選択された責任者は、指定されたクライアントに属していません。')
+        
+        return responsible_person_client
+
+    def clean(self):
+        """バリデーション前に選択肢を再設定"""
+        # まず個別フィールドのバリデーションを実行する前に選択肢を更新
+        if self.is_bound:
+            client_id = self.data.get('client')
+            if client_id:
+                try:
+                    client = Client.objects.get(pk=client_id)
+                    # 選択肢を再設定
+                    self._setup_field_choices(client)
+                except (Client.DoesNotExist, ValueError):
+                    pass
+        
+        cleaned_data = super().clean()
+        return cleaned_data
 
 
 class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
