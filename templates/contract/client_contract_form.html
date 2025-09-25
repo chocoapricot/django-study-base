@@ -310,6 +310,19 @@
 </div>
 
 <script>
+// 編集時の初期値を保存
+const initialDispatchValues = {
+    {% if haken_form %}
+        commander: '{{ haken_form.commander.value|default:"" }}',
+        complaint_officer_client: '{{ haken_form.complaint_officer_client.value|default:"" }}',
+        responsible_person_client: '{{ haken_form.responsible_person_client.value|default:"" }}'
+    {% else %}
+        commander: '',
+        complaint_officer_client: '',
+        responsible_person_client: ''
+    {% endif %}
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     const clientSelectFetchButton = document.getElementById('clientSelectFetchButton');
     if (clientSelectFetchButton) {
@@ -356,6 +369,11 @@ document.addEventListener('DOMContentLoaded', function() {
         {% elif selected_client %}
             clientDisplayText.textContent = '{{ selected_client.name|escapejs }}';
         {% endif %}
+        
+        // 編集時：派遣契約の場合、既存のクライアントに基づいて派遣先フィールドを初期化
+        if (document.getElementById('{{ form.client_contract_type_code.id_for_label }}').value === '20') {
+            updateDispatchFields(clientField.value);
+        }
     }
 });
 
@@ -383,6 +401,18 @@ function updateDispatchFields(clientId) {
         'responsible_person_client'
     ];
 
+    // 現在の選択値を保存（初期値も考慮）
+    const currentValues = {};
+    fields.forEach(fieldName => {
+        const select = document.getElementById(`id_${fieldName}`);
+        if (select && select.value) {
+            currentValues[fieldName] = select.value;
+        } else if (initialDispatchValues[fieldName]) {
+            // 初期値がある場合はそれを使用
+            currentValues[fieldName] = initialDispatchValues[fieldName];
+        }
+    });
+
     // まずはすべてのフィールドをクリア
     fields.forEach(fieldName => {
         const select = document.getElementById(`id_${fieldName}`);
@@ -406,8 +436,20 @@ function updateDispatchFields(clientId) {
                         const option = new Option(user.name, user.id);
                         select.add(option);
                     });
+                    
+                    // 以前の選択値を復元
+                    if (currentValues[fieldName]) {
+                        select.value = currentValues[fieldName];
+                    }
                 }
             });
+            
+            // 初期値は一度だけ使用するため、使用後にクリア
+            if (initialDispatchValues.commander || initialDispatchValues.complaint_officer_client || initialDispatchValues.responsible_person_client) {
+                initialDispatchValues.commander = '';
+                initialDispatchValues.complaint_officer_client = '';
+                initialDispatchValues.responsible_person_client = '';
+            }
         })
         .catch(error => {
             console.error('Error fetching client users:', error);
