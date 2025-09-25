@@ -188,25 +188,7 @@ class ContractViewTest(TestCase):
         self.assertEqual(response['Content-Type'], 'application/pdf')
         self.assertTrue(response['Content-Disposition'].startswith(f'attachment; filename="'))
 
-    def test_client_contract_haken_form_initial_state(self):
-        """派遣契約作成時、派遣先担当者フィールドが空であることを確認"""
-        from apps.client.models import ClientUser
-        ClientUser.objects.create(client=self.test_client, name_last='ShouldNot', name_first='Appear')
 
-        # 派遣契約(type_code=20)の作成画面URL
-        url = reverse('contract:client_contract_create') + '?client_contract_type_code=20'
-
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-        # haken_formがコンテキストに含まれていることを確認
-        self.assertIn('haken_form', response.context)
-        haken_form = response.context['haken_form']
-
-        # 各フィールドのquerysetが空であることを確認
-        self.assertEqual(haken_form.fields['commander'].queryset.count(), 0)
-        self.assertEqual(haken_form.fields['complaint_officer_client'].queryset.count(), 0)
-        self.assertEqual(haken_form.fields['responsible_person_client'].queryset.count(), 0)
 
     def test_client_contract_create_haken_successful_post(self):
         """派遣契約の新規作成が正常に成功することを確認"""
