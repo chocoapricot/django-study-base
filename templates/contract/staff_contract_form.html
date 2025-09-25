@@ -161,12 +161,11 @@
 
 
 
-<!-- Standard Test Modal -->
-<div class="modal fade" id="standardTestModal" tabindex="-1" aria-labelledby="standardTestModalLabel" aria-hidden="true">
+<div class="modal fade" id="selectModal" tabindex="-1" aria-labelledby="selectModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title" id="standardTestModalLabel">スタッフ選択</div>
+                <div class="modal-title" id="selectModalLabel">スタッフ選択</div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -205,12 +204,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.text())
                 .then(html => {
                     // モーダルbodyにHTMLを挿入
-                    const modalBody = document.querySelector('#standardTestModal .modal-body');
+                    const modalBody = document.querySelector('#selectModal .modal-body');
                     if (modalBody) {
                         modalBody.innerHTML = html;
                     }
                     // モーダルを開く
-                    const modalElement = document.getElementById('standardTestModal');
+                    const modalElement = document.getElementById('selectModal');
                     if (modalElement) {
                         let modal = bootstrap.Modal.getInstance(modalElement);
                         if (!modal) {
@@ -273,7 +272,7 @@ function selectStaff(staffId, staffName) {
     document.getElementById('staff-display-text').textContent = staffName;
 
     // どちらのモーダルからでも閉じる
-    const modalIds = [ 'standardTestModal'];
+    const modalIds = [ 'selectModal'];
     for (const id of modalIds) {
         const modalElement = document.getElementById(id);
         if (modalElement) {
@@ -318,14 +317,14 @@ window.selectStaff = selectStaff;
             });
     }
     // 標準テストモーダルの検索フォームにも対応
-    if (standardTestModal) {
-        standardTestModal.addEventListener('submit', function(e) {
+    if (selectModal) {
+        selectModal.addEventListener('submit', function(e) {
             if (e.target && e.target.id === 'staff-search-form') {
-                loadModalContent(e, 1, false, 'standardTestModal');
+                loadModalContent(e, 1, false, 'selectModal');
             }
         });
 
-        const modalBody = standardTestModal.querySelector('.modal-body');
+        const modalBody = selectModal.querySelector('.modal-body');
         if (modalBody) {
             modalBody.addEventListener('click', function(e) {
                 const target = e.target;
@@ -334,7 +333,7 @@ window.selectStaff = selectStaff;
                     const url = new URL(target.href);
                     const page = url.searchParams.get('page');
                     if (page) {
-                        loadModalContent(null, page, false, 'standardTestModal');
+                        loadModalContent(null, page, false, 'selectModal');
                     }
                 }
             });

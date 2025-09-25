@@ -280,12 +280,11 @@
     </div>
 </div>
 
-<!-- Standard Test Modal -->
-<div class="modal fade" id="standardTestModal" tabindex="-1" aria-labelledby="standardTestModalLabel" aria-hidden="true">
+<div class="modal fade" id="selectModal" tabindex="-1" aria-labelledby="selectModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title" id="standardTestModalLabel">クライアント選択</div>
+                <div class="modal-title" id="selectModalLabel">クライアント選択</div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -332,11 +331,11 @@ document.addEventListener('DOMContentLoaded', function() {
             fetch(`{% url "contract:client_select" %}?from_modal=1&client_contract_type_code=${clientContractTypeCode}`)
                 .then(response => response.text())
                 .then(html => {
-                    const modalBody = document.querySelector('#standardTestModal .modal-body');
+                    const modalBody = document.querySelector('#selectModal .modal-body');
                     if (modalBody) {
                         modalBody.innerHTML = html;
                     }
-                    const modalElement = document.getElementById('standardTestModal');
+                    const modalElement = document.getElementById('selectModal');
                     if (modalElement) {
                         let modal = bootstrap.Modal.getInstance(modalElement);
                         if (!modal) {
@@ -380,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function selectClient(clientId, clientName) {
     document.getElementById('{{ form.client.id_for_label }}').value = clientId;
     document.getElementById('client-display-text').textContent = clientName;
-    const modalElement = document.getElementById('standardTestModal');
+    const modalElement = document.getElementById('selectModal');
     if (modalElement) {
         const modal = bootstrap.Modal.getInstance(modalElement);
         if (modal) {
@@ -464,7 +463,7 @@ function updateDispatchFields(clientId) {
 }
 window.selectClient = selectClient;
 
-function loadClientModalContent(event, page, clearSearch = false, modalType = 'standardTestModal') {
+function loadClientModalContent(event, page, clearSearch = false, modalType = 'selectModal') {
     if (event) {
         event.preventDefault();
     }
@@ -490,15 +489,15 @@ function loadClientModalContent(event, page, clearSearch = false, modalType = 's
         });
 }
 
-const standardTestModal = document.getElementById('standardTestModal');
-if (standardTestModal) {
-    standardTestModal.addEventListener('submit', function(e) {
+const selectModal = document.getElementById('selectModal');
+if (selectModal) {
+    selectModal.addEventListener('submit', function(e) {
         if (e.target && e.target.id === 'client-search-form') {
-            loadClientModalContent(e, 1, false, 'standardTestModal');
+            loadClientModalContent(e, 1, false, 'selectModal');
         }
     });
 
-    const modalBody = standardTestModal.querySelector('.modal-body');
+    const modalBody = selectModal.querySelector('.modal-body');
     if (modalBody) {
         modalBody.addEventListener('click', function(e) {
             const target = e.target;
@@ -507,7 +506,7 @@ if (standardTestModal) {
                 const url = new URL(target.href);
                 const page = url.searchParams.get('page');
                 if (page) {
-                    loadClientModalContent(null, page, false, 'standardTestModal');
+                    loadClientModalContent(null, page, false, 'selectModal');
                 }
             }
         });
