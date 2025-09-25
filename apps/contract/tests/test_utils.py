@@ -100,6 +100,6 @@ class ContractUtilsTest(TestCase):
         args, kwargs = mock_generate_pdf.call_args
         items = args[3]
 
-        permit_number_item = next((item for item in items if item['title'] == '許可番号(人材派遣)'), None)
+        permit_number_item = next((item for item in items if item['title'] == '許可番号'), None)
         self.assertIsNotNone(permit_number_item)
         self.assertEqual(permit_number_item['text'], '派13-123456')
