@@ -728,21 +728,37 @@ def client_contract_change_history_list(request, pk):
     """クライアント契約変更履歴一覧"""
     from apps.system.logs.models import AppLog
     from django.core.paginator import Paginator
-    
+    from itertools import chain
+
     contract = get_object_or_404(ClientContract, pk=pk)
-    
+    haken_info = getattr(contract, 'haken_info', None)
+
     # 該当契約の変更履歴を取得
-    logs = AppLog.objects.filter(
+    contract_logs = AppLog.objects.filter(
         model_name='ClientContract',
         object_id=str(pk),
         action__in=['create', 'update', 'delete']
-    ).order_by('-timestamp')
-    
+    )
+
+    haken_logs = AppLog.objects.none()
+    if haken_info:
+        haken_logs = AppLog.objects.filter(
+            model_name='ClientContractHaken',
+            object_id=str(haken_info.pk),
+            action__in=['create', 'update', 'delete']
+        )
+
+    all_logs = sorted(
+        chain(contract_logs, haken_logs),
+        key=lambda log: log.timestamp,
+        reverse=True
+    )
+
     # ページネーション
-    paginator = Paginator(logs, 20)
+    paginator = Paginator(all_logs, 20)
     page = request.GET.get('page')
     logs_page = paginator.get_page(page)
-    
+
     return render(request, 'contract/contract_change_history_list.html', {
         'logs': logs_page,
         'title': f'クライアント契約変更履歴 - {contract.contract_name}',
