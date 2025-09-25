@@ -118,6 +118,8 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         client_id = None
 
         if self.is_bound:
+            # POSTデータからclient_idを取得
+            # ClientContractFormのIDは 'client'
             client_id = self.data.get('client')
         elif self.instance and self.instance.pk:
             client_id = self.instance.client_id
@@ -233,6 +235,7 @@ class ClientContractHakenForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        # ビューから渡された client を取得
         client = kwargs.pop('client', None)
         super().__init__(*args, **kwargs)
 
@@ -241,30 +244,35 @@ class ClientContractHakenForm(forms.ModelForm):
             field.required = True
             if isinstance(field, forms.ModelChoiceField):
                 field.empty_label = '選択してください'
-            # RadioSelectの必須エラーメッセージがデフォルトだと分かりにくいのでカスタム
             if isinstance(field.widget, forms.RadioSelect):
                 field.error_messages['required'] = f'{field.label}を選択してください。'
                 if field_name in ['limit_by_agreement', 'limit_indefinite_or_senior']:
                     field.choices = [choice for choice in field.choices if choice[0]]
 
+        # POSTデータからクライアントIDを取得する試み
+        # self.dataはPOST時のみ存在する
+        if self.is_bound and not client:
+            client_id = self.data.get('client') # ClientContractFormのフィールド名
+            if client_id:
+                try:
+                    client = Client.objects.get(pk=client_id)
+                except (Client.DoesNotExist, ValueError):
+                    pass
+
         # 派遣先関連のフィールドの選択肢をクライアントに紐づくユーザに限定
+        client_users_qs = ClientUser.objects.none()
         if client:
-            client_users = ClientUser.objects.filter(client=client)
-            self.fields['commander'].queryset = client_users
-            self.fields['complaint_officer_client'].queryset = client_users
-            self.fields['responsible_person_client'].queryset = client_users
-        else:
-            self.fields['commander'].queryset = ClientUser.objects.none()
-            self.fields['complaint_officer_client'].queryset = ClientUser.objects.none()
-            self.fields['responsible_person_client'].queryset = ClientUser.objects.none()
+            client_users_qs = ClientUser.objects.filter(client=client)
+
+        haken_fields = ['commander', 'complaint_officer_client', 'responsible_person_client']
+        for field_name in haken_fields:
+            self.fields[field_name].queryset = client_users_qs
 
         # 派遣元関連のフィールドの選択肢を自社ユーザに限定
-        # 部署の表示順 -> 担当者の表示順でソート
         valid_departments = CompanyDepartment.get_valid_departments(timezone.now().date())
         department_display_order = valid_departments.filter(
             department_code=OuterRef('department_code')
         ).values('display_order')[:1]
-
         company_users = CompanyUser.objects.annotate(
             department_display_order=Subquery(department_display_order)
         ).order_by('department_display_order', 'display_order')
@@ -273,15 +281,11 @@ class ClientContractHakenForm(forms.ModelForm):
         self.fields['responsible_person_company'].queryset = company_users
 
         # 選択肢がない場合のラベルを設定
-        if not self.fields['commander'].queryset.exists():
-            self.fields['commander'].empty_label = '選択可能な担当者はいません'
-        if not self.fields['complaint_officer_client'].queryset.exists():
-            self.fields['complaint_officer_client'].empty_label = '選択可能な担当者はいません'
-        if not self.fields['responsible_person_client'].queryset.exists():
-            self.fields['responsible_person_client'].empty_label = '選択可能な担当者はいません'
-        if not self.fields['complaint_officer_company'].queryset.exists():
+        if not client_users_qs.exists():
+            for field_name in haken_fields:
+                self.fields[field_name].empty_label = '選択可能な担当者はいません'
+        if not company_users.exists():
             self.fields['complaint_officer_company'].empty_label = '選択可能な担当者はいません'
-        if not self.fields['responsible_person_company'].queryset.exists():
             self.fields['responsible_person_company'].empty_label = '選択可能な担当者はいません'
 
 
