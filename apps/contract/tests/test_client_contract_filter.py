@@ -87,8 +87,7 @@ class ClientContractFilterTest(TestCase):
 
         response = self.client.get(reverse('contract:client_contract_list'), {'contract_type': '10'})
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'href="?page=2&')
-        self.assertContains(response, 'contract_type=10')
+        self.assertContains(response, 'href="?contract_type=10&amp;page=2"')
 
         response = self.client.get(reverse('contract:client_contract_list'), {'contract_type': '10', 'page': '2'})
         self.assertEqual(response.status_code, 200)
