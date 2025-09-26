@@ -71,35 +71,9 @@
         </div>
 
         <!-- ページネーション -->
-        {% if agreements.has_other_pages %}
-        <nav aria-label="ページネーション">
-            <ul class="pagination pagination-sm justify-content-center">
-                {% if agreements.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ agreements.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">前へ</a>
-                    </li>
-                {% endif %}
-
-                {% for num in agreements.paginator.page_range %}
-                    {% if agreements.number == num %}
-                        <li class="page-item active">
-                            <span class="page-link">{{ num }}</span>
-                        </li>
-                    {% elif num > agreements.number|add:'-3' and num < agreements.number|add:'3' %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a>
-                        </li>
-                    {% endif %}
-                {% endfor %}
-
-                {% if agreements.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ agreements.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">次へ</a>
-                    </li>
-                {% endif %}
-            </ul>
-        </nav>
-        {% endif %}
+        <div class="d-flex justify-content-center">
+            {% include 'common/_pagination.html' with page_obj=agreements %}
+        </div>
 
         <div class="d-flex justify-content-start">
             <a href="{% url 'master:master_index_list' %}" class="btn btn-sm btn-secondary me-2">戻る</a>
