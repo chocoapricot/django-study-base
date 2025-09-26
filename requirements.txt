@@ -8,7 +8,7 @@ openpyxl==3.1.5
 pdfrw==0.4
 pillow==11.3.0
 PyMuPDF==1.26.4
-reportlab==4.4.3
+reportlab==4.4.4
 requests==2.32.5
 python-stdnum==2.1
-coverage==7.10.6
+coverage==7.10.7
