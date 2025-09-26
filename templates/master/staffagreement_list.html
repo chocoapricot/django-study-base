@@ -71,9 +71,7 @@
         </div>
 
         <!-- ページネーション -->
-        <div class="d-flex justify-content-center">
-            {% include 'common/_pagination.html' with page_obj=agreements %}
-        </div>
+        {% include 'common/_pagination.html' with page_obj=agreements %}
 
         <div class="d-flex justify-content-start">
             <a href="{% url 'master:master_index_list' %}" class="btn btn-sm btn-secondary me-2">戻る</a>

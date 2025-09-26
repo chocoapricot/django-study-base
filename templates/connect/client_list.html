@@ -100,7 +100,9 @@
         </table>
         
         <!-- ページネーション -->
-        {% include 'common/_pagination.html' with page_obj=connections %}
+        <div class="d-flex justify-content-start">
+            {% include 'common/_pagination.html' with page_obj=connections %}
+        </div>
 
         <!-- Back Button -->
         <div class="row mt-3">
