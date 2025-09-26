@@ -110,7 +110,9 @@
         </table>
 
         <!-- ページネーション -->
-        {% include 'common/_pagination.html' with page_obj=connections %}
+        <div class="d-flex justify-content-start">
+            {% include 'common/_pagination.html' with page_obj=connections %}
+        </div>
 
         {% else %}
         <div class="text-center py-4">

@@ -54,9 +54,7 @@
         </div>
 
         <!-- ページネーション -->
-        <div class="d-flex justify-content-center">
-            {% include 'common/_pagination.html' with page_obj=mail_templates %}
-        </div>
+        {% include 'common/_pagination.html' with page_obj=mail_templates %}
 
         <div class="d-flex justify-content-start mt-3">
             <a href="{% url 'master:master_index_list' %}" class="btn btn-sm btn-secondary me-2">戻る</a>
