@@ -365,7 +365,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
             'contract_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'job_category': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'contract_pattern': forms.Select(attrs={'class': 'form-select form-select-sm'}),
-            'contract_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'contract_number': forms.HiddenInput(),
             'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'contract_amount': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
@@ -381,8 +381,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         if self.instance and self.instance.pk and hasattr(self.instance, 'staff') and self.instance.staff:
             self.fields['staff_display'].initial = f"{self.instance.staff.name_last} {self.instance.staff.name_first}"
 
-        # 契約番号フィールドを読み取り専用に
-        self.fields['contract_number'].widget.attrs['readonly'] = True
+        # 契約番号は自動採番のため非表示
         self.fields['contract_number'].required = False
 
         # 編集画面では「作成中」「申請中」のみ選択可能にする

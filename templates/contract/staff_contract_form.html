@@ -74,18 +74,6 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約番号</label>
-                <div class="col-sm-4">
-                    {{ form.contract_number }}
-                    {% if form.contract_number.errors %}
-                        <div class="text-danger small">{{ form.contract_number.errors.0 }}</div>
-                    {% endif %}
-                </div>
-            </div>
-
-            
-
-            <div class="row mb-3 align-items-center">
                 <label for="{{ form.start_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
                     契約開始日
                     {% my_help_preset "contract_start_date_staff" %}
