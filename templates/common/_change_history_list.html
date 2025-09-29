@@ -19,76 +19,8 @@
                 {% for log in change_logs %}
                 <tr>
                     <td>
-                        {% if log.model_name == 'Staff' %}
-                            <span class="badge bg-primary">基本情報</span>
-                        {% elif log.model_name == 'StaffQualification' %}
-                            <span class="badge bg-info">資格</span>
-                        {% elif log.model_name == 'StaffSkill' %}
-                            <span class="badge bg-success">技能</span>
-                        {% elif log.model_name == 'StaffFile' %}
-                            <span class="badge bg-secondary">ファイル</span>
-                        {% elif log.model_name == 'StaffMynumber' %}
-                            <span class="badge bg-danger">マイナンバー</span>
-                        {% elif log.model_name == 'StaffInternational' %}
-                            <span class="badge bg-danger">外国籍</span>
-                        {% elif log.model_name == 'StaffBank' %}
-                            <span class="badge bg-info">銀行情報</span>
-                        {% elif log.model_name == 'StaffContact' %}
-                            <span class="badge bg-warning">連絡先</span>
-                        {% elif log.model_name == 'StaffDisability' %}
-                            <span class="badge bg-warning">障害者情報</span>
-                        {% elif log.model_name == 'ConnectStaff' %}
-                            <span class="badge bg-warning">接続</span>
-                        {% elif log.model_name == 'Qualification' %}
-                            <span class="badge bg-primary">資格</span>
-                        {% elif log.model_name == 'Skill' %}
-                            <span class="badge bg-primary">技能</span>
-                        {% elif log.model_name == 'Client' %}
-                            <span class="badge bg-primary">クライアント</span>
-                        {% elif log.model_name == 'ClientDepartment' %}
-                            <span class="badge bg-info">組織</span>
-                        {% elif log.model_name == 'ClientUser' %}
-                            <span class="badge bg-success">担当者</span>
-                        {% elif log.model_name == 'ClientFile' %}
-                            <span class="badge bg-secondary">ファイル</span>
-                        {% elif log.model_name == 'Company' %}
-                            <span class="badge bg-primary">会社情報</span>
-                        {% elif log.model_name == 'CompanyDepartment' %}
-                            <span class="badge bg-info">部署</span>
-                        {% elif log.model_name == 'CompanyUser' %}
-                            <span class="badge bg-success">担当者</span>
-                        {% elif log.model_name == 'ClientContract' %}
-                            <span class="badge bg-primary">契約情報</span>
-                        {% elif log.model_name == 'ClientContractHaken' %}
-                            <span class="badge bg-info">派遣情報</span>
-                        {% elif log.model_name == 'ContractPattern' %}
-                            <span class="badge bg-primary">契約パターン</span>
-                        {% elif log.model_name == 'ContractTerms' %}
-                            <span class="badge bg-info">契約文言</span>
-                        {% elif log.model_name == 'MinimumPay' %}
-                            <span class="badge bg-warning">最低賃金</span>
-                        {% elif log.model_name == 'MailTemplate' %}
-                            <span class="badge bg-primary">メールテンプレート</span>
-                        {% elif log.model_name == 'StaffContract' %}
-                            <span class="badge bg-success">契約情報</span>
-                        {% elif log.model_name == 'BillPayment' %}
-                            <span class="badge bg-primary">支払条件</span>
-                        {% elif log.model_name == 'BillBank' %}
-                            <span class="badge bg-primary">会社銀行</span>
-                        {% elif log.model_name == 'Bank' %}
-                            <span class="badge bg-primary">銀行</span>
-                        {% elif log.model_name == 'BankBranch' %}
-                            <span class="badge bg-info">銀行支店</span>
-                        {% elif log.model_name == 'Information' %}
-                            <span class="badge bg-primary">お知らせ</span>
-                        {% elif log.model_name == 'InformationFile' %}
-                            <span class="badge bg-secondary">添付ファイル</span>
-                        {% elif log.model_name == 'JobCategory' %}
-                            <span class="badge bg-primary">職種</span>
-                        {% elif log.model_name == 'StaffAgreement' %}
-                            <span class="badge bg-primary">同意文言</span>
-                        {% elif log.model_name %}
-                            <span class="badge bg-primary">{{ log.model_name }}</span>
+                        {% if log.model_verbose_name %}
+                            <span class="badge bg-primary">{{ log.model_verbose_name }}</span>
                         {% else %}
                             -
                         {% endif %}

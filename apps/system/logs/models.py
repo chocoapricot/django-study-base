@@ -145,6 +145,25 @@ class AppLog(models.Model):
         """操作の表示名"""
         return dict(self.ACTION_CHOICES).get(self.action, self.action)
 
+    @property
+    def model_verbose_name(self):
+        """モデルの日本語名（verbose_name）を取得する"""
+        from django.apps import apps
+        try:
+            # 'master' app is assumed for now, which covers the current scope.
+            # A more robust solution might store the app_label in the log.
+            app_label = 'master'
+            if '.' in self.model_name:
+                 # If the model name is already in 'app_label.ModelName' format
+                app_label, model_name_str = self.model_name.split('.')
+            else:
+                model_name_str = self.model_name
+
+            model_class = apps.get_model(app_label=app_label, model_name=model_name_str)
+            return model_class._meta.verbose_name
+        except (LookupError, AttributeError):
+            return self.model_name # Fallback to the raw model name
+
 
 class AccessLog(models.Model):
     """
