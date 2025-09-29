@@ -43,5 +43,6 @@ urlpatterns = [
     # 選択用画面
     path('client-select/', views.client_select, name='client_select'),
     path('staff-select/', views.staff_select, name='staff_select'),
+    path('haken-master-select/', views.haken_master_select, name='haken_master_select'),
 
 ]

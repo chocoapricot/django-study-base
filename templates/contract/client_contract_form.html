@@ -241,9 +241,7 @@
                 </div>
                 <div class="col-sm-2">
                     <button class="btn btn-sm btn-secondary" type="button"
-                            data-bs-toggle="modal"
-                            data-bs-target="#hakenMasterModal"
-                            data-url="{% url 'master:haken_business_content_list_api' %}"
+                            data-master-type="business_content"
                             data-target-id="{{ haken_form.business_content.id_for_label }}"
                             data-modal-title="業務内容を選択">参照</button>
                     {% for error in haken_form.business_content.errors %}
@@ -258,9 +256,7 @@
                 </div>
                 <div class="col-sm-2">
                     <button class="btn btn-sm btn-secondary" type="button"
-                            data-bs-toggle="modal"
-                            data-bs-target="#hakenMasterModal"
-                            data-url="{% url 'master:haken_responsibility_degree_list_api' %}"
+                            data-master-type="responsibility_degree"
                             data-target-id="{{ haken_form.responsibility_degree.id_for_label }}"
                             data-modal-title="責任の程度を選択">参照</button>
                     {% for error in haken_form.responsibility_degree.errors %}
@@ -339,29 +335,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="haken-search-form" method="get" class="mb-3">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <input type="text" id="hakenMasterSearchInput" class="form-control form-control-sm" placeholder="内容を検索...">
-                        </div>
-                        <div class="col-md-4">
-                            <button type="button" class="btn btn-sm btn-primary me-2" id="hakenSearchButton">検索</button>
-                            <button type="button" class="btn btn-sm btn-secondary" id="hakenClearButton">クリア</button>
-                        </div>
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">読み込み中...</span>
                     </div>
-                </form>
-                <div class="table-responsive">
-                    <table class="table table-hover" id="hakenMasterTable">
-                        <thead>
-                            <tr>
-                                <th style="width: 90%;">内容</th>
-                                <th style="width: 10%;">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- APIから取得したデータがここに挿入されます -->
-                        </tbody>
-                    </table>
+                    <p class="mt-2">読み込み中...</p>
                 </div>
             </div>
             <div class="modal-footer">
@@ -577,6 +555,32 @@ if (selectModal) {
     }
 }
 
+// 派遣マスターモーダルでの検索フォーム送信イベント
+const hakenMasterModal = document.getElementById('hakenMasterModal');
+if (hakenMasterModal) {
+    hakenMasterModal.addEventListener('submit', function(e) {
+        if (e.target && e.target.id === 'haken-search-form') {
+            loadHakenMasterModalContent(e, 1, false);
+        }
+    });
+
+    // ページネーションのクリックイベント
+    const modalBody = hakenMasterModal.querySelector('.modal-body');
+    if (modalBody) {
+        modalBody.addEventListener('click', function(e) {
+            const target = e.target;
+            if (target.classList.contains('page-link')) {
+                e.preventDefault();
+                const url = new URL(target.href);
+                const page = url.searchParams.get('page');
+                if (page) {
+                    loadHakenMasterModalContent(null, page, false);
+                }
+            }
+        });
+    }
+}
+
 function clearClient() {
     document.getElementById('{{ form.client.id_for_label }}').value = '';
     document.getElementById('client-display-text').textContent = '未選択';
@@ -618,105 +622,104 @@ function setEndDate(months) {
 }
 
 
-// Haken Master Modal
-const hakenMasterModal = document.getElementById('hakenMasterModal');
-if (hakenMasterModal) {
-    hakenMasterModal.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget;
-        const url = button.getAttribute('data-url');
-        const targetId = button.getAttribute('data-target-id');
-        const modalTitle = button.getAttribute('data-modal-title');
+// Haken Master Modal - ボタンクリック時の処理を追加
+document.addEventListener('DOMContentLoaded', function() {
+    // 業務内容参照ボタン
+    const businessContentButton = document.querySelector('[data-master-type="business_content"]');
+    if (businessContentButton) {
+        businessContentButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('data-target-id');
+            const modalTitle = this.getAttribute('data-modal-title');
+            loadHakenMasterModal('business_content', targetId, modalTitle);
+        });
+    }
 
-        const modalTitleElement = hakenMasterModal.querySelector('.modal-title');
-        const modalTableBody = hakenMasterModal.querySelector('#hakenMasterTable tbody');
-        const searchInput = document.getElementById('hakenMasterSearchInput');
-        const searchButton = document.getElementById('hakenSearchButton');
-        const clearButton = document.getElementById('hakenClearButton');
+    // 責任の程度参照ボタン
+    const responsibilityButton = document.querySelector('[data-master-type="responsibility_degree"]');
+    if (responsibilityButton) {
+        responsibilityButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('data-target-id');
+            const modalTitle = this.getAttribute('data-modal-title');
+            loadHakenMasterModal('responsibility_degree', targetId, modalTitle);
+        });
+    }
+});
 
-        // Reset search input on open
-        searchInput.value = '';
-        searchInput.disabled = true;
-        searchButton.disabled = true;
+function loadHakenMasterModal(masterType, targetId, modalTitle) {
+    const hakenMasterModal = document.getElementById('hakenMasterModal');
+    const modalTitleElement = hakenMasterModal.querySelector('.modal-title');
+    const modalBody = hakenMasterModal.querySelector('.modal-body');
 
-        modalTitleElement.textContent = modalTitle;
-        modalTableBody.innerHTML = '<tr><td colspan="2" class="text-center"><div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>';
+    modalTitleElement.textContent = modalTitle;
+    modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">読み込み中...</span></div><p class="mt-2">読み込み中...</p></div>';
 
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                modalTableBody.innerHTML = '';
-                if (data.length > 0) {
-                    searchInput.disabled = false;
-                    searchButton.disabled = false;
-                    
-                    data.forEach(item => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${item.content}</td>
-                            <td style="white-space: nowrap;">
-                                <button type="button" class="btn btn-sm btn-primary" onclick="selectHakenMaster('${item.content.replace(/'/g, "\\'")}', '${targetId}')">
-                                    選択
-                                </button>
-                            </td>
-                        `;
-                        modalTableBody.appendChild(row);
-                    });
+    // Store targetId and masterType for use in selectHakenMaster function
+    hakenMasterModal.setAttribute('data-current-target-id', targetId);
+    hakenMasterModal.setAttribute('data-current-master-type', masterType);
 
-                    // Add search functionality after data is loaded
-                    const performSearch = () => {
-                        const filter = searchInput.value.toLowerCase();
-                        const rows = modalTableBody.getElementsByTagName('tr');
-                        for (let i = 0; i < rows.length; i++) {
-                            const txtValue = rows[i].cells[0].textContent || rows[i].cells[0].innerText;
-                            if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                                rows[i].style.display = "";
-                            } else {
-                                rows[i].style.display = "none";
-                            }
-                        }
-                    };
-                    
-                    const clearSearch = () => {
-                        searchInput.value = '';
-                        const rows = modalTableBody.getElementsByTagName('tr');
-                        for (let i = 0; i < rows.length; i++) {
-                            rows[i].style.display = "";
-                        }
-                    };
-                    
-                    searchButton.onclick = performSearch;
-                    clearButton.onclick = clearSearch;
-                    searchInput.onkeyup = (e) => {
-                        if (e.key === 'Enter') {
-                            performSearch();
-                        }
-                    };
-                } else {
-                    modalTableBody.innerHTML = '<tr><td colspan="2" class="text-center text-muted">データがありません。</td></tr>';
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching haken master data:', error);
-                modalTableBody.innerHTML = '<tr><td colspan="2" class="text-center text-danger">データの取得に失敗しました。</td></tr>';
-            });
-    });
+    const url = `{% url 'contract:haken_master_select' %}?type=${masterType}`;
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            modalBody.innerHTML = html;
+            // モーダルを表示
+            let modal = bootstrap.Modal.getInstance(hakenMasterModal);
+            if (!modal) {
+                modal = new bootstrap.Modal(hakenMasterModal, {
+                    backdrop: true,
+                    keyboard: true,
+                    focus: true
+                });
+            }
+            modal.show();
+        })
+        .catch(error => {
+            console.error('Error fetching haken master data:', error);
+            modalBody.innerHTML = '<p class="text-center text-danger">データの取得に失敗しました。</p>';
+        });
+}
 
-    hakenMasterModal.addEventListener('hidden.bs.modal', function () {
-        const searchInput = document.getElementById('hakenMasterSearchInput');
-        searchInput.value = '';
-        const modalTableBody = hakenMasterModal.querySelector('#hakenMasterTable tbody');
-        const rows = modalTableBody.getElementsByTagName('tr');
-        for (let i = 0; i < rows.length; i++) {
-            rows[i].style.display = "";
-        }
-    });
+function loadHakenMasterModalContent(event, page, clearSearch = false) {
+    if (event) {
+        event.preventDefault();
+    }
+    const modalBody = document.querySelector('#hakenMasterModal .modal-body');
+    const searchForm = document.getElementById('haken-search-form');
+    let searchQuery = '';
+    if (searchForm && !clearSearch) {
+        searchQuery = new FormData(searchForm).get('q');
+    }
+    
+    const modal = document.getElementById('hakenMasterModal');
+    // 現在のマスタータイプを取得（モーダルのdata属性から）
+    const masterType = modal.getAttribute('data-current-master-type') || '';
+    
+    const url = `{% url 'contract:haken_master_select' %}?type=${masterType}&page=${page}&q=${encodeURIComponent(searchQuery)}`;
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            if (modalBody) {
+                modalBody.innerHTML = html;
+            }
+        })
+        .catch(error => {
+            if (modalBody) {
+                modalBody.innerHTML = '<p>コンテンツの読み込みに失敗しました。</p>';
+            }
+        });
 }
 
 // 派遣マスター選択関数
-function selectHakenMaster(content, targetId) {
-    document.getElementById(targetId).value = content;
-    const modal = bootstrap.Modal.getInstance(document.getElementById('hakenMasterModal'));
-    modal.hide();
+function selectHakenMaster(content) {
+    const modal = document.getElementById('hakenMasterModal');
+    const targetId = modal.getAttribute('data-current-target-id');
+    if (targetId) {
+        document.getElementById(targetId).value = content;
+    }
+    const modalInstance = bootstrap.Modal.getInstance(modal);
+    modalInstance.hide();
 }
 </script>
 {% endblock %}
