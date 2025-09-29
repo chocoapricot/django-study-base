@@ -107,7 +107,7 @@ MASTER_CONFIGS = [
         "permission": "master.view_minimumpay",
     },
     {
-        "category": "派遣",
+        "category": "契約",
         "name": "派遣業務内容管理",
         "description": "派遣業務内容の管理",
         "model": "master.HakenBusinessContent",
@@ -115,7 +115,7 @@ MASTER_CONFIGS = [
         "permission": "master.view_hakenbusinesscontent",
     },
     {
-        "category": "派遣",
+        "category": "契約",
         "name": "派遣責任程度管理",
         "description": "派遣責任程度の管理",
         "model": "master.HakenResponsibilityDegree",
