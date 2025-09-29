@@ -14,8 +14,34 @@ from .models import (
     ContractPattern,
     ContractTerms,
     MinimumPay,
+    HakenBusinessContent,
+    HakenResponsibilityDegree,
 )
 from apps.system.settings.models import Dropdowns
+
+
+class HakenBusinessContentForm(forms.ModelForm):
+    """派遣業務内容フォーム"""
+    class Meta:
+        model = HakenBusinessContent
+        fields = ['content', 'display_order', 'is_active']
+        widgets = {
+            'content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+
+class HakenResponsibilityDegreeForm(forms.ModelForm):
+    """派遣責任程度フォーム"""
+    class Meta:
+        model = HakenResponsibilityDegree
+        fields = ['content', 'display_order', 'is_active']
+        widgets = {
+            'content': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
 
 
 class MailTemplateForm(forms.ModelForm):

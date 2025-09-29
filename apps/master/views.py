@@ -20,8 +20,12 @@ from .models import (
     ContractPattern,
     ContractTerms,
     MinimumPay,
+    HakenBusinessContent,
+    HakenResponsibilityDegree,
 )
 from .forms import (
+    HakenBusinessContentForm,
+    HakenResponsibilityDegreeForm,
     QualificationForm,
     QualificationCategoryForm,
     SkillForm,
@@ -101,6 +105,22 @@ MASTER_CONFIGS = [
         "model": "master.MinimumPay",
         "url_name": "master:minimum_pay_list",
         "permission": "master.view_minimumpay",
+    },
+    {
+        "category": "派遣",
+        "name": "派遣業務内容管理",
+        "description": "派遣業務内容の管理",
+        "model": "master.HakenBusinessContent",
+        "url_name": "master:haken_business_content_list",
+        "permission": "master.view_hakenbusinesscontent",
+    },
+    {
+        "category": "派遣",
+        "name": "派遣責任程度管理",
+        "description": "派遣責任程度の管理",
+        "model": "master.HakenResponsibilityDegree",
+        "url_name": "master:haken_responsibility_degree_list",
+        "permission": "master.view_hakenresponsibilitydegree",
     },
     {
         "category": "請求",
@@ -2621,5 +2641,193 @@ def minimum_pay_change_history_list(request):
             "title": "最低賃金マスタ変更履歴",
             "list_url": "master:minimum_pay_list",
             "model_name": "MinimumPay",
+        },
+    )
+
+
+# 派遣業務内容管理ビュー
+@login_required
+@permission_required("master.view_hakenbusinesscontent", raise_exception=True)
+def haken_business_content_list(request):
+    """派遣業務内容一覧"""
+    search_query = request.GET.get("search", "")
+    items = HakenBusinessContent.objects.all()
+    if search_query:
+        items = items.filter(content__icontains=search_query)
+    items = items.order_by("display_order")
+    paginator = Paginator(items, 20)
+    page = request.GET.get("page")
+    items_page = paginator.get_page(page)
+    from apps.system.logs.models import AppLog
+    change_logs = AppLog.objects.filter(model_name="HakenBusinessContent", action__in=["create", "update", "delete"]).order_by("-timestamp")[:5]
+    change_logs_count = AppLog.objects.filter(model_name="HakenBusinessContent", action__in=["create", "update", "delete"]).count()
+    context = {
+        "items": items_page,
+        "search_query": search_query,
+        "change_logs": change_logs,
+        "change_logs_count": change_logs_count,
+        "history_url_name": "master:haken_business_content_change_history_list",
+    }
+    return render(request, "master/haken_business_content_list.html", context)
+
+
+@login_required
+@permission_required("master.add_hakenbusinesscontent", raise_exception=True)
+def haken_business_content_create(request):
+    """派遣業務内容作成"""
+    if request.method == "POST":
+        form = HakenBusinessContentForm(request.POST)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"派遣業務内容「{item.content}」を作成しました。")
+            return redirect("master:haken_business_content_list")
+    else:
+        form = HakenBusinessContentForm()
+    context = {"form": form, "title": "派遣業務内容作成"}
+    return render(request, "master/haken_business_content_form.html", context)
+
+
+@login_required
+@permission_required("master.change_hakenbusinesscontent", raise_exception=True)
+def haken_business_content_update(request, pk):
+    """派遣業務内容編集"""
+    item = get_object_or_404(HakenBusinessContent, pk=pk)
+    if request.method == "POST":
+        form = HakenBusinessContentForm(request.POST, instance=item)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"派遣業務内容「{item.content}」を更新しました。")
+            return redirect("master:haken_business_content_list")
+    else:
+        form = HakenBusinessContentForm(instance=item)
+    context = {"form": form, "item": item, "title": f"派遣業務内容編集"}
+    return render(request, "master/haken_business_content_form.html", context)
+
+
+@login_required
+@permission_required("master.delete_hakenbusinesscontent", raise_exception=True)
+def haken_business_content_delete(request, pk):
+    """派遣業務内容削除"""
+    item = get_object_or_404(HakenBusinessContent, pk=pk)
+    if request.method == "POST":
+        item_content = item.content
+        item.delete()
+        messages.success(request, f"派遣業務内容「{item_content}」を削除しました。")
+        return redirect("master:haken_business_content_list")
+    context = {"item": item, "title": f"派遣業務内容削除"}
+    return render(request, "master/haken_business_content_delete.html", context)
+
+
+@login_required
+@permission_required("master.view_hakenbusinesscontent", raise_exception=True)
+def haken_business_content_change_history_list(request):
+    """派遣業務内容変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    logs = AppLog.objects.filter(model_name="HakenBusinessContent", action__in=["create", "update", "delete"]).order_by("-timestamp")
+    paginator = Paginator(logs, 20)
+    page = request.GET.get("page")
+    logs_page = paginator.get_page(page)
+    return render(
+        request,
+        "master/master_change_history_list.html",
+        {
+            "logs": logs_page,
+            "title": "派遣業務内容変更履歴",
+            "list_url": "master:haken_business_content_list",
+            "model_name": "HakenBusinessContent",
+        },
+    )
+
+
+# 派遣責任程度管理ビュー
+@login_required
+@permission_required("master.view_hakenresponsibilitydegree", raise_exception=True)
+def haken_responsibility_degree_list(request):
+    """派遣責任程度一覧"""
+    search_query = request.GET.get("search", "")
+    items = HakenResponsibilityDegree.objects.all()
+    if search_query:
+        items = items.filter(content__icontains=search_query)
+    items = items.order_by("display_order")
+    paginator = Paginator(items, 20)
+    page = request.GET.get("page")
+    items_page = paginator.get_page(page)
+    from apps.system.logs.models import AppLog
+    change_logs = AppLog.objects.filter(model_name="HakenResponsibilityDegree", action__in=["create", "update", "delete"]).order_by("-timestamp")[:5]
+    change_logs_count = AppLog.objects.filter(model_name="HakenResponsibilityDegree", action__in=["create", "update", "delete"]).count()
+    context = {
+        "items": items_page,
+        "search_query": search_query,
+        "change_logs": change_logs,
+        "change_logs_count": change_logs_count,
+        "history_url_name": "master:haken_responsibility_degree_change_history_list",
+    }
+    return render(request, "master/haken_responsibility_degree_list.html", context)
+
+
+@login_required
+@permission_required("master.add_hakenresponsibilitydegree", raise_exception=True)
+def haken_responsibility_degree_create(request):
+    """派遣責任程度作成"""
+    if request.method == "POST":
+        form = HakenResponsibilityDegreeForm(request.POST)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"派遣責任程度「{item.content}」を作成しました。")
+            return redirect("master:haken_responsibility_degree_list")
+    else:
+        form = HakenResponsibilityDegreeForm()
+    context = {"form": form, "title": "派遣責任程度作成"}
+    return render(request, "master/haken_responsibility_degree_form.html", context)
+
+
+@login_required
+@permission_required("master.change_hakenresponsibilitydegree", raise_exception=True)
+def haken_responsibility_degree_update(request, pk):
+    """派遣責任程度編集"""
+    item = get_object_or_404(HakenResponsibilityDegree, pk=pk)
+    if request.method == "POST":
+        form = HakenResponsibilityDegreeForm(request.POST, instance=item)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"派遣責任程度「{item.content}」を更新しました。")
+            return redirect("master:haken_responsibility_degree_list")
+    else:
+        form = HakenResponsibilityDegreeForm(instance=item)
+    context = {"form": form, "item": item, "title": f"派遣責任程度編集"}
+    return render(request, "master/haken_responsibility_degree_form.html", context)
+
+
+@login_required
+@permission_required("master.delete_hakenresponsibilitydegree", raise_exception=True)
+def haken_responsibility_degree_delete(request, pk):
+    """派遣責任程度削除"""
+    item = get_object_or_404(HakenResponsibilityDegree, pk=pk)
+    if request.method == "POST":
+        item_content = item.content
+        item.delete()
+        messages.success(request, f"派遣責任程度「{item_content}」を削除しました。")
+        return redirect("master:haken_responsibility_degree_list")
+    context = {"item": item, "title": f"派遣責任程度削除"}
+    return render(request, "master/haken_responsibility_degree_delete.html", context)
+
+
+@login_required
+@permission_required("master.view_hakenresponsibilitydegree", raise_exception=True)
+def haken_responsibility_degree_change_history_list(request):
+    """派遣責任程度変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    logs = AppLog.objects.filter(model_name="HakenResponsibilityDegree", action__in=["create", "update", "delete"]).order_by("-timestamp")
+    paginator = Paginator(logs, 20)
+    page = request.GET.get("page")
+    logs_page = paginator.get_page(page)
+    return render(
+        request,
+        "master/master_change_history_list.html",
+        {
+            "logs": logs_page,
+            "title": "派遣責任程度変更履歴",
+            "list_url": "master:haken_responsibility_degree_list",
+            "model_name": "HakenResponsibilityDegree",
         },
     )
