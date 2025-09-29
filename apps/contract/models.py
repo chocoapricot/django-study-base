@@ -386,6 +386,8 @@ class ClientContractHaken(MyModel):
         choices=[('0', '限定しない'), ('1', '限定する')],
         null=True, blank=True,
     )
+    business_content = models.TextField('業務内容', blank=True, null=True)
+    responsibility_degree = models.CharField('責任の程度', max_length=255, blank=True, null=True)
 
     class Meta:
         db_table = 'apps_contract_client_haken'
