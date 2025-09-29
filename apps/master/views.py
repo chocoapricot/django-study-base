@@ -2831,3 +2831,19 @@ def haken_responsibility_degree_change_history_list(request):
             "model_name": "HakenResponsibilityDegree",
         },
     )
+
+
+@login_required
+def haken_business_content_list_api(request):
+    """派遣業務内容マスタをJSONで返すAPIビュー"""
+    contents = HakenBusinessContent.objects.filter(is_active=True).order_by('display_order')
+    data = list(contents.values('id', 'content'))
+    return JsonResponse(data, safe=False)
+
+
+@login_required
+def haken_responsibility_degree_list_api(request):
+    """派遣責任程度マスタをJSONで返すAPIビュー"""
+    degrees = HakenResponsibilityDegree.objects.filter(is_active=True).order_by('display_order')
+    data = list(degrees.values('id', 'content'))
+    return JsonResponse(data, safe=False)
