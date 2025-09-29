@@ -668,14 +668,14 @@ def haken_master_select(request):
     search_query = request.GET.get('q', '')
     master_type = request.GET.get('type', '')  # 'business_content' or 'responsibility_degree'
     
-    # マスタータイプに応じてデータを取得
+    # マスタータイプに応じてデータを取得（有効なもののみ）
     if master_type == 'business_content':
         from apps.master.models import HakenBusinessContent
-        items = HakenBusinessContent.objects.all()
+        items = HakenBusinessContent.objects.filter(is_active=True)
         modal_title = '業務内容を選択'
     elif master_type == 'responsibility_degree':
         from apps.master.models import HakenResponsibilityDegree
-        items = HakenResponsibilityDegree.objects.all()
+        items = HakenResponsibilityDegree.objects.filter(is_active=True)
         modal_title = '責任の程度を選択'
     else:
         items = []
@@ -684,7 +684,8 @@ def haken_master_select(request):
     if search_query:
         items = items.filter(content__icontains=search_query)
     
-    items = items.order_by('content')
+    # 表示順で並び替え（モデルのMeta.orderingを使用）
+    items = items.order_by('display_order')
     
     # ページネーション
     paginator = Paginator(items, 20)
