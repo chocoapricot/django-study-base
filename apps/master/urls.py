@@ -108,7 +108,6 @@ urlpatterns = [
     path('haken-business-content/<int:pk>/update/', views.haken_business_content_update, name='haken_business_content_update'),
     path('haken-business-content/<int:pk>/delete/', views.haken_business_content_delete, name='haken_business_content_delete'),
     path('haken-business-content/history/', views.haken_business_content_change_history_list, name='haken_business_content_change_history_list'),
-    path('api/haken-business-content/', views.haken_business_content_list_api, name='haken_business_content_list_api'),
 
     # 派遣責任程度管理
     path('haken-responsibility-degree/', views.haken_responsibility_degree_list, name='haken_responsibility_degree_list'),
@@ -116,7 +115,6 @@ urlpatterns = [
     path('haken-responsibility-degree/<int:pk>/update/', views.haken_responsibility_degree_update, name='haken_responsibility_degree_update'),
     path('haken-responsibility-degree/<int:pk>/delete/', views.haken_responsibility_degree_delete, name='haken_responsibility_degree_delete'),
     path('haken-responsibility-degree/history/', views.haken_responsibility_degree_change_history_list, name='haken_responsibility_degree_change_history_list'),
-    path('api/haken-responsibility-degree/', views.haken_responsibility_degree_list_api, name='haken_responsibility_degree_list_api'),
 
     # メールテンプレート管理
     path('mail-template/', views.mail_template_list, name='mail_template_list'),
