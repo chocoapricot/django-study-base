@@ -712,7 +712,41 @@ class JobCategory(MyModel):
     def __str__(self):
         return self.name
 
-    
+
+class HakenBusinessContent(MyModel):
+    """
+    派遣業務内容マスタ
+    """
+    content = models.TextField('内容')
+    display_order = models.IntegerField('表示順', default=0)
+    is_active = models.BooleanField('有効', default=True)
+
+    class Meta:
+        db_table = 'apps_master_haken_business_content'
+        verbose_name = '派遣業務内容'
+        verbose_name_plural = '派遣業務内容'
+        ordering = ['display_order']
+
+    def __str__(self):
+        return self.content
+
+
+class HakenResponsibilityDegree(MyModel):
+    """
+    派遣責任程度マスタ
+    """
+    content = models.CharField('内容', max_length=255)
+    display_order = models.IntegerField('表示順', default=0)
+    is_active = models.BooleanField('有効', default=True)
+
+    class Meta:
+        db_table = 'apps_master_haken_responsibility_degree'
+        verbose_name = '派遣責任程度'
+        verbose_name_plural = '派遣責任程度'
+        ordering = ['display_order']
+
+    def __str__(self):
+        return self.content
 
 
 class Information(MyModel):

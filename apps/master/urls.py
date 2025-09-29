@@ -102,6 +102,20 @@ urlpatterns = [
     path('minimum-pay/<int:pk>/delete/', views.minimum_pay_delete, name='minimum_pay_delete'),
     path('minimum-pay/history/', views.minimum_pay_change_history_list, name='minimum_pay_change_history_list'),
 
+    # 派遣業務内容管理
+    path('haken-business-content/', views.haken_business_content_list, name='haken_business_content_list'),
+    path('haken-business-content/create/', views.haken_business_content_create, name='haken_business_content_create'),
+    path('haken-business-content/<int:pk>/update/', views.haken_business_content_update, name='haken_business_content_update'),
+    path('haken-business-content/<int:pk>/delete/', views.haken_business_content_delete, name='haken_business_content_delete'),
+    path('haken-business-content/history/', views.haken_business_content_change_history_list, name='haken_business_content_change_history_list'),
+
+    # 派遣責任程度管理
+    path('haken-responsibility-degree/', views.haken_responsibility_degree_list, name='haken_responsibility_degree_list'),
+    path('haken-responsibility-degree/create/', views.haken_responsibility_degree_create, name='haken_responsibility_degree_create'),
+    path('haken-responsibility-degree/<int:pk>/update/', views.haken_responsibility_degree_update, name='haken_responsibility_degree_update'),
+    path('haken-responsibility-degree/<int:pk>/delete/', views.haken_responsibility_degree_delete, name='haken_responsibility_degree_delete'),
+    path('haken-responsibility-degree/history/', views.haken_responsibility_degree_change_history_list, name='haken_responsibility_degree_change_history_list'),
+
     # メールテンプレート管理
     path('mail-template/', views.mail_template_list, name='mail_template_list'),
     path('mail-template/<int:pk>/', views.mail_template_detail, name='mail_template_detail'),
