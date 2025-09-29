@@ -162,7 +162,7 @@
                 </div>
             {% endif %}
 
-            <div class="row mb-3 align-items-center">
+            <div class="row mb-1 align-items-center">
                 <label for="{{ haken_form.commander.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.commander.label }}</label>
                 <div class="col-sm-4">
                     {{ haken_form.commander }}
@@ -179,8 +179,6 @@
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
                 </div>
-            </div>
-            <div class="row mb-3 align-items-center">
                 <label for="{{ haken_form.responsible_person_client.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.responsible_person_client.label }}</label>
                 <div class="col-sm-4">
                     {{ haken_form.responsible_person_client }}
@@ -198,8 +196,6 @@
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
                 </div>
-            </div>
-            <div class="row mb-3 align-items-center">
                 <label for="{{ haken_form.responsible_person_company.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.responsible_person_company.label }}</label>
                 <div class="col-sm-4">
                     {{ haken_form.responsible_person_company }}
@@ -211,7 +207,7 @@
 
             <div class="row mb-3 align-items-center">
                 <label class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.limit_by_agreement.label }}</label>
-                <div class="col-sm-10">
+                <div class="col-sm-4">
                     {% for radio in haken_form.limit_by_agreement %}
                     <div class="form-check form-check-inline">
                         {{ radio.tag }}
@@ -222,10 +218,8 @@
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
                 </div>
-            </div>
-            <div class="row mb-3 align-items-center">
                 <label class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.limit_indefinite_or_senior.label }}</label>
-                <div class="col-sm-10">
+                <div class="col-sm-4">
                     {% for radio in haken_form.limit_indefinite_or_senior %}
                     <div class="form-check form-check-inline">
                         {{ radio.tag }}
@@ -236,6 +230,8 @@
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
                 </div>
+            </div>
+            <div class="row mb-3 align-items-center">
             </div>
 
             <div class="row mb-3 align-items-center">
