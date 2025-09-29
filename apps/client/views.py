@@ -571,12 +571,12 @@ def client_user_detail(request, pk):
     from apps.system.logs.models import AppLog
     log_view_detail(request.user, client_user)
     
-    # 変更履歴（AppLogから取得、最新10件）
+    # 変更履歴（AppLogから取得、最新5件）
     change_logs = AppLog.objects.filter(
         model_name='ClientUser',
         object_id=str(client_user.pk),
         action__in=['create', 'update', 'delete']
-    ).order_by('-timestamp')[:10]
+    ).order_by('-timestamp')[:5]
     
     return render(request, 'client/client_user_detail.html', {
         'client_user': client_user,

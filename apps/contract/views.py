@@ -515,7 +515,7 @@ def staff_contract_detail(request, pk):
         action__in=['create', 'update', 'delete', 'print']
     ).order_by('-timestamp')
     change_logs_count = all_change_logs.count()
-    change_logs = all_change_logs[:10]  # 最新10件
+    change_logs = all_change_logs[:5]  # 最新5件
 
     # 発行履歴を取得
     print_history = StaffContractPrint.objects.filter(staff_contract=contract).order_by('-printed_at')
