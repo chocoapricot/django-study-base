@@ -247,11 +247,11 @@ class ClientContractHakenForm(forms.ModelForm):
         required=True
     )
     complaint_officer_client = DynamicClientUserField(
-        label='苦情申出先（クライアント）',
+        label='派遣先苦情申出先',
         required=True
     )
     responsible_person_client = DynamicClientUserField(
-        label='責任者（クライアント）',
+        label='派遣先責任者',
         required=True
     )
     

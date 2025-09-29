@@ -240,20 +240,27 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ haken_form.business_content.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.business_content.label }}</label>
-                <div class="col-sm-10">
+                <div class="col-sm-8">
                     {{ haken_form.business_content }}
                     {% for error in haken_form.business_content.errors %}
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
                 </div>
+                <div class="col-sm-2">
+                    <button type="button" class="btn btn-sm btn-secondary">選択</button>
+                </div>
+
             </div>
             <div class="row mb-3 align-items-center">
                 <label for="{{ haken_form.responsibility_degree.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.responsibility_degree.label }}</label>
-                <div class="col-sm-10">
+                <div class="col-sm-8">
                     {{ haken_form.responsibility_degree }}
                     {% for error in haken_form.responsibility_degree.errors %}
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
+                </div>
+                <div class="col-sm-2">
+                    <button type="button" class="btn btn-sm btn-secondary">選択</button>
                 </div>
             </div>
             <hr>
