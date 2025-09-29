@@ -137,6 +137,14 @@
                                 <th class="bg-light">無期雇用派遣労働者又は60歳以上の者に限定するか否かの別</th>
                                 <td colspan="3">{{ haken_info.get_limit_indefinite_or_senior_display|default:"-" }}</td>
                             </tr>
+                            <tr>
+                                <th class="bg-light">業務内容</th>
+                                <td colspan="3">{{ haken_info.business_content|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">責任の程度</th>
+                                <td colspan="3">{{ haken_info.responsibility_degree|default:"-" }}</td>
+                            </tr>
                         </table>
                     </div>
                 </div>

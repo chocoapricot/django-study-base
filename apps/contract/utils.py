@@ -157,6 +157,8 @@ def generate_contract_pdf_content(contract):
             limit_indefinite_or_senior_display = haken_info.get_limit_indefinite_or_senior_display() if haken_info.limit_indefinite_or_senior else "N/A"
             haken_items.append({"title": "協定対象派遣労働者に限定するか否かの別", "text": limit_by_agreement_display})
             haken_items.append({"title": "無期雇用派遣労働者又は60歳以上の者に限定するか否かの別", "text": limit_indefinite_or_senior_display})
+            haken_items.append({"title": "業務内容", "text": str(haken_info.business_content or "")})
+            haken_items.append({"title": "責任の程度", "text": str(haken_info.responsibility_degree or "")})
 
             # 許可番号
             company = Company.objects.first()
