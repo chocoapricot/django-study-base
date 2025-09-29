@@ -306,18 +306,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="get" class="mb-2" style="max-width:400px;" id="client-search-form">
-                    <div class="input-group input-group-sm">
-                        <input type="text" name="q" class="form-control" placeholder="クライアント名・法人番号で検索" value="{{ request.GET.q|default:'' }}">
-                        <button type="submit" class="btn btn-sm btn-primary">検索</button>
-                    </div>
-                </form>
-                <div class="text-center">
-                    <div class="spinner-border" role="status">
-                        <span class="visually-hidden">読み込み中...</span>
-                    </div>
-                    <p class="mt-2">読み込み中...</p>
-                </div>
+                <!-- fetchで内容が挿入されます -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">閉じる</button>
@@ -335,12 +324,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="text-center">
-                    <div class="spinner-border" role="status">
-                        <span class="visually-hidden">読み込み中...</span>
-                    </div>
-                    <p class="mt-2">読み込み中...</p>
-                </div>
+                <!-- fetchで内容が挿入されます -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">閉じる</button>
