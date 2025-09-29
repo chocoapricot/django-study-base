@@ -239,7 +239,7 @@
                 <div class="col-sm-10">
                     <div class="input-group">
                         {{ haken_form.business_content }}
-                        <button class="btn btn-sm btn-dark" type="button"
+                        <button class="btn btn-sm btn-secondary" type="button"
                                 data-bs-toggle="modal"
                                 data-bs-target="#hakenMasterModal"
                                 data-url="{% url 'master:haken_business_content_list_api' %}"
@@ -256,7 +256,7 @@
                 <div class="col-sm-10">
                     <div class="input-group">
                         {{ haken_form.responsibility_degree }}
-                        <button class="btn btn-sm btn-dark" type="button"
+                        <button class="btn btn-sm btn-secondary" type="button"
                                 data-bs-toggle="modal"
                                 data-bs-target="#hakenMasterModal"
                                 data-url="{% url 'master:haken_responsibility_degree_list_api' %}"
@@ -332,13 +332,16 @@
 
 <!-- 派遣業務内容/責任程度 選択モーダル -->
 <div class="modal fade" id="hakenMasterModal" tabindex="-1" aria-labelledby="hakenMasterModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="hakenMasterModalLabel"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div class="mb-3" style="max-width:400px;">
+                    <input type="text" id="hakenMasterSearchInput" class="form-control form-control-sm" placeholder="内容を検索...">
+                </div>
                 <div class="list-group">
                     <!-- APIから取得したデータがここに挿入されます -->
                 </div>
@@ -608,6 +611,11 @@ if (hakenMasterModal) {
 
         const modalTitleElement = hakenMasterModal.querySelector('.modal-title');
         const modalBodyList = hakenMasterModal.querySelector('.modal-body .list-group');
+        const searchInput = document.getElementById('hakenMasterSearchInput');
+
+        // Reset search input on open
+        searchInput.value = '';
+        searchInput.disabled = true;
 
         modalTitleElement.textContent = modalTitle;
         modalBodyList.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div></div>';
@@ -617,6 +625,7 @@ if (hakenMasterModal) {
             .then(data => {
                 modalBodyList.innerHTML = '';
                 if (data.length > 0) {
+                    searchInput.disabled = false;
                     data.forEach(item => {
                         const a = document.createElement('a');
                         a.href = '#';
@@ -630,6 +639,20 @@ if (hakenMasterModal) {
                         };
                         modalBodyList.appendChild(a);
                     });
+
+                    // Add search functionality after data is loaded
+                    searchInput.onkeyup = () => {
+                        const filter = searchInput.value.toLowerCase();
+                        const items = modalBodyList.getElementsByTagName('a');
+                        for (let i = 0; i < items.length; i++) {
+                            const txtValue = items[i].textContent || items[i].innerText;
+                            if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                                items[i].style.display = "";
+                            } else {
+                                items[i].style.display = "none";
+                            }
+                        }
+                    };
                 } else {
                     modalBodyList.innerHTML = '<p class="text-center text-muted">データがありません。</p>';
                 }
@@ -638,6 +661,16 @@ if (hakenMasterModal) {
                 console.error('Error fetching haken master data:', error);
                 modalBodyList.innerHTML = '<p class="text-center text-danger">データの取得に失敗しました。</p>';
             });
+    });
+
+    hakenMasterModal.addEventListener('hidden.bs.modal', function () {
+        const searchInput = document.getElementById('hakenMasterSearchInput');
+        searchInput.value = '';
+        const modalBodyList = hakenMasterModal.querySelector('.modal-body .list-group');
+        const items = modalBodyList.getElementsByTagName('a');
+        for (let i = 0; i < items.length; i++) {
+            items[i].style.display = "";
+        }
     });
 }
 </script>
