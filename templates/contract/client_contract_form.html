@@ -236,27 +236,36 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ haken_form.business_content.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.business_content.label }}</label>
-                <div class="col-sm-8">
-                    {{ haken_form.business_content }}
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        {{ haken_form.business_content }}
+                        <button class="btn btn-sm btn-dark" type="button"
+                                data-bs-toggle="modal"
+                                data-bs-target="#hakenMasterModal"
+                                data-url="{% url 'master:haken_business_content_list_api' %}"
+                                data-target-id="{{ haken_form.business_content.id_for_label }}"
+                                data-modal-title="業務内容を選択">参照</button>
+                    </div>
                     {% for error in haken_form.business_content.errors %}
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
                 </div>
-                <div class="col-sm-2">
-                    <button type="button" class="btn btn-sm btn-secondary">選択</button>
-                </div>
-
             </div>
             <div class="row mb-3 align-items-center">
                 <label for="{{ haken_form.responsibility_degree.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.responsibility_degree.label }}</label>
-                <div class="col-sm-8">
-                    {{ haken_form.responsibility_degree }}
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        {{ haken_form.responsibility_degree }}
+                        <button class="btn btn-sm btn-dark" type="button"
+                                data-bs-toggle="modal"
+                                data-bs-target="#hakenMasterModal"
+                                data-url="{% url 'master:haken_responsibility_degree_list_api' %}"
+                                data-target-id="{{ haken_form.responsibility_degree.id_for_label }}"
+                                data-modal-title="責任の程度を選択">参照</button>
+                    </div>
                     {% for error in haken_form.responsibility_degree.errors %}
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
-                </div>
-                <div class="col-sm-2">
-                    <button type="button" class="btn btn-sm btn-secondary">選択</button>
                 </div>
             </div>
             <hr>
@@ -320,6 +329,27 @@
         </div>
     </div>
 </div>
+
+<!-- 派遣業務内容/責任程度 選択モーダル -->
+<div class="modal fade" id="hakenMasterModal" tabindex="-1" aria-labelledby="hakenMasterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="hakenMasterModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group">
+                    <!-- APIから取得したデータがここに挿入されます -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
 // 編集時の初期値を保存
@@ -564,6 +594,51 @@ function setEndDate(months) {
     const day = String(endDate.getDate()).padStart(2, '0');
     
     endDateInput.value = `${year}-${month}-${day}`;
+}
+
+
+// Haken Master Modal
+const hakenMasterModal = document.getElementById('hakenMasterModal');
+if (hakenMasterModal) {
+    hakenMasterModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const url = button.getAttribute('data-url');
+        const targetId = button.getAttribute('data-target-id');
+        const modalTitle = button.getAttribute('data-modal-title');
+
+        const modalTitleElement = hakenMasterModal.querySelector('.modal-title');
+        const modalBodyList = hakenMasterModal.querySelector('.modal-body .list-group');
+
+        modalTitleElement.textContent = modalTitle;
+        modalBodyList.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                modalBodyList.innerHTML = '';
+                if (data.length > 0) {
+                    data.forEach(item => {
+                        const a = document.createElement('a');
+                        a.href = '#';
+                        a.classList.add('list-group-item', 'list-group-item-action');
+                        a.textContent = item.content;
+                        a.onclick = (e) => {
+                            e.preventDefault();
+                            document.getElementById(targetId).value = item.content;
+                            const modal = bootstrap.Modal.getInstance(hakenMasterModal);
+                            modal.hide();
+                        };
+                        modalBodyList.appendChild(a);
+                    });
+                } else {
+                    modalBodyList.innerHTML = '<p class="text-center text-muted">データがありません。</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching haken master data:', error);
+                modalBodyList.innerHTML = '<p class="text-center text-danger">データの取得に失敗しました。</p>';
+            });
+    });
 }
 </script>
 {% endblock %}
