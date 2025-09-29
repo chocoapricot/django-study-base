@@ -192,7 +192,7 @@ def client_contract_detail(request, pk):
         reverse=True
     )
     change_logs_count = len(all_change_logs)
-    change_logs = all_change_logs[:10]
+    change_logs = all_change_logs[:5]
     
     # 発行履歴を取得
     issue_history = ClientContractPrint.objects.filter(client_contract=contract).order_by('-printed_at')
