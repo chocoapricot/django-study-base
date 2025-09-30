@@ -189,27 +189,19 @@
                     <thead>
                         <tr>
                             <th>組織名</th>
-                            <th class="text-center">派遣事業所</th>
-                            <th class="text-center">派遣組織単位</th>
                             <th>操作</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for department in departments %}
                         <tr>
-                            <td>{{ department.name }}</td>
-                            <td class="text-center">
+                        <td>
+                            {{ department.name }}
                                 {% if department.is_haken_office %}
-                                    <i class="bi bi-check-circle-fill text-success"></i>
-                                {% else %}
-                                    <i class="bi bi-x-circle text-muted"></i>
+                                <span class="badge bg-primary">派遣事業所</span>
                                 {% endif %}
-                            </td>
-                            <td class="text-center">
                                 {% if department.is_haken_unit %}
-                                    <i class="bi bi-check-circle-fill text-success"></i>
-                                {% else %}
-                                    <i class="bi bi-x-circle text-muted"></i>
+                                <span class="badge bg-secondary">派遣組織単位</span>
                                 {% endif %}
                             </td>
                             <td>
@@ -226,7 +218,7 @@
                             </td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="7">組織がありません</td></tr>
+                    <tr><td colspan="2">組織がありません</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
