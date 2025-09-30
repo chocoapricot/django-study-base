@@ -76,6 +76,7 @@ class ClientDepartment(MyModel):
     is_haken_office = models.BooleanField('派遣事業所該当', default=False)
     is_haken_unit = models.BooleanField('派遣組織単位該当', default=False)
     haken_unit_manager_title = models.CharField('派遣組織単位長役職', max_length=100, blank=True, null=True)
+    haken_jigyosho_teishokubi = models.DateField('派遣事業所抵触日', blank=True, null=True)
     display_order = models.PositiveIntegerField('表示順', default=0)
     # 有効期間フィールドを追加
     valid_from = models.DateField('有効期限開始日', blank=True, null=True, help_text='未入力の場合は無期限')
