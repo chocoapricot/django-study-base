@@ -92,11 +92,17 @@ def generate_contract_pdf_content(contract):
         start_date_str = contract.start_date.strftime('%Y年%m月%d日')
         end_date_str = contract.end_date.strftime('%Y年%m月%d日') if contract.end_date else "無期限"
         contract_period = f"{start_date_str}　～　{end_date_str}"
+
+        # 派遣契約の場合、契約期間の名称を「派遣期間」とする
+        contract_period_title = "契約期間"
+        if contract.contract_pattern and contract.contract_pattern.contract_type_code == '20':
+            contract_period_title = "派遣期間"
+
         items = [
             {"title": "契約番号", "text": str(contract.contract_number)},
             {"title": "クライアント名", "text": str(contract.client.name)},
             {"title": "契約名", "text": str(contract.contract_name)},
-            {"title": "契約期間", "text": contract_period},
+            {"title": contract_period_title, "text": contract_period},
             {"title": "契約金額", "text": f"{contract.contract_amount:,} 円" if contract.contract_amount else "N/A"},
             {"title": "支払条件", "text": str(contract.payment_site.name if contract.payment_site else "N/A")},
             {"title": "契約内容", "text": str(contract.description)},
