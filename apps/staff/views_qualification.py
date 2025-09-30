@@ -21,19 +21,6 @@ def staff_qualification_list(request, staff_pk):
     }
     return render(request, 'staff/staff_qualification_list.html', context)
 
-
-@login_required
-@permission_required('staff.view_staffqualification', raise_exception=True)
-def staff_qualification_detail(request, pk):
-    """スタッフ資格詳細"""
-    staff_qualification = get_object_or_404(StaffQualification, pk=pk)
-    context = {
-        'staff_qualification': staff_qualification,
-        'staff': staff_qualification.staff,
-    }
-    return render(request, 'staff/staff_qualification_detail.html', context)
-
-
 @login_required
 @permission_required('staff.add_staffqualification', raise_exception=True)
 def staff_qualification_create(request, staff_pk):
@@ -57,32 +44,6 @@ def staff_qualification_create(request, staff_pk):
         'form': form,
         'staff': staff,
         'title': '資格追加',
-    }
-    return render(request, 'staff/staff_qualification_form.html', context)
-
-
-@login_required
-@permission_required('staff.change_staffqualification', raise_exception=True)
-def staff_qualification_update(request, pk):
-    """スタッフ資格更新"""
-    staff_qualification = get_object_or_404(StaffQualification, pk=pk)
-    
-    if request.method == 'POST':
-        form = StaffQualificationForm(request.POST, instance=staff_qualification, staff=staff_qualification.staff)
-        if form.is_valid():
-            staff_qualification = form.save(commit=False)
-            staff_qualification.updated_by = request.user
-            staff_qualification.save()
-            messages.success(request, f'資格「{staff_qualification.qualification.name}」を更新しました。')
-            return redirect('staff:staff_qualification_detail', pk=staff_qualification.pk)
-    else:
-        form = StaffQualificationForm(instance=staff_qualification, staff=staff_qualification.staff)
-    
-    context = {
-        'form': form,
-        'staff_qualification': staff_qualification,
-        'staff': staff_qualification.staff,
-        'title': '資格編集',
     }
     return render(request, 'staff/staff_qualification_form.html', context)
 
@@ -122,16 +83,6 @@ def staff_skill_list(request, staff_pk):
     return render(request, 'staff/staff_skill_list.html', context)
 
 
-@login_required
-@permission_required('staff.view_staffskill', raise_exception=True)
-def staff_skill_detail(request, pk):
-    """スタッフ技能詳細"""
-    staff_skill = get_object_or_404(StaffSkill, pk=pk)
-    context = {
-        'staff_skill': staff_skill,
-        'staff': staff_skill.staff,
-    }
-    return render(request, 'staff/staff_skill_detail.html', context)
 
 
 @login_required
@@ -160,31 +111,6 @@ def staff_skill_create(request, staff_pk):
     }
     return render(request, 'staff/staff_skill_form.html', context)
 
-
-@login_required
-@permission_required('staff.change_staffskill', raise_exception=True)
-def staff_skill_update(request, pk):
-    """スタッフ技能更新"""
-    staff_skill = get_object_or_404(StaffSkill, pk=pk)
-    
-    if request.method == 'POST':
-        form = StaffSkillForm(request.POST, instance=staff_skill, staff=staff_skill.staff)
-        if form.is_valid():
-            staff_skill = form.save(commit=False)
-            staff_skill.updated_by = request.user
-            staff_skill.save()
-            messages.success(request, f'技能「{staff_skill.skill.name}」を更新しました。')
-            return redirect('staff:staff_skill_detail', pk=staff_skill.pk)
-    else:
-        form = StaffSkillForm(instance=staff_skill, staff=staff_skill.staff)
-    
-    context = {
-        'form': form,
-        'staff_skill': staff_skill,
-        'staff': staff_skill.staff,
-        'title': '技能編集',
-    }
-    return render(request, 'staff/staff_skill_form.html', context)
 
 
 @login_required
