@@ -104,7 +104,11 @@ class ClientDepartmentForm(forms.ModelForm):
         return value
     class Meta:
         model = ClientDepartment
-        fields = ['name', 'department_code', 'postal_code', 'address', 'phone_number', 'display_order', 'valid_from', 'valid_to']
+        fields = [
+            'name', 'department_code', 'postal_code', 'address', 'phone_number',
+            'is_haken_office', 'is_haken_unit', 'haken_unit_manager_title',
+            'display_order', 'valid_from', 'valid_to'
+        ]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'department_code': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
@@ -117,6 +121,9 @@ class ClientDepartmentForm(forms.ModelForm):
                 'style': 'ime-mode:disabled;',
                 'autocomplete': 'off',
             }),
+            'is_haken_office': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'is_haken_unit': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'haken_unit_manager_title': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
             'valid_from': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'valid_to': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),

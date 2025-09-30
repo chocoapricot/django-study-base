@@ -189,6 +189,10 @@
                     <thead>
                         <tr>
                             <th>組織名</th>
+                            <th>電話番号</th>
+                            <th class="text-center">派遣事業所</th>
+                            <th class="text-center">派遣組織単位</th>
+                            <th>単位長役職</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -196,6 +200,22 @@
                         {% for department in departments %}
                         <tr>
                             <td>{{ department.name }}</td>
+                            <td>{{ department.phone_number|default:"-" }}</td>
+                            <td class="text-center">
+                                {% if department.is_haken_office %}
+                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                {% else %}
+                                    <i class="bi bi-x-circle text-muted"></i>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if department.is_haken_unit %}
+                                    <i class="bi bi-check-circle-fill text-success"></i>
+                                {% else %}
+                                    <i class="bi bi-x-circle text-muted"></i>
+                                {% endif %}
+                            </td>
+                            <td>{{ department.haken_unit_manager_title|default:"-" }}</td>
                             <td>
                                 {% if perms.client.change_clientdepartment %}
                                 <a href="{% url 'client:client_department_update' department.pk %}" class="btn btn-dark btn-sm" title="編集">
@@ -210,7 +230,7 @@
                             </td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="4">組織がありません</td></tr>
+                        <tr><td colspan="6">組織がありません</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
