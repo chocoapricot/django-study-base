@@ -102,6 +102,31 @@ class ClientDepartmentForm(forms.ModelForm):
         if value and not re.fullmatch(r'^[0-9\-]+$', value):
             raise forms.ValidationError('電話番号は数字とハイフンのみ入力してください。')
         return value
+    def clean(self):
+        cleaned_data = super().clean()
+        is_haken_office = cleaned_data.get('is_haken_office')
+        haken_jigyosho_teishokubi = cleaned_data.get('haken_jigyosho_teishokubi')
+        is_haken_unit = cleaned_data.get('is_haken_unit')
+        haken_unit_manager_title = cleaned_data.get('haken_unit_manager_title')
+
+        # 派遣事業所関連のバリデーション
+        if is_haken_office:
+            if not haken_jigyosho_teishokubi:
+                self.add_error('haken_jigyosho_teishokubi', '派遣事業所該当の場合、派遣事業所抵触日は必須です。')
+        else:
+            if haken_jigyosho_teishokubi:
+                self.add_error('haken_jigyosho_teishokubi', '派遣事業所該当でない場合、派遣事業所抵触日は入力できません。')
+
+        # 派遣組織単位関連のバリデーション
+        if is_haken_unit:
+            if not haken_unit_manager_title:
+                self.add_error('haken_unit_manager_title', '派遣組織単位該当の場合、派遣組織単位長役職は必須です。')
+        else:
+            if haken_unit_manager_title:
+                self.add_error('haken_unit_manager_title', '派遣組織単位該当でない場合、派遣組織単位長役職は入力できません。')
+
+        return cleaned_data
+
     class Meta:
         model = ClientDepartment
         fields = [
