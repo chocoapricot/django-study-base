@@ -106,7 +106,7 @@ class ClientDepartmentForm(forms.ModelForm):
         model = ClientDepartment
         fields = [
             'name', 'department_code', 'postal_code', 'address', 'phone_number',
-            'is_haken_office', 'is_haken_unit', 'haken_unit_manager_title',
+            'is_haken_office', 'is_haken_unit', 'haken_unit_manager_title', 'haken_jigyosho_teishokubi',
             'display_order', 'valid_from', 'valid_to'
         ]
         widgets = {
@@ -124,6 +124,7 @@ class ClientDepartmentForm(forms.ModelForm):
             'is_haken_office': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'is_haken_unit': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'haken_unit_manager_title': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'haken_jigyosho_teishokubi': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
             'valid_from': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'valid_to': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),

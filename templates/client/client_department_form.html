@@ -32,6 +32,7 @@
                 </div>
             </div>
 
+
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.department_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.department_code.label }}</label>
                 <div class="col-sm-4">
@@ -84,6 +85,16 @@
                             <div class="text-danger">{{ form.is_haken_office.errors }}</div>
                         {% endif %}
                     </div>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.haken_jigyosho_teishokubi.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.haken_jigyosho_teishokubi.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.haken_jigyosho_teishokubi }}
+                    {% if form.haken_jigyosho_teishokubi.errors %}
+                        <div class="text-danger">{{ form.haken_jigyosho_teishokubi.errors }}</div>
+                    {% endif %}
                 </div>
             </div>
 

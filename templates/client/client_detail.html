@@ -193,6 +193,7 @@
                             <th class="text-center">派遣事業所</th>
                             <th class="text-center">派遣組織単位</th>
                             <th>単位長役職</th>
+                            <th>事業所抵触日</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -216,6 +217,7 @@
                                 {% endif %}
                             </td>
                             <td>{{ department.haken_unit_manager_title|default:"-" }}</td>
+                            <td>{{ department.haken_jigyosho_teishokubi|date:"Y/m/d"|default:"-" }}</td>
                             <td>
                                 {% if perms.client.change_clientdepartment %}
                                 <a href="{% url 'client:client_department_update' department.pk %}" class="btn btn-dark btn-sm" title="編集">
@@ -230,7 +232,7 @@
                             </td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="6">組織がありません</td></tr>
+                        <tr><td colspan="7">組織がありません</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
