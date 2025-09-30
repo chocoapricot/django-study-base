@@ -73,6 +73,9 @@ class ClientDepartment(MyModel):
     postal_code = models.CharField('郵便番号', max_length=7, blank=True, null=True)
     address = models.CharField('住所', max_length=500, blank=True, null=True)
     phone_number = models.CharField('電話番号', max_length=20, blank=True, null=True)
+    is_haken_office = models.BooleanField('派遣事業所該当', default=False)
+    is_haken_unit = models.BooleanField('派遣組織単位該当', default=False)
+    haken_unit_manager_title = models.CharField('派遣組織単位長役職', max_length=100, blank=True, null=True)
     display_order = models.PositiveIntegerField('表示順', default=0)
     # 有効期間フィールドを追加
     valid_from = models.DateField('有効期限開始日', blank=True, null=True, help_text='未入力の場合は無期限')

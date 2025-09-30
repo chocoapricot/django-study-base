@@ -17,6 +17,9 @@
                     <th>郵便番号</th>
                     <th>住所</th>
                     <th>電話番号</th>
+                    <th class="text-center">派遣事業所</th>
+                    <th class="text-center">派遣組織単位</th>
+                    <th>単位長役職</th>
                     <th>有効期間</th>
                     <th>表示順</th>
                     <th>操作</th>
@@ -30,6 +33,21 @@
                     <td>{{ department.postal_code|default:"-" }}</td>
                     <td>{{ department.address|default:"-" }}</td>
                     <td>{{ department.phone_number|default:"-" }}</td>
+                    <td class="text-center">
+                        {% if department.is_haken_office %}
+                            <i class="bi bi-check-circle-fill text-success"></i>
+                        {% else %}
+                            <i class="bi bi-x-circle text-muted"></i>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if department.is_haken_unit %}
+                            <i class="bi bi-check-circle-fill text-success"></i>
+                        {% else %}
+                            <i class="bi bi-x-circle text-muted"></i>
+                        {% endif %}
+                    </td>
+                    <td>{{ department.haken_unit_manager_title|default:"-" }}</td>
                     <td>
                         {% if department.valid_from or department.valid_to %}
                             {{ department.valid_from|date:"Y/m/d"|default:"無期限" }}～{{ department.valid_to|date:"Y/m/d"|default:"無期限" }}
@@ -52,7 +70,7 @@
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="9">組織がありません</td></tr>
+                <tr><td colspan="12">組織がありません</td></tr>
                 {% endfor %}
             </tbody>
         </table>
