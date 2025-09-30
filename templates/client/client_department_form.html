@@ -78,7 +78,7 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.is_haken_office.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.is_haken_office.label }}</label>
-                <div class="col-sm-6">
+                <div class="col-sm-1">
                     <div class="form-check">
                         {{ form.is_haken_office }}
                         {% if form.is_haken_office.errors %}
@@ -86,11 +86,9 @@
                         {% endif %}
                     </div>
                 </div>
-            </div>
 
-            <div class="row mb-3 align-items-center">
                 <label for="{{ form.haken_jigyosho_teishokubi.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.haken_jigyosho_teishokubi.label }}</label>
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     {{ form.haken_jigyosho_teishokubi }}
                     {% if form.haken_jigyosho_teishokubi.errors %}
                         <div class="text-danger">{{ form.haken_jigyosho_teishokubi.errors }}</div>
@@ -100,7 +98,7 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.is_haken_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.is_haken_unit.label }}</label>
-                <div class="col-sm-6">
+                <div class="col-sm-1">
                     <div class="form-check">
                         {{ form.is_haken_unit }}
                         {% if form.is_haken_unit.errors %}
@@ -108,11 +106,9 @@
                         {% endif %}
                     </div>
                 </div>
-            </div>
 
-            <div class="row mb-3 align-items-center">
                 <label for="{{ form.haken_unit_manager_title.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.haken_unit_manager_title.label }}</label>
-                <div class="col-sm-6">
+                <div class="col-sm-2">
                     {{ form.haken_unit_manager_title }}
                     {% if form.haken_unit_manager_title.errors %}
                         <div class="text-danger">{{ form.haken_unit_manager_title.errors }}</div>
