@@ -1,8 +1,9 @@
 
+import datetime
 from django.test import TestCase
 from unittest.mock import patch
 from apps.accounts.models import MyUser
-from apps.client.forms import ClientForm
+from apps.client.forms import ClientForm, ClientDepartmentForm
 from apps.client.forms_mail import ClientUserMailForm
 from apps.client.models import Client, ClientDepartment, ClientUser, ClientContacted
 from apps.system.settings.models import Dropdowns
@@ -146,3 +147,105 @@ class ClientUserMailFormTest(TestCase):
         # These assertions will fail before the fix
         self.assertEqual(contacted.user, self.client_user)
         self.assertEqual(contacted.department, self.department)
+
+
+class ClientDepartmentFormTest(TestCase):
+    def setUp(self):
+        self.client = Client.objects.create(
+            name='テストクライアント',
+            name_furigana='テストクライアント',
+            corporate_number='9876543210123'
+        )
+        self.base_data = {
+            'client': self.client.pk,
+            'name': 'テスト部署',
+            'display_order': 0,
+        }
+
+    def test_haken_validation_valid_cases(self):
+        """派遣関連のバリデーション: 正常系ケース"""
+        # ケース1: どちらもFalseで、関連フィールドは空
+        data = self.base_data.copy()
+        data.update({
+            'is_haken_office': False,
+            'haken_jigyosho_teishokubi': '',
+            'is_haken_unit': False,
+            'haken_unit_manager_title': '',
+        })
+        form = ClientDepartmentForm(data=data)
+        self.assertTrue(form.is_valid(), f"Case 1 failed: {form.errors.as_json()}")
+
+        # ケース2: is_haken_officeがTrueで、抵触日が入力されている
+        data = self.base_data.copy()
+        data.update({
+            'is_haken_office': True,
+            'haken_jigyosho_teishokubi': datetime.date.today(),
+            'is_haken_unit': False,
+            'haken_unit_manager_title': '',
+        })
+        form = ClientDepartmentForm(data=data)
+        self.assertTrue(form.is_valid(), f"Case 2 failed: {form.errors.as_json()}")
+
+        # ケース3: is_haken_unitがTrueで、役職が入力されている
+        data = self.base_data.copy()
+        data.update({
+            'is_haken_office': False,
+            'haken_jigyosho_teishokubi': '',
+            'is_haken_unit': True,
+            'haken_unit_manager_title': '組織単位長',
+        })
+        form = ClientDepartmentForm(data=data)
+        self.assertTrue(form.is_valid(), f"Case 3 failed: {form.errors.as_json()}")
+
+        # ケース4: どちらもTrueで、関連フィールドがすべて入力されている
+        data = self.base_data.copy()
+        data.update({
+            'is_haken_office': True,
+            'haken_jigyosho_teishokubi': datetime.date.today(),
+            'is_haken_unit': True,
+            'haken_unit_manager_title': '組織単位長',
+        })
+        form = ClientDepartmentForm(data=data)
+        self.assertTrue(form.is_valid(), f"Case 4 failed: {form.errors.as_json()}")
+
+    def test_haken_validation_invalid_cases(self):
+        """派遣関連のバリデーション: 異常系ケース"""
+        # ケース1: is_haken_officeがFalseなのに、抵触日が入力されている
+        data = self.base_data.copy()
+        data.update({
+            'is_haken_office': False,
+            'haken_jigyosho_teishokubi': datetime.date.today(),
+        })
+        form = ClientDepartmentForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('haken_jigyosho_teishokubi', form.errors)
+
+        # ケース2: is_haken_officeがTrueなのに、抵触日が空
+        data = self.base_data.copy()
+        data.update({
+            'is_haken_office': True,
+            'haken_jigyosho_teishokubi': '',
+        })
+        form = ClientDepartmentForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('haken_jigyosho_teishokubi', form.errors)
+
+        # ケース3: is_haken_unitがFalseなのに、役職が入力されている
+        data = self.base_data.copy()
+        data.update({
+            'is_haken_unit': False,
+            'haken_unit_manager_title': '組織単位長',
+        })
+        form = ClientDepartmentForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('haken_unit_manager_title', form.errors)
+
+        # ケース4: is_haken_unitがTrueなのに、役職が空
+        data = self.base_data.copy()
+        data.update({
+            'is_haken_unit': True,
+            'haken_unit_manager_title': '',
+        })
+        form = ClientDepartmentForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('haken_unit_manager_title', form.errors)
