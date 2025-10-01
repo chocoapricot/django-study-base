@@ -70,3 +70,33 @@ def get_client_users(request, client_id):
     except Exception as e:
         logger.error(f"Error fetching client users for client_id {client_id}: {e}")
         return JsonResponse([], safe=False)
+
+@login_required
+def get_client_haken_offices(request, client_id):
+    """指定されたクライアントIDに紐づく派遣先事業所リストを返す"""
+    from apps.client.models import ClientDepartment
+    try:
+        departments = ClientDepartment.objects.filter(
+            client_id=client_id,
+            is_haken_office=True
+        ).order_by('display_order')
+        department_list = [{'id': dept.id, 'name': dept.name} for dept in departments]
+        return JsonResponse(department_list, safe=False)
+    except Exception as e:
+        logger.error(f"Error fetching client haken offices for client_id {client_id}: {e}")
+        return JsonResponse([], safe=False)
+
+@login_required
+def get_client_haken_units(request, client_id):
+    """指定されたクライアントIDに紐づく派遣組織単位リストを返す"""
+    from apps.client.models import ClientDepartment
+    try:
+        departments = ClientDepartment.objects.filter(
+            client_id=client_id,
+            is_haken_unit=True
+        ).order_by('display_order')
+        department_list = [{'id': dept.id, 'name': dept.name} for dept in departments]
+        return JsonResponse(department_list, safe=False)
+    except Exception as e:
+        logger.error(f"Error fetching client haken units for client_id {client_id}: {e}")
+        return JsonResponse([], safe=False)

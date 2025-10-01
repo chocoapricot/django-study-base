@@ -162,6 +162,22 @@
                 </div>
             {% endif %}
 
+            <div class="row mb-3 align-items-center">
+                <label for="{{ haken_form.haken_office.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.haken_office.label }}</label>
+                <div class="col-sm-4">
+                    {{ haken_form.haken_office }}
+                    {% for error in haken_form.haken_office.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <label for="{{ haken_form.haken_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.haken_unit.label }}</label>
+                <div class="col-sm-4">
+                    {{ haken_form.haken_unit }}
+                    {% for error in haken_form.haken_unit.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
             <div class="row mb-1 align-items-center">
                 <label for="{{ haken_form.commander.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.commander.label }}</label>
                 <div class="col-sm-4">
@@ -338,10 +354,14 @@
 // 編集時の初期値を保存
 const initialDispatchValues = {
     {% if haken_form %}
+        haken_office: '{{ haken_form.haken_office.value|default:"" }}',
+        haken_unit: '{{ haken_form.haken_unit.value|default:"" }}',
         commander: '{{ haken_form.commander.value|default:"" }}',
         complaint_officer_client: '{{ haken_form.complaint_officer_client.value|default:"" }}',
         responsible_person_client: '{{ haken_form.responsible_person_client.value|default:"" }}'
     {% else %}
+        haken_office: '',
+        haken_unit: '',
         commander: '',
         complaint_officer_client: '',
         responsible_person_client: ''
@@ -420,26 +440,39 @@ function selectClient(clientId, clientName) {
 }
 
 function updateDispatchFields(clientId) {
-    const fields = [
-        'commander',
-        'complaint_officer_client',
-        'responsible_person_client'
-    ];
+    const fieldConfigs = {
+        haken_office: {
+            endpoint: `/api/client/${clientId}/haken_offices/`,
+            fields: ['haken_office'],
+            errorMsg: '派遣先事業所の取得に失敗しました'
+        },
+        haken_unit: {
+            endpoint: `/api/client/${clientId}/haken_units/`,
+            fields: ['haken_unit'],
+            errorMsg: '組織単位の取得に失敗しました'
+        },
+        user: {
+            endpoint: `/api/client/${clientId}/users/`,
+            fields: ['commander', 'complaint_officer_client', 'responsible_person_client'],
+            errorMsg: 'クライアント担当者の取得に失敗しました'
+        }
+    };
 
-    // 現在の選択値を保存（初期値も考慮）
+    const allFieldNames = Object.values(fieldConfigs).flatMap(config => config.fields);
+
+    // 現在の選択値を保存
     const currentValues = {};
-    fields.forEach(fieldName => {
+    allFieldNames.forEach(fieldName => {
         const select = document.getElementById(`id_${fieldName}`);
         if (select && select.value) {
             currentValues[fieldName] = select.value;
         } else if (initialDispatchValues[fieldName]) {
-            // 初期値がある場合はそれを使用
             currentValues[fieldName] = initialDispatchValues[fieldName];
         }
     });
 
-    // まずはすべてのフィールドをクリア
-    fields.forEach(fieldName => {
+    // 全てのフィールドをクリア
+    allFieldNames.forEach(fieldName => {
         const select = document.getElementById(`id_${fieldName}`);
         if (select) {
             select.innerHTML = '<option value="">選択してください</option>';
@@ -450,42 +483,39 @@ function updateDispatchFields(clientId) {
         return;
     }
 
-    // APIを叩いて担当者リストを取得
-    fetch(`/api/client/${clientId}/users/`)
-        .then(response => response.json())
-        .then(users => {
-            fields.forEach(fieldName => {
-                const select = document.getElementById(`id_${fieldName}`);
-                if (select) {
-                    users.forEach(user => {
-                        const option = new Option(user.name, user.id);
-                        select.add(option);
-                    });
-                    
-                    // 以前の選択値を復元
-                    if (currentValues[fieldName]) {
-                        select.value = currentValues[fieldName];
+    // 各設定に基づいてAPIを呼び出し、プルダウンを更新
+    Object.values(fieldConfigs).forEach(config => {
+        fetch(config.endpoint)
+            .then(response => response.json())
+            .then(items => {
+                config.fields.forEach(fieldName => {
+                    const select = document.getElementById(`id_${fieldName}`);
+                    if (select) {
+                        items.forEach(item => {
+                            const option = new Option(item.name, item.id);
+                            select.add(option);
+                        });
+                        if (currentValues[fieldName]) {
+                            select.value = currentValues[fieldName];
+                        }
                     }
-                }
+                });
+            })
+            .catch(error => {
+                console.error(`Error fetching ${config.endpoint}:`, error);
+                config.fields.forEach(fieldName => {
+                    const select = document.getElementById(`id_${fieldName}`);
+                    if (select) {
+                        select.innerHTML = `<option value="">${config.errorMsg}</option>`;
+                    }
+                });
             });
-            
-            // 初期値は一度だけ使用するため、使用後にクリア
-            if (initialDispatchValues.commander || initialDispatchValues.complaint_officer_client || initialDispatchValues.responsible_person_client) {
-                initialDispatchValues.commander = '';
-                initialDispatchValues.complaint_officer_client = '';
-                initialDispatchValues.responsible_person_client = '';
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching client users:', error);
-            // エラー時にもフィールドをクリアした状態を維持
-            fields.forEach(fieldName => {
-                const select = document.getElementById(`id_${fieldName}`);
-                if (select) {
-                    select.innerHTML = '<option value="">クライアント担当者の取得に失敗しました</option>';
-                }
-            });
-        });
+    });
+
+    // 初期値は一度だけ使用するため、使用後にクリア
+    Object.keys(initialDispatchValues).forEach(key => {
+        initialDispatchValues[key] = '';
+    });
 }
 window.selectClient = selectClient;
 

@@ -6,7 +6,7 @@ from django.contrib.auth.models import Permission
 import datetime
 
 from ..models import ClientContract, ClientContractHaken
-from apps.client.models import Client, ClientUser
+from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.company.models import Company, CompanyUser
 from apps.master.models import ContractPattern
 from apps.system.logs.models import AppLog
@@ -45,7 +45,9 @@ class ClientContractHakenLogTest(TestCase):
         cls.pattern = ContractPattern.objects.create(name='Haken Pattern', domain='10', contract_type_code='20')
         cls.non_haken_pattern = ContractPattern.objects.create(name='Non-Haken Pattern', domain='10', contract_type_code='10')
 
-        # 派遣先・派遣元の担当者
+        # 派遣先・派遣元の担当者・部署
+        cls.haken_office = ClientDepartment.objects.create(client=cls.client_model, name='Test Office', is_haken_office=True)
+        cls.haken_unit = ClientDepartment.objects.create(client=cls.client_model, name='Test Unit', is_haken_unit=True)
         cls.client_user = ClientUser.objects.create(client=cls.client_model, name_last='Rep', name_first='Client', email='client@test.com')
         cls.company_user = CompanyUser.objects.create(name_last='Rep', name_first='Company', email='company@test.com')
 
@@ -77,6 +79,8 @@ class ClientContractHakenLogTest(TestCase):
             'contract_number': self.contract.contract_number or '',
             'start_date': self.contract.start_date.strftime('%Y-%m-%d'),
             'end_date': (self.contract.start_date + datetime.timedelta(days=365)).strftime('%Y-%m-%d'),
+            'haken_office': self.haken_office.pk,
+            'haken_unit': self.haken_unit.pk,
             'commander': self.client_user.pk,
             'complaint_officer_client': self.client_user.pk,
             'responsible_person_client': self.client_user.pk,
@@ -106,6 +110,8 @@ class ClientContractHakenLogTest(TestCase):
         """派遣情報の更新がログに記録され、詳細画面に表示されること。"""
         haken_info = ClientContractHaken.objects.create(
             client_contract=self.contract,
+            haken_office=self.haken_office,
+            haken_unit=self.haken_unit,
             commander=self.client_user,
             complaint_officer_client=self.client_user,
             responsible_person_client=self.client_user,
@@ -125,6 +131,8 @@ class ClientContractHakenLogTest(TestCase):
             'contract_number': self.contract.contract_number or '',
             'start_date': self.contract.start_date.strftime('%Y-%m-%d'),
             'end_date': (self.contract.start_date + datetime.timedelta(days=365)).strftime('%Y-%m-%d'),
+            'haken_office': self.haken_office.pk,
+            'haken_unit': self.haken_unit.pk,
             'commander': new_client_user.pk, # 更新
             'complaint_officer_client': self.client_user.pk,
             'responsible_person_client': self.client_user.pk,

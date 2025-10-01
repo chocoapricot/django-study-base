@@ -193,6 +193,8 @@ class ContractViewTest(TestCase):
     def test_client_contract_create_haken_successful_post(self):
         """派遣契約の新規作成が正常に成功することを確認"""
         from apps.company.models import CompanyUser
+        haken_office = ClientDepartment.objects.create(client=self.test_client, name='Test Office', is_haken_office=True)
+        haken_unit = ClientDepartment.objects.create(client=self.test_client, name='Test Unit', is_haken_unit=True)
         commander = ClientUser.objects.create(client=self.test_client, name_last='Commander', name_first='Test')
         company_user = CompanyUser.objects.create(name_last='Company', name_first='User')
 
@@ -207,6 +209,8 @@ class ContractViewTest(TestCase):
             'end_date': datetime.date.today() + datetime.timedelta(days=30),
             'contract_status': ClientContract.ContractStatus.DRAFT,
             # Haken form data
+            'haken_office': haken_office.pk,
+            'haken_unit': haken_unit.pk,
             'commander': commander.pk,
             'complaint_officer_client': commander.pk,
             'responsible_person_client': commander.pk,
@@ -229,11 +233,15 @@ class ContractViewTest(TestCase):
         self.assertEqual(new_contract.contract_name, 'New Haken Contract')
         self.assertTrue(hasattr(new_contract, 'haken_info'))
         self.assertEqual(new_contract.haken_info.commander, commander)
+        self.assertEqual(new_contract.haken_info.haken_office, haken_office)
+        self.assertEqual(new_contract.haken_info.haken_unit, haken_unit)
 
     def test_client_contract_update_haken_successful_post(self):
         """派遣契約の更新が正常に成功することを確認"""
         from apps.company.models import CompanyUser
         # Haken Info と関連オブジェクトを作成
+        haken_office = ClientDepartment.objects.create(client=self.test_client, name='Test Office', is_haken_office=True)
+        haken_unit = ClientDepartment.objects.create(client=self.test_client, name='Test Unit', is_haken_unit=True)
         commander = ClientUser.objects.create(client=self.test_client, name_last='Commander', name_first='Test')
         complaint_officer = ClientUser.objects.create(client=self.test_client, name_last='Complaint', name_first='Officer')
         responsible_person = ClientUser.objects.create(client=self.test_client, name_last='Responsible', name_first='Person')
@@ -242,6 +250,8 @@ class ContractViewTest(TestCase):
 
         haken_info = ClientContractHaken.objects.create(
             client_contract=self.client_contract,
+            haken_office=haken_office,
+            haken_unit=haken_unit,
             commander=commander,
             complaint_officer_client=complaint_officer,
             responsible_person_client=responsible_person,
@@ -251,7 +261,9 @@ class ContractViewTest(TestCase):
             limit_indefinite_or_senior='0'
         )
 
-        # 更新用の新しい担当者
+        # 更新用の新しい担当者・部署
+        new_haken_office = ClientDepartment.objects.create(client=self.test_client, name='New Test Office', is_haken_office=True)
+        new_haken_unit = ClientDepartment.objects.create(client=self.test_client, name='New Test Unit', is_haken_unit=True)
         new_commander = ClientUser.objects.create(client=self.test_client, name_last='NewCommander', name_first='Test')
 
         update_url = reverse('contract:client_contract_update', kwargs={'pk': self.client_contract.pk})
@@ -265,6 +277,8 @@ class ContractViewTest(TestCase):
             'end_date': self.client_contract.end_date,
             'contract_status': ClientContract.ContractStatus.DRAFT,
             # Haken form data
+            'haken_office': new_haken_office.pk,
+            'haken_unit': new_haken_unit.pk,
             'commander': new_commander.pk,
             'complaint_officer_client': complaint_officer.pk,
             'responsible_person_client': responsible_person.pk,
@@ -290,6 +304,8 @@ class ContractViewTest(TestCase):
 
         # 派遣情報が更新されていることを確認
         haken_info.refresh_from_db()
+        self.assertEqual(haken_info.haken_office, new_haken_office)
+        self.assertEqual(haken_info.haken_unit, new_haken_unit)
         self.assertEqual(haken_info.commander, new_commander)
         self.assertEqual(haken_info.limit_by_agreement, '1')
 

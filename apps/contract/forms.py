@@ -2,7 +2,7 @@ from django import forms
 from django.db.models import Subquery, OuterRef
 from django.utils import timezone
 from .models import ClientContract, StaffContract, ClientContractHaken
-from apps.client.models import Client, ClientUser
+from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from apps.system.settings.models import Dropdowns
 from apps.company.models import Company, CompanyUser, CompanyDepartment
@@ -24,6 +24,25 @@ class DynamicClientUserField(forms.CharField):
             user_id = int(value)
             return ClientUser.objects.get(id=user_id)
         except (ValueError, TypeError, ClientUser.DoesNotExist):
+            raise forms.ValidationError('無効な選択です。')
+
+
+class DynamicClientDepartmentField(forms.CharField):
+    """動的プルダウン用のClientDepartmentフィールド"""
+
+    def __init__(self, *args, **kwargs):
+        kwargs['widget'] = forms.Select(attrs={'class': 'form-select form-select-sm'})
+        super().__init__(*args, **kwargs)
+
+    def to_python(self, value):
+        """文字列値をClientDepartmentインスタンスに変換"""
+        if not value:
+            return None
+
+        try:
+            department_id = int(value)
+            return ClientDepartment.objects.get(id=department_id)
+        except (ValueError, TypeError, ClientDepartment.DoesNotExist):
             raise forms.ValidationError('無効な選択です。')
 
 
@@ -242,6 +261,14 @@ class ClientContractHakenForm(forms.ModelForm):
     """クライアント契約派遣情報フォーム"""
     
     # 派遣先関連フィールドを動的プルダウン用のカスタムフィールドに変更
+    haken_office = DynamicClientDepartmentField(
+        label='派遣先事業所',
+        required=True
+    )
+    haken_unit = DynamicClientDepartmentField(
+        label='組織単位',
+        required=True
+    )
     commander = DynamicClientUserField(
         label='派遣先指揮命令者',
         required=True
@@ -288,7 +315,10 @@ class ClientContractHakenForm(forms.ModelForm):
                     field.choices = [choice for choice in field.choices if choice[0]]
 
         # 派遣先関連フィールドの初期設定（動的プルダウン用）
-        dispatch_fields = ['commander', 'complaint_officer_client', 'responsible_person_client']
+        dispatch_fields = [
+            'haken_office', 'haken_unit',
+            'commander', 'complaint_officer_client', 'responsible_person_client'
+        ]
         for field_name in dispatch_fields:
             self.fields[field_name].choices = [('', '選択してください')]
 
@@ -311,6 +341,22 @@ class ClientContractHakenForm(forms.ModelForm):
 
         # インスタンスがある場合、派遣先関連フィールドの値を設定
         if self.instance and self.instance.pk:
+            if self.instance.haken_office_id:
+                try:
+                    office = ClientDepartment.objects.get(pk=self.instance.haken_office_id)
+                    self.fields['haken_office'].initial = str(office.id)
+                    self.fields['haken_office'].choices = [('', '選択してください'), (str(office.id), office.name)]
+                except ClientDepartment.DoesNotExist:
+                    pass
+
+            if self.instance.haken_unit_id:
+                try:
+                    unit = ClientDepartment.objects.get(pk=self.instance.haken_unit_id)
+                    self.fields['haken_unit'].initial = str(unit.id)
+                    self.fields['haken_unit'].choices = [('', '選択してください'), (str(unit.id), unit.name)]
+                except ClientDepartment.DoesNotExist:
+                    pass
+
             if self.instance.commander_id:
                 try:
                     commander = ClientUser.objects.get(pk=self.instance.commander_id)
