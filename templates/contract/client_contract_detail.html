@@ -120,6 +120,12 @@
                         <h6 class="text-muted mb-3">派遣情報</h6>
                         <table class="table table-sm ">
                             <tr>
+                                <th class="w-25 bg-light">派遣先事業所</th>
+                                <td>{{ haken_info.haken_office.name|default:"-" }}</td>
+                                <th class="w-25 bg-light">組織単位</th>
+                                <td>{{ haken_info.haken_unit.name|default:"-" }}</td>
+                            </tr>
+                            <tr>
                                 <th class="w-25 bg-light">派遣先指揮命令者</th>
                                 <td colspan="3">{{ haken_info.commander.name|default:"-" }}</td>
                             </tr>
