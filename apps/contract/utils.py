@@ -152,11 +152,32 @@ def generate_contract_pdf_content(contract):
             haken_items.append({"title": "業務内容", "text": str(haken_info.business_content or "")})
             haken_items.append({"title": "責任の程度", "text": str(haken_info.responsibility_degree or "")})
 
-            # 派遣先事業所・組織単位
-            haken_office_name = haken_info.haken_office.name if haken_info.haken_office else ""
-            haken_unit_name = haken_info.haken_unit.name if haken_info.haken_unit else ""
-            haken_items.append({"title": "派遣先事業所", "text": haken_office_name})
-            haken_items.append({"title": "組織単位", "text": haken_unit_name})
+            # 派遣先事業所
+            if haken_info.haken_office:
+                office = haken_info.haken_office
+                client_name = office.client.name
+                office_name = office.name
+                postal = f"〒{office.postal_code}" if office.postal_code else ""
+                address = office.address or ""
+                phone = f"電話番号：{office.phone_number}" if office.phone_number else ""
+
+                line1 = f"{client_name}　{office_name}"
+                line2 = f"{postal} {address} {phone}".strip()
+
+                haken_office_text = f"{line1}\n{line2}" if line2 else line1
+                haken_items.append({"title": "派遣先事業所の名称及び所在地", "text": haken_office_text})
+            else:
+                haken_items.append({"title": "派遣先事業所の名称及び所在地", "text": ""})
+
+            # 組織単位
+            if haken_info.haken_unit:
+                unit = haken_info.haken_unit
+                unit_name = unit.name
+                manager_title = f"（{unit.haken_unit_manager_title}）" if unit.haken_unit_manager_title else ""
+                haken_unit_text = f"{unit_name}　{manager_title}".strip()
+                haken_items.append({"title": "組織単位", "text": haken_unit_text})
+            else:
+                haken_items.append({"title": "組織単位", "text": ""})
 
             # 派遣先
             haken_items.append({"title": "派遣先指揮命令者", "text": format_client_user(haken_info.commander)})
