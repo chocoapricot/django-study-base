@@ -112,16 +112,29 @@ def staff_change_history_list(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
     # スタッフ、資格、技能、ファイルの変更履歴を含む
     from django.db import models as django_models
+
+    # 関連オブジェクトのIDリストを取得
+    qualification_ids = list(staff.qualifications.values_list('pk', flat=True))
+    skill_ids = list(staff.skills.values_list('pk', flat=True))
+    file_ids = list(staff.files.values_list('pk', flat=True))
+    
+    # 1対1の関連オブジェクトのIDを取得（存在する場合）
+    mynumber_id = getattr(staff, 'mynumber', None) and staff.mynumber.pk
+    contact_id = getattr(staff, 'contact', None) and staff.contact.pk
+    bank_id = getattr(staff, 'bank', None) and staff.bank.pk
+    international_id = getattr(staff, 'international', None) and staff.international.pk
+    disability_id = getattr(staff, 'disability', None) and staff.disability.pk
+
     logs = AppLog.objects.filter(
         django_models.Q(model_name='Staff', object_id=str(staff.pk)) |
-        django_models.Q(model_name='StaffQualification', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffMynumber', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffContact', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffBank', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffInternational', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffDisability', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffQualification', object_id__in=[str(pk) for pk in qualification_ids]) |
+        django_models.Q(model_name='StaffSkill', object_id__in=[str(pk) for pk in skill_ids]) |
+        django_models.Q(model_name='StaffFile', object_id__in=[str(pk) for pk in file_ids]) |
+        django_models.Q(model_name='StaffMynumber', object_id=str(mynumber_id)) |
+        django_models.Q(model_name='StaffContact', object_id=str(contact_id)) |
+        django_models.Q(model_name='StaffBank', object_id=str(bank_id)) |
+        django_models.Q(model_name='StaffInternational', object_id=str(international_id)) |
+        django_models.Q(model_name='StaffDisability', object_id=str(disability_id)) |
         django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')
@@ -456,32 +469,35 @@ def staff_detail(request, pk):
     log_view_detail(request.user, staff)
     # 変更履歴（AppLogから取得、最新5件）- スタッフ、資格、技能、ファイルの変更を含む
     from django.db import models as django_models
-    change_logs = AppLog.objects.filter(
+    
+    # 関連オブジェクトのIDリストを取得
+    qualification_ids = list(staff.qualifications.values_list('pk', flat=True))
+    skill_ids = list(staff.skills.values_list('pk', flat=True))
+    file_ids = list(staff.files.values_list('pk', flat=True))
+    
+    # 1対1の関連オブジェクトのIDを取得（存在する場合）
+    mynumber_id = getattr(staff, 'mynumber', None) and staff.mynumber.pk
+    contact_id = getattr(staff, 'contact', None) and staff.contact.pk
+    bank_id = getattr(staff, 'bank', None) and staff.bank.pk
+    international_id = getattr(staff, 'international', None) and staff.international.pk
+    disability_id = getattr(staff, 'disability', None) and staff.disability.pk
+
+    change_logs_query = AppLog.objects.filter(
         django_models.Q(model_name='Staff', object_id=str(staff.pk)) |
-        django_models.Q(model_name='StaffQualification', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffMynumber', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffContact', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffBank', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffInternational', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffDisability', object_repr__startswith=f'{staff} - ') |
+        django_models.Q(model_name='StaffQualification', object_id__in=[str(pk) for pk in qualification_ids]) |
+        django_models.Q(model_name='StaffSkill', object_id__in=[str(pk) for pk in skill_ids]) |
+        django_models.Q(model_name='StaffFile', object_id__in=[str(pk) for pk in file_ids]) |
+        django_models.Q(model_name='StaffMynumber', object_id=str(mynumber_id)) |
+        django_models.Q(model_name='StaffContact', object_id=str(contact_id)) |
+        django_models.Q(model_name='StaffBank', object_id=str(bank_id)) |
+        django_models.Q(model_name='StaffInternational', object_id=str(international_id)) |
+        django_models.Q(model_name='StaffDisability', object_id=str(disability_id)) |
         django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
-    ).order_by('-timestamp')[:5]
-    change_logs_count = AppLog.objects.filter(
-        django_models.Q(model_name='Staff', object_id=str(staff.pk)) |
-        django_models.Q(model_name='StaffQualification', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffSkill', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffFile', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffMynumber', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffContact', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffBank', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffInternational', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='StaffDisability', object_repr__startswith=f'{staff} - ') |
-        django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
-        action__in=['create', 'update', 'delete']
-    ).count()
+    )
+
+    change_logs = change_logs_query.order_by('-timestamp')[:5]
+    change_logs_count = change_logs_query.count()
     
     # 接続関連情報を取得
     connect_request = None
