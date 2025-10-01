@@ -48,19 +48,25 @@ class Client(MyModel):
     def client_code(self):
         """クライアントコードを生成する"""
         if self.corporate_number and len(self.corporate_number) == 13 and self.corporate_number.isdigit():
-            CHARS = "123456789ABCDEFGHJKLMNPQRSTUVWXYZ"
+            # Crockford Base32を参考に、I, L, O, Uを削除し、0-9, A-Zの文字セットを使用
+            CHARS = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
             BASE = len(CHARS)
             try:
+                # 法人番号の先頭1桁（チェックデジット）を除いた12桁を数値に変換
                 num = int(self.corporate_number[1:])
+
                 if num == 0:
-                    result = "A"
-                else:
-                    result = ""
-                    while num > 0:
-                        num, rem = divmod(num, BASE)
-                        result = CHARS[rem] + result
-                return result.rjust(8, 'A')
+                    return CHARS[0] * 8
+
+                result = ""
+                while num > 0:
+                    num, rem = divmod(num, BASE)
+                    result = CHARS[rem] + result
+
+                # 8桁になるように先頭を0で埋める
+                return result.rjust(8, CHARS[0])
             except (ValueError, TypeError):
+                # 数値変換に失敗した場合は空文字を返す
                 return ""
         return ""
 
