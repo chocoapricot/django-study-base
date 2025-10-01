@@ -147,11 +147,74 @@ class ContractUtilsTest(TestCase):
         items = args[3]
 
         # Verify office item
-        office_item = next((item for item in items if item['title'] == '派遣先事業所'), None)
+        office_item = next((item for item in items if item['title'] == '派遣先事業所の名称及び所在地'), None)
         self.assertIsNotNone(office_item)
-        self.assertEqual(office_item['text'], '本社事業所')
+        # Since address details are missing, the text should just be the client and office name.
+        self.assertEqual(office_item['text'], 'Test Client　本社事業所')
 
         # Verify unit item
         unit_item = next((item for item in items if item['title'] == '組織単位'), None)
         self.assertIsNotNone(unit_item)
+        # Since manager title is missing, the text should just be the unit name.
         self.assertEqual(unit_item['text'], '開発第一部')
+
+    @patch('apps.contract.utils.generate_contract_pdf')
+    def test_haken_contract_formats_office_and_unit_correctly(self, mock_generate_pdf):
+        """
+        Test that haken office and unit are formatted correctly in the PDF content.
+        """
+        from apps.contract.models import ClientContractHaken
+        from apps.client.models import ClientDepartment
+
+        # Create ClientDepartment instance for office with full details
+        office_department = ClientDepartment.objects.create(
+            client=self.client,
+            name='本社事業所',
+            postal_code='1000001',
+            address='東京都千代田区千代田1-1',
+            phone_number='03-1234-5678'
+        )
+        # Create ClientDepartment instance for unit with manager title
+        unit_department = ClientDepartment.objects.create(
+            client=self.client,
+            name='開発第一部',
+            haken_unit_manager_title='部長'
+        )
+
+        # Create a dispatch contract
+        haken_contract = ClientContract.objects.create(
+            client=self.client,
+            contract_name='Test Haken Contract with Formatted Office/Unit',
+            contract_pattern=self.haken_pattern,
+            start_date=datetime.date.today(),
+            payment_site=self.payment_site,
+        )
+
+        # Link the haken info with office and unit
+        ClientContractHaken.objects.create(
+            client_contract=haken_contract,
+            haken_office=office_department,
+            haken_unit=unit_department
+        )
+
+        # Generate the PDF content
+        generate_contract_pdf_content(haken_contract)
+
+        # Check the mock call
+        mock_generate_pdf.assert_called_once()
+        args, kwargs = mock_generate_pdf.call_args
+        items = args[3]
+
+        # Verify formatted office item
+        office_item = next((item for item in items if item['title'] == '派遣先事業所の名称及び所在地'), None)
+        self.assertIsNotNone(office_item)
+        expected_office_text = (
+            "Test Client　本社事業所\n"
+            "〒1000001 東京都千代田区千代田1-1 電話番号：03-1234-5678"
+        )
+        self.assertEqual(office_item['text'], expected_office_text)
+
+        # Verify formatted unit item
+        unit_item = next((item for item in items if item['title'] == '組織単位'), None)
+        self.assertIsNotNone(unit_item)
+        self.assertEqual(unit_item['text'], '開発第一部　（部長）')
