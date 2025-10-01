@@ -85,6 +85,34 @@ def my_help_preset(key, placement='top'):
     return mark_safe(html)
 
 
+@register.simple_tag
+def my_note_icon(text, placement='top'):
+    """
+    補足アイコンを表示するテンプレートタグ
+    """
+    html = f'''<i class="bi bi-book" style="color: #66bbff; cursor: pointer;"
+               data-bs-toggle="tooltip" data-bs-placement="{placement}"
+               title="{text}"></i>'''
+    return mark_safe(html)
+
+
+# よく使用される補足テキストの定数
+NOTE_TEXTS = {
+}
+
+
+@register.simple_tag
+def my_note_preset(key, placement='top'):
+    """
+    事前定義された補足テキストを表示するテンプレートタグ
+    """
+    text = NOTE_TEXTS.get(key, key)
+    html = f'''<i class="bi bi-book" style="color: #66bbff; cursor: pointer;"
+               data-bs-toggle="tooltip" data-bs-placement="{placement}"
+               title="{text}"></i>'''
+    return mark_safe(html)
+
+
 @register.filter
 def lookup(choices, key):
     """
