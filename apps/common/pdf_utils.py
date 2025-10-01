@@ -70,13 +70,13 @@ def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None,
     # --- パス1: 総ページ数を数える ---
     story1 = build_story()
     pass1_buffer = io.BytesIO()
-    doc1 = SimpleDocTemplate(pass1_buffer, pagesize=A4, leftMargin=30, rightMargin=30, topMargin=30, bottomMargin=40)
+    doc1 = SimpleDocTemplate(pass1_buffer, pagesize=A4, leftMargin=30, rightMargin=30, topMargin=30, bottomMargin=40, title=title)
     doc1.build(story1)
     total_pages = doc1.page
 
     # --- パス2: 実際に描画する ---
     story2 = build_story()
-    doc2 = SimpleDocTemplate(buffer, pagesize=A4, leftMargin=30, rightMargin=30, topMargin=30, bottomMargin=40)
+    doc2 = SimpleDocTemplate(buffer, pagesize=A4, leftMargin=30, rightMargin=30, topMargin=30, bottomMargin=40, title=title)
 
     def on_page_with_total(canvas, doc):
         """ページ描画のコールバック関数"""
