@@ -199,7 +199,7 @@
                         {% for department in departments %}
                         <tr>
                         <td>
-                            {{ department.name }}
+                            <a href="{% url 'client:client_department_detail' department.pk %}" class="text-decoration-none">{{ department.name }}</a>
                                 {% if department.is_haken_office %}
                                 <span class="badge bg-primary">派遣事業所</span>
                                 {% endif %}

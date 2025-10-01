@@ -387,6 +387,43 @@ def client_department_list(request, client_pk):
     departments = client.departments.all()
     return render(request, 'client/client_department_list.html', {'client': client, 'departments': departments})
 
+
+# クライアント組織詳細
+@login_required
+@permission_required('client.view_clientdepartment', raise_exception=True)
+def client_department_detail(request, pk):
+    """クライアント組織詳細"""
+    department = get_object_or_404(ClientDepartment, pk=pk)
+    client = department.client
+
+    # AppLogに詳細画面アクセスを記録
+    from apps.system.logs.utils import log_view_detail
+    from apps.system.logs.models import AppLog
+    log_view_detail(request.user, department)
+
+    # この組織に所属する担当者
+    users_in_department = department.users.all()
+    users_count = users_in_department.count()
+
+    # 変更履歴（AppLogから取得）
+    change_logs_query = AppLog.objects.filter(
+        model_name='ClientDepartment',
+        object_id=str(department.pk),
+        action__in=['create', 'update', 'delete']
+    )
+    change_logs = change_logs_query.order_by('-timestamp')[:5]
+    change_logs_count = change_logs_query.count()
+
+    return render(request, 'client/client_department_detail.html', {
+        'department': department,
+        'client': client,
+        'users_in_department': users_in_department[:5],
+        'users_count': users_count,
+        'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
+    })
+
+
 @login_required
 @permission_required('client.change_clientdepartment', raise_exception=True)
 def client_department_update(request, pk):

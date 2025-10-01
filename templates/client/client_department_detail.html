@@ -1,0 +1,134 @@
+{% extends 'common/_base.html' %}
+{% load help_tags %}
+
+{% block content %}
+{% include 'client/_client_info_card.html' with client=client %}
+
+<div class="row" style="max-width: 100%;">
+    <!-- 左側メインコンテンツ -->
+    <div class="col-md-8">
+        <div class="content-box card bg-light mt-2 mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="bi bi-building me-2"></i>クライアント組織詳細</h5>
+            </div>
+            <div class="card-body">
+                <div class.row>
+                    <div class="col">
+                        <table class="table table-sm table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th class="text-end" style="width: 30%;">組織名</th>
+                                    <td><strong>{{ department.name }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th class="text-end">組織コード</th>
+                                    <td>{{ department.department_code|default:"-" }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-end">郵便番号</th>
+                                    <td>{{ department.postal_code|default:"-" }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-end">住所</th>
+                                    <td>{{ department.address|default:"-" }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-end">電話番号</th>
+                                    <td>{{ department.phone_number|default:"-" }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-end">有効期間</th>
+                                    <td>
+                                        {% if department.valid_from or department.valid_to %}
+                                            {{ department.valid_from|date:"Y/m/d"|default:"無期限" }} ～ {{ department.valid_to|date:"Y/m/d"|default:"無期限" }}
+                                        {% else %}
+                                            無期限
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="text-end">派遣関連情報</th>
+                                    <td>
+                                        <span class="badge bg-{% if department.is_haken_office %}success{% else %}secondary{% endif %}">
+                                            派遣事業所
+                                        </span>
+                                        <span class="badge bg-{% if department.is_haken_unit %}success{% else %}secondary{% endif %}">
+                                            派遣組織単位
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% if department.is_haken_unit %}
+                                <tr>
+                                    <th class="text-end">派遣組織単位長役職</th>
+                                    <td>{{ department.haken_unit_manager_title|default:"-" }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if department.is_haken_office %}
+                                <tr>
+                                    <th class="text-end">派遣事業所抵触日</th>
+                                    <td>{{ department.haken_jigyosho_teishokubi|date:"Y/m/d"|default:"-" }}</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div.row>
+
+                <div class="d-flex justify-content-start mt-3">
+                    {% if perms.client.change_clientdepartment %}
+                    <a href="{% url 'client:client_department_update' department.pk %}" class="btn btn-sm btn-primary me-2">
+                        <i class="bi bi-pencil-square"></i> 編集
+                    </a>
+                    {% endif %}
+                    {% if perms.client.delete_clientdepartment %}
+                    <a href="{% url 'client:client_department_delete' department.pk %}" class="btn btn-sm btn-dark me-2">
+                        <i class="bi bi-trash"></i> 削除
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'client:client_detail' client.pk %}" class="btn btn-sm btn-secondary">
+                        <i class="bi bi-arrow-return-left"></i> 戻る
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右側サイドコンテンツ -->
+    <div class="col-md-4">
+        <!-- 担当者一覧 -->
+        <div class="content-box card bg-light mt-2 mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-people-fill me-2"></i>所属担当者</span>
+                <span class="badge bg-primary rounded-pill">{{ users_count }}</span>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for user in users_in_department %}
+                    <a href="{% url 'client:client_user_detail' user.pk %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="fw-bold">{{ user.name }}</span>
+                            <small class="text-muted ms-2">{{ user.position|default:"" }}</small>
+                        </div>
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                {% empty %}
+                    <div class="list-group-item">
+                        <span class="text-muted">所属している担当者はいません。</span>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if users_count > 5 %}
+            <div class="card-footer text-center">
+                <a href="{% url 'client:client_user_list' client.pk %}?department_id={{ department.pk }}" class="text-decoration-none">
+                    さらに表示 (全{{ users_count }}名)
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- 変更履歴 -->
+        {% with show_full_content=False title="組織変更履歴" %}
+            {% include 'common/_change_history_list.html' %}
+        {% endwith %}
+    </div>
+</div>
+{% endblock %}

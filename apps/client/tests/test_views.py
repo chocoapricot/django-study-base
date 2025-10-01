@@ -53,6 +53,19 @@ class ClientViewsTest(TestCase):
         self.user.user_permissions.add(self.change_clientuser_permission)
         self.user.user_permissions.add(self.delete_clientuser_permission)
 
+        # ClientDepartmentモデルのContentTypeを取得
+        from apps.client.models import ClientDepartment
+        department_content_type = ContentType.objects.get_for_model(ClientDepartment)
+        self.view_clientdepartment_permission = Permission.objects.get(codename='view_clientdepartment', content_type=department_content_type)
+        self.add_clientdepartment_permission = Permission.objects.get(codename='add_clientdepartment', content_type=department_content_type)
+        self.change_clientdepartment_permission = Permission.objects.get(codename='change_clientdepartment', content_type=department_content_type)
+        self.delete_clientdepartment_permission = Permission.objects.get(codename='delete_clientdepartment', content_type=department_content_type)
+
+        self.user.user_permissions.add(self.view_clientdepartment_permission)
+        self.user.user_permissions.add(self.add_clientdepartment_permission)
+        self.user.user_permissions.add(self.change_clientdepartment_permission)
+        self.user.user_permissions.add(self.delete_clientdepartment_permission)
+
         from apps.system.settings.models import Dropdowns
         # Create necessary Dropdowns for ClientForm
         Dropdowns.objects.create(category='client_regist_status', value='1', name='Test Regist Form', active=True, disp_seq=1)
@@ -352,6 +365,28 @@ class ClientViewsTest(TestCase):
         response = self.client.post(reverse('client:client_delete', args=[self.client_obj.pk]))
         self.assertEqual(response.status_code, 302)  # Redirects to client_list
         self.assertFalse(Client.objects.filter(pk=self.client_obj.pk).exists())
+
+    def test_client_department_detail_view(self):
+        """クライアント組織詳細ビューのテスト"""
+        from apps.client.models import ClientDepartment
+        department = ClientDepartment.objects.create(
+            client=self.client_obj,
+            name='Test Department',
+            department_code='DP001'
+        )
+        # Add a user to the department to test that part of the template
+        ClientUser.objects.create(
+            client=self.client_obj,
+            department=department,
+            name_last='Assigned',
+            name_first='User',
+        )
+        response = self.client.get(reverse('client:client_department_detail', args=[department.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'client/client_department_detail.html')
+        self.assertContains(response, 'Test Department') # 組織名
+        self.assertContains(response, 'DP001') # 組織コード
+        self.assertContains(response, 'Assigned User') # 所属担当者
 
     def test_client_contacted_create_view_get(self):
         response = self.client.get(reverse('client:client_contacted_create', args=[self.client_obj.pk]))
