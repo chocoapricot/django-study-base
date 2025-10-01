@@ -304,10 +304,9 @@ class ClientViewsTest(TestCase):
         )
         response = self.client.get(reverse('client:client_detail', args=[client_with_code.pk]))
         self.assertEqual(response.status_code, 200)
-        self.assertIn('client_code', response.context)
-        # The actual calculated value is '3WLM25QK'
-        self.assertEqual(response.context['client_code'], '3WLM25QK')
-        self.assertContains(response, '( 3WLM25QK )')
+        # The client_code is now a property of the model
+        self.assertEqual(response.context['client'].client_code, '3JZ9J6GM')
+        self.assertContains(response, '3JZ9J6GM')
 
     def test_client_detail_view_with_invalid_corporate_number(self):
         """不正な法人番号の場合にクライアントコードが空文字になることをテスト"""
@@ -319,8 +318,8 @@ class ClientViewsTest(TestCase):
         )
         response = self.client.get(reverse('client:client_detail', args=[client_invalid_code.pk]))
         self.assertEqual(response.status_code, 200)
-        self.assertIn('client_code', response.context)
-        self.assertEqual(response.context['client_code'], '')
+        # The client_code is now a property of the model
+        self.assertEqual(response.context['client'].client_code, '')
         self.assertNotContains(response, '( ') # Make sure the parentheses are not rendered
 
     def test_client_update_view_get(self):

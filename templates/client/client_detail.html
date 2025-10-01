@@ -14,9 +14,9 @@
                         <ruby>
                             {{ client.name }}<rt>{{ client.name_furigana }}</rt>
                         </ruby>
-                        {% if client_code %}
+                        {% if client.client_code %}
                         <span class="ms-3" style="font-size: 1rem; color: #6c757d;">
-                            (クライアントコード {% my_help_icon "システムで法人番号から自動設定されるコードです" %}： {{ client_code }} )
+                            (クライアントコード {% my_help_icon "システムで法人番号から自動設定されるコードです" %}： {{ client.client_code }} )
                         </span>
                         {% endif %}
                     </h4>
