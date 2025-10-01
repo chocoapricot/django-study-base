@@ -103,3 +103,55 @@ class ContractUtilsTest(TestCase):
         permit_number_item = next((item for item in items if item['title'] == '許可番号'), None)
         self.assertIsNotNone(permit_number_item)
         self.assertEqual(permit_number_item['text'], '派13-123456')
+
+    @patch('apps.contract.utils.generate_contract_pdf')
+    def test_haken_contract_includes_office_and_unit(self, mock_generate_pdf):
+        """
+        Test that haken office and unit are included in the PDF content for a dispatch contract.
+        """
+        from apps.contract.models import ClientContractHaken
+        from apps.client.models import ClientDepartment
+
+        # Create ClientDepartment instances for office and unit
+        office_department = ClientDepartment.objects.create(
+            client=self.client,
+            name='本社事業所'
+        )
+        unit_department = ClientDepartment.objects.create(
+            client=self.client,
+            name='開発第一部'
+        )
+
+        # Create a dispatch contract
+        haken_contract = ClientContract.objects.create(
+            client=self.client,
+            contract_name='Test Haken Contract with Office/Unit',
+            contract_pattern=self.haken_pattern,
+            start_date=datetime.date.today(),
+            payment_site=self.payment_site,
+        )
+
+        # Link the haken info with office and unit
+        ClientContractHaken.objects.create(
+            client_contract=haken_contract,
+            haken_office=office_department,
+            haken_unit=unit_department
+        )
+
+        # Generate the PDF content
+        generate_contract_pdf_content(haken_contract)
+
+        # Check the mock call
+        mock_generate_pdf.assert_called_once()
+        args, kwargs = mock_generate_pdf.call_args
+        items = args[3]
+
+        # Verify office item
+        office_item = next((item for item in items if item['title'] == '派遣先事業所'), None)
+        self.assertIsNotNone(office_item)
+        self.assertEqual(office_item['text'], '本社事業所')
+
+        # Verify unit item
+        unit_item = next((item for item in items if item['title'] == '組織単位'), None)
+        self.assertIsNotNone(unit_item)
+        self.assertEqual(unit_item['text'], '開発第一部')
