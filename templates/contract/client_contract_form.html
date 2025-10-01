@@ -1,6 +1,7 @@
 {% extends 'common/_base.html' %}
 {% load static %}
 {% load help_tags %}
+{% load badge_tags %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -50,20 +51,13 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.client_contract_type_display.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約種別</label>
-                <div class="col-sm-4">
-                    {{ form.client_contract_type_display }}
+                <label for="{{ form.contract_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約種別</label>
+                <div class="col-sm-10 d-flex align-items-center">
                     {{ form.client_contract_type_code }}
-                    {% for error in form.client_contract_type_code.errors %}
-                        <div class="text-danger small">{{ error }}</div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約パターン</label>
-                <div class="col-sm-4">
-                    {{ form.contract_pattern }}
+                    <span class="badge me-2 {{ form.client_contract_type_code.value|badge_class }}">{{ form.client_contract_type_display.initial|default:"" }}</span>
+                    <div style="width: 500px;">
+                        {{ form.contract_pattern }}
+                    </div>
                     {% for error in form.contract_pattern.errors %}
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
