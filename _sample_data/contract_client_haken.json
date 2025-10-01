@@ -3,10 +3,10 @@
     "model": "contract.clientcontracthaken",
     "pk": 1,
     "fields": {
-        "version": 1759335360922822,
+        "version": 1759335975646152,
         "created_at": "2024-03-10T14:15:00Z",
         "created_by": 1,
-        "updated_at": "2025-10-01T16:31:47.575Z",
+        "updated_at": "2025-10-01T16:42:02.298Z",
         "updated_by": 1,
         "client_contract": 3,
         "haken_office": 5,
@@ -18,18 +18,18 @@
         "responsible_person_company": 6,
         "limit_by_agreement": "0",
         "limit_indefinite_or_senior": "0",
-        "business_content": "",
-        "responsibility_degree": null
+        "business_content": "ＯＡ機器の操作によるプレゼンテーション用資料、業績管理資料、会議資料等の作成業務",
+        "responsibility_degree": "役職無し、付与される権限無し"
     }
 },
 {
     "model": "contract.clientcontracthaken",
     "pk": 2,
     "fields": {
-        "version": 1759335347377678,
+        "version": 1759335996124640,
         "created_at": "2023-12-01T16:20:00Z",
         "created_by": 1,
-        "updated_at": "2025-10-01T16:31:34.030Z",
+        "updated_at": "2025-10-01T16:42:22.777Z",
         "updated_by": 1,
         "client_contract": 6,
         "haken_office": 5,
@@ -41,8 +41,8 @@
         "responsible_person_company": 8,
         "limit_by_agreement": "1",
         "limit_indefinite_or_senior": "0",
-        "business_content": "",
-        "responsibility_degree": null
+        "business_content": "ＯＡ機器の操作によるプレゼンテーション用資料、業績管理資料、会議資料等の作成業務",
+        "responsibility_degree": "副リーダー（部下２名、リーダー不在の間における緊急対応が週１回程度有）"
     }
 }
 ]
