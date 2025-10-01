@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load dropdowns %}
+{% load help_tags %}
 {% load badge_tags %}
 {% block content %}
 
@@ -8,13 +9,15 @@
     <div class="card-body">
             {% csrf_token %}
             <div class="row mb-3 align-items-center">
-                <div class="col-sm-4">
+                <div class="col-sm-6">
                     <h4>
                         <ruby>
                             {{ client.name }}<rt>{{ client.name_furigana }}</rt>
                         </ruby>
                         {% if client_code %}
-                        <span class="ms-3" style="font-size: 1rem; color: #6c757d;">( {{ client_code }} )</span>
+                        <span class="ms-3" style="font-size: 1rem; color: #6c757d;">
+                            (クライアントコード {% my_help_icon "システムで法人番号から自動設定されるコードです" %}： {{ client_code }} )
+                        </span>
                         {% endif %}
                     </h4>
                     <div class="col-sm-2">

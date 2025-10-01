@@ -217,20 +217,20 @@ def client_detail(request, pk):
     from apps.system.logs.models import AppLog
     log_view_detail(request.user, client)
     # 変更履歴（AppLogから取得、最新5件）- クライアント、組織、担当者、ファイルの変更を含む
-    change_logs = AppLog.objects.filter(
+    department_ids = list(client.departments.values_list('pk', flat=True))
+    user_ids = list(client.users.values_list('pk', flat=True))
+    file_ids = list(client.files.values_list('pk', flat=True))
+
+    change_logs_query = AppLog.objects.filter(
         models.Q(model_name='Client', object_id=str(client.pk)) |
-        models.Q(model_name='ClientDepartment', object_repr__startswith=f'{client.name} - ') |
-        models.Q(model_name='ClientUser', object_repr__startswith=f'{client.name} - ') |
-        models.Q(model_name='ClientFile', object_repr__startswith=f'{client.name} - '),
+        models.Q(model_name='ClientDepartment', object_id__in=[str(pk) for pk in department_ids]) |
+        models.Q(model_name='ClientUser', object_id__in=[str(pk) for pk in user_ids]) |
+        models.Q(model_name='ClientFile', object_id__in=[str(pk) for pk in file_ids]),
         action__in=['create', 'update', 'delete']
-    ).order_by('-timestamp')[:5]
-    change_logs_count = AppLog.objects.filter(
-        models.Q(model_name='Client', object_id=str(client.pk)) |
-        models.Q(model_name='ClientDepartment', object_repr__startswith=f'{client.name} - ') |
-        models.Q(model_name='ClientUser', object_repr__startswith=f'{client.name} - ') |
-        models.Q(model_name='ClientFile', object_repr__startswith=f'{client.name} - '),
-        action__in=['create', 'update', 'delete']
-    ).count()
+    )
+    
+    change_logs = change_logs_query.order_by('-timestamp')[:5]
+    change_logs_count = change_logs_query.count()
 
     # クライアントコードの生成
     client_code = ""
@@ -272,12 +272,18 @@ def client_detail(request, pk):
 def client_change_history_list(request, pk):
     client = get_object_or_404(Client, pk=pk)
     from apps.system.logs.models import AppLog
+
+    # Get IDs of all related objects
+    department_ids = list(client.departments.values_list('pk', flat=True))
+    user_ids = list(client.users.values_list('pk', flat=True))
+    file_ids = list(client.files.values_list('pk', flat=True))
+
     # クライアント、組織、担当者、ファイルの変更履歴を含む
     logs = AppLog.objects.filter(
         models.Q(model_name='Client', object_id=str(client.pk)) |
-        models.Q(model_name='ClientDepartment', object_repr__startswith=f'{client.name} - ') |
-        models.Q(model_name='ClientUser', object_repr__startswith=f'{client.name} - ') |
-        models.Q(model_name='ClientFile', object_repr__startswith=f'{client.name} - '),
+        models.Q(model_name='ClientDepartment', object_id__in=[str(pk) for pk in department_ids]) |
+        models.Q(model_name='ClientUser', object_id__in=[str(pk) for pk in user_ids]) |
+        models.Q(model_name='ClientFile', object_id__in=[str(pk) for pk in file_ids]),
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')
     paginator = Paginator(logs, 20)
