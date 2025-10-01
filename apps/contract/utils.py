@@ -152,6 +152,12 @@ def generate_contract_pdf_content(contract):
             haken_items.append({"title": "業務内容", "text": str(haken_info.business_content or "")})
             haken_items.append({"title": "責任の程度", "text": str(haken_info.responsibility_degree or "")})
 
+            # 派遣先事業所・組織単位
+            haken_office_name = haken_info.haken_office.name if haken_info.haken_office else ""
+            haken_unit_name = haken_info.haken_unit.name if haken_info.haken_unit else ""
+            haken_items.append({"title": "派遣先事業所", "text": haken_office_name})
+            haken_items.append({"title": "組織単位", "text": haken_unit_name})
+
             # 派遣先
             haken_items.append({"title": "派遣先指揮命令者", "text": format_client_user(haken_info.commander)})
             haken_items.append({"title": "派遣先苦情申出先", "text": format_client_user(haken_info.complaint_officer_client, with_phone=True)})
