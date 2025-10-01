@@ -110,12 +110,8 @@ class ClientDepartmentForm(forms.ModelForm):
         haken_unit_manager_title = cleaned_data.get('haken_unit_manager_title')
 
         # 派遣事業所関連のバリデーション
-        if is_haken_office:
-            if not haken_jigyosho_teishokubi:
-                self.add_error('haken_jigyosho_teishokubi', '派遣事業所該当の場合、派遣事業所抵触日は必須です。')
-        else:
-            if haken_jigyosho_teishokubi:
-                self.add_error('haken_jigyosho_teishokubi', '派遣事業所該当でない場合、派遣事業所抵触日は入力できません。')
+        if not is_haken_office and haken_jigyosho_teishokubi:
+            self.add_error('haken_jigyosho_teishokubi', '派遣事業所該当でない場合、派遣事業所抵触日は入力できません。')
 
         # 派遣組織単位関連のバリデーション
         if is_haken_unit:

@@ -186,6 +186,17 @@ class ClientDepartmentFormTest(TestCase):
         form = ClientDepartmentForm(data=data)
         self.assertTrue(form.is_valid(), f"Case 2 failed: {form.errors.as_json()}")
 
+        # ケース2.1: is_haken_officeがTrueで、抵触日が空でもOK
+        data = self.base_data.copy()
+        data.update({
+            'is_haken_office': True,
+            'haken_jigyosho_teishokubi': '',
+            'is_haken_unit': False,
+            'haken_unit_manager_title': '',
+        })
+        form = ClientDepartmentForm(data=data)
+        self.assertTrue(form.is_valid(), f"Case 2.1 failed: {form.errors.as_json()}")
+
         # ケース3: is_haken_unitがTrueで、役職が入力されている
         data = self.base_data.copy()
         data.update({
@@ -220,15 +231,6 @@ class ClientDepartmentFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('haken_jigyosho_teishokubi', form.errors)
 
-        # ケース2: is_haken_officeがTrueなのに、抵触日が空
-        data = self.base_data.copy()
-        data.update({
-            'is_haken_office': True,
-            'haken_jigyosho_teishokubi': '',
-        })
-        form = ClientDepartmentForm(data=data)
-        self.assertFalse(form.is_valid())
-        self.assertIn('haken_jigyosho_teishokubi', form.errors)
 
         # ケース3: is_haken_unitがFalseなのに、役職が入力されている
         data = self.base_data.copy()
