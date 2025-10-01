@@ -1,38 +1,48 @@
 [
-    {
-        "model": "contract.clientcontracthaken",
-        "pk": 1,
-        "fields": {
-            "created_at": "2024-03-10T14:15:00Z",
-            "created_by": 1,
-            "updated_at": "2024-03-10T14:15:00Z",
-            "updated_by": 1,
-            "client_contract": 3,
-            "commander": 6,
-            "complaint_officer_client": 7,
-            "responsible_person_client": 6,
-            "complaint_officer_company": 5,
-            "responsible_person_company": 6,
-            "limit_by_agreement": "0",
-            "limit_indefinite_or_senior": "0"
-        }
-    },
-    {
-        "model": "contract.clientcontracthaken",
-        "pk": 2,
-        "fields": {
-            "created_at": "2023-12-01T16:20:00Z",
-            "created_by": 1,
-            "updated_at": "2024-01-31T16:20:00Z",
-            "updated_by": 1,
-            "client_contract": 6,
-            "commander": 7,
-            "complaint_officer_client": 6,
-            "responsible_person_client": 7,
-            "complaint_officer_company": 7,
-            "responsible_person_company": 8,
-            "limit_by_agreement": "1",
-            "limit_indefinite_or_senior": "0"
-        }
+{
+    "model": "contract.clientcontracthaken",
+    "pk": 1,
+    "fields": {
+        "version": 1759335360922822,
+        "created_at": "2024-03-10T14:15:00Z",
+        "created_by": 1,
+        "updated_at": "2025-10-01T16:31:47.575Z",
+        "updated_by": 1,
+        "client_contract": 3,
+        "haken_office": 5,
+        "haken_unit": 5,
+        "commander": 6,
+        "complaint_officer_client": 7,
+        "responsible_person_client": 6,
+        "complaint_officer_company": 5,
+        "responsible_person_company": 6,
+        "limit_by_agreement": "0",
+        "limit_indefinite_or_senior": "0",
+        "business_content": "",
+        "responsibility_degree": null
     }
+},
+{
+    "model": "contract.clientcontracthaken",
+    "pk": 2,
+    "fields": {
+        "version": 1759335347377678,
+        "created_at": "2023-12-01T16:20:00Z",
+        "created_by": 1,
+        "updated_at": "2025-10-01T16:31:34.030Z",
+        "updated_by": 1,
+        "client_contract": 6,
+        "haken_office": 5,
+        "haken_unit": 5,
+        "commander": 7,
+        "complaint_officer_client": 6,
+        "responsible_person_client": 7,
+        "complaint_officer_company": 7,
+        "responsible_person_company": 8,
+        "limit_by_agreement": "1",
+        "limit_indefinite_or_senior": "0",
+        "business_content": "",
+        "responsibility_degree": null
+    }
+}
 ]
