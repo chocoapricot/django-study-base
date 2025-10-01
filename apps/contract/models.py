@@ -1,6 +1,6 @@
 from django.db import models
 from apps.common.models import MyModel
-from apps.client.models import Client, ClientUser
+from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from django.contrib.auth import get_user_model
 from apps.company.models import CompanyUser
@@ -337,6 +337,20 @@ class ClientContractHaken(MyModel):
         verbose_name='クライアント契約'
     )
     # 派遣先
+    haken_office = models.ForeignKey(
+        ClientDepartment,
+        on_delete=models.SET_NULL,
+        related_name='haken_offices',
+        verbose_name='派遣先事業所',
+        null=True, blank=True,
+    )
+    haken_unit = models.ForeignKey(
+        ClientDepartment,
+        on_delete=models.SET_NULL,
+        related_name='haken_units',
+        verbose_name='組織単位',
+        null=True, blank=True,
+    )
     commander = models.ForeignKey(
         ClientUser,
         on_delete=models.SET_NULL,
