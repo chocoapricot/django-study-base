@@ -1447,7 +1447,7 @@ def issue_clash_day_notification(request, pk):
     """クライアント契約の抵触日通知書を発行する"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
-    if int(contract.contract_status) < int(ClientContract.ContractStatus.APPROVED):
+    if int(contract.contract_status) < int(ClientContract.ContractStatus.APPROVED) or contract.client_contract_type_code != '20':
         messages.error(request, 'この契約の抵触日通知書は発行できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
@@ -1483,6 +1483,10 @@ def issue_clash_day_notification(request, pk):
 def client_contract_draft_clash_day_notification(request, pk):
     """クライアント契約の抵触日通知書のドラフトPDFを生成して返す"""
     contract = get_object_or_404(ClientContract, pk=pk)
+
+    if contract.client_contract_type_code != '20':
+        messages.error(request, 'この契約の抵触日通知書は発行できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
 
     issued_at = timezone.now()
     pdf_content, pdf_filename, document_title = generate_clash_day_notification_pdf(

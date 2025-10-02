@@ -43,6 +43,7 @@
         </form>
 
         {# 抵触日通知書発行スイッチ #}
+        {% if contract.client_contract_type_code == '20' %}
         <form method="post" id="issue-clash-day-notification-form" action="{% url 'contract:issue_clash_day_notification' contract.pk %}" class="mb-3">
             {% csrf_token %}
             <div class="form-check form-switch">
@@ -61,6 +62,7 @@
                 </label>
             </div>
         </form>
+        {% endif %}
 
         {# 発行スイッチ #}
         <form method="post" id="issue-form" action="{% url 'contract:client_contract_issue' contract.pk %}" class="mb-3">

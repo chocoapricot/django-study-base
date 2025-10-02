@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.contrib.messages import get_messages
 from ..models import ClientContract, StaffContract, ClientContractHaken
 from apps.client.models import Client as TestClient, ClientUser, ClientDepartment
 from apps.staff.models import Staff
@@ -55,6 +56,16 @@ class ContractViewTest(TestCase):
             end_date=datetime.date.today() + datetime.timedelta(days=30),
             contract_pattern=self.contract_pattern,
             client_contract_type_code='20'
+        )
+        self.non_haken_contract_pattern = ContractPattern.objects.create(name='Non-Haken Pattern', domain='10', contract_type_code='10')
+        self.non_haken_contract = ClientContract.objects.create(
+            client=self.test_client,
+            contract_name='Test Non-Haken Contract',
+            start_date=datetime.date.today(),
+            end_date=datetime.date.today() + datetime.timedelta(days=30),
+            contract_pattern=self.non_haken_contract_pattern,
+            client_contract_type_code='10',
+            contract_status=ClientContract.ContractStatus.APPROVED,
         )
 
         self.staff = Staff.objects.create(
@@ -188,6 +199,36 @@ class ContractViewTest(TestCase):
         self.assertEqual(response['Content-Type'], 'application/pdf')
         self.assertTrue(response['Content-Disposition'].startswith(f'attachment; filename="'))
 
+    def test_issue_clash_day_notification_for_non_haken_contract(self):
+        """
+        派遣契約でない契約に対して抵触日通知書を発行しようとするとエラーになることをテスト
+        """
+        url = reverse('contract:issue_clash_day_notification', kwargs={'pk': self.non_haken_contract.pk})
+        response = self.client.post(url)
+
+        # 詳細ページにリダイレクトされることを確認
+        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.non_haken_contract.pk}))
+
+        # エラーメッセージが表示されることを確認
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'この契約の抵触日通知書は発行できません。')
+
+    def test_draft_clash_day_notification_for_non_haken_contract(self):
+        """
+        派遣契約でない契約に対してドラフトの抵触日通知書を発行しようとするとエラーになることをテスト
+        """
+        url = reverse('contract:client_contract_draft_clash_day_notification', kwargs={'pk': self.non_haken_contract.pk})
+        response = self.client.get(url)
+
+        # 詳細ページにリダイレクトされることを確認
+        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.non_haken_contract.pk}))
+
+        # エラーメッセージが表示されることを確認
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'この契約の抵触日通知書は発行できません。')
+
 
 
     def test_client_contract_create_haken_successful_post(self):
@@ -227,7 +268,7 @@ class ContractViewTest(TestCase):
             haken_form_errors = response.context.get('haken_form', {}).errors
             self.fail(f"POST failed with status {response.status_code}. Form errors: {form_errors}, Haken form errors: {haken_form_errors}")
 
-        self.assertEqual(ClientContract.objects.count(), 2)
+        self.assertEqual(ClientContract.objects.count(), 3)
         self.assertEqual(ClientContractHaken.objects.count(), 1)
         new_contract = ClientContract.objects.latest('id')
         self.assertEqual(new_contract.contract_name, 'New Haken Contract')
