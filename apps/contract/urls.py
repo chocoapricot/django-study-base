@@ -24,6 +24,8 @@ urlpatterns = [
     path('client/export/', views.client_contract_export, name='client_contract_export'),
     path('client/<int:pk>/draft_pdf/', views.client_contract_draft_pdf, name='client_contract_draft_pdf'),
     path('client/<int:pk>/draft_quotation/', views.client_contract_draft_quotation, name='client_contract_draft_quotation'),
+    path('client/<int:pk>/issue_clash_day_notification/', views.issue_clash_day_notification, name='issue_clash_day_notification'),
+    path('client/<int:pk>/draft_clash_day_notification/', views.client_contract_draft_clash_day_notification, name='client_contract_draft_clash_day_notification'),
     
     # スタッフ契約
     path('staff/', views.staff_contract_list, name='staff_contract_list'),

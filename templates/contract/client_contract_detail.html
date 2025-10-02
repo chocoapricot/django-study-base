@@ -20,6 +20,7 @@
                         <div class="dropdown-menu">
                             <a href="{% url 'contract:client_contract_draft_pdf' contract.pk %}" class="dropdown-item"><i class="bi bi-filetype-pdf"></i>　個別契約書(ドラフト)</a>
                             <a href="{% url 'contract:client_contract_draft_quotation' contract.pk %}" class="dropdown-item"><i class="bi bi-file-earmark-text"></i>　見積書(ドラフト)</a>
+                            <a href="{% url 'contract:client_contract_draft_clash_day_notification' contract.pk %}" class="dropdown-item"><i class="bi bi-file-earmark-check"></i>　抵触日通知書(ドラフト)</a>
                         </div>
                     </li>
                 </ul>
@@ -236,6 +237,8 @@
                                 <span class="badge bg-primary">契約書</span>
                             {% elif item.print_type == item.PrintType.QUOTATION %}
                                 <span class="badge bg-info">見積書</span>
+                            {% elif item.print_type == item.PrintType.CLASH_DAY_NOTIFICATION %}
+                                <span class="badge bg-warning">抵触日通知書</span>
                             {% else %}
                                 <span class="badge bg-secondary">その他</span>
                             {% endif %}

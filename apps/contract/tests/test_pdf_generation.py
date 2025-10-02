@@ -1,11 +1,14 @@
 from django.test import TestCase
 from unittest.mock import patch
 
+from django.test import TestCase
+from unittest.mock import patch
+from apps.accounts.models import MyUser
 from apps.client.models import Client, ClientDepartment, ClientUser
 from apps.company.models import Company, CompanyDepartment as CompanyDept, CompanyUser
 from apps.contract.models import ClientContract, ClientContractHaken
 from apps.master.models import ContractPattern, BillPayment
-from apps.contract.utils import generate_contract_pdf_content
+from apps.contract.utils import generate_contract_pdf_content, generate_clash_day_notification_pdf
 import datetime
 
 class ContractPdfGenerationTest(TestCase):
@@ -85,6 +88,15 @@ class ContractPdfGenerationTest(TestCase):
             contract_number="C-NOR-001"
         )
 
+        self.test_user = MyUser.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='password'
+        )
+        self.test_user.name_last = 'Test'
+        self.test_user.name_first = 'User'
+        self.test_user.save()
+
 
     @patch('apps.contract.utils.generate_contract_pdf')
     def test_dispatch_contract_pdf_includes_haken_info(self, mock_generate_pdf):
@@ -132,3 +144,27 @@ class ContractPdfGenerationTest(TestCase):
         self.assertNotIn("派遣先指揮命令者", items_dict)
         self.assertNotIn("派遣元責任者", items_dict)
         self.assertNotIn("協定対象派遣労働者に限定するか否かの別", items_dict)
+
+    @patch('apps.contract.utils.generate_contract_pdf')
+    def test_clash_day_notification_pdf_generation(self, mock_generate_pdf):
+        """Test that clash day notification PDF is generated with correct data."""
+        issued_at = datetime.datetime.now(datetime.timezone.utc)
+        generate_clash_day_notification_pdf(self.dispatch_contract, self.test_user, issued_at)
+
+        self.assertTrue(mock_generate_pdf.called)
+
+        # Get the arguments passed to the mock
+        positional_args = mock_generate_pdf.call_args[0]
+        pdf_title = positional_args[1]
+        intro_text = positional_args[2]
+        items = positional_args[3]
+
+        # Convert items to a dict for easier lookup
+        items_dict = {item['title']: item['text'] for item in items}
+
+        # Assertions
+        self.assertEqual(pdf_title, "抵触日通知書")
+        self.assertEqual(intro_text, f"{self.dispatch_contract.client.name} 様")
+        self.assertEqual(items_dict["件名"], self.dispatch_contract.contract_name)
+        self.assertEqual(items_dict["発行日"], issued_at.strftime('%Y年%m月%d日'))
+        self.assertEqual(items_dict["発行者"], self.test_user.get_full_name_japanese())
