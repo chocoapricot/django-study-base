@@ -13,39 +13,30 @@
             </div>
             <div class="card-body">
                 <div class="row mb-3 align-items-center">
-                    <div class="col-sm-4 text-start text-md-end">
+                    <div class="col-sm-3 text-start text-md-end">
                         <strong>組織名</strong>
                     </div>
-                    <div class="col-sm-8">
-                        <strong>{{ department.name }}</strong>
+                    <div class="col-sm-4">
+                        {{ department.name }}
                     </div>
-                </div>
-                <div class="row mb-3 align-items-center">
-                    <div class="col-sm-4 text-start text-md-end">
+                    <div class="col-sm-2 text-start text-md-end">
                         <strong>組織コード</strong>
                     </div>
-                    <div class="col-sm-8">
+                    <div class="col-sm-3">
                         {{ department.department_code|default:"-" }}
                     </div>
                 </div>
-                <div class="row mb-3 align-items-center">
-                    <div class="col-sm-4 text-start text-md-end">
-                        <strong>郵便番号</strong>
-                    </div>
-                    <div class="col-sm-8">
-                        {{ department.postal_code|default:"-" }}
-                    </div>
-                </div>
-                <div class="row mb-3 align-items-center">
-                    <div class="col-sm-4 text-start text-md-end">
+                <div class="row mb-3 align-items">
+                    <div class="col-sm-3 text-start text-md-end">
                         <strong>住所</strong>
                     </div>
                     <div class="col-sm-8">
+                        〒{{ department.postal_code|default:"-" }}<br/>
                         {{ department.address|default:"-" }}
                     </div>
                 </div>
                 <div class="row mb-3 align-items-center">
-                    <div class="col-sm-4 text-start text-md-end">
+                    <div class="col-sm-3 text-start text-md-end">
                         <strong>電話番号</strong>
                     </div>
                     <div class="col-sm-8">
@@ -53,7 +44,7 @@
                     </div>
                 </div>
                 <div class="row mb-3 align-items-center">
-                    <div class="col-sm-4 text-start text-md-end">
+                    <div class="col-sm-3 text-start text-md-end">
                         <strong>有効期間</strong>
                     </div>
                     <div class="col-sm-8">
@@ -65,42 +56,38 @@
                     </div>
                 </div>
                 <div class="row mb-3 align-items-center">
-                    <div class="col-sm-4 text-start text-md-end">
+                    <div class="col-sm-3 text-start text-md-end">
                         <strong>派遣事業所該当</strong>
                     </div>
-                    <div class="col-sm-8">
+                    <div class="col-sm-2">
                         {% if department.is_haken_office %}
                         <span class="badge bg-success">該当</span>
                         {% else %}
                         <span class="badge bg-secondary">非該当</span>
                         {% endif %}
                     </div>
-                </div>
-                <div class="row mb-3 align-items-center">
-                    <div class="col-sm-4 text-start text-md-end">
+                    <div class="col-sm-2 text-start text-md-end">
                         <strong>派遣事業所抵触日</strong>
                     </div>
-                    <div class="col-sm-8">
+                    <div class="col-sm-3">
                         {{ department.haken_jigyosho_teishokubi|date:"Y/m/d"|default:"-" }}
                     </div>
                 </div>
                 <div class="row mb-3 align-items-center">
-                    <div class="col-sm-4 text-start text-md-end">
+                    <div class="col-sm-3 text-start text-md-end">
                         <strong>派遣組織単位該当</strong>
                     </div>
-                    <div class="col-sm-8">
+                    <div class="col-sm-2">
                         {% if department.is_haken_unit %}
                         <span class="badge bg-success">該当</span>
                         {% else %}
                         <span class="badge bg-secondary">非該当</span>
                         {% endif %}
                     </div>
-                </div>
-                <div class="row mb-3 align-items-center">
-                    <div class="col-sm-4 text-start text-md-end">
+                    <div class="col-sm-2 text-start text-md-end">
                         <strong>派遣組織単位長役職</strong>
                     </div>
-                    <div class="col-sm-8">
+                    <div class="col-sm-3">
                         {{ department.haken_unit_manager_title|default:"-" }}
                     </div>
                 </div>
