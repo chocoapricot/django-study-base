@@ -129,6 +129,7 @@ class ClientContractPrint(MyModel):
     class PrintType(models.TextChoices):
         CONTRACT = '10', '契約書'
         QUOTATION = '20', '見積書'
+        CLASH_DAY_NOTIFICATION = '30', '抵触日通知書'
 
     client_contract = models.ForeignKey(
         ClientContract,
