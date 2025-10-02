@@ -9,85 +9,103 @@
     <div class="col-md-8">
         <div class="content-box card bg-light mt-2 mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5><i class="bi bi-building me-2"></i>クライアント組織詳細</h5>
+                <h5>クライアント組織詳細</h5>
             </div>
             <div class="card-body">
-                <div class.row>
-                    <div class="col">
-                        <table class="table table-sm table-bordered">
-                            <tbody>
-                                <tr>
-                                    <th class="text-end" style="width: 30%;">組織名</th>
-                                    <td><strong>{{ department.name }}</strong></td>
-                                </tr>
-                                <tr>
-                                    <th class="text-end">組織コード</th>
-                                    <td>{{ department.department_code|default:"-" }}</td>
-                                </tr>
-                                <tr>
-                                    <th class="text-end">郵便番号</th>
-                                    <td>{{ department.postal_code|default:"-" }}</td>
-                                </tr>
-                                <tr>
-                                    <th class="text-end">住所</th>
-                                    <td>{{ department.address|default:"-" }}</td>
-                                </tr>
-                                <tr>
-                                    <th class="text-end">電話番号</th>
-                                    <td>{{ department.phone_number|default:"-" }}</td>
-                                </tr>
-                                <tr>
-                                    <th class="text-end">有効期間</th>
-                                    <td>
-                                        {% if department.valid_from or department.valid_to %}
-                                            {{ department.valid_from|date:"Y/m/d"|default:"無期限" }} ～ {{ department.valid_to|date:"Y/m/d"|default:"無期限" }}
-                                        {% else %}
-                                            無期限
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th class="text-end">派遣関連情報</th>
-                                    <td>
-                                        <span class="badge bg-{% if department.is_haken_office %}success{% else %}secondary{% endif %}">
-                                            派遣事業所
-                                        </span>
-                                        <span class="badge bg-{% if department.is_haken_unit %}success{% else %}secondary{% endif %}">
-                                            派遣組織単位
-                                        </span>
-                                    </td>
-                                </tr>
-                                {% if department.is_haken_unit %}
-                                <tr>
-                                    <th class="text-end">派遣組織単位長役職</th>
-                                    <td>{{ department.haken_unit_manager_title|default:"-" }}</td>
-                                </tr>
-                                {% endif %}
-                                {% if department.is_haken_office %}
-                                <tr>
-                                    <th class="text-end">派遣事業所抵触日</th>
-                                    <td>{{ department.haken_jigyosho_teishokubi|date:"Y/m/d"|default:"-" }}</td>
-                                </tr>
-                                {% endif %}
-                            </tbody>
-                        </table>
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>組織名</strong>
                     </div>
-                </div.row>
+                    <div class="col-sm-8">
+                        <strong>{{ department.name }}</strong>
+                    </div>
+                </div>
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>組織コード</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        {{ department.department_code|default:"-" }}
+                    </div>
+                </div>
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>郵便番号</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        {{ department.postal_code|default:"-" }}
+                    </div>
+                </div>
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>住所</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        {{ department.address|default:"-" }}
+                    </div>
+                </div>
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>電話番号</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        {{ department.phone_number|default:"-" }}
+                    </div>
+                </div>
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>有効期間</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        {% if department.valid_from or department.valid_to %}
+                            {{ department.valid_from|date:"Y/m/d"|default:"無期限" }} ～ {{ department.valid_to|date:"Y/m/d"|default:"無期限" }}
+                        {% else %}
+                            無期限
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>派遣関連情報</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        <span class="badge bg-{% if department.is_haken_office %}success{% else %}secondary{% endif %}">
+                            派遣事業所
+                        </span>
+                        <span class="badge bg-{% if department.is_haken_unit %}success{% else %}secondary{% endif %}">
+                            派遣組織単位
+                        </span>
+                    </div>
+                </div>
+                {% if department.is_haken_unit %}
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>派遣組織単位長役職</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        {{ department.haken_unit_manager_title|default:"-" }}
+                    </div>
+                </div>
+                {% endif %}
+                {% if department.is_haken_office %}
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>派遣事業所抵触日</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        {{ department.haken_jigyosho_teishokubi|date:"Y/m/d"|default:"-" }}
+                    </div>
+                </div>
+                {% endif %}
 
                 <div class="d-flex justify-content-start mt-3">
                     {% if perms.client.change_clientdepartment %}
-                    <a href="{% url 'client:client_department_update' department.pk %}" class="btn btn-sm btn-primary me-2">
-                        <i class="bi bi-pencil-square"></i> 編集
-                    </a>
+                    <a href="{% url 'client:client_department_update' department.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
                     {% endif %}
                     {% if perms.client.delete_clientdepartment %}
-                    <a href="{% url 'client:client_department_delete' department.pk %}" class="btn btn-sm btn-dark me-2">
-                        <i class="bi bi-trash"></i> 削除
-                    </a>
+                    <a href="{% url 'client:client_department_delete' department.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
                     {% endif %}
-                    <a href="{% url 'client:client_detail' client.pk %}" class="btn btn-sm btn-secondary">
-                        <i class="bi bi-arrow-return-left"></i> 戻る
-                    </a>
+                    <a href="{% url 'client:client_detail' client.pk %}" class="btn btn-sm btn-secondary">戻る</a>
                 </div>
             </div>
         </div>
@@ -98,7 +116,7 @@
         <!-- 担当者一覧 -->
         <div class="content-box card bg-light mt-2 mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <span><i class="bi bi-people-fill me-2"></i>所属担当者</span>
+                <span>所属担当者</span>
                 <span class="badge bg-primary rounded-pill">{{ users_count }}</span>
             </div>
             <div class="list-group list-group-flush">
@@ -116,17 +134,11 @@
                     </div>
                 {% endfor %}
             </div>
-            {% if users_count > 5 %}
-            <div class="card-footer text-center">
-                <a href="{% url 'client:client_user_list' client.pk %}?department_id={{ department.pk }}" class="text-decoration-none">
-                    さらに表示 (全{{ users_count }}名)
-                </a>
-            </div>
-            {% endif %}
         </div>
 
         <!-- 変更履歴 -->
-        {% with show_full_content=False title="組織変更履歴" %}
+        {% url 'client:client_department_change_history_list' department.pk as history_url %}
+        {% with change_logs=change_logs change_logs_count=change_logs_count history_url=history_url title="組織変更履歴" show_full_content=False %}
             {% include 'common/_change_history_list.html' %}
         {% endwith %}
     </div>

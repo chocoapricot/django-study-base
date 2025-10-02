@@ -388,6 +388,31 @@ def client_department_list(request, client_pk):
     return render(request, 'client/client_department_list.html', {'client': client, 'departments': departments})
 
 
+# クライアント組織 変更履歴一覧
+@login_required
+@permission_required('client.view_clientdepartment', raise_exception=True)
+def client_department_change_history_list(request, pk):
+    department = get_object_or_404(ClientDepartment, pk=pk)
+    client = department.client
+    from apps.system.logs.models import AppLog
+
+    logs = AppLog.objects.filter(
+        model_name='ClientDepartment',
+        object_id=str(pk),
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')
+
+    paginator = Paginator(logs, 20)
+    page = request.GET.get('page')
+    logs_page = paginator.get_page(page)
+
+    return render(request, 'client/client_department_change_history_list.html', {
+        'client': client,
+        'department': department,
+        'logs': logs_page
+    })
+
+
 # クライアント組織詳細
 @login_required
 @permission_required('client.view_clientdepartment', raise_exception=True)
@@ -417,7 +442,7 @@ def client_department_detail(request, pk):
     return render(request, 'client/client_department_detail.html', {
         'department': department,
         'client': client,
-        'users_in_department': users_in_department[:5],
+        'users_in_department': users_in_department,
         'users_count': users_count,
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
