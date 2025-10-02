@@ -172,6 +172,17 @@
                     {% endfor %}
                 </div>
             </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ haken_form.work_location.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.work_location.label }}</label>
+                <div class="col-sm-10">
+                    {{ haken_form.work_location }}
+                    {% for error in haken_form.work_location.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
             <div class="row mb-1 align-items-center">
                 <label for="{{ haken_form.commander.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.commander.label }}</label>
                 <div class="col-sm-4">
@@ -414,6 +425,26 @@ document.addEventListener('DOMContentLoaded', function() {
             updateDispatchFields(clientField.value);
         }
     }
+
+    // 派遣先事業所の変更イベント
+    const hakenOfficeSelect = document.getElementById('{{ haken_form.haken_office.id_for_label }}');
+    if (hakenOfficeSelect) {
+        hakenOfficeSelect.addEventListener('change', function() {
+            const departmentId = this.value;
+            const workLocationTextarea = document.getElementById('{{ haken_form.work_location.id_for_label }}');
+
+            if (departmentId && workLocationTextarea && workLocationTextarea.value.trim() === '') {
+                fetch(`/api/client_department/${departmentId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.data.address) {
+                            workLocationTextarea.value = data.data.address;
+                        }
+                    })
+                    .catch(error => console.error('Error fetching department address:', error));
+            }
+        });
+    }
 });
 
 function selectClient(clientId, clientName) {
@@ -430,6 +461,11 @@ function selectClient(clientId, clientName) {
     // 派遣契約の場合、関連フィールドを更新
     if (document.getElementById('{{ form.client_contract_type_code.id_for_label }}').value === '20') {
         updateDispatchFields(clientId);
+        // 就業場所をクリア
+        const workLocation = document.getElementById('{{ haken_form.work_location.id_for_label }}');
+        if (workLocation) {
+            workLocation.value = '';
+        }
     }
 }
 
@@ -584,6 +620,11 @@ function clearClient() {
     // 派遣関連フィールドもクリア
     if (document.getElementById('{{ form.client_contract_type_code.id_for_label }}').value === '20') {
         updateDispatchFields(null);
+        // 就業場所をクリア
+        const workLocation = document.getElementById('{{ haken_form.work_location.id_for_label }}');
+        if (workLocation) {
+            workLocation.value = '';
+        }
     }
 }
 

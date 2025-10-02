@@ -400,6 +400,7 @@ class ClientContractHaken(MyModel):
         choices=[('0', '限定しない'), ('1', '限定する')],
         null=True, blank=True,
     )
+    work_location = models.TextField('就業場所', blank=True, null=True)
     business_content = models.TextField('業務内容', blank=True, null=True)
     responsibility_degree = models.CharField('責任の程度', max_length=255, blank=True, null=True)
 
