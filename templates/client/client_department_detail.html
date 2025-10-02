@@ -66,28 +66,16 @@
                 </div>
                 <div class="row mb-3 align-items-center">
                     <div class="col-sm-4 text-start text-md-end">
-                        <strong>派遣関連情報</strong>
+                        <strong>派遣事業所該当</strong>
                     </div>
                     <div class="col-sm-8">
-                        <span class="badge bg-{% if department.is_haken_office %}success{% else %}secondary{% endif %}">
-                            派遣事業所
-                        </span>
-                        <span class="badge bg-{% if department.is_haken_unit %}success{% else %}secondary{% endif %}">
-                            派遣組織単位
-                        </span>
+                        {% if department.is_haken_office %}
+                        <span class="badge bg-success">該当</span>
+                        {% else %}
+                        <span class="badge bg-secondary">非該当</span>
+                        {% endif %}
                     </div>
                 </div>
-                {% if department.is_haken_unit %}
-                <div class="row mb-3 align-items-center">
-                    <div class="col-sm-4 text-start text-md-end">
-                        <strong>派遣組織単位長役職</strong>
-                    </div>
-                    <div class="col-sm-8">
-                        {{ department.haken_unit_manager_title|default:"-" }}
-                    </div>
-                </div>
-                {% endif %}
-                {% if department.is_haken_office %}
                 <div class="row mb-3 align-items-center">
                     <div class="col-sm-4 text-start text-md-end">
                         <strong>派遣事業所抵触日</strong>
@@ -96,7 +84,26 @@
                         {{ department.haken_jigyosho_teishokubi|date:"Y/m/d"|default:"-" }}
                     </div>
                 </div>
-                {% endif %}
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>派遣組織単位該当</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        {% if department.is_haken_unit %}
+                        <span class="badge bg-success">該当</span>
+                        {% else %}
+                        <span class="badge bg-secondary">非該当</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>派遣組織単位長役職</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        {{ department.haken_unit_manager_title|default:"-" }}
+                    </div>
+                </div>
 
                 <div class="d-flex justify-content-start mt-3">
                     {% if perms.client.change_clientdepartment %}
