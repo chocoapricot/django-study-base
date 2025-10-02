@@ -231,6 +231,18 @@ class ClientContactedForm(forms.ModelForm):
             self.fields['department'].queryset = ClientDepartment.objects.none()
             self.fields['user'].queryset = ClientUser.objects.none()
 
+    def clean(self):
+        cleaned_data = super().clean()
+        department = cleaned_data.get('department')
+        user = cleaned_data.get('user')
+
+        if department and user:
+            # 担当者が指定の所属に属しているかチェック
+            if user.department != department:
+                self.add_error('user', '指定された担当者はこの所属にはいません。')
+
+        return cleaned_data
+
     class Meta:
         model = ClientContacted
         fields = ['contacted_at', 'department', 'user', 'contact_type', 'content', 'detail']
