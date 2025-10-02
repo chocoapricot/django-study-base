@@ -286,6 +286,7 @@ class ClientContractHakenForm(forms.ModelForm):
         model = ClientContractHaken
         exclude = ['client_contract', 'version', 'created_at', 'created_by', 'updated_at', 'updated_by']
         widgets = {
+            'work_location': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'business_content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'responsibility_degree': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'complaint_officer_company': forms.Select(attrs={'class': 'form-select form-select-sm'}),
@@ -301,8 +302,8 @@ class ClientContractHakenForm(forms.ModelForm):
 
         # 全てのフィールドを必須にする
         for field_name, field in self.fields.items():
-            # business_contentとresponsibility_degreeは任意入力
-            if field_name in ['business_content', 'responsibility_degree']:
+            # business_content, responsibility_degree, work_locationは任意入力
+            if field_name in ['business_content', 'responsibility_degree', 'work_location']:
                 field.required = False
                 continue
 

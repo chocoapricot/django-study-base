@@ -100,3 +100,23 @@ def get_client_haken_units(request, client_id):
     except Exception as e:
         logger.error(f"Error fetching client haken units for client_id {client_id}: {e}")
         return JsonResponse([], safe=False)
+
+
+@login_required
+def get_client_department_detail(request, department_id):
+    """指定された部署IDの詳細を返す"""
+    from apps.client.models import ClientDepartment
+    try:
+        department = ClientDepartment.objects.get(pk=department_id)
+        data = {
+            'id': department.id,
+            'name': department.name,
+            'address': department.address or '',
+            'postal_code': department.postal_code or '',
+        }
+        return JsonResponse({'success': True, 'data': data})
+    except ClientDepartment.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Department not found'}, status=404)
+    except Exception as e:
+        logger.error(f"Error fetching client department detail for department_id {department_id}: {e}")
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
