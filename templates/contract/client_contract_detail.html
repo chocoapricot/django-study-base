@@ -20,7 +20,9 @@
                         <div class="dropdown-menu">
                             <a href="{% url 'contract:client_contract_draft_pdf' contract.pk %}" class="dropdown-item"><i class="bi bi-filetype-pdf"></i>　個別契約書(ドラフト)</a>
                             <a href="{% url 'contract:client_contract_draft_quotation' contract.pk %}" class="dropdown-item"><i class="bi bi-file-earmark-text"></i>　見積書(ドラフト)</a>
+                            {% if contract.client_contract_type_code == '20' %}
                             <a href="{% url 'contract:client_contract_draft_clash_day_notification' contract.pk %}" class="dropdown-item"><i class="bi bi-file-earmark-check"></i>　抵触日通知書(ドラフト)</a>
+                            {% endif %}
                         </div>
                     </li>
                 </ul>
