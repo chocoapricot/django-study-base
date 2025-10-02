@@ -3,10 +3,64 @@ import datetime
 from django.test import TestCase
 from unittest.mock import patch
 from apps.accounts.models import MyUser
-from apps.client.forms import ClientForm, ClientDepartmentForm
+from apps.client.forms import ClientForm, ClientDepartmentForm, ClientContactedForm
 from apps.client.forms_mail import ClientUserMailForm
 from apps.client.models import Client, ClientDepartment, ClientUser, ClientContacted
 from apps.system.settings.models import Dropdowns
+from django.utils import timezone
+
+class ClientContactedFormTest(TestCase):
+    def setUp(self):
+        """テストに必要なデータを作成"""
+        self.client = Client.objects.create(
+            name='テストクライアント',
+            name_furigana='テストクライアント',
+            corporate_number='1112223334445'
+        )
+        self.department1 = ClientDepartment.objects.create(
+            client=self.client,
+            name='営業部'
+        )
+        self.department2 = ClientDepartment.objects.create(
+            client=self.client,
+            name='開発部'
+        )
+        self.user_in_dept1 = ClientUser.objects.create(
+            client=self.client,
+            department=self.department1,
+            name_last='山田',
+            name_first='太郎'
+        )
+        self.base_data = {
+            'contacted_at': timezone.now(),
+            'content': 'テスト連絡',
+            'client': self.client.pk,
+        }
+
+    def test_user_department_validation(self):
+        """担当者が選択された所属に属しているかのバリデーションをテスト"""
+        # --- 異常系 ---
+        # 担当者(営業部)と異なる所属(開発部)を紐付けて登録
+        invalid_data = self.base_data.copy()
+        invalid_data.update({
+            'department': self.department2.pk, # 開発部
+            'user': self.user_in_dept1.pk,      # 営業部の山田さん
+        })
+        form = ClientContactedForm(data=invalid_data, client=self.client)
+        self.assertFalse(form.is_valid())
+        self.assertIn('user', form.errors)
+        self.assertEqual(form.errors['user'][0], '指定された担当者はこの所属にはいません。')
+
+        # --- 正常系 ---
+        # 担当者(営業部)と同じ所属(営業部)を紐付けて登録
+        valid_data = self.base_data.copy()
+        valid_data.update({
+            'department': self.department1.pk, # 営業部
+            'user': self.user_in_dept1.pk,      # 営業部の山田さん
+        })
+        form = ClientContactedForm(data=valid_data, client=self.client)
+        self.assertTrue(form.is_valid(), form.errors)
+
 
 class ClientFormTest(TestCase):
     def setUp(self):
