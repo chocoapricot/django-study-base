@@ -169,6 +169,8 @@ def generate_contract_pdf_content(contract):
             else:
                 haken_items.append({"title": "派遣先事業所の名称及び所在地", "text": ""})
 
+            haken_items.append({"title": "就業場所", "text": str(haken_info.work_location or "")})
+
             # 組織単位
             if haken_info.haken_unit:
                 unit = haken_info.haken_unit
