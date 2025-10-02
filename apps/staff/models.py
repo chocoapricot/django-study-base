@@ -139,6 +139,15 @@ class Staff(MyModel):
         return self.name_last + " " + self.name_first
 
     @property
+    def full_address(self):
+        """
+        完全な住所を返すプロパティ。
+        address1, address2, address3を結合する。
+        """
+        parts = [self.address1, self.address2, self.address3]
+        return "".join(filter(None, parts))
+
+    @property
     def has_mynumber(self):
         """マイナンバーが登録されているかどうかを返す"""
         return hasattr(self, 'mynumber')
