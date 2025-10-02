@@ -126,6 +126,10 @@
                                 <td>{{ haken_info.haken_unit.name|default:"-" }}</td>
                             </tr>
                             <tr>
+                                <th class="w-25 bg-light">就業場所</th>
+                                <td colspan="3">{{ haken_info.work_location|linebreaksbr|default:"-" }}</td>
+                            </tr>
+                            <tr>
                                 <th class="w-25 bg-light">派遣先指揮命令者</th>
                                 <td colspan="3">{{ haken_info.commander.name|default:"-" }}</td>
                             </tr>
