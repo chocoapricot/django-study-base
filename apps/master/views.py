@@ -856,7 +856,7 @@ def qualification_change_history_list(request):
 
     return render(
         request,
-        "master/master_change_history_list.html",
+        "common/common_change_history_list.html",
         {
             "logs": logs_page,
             "title": "資格マスタ変更履歴",
@@ -958,7 +958,7 @@ def mail_template_change_history_list(request):
 
     return render(
         request,
-        "master/master_change_history_list.html",
+        "common/common_change_history_list.html",
         {
             "logs": logs_page,
             "title": "メールテンプレート変更履歴",
@@ -987,7 +987,7 @@ def skill_change_history_list(request):
 
     return render(
         request,
-        "master/master_change_history_list.html",
+        "common/common_change_history_list.html",
         {
             "logs": logs_page,
             "title": "技能マスタ変更履歴",
@@ -1016,7 +1016,7 @@ def job_category_change_history_list(request):
 
     return render(
         request,
-        "master/master_change_history_list.html",
+        "common/common_change_history_list.html",
         {
             "logs": logs_page,
             "title": "職種マスタ変更履歴",
@@ -1271,7 +1271,7 @@ def bill_payment_change_history_list(request):
 
     return render(
         request,
-        "master/master_change_history_list.html",
+        "common/common_change_history_list.html",
         {
             "logs": logs_page,
             "title": "支払条件変更履歴",
@@ -1301,7 +1301,7 @@ def bill_bank_change_history_list(request):
 
     return render(
         request,
-        "master/master_change_history_list.html",
+        "common/common_change_history_list.html",
         {
             "logs": logs_page,
             "title": "会社銀行変更履歴",
@@ -1697,7 +1697,7 @@ def bank_management_change_history_list(request):
 
     return render(
         request,
-        "master/master_change_history_list.html",
+        "common/common_change_history_list.html",
         {
             "logs": logs_page,
             "title": "銀行・銀行支店変更履歴",
@@ -1869,7 +1869,7 @@ def information_all_change_history_list(request):
         "title": "お知らせマスタ変更履歴",
         "list_url": "master:information_list",
     }
-    return render(request, "master/master_change_history_list.html", context)
+    return render(request, "common/common_change_history_list.html", context)
 
 
 # スタッフ同意文言管理
@@ -2063,7 +2063,7 @@ def staff_agreement_change_history_list(request):
 
     return render(
         request,
-        "master/master_change_history_list.html",
+        "common/common_change_history_list.html",
         {
             "logs": logs_page,
             "title": "スタッフ同意文言変更履歴",
@@ -2273,7 +2273,7 @@ def contract_pattern_change_history_list(request):
 
     return render(
         request,
-        "master/master_change_history_list.html",
+        "common/common_change_history_list.html",
         {
             "logs": logs_page,
             "title": "契約パターン変更履歴",
@@ -2479,7 +2479,7 @@ def minimum_pay_change_history_list(request):
 
     return render(
         request,
-        "master/master_change_history_list.html",
+        "common/common_change_history_list.html",
         {
             "logs": logs_page,
             "title": "最低賃金マスタ変更履歴",
@@ -2573,7 +2573,7 @@ def haken_business_content_change_history_list(request):
     logs_page = paginator.get_page(page)
     return render(
         request,
-        "master/master_change_history_list.html",
+        "common/common_change_history_list.html",
         {
             "logs": logs_page,
             "title": "派遣業務内容変更履歴",
@@ -2667,7 +2667,7 @@ def haken_responsibility_degree_change_history_list(request):
     logs_page = paginator.get_page(page)
     return render(
         request,
-        "master/master_change_history_list.html",
+        "common/common_change_history_list.html",
         {
             "logs": logs_page,
             "title": "派遣責任程度変更履歴",
