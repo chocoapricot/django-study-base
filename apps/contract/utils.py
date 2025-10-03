@@ -1,5 +1,6 @@
 import os
 import io
+import re
 from django.conf import settings
 from django.utils import timezone
 from django.db import transaction
@@ -252,9 +253,9 @@ def generate_contract_pdf_content(contract):
         def replace_placeholders(text):
             text = str(text) if text is not None else ""
             for key, value in replacements.items():
-                placeholder = key.strip('{}')
-                text = text.replace('{{' + placeholder + '}}', value)
-                text = text.replace('{{ ' + placeholder + ' }}', value)
+                placeholder = key.strip('{}').strip()
+                pattern = re.compile(r'{{\s*' + re.escape(placeholder) + r'\s*}}')
+                text = pattern.sub(value, text)
             return text
 
         terms = contract.contract_pattern.terms.all().order_by('display_position', 'display_order')
