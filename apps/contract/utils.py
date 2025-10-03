@@ -324,6 +324,29 @@ def generate_dispatch_notification_pdf(contract, user, issued_at, watermark_text
     return pdf_content, pdf_filename, pdf_title
 
 
+def generate_clash_day_notification_pdf(contract, user, issued_at, watermark_text=None):
+    """抵触日通知書PDFを生成する"""
+    pdf_title = "抵触日通知書"
+
+    intro_text = f"{contract.client.name} 様"
+
+    items = [
+        {"title": "件名", "text": str(contract.contract_name)},
+        {"title": "発行日", "text": issued_at.strftime('%Y年%m月%d日')},
+        {"title": "発行者", "text": user.get_full_name_japanese()},
+    ]
+
+    timestamp = issued_at.strftime('%Y%m%d%H%M%S')
+    pdf_filename = f"dispatch_notification_{contract.pk}_{timestamp}.pdf"
+
+    buffer = io.BytesIO()
+    generate_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text)
+    pdf_content = buffer.getvalue()
+    buffer.close()
+
+    return pdf_content, pdf_filename, pdf_title
+
+
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
