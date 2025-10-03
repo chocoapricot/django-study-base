@@ -6,6 +6,7 @@
        {{ page_title }}
     </div>
     <div class="card-body">
+        {% include 'common/_pagination.html' with page_obj=tables %}
         <div class="table-responsive">
             <table id="sortable-table" class="table table-sm table-hover">
                 <thead>
@@ -26,6 +27,7 @@
                 </tbody>
             </table>
         </div>
+        {% include 'common/_pagination.html' with page_obj=tables %}
     </div>
 </div>
 

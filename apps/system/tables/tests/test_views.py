@@ -2,6 +2,7 @@ from django.test import TestCase, Client as DjangoClient
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from apps.client.models import Client
+from apps.system.tables.views import get_table_info_from_readme
 
 User = get_user_model()
 
@@ -35,7 +36,10 @@ class TableViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'system/tables/table_list.html')
         self.assertIn('tables', response.context)
-        self.assertEqual(len(response.context['tables']), 60)
+
+        # README.mdから動的にテーブル数を取得して比較
+        expected_table_count = len(get_table_info_from_readme())
+        self.assertEqual(response.context['tables'].paginator.count, expected_table_count)
 
     def test_table_data_view_unauthenticated(self):
         """未認証のユーザーはデータ表示ページでリダイレクトされることをテスト"""
