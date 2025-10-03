@@ -1,0 +1,19 @@
+<div class="content-box card bg-light mb-2">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>スタッフ契約詳細</span>
+    </div>
+    <div class="card-body">
+        <h5 class="card-title mb-3">{{ contract.contract_name }}</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <p class="card-text"><strong>スタッフ:</strong> {{ contract.staff.name }}</p>
+                <p class="card-text"><strong>契約番号:</strong> {{ contract.contract_number|default:"-" }}</p>
+                <p class="card-text"><strong>契約ステータス:</strong> {{ contract.get_contract_status_display }}</p>
+            </div>
+            <div class="col-md-6">
+                <p class="card-text"><strong>契約期間:</strong> {{ contract.start_date|date:"Y/m/d" }} - {% if contract.end_date %}{{ contract.end_date|date:"Y/m/d" }}{% else %}未定{% endif %}</p>
+                <p class="card-text"><strong>契約パターン:</strong> {{ contract.contract_pattern.name }}</p>
+            </div>
+        </div>
+    </div>
+</div>
