@@ -29,10 +29,10 @@ def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None,
     # スタイルシートの準備
     styles = getSampleStyleSheet()
     styles.add(ParagraphStyle(name='MainTitle', fontName='IPAPGothic', fontSize=18, alignment=1, spaceAfter=20))
-    styles.add(ParagraphStyle(name='IntroText', fontName='IPAPGothic', fontSize=11, leading=16, spaceAfter=20))
+    styles.add(ParagraphStyle(name='IntroText', fontName='IPAPGothic', fontSize=11, leading=16, spaceAfter=10))
     styles.add(ParagraphStyle(name='ItemTitle', fontName='IPAPGothic', fontSize=11, leading=14))
     styles.add(ParagraphStyle(name='ItemText', fontName='IPAPGothic', fontSize=11, leading=14))
-    styles.add(ParagraphStyle(name='PostambleText', fontName='IPAPGothic', fontSize=11, leading=16, spaceBefore=20))
+    styles.add(ParagraphStyle(name='PostambleText', fontName='IPAPGothic', fontSize=11, leading=16, spaceBefore=10))
 
     def build_story():
         """PDFの内容(Story)を構築する"""

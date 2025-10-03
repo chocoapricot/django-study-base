@@ -266,7 +266,7 @@ def generate_contract_pdf_content(contract):
 
         if preamble_terms:
             preamble_text_parts = [replace_placeholders(term.contract_terms) for term in preamble_terms]
-            intro_text = "\n\n".join(preamble_text_parts) + "\n\n" + intro_text
+            intro_text = "\n\n".join(preamble_text_parts) + intro_text
 
         if body_terms:
             notes_index = -1
