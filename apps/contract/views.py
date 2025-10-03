@@ -829,7 +829,7 @@ def client_contract_change_history_list(request, pk):
     page = request.GET.get('page')
     logs_page = paginator.get_page(page)
 
-    return render(request, 'contract/contract_change_history_list.html', {
+    return render(request, 'common/common_change_history_list.html', {
         'logs': logs_page,
         'title': f'クライアント契約変更履歴 - {contract.contract_name}',
         'list_url': 'contract:client_contract_detail',
@@ -859,7 +859,7 @@ def staff_contract_change_history_list(request, pk):
     page = request.GET.get('page')
     logs_page = paginator.get_page(page)
     
-    return render(request, 'contract/contract_change_history_list.html', {
+    return render(request, 'common/common_change_history_list.html', {
         'logs': logs_page,
         'title': f'スタッフ契約変更履歴 - {contract.contract_name}',
         'list_url': 'contract:staff_contract_detail',
