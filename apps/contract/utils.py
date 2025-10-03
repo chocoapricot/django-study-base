@@ -242,6 +242,12 @@ def generate_contract_pdf_content(contract):
                 "{{company_name}}": company.name if company else "",
                 "{{client_name}}": contract.client.name,
             }
+        elif isinstance(contract, StaffContract):
+            company = Company.objects.first()
+            replacements = {
+                "{{company_name}}": company.name if company else "",
+                "{{staff_name}}": f"{contract.staff.name_last} {contract.staff.name_first}",
+            }
 
         def replace_placeholders(text):
             text = str(text) if text is not None else ""

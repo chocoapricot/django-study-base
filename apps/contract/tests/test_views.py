@@ -297,6 +297,67 @@ class ContractViewTest(TestCase):
         self.assertEqual(new_contract.haken_info.haken_office, haken_office)
         self.assertEqual(new_contract.haken_info.business_content, 'Original business content')
 
+    def test_staff_contract_copy_view(self):
+        """スタッフ契約のコピー機能が正しく動作することをテスト"""
+        # 1. 完全なスタッフ契約データを作成
+        staff_contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='Original Staff Contract',
+            start_date=datetime.date(2025, 1, 1),
+            end_date=datetime.date(2025, 12, 31),
+            contract_pattern=self.staff_pattern,
+            contract_amount=300000,
+            description='Original description',
+            notes='Original notes',
+            contract_status=StaffContract.ContractStatus.APPROVED,
+            contract_number='S-001',
+            corporate_number=self.company.corporate_number,
+        )
+
+        # 2. コピー用URLにGETリクエストを送信
+        copy_url = reverse('contract:staff_contract_create') + f'?copy_from={staff_contract.pk}'
+        response = self.client.get(copy_url)
+
+        # 3. レスポンスとフォームの初期データを確認
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'contract/staff_contract_form.html')
+        form = response.context['form']
+
+        self.assertEqual(form.initial['contract_name'], f"{staff_contract.contract_name}のコピー")
+        self.assertEqual(form.initial['staff'], staff_contract.staff.id)
+        self.assertEqual(form.initial['contract_amount'], 300000)
+        self.assertEqual(form.initial['description'], 'Original description')
+
+        # 4. POSTリクエストでフォームを送信してコピーを作成
+        post_data = form.initial.copy()
+        post_data['contract_pattern'] = self.staff_pattern.pk
+
+        # Noneの値を空文字列に変換
+        for key, value in post_data.items():
+            if value is None:
+                post_data[key] = ''
+
+        initial_staff_contract_count = StaffContract.objects.count()
+
+        response = self.client.post(reverse('contract:staff_contract_create'), data=post_data)
+
+        # リダイレクトをチェック
+        self.assertEqual(response.status_code, 302, f"POST failed with errors: {response.context.get('form').errors if response.context else 'No context'}")
+
+        # 5. 新しい契約が作成されたことを確認
+        self.assertEqual(StaffContract.objects.count(), initial_staff_contract_count + 1)
+        new_contract = StaffContract.objects.latest('id')
+
+        # 6. 新しい契約のステータスと契約番号を確認
+        self.assertEqual(new_contract.contract_status, StaffContract.ContractStatus.DRAFT)
+        self.assertIsNone(new_contract.contract_number)
+        self.assertNotEqual(new_contract.pk, staff_contract.pk)
+
+        # 7. 新しい契約の他のフィールドを確認
+        self.assertEqual(new_contract.contract_name, f"{staff_contract.contract_name}のコピー")
+        self.assertEqual(new_contract.staff, staff_contract.staff)
+        self.assertEqual(new_contract.contract_amount, 300000)
+
     def test_issue_clash_day_notification_for_non_haken_contract(self):
         """
         派遣契約でない契約に対して抵触日通知書を発行しようとするとエラーになることをテスト
