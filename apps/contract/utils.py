@@ -246,7 +246,9 @@ def generate_contract_pdf_content(contract):
         def replace_placeholders(text):
             text = str(text) if text is not None else ""
             for key, value in replacements.items():
-                text = text.replace(key, value)
+                placeholder = key.strip('{}')
+                text = text.replace('{{' + placeholder + '}}', value)
+                text = text.replace('{{ ' + placeholder + ' }}', value)
             return text
 
         terms = contract.contract_pattern.terms.all().order_by('display_position', 'display_order')
