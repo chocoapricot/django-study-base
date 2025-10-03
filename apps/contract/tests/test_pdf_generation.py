@@ -1,11 +1,9 @@
+import datetime
+import io
+import fitz  # PyMuPDF
 from django.test import TestCase
 from unittest.mock import patch
 
-from django.test import TestCase
-from unittest.mock import patch
-
-from django.test import TestCase
-from unittest.mock import patch
 from apps.accounts.models import MyUser
 from apps.client.models import Client, ClientDepartment, ClientUser
 from apps.company.models import Company, CompanyDepartment as CompanyDept, CompanyUser
@@ -13,7 +11,6 @@ from apps.contract.models import ClientContract, ClientContractHaken, StaffContr
 from apps.master.models import ContractPattern, BillPayment, ContractTerms
 from apps.staff.models import Staff
 from apps.contract.utils import generate_contract_pdf_content, generate_clash_day_notification_pdf
-import datetime
 
 class ContractPdfGenerationTest(TestCase):
 
@@ -298,3 +295,36 @@ class ContractPdfGenerationTest(TestCase):
 
         # Check postamble_text
         self.assertEqual(postamble_text, f"Signatures: {expected_company_name} and {expected_staff_name}.")
+
+    def test_generate_client_contract_pdf_removes_unwanted_preamble(self):
+        """クライアント契約書PDFから不要な前文が削除されていることを確認する"""
+        pdf_content, _, _ = generate_contract_pdf_content(self.normal_contract)
+        self.assertIsNotNone(pdf_content)
+
+        # PDFからテキストを抽出
+        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
+        text = ""
+        for page in pdf_document:
+            text += page.get_text()
+        pdf_document.close()
+
+        # 不要な文言が含まれていないことを確認
+        unwanted_text = f"{self.normal_contract.client.name}様との間で、以下の通り業務委託契約を締結します。"
+        self.assertNotIn(unwanted_text, text)
+
+    def test_generate_staff_contract_pdf_removes_unwanted_preamble(self):
+        """スタッフ契約書PDFから不要な前文が削除されていることを確認する"""
+        pdf_content, _, _ = generate_contract_pdf_content(self.staff_contract)
+        self.assertIsNotNone(pdf_content)
+
+        # PDFからテキストを抽出
+        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
+        text = ""
+        for page in pdf_document:
+            text += page.get_text()
+        pdf_document.close()
+
+        # 不要な文言が含まれていないことを確認
+        full_name = f"{self.staff_contract.staff.name_last} {self.staff_contract.staff.name_first}"
+        unwanted_text = f"{full_name}様との間で、以下の通り雇用契約を締結します。"
+        self.assertNotIn(unwanted_text, text)
