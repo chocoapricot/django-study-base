@@ -377,7 +377,7 @@ class StaffViewsTest(TestCase):
     def test_staff_change_history_list_view(self):
         response = self.client.get(reverse('staff:staff_change_history_list', args=[self.staff_obj.pk]))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'staff/staff_change_history_list.html')
+        self.assertTemplateUsed(response, 'common/common_change_history_list.html')
         self.assertContains(response, 'テスト')
         self.assertContains(response, 'スタッフ')
 

@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Company, CompanyDepartment, CompanyUser
 from .forms import CompanyForm, CompanyDepartmentForm, CompanyUserForm
@@ -208,12 +209,22 @@ def change_history_list(request):
     )
 
     # 全てのログを統合してタイムスタンプ順にソート
-    change_logs = (company_logs | department_logs | company_user_logs).order_by('-timestamp')
+    all_logs = (company_logs | department_logs | company_user_logs).order_by('-timestamp')
 
-    return render(request, 'company/company_change_history_list.html', {
+    # ページネーション
+    paginator = Paginator(all_logs, 20) # 1ページあたり20件
+    page = request.GET.get('page')
+    change_logs = paginator.get_page(page)
+
+    context = {
+        'company': company,
         'change_logs': change_logs,
-        'company': company
-    })
+        'info_card_path': 'company/_company_info_card.html',
+        'page_title': '会社関連 変更履歴一覧',
+        'back_url_name': 'company:company_detail',
+        # 'object' は company_detail が pk を取らないため設定しない
+    }
+    return render(request, 'common/common_change_history_list.html', context)
 
 
 # Company User CRUD
