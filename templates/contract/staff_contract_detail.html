@@ -14,7 +14,7 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 スタッフ契約詳細
                 <div class="d-flex align-items-center">
-                    <a href="{% url 'contract:staff_contract_create' %}?copy_from={{ contract.pk }}" class="btn btn-sm btn-info me-2">コピー作成</a>
+                    <a href="{% url 'contract:staff_contract_create' %}?copy_from={{ contract.pk }}" class="btn btn-sm btn-secondary me-2">コピー作成</a>
                     {% if contract.contract_status == '1' or contract.contract_status == '5' %}
                     <ul class="nav nav-pills mb-0">
                         <li class="nav-item dropdown">
