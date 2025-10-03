@@ -168,22 +168,151 @@ class ContractPdfGenerationTest(TestCase):
         self.assertNotIn("派遣元責任者", items_dict)
         self.assertNotIn("協定対象派遣労働者に限定するか否かの別", items_dict)
 
-    @patch('apps.contract.utils.generate_contract_pdf')
-    def test_clash_day_notification_pdf_generation(self, mock_generate_pdf):
-        """Test that clash day notification PDF is generated with correct data."""
-        issued_at = datetime.datetime.now(datetime.timezone.utc)
-        generate_clash_day_notification_pdf(self.dispatch_contract, self.test_user, issued_at)
+    def test_generate_clash_day_notification_pdf_content(self):
+        """抵触日通知書PDFが正しい内容で生成されることをテストする"""
+        # 派遣先事業所と抵触日を設定
+        haken_office = ClientDepartment.objects.create(
+            client=self.client,
+            name="名古屋支社",
+            postal_code="450-0002",
+            address="名古屋市中村区名駅４丁目２７−１",
+            is_haken_office=True,
+            haken_jigyosho_teishokubi=datetime.date(2025, 10, 1)
+        )
+        self.haken_info.haken_office = haken_office
+        self.haken_info.save()
 
+        issued_at = datetime.datetime.now(datetime.timezone.utc)
+        pdf_content, _, pdf_title = generate_clash_day_notification_pdf(self.dispatch_contract, self.test_user, issued_at)
+
+        self.assertIsNotNone(pdf_content)
+        self.assertEqual(pdf_title, "抵触日通知書")
+
+        # PDFからテキストを抽出
+        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
+        text = ""
+        for page in pdf_document:
+            text += page.get_text()
+        pdf_document.close()
+
+        # PDF内容の検証
+        self.assertIn("派遣可能期間の制限（事業所単位の期間制限）に抵触する日の通知", text)
+        self.assertIn("（派遣元）", text)
+        self.assertIn(f"{self.company.name} 御中", text)
+        self.assertIn("（派遣先）", text)
+        self.assertIn(self.client.name, text)
+        self.assertIn(f"役職 {self.client_user.position}", text)
+        self.assertIn(f"氏名 {self.client_user.name} 様", text)
+        self.assertIn("労働者派遣法第２６条第４項に基づき", text)
+        self.assertIn("記", text)
+        self.assertIn("１．労働者派遣の役務の提供を受ける事業所", text)
+        self.assertIn(haken_office.name, text)
+        self.assertIn(haken_office.address, text)
+        self.assertIn("２．上記事業所の抵触日", text)
+        self.assertIn("2025年10月01日", text)
+        self.assertIn("３．その他", text)
+        self.assertIn("事業所単位の派遣可能期間を延長した場合は", text)
+
+    @patch('apps.contract.utils.generate_contract_pdf')
+    def test_contract_term_placeholders_are_replaced(self, mock_generate_pdf):
+        """
+        Test that {{company_name}} and {{client_name}} placeholders in ContractTerms
+        are replaced with actual names in the generated PDF content.
+        """
+        # Create contract terms with placeholders
+        ContractTerms.objects.create(
+            contract_pattern=self.normal_pattern,
+            display_position=1, # Preamble
+            contract_terms="This agreement is between {{company_name}} and {{client_name}}."
+        )
+        ContractTerms.objects.create(
+            contract_pattern=self.normal_pattern,
+            display_position=2, # Body
+            display_order=1,
+            contract_clause="Clause 1",
+            contract_terms="The service provider, {{company_name}}, agrees to deliver the services."
+        )
+        ContractTerms.objects.create(
+            contract_pattern=self.normal_pattern,
+            display_position=3, # Postamble
+            contract_terms="Signed by {{company_name}} and {{client_name}}."
+        )
+
+        # Generate the PDF content
+        generate_contract_pdf_content(self.normal_contract)
+
+        # Check that the mock was called
         self.assertTrue(mock_generate_pdf.called)
 
         # Get the arguments passed to the mock
         positional_args = mock_generate_pdf.call_args[0]
-        pdf_title = positional_args[1]
         intro_text = positional_args[2]
         items = positional_args[3]
+        postamble_text = mock_generate_pdf.call_args[1]['postamble_text']
 
-        # Convert items to a dict for easier lookup
+        # Assertions for placeholder replacement
+        expected_company_name = self.company.name
+        expected_client_name = self.client.name
+
+        # Check intro_text (preamble)
+        self.assertIn(f"This agreement is between {expected_company_name} and {expected_client_name}", intro_text)
+
+        # Check items (body)
         items_dict = {item['title']: item['text'] for item in items}
+        self.assertIn("Clause 1", items_dict)
+        self.assertEqual(items_dict["Clause 1"], f"The service provider, {expected_company_name}, agrees to deliver the services.")
+
+        # Check postamble_text
+        self.assertEqual(postamble_text, f"Signed by {expected_company_name} and {expected_client_name}.")
+
+    @patch('apps.contract.utils.generate_contract_pdf')
+    def test_staff_contract_term_placeholders_are_replaced(self, mock_generate_pdf):
+        """
+        Test that {{company_name}} and {{staff_name}} placeholders in ContractTerms
+        are replaced with actual names in the generated PDF content for staff contracts.
+        """
+        # Create contract terms with placeholders for staff
+        ContractTerms.objects.create(
+            contract_pattern=self.staff_pattern,
+            display_position=1, # Preamble
+            contract_terms="This is an agreement between {{company_name}} and our staff member, {{staff_name}}."
+        )
+        ContractTerms.objects.create(
+            contract_pattern=self.staff_pattern,
+            display_position=2, # Body
+            display_order=1,
+            contract_clause="Article 1",
+            contract_terms="Our company, {{company_name}}, hires {{staff_name}}."
+        )
+        ContractTerms.objects.create(
+            contract_pattern=self.staff_pattern,
+            display_position=3, # Postamble
+            contract_terms="Signatures: {{company_name}} and {{staff_name}}."
+        )
+
+        # Generate the PDF content
+        generate_contract_pdf_content(self.staff_contract)
+
+        # Check that the mock was called
+        self.assertTrue(mock_generate_pdf.called)
+
+        # Get the arguments passed to the mock
+        positional_args = mock_generate_pdf.call_args[0]
+        intro_text = positional_args[2]
+        items = positional_args[3]
+        postamble_text = mock_generate_pdf.call_args[1]['postamble_text']
+
+        # Assertions for placeholder replacement
+        expected_company_name = self.company.name
+        expected_staff_name = f"{self.staff.name_last} {self.staff.name_first}"
+
+        # Check intro_text (preamble)
+        self.assertIn(f"This is an agreement between {expected_company_name} and our staff member, {expected_staff_name}", intro_text)
+
+        # Check items (body)
+        items_dict = {item['title']: item['text'] for item in items}
+        self.assertIn("Article 1", items_dict)
+        self.assertEqual(items_dict["Article 1"], f"Our company, {expected_company_name}, hires {expected_staff_name}.")
 
         # Assertions
         self.assertEqual(pdf_title, "抵触日通知書")

@@ -337,12 +337,119 @@ def generate_clash_day_notification_pdf(contract, user, issued_at, watermark_tex
     ]
 
     timestamp = issued_at.strftime('%Y%m%d%H%M%S')
-    pdf_filename = f"clash_day_notification_{contract.pk}_{timestamp}.pdf"
+    pdf_filename = f"dispatch_notification_{contract.pk}_{timestamp}.pdf"
 
     buffer = io.BytesIO()
     generate_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text)
     pdf_content = buffer.getvalue()
     buffer.close()
+
+    return pdf_content, pdf_filename, pdf_title
+
+
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, KeepInFrame, HRFlowable
+from reportlab.lib.units import cm
+
+from apps.company.models import Company
+
+def generate_clash_day_notification_pdf(contract, user, issued_at, watermark_text=None):
+    """抵触日通知書PDFを生成する"""
+    pdf_title = "抵触日通知書"
+    buffer = io.BytesIO()
+
+    # --- データ取得 ---
+    company = Company.objects.first()
+    client = contract.client
+    haken_info = contract.haken_info
+    responsible_person = haken_info.responsible_person_client
+    haken_office = haken_info.haken_office
+    clash_date = haken_office.haken_jigyosho_teishokubi if haken_office else None
+
+    # --- フォントとスタイルの設定 ---
+    font_path = 'statics/fonts/ipagp.ttf'
+    pdfmetrics.registerFont(TTFont('IPAPGothic', font_path))
+
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name='ClashAddress', fontName='IPAPGothic', fontSize=11, leading=16, spaceBefore=10))
+    styles.add(ParagraphStyle(name='ClashMainTitle', fontName='IPAPGothic', fontSize=16, alignment=1, spaceBefore=20, spaceAfter=20))
+    styles.add(ParagraphStyle(name='ClashBodyText', fontName='IPAPGothic', fontSize=11, leading=18, firstLineIndent=11, spaceAfter=10))
+    styles.add(ParagraphStyle(name='ClashSectionTitle', fontName='IPAPGothic', fontSize=14, alignment=1, spaceBefore=10, spaceAfter=10))
+    styles.add(ParagraphStyle(name='ClashListItem', fontName='IPAPGothic', fontSize=11, leading=18, leftIndent=22, firstLineIndent=-11))
+
+    # --- PDF要素の構築 ---
+    story = []
+
+    # 宛先
+    company_name_text = f"{company.name}　御中" if company else ""
+    story.append(Paragraph("（派遣元）", styles['ClashAddress']))
+    story.append(Paragraph(company_name_text, styles['ClashAddress']))
+    story.append(Spacer(1, 1 * cm))
+
+    client_name_text = f"{client.name}"
+    person_text = ""
+    if responsible_person:
+        position = responsible_person.position or ""
+        name = responsible_person.name or ""
+        person_text = f"役職 {position}<br/>氏名 {name}　様"
+    story.append(Paragraph("（派遣先）", styles['ClashAddress']))
+    story.append(Paragraph(client_name_text, styles['ClashAddress']))
+    if person_text:
+        story.append(Paragraph(person_text, styles['ClashAddress']))
+
+    story.append(Spacer(1, 1 * cm))
+    story.append(HRFlowable(width="100%", thickness=0.5, color=colors.black))
+    story.append(Spacer(1, 0.5 * cm))
+
+    # メインタイトル
+    story.append(Paragraph("派遣可能期間の制限（事業所単位の期間制限）に抵触する日の通知", styles['ClashMainTitle']))
+
+    # 本文
+    body_text = "労働者派遣法第２６条第４項に基づき、派遣可能期間の制限（事業所単位の期間制限）に抵触することとなる最初の日（以下、「抵触日」という。）を、下記のとおり通知します。"
+    story.append(Paragraph(body_text, styles['ClashBodyText']))
+    story.append(Spacer(1, 0.5 * cm))
+    story.append(HRFlowable(width="100%", thickness=0.5, color=colors.black))
+    story.append(Spacer(1, 0.5 * cm))
+
+    # 記
+    story.append(Paragraph("記", styles['ClashSectionTitle']))
+
+    # 記書きの内容
+    # 1. 事業所
+    office_name = haken_office.name if haken_office else "（事業所情報なし）"
+    office_address = ""
+    if haken_office:
+        postal = f"〒{haken_office.postal_code}" if haken_office.postal_code else ""
+        address = haken_office.address or ""
+        office_address = f"{postal} {address}".strip()
+
+    item1_text = f"１．労働者派遣の役務の提供を受ける事業所<br/>{office_name}<br/>{office_address}"
+    story.append(Paragraph(item1_text, styles['ClashListItem']))
+    story.append(Spacer(1, 0.5 * cm))
+
+    # 2. 抵触日
+    clash_date_str = clash_date.strftime('%Y年%m月%d日') if clash_date else "（抵触日の設定なし）"
+    item2_text = f"２．上記事業所の抵触日<br/>{clash_date_str}"
+    story.append(Paragraph(item2_text, styles['ClashListItem']))
+    story.append(Spacer(1, 0.5 * cm))
+
+    # 3. その他
+    item3_text = "３．その他<br/>事業所単位の派遣可能期間を延長した場合は、速やかに、労働者派遣法第４０条の２第７項に基づき、延長後の抵触日を通知します。"
+    story.append(Paragraph(item3_text, styles['ClashListItem']))
+
+    # --- PDF生成 ---
+    doc = SimpleDocTemplate(buffer, pagesize=A4, leftMargin=2*cm, rightMargin=2*cm, topMargin=2*cm, bottomMargin=2*cm, title=pdf_title)
+    doc.build(story)
+
+    pdf_content = buffer.getvalue()
+    buffer.close()
+
+    timestamp = issued_at.strftime('%Y%m%d%H%M%S')
+    pdf_filename = f"clash_day_notification_{contract.pk}_{timestamp}.pdf"
 
     return pdf_content, pdf_filename, pdf_title
 
