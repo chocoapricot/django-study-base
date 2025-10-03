@@ -1,16 +1,28 @@
 {% extends 'common/_base.html' %}
-{% load static %}
-
-{% block title %}{{ title }}{% endblock %}
-
 {% block content %}
-<!-- 共通テンプレートを使用して変更履歴を表示（ページネーション・戻るボタン込み） -->
-{% if list_url_pk %}
-    {% url list_url list_url_pk as back_url_resolved %}
+
+{# --- ヘッダー --- #}
+{# 各Viewで設定されたパスのテンプレートをインクルード #}
+{# companyやstaffオブジェクトは各Viewのcontextで設定されている前提 #}
+{% include info_card_path %}
+
+{# --- 変更履歴 --- #}
+{# 共通テンプレートを使用して変更履歴を表示（ページネーション・戻るボタン込み） #}
+{% if object %}
+    {% url back_url_name object.pk as detail_url %}
 {% else %}
-    {% url list_url as back_url_resolved %}
+    {% url back_url_name as detail_url %}
 {% endif %}
-{% with change_logs=logs change_logs_count=logs.paginator.count history_url='' model_name=model_name title=title back_url=back_url_resolved show_full_content=True %}
+
+{% with change_logs=change_logs change_logs_count=change_logs.paginator.count history_url='' title=page_title back_url=detail_url show_full_content=True %}
     {% include 'common/_change_history_list.html' %}
 {% endwith %}
+
+<style>
+    td[style*="max-width"] {
+        /* スマホでも折り返しやすく */
+        max-width: 90vw;
+    }
+</style>
+
 {% endblock %}
