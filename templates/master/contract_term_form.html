@@ -31,6 +31,15 @@
                     {% if form.contract_terms.errors %}
                         <div class="text-danger small">{{ form.contract_terms.errors.0 }}</div>
                     {% endif %}
+                    <div class="text-muted small mt-2">
+                        {% verbatim %}{{company_name}}{% endverbatim %}：あなたの会社名に置換されます。
+                    </div>
+                    <div class="text-muted small mt-2">
+                        {% verbatim %}{{client_name}}{% endverbatim %}：契約する会社名に置換されます。
+                    </div>
+                    <div class="text-muted small mt-2">
+                        {% verbatim %}{{staff_name}}{% endverbatim %}：契約スタッフ名に置換されます。
+                    </div>
                 </div>
             </div>
 
