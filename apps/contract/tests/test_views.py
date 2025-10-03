@@ -19,6 +19,7 @@ class ContractViewTest(TestCase):
         settings.DROPDOWN_CLIENT_CONTRACT_TYPE = []
         from django.contrib.auth.models import Permission
         from django.contrib.contenttypes.models import ContentType
+        from apps.company.models import Company
 
         self.user = User.objects.create_user(
             username='testuser',
@@ -42,6 +43,8 @@ class ContractViewTest(TestCase):
 
         self.user.user_permissions.set(all_permissions)
 
+        self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
+
         self.test_client = TestClient.objects.create(
             name='Test Client',
             corporate_number='6000000000001',
@@ -55,7 +58,8 @@ class ContractViewTest(TestCase):
             start_date=datetime.date.today(),
             end_date=datetime.date.today() + datetime.timedelta(days=30),
             contract_pattern=self.contract_pattern,
-            client_contract_type_code='20'
+            client_contract_type_code='20',
+            corporate_number=self.company.corporate_number
         )
         self.non_haken_contract_pattern = ContractPattern.objects.create(name='Non-Haken Pattern', domain='10', contract_type_code='10')
         self.non_haken_contract = ClientContract.objects.create(
@@ -66,6 +70,7 @@ class ContractViewTest(TestCase):
             contract_pattern=self.non_haken_contract_pattern,
             client_contract_type_code='10',
             contract_status=ClientContract.ContractStatus.APPROVED,
+            corporate_number=self.company.corporate_number
         )
 
         self.staff = Staff.objects.create(
@@ -198,6 +203,99 @@ class ContractViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/pdf')
         self.assertTrue(response['Content-Disposition'].startswith(f'attachment; filename="'))
+
+    def test_client_contract_copy_view(self):
+        """クライアント契約のコピー機能が正しく動作することをテスト"""
+        from apps.company.models import CompanyUser
+        # 1. 派遣情報を含む完全な契約データを作成
+        self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
+        self.client_contract.contract_number = 'C-001'
+        self.client_contract.contract_amount = 500000
+        self.client_contract.save()
+
+        haken_office = ClientDepartment.objects.create(client=self.test_client, name='Copy Test Office', is_haken_office=True)
+        haken_unit = ClientDepartment.objects.create(client=self.test_client, name='Copy Test Unit', is_haken_unit=True)
+        commander = ClientUser.objects.create(client=self.test_client, name_last='CopyCommander', name_first='Test')
+        company_user = CompanyUser.objects.create(name_last='CopyCompany', name_first='User')
+
+        original_haken_info = ClientContractHaken.objects.create(
+            client_contract=self.client_contract,
+            haken_office=haken_office,
+            haken_unit=haken_unit,
+            commander=commander,
+            complaint_officer_client=commander,
+            responsible_person_client=commander,
+            complaint_officer_company=company_user,
+            responsible_person_company=company_user,
+            limit_by_agreement='0',
+            limit_indefinite_or_senior='0',
+            business_content='Original business content'
+        )
+
+        # 2. コピー用URLにGETリクエストを送信
+        copy_url = reverse('contract:client_contract_create') + f'?copy_from={self.client_contract.pk}'
+        response = self.client.get(copy_url)
+
+        # 3. レスポンスとフォームの初期データを確認
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'contract/client_contract_form.html')
+        form = response.context['form']
+        haken_form = response.context['haken_form']
+
+        self.assertEqual(form.initial['contract_name'], f"{self.client_contract.contract_name}のコピー")
+        self.assertEqual(form.initial['client'], self.client_contract.client.id)
+        self.assertEqual(form.initial['contract_amount'], 500000)
+        self.assertEqual(haken_form.initial['haken_office'], haken_office.id)
+        self.assertEqual(haken_form.initial['commander'], commander.id)
+        self.assertEqual(haken_form.initial['business_content'], 'Original business content')
+
+        # 4. POSTリクエストでフォームを送信してコピーを作成
+        post_data = form.initial.copy()
+        post_data.update(haken_form.initial)
+
+        # `model_to_dict`がForeignKeyをIDに変換するので、ChoiceFieldも手動でpkに変換
+        post_data['contract_pattern'] = self.contract_pattern.pk
+        post_data['complaint_officer_company'] = company_user.pk
+        post_data['responsible_person_company'] = company_user.pk
+
+        # Noneの値を空文字列に変換して、TypeErrorを回避
+        for key, value in post_data.items():
+            if value is None:
+                post_data[key] = ''
+
+        initial_client_contract_count = ClientContract.objects.count()
+        initial_haken_count = ClientContractHaken.objects.count()
+
+        response = self.client.post(reverse('contract:client_contract_create'), data=post_data)
+
+        # リダイレクトをチェック
+        if response.status_code != 302:
+            form_errors = response.context.get('form').errors if response.context and response.context.get('form') else {}
+            haken_form_errors = response.context.get('haken_form').errors if response.context and response.context.get('haken_form') else {}
+            self.fail(f"POST failed with status {response.status_code}. Form errors: {form_errors}, Haken form errors: {haken_form_errors}")
+        self.assertEqual(response.status_code, 302)
+
+        # 5. 新しい契約が作成されたことを確認
+        self.assertEqual(ClientContract.objects.count(), initial_client_contract_count + 1)
+        self.assertEqual(ClientContractHaken.objects.count(), initial_haken_count + 1)
+
+        new_contract = ClientContract.objects.latest('id')
+
+        # 6. 新しい契約のステータスと契約番号を確認
+        self.assertEqual(new_contract.contract_status, ClientContract.ContractStatus.DRAFT)
+        self.assertIsNone(new_contract.contract_number)
+        self.assertNotEqual(new_contract.pk, self.client_contract.pk)
+
+        # 7. 新しい契約の他のフィールドを確認
+        self.assertEqual(new_contract.contract_name, f"{self.client_contract.contract_name}のコピー")
+        self.assertEqual(new_contract.client, self.client_contract.client)
+        self.assertEqual(new_contract.contract_amount, 500000)
+
+        # 8. 新しい派遣情報が作成されたことを確認
+        self.assertTrue(hasattr(new_contract, 'haken_info'))
+        self.assertNotEqual(new_contract.haken_info.pk, original_haken_info.pk)
+        self.assertEqual(new_contract.haken_info.haken_office, haken_office)
+        self.assertEqual(new_contract.haken_info.business_content, 'Original business content')
 
     def test_issue_clash_day_notification_for_non_haken_contract(self):
         """

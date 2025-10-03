@@ -6,6 +6,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, Http404
 from django.core.files.base import ContentFile
+from django.forms.models import model_to_dict
 from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken
 from .forms import ClientContractForm, StaffContractForm, ClientContractHakenForm
 from django.conf import settings
@@ -274,21 +275,19 @@ def client_contract_create(request):
         initial_data = {}
         haken_initial_data = {}
         if original_contract:
-            # モデルのフィールドを辞書に変換
-            initial_data = {
-                f.name: getattr(original_contract, f.name)
-                for f in original_contract._meta.fields
-                if f.name not in ['id', 'pk', 'contract_number', 'contract_status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'approved_at', 'approved_by', 'issued_at', 'issued_by', 'confirmed_at']
-            }
+            # model_to_dictを使用して関連フィールドのIDを正しく取得
+            initial_data = model_to_dict(
+                original_contract,
+                exclude=['id', 'pk', 'contract_number', 'contract_status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'approved_at', 'approved_by', 'issued_at', 'issued_by', 'confirmed_at']
+            )
             initial_data['contract_name'] = f"{initial_data.get('contract_name', '')}のコピー"
 
             if is_haken and hasattr(original_contract, 'haken_info'):
                 original_haken_info = original_contract.haken_info
-                haken_initial_data = {
-                    f.name: getattr(original_haken_info, f.name)
-                    for f in original_haken_info._meta.fields
-                    if f.name not in ['id', 'pk', 'client_contract', 'created_at', 'created_by', 'updated_at', 'updated_by']
-                }
+                haken_initial_data = model_to_dict(
+                    original_haken_info,
+                    exclude=['id', 'pk', 'client_contract', 'created_at', 'created_by', 'updated_at', 'updated_by']
+                )
         else:
             if selected_client:
                 initial_data['client'] = selected_client.id
