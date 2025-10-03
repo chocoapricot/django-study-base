@@ -214,10 +214,21 @@ def client_contract_detail(request, pk):
 @permission_required('contract.add_clientcontract', raise_exception=True)
 def client_contract_create(request):
     """クライアント契約作成"""
+    copy_from_id = request.GET.get('copy_from')
     selected_client_id = request.GET.get('selected_client_id')
     client_contract_type_code = request.GET.get('client_contract_type_code')
-    is_haken = client_contract_type_code == '20'
 
+    original_contract = None
+    if copy_from_id:
+        try:
+            original_contract = get_object_or_404(ClientContract, pk=copy_from_id)
+            selected_client_id = original_contract.client_id
+            client_contract_type_code = original_contract.client_contract_type_code
+        except (ValueError, Http404):
+            messages.error(request, "コピー元の契約が見つかりませんでした。")
+            return redirect('contract:client_contract_list')
+
+    is_haken = client_contract_type_code == '20'
     selected_client = None
     if selected_client_id:
         try:
@@ -227,8 +238,6 @@ def client_contract_create(request):
 
     if request.method == 'POST':
         form = ClientContractForm(request.POST)
-
-        # POST時にもis_hakenを判定
         post_is_haken = request.POST.get('client_contract_type_code') == '20'
 
         client_id = request.POST.get('client')
@@ -247,6 +256,9 @@ def client_contract_create(request):
                     contract = form.save(commit=False)
                     contract.created_by = request.user
                     contract.updated_by = request.user
+                    # コピー作成時はステータスを「作成中」に戻す
+                    contract.contract_status = ClientContract.ContractStatus.DRAFT
+                    contract.contract_number = None  # 契約番号はクリア
                     contract.save()
 
                     if post_is_haken and haken_form:
@@ -258,19 +270,37 @@ def client_contract_create(request):
                     return redirect('contract:client_contract_detail', pk=contract.pk)
             except Exception as e:
                 messages.error(request, f"保存中にエラーが発生しました: {e}")
-    else: # GET
+    else:  # GET
         initial_data = {}
-        if selected_client:
-            initial_data['client'] = selected_client.id
-        if client_contract_type_code:
-            initial_data['client_contract_type_code'] = client_contract_type_code
+        haken_initial_data = {}
+        if original_contract:
+            # モデルのフィールドを辞書に変換
+            initial_data = {
+                f.name: getattr(original_contract, f.name)
+                for f in original_contract._meta.fields
+                if f.name not in ['id', 'pk', 'contract_number', 'contract_status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'approved_at', 'approved_by', 'issued_at', 'issued_by', 'confirmed_at']
+            }
+            initial_data['contract_name'] = f"{initial_data.get('contract_name', '')}のコピー"
+
+            if is_haken and hasattr(original_contract, 'haken_info'):
+                original_haken_info = original_contract.haken_info
+                haken_initial_data = {
+                    f.name: getattr(original_haken_info, f.name)
+                    for f in original_haken_info._meta.fields
+                    if f.name not in ['id', 'pk', 'client_contract', 'created_at', 'created_by', 'updated_at', 'updated_by']
+                }
+        else:
+            if selected_client:
+                initial_data['client'] = selected_client.id
+            if client_contract_type_code:
+                initial_data['client_contract_type_code'] = client_contract_type_code
 
         form = ClientContractForm(initial=initial_data)
-        haken_form = ClientContractHakenForm(client=selected_client) if is_haken else None
+        haken_form = ClientContractHakenForm(initial=haken_initial_data, client=selected_client) if is_haken else None
 
     context = {
         'form': form,
-        'haken_form': haken_form if 'haken_form' in locals() else (ClientContractHakenForm(client=selected_client) if is_haken else None),
+        'haken_form': haken_form,
         'title': 'クライアント契約作成',
         'is_haken': is_haken,
         'selected_client': selected_client,
