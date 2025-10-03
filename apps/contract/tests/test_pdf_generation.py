@@ -7,7 +7,7 @@ from apps.accounts.models import MyUser
 from apps.client.models import Client, ClientDepartment, ClientUser
 from apps.company.models import Company, CompanyDepartment as CompanyDept, CompanyUser
 from apps.contract.models import ClientContract, ClientContractHaken
-from apps.master.models import ContractPattern, BillPayment
+from apps.master.models import ContractPattern, BillPayment, ContractTerms
 from apps.contract.utils import generate_contract_pdf_content, generate_clash_day_notification_pdf
 import datetime
 
@@ -168,3 +168,55 @@ class ContractPdfGenerationTest(TestCase):
         self.assertEqual(items_dict["件名"], self.dispatch_contract.contract_name)
         self.assertEqual(items_dict["発行日"], issued_at.strftime('%Y年%m月%d日'))
         self.assertEqual(items_dict["発行者"], self.test_user.get_full_name_japanese())
+
+    @patch('apps.contract.utils.generate_contract_pdf')
+    def test_contract_term_placeholders_are_replaced(self, mock_generate_pdf):
+        """
+        Test that {{company_name}} and {{client_name}} placeholders in ContractTerms
+        are replaced with actual names in the generated PDF content.
+        """
+        # Create contract terms with placeholders
+        ContractTerms.objects.create(
+            contract_pattern=self.normal_pattern,
+            display_position=1, # Preamble
+            contract_terms="This agreement is between {{company_name}} and {{client_name}}."
+        )
+        ContractTerms.objects.create(
+            contract_pattern=self.normal_pattern,
+            display_position=2, # Body
+            display_order=1,
+            contract_clause="Clause 1",
+            contract_terms="The service provider, {{company_name}}, agrees to deliver the services."
+        )
+        ContractTerms.objects.create(
+            contract_pattern=self.normal_pattern,
+            display_position=3, # Postamble
+            contract_terms="Signed by {{company_name}} and {{client_name}}."
+        )
+
+        # Generate the PDF content
+        generate_contract_pdf_content(self.normal_contract)
+
+        # Check that the mock was called
+        self.assertTrue(mock_generate_pdf.called)
+
+        # Get the arguments passed to the mock
+        positional_args = mock_generate_pdf.call_args[0]
+        intro_text = positional_args[2]
+        items = positional_args[3]
+        postamble_text = mock_generate_pdf.call_args[1]['postamble_text']
+
+        # Assertions for placeholder replacement
+        expected_company_name = self.company.name
+        expected_client_name = self.client.name
+
+        # Check intro_text (preamble)
+        self.assertIn(f"This agreement is between {expected_company_name} and {expected_client_name}", intro_text)
+
+        # Check items (body)
+        items_dict = {item['title']: item['text'] for item in items}
+        self.assertIn("Clause 1", items_dict)
+        self.assertEqual(items_dict["Clause 1"], f"The service provider, {expected_company_name}, agrees to deliver the services.")
+
+        # Check postamble_text
+        self.assertEqual(postamble_text, f"Signed by {expected_company_name} and {expected_client_name}.")
