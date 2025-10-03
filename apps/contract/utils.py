@@ -89,7 +89,7 @@ def generate_contract_pdf_content(contract):
 
     if isinstance(contract, ClientContract):
         contract_type = 'client'
-        intro_text = f"{contract.client.name} 様との間で、以下の通り業務委託契約を締結します。"
+        intro_text = ""
         start_date_str = contract.start_date.strftime('%Y年%m月%d日')
         end_date_str = contract.end_date.strftime('%Y年%m月%d日') if contract.end_date else "無期限"
         contract_period = f"{start_date_str}　～　{end_date_str}"
@@ -215,7 +215,7 @@ def generate_contract_pdf_content(contract):
                 items.extend(haken_items)
     elif isinstance(contract, StaffContract):
         contract_type = 'staff'
-        intro_text = f"{contract.staff.name_last} {contract.staff.name_first} 様との間で、以下の通り雇用契約を締結します。"
+        intro_text = ""
         start_date_str = contract.start_date.strftime('%Y年%m月%d日')
         end_date_str = contract.end_date.strftime('%Y年%m月%d日') if contract.end_date else "無期限"
         contract_period = f"{start_date_str}　～　{end_date_str}"
