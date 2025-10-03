@@ -858,9 +858,9 @@ def qualification_change_history_list(request):
         request,
         "common/common_change_history_list.html",
         {
-            "logs": logs_page,
-            "title": "資格マスタ変更履歴",
-            "list_url": "master:qualification_list",
+            "change_logs": logs_page,
+            "page_title": "資格マスタ変更履歴",
+            "back_url_name": "master:qualification_list",
             "model_name": "Qualification",
         },
     )
@@ -960,9 +960,9 @@ def mail_template_change_history_list(request):
         request,
         "common/common_change_history_list.html",
         {
-            "logs": logs_page,
-            "title": "メールテンプレート変更履歴",
-            "list_url": "master:mail_template_list",
+            "change_logs": logs_page,
+            "page_title": "メールテンプレート変更履歴",
+            "back_url_name": "master:mail_template_list",
             "model_name": "MailTemplate",
         },
     )
@@ -989,9 +989,9 @@ def skill_change_history_list(request):
         request,
         "common/common_change_history_list.html",
         {
-            "logs": logs_page,
-            "title": "技能マスタ変更履歴",
-            "list_url": "master:skill_list",
+            "change_logs": logs_page,
+            "page_title": "技能マスタ変更履歴",
+            "back_url_name": "master:skill_list",
             "model_name": "Skill",
         },
     )
@@ -1018,9 +1018,9 @@ def job_category_change_history_list(request):
         request,
         "common/common_change_history_list.html",
         {
-            "logs": logs_page,
-            "title": "職種マスタ変更履歴",
-            "list_url": "master:job_category_list",
+            "change_logs": logs_page,
+            "page_title": "職種マスタ変更履歴",
+            "back_url_name": "master:job_category_list",
             "model_name": "JobCategory",
         },
     )
@@ -1273,9 +1273,9 @@ def bill_payment_change_history_list(request):
         request,
         "common/common_change_history_list.html",
         {
-            "logs": logs_page,
-            "title": "支払条件変更履歴",
-            "list_url": "master:bill_payment_list",
+            "change_logs": logs_page,
+            "page_title": "支払条件変更履歴",
+            "back_url_name": "master:bill_payment_list",
             "model_name": "BillPayment",
         },
     )
@@ -1303,9 +1303,9 @@ def bill_bank_change_history_list(request):
         request,
         "common/common_change_history_list.html",
         {
-            "logs": logs_page,
-            "title": "会社銀行変更履歴",
-            "list_url": "master:bill_bank_list",
+            "change_logs": logs_page,
+            "page_title": "会社銀行変更履歴",
+            "back_url_name": "master:bill_bank_list",
             "model_name": "BillBank",
         },
     )
@@ -1699,9 +1699,9 @@ def bank_management_change_history_list(request):
         request,
         "common/common_change_history_list.html",
         {
-            "logs": logs_page,
-            "title": "銀行・銀行支店変更履歴",
-            "list_url": "master:bank_management",
+            "change_logs": logs_page,
+            "page_title": "銀行・銀行支店変更履歴",
+            "back_url_name": "master:bank_management",
             "model_name": "Bank/BankBranch",
         },
     )
@@ -1864,10 +1864,10 @@ def information_all_change_history_list(request):
     logs = paginator.get_page(page_number)
 
     context = {
-        "logs": logs,
+        "change_logs": logs,
         "model_name": "Information",
-        "title": "お知らせマスタ変更履歴",
-        "list_url": "master:information_list",
+        "page_title": "お知らせマスタ変更履歴",
+        "back_url_name": "master:information_list",
     }
     return render(request, "common/common_change_history_list.html", context)
 
@@ -2064,13 +2064,12 @@ def staff_agreement_change_history_list(request):
     return render(
         request,
         "common/common_change_history_list.html",
-        {
-            "logs": logs_page,
-            "title": "スタッフ同意文言変更履歴",
-            "list_url": "master:staff_agreement_list",
-            "model_name": "StaffAgreement",
-        },
-    )
+                {
+                    "change_logs": logs_page,
+                    "page_title": "スタッフ同意文言変更履歴",
+                    "back_url_name": "master:staff_agreement_list",
+                    "model_name": "StaffAgreement",
+                },    )
 
 
 @login_required
@@ -2275,9 +2274,9 @@ def contract_pattern_change_history_list(request):
         request,
         "common/common_change_history_list.html",
         {
-            "logs": logs_page,
-            "title": "契約パターン変更履歴",
-            "list_url": "master:contract_pattern_list",
+            "change_logs": logs_page,
+            "page_title": "契約パターン変更履歴",
+            "back_url_name": "master:contract_pattern_list",
             "model_name": "ContractPattern",
         },
     )
@@ -2481,9 +2480,9 @@ def minimum_pay_change_history_list(request):
         request,
         "common/common_change_history_list.html",
         {
-            "logs": logs_page,
-            "title": "最低賃金マスタ変更履歴",
-            "list_url": "master:minimum_pay_list",
+            "change_logs": logs_page,
+            "page_title": "最低賃金マスタ変更履歴",
+            "back_url_name": "master:minimum_pay_list",
             "model_name": "MinimumPay",
         },
     )
@@ -2575,9 +2574,9 @@ def haken_business_content_change_history_list(request):
         request,
         "common/common_change_history_list.html",
         {
-            "logs": logs_page,
-            "title": "派遣業務内容変更履歴",
-            "list_url": "master:haken_business_content_list",
+            "change_logs": logs_page,
+            "page_title": "派遣業務内容変更履歴",
+            "back_url_name": "master:haken_business_content_list",
             "model_name": "HakenBusinessContent",
         },
     )
@@ -2669,9 +2668,9 @@ def haken_responsibility_degree_change_history_list(request):
         request,
         "common/common_change_history_list.html",
         {
-            "logs": logs_page,
-            "title": "派遣責任程度変更履歴",
-            "list_url": "master:haken_responsibility_degree_list",
+            "change_logs": logs_page,
+            "page_title": "派遣責任程度変更履歴",
+            "back_url_name": "master:haken_responsibility_degree_list",
             "model_name": "HakenResponsibilityDegree",
         },
     )

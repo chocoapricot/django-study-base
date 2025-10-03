@@ -456,7 +456,7 @@ class ClientViewsTest(TestCase):
     def test_client_change_history_list_view(self):
         response = self.client.get(reverse('client:client_change_history_list', args=[self.client_obj.pk]))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'client/client_change_history_list.html')
+        self.assertTemplateUsed(response, 'common/common_change_history_list.html')
         self.assertContains(response, 'Test Client')
     
     def test_client_file_list_view(self):

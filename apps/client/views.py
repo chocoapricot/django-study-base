@@ -253,6 +253,7 @@ def client_detail(request, pk):
 def client_change_history_list(request, pk):
     client = get_object_or_404(Client, pk=pk)
     from apps.system.logs.models import AppLog
+    from django.db import models
 
     # Get IDs of all related objects
     department_ids = list(client.departments.values_list('pk', flat=True))
@@ -267,10 +268,20 @@ def client_change_history_list(request, pk):
         models.Q(model_name='ClientFile', object_id__in=[str(pk) for pk in file_ids]),
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')
+    
     paginator = Paginator(logs, 20)
     page = request.GET.get('page')
     logs_page = paginator.get_page(page)
-    return render(request, 'client/client_change_history_list.html', {'client': client, 'logs': logs_page})
+
+    context = {
+        'object': client,
+        'client': client,
+        'change_logs': logs_page,
+        'page_title': 'クライアント関連 変更履歴一覧',
+        'back_url_name': 'client:client_detail',
+        'info_card_path': 'client/_client_info_card.html',
+    }
+    return render(request, 'common/common_change_history_list.html', context)
 
 # クライアント連絡履歴 登録
 @login_required
