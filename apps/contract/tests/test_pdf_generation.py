@@ -3,11 +3,15 @@ from unittest.mock import patch
 
 from django.test import TestCase
 from unittest.mock import patch
+
+from django.test import TestCase
+from unittest.mock import patch
 from apps.accounts.models import MyUser
 from apps.client.models import Client, ClientDepartment, ClientUser
 from apps.company.models import Company, CompanyDepartment as CompanyDept, CompanyUser
-from apps.contract.models import ClientContract, ClientContractHaken
+from apps.contract.models import ClientContract, ClientContractHaken, StaffContract
 from apps.master.models import ContractPattern, BillPayment, ContractTerms
+from apps.staff.models import Staff
 from apps.contract.utils import generate_contract_pdf_content, generate_clash_day_notification_pdf
 import datetime
 
@@ -37,6 +41,13 @@ class ContractPdfGenerationTest(TestCase):
             phone_number="03-3333-4444"
         )
 
+        # Staff
+        self.staff = Staff.objects.create(
+            name_last="Test",
+            name_first="Staff",
+            employee_no="S001",
+        )
+
         # Master data
         self.payment_site = BillPayment.objects.create(
             name="月末締め翌月末払い",
@@ -54,6 +65,11 @@ class ContractPdfGenerationTest(TestCase):
         self.normal_pattern = ContractPattern.objects.create(
             name="Normal Contract Pattern",
             domain='10', # Client contract
+            contract_type_code='10' # Normal
+        )
+        self.staff_pattern = ContractPattern.objects.create(
+            name="Staff Contract Pattern",
+            domain='20', # Staff contract
             contract_type_code='10' # Normal
         )
 
@@ -86,6 +102,16 @@ class ContractPdfGenerationTest(TestCase):
             end_date=datetime.date(2024, 4, 30),
             payment_site=self.payment_site,
             contract_number="C-NOR-001"
+        )
+
+        self.staff_contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name="Test Staff Contract",
+            contract_pattern=self.staff_pattern,
+            start_date=datetime.date(2023, 6, 1),
+            end_date=datetime.date(2024, 5, 31),
+            contract_number="S-STA-001",
+            corporate_number=self.company.corporate_number,
         )
 
         self.test_user = MyUser.objects.create_user(
@@ -220,3 +246,55 @@ class ContractPdfGenerationTest(TestCase):
 
         # Check postamble_text
         self.assertEqual(postamble_text, f"Signed by {expected_company_name} and {expected_client_name}.")
+
+    @patch('apps.contract.utils.generate_contract_pdf')
+    def test_staff_contract_term_placeholders_are_replaced(self, mock_generate_pdf):
+        """
+        Test that {{company_name}} and {{staff_name}} placeholders in ContractTerms
+        are replaced with actual names in the generated PDF content for staff contracts.
+        """
+        # Create contract terms with placeholders for staff
+        ContractTerms.objects.create(
+            contract_pattern=self.staff_pattern,
+            display_position=1, # Preamble
+            contract_terms="This is an agreement between {{company_name}} and our staff member, {{staff_name}}."
+        )
+        ContractTerms.objects.create(
+            contract_pattern=self.staff_pattern,
+            display_position=2, # Body
+            display_order=1,
+            contract_clause="Article 1",
+            contract_terms="Our company, {{company_name}}, hires {{staff_name}}."
+        )
+        ContractTerms.objects.create(
+            contract_pattern=self.staff_pattern,
+            display_position=3, # Postamble
+            contract_terms="Signatures: {{company_name}} and {{staff_name}}."
+        )
+
+        # Generate the PDF content
+        generate_contract_pdf_content(self.staff_contract)
+
+        # Check that the mock was called
+        self.assertTrue(mock_generate_pdf.called)
+
+        # Get the arguments passed to the mock
+        positional_args = mock_generate_pdf.call_args[0]
+        intro_text = positional_args[2]
+        items = positional_args[3]
+        postamble_text = mock_generate_pdf.call_args[1]['postamble_text']
+
+        # Assertions for placeholder replacement
+        expected_company_name = self.company.name
+        expected_staff_name = f"{self.staff.name_last} {self.staff.name_first}"
+
+        # Check intro_text (preamble)
+        self.assertIn(f"This is an agreement between {expected_company_name} and our staff member, {expected_staff_name}", intro_text)
+
+        # Check items (body)
+        items_dict = {item['title']: item['text'] for item in items}
+        self.assertIn("Article 1", items_dict)
+        self.assertEqual(items_dict["Article 1"], f"Our company, {expected_company_name}, hires {expected_staff_name}.")
+
+        # Check postamble_text
+        self.assertEqual(postamble_text, f"Signatures: {expected_company_name} and {expected_staff_name}.")
