@@ -204,6 +204,29 @@ class ContractViewTest(TestCase):
         self.assertEqual(response['Content-Type'], 'application/pdf')
         self.assertTrue(response['Content-Disposition'].startswith(f'attachment; filename="'))
 
+    def test_client_contract_change_history_list_view(self):
+        """クライアント契約変更履歴一覧ビューのテスト"""
+        url = reverse('contract:client_contract_change_history_list', kwargs={'pk': self.client_contract.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'common/common_change_history_list.html')
+        self.assertContains(response, "クライアント契約 変更履歴一覧")
+
+    def test_staff_contract_change_history_list_view(self):
+        """スタッフ契約変更履歴一覧ビューのテスト"""
+        staff_contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='Test Staff Contract History',
+            start_date=datetime.date.today(),
+            contract_pattern=self.staff_pattern,
+            corporate_number=self.company.corporate_number
+        )
+        url = reverse('contract:staff_contract_change_history_list', kwargs={'pk': staff_contract.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'common/common_change_history_list.html')
+        self.assertContains(response, "スタッフ契約 変更履歴一覧")
+
     def test_client_contract_copy_view(self):
         """クライアント契約のコピー機能が正しく動作することをテスト"""
         from apps.company.models import CompanyUser

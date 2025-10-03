@@ -1,4 +1,3 @@
-from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Company, CompanyDepartment, CompanyUser
 from .forms import CompanyForm, CompanyDepartmentForm, CompanyUserForm
@@ -7,6 +6,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from apps.system.logs.models import AppLog
 from apps.system.logs.utils import log_view_detail, log_model_action
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 @login_required
 @permission_required('company.view_company', raise_exception=True)
