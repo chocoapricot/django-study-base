@@ -125,7 +125,7 @@ def staff_change_history_list(request, pk):
     international_id = getattr(staff, 'international', None) and staff.international.pk
     disability_id = getattr(staff, 'disability', None) and staff.disability.pk
 
-    logs = AppLog.objects.filter(
+    all_logs = AppLog.objects.filter(
         django_models.Q(model_name='Staff', object_id=str(staff.pk)) |
         django_models.Q(model_name='StaffQualification', object_id__in=[str(pk) for pk in qualification_ids]) |
         django_models.Q(model_name='StaffSkill', object_id__in=[str(pk) for pk in skill_ids]) |
@@ -138,10 +138,20 @@ def staff_change_history_list(request, pk):
         django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')
-    paginator = Paginator(logs, 20)
+
+    paginator = Paginator(all_logs, 20)
     page = request.GET.get('page')
-    logs_page = paginator.get_page(page)
-    return render(request, 'staff/staff_change_history_list.html', {'staff': staff, 'logs': logs_page})
+    change_logs = paginator.get_page(page)
+
+    context = {
+        'object': staff,
+        'staff': staff,
+        'change_logs': change_logs,
+        'info_card_path': 'staff/_staff_info_card.html',
+        'page_title': 'スタッフ関連 変更履歴一覧',
+        'back_url_name': 'staff:staff_detail',
+    }
+    return render(request, 'common/common_change_history_list.html', context)
 
 @login_required
 @permission_required('staff.view_staffcontacted', raise_exception=True)

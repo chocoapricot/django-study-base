@@ -829,7 +829,7 @@ def client_contract_change_history_list(request, pk):
     contract_logs = AppLog.objects.filter(
         model_name='ClientContract',
         object_id=str(pk),
-        action__in=['create', 'update', 'delete']
+        action__in=['create', 'update', 'delete', 'print']
     )
 
     haken_logs = AppLog.objects.none()
@@ -849,15 +849,17 @@ def client_contract_change_history_list(request, pk):
     # ページネーション
     paginator = Paginator(all_logs, 20)
     page = request.GET.get('page')
-    logs_page = paginator.get_page(page)
+    change_logs = paginator.get_page(page)
 
-    return render(request, 'common/common_change_history_list.html', {
-        'logs': logs_page,
-        'title': f'クライアント契約変更履歴 - {contract.contract_name}',
-        'list_url': 'contract:client_contract_detail',
-        'list_url_pk': pk,
-        'model_name': 'ClientContract'
-    })
+    context = {
+        'object': contract,
+        'contract': contract,
+        'change_logs': change_logs,
+        'info_card_path': 'contract/_client_contract_info_card.html',
+        'page_title': 'クライアント契約 変更履歴一覧',
+        'back_url_name': 'contract:client_contract_detail',
+    }
+    return render(request, 'common/common_change_history_list.html', context)
 
 
 @login_required
@@ -870,24 +872,26 @@ def staff_contract_change_history_list(request, pk):
     contract = get_object_or_404(StaffContract, pk=pk)
     
     # 該当契約の変更履歴を取得
-    logs = AppLog.objects.filter(
+    all_logs = AppLog.objects.filter(
         model_name='StaffContract',
         object_id=str(pk),
-        action__in=['create', 'update', 'delete']
+        action__in=['create', 'update', 'delete', 'print']
     ).order_by('-timestamp')
     
     # ページネーション
-    paginator = Paginator(logs, 20)
+    paginator = Paginator(all_logs, 20)
     page = request.GET.get('page')
-    logs_page = paginator.get_page(page)
+    change_logs = paginator.get_page(page)
     
-    return render(request, 'common/common_change_history_list.html', {
-        'logs': logs_page,
-        'title': f'スタッフ契約変更履歴 - {contract.contract_name}',
-        'list_url': 'contract:staff_contract_detail',
-        'list_url_pk': pk,
-        'model_name': 'StaffContract'
-    })
+    context = {
+        'object': contract,
+        'contract': contract,
+        'change_logs': change_logs,
+        'info_card_path': 'contract/_staff_contract_info_card.html',
+        'page_title': 'スタッフ契約 変更履歴一覧',
+        'back_url_name': 'contract:staff_contract_detail',
+    }
+    return render(request, 'common/common_change_history_list.html', context)
 
 
 @login_required

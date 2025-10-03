@@ -60,6 +60,14 @@ class CompanyViewTest(TestCase):
         # フォームが有効であればリダイレクト、無効であれば200が返される
         self.assertIn(response.status_code, [200, 302])
 
+    def test_change_history_list_view(self):
+        """変更履歴一覧ビューのテスト"""
+        self.client.login(username='testuser', password='testpass123')
+        response = self.client.get(reverse('company:change_history_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'common/common_change_history_list.html')
+        self.assertContains(response, "会社関連 変更履歴一覧")
+
 class DepartmentViewTest(TestCase):
     """部署ビューのテスト"""
     

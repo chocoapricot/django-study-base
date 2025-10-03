@@ -1,11 +1,9 @@
+import datetime
+import io
+import fitz  # PyMuPDF
 from django.test import TestCase
 from unittest.mock import patch
 
-from django.test import TestCase
-from unittest.mock import patch
-
-from django.test import TestCase
-from unittest.mock import patch
 from apps.accounts.models import MyUser
 from apps.client.models import Client, ClientDepartment, ClientUser
 from apps.company.models import Company, CompanyDepartment as CompanyDept, CompanyUser
@@ -13,7 +11,6 @@ from apps.contract.models import ClientContract, ClientContractHaken, StaffContr
 from apps.master.models import ContractPattern, BillPayment, ContractTerms
 from apps.staff.models import Staff
 from apps.contract.utils import generate_contract_pdf_content, generate_clash_day_notification_pdf
-import datetime
 
 class ContractPdfGenerationTest(TestCase):
 
@@ -171,58 +168,50 @@ class ContractPdfGenerationTest(TestCase):
         self.assertNotIn("派遣元責任者", items_dict)
         self.assertNotIn("協定対象派遣労働者に限定するか否かの別", items_dict)
 
-    @patch('apps.contract.utils.generate_contract_pdf')
-    def test_clash_day_notification_pdf_generation(self, mock_generate_pdf):
-        """Test that clash day notification PDF is generated with correct data."""
-        # Link staff contract for the purpose of this test
-        self.staff_contract.contract_name = self.dispatch_contract.contract_name
-        self.staff_contract.save()
-
-        # Set haken_office and haken_unit for the test
-        self.haken_info.haken_office = self.client_dept
-        self.haken_info.haken_unit = self.client_dept
+    def test_generate_clash_day_notification_pdf_content(self):
+        """抵触日通知書PDFが正しい内容で生成されることをテストする"""
+        # 派遣先事業所と抵触日を設定
+        haken_office = ClientDepartment.objects.create(
+            client=self.client,
+            name="名古屋支社",
+            postal_code="450-0002",
+            address="名古屋市中村区名駅４丁目２７−１",
+            is_haken_office=True,
+            haken_jigyosho_teishokubi=datetime.date(2025, 10, 1)
+        )
+        self.haken_info.haken_office = haken_office
         self.haken_info.save()
 
         issued_at = datetime.datetime.now(datetime.timezone.utc)
-        generate_clash_day_notification_pdf(self.dispatch_contract, self.test_user, issued_at)
+        pdf_content, _, pdf_title = generate_clash_day_notification_pdf(self.dispatch_contract, self.test_user, issued_at)
 
-        self.assertTrue(mock_generate_pdf.called)
-
-        # Get the arguments passed to the mock
-        args, kwargs = mock_generate_pdf.call_args
-        pdf_title = args[1]
-        intro_text = args[2]
-        items = args[3]
-        postamble_text = kwargs.get('postamble_text', '')
-
-        # Assertions
+        self.assertIsNotNone(pdf_content)
         self.assertEqual(pdf_title, "抵触日通知書")
 
-        # Check intro text
-        self.assertIn(f"{self.client.name} 様", intro_text)
-        self.assertIn(f"発行日: {issued_at.strftime('%Y年%m月%d日')}", intro_text)
-        self.assertIn(self.company.name, intro_text)
-        self.assertIn("抵触日通知書", intro_text)
+        # PDFからテキストを抽出
+        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
+        text = ""
+        for page in pdf_document:
+            text += page.get_text()
+        pdf_document.close()
 
-        # Check items
-        items_dict = {item['title']: item['text'] for item in items}
-        expected_staff_name = f"{self.staff.name_last} {self.staff.name_first}"
-        self.assertEqual(items_dict["派遣労働者の氏名"], expected_staff_name)
-
-        expected_start_date = self.dispatch_contract.start_date.strftime('%Y年%m月%d日')
-        self.assertEqual(items_dict["派遣就業を開始した日"], expected_start_date)
-
-        clash_day = self.dispatch_contract.start_date.replace(year=self.dispatch_contract.start_date.year + 3)
-        expected_clash_day_str = clash_day.strftime('%Y年%m月%d日')
-
-        expected_office_text = f"{expected_clash_day_str} （派遣先事業所：{self.client_dept.name}）"
-        self.assertEqual(items_dict["事業所単位の期間制限に抵触する最初の日"], expected_office_text)
-
-        expected_unit_text = f"{expected_clash_day_str} （組織単位：{self.client_dept.name}）"
-        self.assertEqual(items_dict["組織単位の期間制限に抵触する最初の日"], expected_unit_text)
-
-        # Check postamble text
-        self.assertIn("貴社が本通知書の受領後", postamble_text)
+        # PDF内容の検証
+        self.assertIn("派遣可能期間の制限（事業所単位の期間制限）に抵触する日の通知", text)
+        self.assertIn("（派遣元）", text)
+        self.assertIn(f"{self.company.name} 御中", text)
+        self.assertIn("（派遣先）", text)
+        self.assertIn(self.client.name, text)
+        self.assertIn(f"役職 {self.client_user.position}", text)
+        self.assertIn(f"氏名 {self.client_user.name} 様", text)
+        self.assertIn("労働者派遣法第２６条第４項に基づき", text)
+        self.assertIn("記", text)
+        self.assertIn("１．労働者派遣の役務の提供を受ける事業所", text)
+        self.assertIn(haken_office.name, text)
+        self.assertIn(haken_office.address, text)
+        self.assertIn("２．上記事業所の抵触日", text)
+        self.assertIn("2025年10月01日", text)
+        self.assertIn("３．その他", text)
+        self.assertIn("事業所単位の派遣可能期間を延長した場合は", text)
 
     @patch('apps.contract.utils.generate_contract_pdf')
     def test_contract_term_placeholders_are_replaced(self, mock_generate_pdf):
@@ -327,3 +316,36 @@ class ContractPdfGenerationTest(TestCase):
 
         # Check postamble_text
         self.assertEqual(postamble_text, f"Signatures: {expected_company_name} and {expected_staff_name}.")
+
+    def test_generate_client_contract_pdf_removes_unwanted_preamble(self):
+        """クライアント契約書PDFから不要な前文が削除されていることを確認する"""
+        pdf_content, _, _ = generate_contract_pdf_content(self.normal_contract)
+        self.assertIsNotNone(pdf_content)
+
+        # PDFからテキストを抽出
+        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
+        text = ""
+        for page in pdf_document:
+            text += page.get_text()
+        pdf_document.close()
+
+        # 不要な文言が含まれていないことを確認
+        unwanted_text = f"{self.normal_contract.client.name}様との間で、以下の通り業務委託契約を締結します。"
+        self.assertNotIn(unwanted_text, text)
+
+    def test_generate_staff_contract_pdf_removes_unwanted_preamble(self):
+        """スタッフ契約書PDFから不要な前文が削除されていることを確認する"""
+        pdf_content, _, _ = generate_contract_pdf_content(self.staff_contract)
+        self.assertIsNotNone(pdf_content)
+
+        # PDFからテキストを抽出
+        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
+        text = ""
+        for page in pdf_document:
+            text += page.get_text()
+        pdf_document.close()
+
+        # 不要な文言が含まれていないことを確認
+        full_name = f"{self.staff_contract.staff.name_last} {self.staff_contract.staff.name_first}"
+        unwanted_text = f"{full_name}様との間で、以下の通り雇用契約を締結します。"
+        self.assertNotIn(unwanted_text, text)
