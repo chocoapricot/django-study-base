@@ -566,13 +566,28 @@ def staff_contract_detail(request, pk):
 @permission_required('contract.add_staffcontract', raise_exception=True)
 def staff_contract_create(request):
     """スタッフ契約作成"""
+    copy_from_id = request.GET.get('copy_from')
+    original_contract = None
+    if copy_from_id:
+        try:
+            original_contract = get_object_or_404(StaffContract, pk=copy_from_id)
+        except (ValueError, Http404):
+            messages.error(request, "コピー元の契約が見つかりませんでした。")
+            return redirect('contract:staff_contract_list')
+
     staff = None
+    if original_contract:
+        staff = original_contract.staff
+
     if request.method == 'POST':
         form = StaffContractForm(request.POST)
         if form.is_valid():
             contract = form.save(commit=False)
             contract.created_by = request.user
             contract.updated_by = request.user
+            # 新規作成・コピー作成時はステータスを「作成中」に戻す
+            contract.contract_status = StaffContract.ContractStatus.DRAFT
+            contract.contract_number = None  # 契約番号はクリア
             contract.save()
             messages.success(request, f'スタッフ契約「{contract.contract_name}」を作成しました。')
             return redirect('contract:staff_contract_detail', pk=contract.pk)
@@ -584,8 +599,16 @@ def staff_contract_create(request):
                     staff = Staff.objects.get(pk=staff_id)
                 except (Staff.DoesNotExist, ValueError):
                     staff = None
-    else:
-        form = StaffContractForm()
+    else:  # GET
+        initial_data = {}
+        if original_contract:
+            initial_data = model_to_dict(
+                original_contract,
+                exclude=['id', 'pk', 'contract_number', 'contract_status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'approved_at', 'approved_by', 'issued_at', 'issued_by', 'confirmed_at']
+            )
+            initial_data['contract_name'] = f"{initial_data.get('contract_name', '')}のコピー"
+
+        form = StaffContractForm(initial=initial_data)
 
     context = {
         'form': form,
