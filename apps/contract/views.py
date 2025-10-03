@@ -855,7 +855,6 @@ def client_contract_change_history_list(request, pk):
         'object': contract,
         'contract': contract,
         'change_logs': change_logs,
-        'info_card_path': 'contract/_client_contract_info_card.html',
         'page_title': 'クライアント契約 変更履歴一覧',
         'back_url_name': 'contract:client_contract_detail',
     }
@@ -887,7 +886,6 @@ def staff_contract_change_history_list(request, pk):
         'object': contract,
         'contract': contract,
         'change_logs': change_logs,
-        'info_card_path': 'contract/_staff_contract_info_card.html',
         'page_title': 'スタッフ契約 変更履歴一覧',
         'back_url_name': 'contract:staff_contract_detail',
     }

@@ -4,7 +4,9 @@
 {# --- ヘッダー --- #}
 {# 各Viewで設定されたパスのテンプレートをインクルード #}
 {# company, staff, client_contract オブジェクトは各Viewのcontextで設定されている前提 #}
-{% include info_card_path %}
+{% if info_card_path %}
+    {% include info_card_path %}
+{% endif %}
 
 {# --- 変更履歴 --- #}
 {# 共通テンプレートを使用して変更履歴を表示（ページネーション・戻るボタン込み） #}
