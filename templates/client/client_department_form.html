@@ -87,7 +87,10 @@
                     </div>
                 </div>
 
-                <label for="{{ form.haken_jigyosho_teishokubi.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.haken_jigyosho_teishokubi.label }}</label>
+                <label for="{{ form.haken_jigyosho_teishokubi.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                    {{ form.haken_jigyosho_teishokubi.label }}
+                     {% my_note_icon "法第40条の２第1項各号に掲げる場合は、期間制限の例外となり、抵触日通知は不要です。" %}
+                </label>
                 <div class="col-sm-2">
                     {{ form.haken_jigyosho_teishokubi }}
                     {% if form.haken_jigyosho_teishokubi.errors %}
