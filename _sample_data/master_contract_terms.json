@@ -797,5 +797,22 @@
         "memo": null,
         "display_order": 999
     }
+},
+{
+    "model": "master.contractterms",
+    "pk": 49,
+    "fields": {
+        "version": 1759504617543577,
+        "created_at": "2025-10-03T15:31:29.553Z",
+        "created_by": 1,
+        "updated_at": "2025-10-03T15:32:44.195Z",
+        "updated_by": 1,
+        "contract_pattern": 1,
+        "contract_clause": "（前文）",
+        "contract_terms": "{{ company_name }}（以下「甲」という。）と、{{ staff_name}}（以下「乙」という。）は、本個別契約を次のとおり締結する。",
+        "display_position": 1,
+        "memo": null,
+        "display_order": 0
+    }
 }
 ]
