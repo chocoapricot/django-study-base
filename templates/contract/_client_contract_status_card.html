@@ -64,6 +64,28 @@
         </form>
         {% endif %}
 
+        {# 派遣通知書発行スイッチ #}
+        {% if contract.client_contract_type_code == '20' %}
+        <form method="post" id="issue-dispatch-notification-form" action="{% url 'contract:issue_dispatch_notification' contract.pk %}" class="mb-3">
+            {% csrf_token %}
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="issueDispatchNotificationSwitch" name="is_issued"
+                       onchange="this.form.submit()"
+                       {% with latest_notification=issue_history|get_latest_dispatch_notification %}{% if latest_notification %}checked{% endif %}{% endwith %}
+                       {% with latest_notification=issue_history|get_latest_dispatch_notification %}{% if latest_notification or not contract.is_approved_or_later %}disabled{% endif %}{% endwith %}>
+                <label class="form-check-label" for="issueDispatchNotificationSwitch">
+                    <i class="bi bi-file-earmark-check" style="font-size: 20px; color: #17a2b8;"></i>
+                    派遣通知書発行
+                    {% with latest_notification=issue_history|get_latest_dispatch_notification %}
+                        {% if latest_notification %}
+                            <span class="text-muted small">（{{ latest_notification.printed_at|date:"Y/m/d H:i:s" }}　{{ latest_notification.printed_by.get_full_name_japanese|default:'' }}）</span>
+                        {% endif %}
+                    {% endwith %}
+                </label>
+            </div>
+        </form>
+        {% endif %}
+
         {# 発行スイッチ #}
         <form method="post" id="issue-form" action="{% url 'contract:client_contract_issue' contract.pk %}" class="mb-3">
             {% csrf_token %}
