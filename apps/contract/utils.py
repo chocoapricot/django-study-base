@@ -1,5 +1,6 @@
 import os
 import io
+import re
 from django.conf import settings
 from django.utils import timezone
 from django.db import transaction
@@ -232,6 +233,31 @@ def generate_contract_pdf_content(contract):
 
     postamble_text = ""
     if contract.contract_pattern:
+        from apps.company.models import Company
+
+        # プレースホルダーの準備
+        replacements = {}
+        if isinstance(contract, ClientContract):
+            company = Company.objects.first()
+            replacements = {
+                "{{company_name}}": company.name if company else "",
+                "{{client_name}}": contract.client.name,
+            }
+        elif isinstance(contract, StaffContract):
+            company = Company.objects.first()
+            replacements = {
+                "{{company_name}}": company.name if company else "",
+                "{{staff_name}}": f"{contract.staff.name_last} {contract.staff.name_first}",
+            }
+
+        def replace_placeholders(text):
+            text = str(text) if text is not None else ""
+            for key, value in replacements.items():
+                placeholder = key.strip('{}').strip()
+                pattern = re.compile(r'{{\s*' + re.escape(placeholder) + r'\s*}}')
+                text = pattern.sub(value, text)
+            return text
+
         terms = contract.contract_pattern.terms.all().order_by('display_position', 'display_order')
 
         preamble_terms = [term for term in terms if term.display_position == 1]
@@ -239,7 +265,7 @@ def generate_contract_pdf_content(contract):
         postamble_terms = [term for term in terms if term.display_position == 3]
 
         if preamble_terms:
-            preamble_text_parts = [f"{term.contract_terms}" for term in preamble_terms]
+            preamble_text_parts = [replace_placeholders(term.contract_terms) for term in preamble_terms]
             intro_text = "\n\n".join(preamble_text_parts) + "\n\n" + intro_text
 
         if body_terms:
@@ -249,7 +275,7 @@ def generate_contract_pdf_content(contract):
                     notes_index = i
                     break
 
-            term_items = [{"title": str(term.contract_clause), "text": str(term.contract_terms)} for term in body_terms]
+            term_items = [{"title": str(term.contract_clause), "text": replace_placeholders(term.contract_terms)} for term in body_terms]
 
             if notes_index != -1:
                 items[notes_index:notes_index] = term_items
@@ -257,7 +283,7 @@ def generate_contract_pdf_content(contract):
                 items.extend(term_items)
 
         if postamble_terms:
-            postamble_text_parts = [f"{term.contract_terms}" for term in postamble_terms]
+            postamble_text_parts = [replace_placeholders(term.contract_terms) for term in postamble_terms]
             postamble_text = "\n\n".join(postamble_text_parts)
 
     timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
@@ -275,9 +301,9 @@ def generate_contract_pdf_content(contract):
     return pdf_content, pdf_filename, pdf_title
 
 
-def generate_clash_day_notification_pdf(contract, user, issued_at, watermark_text=None):
-    """抵触日通知書PDFを生成する"""
-    pdf_title = "抵触日通知書"
+def generate_dispatch_notification_pdf(contract, user, issued_at, watermark_text=None):
+    """派遣通知書PDFを生成する"""
+    pdf_title = "派遣通知書"
 
     intro_text = f"{contract.client.name} 様"
 
@@ -288,10 +314,90 @@ def generate_clash_day_notification_pdf(contract, user, issued_at, watermark_tex
     ]
 
     timestamp = issued_at.strftime('%Y%m%d%H%M%S')
-    pdf_filename = f"clash_day_notification_{contract.pk}_{timestamp}.pdf"
+    pdf_filename = f"dispatch_notification_{contract.pk}_{timestamp}.pdf"
 
     buffer = io.BytesIO()
     generate_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text)
+    pdf_content = buffer.getvalue()
+    buffer.close()
+
+    return pdf_content, pdf_filename, pdf_title
+
+
+def generate_clash_day_notification_pdf(contract, user, issued_at, watermark_text=None):
+    """抵触日通知書PDFを生成する"""
+    from apps.company.models import Company
+
+    pdf_title = "抵触日通知書"
+
+    # 派遣先
+    client_name = contract.client.name
+
+    # 派遣元
+    company = Company.objects.first()
+    company_name = company.name if company else ""
+    # TODO: 代表者名をCompanyモデルなどから取得できるようにする
+    company_rep_name = "（代表者名）"
+
+    intro_text = (
+        f"{client_name} 様\n\n\n"
+        f"発行日: {issued_at.strftime('%Y年%m月%d日')}\n"
+        f"{company_name}\n"
+        f"代表取締役 {company_rep_name}\n\n"
+        "<para align='center'><font size='14'><b>抵触日通知書</b></font></para>\n\n"
+        "労働者派遣事業の適正な運営の確保及び派遣労働者の保護等に関する法律第40条の２第４項の規定に基づき、"
+        "下記の通り通知します。"
+    )
+
+    # 派遣労働者
+    # ClientContractとStaffContractを紐付ける明確なキーがないため、契約名で仮に紐付け
+    staff_contract = StaffContract.objects.filter(contract_name=contract.contract_name).order_by('-start_date').first()
+    staff_name = "（氏名）" # Placeholder
+    if staff_contract and staff_contract.staff:
+        staff_name = f"{staff_contract.staff.name_last} {staff_contract.staff.name_first}"
+
+    # 派遣先事業所
+    haken_office_text = ""
+    if hasattr(contract, 'haken_info') and contract.haken_info.haken_office:
+        haken_office_text = contract.haken_info.haken_office.name
+
+    # 派遣期間
+    start_date_str = contract.start_date.strftime('%Y年%m月%d日')
+
+    # 抵触日の計算 (開始日から3年後)
+    clash_day = None
+    if contract.start_date:
+        try:
+            clash_day = contract.start_date.replace(year=contract.start_date.year + 3)
+        except ValueError:
+            # 閏年の2/29の場合の考慮(2/28にする)
+            clash_day = contract.start_date.replace(year=contract.start_date.year + 3, day=28)
+
+    clash_day_str = clash_day.strftime('%Y年%m月%d日') if clash_day else ""
+
+    # 組織単位
+    haken_unit_text = ""
+    if hasattr(contract, 'haken_info') and contract.haken_info.haken_unit:
+        haken_unit_text = contract.haken_info.haken_unit.name
+
+    items = [
+        {"title": "派遣労働者の氏名", "text": staff_name},
+        {"title": "派遣就業を開始した日", "text": start_date_str},
+        {"title": "事業所単位の期間制限に抵触する最初の日", "text": f"{clash_day_str} （派遣先事業所：{haken_office_text}）"},
+        {"title": "組織単位の期間制限に抵触する最初の日", "text": f"{clash_day_str} （組織単位：{haken_unit_text}）"},
+    ]
+
+    postamble_text = (
+        "貴社が本通知書の受領後、事業所単位の期間制限の範囲内で、かつ、組織単位の期間制限の抵触日を超えて、"
+        "同一の組織単位において労働者派遣を受けようとする場合には、あらかじめ、派遣先の過半数労働組合等からの"
+        "意見を聴取し、その結果を弊社までご通知いただく必要がありますので、ご留意ください。"
+    )
+
+    timestamp = issued_at.strftime('%Y%m%d%H%M%S')
+    pdf_filename = f"clash_day_notification_{contract.pk}_{timestamp}.pdf"
+
+    buffer = io.BytesIO()
+    generate_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text, postamble_text=postamble_text)
     pdf_content = buffer.getvalue()
     buffer.close()
 

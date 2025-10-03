@@ -6,6 +6,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, Http404
 from django.core.files.base import ContentFile
+from django.forms.models import model_to_dict
 from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken
 from .forms import ClientContractForm, StaffContractForm, ClientContractHakenForm
 from django.conf import settings
@@ -25,7 +26,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import io
 from apps.common.pdf_utils import generate_contract_pdf
-from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number, generate_clash_day_notification_pdf
+from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number, generate_clash_day_notification_pdf, generate_dispatch_notification_pdf
 from .resources import ClientContractResource, StaffContractResource
 
 # 契約管理トップページ
@@ -214,10 +215,21 @@ def client_contract_detail(request, pk):
 @permission_required('contract.add_clientcontract', raise_exception=True)
 def client_contract_create(request):
     """クライアント契約作成"""
+    copy_from_id = request.GET.get('copy_from')
     selected_client_id = request.GET.get('selected_client_id')
     client_contract_type_code = request.GET.get('client_contract_type_code')
-    is_haken = client_contract_type_code == '20'
 
+    original_contract = None
+    if copy_from_id:
+        try:
+            original_contract = get_object_or_404(ClientContract, pk=copy_from_id)
+            selected_client_id = original_contract.client_id
+            client_contract_type_code = original_contract.client_contract_type_code
+        except (ValueError, Http404):
+            messages.error(request, "コピー元の契約が見つかりませんでした。")
+            return redirect('contract:client_contract_list')
+
+    is_haken = client_contract_type_code == '20'
     selected_client = None
     if selected_client_id:
         try:
@@ -227,8 +239,6 @@ def client_contract_create(request):
 
     if request.method == 'POST':
         form = ClientContractForm(request.POST)
-
-        # POST時にもis_hakenを判定
         post_is_haken = request.POST.get('client_contract_type_code') == '20'
 
         client_id = request.POST.get('client')
@@ -247,6 +257,9 @@ def client_contract_create(request):
                     contract = form.save(commit=False)
                     contract.created_by = request.user
                     contract.updated_by = request.user
+                    # コピー作成時はステータスを「作成中」に戻す
+                    contract.contract_status = ClientContract.ContractStatus.DRAFT
+                    contract.contract_number = None  # 契約番号はクリア
                     contract.save()
 
                     if post_is_haken and haken_form:
@@ -258,19 +271,35 @@ def client_contract_create(request):
                     return redirect('contract:client_contract_detail', pk=contract.pk)
             except Exception as e:
                 messages.error(request, f"保存中にエラーが発生しました: {e}")
-    else: # GET
+    else:  # GET
         initial_data = {}
-        if selected_client:
-            initial_data['client'] = selected_client.id
-        if client_contract_type_code:
-            initial_data['client_contract_type_code'] = client_contract_type_code
+        haken_initial_data = {}
+        if original_contract:
+            # model_to_dictを使用して関連フィールドのIDを正しく取得
+            initial_data = model_to_dict(
+                original_contract,
+                exclude=['id', 'pk', 'contract_number', 'contract_status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'approved_at', 'approved_by', 'issued_at', 'issued_by', 'confirmed_at']
+            )
+            initial_data['contract_name'] = f"{initial_data.get('contract_name', '')}のコピー"
+
+            if is_haken and hasattr(original_contract, 'haken_info'):
+                original_haken_info = original_contract.haken_info
+                haken_initial_data = model_to_dict(
+                    original_haken_info,
+                    exclude=['id', 'pk', 'client_contract', 'created_at', 'created_by', 'updated_at', 'updated_by']
+                )
+        else:
+            if selected_client:
+                initial_data['client'] = selected_client.id
+            if client_contract_type_code:
+                initial_data['client_contract_type_code'] = client_contract_type_code
 
         form = ClientContractForm(initial=initial_data)
-        haken_form = ClientContractHakenForm(client=selected_client) if is_haken else None
+        haken_form = ClientContractHakenForm(initial=haken_initial_data, client=selected_client) if is_haken else None
 
     context = {
         'form': form,
-        'haken_form': haken_form if 'haken_form' in locals() else (ClientContractHakenForm(client=selected_client) if is_haken else None),
+        'haken_form': haken_form,
         'title': 'クライアント契約作成',
         'is_haken': is_haken,
         'selected_client': selected_client,
@@ -537,13 +566,28 @@ def staff_contract_detail(request, pk):
 @permission_required('contract.add_staffcontract', raise_exception=True)
 def staff_contract_create(request):
     """スタッフ契約作成"""
+    copy_from_id = request.GET.get('copy_from')
+    original_contract = None
+    if copy_from_id:
+        try:
+            original_contract = get_object_or_404(StaffContract, pk=copy_from_id)
+        except (ValueError, Http404):
+            messages.error(request, "コピー元の契約が見つかりませんでした。")
+            return redirect('contract:staff_contract_list')
+
     staff = None
+    if original_contract:
+        staff = original_contract.staff
+
     if request.method == 'POST':
         form = StaffContractForm(request.POST)
         if form.is_valid():
             contract = form.save(commit=False)
             contract.created_by = request.user
             contract.updated_by = request.user
+            # 新規作成・コピー作成時はステータスを「作成中」に戻す
+            contract.contract_status = StaffContract.ContractStatus.DRAFT
+            contract.contract_number = None  # 契約番号はクリア
             contract.save()
             messages.success(request, f'スタッフ契約「{contract.contract_name}」を作成しました。')
             return redirect('contract:staff_contract_detail', pk=contract.pk)
@@ -555,8 +599,16 @@ def staff_contract_create(request):
                     staff = Staff.objects.get(pk=staff_id)
                 except (Staff.DoesNotExist, ValueError):
                     staff = None
-    else:
-        form = StaffContractForm()
+    else:  # GET
+        initial_data = {}
+        if original_contract:
+            initial_data = model_to_dict(
+                original_contract,
+                exclude=['id', 'pk', 'contract_number', 'contract_status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'approved_at', 'approved_by', 'issued_at', 'issued_by', 'confirmed_at']
+            )
+            initial_data['contract_name'] = f"{initial_data.get('contract_name', '')}のコピー"
+
+        form = StaffContractForm(initial=initial_data)
 
     context = {
         'form': form,
@@ -799,7 +851,7 @@ def client_contract_change_history_list(request, pk):
     page = request.GET.get('page')
     logs_page = paginator.get_page(page)
 
-    return render(request, 'contract/contract_change_history_list.html', {
+    return render(request, 'common/common_change_history_list.html', {
         'logs': logs_page,
         'title': f'クライアント契約変更履歴 - {contract.contract_name}',
         'list_url': 'contract:client_contract_detail',
@@ -829,7 +881,7 @@ def staff_contract_change_history_list(request, pk):
     page = request.GET.get('page')
     logs_page = paginator.get_page(page)
     
-    return render(request, 'contract/contract_change_history_list.html', {
+    return render(request, 'common/common_change_history_list.html', {
         'logs': logs_page,
         'title': f'スタッフ契約変更履歴 - {contract.contract_name}',
         'list_url': 'contract:staff_contract_detail',
@@ -1499,6 +1551,67 @@ def client_contract_draft_clash_day_notification(request, pk):
         return response
     else:
         messages.error(request, "抵触日通知書のPDFの生成に失敗しました。")
+        return redirect('contract:client_contract_detail', pk=pk)
+
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def issue_dispatch_notification(request, pk):
+    """クライアント契約の派遣通知書を発行する"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+
+    if int(contract.contract_status) < int(ClientContract.ContractStatus.APPROVED) or contract.client_contract_type_code != '20':
+        messages.error(request, 'この契約の派遣通知書は発行できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
+    issued_at = timezone.now()
+    pdf_content, pdf_filename, document_title = generate_dispatch_notification_pdf(contract, request.user, issued_at)
+
+    if pdf_content:
+        new_print = ClientContractPrint(
+            client_contract=contract,
+            printed_by=request.user,
+            printed_at=issued_at,
+            print_type=ClientContractPrint.PrintType.DISPATCH_NOTIFICATION,
+            document_title=document_title
+        )
+        new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
+
+        AppLog.objects.create(
+            user=request.user,
+            action='dispatch_notification_issue',
+            model_name='ClientContract',
+            object_id=str(contract.pk),
+            object_repr=f'派遣通知書PDF出力: {contract.contract_name}'
+        )
+        messages.success(request, f'契約「{contract.contract_name}」の派遣通知書を発行しました。')
+    else:
+        messages.error(request, "派遣通知書のPDFの生成に失敗しました。")
+
+    return redirect('contract:client_contract_detail', pk=pk)
+
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def client_contract_draft_dispatch_notification(request, pk):
+    """クライアント契約の派遣通知書のドラフトPDFを生成して返す"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+
+    if contract.client_contract_type_code != '20':
+        messages.error(request, 'この契約の派遣通知書は発行できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
+    issued_at = timezone.now()
+    pdf_content, pdf_filename, document_title = generate_dispatch_notification_pdf(
+        contract, request.user, issued_at, watermark_text="DRAFT"
+    )
+
+    if pdf_content:
+        response = HttpResponse(pdf_content, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
+        return response
+    else:
+        messages.error(request, "派遣通知書のPDFの生成に失敗しました。")
         return redirect('contract:client_contract_detail', pk=pk)
 
 

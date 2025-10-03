@@ -3,9 +3,7 @@ import re
 from django.conf import settings
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-import os
-import re
-from django.conf import settings
+from django.core.paginator import Paginator
 from django.http import Http404
 
 def get_table_info_from_readme():
@@ -49,7 +47,13 @@ class TableListView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['tables'] = get_table_info_from_readme()
+        all_tables = get_table_info_from_readme()
+
+        paginator = Paginator(all_tables, 1000)
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        context['tables'] = page_obj
         context['page_title'] = 'テーブル一覧'
         context['active_menu'] = 'system_tables'
         return context

@@ -13,20 +13,24 @@
         <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
             <div class="card-header d-flex justify-content-between align-items-center">
                 クライアント契約詳細
-                {% if contract.contract_status == '1' or contract.contract_status == '5' %}
-                <ul class="nav nav-pills">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">印刷</a>
-                        <div class="dropdown-menu">
-                            <a href="{% url 'contract:client_contract_draft_pdf' contract.pk %}" class="dropdown-item"><i class="bi bi-filetype-pdf"></i>　個別契約書(ドラフト)</a>
-                            <a href="{% url 'contract:client_contract_draft_quotation' contract.pk %}" class="dropdown-item"><i class="bi bi-file-earmark-text"></i>　見積書(ドラフト)</a>
-                            {% if contract.client_contract_type_code == '20' %}
-                            <a href="{% url 'contract:client_contract_draft_clash_day_notification' contract.pk %}" class="dropdown-item"><i class="bi bi-file-earmark-check"></i>　抵触日通知書(ドラフト)</a>
-                            {% endif %}
-                        </div>
-                    </li>
-                </ul>
-                {% endif %}
+                <div class="d-flex align-items-center">
+                    <a href="{% url 'contract:client_contract_create' %}?copy_from={{ contract.pk }}" class="btn btn-sm btn-secondary me-2">コピー作成</a>
+                    {% if contract.contract_status == '1' or contract.contract_status == '5' %}
+                    <ul class="nav nav-pills">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">印刷</a>
+                            <div class="dropdown-menu">
+                                <a href="{% url 'contract:client_contract_draft_pdf' contract.pk %}" class="dropdown-item"><i class="bi bi-filetype-pdf"></i>　個別契約書(ドラフト)</a>
+                                <a href="{% url 'contract:client_contract_draft_quotation' contract.pk %}" class="dropdown-item"><i class="bi bi-file-earmark-text"></i>　見積書(ドラフト)</a>
+                                {% if contract.client_contract_type_code == '20' %}
+                                <a href="{% url 'contract:client_contract_draft_clash_day_notification' contract.pk %}" class="dropdown-item"><i class="bi bi-file-earmark-check"></i>　抵触日通知書(ドラフト)</a>
+                                <a href="{% url 'contract:client_contract_draft_dispatch_notification' contract.pk %}" class="dropdown-item"><i class="bi bi-file-earmark-check"></i>　派遣通知書(ドラフト)</a>
+                                {% endif %}
+                            </div>
+                        </li>
+                    </ul>
+                    {% endif %}
+                </div>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -241,6 +245,8 @@
                                 <span class="badge bg-info">見積書</span>
                             {% elif item.print_type == item.PrintType.CLASH_DAY_NOTIFICATION %}
                                 <span class="badge bg-warning">抵触日通知書</span>
+                            {% elif item.print_type == item.PrintType.DISPATCH_NOTIFICATION %}
+                                <span class="badge bg-info">派遣通知書</span>
                             {% else %}
                                 <span class="badge bg-secondary">その他</span>
                             {% endif %}
