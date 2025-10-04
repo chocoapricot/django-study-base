@@ -8,6 +8,7 @@ from .models import ClientContract, StaffContract, ClientContractPrint, StaffCon
 from apps.common.pdf_utils import generate_contract_pdf, generate_structured_pdf
 from apps.system.logs.models import AppLog
 from apps.company.models import Company
+from .models import ClientContract
 
 def generate_client_contract_number(contract: ClientContract) -> str:
     """
@@ -298,6 +299,55 @@ def generate_contract_pdf_content(contract):
     generate_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text, postamble_text=postamble_text)
     pdf_content = buffer.getvalue()
     buffer.close()
+
+    return pdf_content, pdf_filename, pdf_title
+
+
+def generate_dispatch_ledger_pdf(contract: ClientContract, user, issued_at):
+    """派遣元管理台帳PDFを生成する"""
+    pdf_title = "派遣元管理台帳"
+    buffer = io.BytesIO()
+
+    # --- データ取得 ---
+    company = Company.objects.first()
+    client = contract.client
+
+    # --- PDFコンテンツの準備 ---
+    # 宛先 (左)
+    to_address_lines = [
+        f"{client.name} 御中",
+    ]
+
+    # 送付元 (右)
+    from_address_lines = []
+    if company:
+        from_address_lines.append(f"（派遣元）")
+        from_address_lines.append(f"{company.name}")
+        if company.postal_code and company.address:
+            from_address_lines.append(f"〒{company.postal_code} {company.address}")
+        if company.phone_number:
+            from_address_lines.append(f"電話番号：{company.phone_number}")
+
+    # メインタイトル
+    main_title = "派遣元管理台帳"
+
+    # --- PDF生成 ---
+    generate_structured_pdf(
+        buffer,
+        meta_title=pdf_title,
+        to_address_lines=to_address_lines,
+        from_address_lines=from_address_lines,
+        main_title_text=main_title,
+        summary_lines=[],
+        body_items=[],
+        watermark_text=None
+    )
+
+    pdf_content = buffer.getvalue()
+    buffer.close()
+
+    timestamp = issued_at.strftime('%Y%m%d%H%M%S')
+    pdf_filename = f"dispatch_ledger_{contract.pk}_{timestamp}.pdf"
 
     return pdf_content, pdf_filename, pdf_title
 

@@ -204,6 +204,32 @@ class ContractViewTest(TestCase):
         self.assertEqual(response['Content-Type'], 'application/pdf')
         self.assertTrue(response['Content-Disposition'].startswith(f'attachment; filename="'))
 
+    def test_client_dispatch_ledger_pdf_for_haken_contract(self):
+        """
+        派遣契約の場合、派遣元管理台帳PDFが正常にダウンロードされることをテスト
+        """
+        url = reverse('contract:client_dispatch_ledger_pdf', kwargs={'pk': self.client_contract.pk})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertTrue(response['Content-Disposition'].startswith('attachment; filename="dispatch_ledger_'))
+
+    def test_client_dispatch_ledger_pdf_for_non_haken_contract(self):
+        """
+        派遣契約でない場合、派遣元管理台帳PDFのダウンロードが失敗しリダイレクトされることをテスト
+        """
+        url = reverse('contract:client_dispatch_ledger_pdf', kwargs={'pk': self.non_haken_contract.pk})
+        response = self.client.get(url)
+
+        # 詳細ページにリダイレクトされることを確認
+        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.non_haken_contract.pk}))
+
+        # エラーメッセージが表示されることを確認
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'この契約の派遣元管理台帳は発行できません。')
+
     def test_client_contract_change_history_list_view(self):
         """クライアント契約変更履歴一覧ビューのテスト"""
         url = reverse('contract:client_contract_change_history_list', kwargs={'pk': self.client_contract.pk})
