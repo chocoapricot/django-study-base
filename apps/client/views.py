@@ -7,8 +7,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.db import models
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from django.utils import timezone
+from django.core.files.base import ContentFile
 from apps.system.logs.utils import log_model_action
+from apps.system.logs.models import AppLog
+from apps.contract.models import ClientContract, ClientContractPrint
+from apps.contract.utils import generate_clash_day_notification_pdf
 # クライアント連絡履歴用インポート
 from .models import Client, ClientContacted, ClientDepartment, ClientUser, ClientFile
 from .forms import ClientForm, ClientContactedForm, ClientDepartmentForm, ClientUserForm, ClientFileForm
@@ -779,3 +784,72 @@ def client_file_download(request, pk):
         messages.error(request, f'ファイルのダウンロード中にエラーが発生しました: {str(e)}')
         return redirect('client:client_detail', pk=client_file.client.pk)
 
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def issue_clash_day_notification_from_department(request, pk):
+    """クライアント組織から抵触日通知書を発行する"""
+    department = get_object_or_404(ClientDepartment, pk=pk)
+
+    # 派遣事業所でない場合はエラー
+    if not department.is_haken_office:
+        messages.error(request, 'この組織は派遣事業所ではないため、抵触日通知書を発行できません。')
+        return redirect('client:client_department_detail', pk=pk)
+
+    # この事業所を使用している最新の有効な派遣契約を検索
+    # 承認済み以降のステータスで、現在日付が契約期間内のものを対象とする
+    today = timezone.now().date()
+    contract = ClientContract.objects.filter(
+        haken_info__haken_office=department,
+        client_contract_type_code='20',
+        contract_status__in=[
+            ClientContract.ContractStatus.APPROVED,
+            ClientContract.ContractStatus.ISSUED,
+            ClientContract.ContractStatus.CONFIRMED,
+            ClientContract.ContractStatus.COMPLETED,
+        ],
+        start_date__lte=today
+    ).filter(
+        Q(end_date__gte=today) | Q(end_date__isnull=True)
+    ).order_by('-start_date').first()
+
+    if not contract:
+        messages.error(request, 'この派遣事業所を使用している有効な派遣契約が見つかりませんでした。')
+        return redirect('client:client_department_detail', pk=pk)
+
+    # 抵触日が設定されているか確認
+    if not department.haken_jigyosho_teishokubi:
+        messages.error(request, '派遣事業所の抵触日が設定されていません。')
+        return redirect('client:client_department_detail', pk=pk)
+
+    issued_at = timezone.now()
+    # 透かしなしで生成
+    pdf_content, pdf_filename, document_title = generate_clash_day_notification_pdf(contract, request.user, issued_at)
+
+    if pdf_content:
+        # ClientContractPrintに保存
+        new_print = ClientContractPrint(
+            client_contract=contract,
+            printed_by=request.user,
+            printed_at=issued_at,
+            print_type=ClientContractPrint.PrintType.CLASH_DAY_NOTIFICATION,
+            document_title=document_title
+        )
+        new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
+
+        # AppLogに記録
+        AppLog.objects.create(
+            user=request.user,
+            action='clash_day_notification_issue',
+            model_name='ClientContract',
+            object_id=str(contract.pk),
+            object_repr=f'抵触日通知書PDF出力（組織詳細画面から）: {contract.contract_name}'
+        )
+        messages.success(request, f'契約「{contract.contract_name}」の抵触日通知書を発行しました。')
+
+        response = HttpResponse(pdf_content, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
+        return response
+    else:
+        messages.error(request, "抵触日通知書のPDFの生成に失敗しました。")
+        return redirect('client:client_department_detail', pk=pk)

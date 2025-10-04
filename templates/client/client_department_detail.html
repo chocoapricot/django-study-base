@@ -9,7 +9,17 @@
     <div class="col-md-8">
         <div class="content-box card bg-light mt-2 mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
-                クライアント組織詳細
+                <span>クライアント組織詳細</span>
+                {% if department.is_haken_office %}
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-printer"></i> 印刷
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" href="{% url 'client:issue_clash_day_notification_from_department' department.pk %}" target="_blank">抵触日通知書</a></li>
+                    </ul>
+                </div>
+                {% endif %}
             </div>
             <div class="card-body">
                 <div class="row mb-3 align-items-center">
