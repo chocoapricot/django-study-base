@@ -86,6 +86,14 @@ class ClientContract(MyModel):
         verbose_name='発行者'
     )
     confirmed_at = models.DateTimeField('確認日時', blank=True, null=True)
+    confirmed_by = models.ForeignKey(
+        ClientUser,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='confirmed_client_contracts',
+        verbose_name='確認者'
+    )
     class Meta:
         db_table = 'apps_contract_client'
         verbose_name = 'クライアント契約'

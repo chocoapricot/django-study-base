@@ -20,7 +20,7 @@
                     <th>契約名</th>
                     <th>クライアント名</th>
                     <th>契約期間</th>
-                    <th>PDF</th>
+                    <th>関連書類</th>
                     <th>契約ステータス</th>
                     <th>確認日時</th>
                     <th>操作</th>
@@ -38,11 +38,23 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if item.latest_pdf %}
-                            <a href="{% url 'contract:client_contract_pdf' item.contract.pk %}" target="_blank" class="btn btn-sm btn-info">最新のPDFを開く</a>
-                        {% else %}
-                            -
-                        {% endif %}
+                        <div class="d-flex flex-column">
+                            {% if item.latest_contract_pdf %}
+                                <a href="{% url 'contract:download_client_contract_pdf' item.latest_contract_pdf.pk %}" target="_blank" class="btn btn-sm btn-outline-secondary mb-1 text-start">契約書</a>
+                            {% endif %}
+                            {% if item.quotation_pdf %}
+                                <a href="{% url 'contract:download_client_contract_pdf' item.quotation_pdf.pk %}" target="_blank" class="btn btn-sm btn-outline-secondary mb-1 text-start">見積書</a>
+                            {% endif %}
+                            {% if item.clash_day_notification_pdf %}
+                                <a href="{% url 'contract:download_client_contract_pdf' item.clash_day_notification_pdf.pk %}" target="_blank" class="btn btn-sm btn-outline-secondary mb-1 text-start">抵触日通知書</a>
+                            {% endif %}
+                            {% if item.dispatch_notification_pdf %}
+                                <a href="{% url 'contract:download_client_contract_pdf' item.dispatch_notification_pdf.pk %}" target="_blank" class="btn btn-sm btn-outline-secondary mb-1 text-start">派遣通知書</a>
+                            {% endif %}
+                            {% if not item.latest_contract_pdf and not item.quotation_pdf and not item.clash_day_notification_pdf and not item.dispatch_notification_pdf %}
+                                -
+                            {% endif %}
+                        </div>
                     </td>
                     <td>
                         <span class="badge {{ item.contract.contract_status|badge_class }}">{{ item.contract.get_contract_status_display }}</span>
@@ -51,7 +63,7 @@
                         {{ item.contract.confirmed_at|date:"Y/m/d H:i"|default:"-" }}
                     </td>
                     <td>
-                        {% if item.contract.contract_status == '20' %} {# ISSUED #}
+                        {% if item.contract.contract_status == '20' and item.latest_contract_pdf %} {# ISSUED and contract exists #}
                             <form method="post" action="{% url 'contract:client_contract_confirm_list' %}" class="d-inline">
                                 {% csrf_token %}
                                 <input type="hidden" name="contract_id" value="{{ item.contract.pk }}">
