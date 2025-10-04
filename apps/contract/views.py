@@ -1249,15 +1249,20 @@ def staff_contract_confirm_list(request):
     ).values_list('corporate_number', flat=True)
 
     # 契約を取得
-    contracts = StaffContract.objects.filter(
+    contracts_query = StaffContract.objects.filter(
         staff=staff,
         corporate_number__in=approved_corporate_numbers,
         contract_status__in=[StaffContract.ContractStatus.ISSUED, StaffContract.ContractStatus.CONFIRMED]
     ).select_related('staff').order_by('-start_date')
 
+    # ページネーション
+    paginator = Paginator(contracts_query, 20) # 1ページあたり20件
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     # 同意状況とPDFの情報を追加
     contracts_with_status = []
-    for contract in contracts:
+    for contract in page_obj:
         # 同意文言の取得
         staff_agreement = StaffAgreement.objects.filter(
             Q(corporation_number=contract.corporate_number) | Q(corporation_number__isnull=True) | Q(corporation_number=''),
@@ -1284,6 +1289,7 @@ def staff_contract_confirm_list(request):
 
     context = {
         'contracts_with_status': contracts_with_status,
+        'page_obj': page_obj,
         'title': 'スタッフ契約確認',
         'ContractStatus': StaffContract.ContractStatus,
     }
@@ -1342,15 +1348,20 @@ def client_contract_confirm_list(request):
         queryset=ClientContractPrint.objects.order_by('-printed_at'),
         to_attr='all_prints'
     )
-    contracts = ClientContract.objects.filter(
+    contracts_query = ClientContract.objects.filter(
         client=client,
         corporate_number__in=approved_corporate_numbers,
         contract_status__in=[ClientContract.ContractStatus.ISSUED, ClientContract.ContractStatus.CONFIRMED]
     ).select_related('client', 'confirmed_by').prefetch_related(prefetch_prints).order_by('-start_date')
 
+    # ページネーション
+    paginator = Paginator(contracts_query, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     # PDFの情報を追加
     contracts_with_status = []
-    for contract in contracts:
+    for contract in page_obj:
         # all_printsはprefetchで取得済
         all_prints_for_contract = getattr(contract, 'all_prints', [])
 
@@ -1370,6 +1381,7 @@ def client_contract_confirm_list(request):
 
     context = {
         'contracts_with_status': contracts_with_status,
+        'page_obj': page_obj,
         'title': 'クライアント契約確認',
     }
     return render(request, 'contract/client_contract_confirm_list.html', context)
