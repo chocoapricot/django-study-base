@@ -9,6 +9,8 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.units import cm
+
 
 def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None, postamble_text=None):
     """
@@ -103,4 +105,116 @@ def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None,
         canvas.drawCentredString(A4[0] / 2, 20, f"{doc.page} / {total_pages}")
         canvas.restoreState()
 
+    doc2.build(story2, onFirstPage=on_page_with_total, onLaterPages=on_page_with_total)
+
+
+def generate_structured_pdf(
+    buffer,
+    meta_title,
+    to_address_flowables,
+    from_address_flowables,
+    main_title_text,
+    summary_flowables,
+    body_title_text=None,
+    body_flowables=None,
+    watermark_text=None
+):
+    """
+    構造化されたPDFを生成する共通関数。
+    左上に宛先、右上に送付元情報、タイトル、概要、本文、ページ番号を持つレイアウトを生成する。
+
+    :param buffer: PDFを書き込むためのBytesIOなどのバッファ
+    :param meta_title: PDFのメタデータタイトル
+    :param to_address_flowables: 宛先ブロックに表示するFlowableのリスト (左上)
+    :param from_address_flowables: 送付元ブロックに表示するFlowableのリスト (右上)
+    :param main_title_text: メインタイトル文字列
+    :param summary_flowables: 概要セクションに表示するFlowableのリスト
+    :param body_title_text: 本文セクションのタイトル（例：「記」）。オプショナル。
+    :param body_flowables: 本文セクションに表示するFlowableのリスト。オプショナル。
+    :param watermark_text: 透かしとして表示する文字列（オプショナル）
+    """
+    # --- フォントとスタイルの設定 ---
+    font_path = 'statics/fonts/ipagp.ttf'
+    pdfmetrics.registerFont(TTFont('IPAPGothic', font_path))
+
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name='StructAddress', fontName='IPAPGothic', fontSize=11, leading=16))
+    styles.add(ParagraphStyle(name='StructMainTitle', fontName='IPAPGothic', fontSize=16, alignment=1, spaceBefore=20, spaceAfter=20))
+    styles.add(ParagraphStyle(name='StructSectionTitle', fontName='IPAPGothic', fontSize=14, alignment=1, spaceBefore=10, spaceAfter=10))
+
+    # --- PDF要素の構築 ---
+    def build_story():
+        story = []
+
+        # --- ヘッダー: 宛先と送付元 ---
+        if to_address_flowables and from_address_flowables:
+            # 宛先が左、送付元が右
+            address_table = Table(
+                [[to_address_flowables, from_address_flowables]],
+                colWidths=['50%', '50%']
+            )
+            address_table.setStyle(TableStyle([
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+            ]))
+            story.append(address_table)
+            story.append(Spacer(1, 1 * cm))
+
+        # --- メインタイトル ---
+        if main_title_text:
+            story.append(Paragraph(main_title_text, styles['StructMainTitle']))
+
+        # --- 概要 ---
+        if summary_flowables:
+            story.extend(summary_flowables)
+            story.append(Spacer(1, 0.5 * cm))
+
+        # --- 本文タイトル (例: 記) ---
+        if body_title_text:
+            story.append(Paragraph(body_title_text, styles['StructSectionTitle']))
+            story.append(Spacer(1, 0.5 * cm))
+
+        # --- 本文コンテンツ ---
+        if body_flowables:
+            story.extend(body_flowables)
+
+        return story
+
+    # --- パス1: 総ページ数を数える ---
+    story1 = build_story()
+    pass1_buffer = io.BytesIO()
+    doc1 = SimpleDocTemplate(pass1_buffer, pagesize=A4, leftMargin=2*cm, rightMargin=2*cm, topMargin=2*cm, bottomMargin=2.5*cm, title=meta_title)
+    doc1.build(story1)
+    total_pages = doc1.page if doc1.page > 0 else 1
+
+    # --- パス2: 実際に描画する ---
+    story2 = build_story()
+
+    def on_page_with_total(canvas, doc):
+        """ページ描画のコールバック関数"""
+        # 透かし
+        if watermark_text:
+            canvas.saveState()
+            canvas.setFont('IPAPGothic', 60)
+            canvas.setFillColor(colors.lightgrey, alpha=0.2)
+
+            # ページ全体にタイル状に描画
+            for x in range(0, int(A4[0]) + 200, 250):
+                for y in range(0, int(A4[1]) + 200, 250):
+                    canvas.saveState()
+                    canvas.translate(x, y)
+                    canvas.rotate(45)
+                    canvas.drawCentredString(0, 0, watermark_text)
+                    canvas.restoreState()
+
+            canvas.restoreState()
+
+        # ページ番号
+        canvas.saveState()
+        canvas.setFont("IPAPGothic", 9)
+        canvas.drawCentredString(A4[0] / 2, 1.5 * cm, f"{doc.page} / {total_pages}")
+        canvas.restoreState()
+
+    doc2 = SimpleDocTemplate(buffer, pagesize=A4, leftMargin=2*cm, rightMargin=2*cm, topMargin=2*cm, bottomMargin=2.5*cm, title=meta_title)
     doc2.build(story2, onFirstPage=on_page_with_total, onLaterPages=on_page_with_total)
