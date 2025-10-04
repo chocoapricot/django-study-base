@@ -7,6 +7,7 @@ from django.db import transaction
 from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractNumber, StaffContractNumber
 from apps.common.pdf_utils import generate_contract_pdf, generate_structured_pdf
 from apps.system.logs.models import AppLog
+from apps.company.models import Company
 
 def generate_client_contract_number(contract: ClientContract) -> str:
     """
@@ -324,42 +325,56 @@ def generate_dispatch_notification_pdf(contract, user, issued_at, watermark_text
     return pdf_content, pdf_filename, pdf_title
 
 
-from apps.company.models import Company
-
-
-def generate_clash_day_notification_pdf(contract, user, issued_at, watermark_text=None):
+def generate_clash_day_notification_pdf(source_obj, user, issued_at, watermark_text=None):
     """抵触日通知書PDFを生成する"""
+    from apps.client.models import ClientDepartment
     pdf_title = "抵触日通知書"
     buffer = io.BytesIO()
 
     # --- データ取得 ---
     company = Company.objects.first()
-    client = contract.client
-    haken_info = contract.haken_info
-    responsible_person = haken_info.responsible_person_client
-    haken_office = haken_info.haken_office
-    clash_date = haken_office.haken_jigyosho_teishokubi if haken_office else None
+
+    if isinstance(source_obj, ClientContract):
+        contract = source_obj
+        client = contract.client
+        haken_info = contract.haken_info
+        responsible_person = haken_info.responsible_person_client
+        haken_office = haken_info.haken_office
+        clash_date = haken_office.haken_jigyosho_teishokubi if haken_office else None
+        # 送付元 (右) - 契約書から
+        client_name_text = f"{client.name}"
+        person_text = ""
+        if responsible_person:
+            position = responsible_person.position or ""
+            name = responsible_person.name or ""
+            person_text = f"役職 {position}\n氏名 {name}"
+
+        from_address_lines = ["（派遣先）", client_name_text]
+        if person_text:
+            from_address_lines.append(person_text)
+
+    elif isinstance(source_obj, ClientDepartment):
+        department = source_obj
+        client = department.client
+        haken_office = department
+        clash_date = department.haken_jigyosho_teishokubi
+        # 送付元 (右) - 組織情報から
+        from_address_lines = [
+            "（派遣先）",
+            f"{client.name}",
+            f"{department.name}"
+        ]
+    else:
+        # 不明なオブジェクトタイプの場合はエラー
+        return None, None, None
 
     # --- PDFコンテンツの準備 ---
-
     # 宛先 (左)
     company_name_text = f"{company.name} 御中" if company else ""
     to_address_lines = [
         "（派遣元）",
         company_name_text,
     ]
-
-    # 送付元 (右)
-    client_name_text = f"{client.name}"
-    person_text = ""
-    if responsible_person:
-        position = responsible_person.position or ""
-        name = responsible_person.name or ""
-        person_text = f"役職 {position}\n氏名 {name}"
-
-    from_address_lines = ["（派遣先）", client_name_text]
-    if person_text:
-        from_address_lines.append(person_text)
 
     # メインタイトル
     main_title = "派遣可能期間の制限（事業所単位の期間制限）に抵触する日の通知"
@@ -409,7 +424,7 @@ def generate_clash_day_notification_pdf(contract, user, issued_at, watermark_tex
     buffer.close()
 
     timestamp = issued_at.strftime('%Y%m%d%H%M%S')
-    pdf_filename = f"clash_day_notification_{contract.pk}_{timestamp}.pdf"
+    pdf_filename = f"clash_day_notification_{source_obj.pk}_{timestamp}.pdf"
 
     return pdf_content, pdf_filename, pdf_title
 
