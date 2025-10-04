@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from django.http import JsonResponse, HttpResponse, Http404
 from django.core.files.base import ContentFile
 from django.forms.models import model_to_dict
@@ -1295,6 +1295,13 @@ def client_contract_confirm_list(request):
     """クライアント契約確認一覧"""
     user = request.user
 
+    try:
+        client_user = ClientUser.objects.get(email=user.email)
+        client = client_user.client
+    except ClientUser.DoesNotExist:
+        client_user = None
+        client = None
+
     if request.method == 'POST':
         contract_id = request.POST.get('contract_id')
         action = request.POST.get('action')
@@ -1303,22 +1310,18 @@ def client_contract_confirm_list(request):
         if action == 'confirm':
             contract.contract_status = ClientContract.ContractStatus.CONFIRMED
             contract.confirmed_at = timezone.now()
+            contract.confirmed_by = client_user
             contract.save()
             messages.success(request, f'契約「{contract.contract_name}」を確認しました。')
 
         elif action == 'unconfirm':
             contract.contract_status = ClientContract.ContractStatus.ISSUED
             contract.confirmed_at = None
+            contract.confirmed_by = None
             contract.save()
             messages.success(request, f'契約「{contract.contract_name}」を未確認に戻しました。')
 
         return redirect('contract:client_contract_confirm_list')
-
-    try:
-        client_user = ClientUser.objects.get(email=user.email)
-        client = client_user.client
-    except ClientUser.DoesNotExist:
-        client = None
 
     if not client:
         context = {
@@ -1334,21 +1337,35 @@ def client_contract_confirm_list(request):
     ).values_list('corporate_number', flat=True)
 
     # 契約を取得
+    prefetch_prints = Prefetch(
+        'print_history',
+        queryset=ClientContractPrint.objects.order_by('-printed_at'),
+        to_attr='all_prints'
+    )
     contracts = ClientContract.objects.filter(
         client=client,
         corporate_number__in=approved_corporate_numbers,
         contract_status__in=[ClientContract.ContractStatus.ISSUED, ClientContract.ContractStatus.CONFIRMED]
-    ).select_related('client').order_by('-start_date')
+    ).select_related('client', 'confirmed_by').prefetch_related(prefetch_prints).order_by('-start_date')
 
     # PDFの情報を追加
     contracts_with_status = []
     for contract in contracts:
-        # 最新のPDFを取得
-        latest_pdf = ClientContractPrint.objects.filter(client_contract=contract).order_by('-printed_at').first()
+        # all_printsはprefetchで取得済
+        all_prints_for_contract = getattr(contract, 'all_prints', [])
+
+        # 各種の最新PDFを取得
+        latest_contract_pdf = next((p for p in all_prints_for_contract if p.print_type == ClientContractPrint.PrintType.CONTRACT), None)
+        quotation_pdf = next((p for p in all_prints_for_contract if p.print_type == ClientContractPrint.PrintType.QUOTATION), None)
+        clash_day_notification_pdf = next((p for p in all_prints_for_contract if p.print_type == ClientContractPrint.PrintType.CLASH_DAY_NOTIFICATION), None)
+        dispatch_notification_pdf = next((p for p in all_prints_for_contract if p.print_type == ClientContractPrint.PrintType.DISPATCH_NOTIFICATION), None)
 
         contracts_with_status.append({
             'contract': contract,
-            'latest_pdf': latest_pdf,
+            'latest_contract_pdf': latest_contract_pdf,
+            'quotation_pdf': quotation_pdf,
+            'clash_day_notification_pdf': clash_day_notification_pdf,
+            'dispatch_notification_pdf': dispatch_notification_pdf,
         })
 
     context = {

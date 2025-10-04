@@ -115,7 +115,7 @@
                     <i class="bi bi-link" style="font-size: 20px; color: #17a2b8;"></i>
                     クライアント確認
                     {% if contract.confirmed_at %}
-                        <span class="text-muted small">（{{ contract.confirmed_at|date:"Y/m/d H:i:s" }}）</span>
+                        <span class="text-muted small">（{{ contract.confirmed_at|date:"Y/m/d H:i:s" }}　{{ contract.confirmed_by.name|default:'' }}）</span>
                     {% endif %}
                 </label>
             </div>
