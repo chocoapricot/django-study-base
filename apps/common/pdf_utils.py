@@ -12,9 +12,9 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib.units import cm
 
 
-def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None, postamble_text=None):
+def generate_table_based_contract_pdf(buffer, title, intro_text, items, watermark_text=None, postamble_text=None):
     """
-    契約書形式のPDFを生成する共通関数。
+    テーブルベースの契約書PDFを生成する共通関数。
     2パス処理を行い、フッターに総ページ数付きのページ番号を印字する。
 
     :param buffer: PDFを書き込むためのBytesIOなどのバッファ
@@ -108,7 +108,7 @@ def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None,
     doc2.build(story2, onFirstPage=on_page_with_total, onLaterPages=on_page_with_total)
 
 
-def generate_structured_pdf(
+def generate_article_based_contract_pdf(
     buffer,
     meta_title,
     to_address_lines,
@@ -120,7 +120,7 @@ def generate_structured_pdf(
     watermark_text=None
 ):
     """
-    構造化されたPDFを生成する共通関数。
+    条文ベースの契約書PDFを生成する共通関数。
     左上に宛先、右上に送付元情報、タイトル、概要、本文、ページ番号を持つレイアウトを生成する。
     Flowableの代わりに文字列や文字列のリストを受け取る。
 

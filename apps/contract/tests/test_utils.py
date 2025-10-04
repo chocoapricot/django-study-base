@@ -36,7 +36,7 @@ class ContractUtilsTest(TestCase):
             contract_type_code='1'
         )
 
-    @patch('apps.contract.utils.generate_contract_pdf')
+    @patch('apps.contract.utils.generate_table_based_contract_pdf')
     def test_generate_haken_contract_pdf_title(self, mock_generate_pdf):
         """
         Test that the title for a 'haken' (dispatch) contract is '労働者派遣個別契約書'.
@@ -55,7 +55,7 @@ class ContractUtilsTest(TestCase):
         args, kwargs = mock_generate_pdf.call_args
         self.assertEqual(args[1], "労働者派遣個別契約書")
 
-    @patch('apps.contract.utils.generate_contract_pdf')
+    @patch('apps.contract.utils.generate_table_based_contract_pdf')
     def test_generate_ukeoi_contract_pdf_title(self, mock_generate_pdf):
         """
         Test that the title for a 'ukeoi' (contracting) contract is '業務委託個別契約書'.
@@ -74,7 +74,7 @@ class ContractUtilsTest(TestCase):
         args, kwargs = mock_generate_pdf.call_args
         self.assertEqual(args[1], "業務委託個別契約書")
 
-    @patch('apps.contract.utils.generate_contract_pdf')
+    @patch('apps.contract.utils.generate_table_based_contract_pdf')
     def test_haken_contract_includes_permit_number(self, mock_generate_pdf):
         """
         Test that the haken permit number is included in the PDF content for a dispatch contract.
@@ -104,7 +104,7 @@ class ContractUtilsTest(TestCase):
         self.assertIsNotNone(permit_number_item)
         self.assertEqual(permit_number_item['text'], '派13-123456')
 
-    @patch('apps.contract.utils.generate_contract_pdf')
+    @patch('apps.contract.utils.generate_table_based_contract_pdf')
     def test_haken_contract_includes_office_and_unit(self, mock_generate_pdf):
         """
         Test that haken office and unit are included in the PDF content for a dispatch contract.
@@ -158,7 +158,7 @@ class ContractUtilsTest(TestCase):
         # Since manager title is missing, the text should just be the unit name.
         self.assertEqual(unit_item['text'], '開発第一部')
 
-    @patch('apps.contract.utils.generate_contract_pdf')
+    @patch('apps.contract.utils.generate_table_based_contract_pdf')
     def test_haken_contract_formats_office_and_unit_correctly(self, mock_generate_pdf):
         """
         Test that haken office and unit are formatted correctly in the PDF content.
