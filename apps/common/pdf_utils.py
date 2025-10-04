@@ -157,7 +157,7 @@ def generate_structured_pdf(
 
             address_table = Table(
                 [[to_address_flowables, from_address_flowables]],
-                colWidths=['50%', '50%']
+                colWidths=['60%', '40%']
             )
             address_table.setStyle(TableStyle([
                 ('VALIGN', (0, 0), (-1, -1), 'TOP'),
