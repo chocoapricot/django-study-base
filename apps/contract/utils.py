@@ -324,14 +324,6 @@ def generate_dispatch_notification_pdf(contract, user, issued_at, watermark_text
     return pdf_content, pdf_filename, pdf_title
 
 
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-from reportlab.lib.units import cm
-
 from apps.company.models import Company
 
 
@@ -348,51 +340,38 @@ def generate_clash_day_notification_pdf(contract, user, issued_at, watermark_tex
     haken_office = haken_info.haken_office
     clash_date = haken_office.haken_jigyosho_teishokubi if haken_office else None
 
-    # --- スタイルの設定 ---
-    font_path = 'statics/fonts/ipagp.ttf'
-    pdfmetrics.registerFont(TTFont('IPAPGothic', font_path))
-    styles = getSampleStyleSheet()
-    # 共通ユーティリティ側で'StructAddress'が定義されているが、呼び出し側でFlowableを作成する必要があるため、ここで定義する。
-    styles.add(ParagraphStyle(name='ClashAddress', fontName='IPAPGothic', fontSize=11, leading=16))
-    styles.add(ParagraphStyle(name='ClashBodyText', fontName='IPAPGothic', fontSize=11, leading=18, firstLineIndent=11, spaceAfter=10))
-    styles.add(ParagraphStyle(name='ClashListItem', fontName='IPAPGothic', fontSize=11, leading=18, leftIndent=22, firstLineIndent=-11))
-
-    # --- Flowableの構築 ---
+    # --- PDFコンテンツの準備 ---
 
     # 宛先 (左)
-    to_address_flowables = []
     company_name_text = f"{company.name} 御中" if company else ""
-    to_address_flowables.append(Paragraph("（派遣元）", styles['ClashAddress']))
-    to_address_flowables.append(Paragraph(f"{company_name_text}", styles['ClashAddress']))
+    to_address_lines = [
+        "（派遣元）",
+        company_name_text,
+    ]
 
     # 送付元 (右)
-    from_address_flowables = []
     client_name_text = f"{client.name}"
     person_text = ""
     if responsible_person:
         position = responsible_person.position or ""
         name = responsible_person.name or ""
-        person_text = f"役職 {position}<br/>氏名 {name}"
+        person_text = f"役職 {position}\n氏名 {name}"
 
-    from_address_flowables.append(Paragraph("（派遣先）", styles['ClashAddress']))
-    from_address_flowables.append(Paragraph(client_name_text, styles['ClashAddress']))
+    from_address_lines = ["（派遣先）", client_name_text]
     if person_text:
-        from_address_flowables.append(Paragraph(person_text, styles['ClashAddress']))
+        from_address_lines.append(person_text)
 
     # メインタイトル
     main_title = "派遣可能期間の制限（事業所単位の期間制限）に抵触する日の通知"
 
     # 概要
-    summary_flowables = [
-        Paragraph(
-            "労働者派遣法第２６条第４項に基づき、派遣可能期間の制限（事業所単位の期間制限）に抵触することとなる最初の日（以下、「抵触日」という。）を、下記のとおり通知します。",
-            styles['ClashBodyText']
-        )
+    summary_lines = [
+        "労働者派遣法第２６条第４項に基づき、派遣可能期間の制限（事業所単位の期間制限）に抵触することとなる最初の日（以下、「抵触日」という。）を、下記のとおり通知します。"
     ]
 
     # 本文
     body_title = "記"
-    body_flowables = []
+    body_items = []
 
     # 1. 事業所
     office_name = haken_office.name if haken_office else "（事業所情報なし）"
@@ -401,30 +380,28 @@ def generate_clash_day_notification_pdf(contract, user, issued_at, watermark_tex
         postal = f"〒{haken_office.postal_code}" if haken_office.postal_code else ""
         address = haken_office.address or ""
         office_address = f"{postal} {address}".strip()
-    item1_text = f"１．労働者派遣の役務の提供を受ける事業所<br/>{office_name}<br/>{office_address}"
-    body_flowables.append(Paragraph(item1_text, styles['ClashListItem']))
-    body_flowables.append(Spacer(1, 0.5 * cm))
+    item1_text = f"１．労働者派遣の役務の提供を受ける事業所\n{office_name}\n{office_address}"
+    body_items.append(item1_text)
 
     # 2. 抵触日
     clash_date_str = clash_date.strftime('%Y年%m月%d日') if clash_date else "（抵触日の設定なし）"
-    item2_text = f"２．上記事業所の抵触日<br/>{clash_date_str}"
-    body_flowables.append(Paragraph(item2_text, styles['ClashListItem']))
-    body_flowables.append(Spacer(1, 0.5 * cm))
+    item2_text = f"２．上記事業所の抵触日\n{clash_date_str}"
+    body_items.append(item2_text)
 
     # 3. その他
-    item3_text = "３．その他<br/>事業所単位の派遣可能期間を延長した場合は、速やかに、労働者派遣法第４０条の２第７項に基づき、延長後の抵触日を通知します。"
-    body_flowables.append(Paragraph(item3_text, styles['ClashListItem']))
+    item3_text = "３．その他\n事業所単位の派遣可能期間を延長した場合は、速やかに、労働者派遣法第４０条の２第７項に基づき、延長後の抵触日を通知します。"
+    body_items.append(item3_text)
 
     # --- PDF生成 ---
     generate_structured_pdf(
         buffer,
         meta_title=pdf_title,
-        to_address_flowables=to_address_flowables,
-        from_address_flowables=from_address_flowables,
+        to_address_lines=to_address_lines,
+        from_address_lines=from_address_lines,
         main_title_text=main_title,
-        summary_flowables=summary_flowables,
+        summary_lines=summary_lines,
         body_title_text=body_title,
-        body_flowables=body_flowables,
+        body_items=body_items,
         watermark_text=watermark_text
     )
 

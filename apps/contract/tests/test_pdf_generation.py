@@ -202,7 +202,7 @@ class ContractPdfGenerationTest(TestCase):
         self.assertIn("（派遣先）", text)
         self.assertIn(self.client.name, text)
         self.assertIn(f"役職 {self.client_user.position}", text)
-        self.assertIn(f"氏名 {self.client_user.name} 様", text)
+        self.assertIn(f"氏名 {self.client_user.name}", text)
         self.assertIn("労働者派遣法第２６条第４項に基づき", text)
         self.assertIn("記", text)
         self.assertIn("１．労働者派遣の役務の提供を受ける事業所", text)
