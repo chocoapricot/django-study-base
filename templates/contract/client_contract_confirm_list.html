@@ -19,6 +19,7 @@
                 <tr>
                     <th>契約名</th>
                     <th>クライアント名</th>
+                    <th>契約種別</th>
                     <th>契約期間</th>
                     <th>関連書類</th>
                     <th>契約ステータス</th>
@@ -31,6 +32,7 @@
                 <tr>
                     <td>{{ item.contract.contract_name }}</td>
                     <td>{{ item.contract.client.name }}</td>
+                    <td>{{ item.contract.get_client_contract_type_code_display }}</td>
                     <td>
                         {{ item.contract.start_date|date:"Y/m/d" }}
                         {% if item.contract.end_date %}
@@ -85,6 +87,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% include 'common/_pagination.html' %}
         {% else %}
         <div class="text-center py-4">
             <p class="text-muted">確認対象の契約が見つかりませんでした。</p>
