@@ -7,8 +7,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.db import models
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from django.utils import timezone
+from django.core.files.base import ContentFile
 from apps.system.logs.utils import log_model_action
+from apps.contract.utils import generate_clash_day_notification_pdf
 # クライアント連絡履歴用インポート
 from .models import Client, ClientContacted, ClientDepartment, ClientUser, ClientFile
 from .forms import ClientForm, ClientContactedForm, ClientDepartmentForm, ClientUserForm, ClientFileForm
@@ -779,3 +782,32 @@ def client_file_download(request, pk):
         messages.error(request, f'ファイルのダウンロード中にエラーが発生しました: {str(e)}')
         return redirect('client:client_detail', pk=client_file.client.pk)
 
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def issue_clash_day_notification_from_department(request, pk):
+    """クライアント組織から抵触日通知書を発行する"""
+    department = get_object_or_404(ClientDepartment, pk=pk)
+
+    # 派遣事業所でない場合はエラー
+    if not department.is_haken_office:
+        messages.error(request, 'この組織は派遣事業所ではないため、抵触日通知書を発行できません。')
+        return redirect('client:client_department_detail', pk=pk)
+
+    # 抵触日が設定されているか確認
+    if not department.haken_jigyosho_teishokubi:
+        messages.error(request, '派遣事業所の抵触日が設定されていません。')
+        return redirect('client:client_department_detail', pk=pk)
+
+    issued_at = timezone.now()
+    # 組織オブジェクトを渡して、透かしなしで生成
+    pdf_content, pdf_filename, document_title = generate_clash_day_notification_pdf(department, request.user, issued_at)
+
+    if pdf_content:
+        # 発行履歴は保存しない
+        response = HttpResponse(pdf_content, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
+        return response
+    else:
+        messages.error(request, "抵触日通知書のPDFの生成に失敗しました。")
+        return redirect('client:client_department_detail', pk=pk)

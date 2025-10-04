@@ -1544,7 +1544,7 @@ def client_contract_draft_clash_day_notification(request, pk):
 
     issued_at = timezone.now()
     pdf_content, pdf_filename, document_title = generate_clash_day_notification_pdf(
-        contract, request.user, issued_at, watermark_text="DRAFT"
+        contract, request.user, issued_at
     )
 
     if pdf_content:
