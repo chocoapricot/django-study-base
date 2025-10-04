@@ -32,7 +32,11 @@
                 <tr>
                     <td>{{ item.contract.contract_name }}</td>
                     <td>{{ item.contract.client.name }}</td>
-                    <td>{{ item.contract.get_client_contract_type_code_display }}</td>
+                    <td>
+                        <span class="badge {{item.contract.client_contract_type_code|badge_class}}">
+                            {% my_name 'client_contract_type' item.contract.client_contract_type_code %}
+                        </span>
+                    </td>
                     <td>
                         {{ item.contract.start_date|date:"Y/m/d" }}
                         {% if item.contract.end_date %}
