@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.db import transaction
 from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractNumber, StaffContractNumber
-from apps.common.pdf_utils import generate_contract_pdf
+from apps.common.pdf_utils import generate_contract_pdf, generate_structured_pdf
 from apps.system.logs.models import AppLog
 
 def generate_client_contract_number(contract: ClientContract) -> str:
@@ -348,131 +348,89 @@ def generate_clash_day_notification_pdf(contract, user, issued_at, watermark_tex
     haken_office = haken_info.haken_office
     clash_date = haken_office.haken_jigyosho_teishokubi if haken_office else None
 
-    # --- フォントとスタイルの設定 ---
+    # --- スタイルの設定 ---
     font_path = 'statics/fonts/ipagp.ttf'
     pdfmetrics.registerFont(TTFont('IPAPGothic', font_path))
-
     styles = getSampleStyleSheet()
+    # 共通ユーティリティ側で'StructAddress'が定義されているが、呼び出し側でFlowableを作成する必要があるため、ここで定義する。
     styles.add(ParagraphStyle(name='ClashAddress', fontName='IPAPGothic', fontSize=11, leading=16))
-    styles.add(ParagraphStyle(name='ClashMainTitle', fontName='IPAPGothic', fontSize=16, alignment=1, spaceBefore=20, spaceAfter=20))
     styles.add(ParagraphStyle(name='ClashBodyText', fontName='IPAPGothic', fontSize=11, leading=18, firstLineIndent=11, spaceAfter=10))
-    styles.add(ParagraphStyle(name='ClashSectionTitle', fontName='IPAPGothic', fontSize=14, alignment=1, spaceBefore=10, spaceAfter=10))
     styles.add(ParagraphStyle(name='ClashListItem', fontName='IPAPGothic', fontSize=11, leading=18, leftIndent=22, firstLineIndent=-11))
 
-    # --- PDF要素の構築 ---
-    def build_story():
-        story = []
+    # --- Flowableの構築 ---
 
-        # --- 宛先 ---
-        # 派遣元 (左)
-        company_name_text = f"{company.name}　御中" if company else ""
-        from_address_parts = [
-            Paragraph("（派遣元）", styles['ClashAddress']),
-            Paragraph(company_name_text, styles['ClashAddress']),
-        ]
+    # 宛先 (左)
+    to_address_flowables = []
+    client_name_text = f"{client.name}"
+    person_text = ""
+    if responsible_person:
+        position = responsible_person.position or ""
+        name = responsible_person.name or ""
+        person_text = f"役職 {position}<br/>氏名 {name}　様"
 
-        # 派遣先 (右)
-        client_name_text = f"{client.name}"
-        person_text = ""
-        if responsible_person:
-            position = responsible_person.position or ""
-            name = responsible_person.name or ""
-            person_text = f"役職 {position}<br/>氏名 {name}　様"
+    to_address_flowables.append(Paragraph("（派遣先）", styles['ClashAddress']))
+    to_address_flowables.append(Paragraph(client_name_text, styles['ClashAddress']))
+    if person_text:
+        to_address_flowables.append(Paragraph(person_text, styles['ClashAddress']))
 
-        to_address_parts = [
-            Paragraph("（派遣先）", styles['ClashAddress']),
-            Paragraph(client_name_text, styles['ClashAddress']),
-        ]
-        if person_text:
-            to_address_parts.append(Paragraph(person_text, styles['ClashAddress']))
+    # 送付元 (右)
+    from_address_flowables = []
+    company_name_text = f"{company.name} 御中" if company else ""
+    from_address_flowables.append(Paragraph("（派遣元）", styles['ClashAddress']))
+    from_address_flowables.append(Paragraph(f"{company_name_text}", styles['ClashAddress']))
+    from_address_flowables.append(Paragraph(f"〒{company.postal_code}", styles['ClashAddress']))
+    from_address_flowables.append(Paragraph(f"{company.address}", styles['ClashAddress']))
+    if company.phone_number:
+        from_address_flowables.append(Paragraph(f"TEL: {company.phone_number}", styles['ClashAddress']))
 
-        address_table = Table(
-            [[from_address_parts, to_address_parts]],
-            colWidths=['50%', '50%']
+    # メインタイトル
+    main_title = "派遣可能期間の制限（事業所単位の期間制限）に抵触する日の通知"
+
+    # 概要
+    summary_flowables = [
+        Paragraph(
+            "労働者派遣法第２６条第４項に基づき、派遣可能期間の制限（事業所単位の期間制限）に抵触することとなる最初の日（以下、「抵触日」という。）を、下記のとおり通知します。",
+            styles['ClashBodyText']
         )
-        address_table.setStyle(TableStyle([
-            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('LEFTPADDING', (0, 0), (-1, -1), 0),
-            ('RIGHTPADDING', (0, 0), (-1, -1), 0),
-        ]))
-        story.append(address_table)
-        story.append(Spacer(1, 1 * cm))
+    ]
 
-        # --- メインタイトル ---
-        story.append(Paragraph("派遣可能期間の制限（事業所単位の期間制限）に抵触する日の通知", styles['ClashMainTitle']))
+    # 本文
+    body_title = "記"
+    body_flowables = []
 
-        # --- 本文 ---
-        body_text = "労働者派遣法第２６条第４項に基づき、派遣可能期間の制限（事業所単位の期間制限）に抵触することとなる最初の日（以下、「抵触日」という。）を、下記のとおり通知します。"
-        story.append(Paragraph(body_text, styles['ClashBodyText']))
-        story.append(Spacer(1, 0.5 * cm))
+    # 1. 事業所
+    office_name = haken_office.name if haken_office else "（事業所情報なし）"
+    office_address = ""
+    if haken_office:
+        postal = f"〒{haken_office.postal_code}" if haken_office.postal_code else ""
+        address = haken_office.address or ""
+        office_address = f"{postal} {address}".strip()
+    item1_text = f"１．労働者派遣の役務の提供を受ける事業所<br/>{office_name}<br/>{office_address}"
+    body_flowables.append(Paragraph(item1_text, styles['ClashListItem']))
+    body_flowables.append(Spacer(1, 0.5 * cm))
 
-        # --- 記 ---
-        story.append(Paragraph("記", styles['ClashSectionTitle']))
-        story.append(Spacer(1, 0.5 * cm))
+    # 2. 抵触日
+    clash_date_str = clash_date.strftime('%Y年%m月%d日') if clash_date else "（抵触日の設定なし）"
+    item2_text = f"２．上記事業所の抵触日<br/>{clash_date_str}"
+    body_flowables.append(Paragraph(item2_text, styles['ClashListItem']))
+    body_flowables.append(Spacer(1, 0.5 * cm))
 
-        # --- 記書きの内容 ---
-        # 1. 事業所
-        office_name = haken_office.name if haken_office else "（事業所情報なし）"
-        office_address = ""
-        if haken_office:
-            postal = f"〒{haken_office.postal_code}" if haken_office.postal_code else ""
-            address = haken_office.address or ""
-            office_address = f"{postal} {address}".strip()
+    # 3. その他
+    item3_text = "３．その他<br/>事業所単位の派遣可能期間を延長した場合は、速やかに、労働者派遣法第４０条の２第７項に基づき、延長後の抵触日を通知します。"
+    body_flowables.append(Paragraph(item3_text, styles['ClashListItem']))
 
-        item1_text = f"１．労働者派遣の役務の提供を受ける事業所<br/>{office_name}<br/>{office_address}"
-        story.append(Paragraph(item1_text, styles['ClashListItem']))
-        story.append(Spacer(1, 0.5 * cm))
-
-        # 2. 抵触日
-        clash_date_str = clash_date.strftime('%Y年%m月%d日') if clash_date else "（抵触日の設定なし）"
-        item2_text = f"２．上記事業所の抵触日<br/>{clash_date_str}"
-        story.append(Paragraph(item2_text, styles['ClashListItem']))
-        story.append(Spacer(1, 0.5 * cm))
-
-        # 3. その他
-        item3_text = "３．その他<br/>事業所単位の派遣可能期間を延長した場合は、速やかに、労働者派遣法第４０条の２第７項に基づき、延長後の抵触日を通知します。"
-        story.append(Paragraph(item3_text, styles['ClashListItem']))
-
-        return story
-
-    # --- パス1: 総ページ数を数える ---
-    story1 = build_story()
-    pass1_buffer = io.BytesIO()
-    doc1 = SimpleDocTemplate(pass1_buffer, pagesize=A4, leftMargin=2*cm, rightMargin=2*cm, topMargin=2*cm, bottomMargin=2.5*cm, title=pdf_title)
-    doc1.build(story1)
-    total_pages = doc1.page
-
-    # --- パス2: 実際に描画する ---
-    story2 = build_story()
-
-    def on_page_with_total(canvas, doc):
-        """ページ描画のコールバック関数"""
-        # 透かし
-        if watermark_text:
-            canvas.saveState()
-            canvas.setFont('IPAPGothic', 60)
-            canvas.setFillColor(colors.lightgrey, alpha=0.2)
-
-            # ページ全体にタイル状に描画
-            for x in range(0, int(A4[0]) + 200, 250):
-                for y in range(0, int(A4[1]) + 200, 250):
-                    canvas.saveState()
-                    canvas.translate(x, y)
-                    canvas.rotate(45)
-                    canvas.drawCentredString(0, 0, watermark_text)
-                    canvas.restoreState()
-
-            canvas.restoreState()
-
-        # ページ番号
-        canvas.saveState()
-        canvas.setFont("IPAPGothic", 9)
-        canvas.drawCentredString(A4[0] / 2, 1.5 * cm, f"{doc.page} / {total_pages}")
-        canvas.restoreState()
-
-    doc2 = SimpleDocTemplate(buffer, pagesize=A4, leftMargin=2*cm, rightMargin=2*cm, topMargin=2*cm, bottomMargin=2.5*cm, title=pdf_title)
-    doc2.build(story2, onFirstPage=on_page_with_total, onLaterPages=on_page_with_total)
-
+    # --- PDF生成 ---
+    generate_structured_pdf(
+        buffer,
+        meta_title=pdf_title,
+        to_address_flowables=to_address_flowables,
+        from_address_flowables=from_address_flowables,
+        main_title_text=main_title,
+        summary_flowables=summary_flowables,
+        body_title_text=body_title,
+        body_flowables=body_flowables,
+        watermark_text=watermark_text
+    )
 
     pdf_content = buffer.getvalue()
     buffer.close()
