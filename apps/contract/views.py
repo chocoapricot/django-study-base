@@ -26,7 +26,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import io
 from apps.common.pdf_utils import generate_contract_pdf
-from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number, generate_clash_day_notification_pdf, generate_dispatch_notification_pdf
+from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number, generate_clash_day_notification_pdf, generate_dispatch_notification_pdf, generate_dispatch_ledger_pdf
 from .resources import ClientContractResource, StaffContractResource
 
 # 契約管理トップページ
@@ -1470,6 +1470,30 @@ def client_contract_export(request):
         response['Content-Disposition'] = f'attachment; filename="client_contracts_{timestamp}.csv"'
 
     return response
+
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def client_dispatch_ledger_pdf(request, pk):
+    """クライアント契約の派遣元管理台帳PDFを生成して返す"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+
+    if contract.client_contract_type_code != '20':
+        messages.error(request, 'この契約の派遣元管理台帳は発行できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
+    issued_at = timezone.now()
+    pdf_content, pdf_filename, document_title = generate_dispatch_ledger_pdf(
+        contract, request.user, issued_at
+    )
+
+    if pdf_content:
+        response = HttpResponse(pdf_content, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
+        return response
+    else:
+        messages.error(request, "派遣元管理台帳のPDFの生成に失敗しました。")
+        return redirect('contract:client_contract_detail', pk=pk)
 
 
 @login_required
