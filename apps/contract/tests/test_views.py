@@ -394,13 +394,13 @@ class ContractViewTest(TestCase):
         # エラーメッセージが表示されることを確認
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'この契約の抵触日通知書は発行できません。')
+        self.assertEqual(str(messages[0]), 'この契約の抵触日通知書は共有できません。')
 
-    def test_draft_clash_day_notification_for_non_haken_contract(self):
+    def test_clash_day_notification_pdf_for_non_haken_contract(self):
         """
-        派遣契約でない契約に対してドラフトの抵触日通知書を発行しようとするとエラーになることをテスト
+        派遣契約でない契約に対して抵触日通知書PDFを発行しようとするとエラーになることをテスト
         """
-        url = reverse('contract:client_contract_draft_clash_day_notification', kwargs={'pk': self.non_haken_contract.pk})
+        url = reverse('contract:client_clash_day_notification_pdf', kwargs={'pk': self.non_haken_contract.pk})
         response = self.client.get(url)
 
         # 詳細ページにリダイレクトされることを確認
@@ -411,7 +411,81 @@ class ContractViewTest(TestCase):
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), 'この契約の抵触日通知書は発行できません。')
 
+    def test_issue_clash_day_notification_no_clash_day_date(self):
+        """抵触日通知書発行時、事業所に抵触日が未設定の場合エラーになることをテスト"""
+        haken_office = ClientDepartment.objects.create(client=self.test_client, name='Test Office No Date', is_haken_office=True, haken_jigyosho_teishokubi=None)
+        self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
+        self.client_contract.save()
+        ClientContractHaken.objects.create(client_contract=self.client_contract, haken_office=haken_office)
 
+        url = reverse('contract:issue_clash_day_notification', kwargs={'pk': self.client_contract.pk})
+        response = self.client.post(url)
+
+        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract.pk}))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), '派遣事業所の抵触日が設定されていません。')
+
+    def test_clash_day_notification_pdf_no_clash_day_date(self):
+        """抵触日通知書PDF表示時、事業所に抵触日が未設定の場合エラーになることをテスト"""
+        haken_office = ClientDepartment.objects.create(client=self.test_client, name='Test Office No Date PDF', is_haken_office=True, haken_jigyosho_teishokubi=None)
+        self.client_contract.save()
+        ClientContractHaken.objects.create(client_contract=self.client_contract, haken_office=haken_office)
+
+        url = reverse('contract:client_clash_day_notification_pdf', kwargs={'pk': self.client_contract.pk})
+        response = self.client.get(url)
+
+        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract.pk}))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), '派遣事業所の抵触日が設定されていません。')
+
+    def test_clash_day_notification_pdf_does_not_create_print_record(self):
+        """抵触日通知書PDF表示（印刷メニューから）では発行履歴が作成されないことをテスト"""
+        from ..models import ClientContractPrint
+        haken_office = ClientDepartment.objects.create(
+            client=self.test_client,
+            name='Test Office With Date PDF',
+            is_haken_office=True,
+            haken_jigyosho_teishokubi=datetime.date.today()
+        )
+        self.client_contract.save()
+        ClientContractHaken.objects.create(client_contract=self.client_contract, haken_office=haken_office)
+
+        url = reverse('contract:client_clash_day_notification_pdf', kwargs={'pk': self.client_contract.pk})
+
+        initial_print_count = ClientContractPrint.objects.count()
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertEqual(ClientContractPrint.objects.count(), initial_print_count)
+
+    def test_issue_clash_day_notification_creates_print_record(self):
+        """抵触日通知書共有（状況カードから）では発行履歴が作成されることをテスト"""
+        from ..models import ClientContractPrint
+        haken_office = ClientDepartment.objects.create(
+            client=self.test_client,
+            name='Test Office With Date Issue',
+            is_haken_office=True,
+            haken_jigyosho_teishokubi=datetime.date.today()
+        )
+        self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
+        self.client_contract.save()
+        ClientContractHaken.objects.create(client_contract=self.client_contract, haken_office=haken_office)
+
+        url = reverse('contract:issue_clash_day_notification', kwargs={'pk': self.client_contract.pk})
+
+        initial_print_count = ClientContractPrint.objects.count()
+        response = self.client.post(url)
+
+        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract.pk}))
+        self.assertEqual(ClientContractPrint.objects.count(), initial_print_count + 1)
+
+        # Check message
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(messages), 1)
+        self.assertIn('抵触日通知書を共有しました。', str(messages[0]))
 
     def test_client_contract_create_haken_successful_post(self):
         """派遣契約の新規作成が正常に成功することを確認"""

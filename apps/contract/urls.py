@@ -25,7 +25,7 @@ urlpatterns = [
     path('client/<int:pk>/draft_pdf/', views.client_contract_draft_pdf, name='client_contract_draft_pdf'),
     path('client/<int:pk>/draft_quotation/', views.client_contract_draft_quotation, name='client_contract_draft_quotation'),
     path('client/<int:pk>/issue_clash_day_notification/', views.issue_clash_day_notification, name='issue_clash_day_notification'),
-    path('client/<int:pk>/draft_clash_day_notification/', views.client_contract_draft_clash_day_notification, name='client_contract_draft_clash_day_notification'),
+    path('client/<int:pk>/clash_day_notification_pdf/', views.client_clash_day_notification_pdf, name='client_clash_day_notification_pdf'),
     path('client/<int:pk>/issue_dispatch_notification/', views.issue_dispatch_notification, name='issue_dispatch_notification'),
     path('client/<int:pk>/draft_dispatch_notification/', views.client_contract_draft_dispatch_notification, name='client_contract_draft_dispatch_notification'),
     

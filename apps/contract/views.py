@@ -1502,7 +1502,13 @@ def issue_clash_day_notification(request, pk):
     contract = get_object_or_404(ClientContract, pk=pk)
 
     if int(contract.contract_status) < int(ClientContract.ContractStatus.APPROVED) or contract.client_contract_type_code != '20':
-        messages.error(request, 'この契約の抵触日通知書は発行できません。')
+        messages.error(request, 'この契約の抵触日通知書は共有できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
+    # 派遣情報および派遣先事業所の抵触日の存在チェック
+    haken_info = getattr(contract, 'haken_info', None)
+    if not haken_info or not haken_info.haken_office or not haken_info.haken_office.haken_jigyosho_teishokubi:
+        messages.error(request, '派遣事業所の抵触日が設定されていません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
     issued_at = timezone.now()
@@ -1525,7 +1531,7 @@ def issue_clash_day_notification(request, pk):
             object_id=str(contract.pk),
             object_repr=f'抵触日通知書PDF出力: {contract.contract_name}'
         )
-        messages.success(request, f'契約「{contract.contract_name}」の抵触日通知書を発行しました。')
+        messages.success(request, f'契約「{contract.contract_name}」の抵触日通知書を共有しました。')
     else:
         messages.error(request, "抵触日通知書のPDFの生成に失敗しました。")
 
@@ -1534,12 +1540,18 @@ def issue_clash_day_notification(request, pk):
 
 @login_required
 @permission_required('contract.view_clientcontract', raise_exception=True)
-def client_contract_draft_clash_day_notification(request, pk):
-    """クライアント契約の抵触日通知書のドラフトPDFを生成して返す"""
+def client_clash_day_notification_pdf(request, pk):
+    """クライアント契約の抵触日通知書のPDFを生成して返す"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
     if contract.client_contract_type_code != '20':
         messages.error(request, 'この契約の抵触日通知書は発行できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
+    # 派遣情報および派遣先事業所の抵触日の存在チェック
+    haken_info = getattr(contract, 'haken_info', None)
+    if not haken_info or not haken_info.haken_office or not haken_info.haken_office.haken_jigyosho_teishokubi:
+        messages.error(request, '派遣事業所の抵触日が設定されていません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
     issued_at = timezone.now()
