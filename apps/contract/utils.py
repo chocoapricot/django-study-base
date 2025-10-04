@@ -361,27 +361,23 @@ def generate_clash_day_notification_pdf(contract, user, issued_at, watermark_tex
 
     # 宛先 (左)
     to_address_flowables = []
+    company_name_text = f"{company.name} 御中" if company else ""
+    to_address_flowables.append(Paragraph("（派遣元）", styles['ClashAddress']))
+    to_address_flowables.append(Paragraph(f"{company_name_text}", styles['ClashAddress']))
+
+    # 送付元 (右)
+    from_address_flowables = []
     client_name_text = f"{client.name}"
     person_text = ""
     if responsible_person:
         position = responsible_person.position or ""
         name = responsible_person.name or ""
-        person_text = f"役職 {position}<br/>氏名 {name}　様"
+        person_text = f"役職 {position}<br/>氏名 {name}"
 
-    to_address_flowables.append(Paragraph("（派遣先）", styles['ClashAddress']))
-    to_address_flowables.append(Paragraph(client_name_text, styles['ClashAddress']))
+    from_address_flowables.append(Paragraph("（派遣先）", styles['ClashAddress']))
+    from_address_flowables.append(Paragraph(client_name_text, styles['ClashAddress']))
     if person_text:
-        to_address_flowables.append(Paragraph(person_text, styles['ClashAddress']))
-
-    # 送付元 (右)
-    from_address_flowables = []
-    company_name_text = f"{company.name} 御中" if company else ""
-    from_address_flowables.append(Paragraph("（派遣元）", styles['ClashAddress']))
-    from_address_flowables.append(Paragraph(f"{company_name_text}", styles['ClashAddress']))
-    from_address_flowables.append(Paragraph(f"〒{company.postal_code}", styles['ClashAddress']))
-    from_address_flowables.append(Paragraph(f"{company.address}", styles['ClashAddress']))
-    if company.phone_number:
-        from_address_flowables.append(Paragraph(f"TEL: {company.phone_number}", styles['ClashAddress']))
+        from_address_flowables.append(Paragraph(person_text, styles['ClashAddress']))
 
     # メインタイトル
     main_title = "派遣可能期間の制限（事業所単位の期間制限）に抵触する日の通知"
