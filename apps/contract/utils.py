@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.db import transaction
 from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractNumber, StaffContractNumber
-from apps.common.pdf_utils import generate_contract_pdf, generate_structured_pdf
+from apps.common.pdf_utils import generate_table_based_contract_pdf, generate_article_based_contract_pdf
 from apps.system.logs.models import AppLog
 from apps.company.models import Company
 
@@ -295,7 +295,7 @@ def generate_contract_pdf_content(contract):
         watermark_text = "DRAFT"
 
     buffer = io.BytesIO()
-    generate_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text, postamble_text=postamble_text)
+    generate_table_based_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text, postamble_text=postamble_text)
     pdf_content = buffer.getvalue()
     buffer.close()
 
@@ -315,7 +315,7 @@ def generate_dispatch_ledger_pdf(contract, user, issued_at, watermark_text=None)
     pdf_filename = f"dispatch_ledger_{contract.pk}_{timestamp}.pdf"
 
     buffer = io.BytesIO()
-    generate_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text)
+    generate_table_based_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text)
     pdf_content = buffer.getvalue()
     buffer.close()
 
@@ -338,7 +338,7 @@ def generate_dispatch_notification_pdf(contract, user, issued_at, watermark_text
     pdf_filename = f"dispatch_notification_{contract.pk}_{timestamp}.pdf"
 
     buffer = io.BytesIO()
-    generate_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text)
+    generate_table_based_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text)
     pdf_content = buffer.getvalue()
     buffer.close()
 
@@ -428,7 +428,7 @@ def generate_clash_day_notification_pdf(source_obj, user, issued_at, watermark_t
     body_items.append(item3_text)
 
     # --- PDF生成 ---
-    generate_structured_pdf(
+    generate_article_based_contract_pdf(
         buffer,
         meta_title=pdf_title,
         to_address_lines=to_address_lines,
@@ -472,7 +472,7 @@ def generate_quotation_pdf(contract, user, issued_at, watermark_text=None):
     pdf_filename = f"quotation_{contract.pk}_{timestamp}.pdf"
 
     buffer = io.BytesIO()
-    generate_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text)
+    generate_table_based_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text)
     pdf_content = buffer.getvalue()
     buffer.close()
 

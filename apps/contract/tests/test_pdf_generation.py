@@ -121,7 +121,7 @@ class ContractPdfGenerationTest(TestCase):
         self.test_user.save()
 
 
-    @patch('apps.contract.utils.generate_contract_pdf')
+    @patch('apps.contract.utils.generate_table_based_contract_pdf')
     def test_dispatch_contract_pdf_includes_haken_info(self, mock_generate_pdf):
         """Test that PDF for dispatch contract includes haken specific information."""
         generate_contract_pdf_content(self.dispatch_contract)
@@ -153,7 +153,7 @@ class ContractPdfGenerationTest(TestCase):
         self.assertEqual(items_dict["無期雇用派遣労働者又は60歳以上の者に限定するか否かの別"], "限定しない")
 
 
-    @patch('apps.contract.utils.generate_contract_pdf')
+    @patch('apps.contract.utils.generate_table_based_contract_pdf')
     def test_normal_contract_pdf_does_not_include_haken_info(self, mock_generate_pdf):
         """Test that PDF for normal contract does not include haken specific information."""
         generate_contract_pdf_content(self.normal_contract)
@@ -213,167 +213,8 @@ class ContractPdfGenerationTest(TestCase):
         self.assertIn("３．その他", text)
         self.assertIn("事業所単位の派遣可能期間を延長した場合は", text)
 
-    @patch('apps.contract.utils.generate_contract_pdf')
-    def test_contract_term_placeholders_are_replaced(self, mock_generate_pdf):
-        """
-        Test that {{company_name}} and {{client_name}} placeholders in ContractTerms
-        are replaced with actual names in the generated PDF content.
-        """
-        # Create contract terms with placeholders
-        ContractTerms.objects.create(
-            contract_pattern=self.normal_pattern,
-            display_position=1, # Preamble
-            contract_terms="This agreement is between {{company_name}} and {{client_name}}."
-        )
-        ContractTerms.objects.create(
-            contract_pattern=self.normal_pattern,
-            display_position=2, # Body
-            display_order=1,
-            contract_clause="Clause 1",
-            contract_terms="The service provider, {{company_name}}, agrees to deliver the services."
-        )
-        ContractTerms.objects.create(
-            contract_pattern=self.normal_pattern,
-            display_position=3, # Postamble
-            contract_terms="Signed by {{company_name}} and {{client_name}}."
-        )
 
-        # Generate the PDF content
-        generate_contract_pdf_content(self.normal_contract)
-
-        # Check that the mock was called
-        self.assertTrue(mock_generate_pdf.called)
-
-        # Get the arguments passed to the mock
-        positional_args = mock_generate_pdf.call_args[0]
-        intro_text = positional_args[2]
-        items = positional_args[3]
-        postamble_text = mock_generate_pdf.call_args[1]['postamble_text']
-
-        # Assertions for placeholder replacement
-        expected_company_name = self.company.name
-        expected_client_name = self.client.name
-
-        # Check intro_text (preamble)
-        self.assertIn(f"This agreement is between {expected_company_name} and {expected_client_name}", intro_text)
-
-        # Check items (body)
-        items_dict = {item['title']: item['text'] for item in items}
-        self.assertIn("Clause 1", items_dict)
-        self.assertEqual(items_dict["Clause 1"], f"The service provider, {expected_company_name}, agrees to deliver the services.")
-
-        # Check postamble_text
-        self.assertEqual(postamble_text, f"Signed by {expected_company_name} and {expected_client_name}.")
-
-    @patch('apps.contract.utils.generate_contract_pdf')
-    def test_staff_contract_term_placeholders_are_replaced(self, mock_generate_pdf):
-        """
-        Test that {{company_name}} and {{staff_name}} placeholders in ContractTerms
-        are replaced with actual names in the generated PDF content for staff contracts.
-        """
-        # Create contract terms with placeholders for staff
-        ContractTerms.objects.create(
-            contract_pattern=self.staff_pattern,
-            display_position=1, # Preamble
-            contract_terms="This is an agreement between {{company_name}} and our staff member, {{staff_name}}."
-        )
-        ContractTerms.objects.create(
-            contract_pattern=self.staff_pattern,
-            display_position=2, # Body
-            display_order=1,
-            contract_clause="Article 1",
-            contract_terms="Our company, {{company_name}}, hires {{staff_name}}."
-        )
-        ContractTerms.objects.create(
-            contract_pattern=self.staff_pattern,
-            display_position=3, # Postamble
-            contract_terms="Signatures: {{company_name}} and {{staff_name}}."
-        )
-
-        # Generate the PDF content
-        generate_contract_pdf_content(self.staff_contract)
-
-        # Check that the mock was called
-        self.assertTrue(mock_generate_pdf.called)
-
-        # Get the arguments passed to the mock
-        positional_args = mock_generate_pdf.call_args[0]
-        intro_text = positional_args[2]
-        items = positional_args[3]
-        postamble_text = mock_generate_pdf.call_args[1]['postamble_text']
-
-        # Assertions for placeholder replacement
-        expected_company_name = self.company.name
-        expected_staff_name = f"{self.staff.name_last} {self.staff.name_first}"
-
-        # Check intro_text (preamble)
-        self.assertIn(f"This is an agreement between {expected_company_name} and our staff member, {expected_staff_name}", intro_text)
-
-        # Check items (body)
-        items_dict = {item['title']: item['text'] for item in items}
-        self.assertIn("Article 1", items_dict)
-        self.assertEqual(items_dict["Article 1"], f"Our company, {expected_company_name}, hires {expected_staff_name}.")
-
-        # Assertions
-        self.assertEqual(pdf_title, "抵触日通知書")
-        self.assertEqual(intro_text, f"{self.dispatch_contract.client.name} 様")
-        self.assertEqual(items_dict["件名"], self.dispatch_contract.contract_name)
-        self.assertEqual(items_dict["発行日"], issued_at.strftime('%Y年%m月%d日'))
-        self.assertEqual(items_dict["発行者"], self.test_user.get_full_name_japanese())
-
-    @patch('apps.contract.utils.generate_contract_pdf')
-    def test_contract_term_placeholders_are_replaced(self, mock_generate_pdf):
-        """
-        Test that {{company_name}} and {{client_name}} placeholders in ContractTerms
-        are replaced with actual names in the generated PDF content.
-        """
-        # Create contract terms with placeholders
-        ContractTerms.objects.create(
-            contract_pattern=self.normal_pattern,
-            display_position=1, # Preamble
-            contract_terms="This agreement is between {{company_name}} and {{client_name}}."
-        )
-        ContractTerms.objects.create(
-            contract_pattern=self.normal_pattern,
-            display_position=2, # Body
-            display_order=1,
-            contract_clause="Clause 1",
-            contract_terms="The service provider, {{company_name}}, agrees to deliver the services."
-        )
-        ContractTerms.objects.create(
-            contract_pattern=self.normal_pattern,
-            display_position=3, # Postamble
-            contract_terms="Signed by {{company_name}} and {{client_name}}."
-        )
-
-        # Generate the PDF content
-        generate_contract_pdf_content(self.normal_contract)
-
-        # Check that the mock was called
-        self.assertTrue(mock_generate_pdf.called)
-
-        # Get the arguments passed to the mock
-        positional_args = mock_generate_pdf.call_args[0]
-        intro_text = positional_args[2]
-        items = positional_args[3]
-        postamble_text = mock_generate_pdf.call_args[1]['postamble_text']
-
-        # Assertions for placeholder replacement
-        expected_company_name = self.company.name
-        expected_client_name = self.client.name
-
-        # Check intro_text (preamble)
-        self.assertIn(f"This agreement is between {expected_company_name} and {expected_client_name}", intro_text)
-
-        # Check items (body)
-        items_dict = {item['title']: item['text'] for item in items}
-        self.assertIn("Clause 1", items_dict)
-        self.assertEqual(items_dict["Clause 1"], f"The service provider, {expected_company_name}, agrees to deliver the services.")
-
-        # Check postamble_text
-        self.assertEqual(postamble_text, f"Signed by {expected_company_name} and {expected_client_name}.")
-
-    @patch('apps.contract.utils.generate_contract_pdf')
+    @patch('apps.contract.utils.generate_table_based_contract_pdf')
     def test_staff_contract_term_placeholders_are_replaced(self, mock_generate_pdf):
         """
         Test that {{company_name}} and {{staff_name}} placeholders in ContractTerms
@@ -424,6 +265,58 @@ class ContractPdfGenerationTest(TestCase):
 
         # Check postamble_text
         self.assertEqual(postamble_text, f"Signatures: {expected_company_name} and {expected_staff_name}.")
+
+    @patch('apps.contract.utils.generate_table_based_contract_pdf')
+    def test_contract_term_placeholders_are_replaced(self, mock_generate_pdf):
+        """
+        Test that {{company_name}} and {{client_name}} placeholders in ContractTerms
+        are replaced with actual names in the generated PDF content.
+        """
+        # Create contract terms with placeholders
+        ContractTerms.objects.create(
+            contract_pattern=self.normal_pattern,
+            display_position=1, # Preamble
+            contract_terms="This agreement is between {{company_name}} and {{client_name}}."
+        )
+        ContractTerms.objects.create(
+            contract_pattern=self.normal_pattern,
+            display_position=2, # Body
+            display_order=1,
+            contract_clause="Clause 1",
+            contract_terms="The service provider, {{company_name}}, agrees to deliver the services."
+        )
+        ContractTerms.objects.create(
+            contract_pattern=self.normal_pattern,
+            display_position=3, # Postamble
+            contract_terms="Signed by {{company_name}} and {{client_name}}."
+        )
+
+        # Generate the PDF content
+        generate_contract_pdf_content(self.normal_contract)
+
+        # Check that the mock was called
+        self.assertTrue(mock_generate_pdf.called)
+
+        # Get the arguments passed to the mock
+        positional_args = mock_generate_pdf.call_args[0]
+        intro_text = positional_args[2]
+        items = positional_args[3]
+        postamble_text = mock_generate_pdf.call_args[1]['postamble_text']
+
+        # Assertions for placeholder replacement
+        expected_company_name = self.company.name
+        expected_client_name = self.client.name
+
+        # Check intro_text (preamble)
+        self.assertIn(f"This agreement is between {expected_company_name} and {expected_client_name}", intro_text)
+
+        # Check items (body)
+        items_dict = {item['title']: item['text'] for item in items}
+        self.assertIn("Clause 1", items_dict)
+        self.assertEqual(items_dict["Clause 1"], f"The service provider, {expected_company_name}, agrees to deliver the services.")
+
+        # Check postamble_text
+        self.assertEqual(postamble_text, f"Signed by {expected_company_name} and {expected_client_name}.")
 
     def test_generate_client_contract_pdf_removes_unwanted_preamble(self):
         """クライアント契約書PDFから不要な前文が削除されていることを確認する"""
