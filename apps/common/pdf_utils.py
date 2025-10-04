@@ -111,26 +111,27 @@ def generate_contract_pdf(buffer, title, intro_text, items, watermark_text=None,
 def generate_structured_pdf(
     buffer,
     meta_title,
-    to_address_flowables,
-    from_address_flowables,
+    to_address_lines,
+    from_address_lines,
     main_title_text,
-    summary_flowables,
+    summary_lines,
     body_title_text=None,
-    body_flowables=None,
+    body_items=None,
     watermark_text=None
 ):
     """
     構造化されたPDFを生成する共通関数。
     左上に宛先、右上に送付元情報、タイトル、概要、本文、ページ番号を持つレイアウトを生成する。
+    Flowableの代わりに文字列や文字列のリストを受け取る。
 
     :param buffer: PDFを書き込むためのBytesIOなどのバッファ
     :param meta_title: PDFのメタデータタイトル
-    :param to_address_flowables: 宛先ブロックに表示するFlowableのリスト (左上)
-    :param from_address_flowables: 送付元ブロックに表示するFlowableのリスト (右上)
+    :param to_address_lines: 宛先ブロックに表示する文字列のリスト (左上)
+    :param from_address_lines: 送付元ブロックに表示する文字列のリスト (右上)
     :param main_title_text: メインタイトル文字列
-    :param summary_flowables: 概要セクションに表示するFlowableのリスト
+    :param summary_lines: 概要セクションに表示する文字列のリスト
     :param body_title_text: 本文セクションのタイトル（例：「記」）。オプショナル。
-    :param body_flowables: 本文セクションに表示するFlowableのリスト。オプショナル。
+    :param body_items: 本文セクションに表示する箇条書きアイテムのリスト。オプショナル。
     :param watermark_text: 透かしとして表示する文字列（オプショナル）
     """
     # --- フォントとスタイルの設定 ---
@@ -141,14 +142,19 @@ def generate_structured_pdf(
     styles.add(ParagraphStyle(name='StructAddress', fontName='IPAPGothic', fontSize=11, leading=16))
     styles.add(ParagraphStyle(name='StructMainTitle', fontName='IPAPGothic', fontSize=16, alignment=1, spaceBefore=20, spaceAfter=20))
     styles.add(ParagraphStyle(name='StructSectionTitle', fontName='IPAPGothic', fontSize=14, alignment=1, spaceBefore=10, spaceAfter=10))
+    styles.add(ParagraphStyle(name='StructBodyText', fontName='IPAPGothic', fontSize=11, leading=18, firstLineIndent=11, spaceAfter=10))
+    styles.add(ParagraphStyle(name='StructListItem', fontName='IPAPGothic', fontSize=11, leading=18, leftIndent=22, firstLineIndent=-11))
+
 
     # --- PDF要素の構築 ---
     def build_story():
         story = []
 
         # --- ヘッダー: 宛先と送付元 ---
-        if to_address_flowables and from_address_flowables:
-            # 宛先が左、送付元が右
+        if to_address_lines and from_address_lines:
+            to_address_flowables = [Paragraph(line.replace('\n', '<br/>'), styles['StructAddress']) for line in to_address_lines]
+            from_address_flowables = [Paragraph(line.replace('\n', '<br/>'), styles['StructAddress']) for line in from_address_lines]
+
             address_table = Table(
                 [[to_address_flowables, from_address_flowables]],
                 colWidths=['50%', '50%']
@@ -166,7 +172,8 @@ def generate_structured_pdf(
             story.append(Paragraph(main_title_text, styles['StructMainTitle']))
 
         # --- 概要 ---
-        if summary_flowables:
+        if summary_lines:
+            summary_flowables = [Paragraph(line.replace('\n', '<br/>'), styles['StructBodyText']) for line in summary_lines]
             story.extend(summary_flowables)
             story.append(Spacer(1, 0.5 * cm))
 
@@ -176,7 +183,11 @@ def generate_structured_pdf(
             story.append(Spacer(1, 0.5 * cm))
 
         # --- 本文コンテンツ ---
-        if body_flowables:
+        if body_items:
+            body_flowables = []
+            for item in body_items:
+                body_flowables.append(Paragraph(item.replace('\n', '<br/>'), styles['StructListItem']))
+                body_flowables.append(Spacer(1, 0.5 * cm))
             story.extend(body_flowables)
 
         return story
