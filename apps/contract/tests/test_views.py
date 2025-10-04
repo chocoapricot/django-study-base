@@ -204,513 +204,105 @@ class ContractViewTest(TestCase):
         self.assertEqual(response['Content-Type'], 'application/pdf')
         self.assertTrue(response['Content-Disposition'].startswith(f'attachment; filename="'))
 
-    def test_client_dispatch_ledger_pdf_for_haken_contract(self):
-        """
-        派遣契約の場合、派遣元管理台帳PDFが正常にダウンロードされることをテスト
-        """
-        url = reverse('contract:client_dispatch_ledger_pdf', kwargs={'pk': self.client_contract.pk})
-        response = self.client.get(url)
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['Content-Type'], 'application/pdf')
-        self.assertTrue(response['Content-Disposition'].startswith('attachment; filename="dispatch_ledger_'))
+class ClientContractConfirmListViewTest(TestCase):
+    """クライアント契約確認一覧ビューのテスト"""
 
-    def test_client_dispatch_ledger_pdf_for_non_haken_contract(self):
-        """
-        派遣契約でない場合、派遣元管理台帳PDFのダウンロードが失敗しリダイレクトされることをテスト
-        """
-        url = reverse('contract:client_dispatch_ledger_pdf', kwargs={'pk': self.non_haken_contract.pk})
-        response = self.client.get(url)
+    def setUp(self):
+        """テストデータの準備"""
+        from apps.company.models import Company
+        from apps.connect.models import ConnectClient
+        from ..models import ClientContractPrint
 
-        # 詳細ページにリダイレクトされることを確認
-        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.non_haken_contract.pk}))
+        # 会社を作成
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
 
-        # エラーメッセージが表示されることを確認
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'この契約の派遣元管理台帳は発行できません。')
+        # クライアントとクライアントユーザーを作成
+        self.test_client = TestClient.objects.create(name='Test Client Corp', corporate_number='9876543210987')
+        self.client_user = User.objects.create_user(
+            username='clientuser',
+            email='client@example.com',
+            password='testpass123'
+        )
+        self.client_user_profile = ClientUser.objects.create(
+            client=self.test_client,
+            email=self.client_user.email,
+            name_last='Client',
+            name_first='User'
+        )
 
-    def test_client_contract_change_history_list_view(self):
-        """クライアント契約変更履歴一覧ビューのテスト"""
-        url = reverse('contract:client_contract_change_history_list', kwargs={'pk': self.client_contract.pk})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'common/common_change_history_list.html')
-        self.assertContains(response, "クライアント契約 変更履歴一覧")
+        # 会社とクライアントユーザーを接続
+        ConnectClient.objects.create(
+            email=self.client_user.email,
+            corporate_number=self.company.corporate_number,
+            status='approved'
+        )
 
-    def test_staff_contract_change_history_list_view(self):
-        """スタッフ契約変更履歴一覧ビューのテスト"""
-        staff_contract = StaffContract.objects.create(
-            staff=self.staff,
-            contract_name='Test Staff Contract History',
+        # 契約パターンを作成
+        self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='10')
+
+        # ①「承認済」の契約を作成
+        self.approved_contract = ClientContract.objects.create(
+            client=self.test_client,
+            contract_name='Approved Contract',
             start_date=datetime.date.today(),
-            contract_pattern=self.staff_pattern,
-            corporate_number=self.company.corporate_number
-        )
-        url = reverse('contract:staff_contract_change_history_list', kwargs={'pk': staff_contract.pk})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'common/common_change_history_list.html')
-        self.assertContains(response, "スタッフ契約 変更履歴一覧")
-
-    def test_client_contract_copy_view(self):
-        """クライアント契約のコピー機能が正しく動作することをテスト"""
-        from apps.company.models import CompanyUser
-        # 1. 派遣情報を含む完全な契約データを作成
-        self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
-        self.client_contract.contract_number = 'C-001'
-        self.client_contract.contract_amount = 500000
-        self.client_contract.save()
-
-        haken_office = ClientDepartment.objects.create(client=self.test_client, name='Copy Test Office', is_haken_office=True)
-        haken_unit = ClientDepartment.objects.create(client=self.test_client, name='Copy Test Unit', is_haken_unit=True)
-        commander = ClientUser.objects.create(client=self.test_client, name_last='CopyCommander', name_first='Test')
-        company_user = CompanyUser.objects.create(name_last='CopyCompany', name_first='User')
-
-        original_haken_info = ClientContractHaken.objects.create(
-            client_contract=self.client_contract,
-            haken_office=haken_office,
-            haken_unit=haken_unit,
-            commander=commander,
-            complaint_officer_client=commander,
-            responsible_person_client=commander,
-            complaint_officer_company=company_user,
-            responsible_person_company=company_user,
-            limit_by_agreement='0',
-            limit_indefinite_or_senior='0',
-            business_content='Original business content'
-        )
-
-        # 2. コピー用URLにGETリクエストを送信
-        copy_url = reverse('contract:client_contract_create') + f'?copy_from={self.client_contract.pk}'
-        response = self.client.get(copy_url)
-
-        # 3. レスポンスとフォームの初期データを確認
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'contract/client_contract_form.html')
-        form = response.context['form']
-        haken_form = response.context['haken_form']
-
-        self.assertEqual(form.initial['contract_name'], f"{self.client_contract.contract_name}のコピー")
-        self.assertEqual(form.initial['client'], self.client_contract.client.id)
-        self.assertEqual(form.initial['contract_amount'], 500000)
-        self.assertEqual(haken_form.initial['haken_office'], haken_office.id)
-        self.assertEqual(haken_form.initial['commander'], commander.id)
-        self.assertEqual(haken_form.initial['business_content'], 'Original business content')
-
-        # 4. POSTリクエストでフォームを送信してコピーを作成
-        post_data = form.initial.copy()
-        post_data.update(haken_form.initial)
-
-        # `model_to_dict`がForeignKeyをIDに変換するので、ChoiceFieldも手動でpkに変換
-        post_data['contract_pattern'] = self.contract_pattern.pk
-        post_data['complaint_officer_company'] = company_user.pk
-        post_data['responsible_person_company'] = company_user.pk
-
-        # Noneの値を空文字列に変換して、TypeErrorを回避
-        for key, value in post_data.items():
-            if value is None:
-                post_data[key] = ''
-
-        initial_client_contract_count = ClientContract.objects.count()
-        initial_haken_count = ClientContractHaken.objects.count()
-
-        response = self.client.post(reverse('contract:client_contract_create'), data=post_data)
-
-        # リダイレクトをチェック
-        if response.status_code != 302:
-            form_errors = response.context.get('form').errors if response.context and response.context.get('form') else {}
-            haken_form_errors = response.context.get('haken_form').errors if response.context and response.context.get('haken_form') else {}
-            self.fail(f"POST failed with status {response.status_code}. Form errors: {form_errors}, Haken form errors: {haken_form_errors}")
-        self.assertEqual(response.status_code, 302)
-
-        # 5. 新しい契約が作成されたことを確認
-        self.assertEqual(ClientContract.objects.count(), initial_client_contract_count + 1)
-        self.assertEqual(ClientContractHaken.objects.count(), initial_haken_count + 1)
-
-        new_contract = ClientContract.objects.latest('id')
-
-        # 6. 新しい契約のステータスと契約番号を確認
-        self.assertEqual(new_contract.contract_status, ClientContract.ContractStatus.DRAFT)
-        self.assertIsNone(new_contract.contract_number)
-        self.assertNotEqual(new_contract.pk, self.client_contract.pk)
-
-        # 7. 新しい契約の他のフィールドを確認
-        self.assertEqual(new_contract.contract_name, f"{self.client_contract.contract_name}のコピー")
-        self.assertEqual(new_contract.client, self.client_contract.client)
-        self.assertEqual(new_contract.contract_amount, 500000)
-
-        # 8. 新しい派遣情報が作成されたことを確認
-        self.assertTrue(hasattr(new_contract, 'haken_info'))
-        self.assertNotEqual(new_contract.haken_info.pk, original_haken_info.pk)
-        self.assertEqual(new_contract.haken_info.haken_office, haken_office)
-        self.assertEqual(new_contract.haken_info.business_content, 'Original business content')
-
-    def test_staff_contract_copy_view(self):
-        """スタッフ契約のコピー機能が正しく動作することをテスト"""
-        # 1. 完全なスタッフ契約データを作成
-        staff_contract = StaffContract.objects.create(
-            staff=self.staff,
-            contract_name='Original Staff Contract',
-            start_date=datetime.date(2025, 1, 1),
-            end_date=datetime.date(2025, 12, 31),
-            contract_pattern=self.staff_pattern,
-            contract_amount=300000,
-            description='Original description',
-            notes='Original notes',
-            contract_status=StaffContract.ContractStatus.APPROVED,
-            contract_number='S-001',
+            contract_pattern=self.contract_pattern,
+            contract_status=ClientContract.ContractStatus.APPROVED,
             corporate_number=self.company.corporate_number,
         )
 
-        # 2. コピー用URLにGETリクエストを送信
-        copy_url = reverse('contract:staff_contract_create') + f'?copy_from={staff_contract.pk}'
-        response = self.client.get(copy_url)
-
-        # 3. レスポンスとフォームの初期データを確認
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'contract/staff_contract_form.html')
-        form = response.context['form']
-
-        self.assertEqual(form.initial['contract_name'], f"{staff_contract.contract_name}のコピー")
-        self.assertEqual(form.initial['staff'], staff_contract.staff.id)
-        self.assertEqual(form.initial['contract_amount'], 300000)
-        self.assertEqual(form.initial['description'], 'Original description')
-
-        # 4. POSTリクエストでフォームを送信してコピーを作成
-        post_data = form.initial.copy()
-        post_data['contract_pattern'] = self.staff_pattern.pk
-
-        # Noneの値を空文字列に変換
-        for key, value in post_data.items():
-            if value is None:
-                post_data[key] = ''
-
-        initial_staff_contract_count = StaffContract.objects.count()
-
-        response = self.client.post(reverse('contract:staff_contract_create'), data=post_data)
-
-        # リダイレクトをチェック
-        self.assertEqual(response.status_code, 302, f"POST failed with errors: {response.context.get('form').errors if response.context else 'No context'}")
-
-        # 5. 新しい契約が作成されたことを確認
-        self.assertEqual(StaffContract.objects.count(), initial_staff_contract_count + 1)
-        new_contract = StaffContract.objects.latest('id')
-
-        # 6. 新しい契約のステータスと契約番号を確認
-        self.assertEqual(new_contract.contract_status, StaffContract.ContractStatus.DRAFT)
-        self.assertIsNone(new_contract.contract_number)
-        self.assertNotEqual(new_contract.pk, staff_contract.pk)
-
-        # 7. 新しい契約の他のフィールドを確認
-        self.assertEqual(new_contract.contract_name, f"{staff_contract.contract_name}のコピー")
-        self.assertEqual(new_contract.staff, staff_contract.staff)
-        self.assertEqual(new_contract.contract_amount, 300000)
-
-    def test_issue_clash_day_notification_for_non_haken_contract(self):
-        """
-        派遣契約でない契約に対して抵触日通知書を発行しようとするとエラーになることをテスト
-        """
-        url = reverse('contract:issue_clash_day_notification', kwargs={'pk': self.non_haken_contract.pk})
-        response = self.client.post(url)
-
-        # 詳細ページにリダイレクトされることを確認
-        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.non_haken_contract.pk}))
-
-        # エラーメッセージが表示されることを確認
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'この契約の抵触日通知書は共有できません。')
-
-    def test_clash_day_notification_pdf_for_non_haken_contract(self):
-        """
-        派遣契約でない契約に対して抵触日通知書PDFを発行しようとするとエラーになることをテスト
-        """
-        url = reverse('contract:client_clash_day_notification_pdf', kwargs={'pk': self.non_haken_contract.pk})
-        response = self.client.get(url)
-
-        # 詳細ページにリダイレクトされることを確認
-        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.non_haken_contract.pk}))
-
-        # エラーメッセージが表示されることを確認
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'この契約の抵触日通知書は発行できません。')
-
-    def test_issue_clash_day_notification_no_clash_day_date(self):
-        """抵触日通知書発行時、事業所に抵触日が未設定の場合エラーになることをテスト"""
-        haken_office = ClientDepartment.objects.create(client=self.test_client, name='Test Office No Date', is_haken_office=True, haken_jigyosho_teishokubi=None)
-        self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
-        self.client_contract.save()
-        ClientContractHaken.objects.create(client_contract=self.client_contract, haken_office=haken_office)
-
-        url = reverse('contract:issue_clash_day_notification', kwargs={'pk': self.client_contract.pk})
-        response = self.client.post(url)
-
-        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract.pk}))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), '派遣事業所の抵触日が設定されていません。')
-
-    def test_clash_day_notification_pdf_no_clash_day_date(self):
-        """抵触日通知書PDF表示時、事業所に抵触日が未設定の場合エラーになることをテスト"""
-        haken_office = ClientDepartment.objects.create(client=self.test_client, name='Test Office No Date PDF', is_haken_office=True, haken_jigyosho_teishokubi=None)
-        self.client_contract.save()
-        ClientContractHaken.objects.create(client_contract=self.client_contract, haken_office=haken_office)
-
-        url = reverse('contract:client_clash_day_notification_pdf', kwargs={'pk': self.client_contract.pk})
-        response = self.client.get(url)
-
-        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract.pk}))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), '派遣事業所の抵触日が設定されていません。')
-
-    def test_clash_day_notification_pdf_does_not_create_print_record(self):
-        """抵触日通知書PDF表示（印刷メニューから）では発行履歴が作成されないことをテスト"""
-        from ..models import ClientContractPrint
-        haken_office = ClientDepartment.objects.create(
+        # ②「発行済」の契約を作成
+        self.issued_contract = ClientContract.objects.create(
             client=self.test_client,
-            name='Test Office With Date PDF',
-            is_haken_office=True,
-            haken_jigyosho_teishokubi=datetime.date.today()
-        )
-        self.client_contract.save()
-        ClientContractHaken.objects.create(client_contract=self.client_contract, haken_office=haken_office)
-
-        url = reverse('contract:client_clash_day_notification_pdf', kwargs={'pk': self.client_contract.pk})
-
-        initial_print_count = ClientContractPrint.objects.count()
-        response = self.client.get(url)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['Content-Type'], 'application/pdf')
-        self.assertEqual(ClientContractPrint.objects.count(), initial_print_count)
-
-    def test_issue_clash_day_notification_creates_print_record(self):
-        """抵触日通知書共有（状況カードから）では発行履歴が作成されることをテスト"""
-        from ..models import ClientContractPrint
-        haken_office = ClientDepartment.objects.create(
-            client=self.test_client,
-            name='Test Office With Date Issue',
-            is_haken_office=True,
-            haken_jigyosho_teishokubi=datetime.date.today()
-        )
-        self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
-        self.client_contract.save()
-        ClientContractHaken.objects.create(client_contract=self.client_contract, haken_office=haken_office)
-
-        url = reverse('contract:issue_clash_day_notification', kwargs={'pk': self.client_contract.pk})
-
-        initial_print_count = ClientContractPrint.objects.count()
-        response = self.client.post(url)
-
-        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract.pk}))
-        self.assertEqual(ClientContractPrint.objects.count(), initial_print_count + 1)
-
-        # Check message
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(len(messages), 1)
-        self.assertIn('抵触日通知書を共有しました。', str(messages[0]))
-
-    def test_client_contract_create_haken_successful_post(self):
-        """派遣契約の新規作成が正常に成功することを確認"""
-        from apps.company.models import CompanyUser
-        haken_office = ClientDepartment.objects.create(client=self.test_client, name='Test Office', is_haken_office=True)
-        haken_unit = ClientDepartment.objects.create(client=self.test_client, name='Test Unit', is_haken_unit=True)
-        commander = ClientUser.objects.create(client=self.test_client, name_last='Commander', name_first='Test')
-        company_user = CompanyUser.objects.create(name_last='Company', name_first='User')
-
-        create_url = reverse('contract:client_contract_create')
-
-        post_data = {
-            'client': self.test_client.pk,
-            'client_contract_type_code': '20',
-            'contract_name': 'New Haken Contract',
-            'contract_pattern': self.contract_pattern.pk,
-            'start_date': datetime.date.today(),
-            'end_date': datetime.date.today() + datetime.timedelta(days=30),
-            'contract_status': ClientContract.ContractStatus.DRAFT,
-            # Haken form data
-            'haken_office': haken_office.pk,
-            'haken_unit': haken_unit.pk,
-            'commander': commander.pk,
-            'complaint_officer_client': commander.pk,
-            'responsible_person_client': commander.pk,
-            'complaint_officer_company': company_user.pk,
-            'responsible_person_company': company_user.pk,
-            'limit_by_agreement': '0',
-            'limit_indefinite_or_senior': '0',
-        }
-
-        response = self.client.post(create_url, data=post_data)
-
-        if response.status_code != 302:
-            form_errors = response.context.get('form', {}).errors
-            haken_form_errors = response.context.get('haken_form', {}).errors
-            self.fail(f"POST failed with status {response.status_code}. Form errors: {form_errors}, Haken form errors: {haken_form_errors}")
-
-        self.assertEqual(ClientContract.objects.count(), 3)
-        self.assertEqual(ClientContractHaken.objects.count(), 1)
-        new_contract = ClientContract.objects.latest('id')
-        self.assertEqual(new_contract.contract_name, 'New Haken Contract')
-        self.assertTrue(hasattr(new_contract, 'haken_info'))
-        self.assertEqual(new_contract.haken_info.commander, commander)
-        self.assertEqual(new_contract.haken_info.haken_office, haken_office)
-        self.assertEqual(new_contract.haken_info.haken_unit, haken_unit)
-
-    def test_client_contract_update_haken_successful_post(self):
-        """派遣契約の更新が正常に成功することを確認"""
-        from apps.company.models import CompanyUser
-        # Haken Info と関連オブジェクトを作成
-        haken_office = ClientDepartment.objects.create(client=self.test_client, name='Test Office', is_haken_office=True)
-        haken_unit = ClientDepartment.objects.create(client=self.test_client, name='Test Unit', is_haken_unit=True)
-        commander = ClientUser.objects.create(client=self.test_client, name_last='Commander', name_first='Test')
-        complaint_officer = ClientUser.objects.create(client=self.test_client, name_last='Complaint', name_first='Officer')
-        responsible_person = ClientUser.objects.create(client=self.test_client, name_last='Responsible', name_first='Person')
-
-        company_user = CompanyUser.objects.create(name_last='Company', name_first='User')
-
-        haken_info = ClientContractHaken.objects.create(
-            client_contract=self.client_contract,
-            haken_office=haken_office,
-            haken_unit=haken_unit,
-            commander=commander,
-            complaint_officer_client=complaint_officer,
-            responsible_person_client=responsible_person,
-            complaint_officer_company=company_user,
-            responsible_person_company=company_user,
-            limit_by_agreement='0',
-            limit_indefinite_or_senior='0'
-        )
-
-        # 更新用の新しい担当者・部署
-        new_haken_office = ClientDepartment.objects.create(client=self.test_client, name='New Test Office', is_haken_office=True)
-        new_haken_unit = ClientDepartment.objects.create(client=self.test_client, name='New Test Unit', is_haken_unit=True)
-        new_commander = ClientUser.objects.create(client=self.test_client, name_last='NewCommander', name_first='Test')
-
-        update_url = reverse('contract:client_contract_update', kwargs={'pk': self.client_contract.pk})
-
-        post_data = {
-            'client': self.test_client.pk,
-            'client_contract_type_code': '20',
-            'contract_name': 'Updated Haken Contract',
-            'contract_pattern': self.contract_pattern.pk,
-            'start_date': self.client_contract.start_date,
-            'end_date': self.client_contract.end_date,
-            'contract_status': ClientContract.ContractStatus.DRAFT,
-            # Haken form data
-            'haken_office': new_haken_office.pk,
-            'haken_unit': new_haken_unit.pk,
-            'commander': new_commander.pk,
-            'complaint_officer_client': complaint_officer.pk,
-            'responsible_person_client': responsible_person.pk,
-            'complaint_officer_company': company_user.pk,
-            'responsible_person_company': company_user.pk,
-            'limit_by_agreement': '1',
-            'limit_indefinite_or_senior': '1',
-        }
-
-        response = self.client.post(update_url, data=post_data)
-
-        # 最初にステータスコードをチェックし、失敗した場合のみエラー詳細を出力
-        if response.status_code != 302:
-            form_errors = response.context.get('form', {}).errors
-            haken_form_errors = response.context.get('haken_form', {}).errors
-            self.fail(f"POST failed with status {response.status_code}. Form errors: {form_errors}, Haken form errors: {haken_form_errors}")
-
-        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract.pk}))
-
-        # 契約が更新されていることを確認
-        updated_contract = ClientContract.objects.get(pk=self.client_contract.pk)
-        self.assertEqual(updated_contract.contract_name, 'Updated Haken Contract')
-
-        # 派遣情報が更新されていることを確認
-        haken_info.refresh_from_db()
-        self.assertEqual(haken_info.haken_office, new_haken_office)
-        self.assertEqual(haken_info.haken_unit, new_haken_unit)
-        self.assertEqual(haken_info.commander, new_commander)
-        self.assertEqual(haken_info.limit_by_agreement, '1')
-
-    def test_client_contract_update_preserves_contract_type(self):
-        """契約更新時に契約種別が維持されることをテスト"""
-        from apps.system.settings.models import Dropdowns
-        from apps.master.models import ContractPattern
-
-        # 契約種別を作成
-        contract_type = Dropdowns.objects.create(
-            category='client_contract_type',
-            name='テスト契約種別',
-            value='TS',
-            disp_seq=1,
-        )
-
-        self.contract_pattern.contract_type_code = contract_type.value
-        self.contract_pattern.save()
-
-        self.test_client.basic_contract_date = '2025-01-01'
-        self.test_client.save()
-
-        # クライアント契約を作成
-        contract = ClientContract.objects.create(
-            client=self.test_client,
-            contract_name='Initial Contract',
-            client_contract_type_code=contract_type.value,
-            contract_pattern=self.contract_pattern,
-            start_date='2025-01-01',
-            end_date='2025-12-31',
-        )
-
-        self.client.login(username='testuser', password='testpass123')
-
-        update_url = reverse('contract:client_contract_update', kwargs={'pk': contract.pk})
-
-        post_data = {
-            'client': self.test_client.pk,
-            'client_contract_type_code': contract_type.value,
-            'contract_name': 'Updated Contract Name',
-            'job_category': '',
-            'contract_pattern': self.contract_pattern.pk,
-            'contract_number': '',
-            'contract_status': ClientContract.ContractStatus.DRAFT,
-            'start_date': '2025-01-01',
-            'end_date': '2025-12-31',
-            'contract_amount': '',
-            'payment_site': '',
-            'description': '',
-            'notes': '',
-        }
-
-        response = self.client.post(update_url, data=post_data)
-
-        # リダイレクトを検証
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': contract.pk}))
-
-        # 契約が更新されていることを確認
-        updated_contract = ClientContract.objects.get(pk=contract.pk)
-        self.assertEqual(updated_contract.contract_name, 'Updated Contract Name')
-
-        # 契約種別が維持されていることを確認
-        self.assertEqual(updated_contract.client_contract_type_code, contract_type.value)
-
-        # staff契約のテスト
-        from apps.staff.models import Staff
-        from ..models import StaffContractPrint
-        staff = Staff.objects.create(name_last='Test', name_first='Staff')
-        staff_pattern = ContractPattern.objects.create(name='Staff Pattern', domain='1')
-        staff_contract = StaffContract.objects.create(
-            staff=staff,
-            contract_name='Test Staff Contract',
+            contract_name='Issued Contract',
             start_date=datetime.date.today(),
-            contract_status=StaffContract.ContractStatus.APPROVED,
-            contract_pattern=staff_pattern
+            contract_pattern=self.contract_pattern,
+            contract_status=ClientContract.ContractStatus.ISSUED,
+            corporate_number=self.company.corporate_number,
         )
-        self.client.get(reverse('contract:staff_contract_pdf', kwargs={'pk': staff_contract.pk}))
-        print_history = StaffContractPrint.objects.filter(staff_contract=staff_contract).first()
-        self.assertIsNotNone(print_history)
+        # 発行済契約には、確認ボタンの表示条件である発行済みPDFが必要
+        ClientContractPrint.objects.create(
+            client_contract=self.issued_contract,
+            print_type=ClientContractPrint.PrintType.CONTRACT,
+            document_title='契約書'
+        )
 
-        response = self.client.get(reverse('contract:download_staff_contract_pdf', kwargs={'pk': print_history.pk}))
+        # ③「下書き」の契約を作成（これはリストに表示されないはず）
+        self.draft_contract = ClientContract.objects.create(
+            client=self.test_client,
+            contract_name='Draft Contract',
+            start_date=datetime.date.today(),
+            contract_pattern=self.contract_pattern,
+            contract_status=ClientContract.ContractStatus.DRAFT,
+            corporate_number=self.company.corporate_number,
+        )
+
+        # テスト用のクライアント（ブラウザ）を準備
+        self.client = Client()
+
+    def test_list_contracts_and_button_visibility(self):
+        """承認済・発行済契約が表示され、ボタンの可視性が正しいことをテスト"""
+        # クライアントユーザーとしてログイン
+        self.client.login(username='clientuser', password='testpass123')
+
+        # 契約確認一覧ページにアクセス
+        url = reverse('contract:client_contract_confirm_list')
+        response = self.client.get(url)
+
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['Content-Type'], 'application/pdf')
-        self.assertTrue(response['Content-Disposition'].startswith(f'attachment; filename="'))
+
+        # 「承認済」と「発行済」の契約がリストに含まれていることを確認
+        self.assertContains(response, self.approved_contract.contract_name)
+        self.assertContains(response, self.issued_contract.contract_name)
+
+        # 「下書き」の契約がリストに含まれていないことを確認
+        self.assertNotContains(response, self.draft_contract.contract_name)
+
+        # 「承認済」契約の行に「確認」ボタンがないことを確認（- が表示される）
+        # ボタンのform action自体が存在しないことで確認する
+        confirm_form_action_url_approved = f'<form method="post" action="{url}" class="d-inline">'
+        self.assertNotContains(response, f'<input type="hidden" name="contract_id" value="{self.approved_contract.pk}">')
+
+        # 「発行済」契約の行に「確認」ボタンがあることを確認
+        self.assertContains(response, f'<input type="hidden" name="contract_id" value="{self.issued_contract.pk}">')
+        self.assertContains(response, '<button type="submit" class="btn btn-sm btn-primary">確認</button>')

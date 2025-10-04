@@ -1351,7 +1351,11 @@ def client_contract_confirm_list(request):
     contracts_query = ClientContract.objects.filter(
         client=client,
         corporate_number__in=approved_corporate_numbers,
-        contract_status__in=[ClientContract.ContractStatus.ISSUED, ClientContract.ContractStatus.CONFIRMED]
+        contract_status__in=[
+            ClientContract.ContractStatus.APPROVED,
+            ClientContract.ContractStatus.ISSUED,
+            ClientContract.ContractStatus.CONFIRMED
+        ]
     ).select_related('client', 'confirmed_by').prefetch_related(prefetch_prints).order_by('-start_date')
 
     # ページネーション
