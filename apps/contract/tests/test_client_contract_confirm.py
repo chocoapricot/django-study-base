@@ -76,3 +76,23 @@ class ClientContractConfirmTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.contract.refresh_from_db()
         self.assertEqual(self.contract.contract_status, ClientContract.ContractStatus.ISSUED)
+
+    def test_confirm_button_is_present_for_issued_contract(self):
+        """
+        ステータスが「発行済み」の契約に対して「確認」ボタンが表示されることを確認
+        """
+        self.client.login(username='clientuser', password='password')
+        response = self.client.get(reverse('contract:client_contract_confirm_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<button type="submit" class="btn btn-sm btn-primary">確認</button>')
+
+    def test_unconfirm_button_is_present_for_confirmed_contract(self):
+        """
+        ステータスが「確認済み」の契約に対して「未確認に戻す」ボタンが表示されることを確認
+        """
+        self.contract.contract_status = ClientContract.ContractStatus.CONFIRMED
+        self.contract.save()
+        self.client.login(username='clientuser', password='password')
+        response = self.client.get(reverse('contract:client_contract_confirm_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<button type="submit" class="btn btn-sm btn-secondary">未確認に戻す</button>')
