@@ -220,6 +220,7 @@ class StaffContract(MyModel):
     start_date = models.DateField('契約開始日')
     end_date = models.DateField('契約終了日', blank=True, null=True)
     contract_amount = models.DecimalField('契約金額', max_digits=10, decimal_places=0, blank=True, null=True)
+    pay_unit = models.CharField('支払単位', max_length=10, blank=True, null=True)
     description = models.TextField('契約内容', blank=True, null=True)
     notes = models.TextField('備考', blank=True, null=True)
     approved_at = models.DateTimeField('承認日時', blank=True, null=True)

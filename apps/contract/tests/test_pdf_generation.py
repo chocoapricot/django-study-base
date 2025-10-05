@@ -425,3 +425,27 @@ class ContractPdfGenerationTest(TestCase):
         full_name = f"{self.staff_contract.staff.name_last} {self.staff_contract.staff.name_first}"
         unwanted_text = f"{full_name}様との間で、以下の通り雇用契約を締結します。"
         self.assertNotIn(unwanted_text, text)
+
+    def test_staff_contract_pdf_with_pay_unit(self):
+        """スタッフ契約書PDFで支払単位が正しく印字されることをテストする"""
+        from apps.system.settings.models import Dropdowns
+        pay_unit_daily = Dropdowns.objects.create(category='pay_unit', value='20', name='日給', active=True)
+
+        self.staff_contract.pay_unit = pay_unit_daily.value
+        self.staff_contract.contract_amount = 30000
+        self.staff_contract.save()
+
+        pdf_content, _, _ = generate_contract_pdf_content(self.staff_contract)
+
+        self.assertIsNotNone(pdf_content)
+
+        # PDFからテキストを抽出
+        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
+        text = ""
+        for page in pdf_document:
+            text += page.get_text()
+        pdf_document.close()
+
+        # 支払単位と金額が正しく印字されていることを確認
+        self.assertIn("契約金額", text)
+        self.assertIn("日給 30,000円", text)

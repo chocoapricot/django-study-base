@@ -103,14 +103,18 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.contract_amount.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約金額</label>
-                <div class="col-sm-4">
-                    {{ form.contract_amount }}
+                <div class="col-sm-6">
+                    <div class="input-group input-group-sm">
+                        {{ form.pay_unit }}
+                        {{ form.contract_amount }}
+                        <span class="input-group-text">円</span>
+                    </div>
                     {% if form.contract_amount.errors %}
                         <div class="text-danger small">{{ form.contract_amount.errors.0 }}</div>
                     {% endif %}
-                </div>
-                <div class="col-sm-6">
-                    <small class="text-muted">円</small>
+                    {% if form.pay_unit.errors %}
+                        <div class="text-danger small">{{ form.pay_unit.errors.0 }}</div>
+                    {% endif %}
                 </div>
             </div>
 

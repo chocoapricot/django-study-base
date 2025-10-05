@@ -169,7 +169,7 @@
                                     </td>
                                     <td class="text-end">
                                         {% if contract.contract_amount %}
-                                            ¥{{ contract.contract_amount|floatformat:0|intcomma }}
+                                            {% if contract.pay_unit %}{% my_name 'pay_unit' contract.pay_unit %}&nbsp;{% endif %}{{ contract.contract_amount|floatformat:0|intcomma }}円
                                         {% else %}
                                             -
                                         {% endif %}
