@@ -8,7 +8,7 @@ from apps.accounts.models import MyUser
 from apps.client.models import Client, ClientDepartment, ClientUser
 from apps.company.models import Company, CompanyDepartment as CompanyDept, CompanyUser
 from apps.contract.models import ClientContract, ClientContractHaken, StaffContract
-from apps.master.models import ContractPattern, BillPayment, ContractTerms
+from apps.master.models import ContractPattern, BillPayment, ContractTerms, JobCategory
 from apps.staff.models import Staff
 from apps.contract.utils import generate_contract_pdf_content, generate_clash_day_notification_pdf
 
@@ -120,6 +120,47 @@ class ContractPdfGenerationTest(TestCase):
         self.test_user.name_first = 'User'
         self.test_user.save()
 
+        # Add Job Categories for testing
+        self.manufacturing_job = JobCategory.objects.create(
+            name="Manufacturing Job",
+            is_manufacturing_dispatch=True
+        )
+        self.non_manufacturing_job = JobCategory.objects.create(
+            name="Non-Manufacturing Job",
+            is_manufacturing_dispatch=False
+        )
+
+        # Create contracts linked to these job categories
+        self.manufacturing_dispatch_contract = ClientContract.objects.create(
+            client=self.client,
+            contract_name="Test Manufacturing Dispatch Contract",
+            contract_pattern=self.dispatch_pattern,
+            job_category=self.manufacturing_job, # Link to manufacturing job
+            start_date=datetime.date(2023, 7, 1),
+            end_date=datetime.date(2024, 6, 30),
+            contract_number="C-MAN-001"
+        )
+        ClientContractHaken.objects.create(
+            client_contract=self.manufacturing_dispatch_contract,
+            responsible_person_client=self.client_user,
+            responsible_person_company=self.company_user,
+        )
+
+        self.non_manufacturing_dispatch_contract = ClientContract.objects.create(
+            client=self.client,
+            contract_name="Test Non-Manufacturing Dispatch Contract",
+            contract_pattern=self.dispatch_pattern,
+            job_category=self.non_manufacturing_job, # Link to non-manufacturing job
+            start_date=datetime.date(2023, 8, 1),
+            end_date=datetime.date(2024, 7, 31),
+            contract_number="C-NON-001"
+        )
+        ClientContractHaken.objects.create(
+            client_contract=self.non_manufacturing_dispatch_contract,
+            responsible_person_client=self.client_user,
+            responsible_person_company=self.company_user,
+        )
+
 
     @patch('apps.contract.utils.generate_table_based_contract_pdf')
     def test_dispatch_contract_pdf_includes_haken_info(self, mock_generate_pdf):
@@ -167,6 +208,40 @@ class ContractPdfGenerationTest(TestCase):
         self.assertNotIn("派遣先指揮命令者", items_dict)
         self.assertNotIn("派遣元責任者", items_dict)
         self.assertNotIn("協定対象派遣労働者に限定するか否かの別", items_dict)
+
+    @patch('apps.contract.utils.generate_table_based_contract_pdf')
+    def test_responsible_person_title_changes_for_manufacturing_dispatch(self, mock_generate_pdf):
+        """
+        Test that responsible person titles in the PDF change for manufacturing dispatch contracts.
+        """
+        # 1. Test with a manufacturing dispatch contract
+        generate_contract_pdf_content(self.manufacturing_dispatch_contract)
+        self.assertTrue(mock_generate_pdf.called)
+
+        args, kwargs = mock_generate_pdf.call_args
+        items = args[3]
+        items_dict = {item['title']: item['text'] for item in items}
+
+        self.assertIn("製造業務専門派遣先責任者", items_dict)
+        self.assertIn("製造業務専門派遣元責任者", items_dict)
+        self.assertNotIn("派遣先責任者", items_dict)
+        self.assertNotIn("派遣元責任者", items_dict)
+
+        # Reset mock for the next call
+        mock_generate_pdf.reset_mock()
+
+        # 2. Test with a non-manufacturing dispatch contract
+        generate_contract_pdf_content(self.non_manufacturing_dispatch_contract)
+        self.assertTrue(mock_generate_pdf.called)
+
+        args, kwargs = mock_generate_pdf.call_args
+        items = args[3]
+        items_dict = {item['title']: item['text'] for item in items}
+
+        self.assertIn("派遣先責任者", items_dict)
+        self.assertIn("派遣元責任者", items_dict)
+        self.assertNotIn("製造業務専門派遣先責任者", items_dict)
+        self.assertNotIn("製造業務専門派遣元責任者", items_dict)
 
     def test_generate_clash_day_notification_pdf_content(self):
         """抵触日通知書PDFが正しい内容で生成されることをテストする"""

@@ -85,9 +85,10 @@ class JobCategoryForm(forms.ModelForm):
 
     class Meta:
         model = JobCategory
-        fields = ['name', 'jobs_kourou', 'jobs_soumu', 'display_order', 'is_active']
+        fields = ['name', 'is_manufacturing_dispatch', 'jobs_kourou', 'jobs_soumu', 'display_order', 'is_active']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_manufacturing_dispatch': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
