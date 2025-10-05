@@ -90,7 +90,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         model = ClientContract
         fields = [
             'client', 'client_contract_type_code', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
-            'start_date', 'end_date', 'contract_amount',
+            'start_date', 'end_date', 'contract_amount', 'bill_unit',
             'description', 'notes', 'payment_site'
         ]
         widgets = {
@@ -103,6 +103,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
             'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'contract_amount': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            'bill_unit': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 4}),
             'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'payment_site': forms.Select(attrs={'class': 'form-select form-select-sm'}),
@@ -116,6 +117,12 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         self.fields['contract_pattern'].empty_label = '契約パターンを選択してください'
         self.fields['end_date'].required = True
         self.fields['payment_site'].queryset = BillPayment.get_active_list()
+
+        # 請求単位の選択肢を設定
+        self.fields['bill_unit'].choices = [('', '単位を選択')] + [
+            (d.value, d.name) for d in Dropdowns.objects.filter(category='bill_unit', active=True).order_by('disp_seq')
+        ]
+        self.fields['bill_unit'].required = False
 
         # 契約番号は自動採番のため非表示
         self.fields['contract_number'].required = False

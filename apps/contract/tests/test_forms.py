@@ -214,6 +214,35 @@ class ContractFormTest(TestCase):
         
         form = ClientContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
+
+    def test_client_contract_form_with_bill_unit(self):
+        """クライアント契約フォームの請求単位フィールドテスト"""
+        from apps.system.settings.models import Dropdowns
+        bill_unit_monthly = Dropdowns.objects.create(category='bill_unit', value='10', name='月額', active=True)
+
+        # フォームの初期化とフィールド確認
+        form = ClientContractForm(initial={'client_contract_type_code': self.client_pattern.contract_type_code})
+        self.assertIn('bill_unit', form.fields)
+        self.assertIn((bill_unit_monthly.value, bill_unit_monthly.name), form.fields['bill_unit'].choices)
+
+        # フォームにデータを渡してバリデーション
+        form_data = {
+            'client': self.client_obj.pk,
+            'contract_name': '請求単位テスト契約',
+            'job_category': self.job_category.pk,
+            'contract_pattern': self.client_pattern.pk,
+            'start_date': date(2024, 2, 1),
+            'end_date': date(2024, 12, 31),
+            'contract_amount': 500000,
+            'bill_unit': bill_unit_monthly.value,
+            'client_contract_type_code': self.client_pattern.contract_type_code,
+        }
+        form = ClientContractForm(data=form_data)
+        self.assertTrue(form.is_valid(), form.errors)
+
+        # 保存してインスタンスを確認
+        instance = form.save()
+        self.assertEqual(instance.bill_unit, bill_unit_monthly.value)
     
     def test_staff_contract_form_valid_data(self):
         """スタッフ契約フォームの正常データテスト"""
