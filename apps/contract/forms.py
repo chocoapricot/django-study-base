@@ -127,7 +127,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
 
         # 請求単位の選択肢を設定
         # Dropdownsモデルからactiveな請求単位を取得して選択肢を組み立てる
-        bill_choices = [('', '単位を選択')] + [
+        bill_choices = [('', '---------')] + [
             (d.value, d.name) for d in Dropdowns.objects.filter(category='bill_unit', active=True).order_by('disp_seq')
         ]
         self.fields['bill_unit'].choices = bill_choices
