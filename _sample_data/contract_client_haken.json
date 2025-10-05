@@ -3,7 +3,7 @@
     "model": "contract.clientcontracthaken",
     "pk": 1,
     "fields": {
-        "version": 1759499376787189,
+        "version": 1759676779013194,
         "created_at": "2024-03-10T14:15:00Z",
         "created_by": 1,
         "updated_at": "2025-10-03T14:05:23.439Z",
@@ -27,7 +27,7 @@
     "model": "contract.clientcontracthaken",
     "pk": 2,
     "fields": {
-        "version": 1759499407723521,
+        "version": 1759676779040129,
         "created_at": "2023-12-01T16:20:00Z",
         "created_by": 1,
         "updated_at": "2025-10-03T14:05:54.375Z",
@@ -45,6 +45,30 @@
         "work_location": "東京都渋谷区恵比寿4-20-3 商品開発センター",
         "business_content": "ＯＡ機器の操作によるプレゼンテーション用資料、業績管理資料、会議資料等の作成業務",
         "responsibility_degree": "副リーダー（部下２名、リーダー不在の間における緊急対応が週１回程度有）"
+    }
+},
+{
+    "model": "contract.clientcontracthaken",
+    "pk": 3,
+    "fields": {
+        "version": 1759677056282989,
+        "created_at": "2025-10-05T15:25:33.203Z",
+        "created_by": 1,
+        "updated_at": "2025-10-05T15:26:42.935Z",
+        "updated_by": 1,
+        "client_contract": 7,
+        "haken_office": 30,
+        "haken_unit": 30,
+        "commander": 11,
+        "complaint_officer_client": 11,
+        "responsible_person_client": 11,
+        "complaint_officer_company": 1,
+        "responsible_person_company": 1,
+        "limit_by_agreement": "0",
+        "limit_indefinite_or_senior": "0",
+        "work_location": "大阪府門真市門真",
+        "business_content": "部品の組立。",
+        "responsibility_degree": "役職無し、付与される権限無し"
     }
 }
 ]
