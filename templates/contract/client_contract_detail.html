@@ -101,10 +101,8 @@
                                 <th>契約金額</th>
                                 <td>
                                     {% if contract.contract_amount %}
+                                        {% my_name 'bill_unit' contract.bill_unit %}
                                         ¥{{ contract.contract_amount|floatformat:0|intcomma }}
-                                        {% if contract.bill_unit %}
-                                            / {% my_name 'bill_unit' contract.bill_unit %}
-                                        {% endif %}
                                     {% else %}
                                         -
                                     {% endif %}

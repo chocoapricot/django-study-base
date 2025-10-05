@@ -62,6 +62,13 @@ class CorporateNumberMixin:
 
 class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
     """クライアント契約フォーム"""
+    # 請求単位をテンプレートで確実にselectとしてレンダリングするために
+    # フォームクラスでChoiceFieldを定義しておく
+    bill_unit = forms.ChoiceField(
+        label='請求単位',
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
     
     # 選択されたクライアント名を表示するための読み取り専用フィールド
     client_display = forms.CharField(
@@ -119,10 +126,13 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         self.fields['payment_site'].queryset = BillPayment.get_active_list()
 
         # 請求単位の選択肢を設定
-        self.fields['bill_unit'].choices = [('', '単位を選択')] + [
+        # Dropdownsモデルからactiveな請求単位を取得して選択肢を組み立てる
+        bill_choices = [('', '単位を選択')] + [
             (d.value, d.name) for d in Dropdowns.objects.filter(category='bill_unit', active=True).order_by('disp_seq')
         ]
-        self.fields['bill_unit'].required = False
+        self.fields['bill_unit'].choices = bill_choices
+        # 要求により請求単位は保存時に必須
+        self.fields['bill_unit'].required = True
 
         # 契約番号は自動採番のため非表示
         self.fields['contract_number'].required = False

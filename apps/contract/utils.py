@@ -111,9 +111,8 @@ def generate_contract_pdf_content(contract):
 
         contract_amount_text = "N/A"
         if contract.contract_amount is not None:
-            contract_amount_text = f"¥{contract.contract_amount:,}"
-            if bill_unit_name:
-                contract_amount_text += f" / {bill_unit_name}"
+            contract_amount_text = f"{bill_unit_name} "
+            contract_amount_text += f"¥{contract.contract_amount:,}"
         else:
             contract_amount_text = "N/A"
 
