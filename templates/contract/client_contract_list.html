@@ -176,6 +176,9 @@
                                     <td class="text-end">
                                         {% if contract.contract_amount %}
                                             ¥{{ contract.contract_amount|floatformat:0|intcomma }}
+                                            {% if contract.bill_unit %}
+                                                <br><small>/ {% my_name 'bill_unit' contract.bill_unit %}</small>
+                                            {% endif %}
                                         {% else %}
                                             -
                                         {% endif %}

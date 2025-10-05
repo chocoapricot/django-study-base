@@ -100,12 +100,29 @@ def generate_contract_pdf_content(contract):
         if contract.contract_pattern and contract.contract_pattern.contract_type_code == '20':
             contract_period_title = "派遣期間"
 
+        bill_unit_name = ""
+        if contract.bill_unit:
+            from apps.system.settings.models import Dropdowns
+            try:
+                dropdown = Dropdowns.objects.get(category='bill_unit', value=contract.bill_unit)
+                bill_unit_name = dropdown.name
+            except Dropdowns.DoesNotExist:
+                pass
+
+        contract_amount_text = "N/A"
+        if contract.contract_amount is not None:
+            contract_amount_text = f"¥{contract.contract_amount:,}"
+            if bill_unit_name:
+                contract_amount_text += f" / {bill_unit_name}"
+        else:
+            contract_amount_text = "N/A"
+
         items = [
             {"title": "契約番号", "text": str(contract.contract_number)},
             {"title": "クライアント名", "text": str(contract.client.name)},
             {"title": "契約名", "text": str(contract.contract_name)},
             {"title": contract_period_title, "text": contract_period},
-            {"title": "契約金額", "text": f"{contract.contract_amount:,} 円" if contract.contract_amount else "N/A"},
+            {"title": "契約金額", "text": contract_amount_text},
             {"title": "支払条件", "text": str(contract.payment_site.name if contract.payment_site else "N/A")},
             {"title": "契約内容", "text": str(contract.description)},
             {"title": "備考", "text": str(contract.notes)},
@@ -464,10 +481,25 @@ def generate_quotation_pdf(contract, user, issued_at, watermark_text=None):
     end_date_str = contract.end_date.strftime('%Y年%m月%d日') if contract.end_date else "無期限"
     contract_period = f"{start_date_str}　～　{end_date_str}"
     
+    bill_unit_name = ""
+    if contract.bill_unit:
+        from apps.system.settings.models import Dropdowns
+        try:
+            dropdown = Dropdowns.objects.get(category='bill_unit', value=contract.bill_unit)
+            bill_unit_name = dropdown.name
+        except Dropdowns.DoesNotExist:
+            pass
+
+    contract_amount_text = "別途ご相談"
+    if contract.contract_amount is not None:
+        contract_amount_text = f"¥{contract.contract_amount:,}"
+        if bill_unit_name:
+            contract_amount_text += f" / {bill_unit_name}"
+
     items = [
         {"title": "件名", "text": str(contract.contract_name)},
         {"title": "契約期間", "text": contract_period},
-        {"title": "お見積金額", "text": f"{contract.contract_amount:,} 円" if contract.contract_amount else "別途ご相談"},
+        {"title": "お見積金額", "text": contract_amount_text},
         {"title": "支払条件", "text": str(contract.payment_site.name if contract.payment_site else "別途ご相談")},
         {"title": "発行日", "text": issued_at.strftime('%Y年%m月%d日')},
         {"title": "発行者", "text": user.get_full_name_japanese()},
