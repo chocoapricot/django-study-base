@@ -53,7 +53,7 @@ import uuid
 import os
 from itertools import chain
 from django.conf import settings
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 
 
 # マスタ設定データ
@@ -2355,6 +2355,12 @@ def minimum_pay_list(request):
     """最低賃金一覧"""
     search_query = request.GET.get("search", "")
     pref_filter = request.GET.get("pref", "")
+    date_filter = request.GET.get("date_filter", "")
+
+    # /master/ からの遷移の場合、デフォルトで「現在以降」を選択
+    referer = request.META.get('HTTP_REFERER')
+    if referer and referer.endswith('/master/') and 'date_filter' not in request.GET:
+        date_filter = 'future'
 
     minimum_pays = MinimumPay.objects.all()
 
@@ -2365,6 +2371,9 @@ def minimum_pay_list(request):
 
     if pref_filter:
         minimum_pays = minimum_pays.filter(pref=pref_filter)
+
+    if date_filter == 'future':
+        minimum_pays = minimum_pays.filter(start_date__gte=date.today())
 
     minimum_pays = minimum_pays.order_by("display_order", "pref", "-start_date")
 
@@ -2389,6 +2398,7 @@ def minimum_pay_list(request):
         "minimum_pays": minimum_pays_page,
         "search_query": search_query,
         "pref_filter": pref_filter,
+        "date_filter": date_filter,
         "pref_choices": pref_choices,
         "change_logs": change_logs,
         "change_logs_count": change_logs_count,

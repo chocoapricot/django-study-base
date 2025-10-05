@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from apps.master.models import MinimumPay
 from apps.system.settings.models import Dropdowns
-from datetime import date
+from datetime import date, timedelta
 
 User = get_user_model()
 
@@ -31,10 +31,17 @@ class MinimumPayViewTest(TestCase):
         Dropdowns.objects.create(category='pref', name='神奈川県', value='14', disp_seq=2)
 
         # テスト用最低賃金データ作成
-        self.minimum_pay = MinimumPay.objects.create(
+        self.minimum_pay_past = MinimumPay.objects.create(
             pref='13',
             start_date=date(2023, 10, 1),
             hourly_wage=1113,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        self.minimum_pay_future = MinimumPay.objects.create(
+            pref='14',
+            start_date=date.today() + timedelta(days=30),
+            hourly_wage=1200,
             created_by=self.user,
             updated_by=self.user
         )
@@ -42,11 +49,31 @@ class MinimumPayViewTest(TestCase):
         self.test_client.login(username='testuser', password='testpass123')
 
     def test_minimum_pay_list_view(self):
-        """最低賃金一覧ビューのテスト"""
+        """最低賃金一覧ビューのテスト（フィルタなし）"""
         response = self.test_client.get(reverse('master:minimum_pay_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '東京都')
-        self.assertContains(response, '1,113')
+        pays_in_context = response.context['minimum_pays']
+        self.assertIn(self.minimum_pay_past, pays_in_context)
+        self.assertIn(self.minimum_pay_future, pays_in_context)
+        self.assertEqual(response.context['date_filter'], '')
+
+    def test_minimum_pay_list_view_with_date_filter(self):
+        """最低賃金一覧ビューのテスト（「現在以降」フィルタ）"""
+        response = self.test_client.get(reverse('master:minimum_pay_list'), {'date_filter': 'future'})
+        self.assertEqual(response.status_code, 200)
+        pays_in_context = response.context['minimum_pays']
+        self.assertNotIn(self.minimum_pay_past, pays_in_context)
+        self.assertIn(self.minimum_pay_future, pays_in_context)
+        self.assertEqual(response.context['date_filter'], 'future')
+
+    def test_minimum_pay_list_view_default_filter_from_master_index(self):
+        """マスタ一覧からの遷移でデフォルトフィルタが適用されるかのテスト"""
+        response = self.test_client.get(reverse('master:minimum_pay_list'), HTTP_REFERER='/master/')
+        self.assertEqual(response.status_code, 200)
+        pays_in_context = response.context['minimum_pays']
+        self.assertNotIn(self.minimum_pay_past, pays_in_context)
+        self.assertIn(self.minimum_pay_future, pays_in_context)
+        self.assertEqual(response.context['date_filter'], 'future')
 
     def test_minimum_pay_create_view_get(self):
         """最低賃金作成ビューGETのテスト"""
@@ -75,7 +102,7 @@ class MinimumPayViewTest(TestCase):
     def test_minimum_pay_update_view_get(self):
         """最低賃金更新ビューGETのテスト"""
         response = self.test_client.get(
-            reverse('master:minimum_pay_update', kwargs={'pk': self.minimum_pay.pk})
+            reverse('master:minimum_pay_update', kwargs={'pk': self.minimum_pay_past.pk})
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '最低賃金編集')
@@ -91,23 +118,23 @@ class MinimumPayViewTest(TestCase):
         }
 
         response = self.test_client.post(
-            reverse('master:minimum_pay_update', kwargs={'pk': self.minimum_pay.pk}),
+            reverse('master:minimum_pay_update', kwargs={'pk': self.minimum_pay_past.pk}),
             data=form_data
         )
 
         self.assertEqual(response.status_code, 302)
-        self.minimum_pay.refresh_from_db()
-        self.assertEqual(self.minimum_pay.hourly_wage, 1200)
+        self.minimum_pay_past.refresh_from_db()
+        self.assertEqual(self.minimum_pay_past.hourly_wage, 1200)
 
     def test_minimum_pay_delete_post(self):
         """最低賃金削除POSTのテスト"""
         response = self.test_client.post(
-            reverse('master:minimum_pay_delete', kwargs={'pk': self.minimum_pay.pk})
+            reverse('master:minimum_pay_delete', kwargs={'pk': self.minimum_pay_past.pk})
         )
 
         self.assertEqual(response.status_code, 302)
         self.assertFalse(
-            MinimumPay.objects.filter(pk=self.minimum_pay.pk).exists()
+            MinimumPay.objects.filter(pk=self.minimum_pay_past.pk).exists()
         )
 
     def test_minimum_pay_list_view_with_change_history(self):
@@ -118,8 +145,8 @@ class MinimumPayViewTest(TestCase):
             user=self.user,
             action='create',
             model_name='MinimumPay',
-            object_id=self.minimum_pay.pk,
-            object_repr=str(self.minimum_pay)
+            object_id=self.minimum_pay_past.pk,
+            object_repr=str(self.minimum_pay_past)
         )
 
         response = self.test_client.get(reverse('master:minimum_pay_list'))
