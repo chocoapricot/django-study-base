@@ -39,7 +39,7 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.job_category.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">職種</label>
-                <div class="col-sm-4">
+                <div class="col-sm-3">
                     {{ form.job_category }}
                     {% for error in form.job_category.errors %}
                         <div class="text-danger small">{{ error }}</div>
@@ -49,7 +49,7 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.contract_status.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約状況</label>
-                <div class="col-sm-4">
+                <div class="col-sm-3">
                     {{ form.contract_status }}
                     {% for error in form.contract_status.errors %}
                         <div class="text-danger small">{{ error }}</div>
@@ -146,7 +146,7 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.payment_site.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">支払条件</label>
-                <div class="col-sm-6">
+                <div class="col-sm-3">
                     {{ form.payment_site }}
                     {% if form.payment_site.help_text %}
                         <small class="text-muted">{{ form.payment_site.help_text }}</small>
