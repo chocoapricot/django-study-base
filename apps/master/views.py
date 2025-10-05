@@ -2,7 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Q, Count
+from django.db.models import Q, Count, F, Window
+from django.db.models.functions import RowNumber
 from django.urls import reverse
 from django.apps import apps
 from .models import (
@@ -2373,7 +2374,19 @@ def minimum_pay_list(request):
         minimum_pays = minimum_pays.filter(pref=pref_filter)
 
     if date_filter == 'future':
-        minimum_pays = minimum_pays.filter(start_date__gte=date.today())
+        # まず、今日より後の開始日を持つすべてのレコードを取得
+        future_pays = minimum_pays.filter(start_date__gt=date.today()).order_by('pref', 'start_date')
+
+        # 各都道府県ごとに最も近い未来のレコードのPKを保持するリスト
+        pks_to_keep = []
+        seen_prefs = set()
+        for pay in future_pays:
+            if pay.pref not in seen_prefs:
+                pks_to_keep.append(pay.pk)
+                seen_prefs.add(pay.pref)
+
+        # 最終的なクエリセットを、保持したいPKでフィルタリング
+        minimum_pays = minimum_pays.filter(pk__in=pks_to_keep)
 
     minimum_pays = minimum_pays.order_by("display_order", "pref", "-start_date")
 

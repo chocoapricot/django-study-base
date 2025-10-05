@@ -30,12 +30,6 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <select name="date_filter" class="form-control form-control-sm">
-                        <option value="">すべて</option>
-                        <option value="future" {% if date_filter == 'future' %}selected{% endif %}>現在以降</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
                     <button type="submit" class="btn btn-sm btn-primary">検索</button>
                     <a href="{% url 'master:minimum_pay_list' %}" class="btn btn-sm btn-secondary">リセット</a>
                 </div>
