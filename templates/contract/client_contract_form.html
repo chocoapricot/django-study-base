@@ -200,7 +200,10 @@
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
                 </div>
-                <label for="{{ haken_form.responsible_person_client.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.responsible_person_client.label }}</label>
+                <label for="{{ haken_form.responsible_person_client.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                    {{ haken_form.responsible_person_client.label }}
+                    {% my_help_icon "職種が製造派遣該当の場合は「製造業務専門派遣先責任者」で帳票出力されます" %}
+                </label>
                 <div class="col-sm-4">
                     {{ haken_form.responsible_person_client }}
                     {% for error in haken_form.responsible_person_client.errors %}
@@ -217,9 +220,13 @@
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
                 </div>
-                <label for="{{ haken_form.responsible_person_company.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.responsible_person_company.label }}</label>
+                <label for="{{ haken_form.responsible_person_company.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                    {{ haken_form.responsible_person_company.label }}
+                    {% my_help_icon "職種が製造派遣該当の場合は「製造業務専門派遣元責任者」で帳票出力されます" %}
+                </label>
                 <div class="col-sm-4">
                     {{ haken_form.responsible_person_company }}
+
                     {% for error in haken_form.responsible_person_company.errors %}
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
