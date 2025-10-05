@@ -63,7 +63,7 @@ class MailTemplateForm(forms.ModelForm):
 
 class CustomModelChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
-        return obj.name
+        return f"{obj.value}: {obj.name}"
 
 
 class JobCategoryForm(forms.ModelForm):

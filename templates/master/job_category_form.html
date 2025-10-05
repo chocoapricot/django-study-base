@@ -42,6 +42,22 @@
             </div>
 
             <div class="row mb-3 align-items-center">
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                    製造派遣該当
+                    {% my_help_icon "製造派遣に該当する場合、派遣元/派遣先責任者の契約書への印字がかわります" %}
+                </label>
+                <div class="col-sm-6">
+                        {{ form.is_manufacturing_dispatch }}
+                        <label class="form-check-label" for="{{ form.is_manufacturing_dispatch.id_for_label }}">
+                            製造派遣に該当する
+                        </label>
+                        {% if form.is_manufacturing_dispatch.errors %}
+                            <div class="text-danger small">{{ form.is_manufacturing_dispatch.errors.0 }}</div>
+                        {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
                 <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">表示順</label>
                 <div class="col-sm-3">
                     {{ form.display_order }}
@@ -50,6 +66,7 @@
                     {% endif %}
                 </div>
             </div>
+
 
             <div class="row mb-3 align-items-center">
                 <div class="col-sm-2"></div>
