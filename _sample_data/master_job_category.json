@@ -1,62 +1,87 @@
 [
-  {
+{
     "model": "master.jobcategory",
     "pk": 1,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "name": "営業事務",
-      "display_order": 10,
-      "is_active": true,
-      "jobs_kourou": 240,
-      "jobs_soumu": 44
+        "version": 1759499182625172,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_by": 1,
+        "name": "営業事務",
+        "display_order": 10,
+        "is_active": true,
+        "is_manufacturing_dispatch": false,
+        "jobs_kourou": 240,
+        "jobs_soumu": 44
     }
-  },
-  {
+},
+{
     "model": "master.jobcategory",
     "pk": 2,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "name": "一般事務",
-      "display_order": 20,
-      "is_active": true,
-      "jobs_kourou": 234,
-      "jobs_soumu": 41
+        "version": 1759499182639820,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_by": 1,
+        "name": "一般事務",
+        "display_order": 20,
+        "is_active": true,
+        "is_manufacturing_dispatch": false,
+        "jobs_kourou": 234,
+        "jobs_soumu": 41
     }
-  },
-  {
+},
+{
     "model": "master.jobcategory",
     "pk": 3,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "name": "ソフトウェア開発",
-      "display_order": 30,
-      "is_active": true,
-      "jobs_kourou": 209,
-      "jobs_soumu": 26
+        "version": 1759499182644704,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_by": 1,
+        "name": "ソフトウェア開発",
+        "display_order": 30,
+        "is_active": true,
+        "is_manufacturing_dispatch": false,
+        "jobs_kourou": 209,
+        "jobs_soumu": 26
     }
-  },
-  {
+},
+{
     "model": "master.jobcategory",
     "pk": 4,
     "fields": {
-      "created_at": "2025-09-07T00:00:00Z",
-      "created_by": 1,
-      "updated_at": "2025-09-07T00:00:00Z",
-      "updated_by": 1,
-      "name": "看護",
-      "display_order": 40,
-      "is_active": true,
-      "jobs_kourou": 223,
-      "jobs_soumu": 29
+        "version": 1759499182647663,
+        "created_at": "2025-09-07T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_by": 1,
+        "name": "看護",
+        "display_order": 40,
+        "is_active": true,
+        "is_manufacturing_dispatch": false,
+        "jobs_kourou": 223,
+        "jobs_soumu": 29
     }
-  }
+},
+{
+    "model": "master.jobcategory",
+    "pk": 5,
+    "fields": {
+        "version": 1759674450006043,
+        "created_at": "2025-10-05T14:42:50.183Z",
+        "created_by": 1,
+        "updated_at": "2025-10-05T14:43:16.658Z",
+        "updated_by": 1,
+        "name": "機械組立",
+        "display_order": 50,
+        "is_active": true,
+        "is_manufacturing_dispatch": true,
+        "jobs_kourou": 274,
+        "jobs_soumu": 70
+    }
+}
 ]

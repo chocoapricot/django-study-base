@@ -66,6 +66,7 @@ python manage.py dumpdata client.clientdepartment      --format=json --indent=4 
 python manage.py dumpdata contract.clientcontracthaken --format=json --indent=4 > _sample_data/contract_client_haken.json
 python manage.py dumpdata master.contractpattern       --format=json --indent=4 > _sample_data/master_contract_pattern.json
 python manage.py dumpdata master.contractterms         --format=json --indent=4 > _sample_data/master_contract_terms.json
+python manage.py dumpdata master.jobcategory　         --format=json --indent=4 > _sample_data/master_job_category.json
 python manage.py dumpdata master.hakenbusinesscontent      --format=json --indent=4 > _sample_data/master_haken_business_content.json
 python manage.py dumpdata master.hakenresponsibilitydegree --format=json --indent=4 > _sample_data/master_haken_responsibility_degree.json
 
