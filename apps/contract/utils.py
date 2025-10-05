@@ -183,14 +183,19 @@ def generate_contract_pdf_content(contract):
             else:
                 haken_items.append({"title": "組織単位", "text": ""})
 
+            # 派遣先責任者と派遣元責任者のタイトルを決定
+            is_manufacturing_dispatch = contract.job_category and contract.job_category.is_manufacturing_dispatch
+            client_responsible_person_title = "製造業務専門派遣先責任者" if is_manufacturing_dispatch else "派遣先責任者"
+            company_responsible_person_title = "製造業務専門派遣元責任者" if is_manufacturing_dispatch else "派遣元責任者"
+
             # 派遣先
             haken_items.append({"title": "派遣先指揮命令者", "text": format_client_user(haken_info.commander)})
             haken_items.append({"title": "派遣先苦情申出先", "text": format_client_user(haken_info.complaint_officer_client, with_phone=True)})
-            haken_items.append({"title": "派遣先責任者", "text": format_client_user(haken_info.responsible_person_client, with_phone=True)})
+            haken_items.append({"title": client_responsible_person_title, "text": format_client_user(haken_info.responsible_person_client, with_phone=True)})
 
             # 派遣元
             haken_items.append({"title": "派遣元苦情申出先", "text": format_company_user(haken_info.complaint_officer_company, with_phone=True)})
-            haken_items.append({"title": "派遣元責任者", "text": format_company_user(haken_info.responsible_person_company, with_phone=True)})
+            haken_items.append({"title": company_responsible_person_title, "text": format_company_user(haken_info.responsible_person_company, with_phone=True)})
 
             # 限定の別
             limit_by_agreement_display = haken_info.get_limit_by_agreement_display() if haken_info.limit_by_agreement else "N/A"

@@ -680,6 +680,7 @@ class JobCategory(MyModel):
     name = models.CharField('名称', max_length=100)
     display_order = models.IntegerField('表示順', default=0)
     is_active = models.BooleanField('有効', default=True)
+    is_manufacturing_dispatch = models.BooleanField('製造派遣該当', default=False, help_text='この職種が製造業務への労働者派遣に該当する場合にチェックします。')
     jobs_kourou = models.ForeignKey(
         'settings.Dropdowns',
         on_delete=models.SET_NULL,
