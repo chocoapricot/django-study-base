@@ -6,6 +6,13 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
+<style>
+    /* bill_unit のプルダウンを狭くする */
+    #id_bill_unit {
+        width: 110px !important;
+        max-width: 110px !important;
+    }
+</style>
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">{{ title }}</div>
     <div class="card-body">
@@ -120,7 +127,7 @@
                 <label for="{{ form.contract_amount.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
                     契約金額
                 </label>
-                <div class="col-sm-6">
+                <div class="col-sm-3">
                     <div class="input-group">
                         {{ form.bill_unit }}
                         {{ form.contract_amount }}
