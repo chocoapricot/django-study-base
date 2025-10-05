@@ -406,6 +406,11 @@ class ClientContractHakenForm(forms.ModelForm):
 
 class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
     """スタッフ契約フォーム"""
+    pay_unit = forms.ChoiceField(
+        label='支払単位',
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
     
     # 選択されたスタッフ名を表示するための読み取り専用フィールド
     staff_display = forms.CharField(
@@ -428,7 +433,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         model = StaffContract
         fields = [
             'staff', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
-            'start_date', 'end_date', 'contract_amount',
+            'start_date', 'end_date', 'contract_amount', 'pay_unit',
             'description', 'notes'
         ]
         widgets = {
@@ -440,6 +445,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
             'start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'contract_amount': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            'pay_unit': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 4}),
             'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
@@ -451,6 +457,13 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, domain='1')
         if self.instance and self.instance.pk and hasattr(self.instance, 'staff') and self.instance.staff:
             self.fields['staff_display'].initial = f"{self.instance.staff.name_last} {self.instance.staff.name_first}"
+
+        # 支払単位の選択肢を設定
+        pay_unit_choices = [('', '単位を選択')] + [
+            (d.value, d.name) for d in Dropdowns.objects.filter(category='pay_unit', active=True).order_by('disp_seq')
+        ]
+        self.fields['pay_unit'].choices = pay_unit_choices
+        self.fields['pay_unit'].required = True
 
         # 契約番号は自動採番のため非表示
         self.fields['contract_number'].required = False

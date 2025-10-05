@@ -40,6 +40,7 @@ class ClientContractHakenLogTest(TestCase):
 
         # 派遣契約種別をDropdownに作成
         Dropdowns.objects.create(category='client_contract_type', name='派遣', value='20')
+        cls.bill_unit = Dropdowns.objects.create(category='bill_unit', value='10', name='月額', active=True)
 
         # 契約パターン
         cls.pattern = ContractPattern.objects.create(name='Haken Pattern', domain='10', contract_type_code='20')
@@ -79,6 +80,7 @@ class ClientContractHakenLogTest(TestCase):
             'contract_number': self.contract.contract_number or '',
             'start_date': self.contract.start_date.strftime('%Y-%m-%d'),
             'end_date': (self.contract.start_date + datetime.timedelta(days=365)).strftime('%Y-%m-%d'),
+            'bill_unit': self.bill_unit.value,
             'haken_office': self.haken_office.pk,
             'haken_unit': self.haken_unit.pk,
             'commander': self.client_user.pk,
@@ -131,6 +133,7 @@ class ClientContractHakenLogTest(TestCase):
             'contract_number': self.contract.contract_number or '',
             'start_date': self.contract.start_date.strftime('%Y-%m-%d'),
             'end_date': (self.contract.start_date + datetime.timedelta(days=365)).strftime('%Y-%m-%d'),
+            'bill_unit': self.bill_unit.value,
             'haken_office': self.haken_office.pk,
             'haken_unit': self.haken_unit.pk,
             'commander': new_client_user.pk, # 更新

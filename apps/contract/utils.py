@@ -241,12 +241,28 @@ def generate_contract_pdf_content(contract):
         start_date_str = contract.start_date.strftime('%Y年%m月%d日')
         end_date_str = contract.end_date.strftime('%Y年%m月%d日') if contract.end_date else "無期限"
         contract_period = f"{start_date_str}　～　{end_date_str}"
+
+        pay_unit_name = ""
+        if contract.pay_unit:
+            from apps.system.settings.models import Dropdowns
+            try:
+                dropdown = Dropdowns.objects.get(category='pay_unit', value=contract.pay_unit)
+                pay_unit_name = dropdown.name
+            except Dropdowns.DoesNotExist:
+                pass
+
+        contract_amount_text = "N/A"
+        if contract.contract_amount is not None:
+            contract_amount_text = f"{contract.contract_amount:,}円"
+            if pay_unit_name:
+                contract_amount_text = f"{pay_unit_name} {contract_amount_text}"
+
         items = [
             {"title": "契約名", "text": str(contract.contract_name)},
             {"title": "スタッフ名", "text": f"{contract.staff.name_last} {contract.staff.name_first}"},
             {"title": "契約番号", "text": str(contract.contract_number or "")},
             {"title": "契約期間", "text": contract_period},
-            {"title": "契約金額", "text": f"{contract.contract_amount:,} 円" if contract.contract_amount else "N/A"},
+            {"title": "契約金額", "text": contract_amount_text},
             {"title": "契約内容", "text": str(contract.description or "")},
             {"title": "備考", "text": str(contract.notes or "")},
         ]

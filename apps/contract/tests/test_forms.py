@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django import forms
 from apps.client.models import Client as ClientModel
 from apps.staff.models import Staff
-from apps.master.models import JobCategory, ContractPattern
+from apps.master.models import JobCategory, ContractPattern, Dropdowns
 from ..models import ClientContract, StaffContract
 from ..forms import ClientContractForm, StaffContractForm
 from datetime import date
@@ -50,6 +50,8 @@ class ContractFormTest(TestCase):
         self.job_category = JobCategory.objects.create(name='エンジニア', is_active=True)
         self.client_pattern = ContractPattern.objects.create(name='クライアント向け基本契約', domain='10', contract_type_code='10', is_active=True)
         self.staff_pattern = ContractPattern.objects.create(name='スタッフ向け雇用契約', domain='1', is_active=True)
+        self.bill_unit = Dropdowns.objects.create(category='bill_unit', value='10', name='月額', active=True)
+        self.pay_unit = Dropdowns.objects.create(category='pay_unit', value='10', name='月給', active=True)
 
     def test_client_contract_form_with_new_fields(self):
         """クライアント契約フォーム（新しいフィールドあり）のテスト"""
@@ -70,6 +72,7 @@ class ContractFormTest(TestCase):
             'start_date': date(2024, 2, 1),
             'end_date': date(2024, 12, 31),
             'client_contract_type_code': self.client_pattern.contract_type_code,
+            'bill_unit': self.bill_unit.value,
         }
         form = ClientContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
@@ -95,6 +98,7 @@ class ContractFormTest(TestCase):
             'contract_pattern': self.staff_pattern.pk,
             'start_date': date(2024, 5, 1),
             'end_date': date(2024, 12, 31),
+            'pay_unit': self.pay_unit.value,
         }
         form = StaffContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
@@ -178,6 +182,7 @@ class ContractFormTest(TestCase):
             'contract_pattern': self.client_pattern.pk,
             'job_category': self.job_category.pk,
             'client_contract_type_code': self.client_pattern.contract_type_code,
+            'bill_unit': self.bill_unit.value,
         }
         
         form = ClientContractForm(data=form_data)
@@ -192,7 +197,9 @@ class ContractFormTest(TestCase):
             'contract_name': '雇用契約',
             'start_date': date(2024, 3, 1),  # 入社日より前
             'end_date': date(2024, 12, 31),
-            'contract_amount': 300000
+            'contract_amount': 300000,
+            'contract_pattern': self.staff_pattern.pk,
+            'pay_unit': self.pay_unit.value,
         }
         
         form = StaffContractForm(data=form_data)
@@ -210,6 +217,7 @@ class ContractFormTest(TestCase):
             'contract_amount': 1000000,
             'contract_pattern': self.client_pattern.pk,
             'client_contract_type_code': self.client_pattern.contract_type_code,
+            'bill_unit': self.bill_unit.value,
         }
         
         form = ClientContractForm(data=form_data)
@@ -243,9 +251,48 @@ class ContractFormTest(TestCase):
         # 保存してインスタンスを確認
         instance = form.save()
         self.assertEqual(instance.bill_unit, bill_unit_monthly.value)
+
+    def test_staff_contract_form_with_pay_unit(self):
+        """スタッフ契約フォームの支払単位フィールドテスト"""
+        from apps.system.settings.models import Dropdowns
+        pay_unit_daily = Dropdowns.objects.create(category='pay_unit', value='20', name='日給', active=True)
+
+        # フォームの初期化とフィールド確認
+        form = StaffContractForm()
+        self.assertIn('pay_unit', form.fields)
+        self.assertIn((pay_unit_daily.value, pay_unit_daily.name), form.fields['pay_unit'].choices)
+
+        # フォームにデータを渡してバリデーション
+        form_data = {
+            'staff': self.staff.pk,
+            'contract_name': '支払単位テスト契約',
+            'job_category': self.job_category.pk,
+            'contract_pattern': self.staff_pattern.pk,
+            'start_date': date(2024, 5, 1),
+            'end_date': date(2024, 12, 31),
+            'contract_amount': 30000,
+            'pay_unit': pay_unit_daily.value,
+        }
+        form = StaffContractForm(data=form_data)
+        self.assertTrue(form.is_valid(), form.errors)
+
+        # 保存してインスタンスを確認
+        instance = form.save()
+        self.assertEqual(instance.pay_unit, pay_unit_daily.value)
     
     def test_staff_contract_form_valid_data(self):
         """スタッフ契約フォームの正常データテスト"""
+        form_data = {
+            'staff': self.staff.pk,
+            'contract_name': '雇用契約',
+            'start_date': date(2024, 4, 1),  # 入社日以降
+            'end_date': date(2024, 12, 31),
+            'contract_amount': 300000,
+            'contract_pattern': self.staff_pattern.pk,
+            'pay_unit': self.pay_unit.value,
+        }
+        form = StaffContractForm(data=form_data)
+        self.assertTrue(form.is_valid(), form.errors)
 
     def test_client_contract_form_validation_for_client_without_corporate_number(self):
         """法人番号のないクライアントを選択した場合のバリデーションテスト"""
@@ -257,21 +304,12 @@ class ContractFormTest(TestCase):
             'start_date': date(2024, 2, 1),
             'end_date': date(2024, 12, 31),
             'client_contract_type_code': self.client_pattern.contract_type_code,
+            'bill_unit': self.bill_unit.value,
         }
         form = ClientContractForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn('client', form.errors)
         self.assertEqual(form.errors['client'][0], '法人番号が設定されていないクライアントは選択できません。')
-        form_data = {
-            'staff': self.staff.pk,
-            'contract_name': '雇用契約',
-            'start_date': date(2024, 4, 1),  # 入社日以降
-            'end_date': date(2024, 12, 31),
-            'contract_amount': 300000
-        }
-        
-        form = StaffContractForm(data=form_data)
-        self.assertTrue(form.is_valid())
 
 
 class ContractFormDisplayTest(TestCase):

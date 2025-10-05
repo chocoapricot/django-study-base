@@ -81,6 +81,9 @@ class ContractViewTest(TestCase):
         )
         self.staff_pattern = ContractPattern.objects.create(name='Staff Pattern', domain='1', is_active=True)
 
+        from apps.system.settings.models import Dropdowns
+        self.pay_unit_daily = Dropdowns.objects.create(category='pay_unit', value='20', name='日給', active=True)
+
         self.client = Client()
         self.client.login(username='testuser', password='testpass123')
 
@@ -203,6 +206,34 @@ class ContractViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/pdf')
         self.assertTrue(response['Content-Disposition'].startswith(f'attachment; filename="'))
+
+    def test_staff_contract_list_view_with_pay_unit(self):
+        """スタッフ契約一覧画面で支払単位が表示されるかテスト"""
+        staff_contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='Test Staff Contract with Pay Unit',
+            start_date=datetime.date.today(),
+            contract_pattern=self.staff_pattern,
+            contract_amount=20000,
+            pay_unit=self.pay_unit_daily.value
+        )
+        response = self.client.get(reverse('contract:staff_contract_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '日給&nbsp;20,000円')
+
+    def test_staff_contract_detail_view_with_pay_unit(self):
+        """スタッフ契約詳細画面で支払単位が表示されるかテスト"""
+        staff_contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='Test Staff Contract with Pay Unit',
+            start_date=datetime.date.today(),
+            contract_pattern=self.staff_pattern,
+            contract_amount=20000,
+            pay_unit=self.pay_unit_daily.value
+        )
+        response = self.client.get(reverse('contract:staff_contract_detail', kwargs={'pk': staff_contract.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '日給&nbsp;20,000円')
 
 
 class ClientContractConfirmListViewTest(TestCase):
