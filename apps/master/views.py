@@ -2,10 +2,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Q, Count, F, Window
-from django.db.models.functions import RowNumber
+from django.db.models import Q, Count
 from django.urls import reverse
 from django.apps import apps
+from datetime import date
 from .models import (
     Qualification,
     Skill,
@@ -2360,33 +2360,40 @@ def minimum_pay_list(request):
 
     # /master/ からの遷移の場合、デフォルトで「現在以降」を選択
     referer = request.META.get('HTTP_REFERER')
-    if referer and referer.endswith('/master/') and 'date_filter' not in request.GET:
+    if referer and referer.endswith('/master/') and not request.GET:
         date_filter = 'future'
 
-    minimum_pays = MinimumPay.objects.all()
+    minimum_pays_query = MinimumPay.objects.all()
 
     if search_query:
-        minimum_pays = minimum_pays.filter(
+        minimum_pays_query = minimum_pays_query.filter(
             Q(hourly_wage__icontains=search_query)
         )
 
     if pref_filter:
-        minimum_pays = minimum_pays.filter(pref=pref_filter)
+        minimum_pays_query = minimum_pays_query.filter(pref=pref_filter)
 
     if date_filter == 'future':
-        # まず、今日より後の開始日を持つすべてのレコードを取得
-        future_pays = minimum_pays.filter(start_date__gt=date.today()).order_by('pref', 'start_date')
+        today = date.today()
 
-        # 各都道府県ごとに最も近い未来のレコードのPKを保持するリスト
-        pks_to_keep = []
+        # 1. 未来のレコードのPKを取得
+        future_pks = set(minimum_pays_query.filter(start_date__gt=today).values_list('pk', flat=True))
+
+        # 2. 各都道府県の現在有効な最新レコードのPKを取得
+        past_records = minimum_pays_query.filter(start_date__lte=today).order_by('pref', '-start_date')
+
+        latest_past_pks = []
         seen_prefs = set()
-        for pay in future_pays:
-            if pay.pref not in seen_prefs:
-                pks_to_keep.append(pay.pk)
-                seen_prefs.add(pay.pref)
+        for record in past_records:
+            if record.pref not in seen_prefs:
+                latest_past_pks.append(record.pk)
+                seen_prefs.add(record.pref)
 
-        # 最終的なクエリセットを、保持したいPKでフィルタリング
-        minimum_pays = minimum_pays.filter(pk__in=pks_to_keep)
+        # 3. PKを結合してフィルタリング
+        combined_pks = future_pks.union(set(latest_past_pks))
+        minimum_pays = MinimumPay.objects.filter(pk__in=combined_pks)
+    else:
+        minimum_pays = minimum_pays_query
 
     minimum_pays = minimum_pays.order_by("display_order", "pref", "-start_date")
 
