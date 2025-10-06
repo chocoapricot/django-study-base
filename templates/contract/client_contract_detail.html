@@ -244,10 +244,10 @@
             <thead>
                 <tr>
                     <th>種別</th>
+                    <th>契約番号</th>
                     <th>ファイル</th>
                     <th>発行者</th>
                     <th>発行日時</th>
-                    <th>契約番号</th>
                 </tr>
             </thead>
             <tbody>
@@ -266,6 +266,7 @@
                                 <span class="badge bg-secondary">その他</span>
                             {% endif %}
                         </td>
+                        <td>{% if item.contract_number %}{{ item.contract_number }}{% else %}-{% endif %}</td>
                         <td>
                             <a href="{% url 'contract:download_client_contract_pdf' item.pk %}">
                                 {{ item.document_title }}
@@ -273,7 +274,6 @@
                         </td>
                         <td>{{ item.printed_by.get_full_name_japanese|default:"-" }}</td>
                         <td>{{ item.printed_at|date:"Y/m/d H:i:s" }}</td>
-                        <td>{% if item.contract_number %}{{ item.contract_number }}{% else %}-{% endif %}</td>
                     </tr>
                 {% endfor %}
             </tbody>
