@@ -112,6 +112,12 @@
                                 <td>{{ contract.notes|linebreaksbr }}</td>
                             </tr>
                             {% endif %}
+                            {% if contract.memo %}
+                            <tr>
+                                <th class="w-25 bg-light">メモ</th>
+                                <td>{{ contract.memo|linebreaksbr }}</td>
+                            </tr>
+                            {% endif %}
                         </table>
                     </div>
                 </div>

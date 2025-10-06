@@ -98,7 +98,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         fields = [
             'client', 'client_contract_type_code', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
             'start_date', 'end_date', 'contract_amount', 'bill_unit',
-            'description', 'notes', 'payment_site'
+            'description', 'notes', 'memo', 'payment_site'
         ]
         widgets = {
             'client': forms.HiddenInput(),
@@ -113,6 +113,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
             'bill_unit': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 4}),
             'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'payment_site': forms.Select(attrs={'class': 'form-select form-select-sm'}),
         }
 
@@ -434,7 +435,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         fields = [
             'staff', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
             'start_date', 'end_date', 'contract_amount', 'pay_unit',
-            'description', 'notes'
+            'description', 'notes', 'memo'
         ]
         widgets = {
             'staff': forms.HiddenInput(),
@@ -448,6 +449,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
             'pay_unit': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 4}),
             'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
 
     def __init__(self, *args, **kwargs):

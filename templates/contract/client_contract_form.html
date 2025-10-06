@@ -37,6 +37,16 @@
                 </div>
             </div>
 
+            <div class="row mb-3">
+                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">メモ</label>
+                <div class="col-sm-10">
+                    {{ form.memo }}
+                    {% for error in form.memo.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.job_category.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">職種</label>
                 <div class="col-sm-3">

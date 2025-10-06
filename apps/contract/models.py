@@ -61,6 +61,7 @@ class ClientContract(MyModel):
     bill_unit = models.CharField('請求単位', max_length=10, blank=True, null=True)
     description = models.TextField('契約内容', blank=True, null=True)
     notes = models.TextField('備考', blank=True, null=True)
+    memo = models.TextField('メモ', blank=True, null=True)
     payment_site = models.ForeignKey(
         'master.BillPayment',
         on_delete=models.SET_NULL,
@@ -223,6 +224,7 @@ class StaffContract(MyModel):
     pay_unit = models.CharField('支払単位', max_length=10, blank=True, null=True)
     description = models.TextField('契約内容', blank=True, null=True)
     notes = models.TextField('備考', blank=True, null=True)
+    memo = models.TextField('メモ', blank=True, null=True)
     approved_at = models.DateTimeField('承認日時', blank=True, null=True)
     approved_by = models.ForeignKey(
         User,
