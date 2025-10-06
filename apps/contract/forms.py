@@ -121,7 +121,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         from apps.master.models import BillPayment, ContractPattern, JobCategory
         self.fields['job_category'].queryset = JobCategory.objects.filter(is_active=True)
         self.fields['contract_pattern'].required = True
-        self.fields['contract_pattern'].empty_label = '契約パターンを選択してください'
+        self.fields['contract_pattern'].empty_label = '契約書パターンを選択してください'
         self.fields['end_date'].required = True
         self.fields['payment_site'].queryset = BillPayment.get_active_list()
 

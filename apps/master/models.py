@@ -543,7 +543,7 @@ class Bank(MyModel):
     
 class ContractPattern(MyModel):
     """
-    契約パターンマスタ
+    契約書パターンマスタ
     """
     name = models.CharField('名称', max_length=100)
     domain = models.CharField(
@@ -559,8 +559,8 @@ class ContractPattern(MyModel):
 
     class Meta:
         db_table = 'apps_master_contract_pattern'
-        verbose_name = '契約パターン'
-        verbose_name_plural = '契約パターン'
+        verbose_name = '契約書パターン'
+        verbose_name_plural = '契約書パターン'
         ordering = ['domain', 'display_order']
         indexes = [
             models.Index(fields=['is_active']),
@@ -578,7 +578,7 @@ class ContractTerms(MyModel):
     contract_pattern = models.ForeignKey(
         ContractPattern,
         on_delete=models.CASCADE,
-        verbose_name='契約パターン',
+        verbose_name='契約書パターン',
         related_name='terms'
     )
     contract_clause = models.TextField('契約条項')

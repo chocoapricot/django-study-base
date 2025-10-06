@@ -425,7 +425,7 @@ def staff_contract_list(request):
     if status_filter:
         contracts = contracts.filter(contract_status=status_filter)
 
-    # 契約パターンフィルタを適用
+    # 契約書パターンフィルタを適用
     if contract_pattern_filter:
         contracts = contracts.filter(contract_pattern_id=contract_pattern_filter)
 

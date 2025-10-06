@@ -59,7 +59,7 @@ class ContractFormTest(TestCase):
         self.assertIn('job_category', form.fields)
         self.assertIn('contract_pattern', form.fields)
 
-        # 契約パターンの選択肢がクライアント向けのものだけになっているか確認
+        # 契約書パターンの選択肢がクライアント向けのものだけになっているか確認
         patterns = form.fields['contract_pattern'].queryset
         self.assertIn(self.client_pattern, patterns)
         self.assertNotIn(self.staff_pattern, patterns)
@@ -86,7 +86,7 @@ class ContractFormTest(TestCase):
         self.assertIn('job_category', form.fields)
         self.assertIn('contract_pattern', form.fields)
 
-        # 契約パターンの選択肢がスタッフ向けのものだけになっているか確認
+        # 契約書パターンの選択肢がスタッフ向けのものだけになっているか確認
         patterns = form.fields['contract_pattern'].queryset
         self.assertNotIn(self.client_pattern, patterns)
         self.assertIn(self.staff_pattern, patterns)

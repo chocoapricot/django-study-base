@@ -55,7 +55,7 @@
             </div>
             <div class="input-group me-2 mb-2" style="width: 12em;">
                 <select name="contract_pattern" class="form-select form-select-sm">
-                    <option value="">契約パターン（全て）</option>
+                    <option value="">契約書パターン（全て）</option>
                     {% for pattern in contract_pattern_list %}
                     <option value="{{ pattern.pk }}" {% if contract_pattern_filter == pattern.pk|stringformat:"s" %}selected{% endif %}>{{ pattern.name }}</option>
                     {% endfor %}
@@ -126,7 +126,7 @@
                                     <th>社員番号</th>
                                     <th>スタッフ</th>
                                     <th>契約名</th>
-                                    <th>契約パターン</th>
+                                    <th>契約書パターン</th>
                                     <th>契約期間</th>
                                     <th class="text-end">契約金額</th>
                                     <th>契約状況</th>
