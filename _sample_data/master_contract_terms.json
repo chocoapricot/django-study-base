@@ -3,7 +3,7 @@
     "model": "master.contractterms",
     "pk": 1,
     "fields": {
-        "version": 1759499191023746,
+        "version": 1759676748079056,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -20,7 +20,7 @@
     "model": "master.contractterms",
     "pk": 2,
     "fields": {
-        "version": 1759499191036489,
+        "version": 1759676748091520,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -37,7 +37,7 @@
     "model": "master.contractterms",
     "pk": 3,
     "fields": {
-        "version": 1759499191039057,
+        "version": 1759676748095198,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -54,7 +54,7 @@
     "model": "master.contractterms",
     "pk": 4,
     "fields": {
-        "version": 1759499191042315,
+        "version": 1759676748099008,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -71,7 +71,7 @@
     "model": "master.contractterms",
     "pk": 5,
     "fields": {
-        "version": 1759499191046558,
+        "version": 1759676748101622,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -88,7 +88,7 @@
     "model": "master.contractterms",
     "pk": 6,
     "fields": {
-        "version": 1759499191049692,
+        "version": 1759676748103949,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -105,7 +105,7 @@
     "model": "master.contractterms",
     "pk": 7,
     "fields": {
-        "version": 1759499191052008,
+        "version": 1759676748106232,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:50:15.128Z",
@@ -122,7 +122,7 @@
     "model": "master.contractterms",
     "pk": 8,
     "fields": {
-        "version": 1759499191054298,
+        "version": 1759676748108554,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:50:29.241Z",
@@ -139,7 +139,7 @@
     "model": "master.contractterms",
     "pk": 9,
     "fields": {
-        "version": 1759499191057236,
+        "version": 1759676748111115,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:58:24.831Z",
@@ -156,7 +156,7 @@
     "model": "master.contractterms",
     "pk": 10,
     "fields": {
-        "version": 1759499191060141,
+        "version": 1759676748113450,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:58:39.789Z",
@@ -173,7 +173,7 @@
     "model": "master.contractterms",
     "pk": 12,
     "fields": {
-        "version": 1759499191065749,
+        "version": 1759676748115757,
         "created_at": "2025-09-12T17:46:35.466Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:50:51.833Z",
@@ -190,14 +190,14 @@
     "model": "master.contractterms",
     "pk": 13,
     "fields": {
-        "version": 1759499191072047,
+        "version": 1759774922632076,
         "created_at": "2025-09-12T17:46:54.472Z",
         "created_by": 1,
-        "updated_at": "2025-09-12T17:51:22.442Z",
+        "updated_at": "2025-10-06T18:37:49.284Z",
         "updated_by": 1,
         "contract_pattern": 5,
         "contract_clause": "報酬・支払条件",
-        "contract_terms": "甲は乙に対し、本業務の対価として金〇〇円（消費税別途）を支払う。支払期日は検収合格日から30日以内とし、支払遅延が生じた場合は年14.6％の遅延損害金を付す。",
+        "contract_terms": "甲は乙に対し、本業務の対価を支払う。支払期日は検収合格日から30日以内とし、支払遅延が生じた場合は年14.6％の遅延損害金を付す。",
         "display_position": 2,
         "memo": null,
         "display_order": 40
@@ -207,14 +207,14 @@
     "model": "master.contractterms",
     "pk": 14,
     "fields": {
-        "version": 1759499191081410,
+        "version": 1759774984278008,
         "created_at": "2025-09-12T17:47:28.634Z",
         "created_by": 1,
-        "updated_at": "2025-09-12T17:51:43.413Z",
+        "updated_at": "2025-10-06T18:38:50.930Z",
         "updated_by": 1,
         "contract_pattern": 5,
         "contract_clause": "契約期間",
-        "contract_terms": "本契約の有効期間は、契約締結日から令和〇年〇月〇日までとする。但し、やむを得ない事由により乙が納期の延長を求めた場合、甲は合理的な範囲でこれを認める。",
+        "contract_terms": "本契約の有効期間は、契約締結日から契約終了日までとする。但し、やむを得ない事由により乙が納期の延長を求めた場合、甲は合理的な範囲でこれを認める。",
         "display_position": 2,
         "memo": null,
         "display_order": 50
@@ -224,7 +224,7 @@
     "model": "master.contractterms",
     "pk": 15,
     "fields": {
-        "version": 1759499191083948,
+        "version": 1759676748122603,
         "created_at": "2025-09-12T17:47:50.232Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:51:53.714Z",
@@ -241,7 +241,7 @@
     "model": "master.contractterms",
     "pk": 16,
     "fields": {
-        "version": 1759499191087367,
+        "version": 1759676748125140,
         "created_at": "2025-09-12T17:48:08.683Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:52:07.150Z",
@@ -258,7 +258,7 @@
     "model": "master.contractterms",
     "pk": 17,
     "fields": {
-        "version": 1759499191091572,
+        "version": 1759676748127688,
         "created_at": "2025-09-12T17:48:52.401Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:52:22.872Z",
@@ -275,7 +275,7 @@
     "model": "master.contractterms",
     "pk": 18,
     "fields": {
-        "version": 1759499191097693,
+        "version": 1759676748129995,
         "created_at": "2025-09-12T17:49:59.743Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:52:36.837Z",
@@ -292,7 +292,7 @@
     "model": "master.contractterms",
     "pk": 19,
     "fields": {
-        "version": 1759499191101631,
+        "version": 1759676748132330,
         "created_at": "2025-09-12T17:53:26.151Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:53:26.151Z",
@@ -309,7 +309,7 @@
     "model": "master.contractterms",
     "pk": 20,
     "fields": {
-        "version": 1759499191105636,
+        "version": 1759676748134619,
         "created_at": "2025-09-12T17:53:46.352Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:53:46.352Z",
@@ -326,7 +326,7 @@
     "model": "master.contractterms",
     "pk": 21,
     "fields": {
-        "version": 1759499191109237,
+        "version": 1759676748136913,
         "created_at": "2025-09-12T17:54:05.943Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:54:05.943Z",
@@ -343,14 +343,14 @@
     "model": "master.contractterms",
     "pk": 22,
     "fields": {
-        "version": 1759499191118185,
+        "version": 1759775006010750,
         "created_at": "2025-09-12T17:58:55.356Z",
         "created_by": 1,
-        "updated_at": "2025-09-12T17:58:55.356Z",
+        "updated_at": "2025-10-06T18:39:12.663Z",
         "updated_by": 1,
         "contract_pattern": 6,
         "contract_clause": "報酬・支払条件",
-        "contract_terms": "甲は乙に対し、本業務遂行の対価として、月額〇〇円（消費税別途）を支払う。  \r\n支払期日は翌月末日とする。  \r\n本業務遂行の有無・成果物の完成に関わらず、乙が業務を遂行した期間に応じて報酬が発生する。",
+        "contract_terms": "甲は乙に対し、本業務遂行の対価を支払う。  \r\n支払期日は翌月末日とする。  \r\n本業務遂行の有無・成果物の完成に関わらず、乙が業務を遂行した期間に応じて報酬が発生する。",
         "display_position": 2,
         "memo": null,
         "display_order": 30
@@ -360,14 +360,14 @@
     "model": "master.contractterms",
     "pk": 23,
     "fields": {
-        "version": 1759499191121947,
+        "version": 1759775020274669,
         "created_at": "2025-09-12T17:59:23.116Z",
         "created_by": 1,
-        "updated_at": "2025-09-12T17:59:23.116Z",
+        "updated_at": "2025-10-06T18:39:26.927Z",
         "updated_by": 1,
         "contract_pattern": 6,
         "contract_clause": "契約期間",
-        "contract_terms": "本契約の有効期間は、契約締結日から令和〇年〇月〇日までとする。但し、双方の合意により更新できる。",
+        "contract_terms": "本契約の有効期間は、契約締結日から契約終了日までとする。但し、双方の合意により更新できる。",
         "display_position": 2,
         "memo": null,
         "display_order": 40
@@ -377,7 +377,7 @@
     "model": "master.contractterms",
     "pk": 24,
     "fields": {
-        "version": 1759499191126117,
+        "version": 1759676748144001,
         "created_at": "2025-09-12T17:59:48.132Z",
         "created_by": 1,
         "updated_at": "2025-09-12T17:59:48.132Z",
@@ -394,7 +394,7 @@
     "model": "master.contractterms",
     "pk": 25,
     "fields": {
-        "version": 1759499191133130,
+        "version": 1759676748146292,
         "created_at": "2025-09-12T18:00:03.871Z",
         "created_by": 1,
         "updated_at": "2025-09-12T18:00:03.871Z",
@@ -411,7 +411,7 @@
     "model": "master.contractterms",
     "pk": 26,
     "fields": {
-        "version": 1759499191137308,
+        "version": 1759676748149155,
         "created_at": "2025-09-12T18:00:23.820Z",
         "created_by": 1,
         "updated_at": "2025-09-12T18:00:23.820Z",
@@ -428,7 +428,7 @@
     "model": "master.contractterms",
     "pk": 27,
     "fields": {
-        "version": 1759499191139725,
+        "version": 1759676748151929,
         "created_at": "2025-09-12T18:00:45.512Z",
         "created_by": 1,
         "updated_at": "2025-09-12T18:00:45.512Z",
@@ -445,7 +445,7 @@
     "model": "master.contractterms",
     "pk": 28,
     "fields": {
-        "version": 1759499191143187,
+        "version": 1759676748154272,
         "created_at": "2025-09-12T18:02:38.568Z",
         "created_by": 1,
         "updated_at": "2025-09-12T18:02:38.568Z",
@@ -462,7 +462,7 @@
     "model": "master.contractterms",
     "pk": 29,
     "fields": {
-        "version": 1759499191148783,
+        "version": 1759676748156609,
         "created_at": "2025-09-12T18:02:55.534Z",
         "created_by": 1,
         "updated_at": "2025-09-12T18:02:55.534Z",
@@ -479,7 +479,7 @@
     "model": "master.contractterms",
     "pk": 30,
     "fields": {
-        "version": 1759499191151562,
+        "version": 1759676748159469,
         "created_at": "2025-09-12T18:03:12.902Z",
         "created_by": 1,
         "updated_at": "2025-09-12T18:03:12.902Z",
@@ -496,7 +496,7 @@
     "model": "master.contractterms",
     "pk": 31,
     "fields": {
-        "version": 1759499191154094,
+        "version": 1759676748161783,
         "created_at": "2025-09-13T15:25:48.795Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:26:15.289Z",
@@ -513,7 +513,7 @@
     "model": "master.contractterms",
     "pk": 32,
     "fields": {
-        "version": 1759499191156343,
+        "version": 1759676748164038,
         "created_at": "2025-09-13T15:26:33.424Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:26:33.424Z",
@@ -530,14 +530,14 @@
     "model": "master.contractterms",
     "pk": 33,
     "fields": {
-        "version": 1759499191159208,
+        "version": 1759775043227078,
         "created_at": "2025-09-13T15:26:51.489Z",
         "created_by": 1,
-        "updated_at": "2025-09-13T15:26:51.489Z",
+        "updated_at": "2025-10-06T18:39:49.879Z",
         "updated_by": 1,
         "contract_pattern": 7,
-        "contract_clause": "派遣期間",
-        "contract_terms": "派遣期間は、令和○年○月○日から令和○年○月○日までとする。\r\n契約の更新は、労働者派遣法の定める上限を超えない範囲で、甲乙協議のうえ行う。",
+        "contract_clause": "派遣期間更新",
+        "contract_terms": "契約の更新は、労働者派遣法の定める上限を超えない範囲で、甲乙協議のうえ行う。",
         "display_position": 2,
         "memo": null,
         "display_order": 40
@@ -547,7 +547,7 @@
     "model": "master.contractterms",
     "pk": 34,
     "fields": {
-        "version": 1759499191166016,
+        "version": 1759676748168585,
         "created_at": "2025-09-13T15:27:21.693Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:27:21.693Z",
@@ -564,14 +564,14 @@
     "model": "master.contractterms",
     "pk": 35,
     "fields": {
-        "version": 1759499191169230,
+        "version": 1759775070406206,
         "created_at": "2025-09-13T15:27:48.905Z",
         "created_by": 1,
-        "updated_at": "2025-09-13T15:27:48.905Z",
+        "updated_at": "2025-10-06T18:40:17.058Z",
         "updated_by": 1,
         "contract_pattern": 7,
         "contract_clause": "派遣料金",
-        "contract_terms": "1.派遣料金は、派遣労働者1名につき時間単価○○円（消費税別途）とする。\r\n2.派遣料金は、派遣労働者の出勤簿に基づき算定し、乙の請求書により翌月末日までに乙指定口座に振込支払いとする。\r\n3.甲が支払を遅延した場合、年14.6％の割合による遅延損害金を付す。",
+        "contract_terms": "1.派遣料金は、派遣労働者の出勤簿に基づき算定し、乙の請求書により翌月末日までに乙指定口座に振込支払いとする。\r\n2.甲が支払を遅延した場合、年14.6％の割合による遅延損害金を付す。",
         "display_position": 2,
         "memo": null,
         "display_order": 60
@@ -581,7 +581,7 @@
     "model": "master.contractterms",
     "pk": 36,
     "fields": {
-        "version": 1759499191171583,
+        "version": 1759676748173944,
         "created_at": "2025-09-13T15:28:15.059Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:28:15.059Z",
@@ -598,7 +598,7 @@
     "model": "master.contractterms",
     "pk": 37,
     "fields": {
-        "version": 1759499191174018,
+        "version": 1759676748177348,
         "created_at": "2025-09-13T15:28:40.330Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:28:40.330Z",
@@ -615,7 +615,7 @@
     "model": "master.contractterms",
     "pk": 38,
     "fields": {
-        "version": 1759499191178745,
+        "version": 1759676748179612,
         "created_at": "2025-09-13T15:28:53.745Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:28:53.745Z",
@@ -632,7 +632,7 @@
     "model": "master.contractterms",
     "pk": 39,
     "fields": {
-        "version": 1759499191182103,
+        "version": 1759676748182124,
         "created_at": "2025-09-13T15:29:21.171Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:29:21.171Z",
@@ -649,7 +649,7 @@
     "model": "master.contractterms",
     "pk": 40,
     "fields": {
-        "version": 1759499191185154,
+        "version": 1759676748184412,
         "created_at": "2025-09-13T15:29:53.370Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:29:53.370Z",
@@ -666,7 +666,7 @@
     "model": "master.contractterms",
     "pk": 41,
     "fields": {
-        "version": 1759499191187579,
+        "version": 1759676748186664,
         "created_at": "2025-09-13T15:30:16.709Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:30:16.709Z",
@@ -683,7 +683,7 @@
     "model": "master.contractterms",
     "pk": 42,
     "fields": {
-        "version": 1759499191189929,
+        "version": 1759676748189338,
         "created_at": "2025-09-13T15:30:31.558Z",
         "created_by": 1,
         "updated_at": "2025-09-13T15:30:31.558Z",
@@ -700,7 +700,7 @@
     "model": "master.contractterms",
     "pk": 43,
     "fields": {
-        "version": 1759499530253912,
+        "version": 1759676748192019,
         "created_at": "2025-09-21T16:37:44.474Z",
         "created_by": 1,
         "updated_at": "2025-10-03T14:07:56.906Z",
@@ -717,7 +717,7 @@
     "model": "master.contractterms",
     "pk": 44,
     "fields": {
-        "version": 1759499191198974,
+        "version": 1759676748194354,
         "created_at": "2025-09-21T16:38:22.346Z",
         "created_by": 1,
         "updated_at": "2025-09-21T16:38:22.346Z",
@@ -734,7 +734,7 @@
     "model": "master.contractterms",
     "pk": 45,
     "fields": {
-        "version": 1759499576206097,
+        "version": 1759676748196620,
         "created_at": "2025-09-21T16:38:52.497Z",
         "created_by": 1,
         "updated_at": "2025-10-03T14:08:42.858Z",
@@ -751,7 +751,7 @@
     "model": "master.contractterms",
     "pk": 46,
     "fields": {
-        "version": 1759499191207680,
+        "version": 1759676748198877,
         "created_at": "2025-09-21T16:39:10.347Z",
         "created_by": 1,
         "updated_at": "2025-09-21T16:39:10.347Z",
@@ -768,7 +768,7 @@
     "model": "master.contractterms",
     "pk": 47,
     "fields": {
-        "version": 1759499608230209,
+        "version": 1759676748201118,
         "created_at": "2025-09-21T16:39:42.095Z",
         "created_by": 1,
         "updated_at": "2025-10-03T14:09:14.882Z",
@@ -785,7 +785,7 @@
     "model": "master.contractterms",
     "pk": 48,
     "fields": {
-        "version": 1759499191216580,
+        "version": 1759676748203384,
         "created_at": "2025-09-21T16:39:54.189Z",
         "created_by": 1,
         "updated_at": "2025-09-21T16:39:54.189Z",
@@ -802,7 +802,7 @@
     "model": "master.contractterms",
     "pk": 49,
     "fields": {
-        "version": 1759504617543577,
+        "version": 1759676748205977,
         "created_at": "2025-10-03T15:31:29.553Z",
         "created_by": 1,
         "updated_at": "2025-10-03T15:32:44.195Z",
