@@ -957,21 +957,18 @@ def client_contract_approve(request, pk):
         else:
             # 「承認解除」アクションは「承認済」以降からのみ可能
             if int(contract.contract_status) >= int(ClientContract.ContractStatus.APPROVED):
-                # 関連する発行履歴（契約書・見積書）を削除
-                for print_history in contract.print_history.all():
-                    if print_history.pdf_file:
-                        print_history.pdf_file.delete(save=False)
-                    print_history.delete()
-
+                # 承認解除: 発行履歴そのものは過去の発行記録として保持する。
+                # 契約のステータスと承認/発行関連の日時・ユーザーはクリアする。
                 contract.contract_status = ClientContract.ContractStatus.DRAFT
                 contract.contract_number = None  # 契約番号をクリア
                 contract.approved_at = None
                 contract.approved_by = None
+                # 発行済みフラグは契約上はクリアするが、過去のPDFファイルや履歴は残す
                 contract.issued_at = None
                 contract.issued_by = None
                 contract.confirmed_at = None
                 contract.save()
-                messages.success(request, f'契約「{contract.contract_name}」を作成中に戻しました。')
+                messages.success(request, f'契約「{contract.contract_name}」を作成中に戻しました。（発行履歴は保持されます）')
             else:
                 messages.error(request, 'この契約の承認は解除できません。')
 
@@ -1101,20 +1098,17 @@ def staff_contract_approve(request, pk):
                 messages.error(request, 'このステータスからは承認できません。')
         else:
             if int(contract.contract_status) >= int(StaffContract.ContractStatus.APPROVED):
-                for print_history in contract.print_history.all():
-                    if print_history.pdf_file:
-                        print_history.pdf_file.delete(save=False)
-                    print_history.delete()
-
+                # 承認解除時も過去の発行履歴は削除しない
                 contract.contract_status = StaffContract.ContractStatus.DRAFT
                 contract.contract_number = None
                 contract.approved_at = None
                 contract.approved_by = None
+                # 発行日時/発行者はクリアするが、print_history レコードとPDFは保持する
                 contract.issued_at = None
                 contract.issued_by = None
                 contract.confirmed_at = None
                 contract.save()
-                messages.success(request, f'契約「{contract.contract_name}」を作成中に戻しました。')
+                messages.success(request, f'契約「{contract.contract_name}」を作成中に戻しました。（発行履歴は保持されます）')
             else:
                 messages.error(request, 'この契約の承認は解除できません。')
 
