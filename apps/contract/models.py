@@ -87,6 +87,16 @@ class ClientContract(MyModel):
         related_name='issued_client_contracts',
         verbose_name='発行者'
     )
+    # 見積書の発行日時・発行者（UI 判定用。履歴は ClientContractPrint に保持）
+    quotation_issued_at = models.DateTimeField('見積発行日時', blank=True, null=True)
+    quotation_issued_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='issued_client_quotations',
+        verbose_name='見積発行者'
+    )
     confirmed_at = models.DateTimeField('確認日時', blank=True, null=True)
     confirmed_by = models.ForeignKey(
         ClientUser,
@@ -163,6 +173,10 @@ class ClientContractPrint(MyModel):
     )
     pdf_file = models.FileField('PDFファイル', upload_to='client_prints/', null=True, blank=True)
     document_title = models.CharField('タイトル', max_length=255, blank=True, null=True)
+    # 発行時点の契約番号を保存（後で契約番号が変更/クリアされても履歴に残す）
+    contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
+    # NOTE: UI の発行判定は ClientContract 側のフィールドで行うため、
+    # Print 側に is_active フラグは不要。
 
     class Meta:
         db_table = 'apps_contract_client_print'
@@ -289,6 +303,8 @@ class StaffContractPrint(MyModel):
     )
     pdf_file = models.FileField('PDFファイル', upload_to='staff_prints/', null=True, blank=True)
     document_title = models.CharField('タイトル', max_length=255, blank=True, null=True)
+    # 発行時点の契約番号を保存
+    contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
 
     class Meta:
         db_table = 'apps_contract_staff_print'

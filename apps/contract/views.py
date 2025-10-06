@@ -912,7 +912,8 @@ def client_contract_pdf(request, pk):
             client_contract=contract,
             printed_by=request.user,
             print_type=ClientContractPrint.PrintType.CONTRACT,
-            document_title=document_title
+            document_title=document_title,
+            contract_number=contract.contract_number
         )
         new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
 
@@ -966,8 +967,14 @@ def client_contract_approve(request, pk):
                 # 発行済みフラグは契約上はクリアするが、過去のPDFファイルや履歴は残す
                 contract.issued_at = None
                 contract.issued_by = None
+                # 見積の発行フラグもクリア
+                contract.quotation_issued_at = None
+                contract.quotation_issued_by = None
                 contract.confirmed_at = None
                 contract.save()
+                # 承認解除時は見積書をUI上無効化する必要はない。
+                # 見積の有効/無効は契約側の quotation_issued_at/quotation_issued_by を参照するため、
+                # ClientContractPrint の is_active フラグを更新する操作は削除する。
                 messages.success(request, f'契約「{contract.contract_name}」を作成中に戻しました。（発行履歴は保持されます）')
             else:
                 messages.error(request, 'この契約の承認は解除できません。')
@@ -988,7 +995,8 @@ def client_contract_issue(request, pk):
                     client_contract=contract,
                     printed_by=request.user,
                     print_type=ClientContractPrint.PrintType.CONTRACT,
-                    document_title=document_title
+                    document_title=document_title,
+                    contract_number=contract.contract_number
                 )
                 new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
 
@@ -1022,23 +1030,29 @@ def issue_quotation(request, pk):
         messages.error(request, 'この契約の見積書は発行できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
-    # 既に発行済みの場合はエラー
-    if ClientContractPrint.objects.filter(client_contract=contract, print_type=ClientContractPrint.PrintType.QUOTATION).exists():
-        messages.error(request, 'この契約の見積書は既に発行済みです。')
-        return redirect('contract:client_contract_detail', pk=pk)
+    # NOTE: allow re-issuing quotations even if a previous quotation exists.
+    # This lets users unapprove -> reapprove -> reissue a fresh quotation while
+    # preserving past quotation history.
 
     issued_at = timezone.now()
     pdf_content, pdf_filename, document_title = generate_quotation_pdf(contract, request.user, issued_at)
 
     if pdf_content:
+        # 履歴として新しい ClientContractPrint を作成
         new_print = ClientContractPrint(
             client_contract=contract,
             printed_by=request.user,
             printed_at=issued_at,
             print_type=ClientContractPrint.PrintType.QUOTATION,
-            document_title=document_title
+            document_title=document_title,
+            contract_number=contract.contract_number
         )
         new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
+
+        # 契約側の見積発行日時/発行者を更新（UI 判定はこれを参照する）
+        contract.quotation_issued_at = issued_at
+        contract.quotation_issued_by = request.user
+        contract.save()
 
         AppLog.objects.create(
             user=request.user,
@@ -1106,6 +1120,11 @@ def staff_contract_approve(request, pk):
                 # 発行日時/発行者はクリアするが、print_history レコードとPDFは保持する
                 contract.issued_at = None
                 contract.issued_by = None
+                # （スタッフ契約に見積フィールドは通常無いが、対称性のため）
+                if hasattr(contract, 'quotation_issued_at'):
+                    contract.quotation_issued_at = None
+                if hasattr(contract, 'quotation_issued_by'):
+                    contract.quotation_issued_by = None
                 contract.confirmed_at = None
                 contract.save()
                 messages.success(request, f'契約「{contract.contract_name}」を作成中に戻しました。（発行履歴は保持されます）')
@@ -1129,7 +1148,8 @@ def staff_contract_issue(request, pk):
                     new_print = StaffContractPrint(
                         staff_contract=contract,
                         printed_by=request.user,
-                        document_title=document_title
+                        document_title=document_title,
+                        contract_number=contract.contract_number if hasattr(contract, 'contract_number') else None
                     )
                     new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
 
@@ -1570,7 +1590,8 @@ def issue_clash_day_notification(request, pk):
             printed_by=request.user,
             printed_at=issued_at,
             print_type=ClientContractPrint.PrintType.CLASH_DAY_NOTIFICATION,
-            document_title=document_title
+            document_title=document_title,
+            contract_number=contract.contract_number
         )
         new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
 
@@ -1637,7 +1658,8 @@ def issue_dispatch_notification(request, pk):
             printed_by=request.user,
             printed_at=issued_at,
             print_type=ClientContractPrint.PrintType.DISPATCH_NOTIFICATION,
-            document_title=document_title
+            document_title=document_title,
+            contract_number=contract.contract_number
         )
         new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
 
