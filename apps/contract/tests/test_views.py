@@ -269,7 +269,7 @@ class ClientContractConfirmListViewTest(TestCase):
             status='approved'
         )
 
-        # 契約パターンを作成
+        # 契約書パターンを作成
         self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='10')
 
         # ①「承認済」の契約を作成

@@ -41,7 +41,7 @@ class ContractPatternCopyTest(TestCase):
         response = self.client.get(self.copy_url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'master/contract_pattern_form.html')
-        self.assertContains(response, '契約パターンコピー作成')
+        self.assertContains(response, '契約書パターンコピー作成')
         # This test now fails because I am not touching the template. I will remove it.
         # self.assertContains(response, '契約文言もコピーされます')
         self.assertContains(response, 'value="Original Patternのコピー"')
@@ -254,7 +254,7 @@ class ContractTermDisplayPositionTest(TestCase):
         }
         response = self.client.post(self.create_url, post_data)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'この契約パターンにはすでに「前文」が登録されています。')
+        self.assertContains(response, 'この契約書パターンにはすでに「前文」が登録されています。')
         self.assertEqual(self.pattern.terms.filter(display_position=1).count(), 1)
 
     def test_create_second_postscript_fails(self):
@@ -274,7 +274,7 @@ class ContractTermDisplayPositionTest(TestCase):
         }
         response = self.client.post(self.create_url, post_data)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'この契約パターンにはすでに「末文」が登録されています。')
+        self.assertContains(response, 'この契約書パターンにはすでに「末文」が登録されています。')
         self.assertEqual(self.pattern.terms.filter(display_position=3).count(), 1)
 
     def test_create_multiple_body_terms_success(self):
@@ -315,6 +315,6 @@ class ContractTermDisplayPositionTest(TestCase):
 
         response = self.client.post(update_url, post_data)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'この契約パターンにはすでに「前文」が登録されています。')
+        self.assertContains(response, 'この契約書パターンにはすでに「前文」が登録されています。')
         body_term.refresh_from_db()
         self.assertEqual(body_term.display_position, 2)

@@ -42,7 +42,7 @@ class ClientContractHakenLogTest(TestCase):
         Dropdowns.objects.create(category='client_contract_type', name='派遣', value='20')
         cls.bill_unit = Dropdowns.objects.create(category='bill_unit', value='10', name='月額', active=True)
 
-        # 契約パターン
+        # 契約書パターン
         cls.pattern = ContractPattern.objects.create(name='Haken Pattern', domain='10', contract_type_code='20')
         cls.non_haken_pattern = ContractPattern.objects.create(name='Non-Haken Pattern', domain='10', contract_type_code='10')
 

@@ -122,7 +122,7 @@ class MinimumPayForm(forms.ModelForm):
 
 
 class ContractPatternForm(forms.ModelForm):
-    """契約パターンフォーム"""
+    """契約書パターンフォーム"""
     class Meta:
         model = ContractPattern
         fields = ['name', 'domain', 'contract_type_code', 'memo', 'display_order', 'is_active']
@@ -207,7 +207,7 @@ class ContractTermForm(forms.ModelForm):
 
             if query.exists():
                 position_name = dict(self.Meta.model.POSITION_CHOICES).get(display_position)
-                raise ValidationError(f'この契約パターンにはすでに「{position_name}」が登録されています。')
+                raise ValidationError(f'この契約書パターンにはすでに「{position_name}」が登録されています。')
 
         return cleaned_data
 

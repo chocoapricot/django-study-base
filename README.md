@@ -125,7 +125,7 @@ django-study-base/
 | `apps_master_bank_branch` | `BankBranch` | 銀行支店マスター |
 | `apps_master_bill_bank` | `BillBank` | 会社銀行マスター |
 | `apps_master_bill_payment` | `BillPayment` | 支払条件マスター |
-| `apps_master_contract_pattern` | `ContractPattern` | 契約パターンマスター |
+| `apps_master_contract_pattern` | `ContractPattern` | 契約書パターンマスター |
 | `apps_master_contract_terms` | `ContractTerms` | 契約文言マスター |
 | `apps_master_haken_business_content` | `HakenBusinessContent` | 派遣業務内容マスター |
 | `apps_master_haken_responsibility_degree` | `HakenResponsibilityDegree` | 派遣責任程度マスター |

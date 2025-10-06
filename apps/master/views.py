@@ -93,8 +93,8 @@ MASTER_CONFIGS = [
     },
     {
         "category": "契約",
-        "name": "契約パターン管理",
-        "description": "契約パターンと文言の管理",
+        "name": "契約書パターン管理",
+        "description": "契約書パターンと文言の管理",
         "model": "master.ContractPattern",
         "url_name": "master:contract_pattern_list",
         "permission": "master.view_contractpattern",
@@ -2076,7 +2076,7 @@ def staff_agreement_change_history_list(request):
 @login_required
 @permission_required("master.view_contractpattern", raise_exception=True)
 def contract_pattern_list(request):
-    """契約パターン一覧"""
+    """契約書パターン一覧"""
     from apps.system.logs.models import AppLog
     search_query = request.GET.get("search", "")
     patterns = ContractPattern.objects.all()
@@ -2105,7 +2105,7 @@ def contract_pattern_list(request):
     context = {
         'patterns': patterns_page,
         'search_query': search_query,
-        'title': '契約パターン管理',
+        'title': '契約書パターン管理',
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
     }
@@ -2115,19 +2115,19 @@ def contract_pattern_list(request):
 @login_required
 @permission_required("master.add_contractpattern", raise_exception=True)
 def contract_pattern_create(request):
-    """契約パターン作成"""
+    """契約書パターン作成"""
     if request.method == 'POST':
         form = ContractPatternForm(request.POST)
         if form.is_valid():
             pattern = form.save()
-            messages.success(request, f"契約パターン「{pattern.name}」を作成しました。")
+            messages.success(request, f"契約書パターン「{pattern.name}」を作成しました。")
             return redirect('master:contract_pattern_list')
     else:
         form = ContractPatternForm()
 
     context = {
         'form': form,
-        'title': '契約パターン作成'
+        'title': '契約書パターン作成'
     }
     return render(request, 'master/contract_pattern_form.html', context)
 
@@ -2135,16 +2135,16 @@ def contract_pattern_create(request):
 @login_required
 @permission_required("master.add_contractpattern", raise_exception=True)
 def contract_pattern_copy(request, pk):
-    """契約パターンをコピーして新規作成"""
+    """契約書パターンをコピーして新規作成"""
     original_pattern = get_object_or_404(ContractPattern, pk=pk)
 
     if request.method == 'POST':
         form = ContractPatternForm(request.POST)
         if form.is_valid():
-            # 新しい契約パターンを作成
+            # 新しい契約書パターンを作成
             new_pattern = form.save()
 
-            # 元の契約パターンの契約文言をコピー
+            # 元の契約書パターンの契約文言をコピー
             original_terms = original_pattern.terms.all()
             for term in original_terms:
                 ContractTerms.objects.create(
@@ -2155,7 +2155,7 @@ def contract_pattern_copy(request, pk):
                     display_order=term.display_order,
                 )
 
-            messages.success(request, f"契約パターン「{original_pattern.name}」をコピーして「{new_pattern.name}」を作成しました。")
+            messages.success(request, f"契約書パターン「{original_pattern.name}」をコピーして「{new_pattern.name}」を作成しました。")
             return redirect('master:contract_pattern_list')
     else:
         # GETリクエストの場合、元のデータでフォームを初期化
@@ -2169,7 +2169,7 @@ def contract_pattern_copy(request, pk):
 
     context = {
         'form': form,
-        'title': '契約パターンコピー作成',
+        'title': '契約書パターンコピー作成',
         'is_copy': True,
         'original_id': pk,
     }
@@ -2179,13 +2179,13 @@ def contract_pattern_copy(request, pk):
 @login_required
 @permission_required("master.change_contractpattern", raise_exception=True)
 def contract_pattern_update(request, pk):
-    """契約パターン編集"""
+    """契約書パターン編集"""
     pattern = get_object_or_404(ContractPattern, pk=pk)
     if request.method == 'POST':
         form = ContractPatternForm(request.POST, instance=pattern)
         if form.is_valid():
             pattern = form.save()
-            messages.success(request, f"契約パターン「{pattern.name}」を更新しました。")
+            messages.success(request, f"契約書パターン「{pattern.name}」を更新しました。")
             return redirect('master:contract_pattern_list')
     else:
         form = ContractPatternForm(instance=pattern)
@@ -2193,7 +2193,7 @@ def contract_pattern_update(request, pk):
     context = {
         'form': form,
         'pattern': pattern,
-        'title': f'契約パターン編集 - {pattern.name}'
+        'title': f'契約書パターン編集 - {pattern.name}'
     }
     return render(request, 'master/contract_pattern_form.html', context)
 
@@ -2204,11 +2204,11 @@ from apps.system.logs.models import AppLog
 @login_required
 @permission_required("master.view_contractpattern", raise_exception=True)
 def contract_pattern_detail(request, pk):
-    """契約パターン詳細"""
+    """契約書パターン詳細"""
     pattern = get_object_or_404(ContractPattern, pk=pk)
     terms = pattern.terms.all()
 
-    # 契約パターンの変更履歴
+    # 契約書パターンの変更履歴
     pattern_logs = AppLog.objects.filter(
         model_name='ContractPattern',
         object_id=str(pattern.pk)
@@ -2231,7 +2231,7 @@ def contract_pattern_detail(request, pk):
     context = {
         'pattern': pattern,
         'terms': terms,
-        'title': f'契約パターン詳細 - {pattern.name}',
+        'title': f'契約書パターン詳細 - {pattern.name}',
         'change_logs': change_logs[:20],  # ページネーションは一旦省略し、最新20件を表示
         'change_logs_count': len(change_logs),
     }
@@ -2241,17 +2241,17 @@ def contract_pattern_detail(request, pk):
 @login_required
 @permission_required("master.delete_contractpattern", raise_exception=True)
 def contract_pattern_delete(request, pk):
-    """契約パターン削除"""
+    """契約書パターン削除"""
     pattern = get_object_or_404(ContractPattern, pk=pk)
     if request.method == 'POST':
         pattern_name = pattern.name
         pattern.delete()
-        messages.success(request, f"契約パターン「{pattern_name}」を削除しました。")
+        messages.success(request, f"契約書パターン「{pattern_name}」を削除しました。")
         return redirect('master:contract_pattern_list')
 
     context = {
         'pattern': pattern,
-        'title': f'契約パターン削除 - {pattern.name}'
+        'title': f'契約書パターン削除 - {pattern.name}'
     }
     return render(request, 'master/contract_pattern_confirm_delete.html', context)
 
@@ -2259,7 +2259,7 @@ def contract_pattern_delete(request, pk):
 @login_required
 @permission_required("master.view_contractpattern", raise_exception=True)
 def contract_pattern_change_history_list(request):
-    """契約パターン変更履歴一覧"""
+    """契約書パターン変更履歴一覧"""
     from apps.system.logs.models import AppLog
     from django.core.paginator import Paginator
 
@@ -2276,7 +2276,7 @@ def contract_pattern_change_history_list(request):
         "common/common_change_history_list.html",
         {
             "change_logs": logs_page,
-            "page_title": "契約パターン変更履歴",
+            "page_title": "契約書パターン変更履歴",
             "back_url_name": "master:contract_pattern_list",
             "model_name": "ContractPattern",
         },
