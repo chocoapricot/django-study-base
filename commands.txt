@@ -63,6 +63,7 @@ python manage.py dumpdata settings.parameters --format=json --indent=4 > _sample
 python manage.py dumpdata staff               --format=json --indent=4 > _sample_data/staff.json
 python manage.py dumpdata client              --format=json --indent=4 > _sample_data/client.json
 python manage.py dumpdata client.clientdepartment      --format=json --indent=4 > _sample_data/client_department.json
+python manage.py dumpdata contract.staffcontract       --format=json --indent=4 > _sample_data/contract_staff.json
 python manage.py dumpdata contract.clientcontract      --format=json --indent=4 > _sample_data/contract_client.json
 python manage.py dumpdata contract.clientcontracthaken --format=json --indent=4 > _sample_data/contract_client_haken.json
 python manage.py dumpdata master.contractpattern       --format=json --indent=4 > _sample_data/master_contract_pattern.json
