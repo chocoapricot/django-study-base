@@ -768,14 +768,14 @@
     "model": "master.contractterms",
     "pk": 47,
     "fields": {
-        "version": 1759676748201118,
+        "version": 1759775339230333,
         "created_at": "2025-09-21T16:39:42.095Z",
         "created_by": 1,
-        "updated_at": "2025-10-03T14:09:14.882Z",
+        "updated_at": "2025-10-06T18:44:45.882Z",
         "updated_by": 1,
         "contract_pattern": 7,
         "contract_clause": "（前文）",
-        "contract_terms": "{{ client_name }}（以下「甲」という。）と、{{ company_name }}（以下「乙」という。）は、\r\n甲乙間で締結済みの基本契約（業務委託基本契約）に基づき、本個別契約を次のとおり締結する。",
+        "contract_terms": "{{ client_name }}（以下「甲」という。）と、{{ company_name }}（以下「乙」という。）は、\r\n甲乙間で締結済みの基本契約（労働者派遣基本契約）に基づき、本個別契約を次のとおり締結する。",
         "display_position": 1,
         "memo": null,
         "display_order": 0
