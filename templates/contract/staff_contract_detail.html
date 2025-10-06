@@ -155,6 +155,8 @@
         <table class="table table-sm table-striped">
             <thead>
                 <tr>
+                    <th>種別</th>
+                    <th>契約番号</th>
                     <th>ファイル</th>
                     <th>発行者</th>
                     <th>発行日時</th>
@@ -163,6 +165,8 @@
             <tbody>
                 {% for print_item in print_history %}
                     <tr>
+                        <td><span class="badge bg-primary">契約書</span></td>
+                        <td>{% if print_item.contract_number %}{{ print_item.contract_number }}{% else %}-{% endif %}</td>
                         <td>
                             <a href="{% url 'contract:download_staff_contract_pdf' print_item.pk %}">
                                 {{ print_item.document_title|default:print_item.pdf_file.name|basename }}
