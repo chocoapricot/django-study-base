@@ -141,9 +141,9 @@
                                 <td>
                                     {{ haken_info.haken_office.name|default:"-" }}
                                     {% if haken_info.haken_office.haken_jigyosho_teishokubi %}
-                                        <span class="ms-2">（抵触日：{{ haken_info.haken_office.haken_jigyosho_teishokubi|date:"Y/m/d" }}）</span>
+                                        <span class="text-muted small">（抵触日：{{ haken_info.haken_office.haken_jigyosho_teishokubi|date:"Y/m/d" }}）</span>
                                     {% else %}
-                                        <span class="ms-2">（抵触日未設定）</span>
+                                        <span class="text-muted small">（抵触日未設定）</span>
                                     {% endif %}
                                 </td>
                                 <th class="w-25 bg-light">組織単位</th>
