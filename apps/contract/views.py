@@ -65,7 +65,7 @@ def client_contract_list(request):
     client_filter = request.GET.get('client', '')
     contract_type_filter = request.GET.get('contract_type', '')
 
-    contracts = ClientContract.objects.select_related('client').all()
+    contracts = ClientContract.objects.select_related('client', 'haken_info__ttp_info').all()
 
     if client_filter:
         contracts = contracts.filter(client_id=client_filter)
@@ -178,7 +178,10 @@ def staff_contract_issue_history_list(request, pk):
 @permission_required('contract.view_clientcontract', raise_exception=True)
 def client_contract_detail(request, pk):
     """クライアント契約詳細"""
-    contract = get_object_or_404(ClientContract.objects.select_related('client', 'job_category', 'contract_pattern', 'payment_site'), pk=pk)
+    contract = get_object_or_404(
+        ClientContract.objects.select_related('client', 'job_category', 'contract_pattern', 'payment_site', 'haken_info__ttp_info'),
+        pk=pk
+    )
     haken_info = getattr(contract, 'haken_info', None)
 
     # クライアントフィルタ情報を取得
@@ -335,7 +338,10 @@ def client_contract_create(request):
 @permission_required('contract.change_clientcontract', raise_exception=True)
 def client_contract_update(request, pk):
     """クライアント契約更新"""
-    contract = get_object_or_404(ClientContract, pk=pk)
+    contract = get_object_or_404(
+        ClientContract.objects.select_related('haken_info__ttp_info'),
+        pk=pk
+    )
     haken_info = getattr(contract, 'haken_info', None)
     
     if contract.contract_status not in [ClientContract.ContractStatus.DRAFT, ClientContract.ContractStatus.PENDING]:

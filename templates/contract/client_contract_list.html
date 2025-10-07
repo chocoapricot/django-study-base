@@ -164,7 +164,7 @@
                                     </td>
                                     <td>
                                         <span class="badge {{contract.client_contract_type_code|badge_class}}">
-                                            {% my_name 'client_contract_type' contract.client_contract_type_code %}
+                                            {{ contract.contract_type_display_name }}
                                         </span>
                                     </td>
                                     <td>
