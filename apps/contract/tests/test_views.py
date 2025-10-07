@@ -451,3 +451,128 @@ class ClientContractIssueHistoryViewTest(TestCase):
         self.assertIn('Document 5', page2_docs)
         self.assertIn('Document 1', page2_docs)   # Lowest PK
         self.assertNotIn('Document 6', page2_docs) # Should be on page 1
+
+
+class StaffContractIssueHistoryViewTest(TestCase):
+    """スタッフ契約発行履歴ビューのテスト"""
+
+    def setUp(self):
+        """テストデータの準備"""
+        from django.contrib.auth.models import Permission
+        from django.contrib.contenttypes.models import ContentType
+        from apps.company.models import Company
+        from ..models import StaffContractPrint
+
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='testpass123',
+            email='testuser@example.com'
+        )
+        content_type = ContentType.objects.get_for_model(StaffContract)
+        permissions = Permission.objects.filter(content_type=content_type)
+        self.user.user_permissions.set(permissions)
+
+        self.client = Client()
+        self.client.login(username='testuser', password='testpass123')
+
+        self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
+        self.staff = Staff.objects.create(name_last='Test', name_first='Staff')
+        self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='1')
+
+        # 10件以上の発行履歴を持つ契約
+        self.contract_many = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='Many Prints Contract',
+            start_date=datetime.date.today(),
+            contract_pattern=self.contract_pattern,
+        )
+        for i in range(12):
+            StaffContractPrint.objects.create(
+                staff_contract=self.contract_many,
+                printed_by=self.user,
+                document_title=f'Document {i+1}'
+            )
+
+        # 10件未満の発行履歴を持つ契約
+        self.contract_few = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='Few Prints Contract',
+            start_date=datetime.date.today(),
+            contract_pattern=self.contract_pattern,
+        )
+        for i in range(5):
+            StaffContractPrint.objects.create(
+                staff_contract=self.contract_few,
+                printed_by=self.user,
+                document_title=f'Doc {i+1}'
+            )
+
+        # 発行履歴が0件の契約
+        self.contract_zero = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='Zero Prints Contract',
+            start_date=datetime.date.today(),
+            contract_pattern=self.contract_pattern,
+        )
+
+    def test_detail_view_history_limit(self):
+        """詳細ページで発行履歴が10件に制限されることをテスト"""
+        url = reverse('contract:staff_contract_detail', kwargs={'pk': self.contract_many.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['issue_history_for_display']), 10)
+        self.assertEqual(response.context['issue_history_count'], 12)
+        self.assertContains(response, '全て表示')
+
+    def test_detail_view_history_less_than_limit(self):
+        """詳細ページで発行履歴が10件未満の場合のテスト"""
+        url = reverse('contract:staff_contract_detail', kwargs={'pk': self.contract_few.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['issue_history_for_display']), 5)
+        self.assertEqual(response.context['issue_history_count'], 5)
+        self.assertContains(response, '全て表示')
+
+    def test_detail_view_no_history_shows_link(self):
+        """詳細ページで発行履歴が0件でも「全て表示」リンクが表示される"""
+        url = reverse('contract:staff_contract_detail', kwargs={'pk': self.contract_zero.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['issue_history_count'], 0)
+        # The link should still be rendered because the URL is passed to the template
+        self.assertContains(response, '全て表示')
+        self.assertContains(response, f"href=\"{reverse('contract:staff_contract_issue_history_list', kwargs={'pk': self.contract_zero.pk})}\"")
+
+    def test_issue_history_list_view_and_pagination(self):
+        """発行履歴一覧ページとページネーションをテスト"""
+        from ..models import StaffContractPrint
+        from django.utils import timezone
+        from datetime import timedelta
+
+        StaffContractPrint.objects.filter(staff_contract=self.contract_many).delete()
+
+        base_time = timezone.now()
+        for i in range(25):
+            StaffContractPrint.objects.create(
+                staff_contract=self.contract_many,
+                printed_by=self.user,
+                document_title=f'Document {i + 1}',
+                printed_at=base_time - timedelta(days=i)
+            )
+
+        url = reverse('contract:staff_contract_issue_history_list', kwargs={'pk': self.contract_many.pk})
+
+        # 1ページ目
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['page_obj'].object_list), 20)
+        self.assertContains(response, 'Document 25')
+        self.assertNotContains(response, 'Document 5')
+
+        # 2ページ目
+        response = self.client.get(url, {'page': 2})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['page_obj'].object_list), 5)
+        self.assertContains(response, 'Document 5')
+        self.assertContains(response, 'Document 1')
+        self.assertNotContains(response, 'Document 6')
