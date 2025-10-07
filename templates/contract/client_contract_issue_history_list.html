@@ -1,0 +1,75 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+{% load humanize %}
+{% load dropdowns %}
+{% load badge_tags %}
+
+{% block title %}クライアント契約 発行履歴 - {{ contract.contract_name }}{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">発行履歴一覧</h5>
+    </div>
+    <div class="card-body">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home:home' %}">ホーム</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'contract:contract_index' %}">契約管理</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'contract:client_contract_list' %}">クライアント契約一覧</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'contract:client_contract_detail' contract.pk %}">{{ contract.contract_name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">発行履歴一覧</li>
+            </ol>
+        </nav>
+
+        <table class="table table-sm table-striped">
+            <thead>
+                <tr>
+                    <th>種別</th>
+                    <th>契約番号</th>
+                    <th>ファイル</th>
+                    <th>発行者</th>
+                    <th>発行日時</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in page_obj %}
+                    <tr>
+                        <td>
+                            {% if item.print_type == item.PrintType.CONTRACT %}
+                                <span class="badge bg-primary">契約書</span>
+                            {% elif item.print_type == item.PrintType.QUOTATION %}
+                                <span class="badge bg-info">見積書</span>
+                            {% elif item.print_type == item.PrintType.CLASH_DAY_NOTIFICATION %}
+                                <span class="badge bg-warning">抵触日通知書</span>
+                            {% elif item.print_type == item.PrintType.DISPATCH_NOTIFICATION %}
+                                <span class="badge bg-info">派遣通知書</span>
+                            {% else %}
+                                <span class="badge bg-secondary">その他</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.contract_number|default:"-" }}</td>
+                        <td>
+                            <a href="{% url 'contract:download_client_contract_pdf' item.pk %}">
+                                {{ item.document_title }}
+                            </a>
+                        </td>
+                        <td>{{ item.printed_by.get_full_name_japanese|default:"-" }}</td>
+                        <td>{{ item.printed_at|date:"Y/m/d H:i:s" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">発行履歴はありません。</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% include 'common/_pagination.html' %}
+
+    </div>
+    <div class="card-footer">
+        <a href="{% url 'contract:client_contract_detail' contract.pk %}" class="btn btn-secondary btn-sm">戻る</a>
+    </div>
+</div>
+{% endblock %}
