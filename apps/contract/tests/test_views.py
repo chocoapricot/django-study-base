@@ -61,6 +61,35 @@ class ContractViewTest(TestCase):
             client_contract_type_code='20',
             corporate_number=self.company.corporate_number
         )
+
+        # 抵触日ありの派遣先事業所と契約
+        self.haken_office_with_clash_day = ClientDepartment.objects.create(
+            client=self.test_client,
+            name='本社',
+            haken_jigyosho_teishokubi=datetime.date(2025, 12, 31)
+        )
+        ClientContractHaken.objects.create(
+            client_contract=self.client_contract,
+            haken_office=self.haken_office_with_clash_day
+        )
+
+        # 抵触日なしの派遣先事業所と契約
+        self.contract_without_clash_day = ClientContract.objects.create(
+            client=self.test_client,
+            contract_name='No Clash Day Contract',
+            start_date=datetime.date.today(),
+            contract_pattern=self.contract_pattern,
+            client_contract_type_code='20',
+            corporate_number=self.company.corporate_number
+        )
+        self.haken_office_without_clash_day = ClientDepartment.objects.create(
+            client=self.test_client,
+            name='支社'
+        )
+        ClientContractHaken.objects.create(
+            client_contract=self.contract_without_clash_day,
+            haken_office=self.haken_office_without_clash_day
+        )
         self.non_haken_contract_pattern = ContractPattern.objects.create(name='Non-Haken Pattern', domain='10', contract_type_code='10')
         self.non_haken_contract = ClientContract.objects.create(
             client=self.test_client,
@@ -282,6 +311,22 @@ class ContractViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotRegex(response.content.decode('utf-8'), r'<input class="form-check-input" type="checkbox" id="issueClashDayNotificationSwitch"[^>]*checked')
         self.assertNotRegex(response.content.decode('utf-8'), r'<input class="form-check-input" type="checkbox" id="issueDispatchNotificationSwitch"[^>]*checked')
+
+    def test_client_contract_detail_displays_clash_day(self):
+        """クライアント契約詳細ページで事業所抵触日が表示されることをテスト"""
+        url = reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # 抵触日が表示されていることを確認
+        self.assertContains(response, '（抵触日：2025/12/31）')
+
+    def test_client_contract_detail_displays_no_clash_day_message(self):
+        """クライアント契約詳細ページで事業所抵触日が未設定の場合のメッセージをテスト"""
+        url = reverse('contract:client_contract_detail', kwargs={'pk': self.contract_without_clash_day.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # 抵触日未設定のメッセージが表示されていることを確認
+        self.assertContains(response, '（抵触日未設定）')
 
 
 class ClientContractConfirmListViewTest(TestCase):
