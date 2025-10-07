@@ -47,16 +47,14 @@
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="issueClashDayNotificationSwitch" name="is_issued"
                        onchange="if(confirm('抵触日通知書を共有します。よろしいですか？')) { this.form.submit(); }"
-                       {% with latest_notification=issue_history|get_latest_clash_day_notification %}{% if latest_notification and contract.is_approved_or_later %}checked{% endif %}{% endwith %}
-                       {% with latest_notification=issue_history|get_latest_clash_day_notification %}{% if latest_notification or not contract.is_approved_or_later %}disabled{% endif %}{% endwith %}>
+                       {% if contract.clash_day_notification_issued_at %}checked{% endif %}
+                       {% if not contract.is_approved_or_later %}disabled{% endif %}>
                 <label class="form-check-label" for="issueClashDayNotificationSwitch">
                     <i class="bi bi-file-earmark-check" style="font-size: 20px; color: #17a2b8;"></i>
                     抵触日通知書共有
-                    {% with latest_notification=issue_history|get_latest_clash_day_notification %}
-                        {% if latest_notification and contract.is_approved_or_later %}
-                            <span class="text-muted small">（{{ latest_notification.printed_at|date:"Y/m/d H:i:s" }}　{{ latest_notification.printed_by.get_full_name_japanese|default:'' }}）</span>
-                        {% endif %}
-                    {% endwith %}
+                    {% if contract.clash_day_notification_issued_at %}
+                        <span class="text-muted small">（{{ contract.clash_day_notification_issued_at|date:"Y/m/d H:i:s" }}　{{ contract.clash_day_notification_issued_by.get_full_name_japanese|default:'' }}）</span>
+                    {% endif %}
                 </label>
             </div>
         </form>

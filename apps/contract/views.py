@@ -1016,6 +1016,9 @@ def client_contract_approve(request, pk):
                 # 見積の発行フラグもクリア
                 contract.quotation_issued_at = None
                 contract.quotation_issued_by = None
+                # 抵触日通知書の共有フラグもクリア
+                contract.clash_day_notification_issued_at = None
+                contract.clash_day_notification_issued_by = None
                 contract.confirmed_at = None
                 contract.save()
                 # 承認解除時は見積書をUI上無効化する必要はない。
@@ -1674,6 +1677,11 @@ def issue_clash_day_notification(request, pk):
             contract_number=contract.contract_number
         )
         new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
+
+        # 抵触日通知書の共有日時/共有者を契約に記録
+        contract.clash_day_notification_issued_at = issued_at
+        contract.clash_day_notification_issued_by = request.user
+        contract.save()
 
         AppLog.objects.create(
             user=request.user,

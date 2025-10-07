@@ -116,6 +116,54 @@ class ContractViewTest(TestCase):
         self.client = Client()
         self.client.login(username='testuser', password='testpass123')
 
+    def test_issue_clash_day_notification_updates_contract(self):
+        """抵触日通知書を共有した際に、契約の共有日時と共有者が更新されるかテスト"""
+        # 契約を承認済みにする
+        self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
+        self.client_contract.save()
+
+        # 初期状態では共有日時はNone
+        self.assertIsNone(self.client_contract.clash_day_notification_issued_at)
+        self.assertIsNone(self.client_contract.clash_day_notification_issued_by)
+
+        # 抵触日通知書を共有
+        url = reverse('contract:issue_clash_day_notification', kwargs={'pk': self.client_contract.pk})
+        response = self.client.post(url, {})
+
+        # リダイレクトされることを確認
+        self.assertEqual(response.status_code, 302)
+
+        # DBから契約を再取得
+        self.client_contract.refresh_from_db()
+
+        # 共有日時と共有者が記録されていることを確認
+        self.assertIsNotNone(self.client_contract.clash_day_notification_issued_at)
+        self.assertEqual(self.client_contract.clash_day_notification_issued_by, self.user)
+
+    def test_unapprove_resets_clash_day_notification(self):
+        """承認解除時に抵触日通知書の共有日時と共有者がリセットされるかテスト"""
+        from django.utils import timezone
+
+        # 契約を承認済みにし、抵触日通知書を共有済みの状態にする
+        self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
+        self.client_contract.clash_day_notification_issued_at = timezone.now()
+        self.client_contract.clash_day_notification_issued_by = self.user
+        self.client_contract.save()
+
+        # 承認解除（is_approvedを送らない）
+        url = reverse('contract:client_contract_approve', kwargs={'pk': self.client_contract.pk})
+        response = self.client.post(url, {})
+
+        # リダイレクトされることを確認
+        self.assertEqual(response.status_code, 302)
+
+        # DBから契約を再取得
+        self.client_contract.refresh_from_db()
+
+        # 共有日時と共有者がNoneにリセットされていることを確認
+        self.assertIsNone(self.client_contract.clash_day_notification_issued_at)
+        self.assertIsNone(self.client_contract.clash_day_notification_issued_by)
+
     def test_staff_contract_create_post_invalid_retains_staff_display(self):
         """POSTリクエストでフォームが無効な場合に、スタッフの表示が維持されるかテスト"""
         # 無効なデータを作成（契約名が空）
@@ -266,7 +314,6 @@ class ContractViewTest(TestCase):
 
     def test_unapprove_resets_notification_status_and_info_on_ui(self):
         """承認解除時に通知書ステータスと発行者情報がUI上リセットされるかテスト"""
-        from ..models import ClientContractPrint
         from django.utils import timezone
 
         # 1. ユーザーに姓名を設定
@@ -275,26 +322,13 @@ class ContractViewTest(TestCase):
         self.user.save()
         user_full_name = self.user.get_full_name_japanese()
 
-        # 2. 契約を承認済みにする
+        # 2. 契約を承認済みにし、通知書も共有済みの状態にする
         self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
+        self.client_contract.clash_day_notification_issued_at = timezone.now()
+        self.client_contract.clash_day_notification_issued_by = self.user
         self.client_contract.save()
 
-        # 3. 抵触日通知書と派遣通知書を発行する
-        ClientContractPrint.objects.create(
-            client_contract=self.client_contract,
-            print_type=ClientContractPrint.PrintType.CLASH_DAY_NOTIFICATION,
-            printed_by=self.user,
-            printed_at=timezone.now()
-        )
-        ClientContractPrint.objects.create(
-            client_contract=self.client_contract,
-            print_type=ClientContractPrint.PrintType.DISPATCH_NOTIFICATION,
-            printed_by=self.user,
-            printed_at=timezone.now()
-        )
-        self.assertEqual(ClientContractPrint.objects.filter(client_contract=self.client_contract).count(), 2)
-
-        # 4. 詳細ページでスイッチがチェックされ、発行者情報が表示されていることを確認
+        # 3. 詳細ページでスイッチがチェックされ、発行者情報が表示されていることを確認
         detail_url = reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract.pk})
         response = self.client.get(detail_url)
         self.assertEqual(response.status_code, 200)
@@ -303,22 +337,18 @@ class ContractViewTest(TestCase):
         # 発行者情報が表示されているか
         self.assertContains(response, user_full_name)
 
-        # 5. 契約の承認を解除する
+        # 4. 契約の承認を解除する
         approve_url = reverse('contract:client_contract_approve', kwargs={'pk': self.client_contract.pk})
         response = self.client.post(approve_url, data={}) # is_approved がないので解除になる
         self.assertEqual(response.status_code, 302) # 詳細ページへリダイレクト
         self.client_contract.refresh_from_db()
         self.assertEqual(self.client_contract.contract_status, ClientContract.ContractStatus.DRAFT)
 
-        # 6. 発行履歴レコードが削除されていないことを確認
-        self.assertEqual(ClientContractPrint.objects.filter(client_contract=self.client_contract).count(), 2)
-
-        # 7. 詳細ページでスイッチがチェックされておらず、発行者情報も表示されていないことを確認
+        # 5. 詳細ページでスイッチがチェックされておらず、発行者情報も表示されていないことを確認
         response = self.client.get(detail_url)
         self.assertEqual(response.status_code, 200)
         # スイッチがチェックされていないか
         self.assertNotRegex(response.content.decode('utf-8'), r'<input class="form-check-input" type="checkbox" id="issueClashDayNotificationSwitch"[^>]*checked')
-
         # 承認解除により発行者情報が表示されなくなることを確認する。
         # 変更履歴にユーザー名が表示される可能性があるため、より具体的な文字列で検証する。
         self.assertNotContains(response, f'　{user_full_name}）')
