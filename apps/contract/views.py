@@ -354,7 +354,17 @@ def client_contract_update(request, pk):
                 # form.cleaned_data から start_date と end_date を取得し、期間が6か月超であればエラー
                 start_date = form.cleaned_data.get('start_date')
                 end_date = form.cleaned_data.get('end_date')
-                if post_is_haken and start_date and end_date:
+                # Determine whether TTP data is present: either existing ttp_info attached to haken_info,
+                # or POST contains any TTP-specific fields (user is editing/creating TTP)
+                ttp_field_names = [
+                    'contract_period', 'probation_period', 'working_hours', 'break_time',
+                    'insurances', 'employer_name', 'business_content', 'work_location',
+                    'overtime', 'holidays', 'vacations', 'wages', 'other'
+                ]
+                has_ttp_post = any(name in request.POST for name in ttp_field_names)
+                existing_ttp = haken_info and hasattr(haken_info, 'ttp_info')
+
+                if post_is_haken and (has_ttp_post or existing_ttp) and start_date and end_date:
                     d1 = start_date
                     d2 = end_date
                     months = (d2.year - d1.year) * 12 + (d2.month - d1.month)
