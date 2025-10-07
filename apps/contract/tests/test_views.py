@@ -403,7 +403,7 @@ class ClientContractIssueHistoryViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['issue_history_for_display']), 10)
         self.assertEqual(response.context['issue_history_count'], 12)
-        self.assertContains(response, 'すべて表示')
+        self.assertContains(response, '全て表示')
 
     def test_detail_view_history_less_than_limit(self):
         """詳細ページで発行履歴が10件未満の場合のテスト"""
@@ -412,7 +412,7 @@ class ClientContractIssueHistoryViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['issue_history_for_display']), 5)
         self.assertEqual(response.context['issue_history_count'], 5)
-        self.assertContains(response, 'すべて表示')
+        self.assertContains(response, '全て表示')
 
     def test_issue_history_list_view_and_pagination(self):
         """発行履歴一覧ページとページネーションをテスト"""
