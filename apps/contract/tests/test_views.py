@@ -337,3 +337,117 @@ class ClientContractConfirmListViewTest(TestCase):
         # 「発行済」契約の行に「確認」ボタンがあることを確認
         self.assertContains(response, f'<input type="hidden" name="contract_id" value="{self.issued_contract.pk}">')
         self.assertContains(response, '<button type="submit" class="btn btn-sm btn-primary">確認</button>')
+
+
+class ClientContractIssueHistoryViewTest(TestCase):
+    """クライアント契約発行履歴ビューのテスト"""
+
+    def setUp(self):
+        """テストデータの準備"""
+        from django.contrib.auth.models import Permission
+        from django.contrib.contenttypes.models import ContentType
+        from apps.company.models import Company
+        from ..models import ClientContractPrint
+
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='testpass123',
+            email='testuser@example.com'
+        )
+        # 必要な権限を付与
+        content_type = ContentType.objects.get_for_model(ClientContract)
+        permissions = Permission.objects.filter(content_type=content_type)
+        self.user.user_permissions.set(permissions)
+
+        self.client = Client()
+        self.client.login(username='testuser', password='testpass123')
+
+        self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
+        self.test_client_model = TestClient.objects.create(name='Test Client', corporate_number='6000000000001')
+        self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='10')
+
+        # 10件以上の発行履歴を持つ契約
+        self.contract_many = ClientContract.objects.create(
+            client=self.test_client_model,
+            contract_name='Many Prints Contract',
+            start_date=datetime.date.today(),
+            contract_pattern=self.contract_pattern,
+            corporate_number=self.company.corporate_number,
+        )
+        for i in range(12):
+            ClientContractPrint.objects.create(
+                client_contract=self.contract_many,
+                printed_by=self.user,
+                document_title=f'Document {i+1}'
+            )
+
+        # 10件未満の発行履歴を持つ契約
+        self.contract_few = ClientContract.objects.create(
+            client=self.test_client_model,
+            contract_name='Few Prints Contract',
+            start_date=datetime.date.today(),
+            contract_pattern=self.contract_pattern,
+            corporate_number=self.company.corporate_number,
+        )
+        for i in range(5):
+            ClientContractPrint.objects.create(
+                client_contract=self.contract_few,
+                printed_by=self.user,
+                document_title=f'Doc {i+1}'
+            )
+
+    def test_detail_view_history_limit(self):
+        """詳細ページで発行履歴が10件に制限されることをテスト"""
+        url = reverse('contract:client_contract_detail', kwargs={'pk': self.contract_many.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['issue_history_for_display']), 10)
+        self.assertEqual(response.context['issue_history_count'], 12)
+        self.assertContains(response, 'すべて表示')
+
+    def test_detail_view_history_less_than_limit(self):
+        """詳細ページで発行履歴が10件未満の場合のテスト"""
+        url = reverse('contract:client_contract_detail', kwargs={'pk': self.contract_few.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['issue_history_for_display']), 5)
+        self.assertEqual(response.context['issue_history_count'], 5)
+        self.assertContains(response, 'すべて表示')
+
+    def test_issue_history_list_view_and_pagination(self):
+        """発行履歴一覧ページとページネーションをテスト"""
+        from ..models import ClientContractPrint
+        from django.utils import timezone
+        from datetime import timedelta
+
+        # 既存の履歴をクリアして、テストごとに状態をリセット
+        ClientContractPrint.objects.filter(client_contract=self.contract_many).delete()
+
+        # タイムスタンプが明確に異なる25件の履歴を作成
+        base_time = timezone.now()
+        for i in range(25):
+            ClientContractPrint.objects.create(
+                client_contract=self.contract_many,
+                printed_by=self.user,
+                document_title=f'Document {i + 1}',
+                printed_at=base_time - timedelta(days=i)  # 新しいものが若く、古いものが古くなるように
+            )
+
+        url = reverse('contract:client_contract_issue_history_list', kwargs={'pk': self.contract_many.pk})
+
+        # 1ページ目
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        page1_docs = [item.document_title for item in response.context['page_obj'].object_list]
+        self.assertEqual(len(page1_docs), 20)
+        self.assertIn('Document 25', page1_docs)  # Highest PK, so it should be first
+        self.assertNotIn('Document 5', page1_docs) # Should be on page 2
+
+        # 2ページ目
+        response = self.client.get(url, {'page': 2})
+        self.assertEqual(response.status_code, 200)
+        page2_docs = [item.document_title for item in response.context['page_obj'].object_list]
+        self.assertEqual(len(page2_docs), 5)
+        self.assertIn('Document 5', page2_docs)
+        self.assertIn('Document 1', page2_docs)   # Lowest PK
+        self.assertNotIn('Document 6', page2_docs) # Should be on page 1

@@ -195,12 +195,16 @@ def client_contract_detail(request, pk):
     change_logs = all_change_logs[:5]
     
     # 発行履歴を取得
-    issue_history = ClientContractPrint.objects.filter(client_contract=contract).order_by('-printed_at')
+    all_issue_history = ClientContractPrint.objects.filter(client_contract=contract).order_by('-printed_at', '-pk')
+    issue_history_count = all_issue_history.count()
+    issue_history_for_display = all_issue_history[:10]
 
     context = {
         'contract': contract,
         'haken_info': haken_info,
-        'issue_history': issue_history,
+        'issue_history': all_issue_history,
+        'issue_history_for_display': issue_history_for_display,
+        'issue_history_count': issue_history_count,
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
         'client_filter': client_filter,
@@ -813,6 +817,25 @@ def staff_select(request):
 
 
 # 変更履歴ビュー
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def client_contract_issue_history_list(request, pk):
+    """クライアント契約の発行履歴一覧"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+
+    issue_history_query = ClientContractPrint.objects.filter(client_contract=contract).order_by('-printed_at', '-pk')
+
+    paginator = Paginator(issue_history_query, 20)  # 1ページあたり20件
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'contract': contract,
+        'page_obj': page_obj,
+    }
+    return render(request, 'contract/client_contract_issue_history_list.html', context)
+
+
 @login_required
 @permission_required('contract.view_clientcontract', raise_exception=True)
 def client_contract_change_history_list(request, pk):
