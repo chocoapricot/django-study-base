@@ -61,6 +61,35 @@ class ContractViewTest(TestCase):
             client_contract_type_code='20',
             corporate_number=self.company.corporate_number
         )
+
+        # 抵触日ありの派遣先事業所と契約
+        self.haken_office_with_clash_day = ClientDepartment.objects.create(
+            client=self.test_client,
+            name='本社',
+            haken_jigyosho_teishokubi=datetime.date(2025, 12, 31)
+        )
+        ClientContractHaken.objects.create(
+            client_contract=self.client_contract,
+            haken_office=self.haken_office_with_clash_day
+        )
+
+        # 抵触日なしの派遣先事業所と契約
+        self.contract_without_clash_day = ClientContract.objects.create(
+            client=self.test_client,
+            contract_name='No Clash Day Contract',
+            start_date=datetime.date.today(),
+            contract_pattern=self.contract_pattern,
+            client_contract_type_code='20',
+            corporate_number=self.company.corporate_number
+        )
+        self.haken_office_without_clash_day = ClientDepartment.objects.create(
+            client=self.test_client,
+            name='支社'
+        )
+        ClientContractHaken.objects.create(
+            client_contract=self.contract_without_clash_day,
+            haken_office=self.haken_office_without_clash_day
+        )
         self.non_haken_contract_pattern = ContractPattern.objects.create(name='Non-Haken Pattern', domain='10', contract_type_code='10')
         self.non_haken_contract = ClientContract.objects.create(
             client=self.test_client,
