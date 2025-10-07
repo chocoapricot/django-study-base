@@ -235,6 +235,54 @@ class ContractViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '日給&nbsp;20,000円')
 
+    def test_unapprove_resets_notification_status_on_ui(self):
+        """承認解除時に通知書ステータスがUI上リセットされるかテスト"""
+        from ..models import ClientContractPrint
+        from django.utils import timezone
+
+        # 1. 契約を承認済みにする
+        self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
+        self.client_contract.save()
+
+        # 2. 抵触日通知書と派遣通知書を発行する
+        ClientContractPrint.objects.create(
+            client_contract=self.client_contract,
+            print_type=ClientContractPrint.PrintType.CLASH_DAY_NOTIFICATION,
+            printed_by=self.user,
+            printed_at=timezone.now()
+        )
+        ClientContractPrint.objects.create(
+            client_contract=self.client_contract,
+            print_type=ClientContractPrint.PrintType.DISPATCH_NOTIFICATION,
+            printed_by=self.user,
+            printed_at=timezone.now()
+        )
+        self.assertEqual(ClientContractPrint.objects.filter(client_contract=self.client_contract).count(), 2)
+
+        # 3. 詳細ページでスイッチがチェックされていることを確認
+        detail_url = reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract.pk})
+        response = self.client.get(detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertRegex(response.content.decode('utf-8'), r'<input class="form-check-input" type="checkbox" id="issueClashDayNotificationSwitch"[^>]*checked')
+        self.assertRegex(response.content.decode('utf-8'), r'<input class="form-check-input" type="checkbox" id="issueDispatchNotificationSwitch"[^>]*checked')
+
+        # 4. 契約の承認を解除する
+        approve_url = reverse('contract:client_contract_approve', kwargs={'pk': self.client_contract.pk})
+        # is_approvedがPOSTデータにない場合、承認解除とみなされる
+        response = self.client.post(approve_url, data={})
+        self.assertEqual(response.status_code, 302) # 詳細ページへリダイレクト
+        self.client_contract.refresh_from_db()
+        self.assertEqual(self.client_contract.contract_status, ClientContract.ContractStatus.DRAFT)
+
+        # 5. 発行履歴レコードが削除されていないことを確認
+        self.assertEqual(ClientContractPrint.objects.filter(client_contract=self.client_contract).count(), 2)
+
+        # 6. 詳細ページでスイッチがチェックされていないことを確認
+        response = self.client.get(detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotRegex(response.content.decode('utf-8'), r'<input class="form-check-input" type="checkbox" id="issueClashDayNotificationSwitch"[^>]*checked')
+        self.assertNotRegex(response.content.decode('utf-8'), r'<input class="form-check-input" type="checkbox" id="issueDispatchNotificationSwitch"[^>]*checked')
+
 
 class ClientContractConfirmListViewTest(TestCase):
     """クライアント契約確認一覧ビューのテスト"""
