@@ -19,21 +19,25 @@
                 {% for item in issue_history %}
                     <tr>
                         <td>
-                            {% if item.print_type == item.PrintType.CONTRACT %}
+                            {% if contract_type == 'client' %}
+                                {% if item.print_type == item.PrintType.CONTRACT %}
+                                    <span class="badge bg-primary">契約書</span>
+                                {% elif item.print_type == item.PrintType.QUOTATION %}
+                                    <span class="badge bg-info">見積書</span>
+                                {% elif item.print_type == item.PrintType.CLASH_DAY_NOTIFICATION %}
+                                    <span class="badge bg-warning">抵触日通知書</span>
+                                {% elif item.print_type == item.PrintType.DISPATCH_NOTIFICATION %}
+                                    <span class="badge bg-info">派遣通知書</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">その他</span>
+                                {% endif %}
+                            {% elif contract_type == 'staff' %}
                                 <span class="badge bg-primary">契約書</span>
-                            {% elif item.print_type == item.PrintType.QUOTATION %}
-                                <span class="badge bg-info">見積書</span>
-                            {% elif item.print_type == item.PrintType.CLASH_DAY_NOTIFICATION %}
-                                <span class="badge bg-warning">抵触日通知書</span>
-                            {% elif item.print_type == item.PrintType.DISPATCH_NOTIFICATION %}
-                                <span class="badge bg-info">派遣通知書</span>
-                            {% else %}
-                                <span class="badge bg-secondary">その他</span>
                             {% endif %}
                         </td>
                         <td>{% if item.contract_number %}{{ item.contract_number }}{% else %}-{% endif %}</td>
                         <td>
-                            <a href="{% url 'contract:download_client_contract_pdf' item.pk %}">
+                            <a href="{% url download_url_name item.pk %}">
                                 {{ item.document_title }}
                             </a>
                         </td>
@@ -60,9 +64,9 @@
             </div>
         {% endif %}
     </div>
-    {% if issue_history_count > 0 and history_url %}
+    {% if history_url %}
     <div class="card-footer d-flex justify-content-center align-items-center">
-        <a href="{{ history_url }}">全て表示 (全{{ issue_history_count }}件)</a>
+        <a href="{{ history_url }}">全て表示{% if issue_history_count > 0 %} (全{{ issue_history_count }}件){% endif %}</a>
     </div>
     {% endif %}
 </div>

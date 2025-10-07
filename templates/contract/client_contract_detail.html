@@ -237,7 +237,7 @@
 {% if issue_history_count > 0 %}
     {% url 'contract:client_contract_issue_history_list' contract.pk as client_contract_issue_history_url %}
     {% with issue_history=issue_history_for_display issue_history_count=issue_history_count history_url=client_contract_issue_history_url %}
-        {% include 'contract/_client_contract_issue_history.html' %}
+        {% include 'contract/_issue_history.html' with contract_type='client' download_url_name='contract:download_client_contract_pdf' %}
     {% endwith %}
 {% endif %}
 
