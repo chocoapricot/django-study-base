@@ -451,3 +451,36 @@ class ClientContractHaken(MyModel):
 
     def __str__(self):
         return f"{self.client_contract}"
+
+
+class ClientContractTtp(MyModel):
+    """
+    クライアント契約紹介予定派遣情報
+    """
+    haken = models.OneToOneField(
+        ClientContractHaken,
+        on_delete=models.CASCADE,
+        related_name='ttp_info',
+        verbose_name='クライアント契約派遣情報'
+    )
+    contract_period = models.TextField('契約期間', blank=True, null=True)
+    probation_period = models.TextField('試用期間に関する事項', blank=True, null=True)
+    business_content = models.TextField('業務内容', blank=True, null=True)
+    work_location = models.TextField('就業場所', blank=True, null=True)
+    working_hours = models.TextField('始業・終業', blank=True, null=True)
+    break_time = models.TextField('休憩時間', blank=True, null=True)
+    overtime = models.TextField('所定時間外労働', blank=True, null=True)
+    holidays = models.TextField('休日', blank=True, null=True)
+    vacations = models.TextField('休暇', blank=True, null=True)
+    wages = models.TextField('賃金', blank=True, null=True)
+    insurances = models.TextField('各種保険の加入', blank=True, null=True)
+    employer_name = models.TextField('雇用しようとする者の名称', blank=True, null=True)
+    other = models.TextField('その他', blank=True, null=True)
+
+    class Meta:
+        db_table = 'apps_contract_client_ttp'
+        verbose_name = 'クライアント契約紹介予定派遣情報'
+        verbose_name_plural = 'クライアント契約紹介予定派遣情報'
+
+    def __str__(self):
+        return f"{self.haken.client_contract}"

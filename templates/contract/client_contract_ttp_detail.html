@@ -1,0 +1,99 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block breadcrumb %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="{% url 'accounts:index' %}">ホーム</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'contract:contract_index' %}">契約管理</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'contract:client_contract_list' %}">クライアント契約</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'contract:client_contract_detail' pk=contract.pk %}">{{ contract.contract_name }}</a></li>
+                        <li class="breadcrumb-item active">紹介予定派遣情報</li>
+                    </ol>
+                </div>
+                <h4 class="page-title">紹介予定派遣情報</h4>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-end mb-3">
+                    <a href="{% url 'contract:client_contract_ttp_update' pk=ttp_info.pk %}" class="btn btn-primary btn-sm me-2">編集</a>
+                    <a href="{% url 'contract:client_contract_ttp_delete' pk=ttp_info.pk %}" class="btn btn-dark btn-sm">削除</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm" style="table-layout: fixed;">
+                        <tbody>
+                            <tr>
+                                <th class="bg-light" style="width: 25%;">契約期間</th>
+                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ ttp_info.contract_period|default_if_none:"" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">試用期間に関する事項</th>
+                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ ttp_info.probation_period|default_if_none:"" }}</td>
+                            </tr>
+                             <tr>
+                                <th class="bg-light">業務内容</th>
+                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ ttp_info.business_content|default_if_none:"" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">就業場所</th>
+                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ ttp_info.work_location|default_if_none:"" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">始業・終業</th>
+                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ ttp_info.working_hours|default_if_none:"" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">休憩時間</th>
+                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ ttp_info.break_time|default_if_none:"" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">所定時間外労働</th>
+                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ ttp_info.overtime|default_if_none:"" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">休日</th>
+                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ ttp_info.holidays|default_if_none:"" }}</td>
+                            </tr>
+                             <tr>
+                                <th class="bg-light">休暇</th>
+                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ ttp_info.vacations|default_if_none:"" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">賃金</th>
+                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ ttp_info.wages|default_if_none:"" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">各種保険の加入</th>
+                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ ttp_info.insurances|default_if_none:"" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">雇用しようとする者の名称</th>
+                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ ttp_info.employer_name|default_if_none:"" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">その他</th>
+                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ ttp_info.other|default_if_none:"" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                 <div class="mt-3">
+                    <a href="{% url 'contract:client_contract_detail' pk=contract.pk %}" class="btn btn-secondary btn-sm">戻る</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
