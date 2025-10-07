@@ -1,0 +1,24 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+{% load humanize %}
+{% load dropdowns %}
+{% load badge_tags %}
+
+{% block title %}スタッフ契約 発行履歴 - {{ contract.contract_name }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home:home' %}">ホーム</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'contract:contract_index' %}">契約管理</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'contract:staff_contract_list' %}">スタッフ契約一覧</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'contract:staff_contract_detail' contract.pk %}">{{ contract.contract_name }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">発行履歴一覧</li>
+    </ol>
+</nav>
+
+{% url 'contract:staff_contract_detail' contract.pk as back_url_path %}
+{% with issue_history=page_obj title="発行履歴一覧" back_url=back_url_path %}
+    {% include 'contract/_staff_contract_issue_history.html' %}
+{% endwith %}
+{% endblock %}

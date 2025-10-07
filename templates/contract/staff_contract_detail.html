@@ -145,42 +145,11 @@
     </div>
 </div>
 
-<!-- 発行履歴 -->
-{% if print_history %}
-<div class="content-box card bg-light mt-2 mb-4">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        発行履歴
-    </div>
-    <div class="card-body">
-        <table class="table table-sm table-striped">
-            <thead>
-                <tr>
-                    <th>種別</th>
-                    <th>契約番号</th>
-                    <th>ファイル</th>
-                    <th>発行者</th>
-                    <th>発行日時</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for print_item in print_history %}
-                    <tr>
-                        <td><span class="badge bg-primary">契約書</span></td>
-                        <td>{% if print_item.contract_number %}{{ print_item.contract_number }}{% else %}-{% endif %}</td>
-                        <td>
-                            <a href="{% url 'contract:download_staff_contract_pdf' print_item.pk %}">
-                                {{ print_item.document_title|default:print_item.pdf_file.name|basename }}
-                            </a>
-                        </td>
-                        <td>{{ print_item.printed_by.get_full_name_japanese|default:"-" }}</td>
-                        <td>{{ print_item.printed_at|date:"Y/m/d H:i:s" }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-{% endif %}
+<!-- 発行履歴（共通テンプレート使用） -->
+{% url 'contract:staff_contract_issue_history_list' contract.pk as staff_contract_issue_history_url %}
+{% with issue_history=issue_history_for_display issue_history_count=issue_history_count history_url=staff_contract_issue_history_url %}
+    {% include 'contract/_staff_contract_issue_history.html' %}
+{% endwith %}
 
 <!-- 変更履歴（共通テンプレート使用） -->
 {% url 'contract:staff_contract_change_history_list' contract.pk as staff_contract_history_url %}

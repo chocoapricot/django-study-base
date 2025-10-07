@@ -36,6 +36,7 @@ urlpatterns = [
     path('staff/create/', views.staff_contract_create, name='staff_contract_create'),
     path('staff/confirm/', views.staff_contract_confirm_list, name='staff_contract_confirm_list'),
     path('staff/<int:pk>/', views.staff_contract_detail, name='staff_contract_detail'),
+    path('staff/<int:pk>/issue_history/', views.staff_contract_issue_history_list, name='staff_contract_issue_history_list'),
     path('staff/<int:pk>/update/', views.staff_contract_update, name='staff_contract_update'),
     path('staff/<int:pk>/delete/', views.staff_contract_delete, name='staff_contract_delete'),
     path('staff/<int:pk>/pdf/', views.staff_contract_pdf, name='staff_contract_pdf'),
