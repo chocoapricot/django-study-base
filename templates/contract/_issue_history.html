@@ -50,10 +50,8 @@
             </tbody>
         </table>
 
-        <!-- ページネーション（ページ分割されている場合） -->
-        {% if issue_history.has_other_pages %}
-            {% include 'common/_pagination.html' with page_obj=issue_history %}
-        {% endif %}
+        <!-- ページネーション -->
+        {% include 'common/_pagination.html' with page_obj=issue_history %}
 
         <!-- 戻るボタン（全件表示画面でのみ表示） -->
         {% if back_url %}
