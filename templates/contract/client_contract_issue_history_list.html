@@ -19,6 +19,6 @@
 
 {% url 'contract:client_contract_detail' contract.pk as back_url_path %}
 {% with issue_history=page_obj title="発行履歴一覧" back_url=back_url_path %}
-    {% include 'contract/_client_contract_issue_history.html' %}
+    {% include 'contract/_issue_history.html' with contract_type='client' download_url_name='contract:download_client_contract_pdf' %}
 {% endwith %}
 {% endblock %}
