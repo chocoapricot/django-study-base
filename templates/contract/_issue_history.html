@@ -1,7 +1,7 @@
 {% load humanize %}
 <!-- 発行履歴一覧（インクルード用） -->
-{# Only render the card when there is data or when a full list view is requested (page_obj present) #}
-{% if issue_history_count and issue_history_count > 0 or issue_history %}
+{# Only render the card when there is a history_url (for detail pages) or when there's actual history to show (for list pages) #}
+{% if history_url or issue_history %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         {% if title %}{{ title }}{% else %}発行履歴{% endif %}
@@ -75,7 +75,6 @@
     </div>
     {% if history_url %}
     <div class="card-footer d-flex justify-content-center align-items-center">
-        {# Use variables passed in: issue_history_count for total, and if page_obj present show range; otherwise show total count #}
         <a href="{{ history_url }}">全て表示{% if issue_history_count|default:0 > 0 %} (全{{ issue_history_count }}件){% endif %}</a>
     </div>
     {% endif %}

@@ -99,3 +99,57 @@ class ContractModelTest(TestCase):
 
         self.assertEqual(contract.staff, self.staff)
         self.assertEqual(contract.contract_name, '雇用契約')
+
+
+from django.core.exceptions import ValidationError
+from datetime import date
+from apps.company.models import Company
+from ..models import ClientContract, ClientContractHaken, ClientContractTtp
+from apps.system.settings.models import Dropdowns
+
+class ClientContractModelPropertyTests(TestCase):
+    def setUp(self):
+        # 必要なオブジェクトを作成
+        self.user = User.objects.create_user(username='testuser', email='test@example.com', password='password')
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        self.client = ClientModel.objects.create(
+            name='Test Client',
+            created_by=self.user,
+            corporate_number=self.company.corporate_number
+        )
+        self.contract_pattern = ContractPattern.objects.create(
+            domain='10', name='Test Pattern', contract_type_code='20'
+        )
+        Dropdowns.objects.create(category='client_contract_type', value='20', name='派遣')
+        Dropdowns.objects.create(category='client_contract_type', value='10', name='準委任')
+
+    def test_contract_type_display_name(self):
+        """TTP情報に基づいて契約種別の表示名が正しく変わることをテストする"""
+        # 1. 派遣契約（TTPなし）
+        contract_haken = ClientContract.objects.create(
+            client=self.client,
+            contract_name='Haken Contract',
+            client_contract_type_code='20',
+            contract_pattern=self.contract_pattern,
+            start_date=date(2023, 1, 1),
+            created_by=self.user,
+        )
+        self.assertEqual(contract_haken.contract_type_display_name, '派遣')
+
+        # 2. 派遣契約（TTPあり）
+        haken_info = ClientContractHaken.objects.create(client_contract=contract_haken)
+        ClientContractTtp.objects.create(haken=haken_info)
+        # refresh_from_dbは関連オブジェクトのキャッシュを更新しないため、再度オブジェクトを取得
+        contract_haken_with_ttp = ClientContract.objects.get(pk=contract_haken.pk)
+        self.assertEqual(contract_haken_with_ttp.contract_type_display_name, '派遣（TTP）')
+
+        # 3. 派遣以外の契約
+        contract_other = ClientContract.objects.create(
+            client=self.client,
+            contract_name='Other Contract',
+            client_contract_type_code='10',  # 準委任
+            contract_pattern=self.contract_pattern,
+            start_date=date(2023, 1, 1),
+            created_by=self.user,
+        )
+        self.assertEqual(contract_other.contract_type_display_name, '準委任')

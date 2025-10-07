@@ -151,6 +151,27 @@ class ClientContract(MyModel):
         if self.start_date and self.end_date and self.start_date > self.end_date:
             raise ValidationError('契約開始日は終了日より前の日付を入力してください。')
 
+    @property
+    def contract_type_display_name(self):
+        """表示用の契約種別名を取得する。TTPの場合は「派遣（TTP）」と表示する。"""
+        from apps.system.settings.models import Dropdowns
+        from django.core.exceptions import ObjectDoesNotExist
+        try:
+            dropdown = Dropdowns.objects.get(category='client_contract_type', value=self.client_contract_type_code)
+            base_name = dropdown.name
+        except Dropdowns.DoesNotExist:
+            base_name = "不明"
+
+        if self.client_contract_type_code == '20':  # 派遣
+            try:
+                # 関連オブジェクトが存在するかどうかを堅牢にチェック
+                if self.haken_info and self.haken_info.ttp_info:
+                    return f"{base_name}（TTP）"
+            except ObjectDoesNotExist:
+                # haken_infoまたはttp_infoが存在しない場合
+                pass
+        return base_name
+
 
 class ClientContractPrint(MyModel):
     """
