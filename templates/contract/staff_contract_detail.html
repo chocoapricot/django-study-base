@@ -146,10 +146,12 @@
 </div>
 
 <!-- 発行履歴（共通テンプレート使用） -->
-{% url 'contract:staff_contract_issue_history_list' contract.pk as staff_contract_issue_history_url %}
-{% with issue_history=issue_history_for_display issue_history_count=issue_history_count history_url=staff_contract_issue_history_url %}
-    {% include 'contract/_issue_history.html' with contract_type='staff' download_url_name='contract:download_staff_contract_pdf' %}
-{% endwith %}
+{% if issue_history_count and issue_history_count > 0 %}
+    {% url 'contract:staff_contract_issue_history_list' contract.pk as staff_contract_issue_history_url %}
+    {% with issue_history=issue_history_for_display issue_history_count=issue_history_count history_url=staff_contract_issue_history_url %}
+        {% include 'contract/_issue_history.html' with contract_type='staff' download_url_name='contract:download_staff_contract_pdf' %}
+    {% endwith %}
+{% endif %}
 
 <!-- 変更履歴（共通テンプレート使用） -->
 {% url 'contract:staff_contract_change_history_list' contract.pk as staff_contract_history_url %}

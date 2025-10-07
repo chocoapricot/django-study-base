@@ -1,4 +1,7 @@
+{% load humanize %}
 <!-- 発行履歴一覧（インクルード用） -->
+{# Only render the card when there is data or when a full list view is requested (page_obj present) #}
+{% if issue_history_count and issue_history_count > 0 or issue_history %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         {% if title %}{{ title }}{% else %}発行履歴{% endif %}
@@ -51,7 +54,15 @@
         </table>
 
         <!-- ページネーション -->
-        {% include 'common/_pagination.html' with page_obj=issue_history %}
+        {% if issue_history.paginator %}
+            {% include 'common/_pagination.html' with page_obj=issue_history %}
+        {% else %}
+            <div class="d-flex justify-content-start align-items-center mt-3">
+                <div>
+                    <span class="text-muted small">（全{{ issue_history_count|default:0|intcomma }}件中　1～{{ issue_history|length|intcomma }}件を表示）</span>
+                </div>
+            </div>
+        {% endif %}
 
         <!-- 戻るボタン（全件表示画面でのみ表示） -->
         {% if back_url %}
@@ -64,7 +75,9 @@
     </div>
     {% if history_url %}
     <div class="card-footer d-flex justify-content-center align-items-center">
-        <a href="{{ history_url }}">全て表示{% if issue_history_count > 0 %} (全{{ issue_history_count }}件){% endif %}</a>
+        {# Use variables passed in: issue_history_count for total, and if page_obj present show range; otherwise show total count #}
+        <a href="{{ history_url }}">全て表示{% if issue_history_count|default:0 > 0 %} (全{{ issue_history_count }}件){% endif %}</a>
     </div>
     {% endif %}
 </div>
+{% endif %}
