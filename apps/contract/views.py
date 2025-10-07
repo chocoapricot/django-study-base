@@ -5,6 +5,8 @@ from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Q, Prefetch
 from django.http import JsonResponse, HttpResponse, Http404
+import re
+from datetime import datetime, date
 from django.core.files.base import ContentFile
 from django.forms.models import model_to_dict
 from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken, ClientContractTtp
@@ -348,6 +350,21 @@ def client_contract_update(request, pk):
 
         if form.is_valid() and (not post_is_haken or (haken_form and haken_form.is_valid())):
             try:
+                # --- TTP 6か月チェック: 保存前にクライアント契約の start_date/end_date を使って確認 ---
+                # form.cleaned_data から start_date と end_date を取得し、期間が6か月超であればエラー
+                start_date = form.cleaned_data.get('start_date')
+                end_date = form.cleaned_data.get('end_date')
+                if post_is_haken and start_date and end_date:
+                    d1 = start_date
+                    d2 = end_date
+                    months = (d2.year - d1.year) * 12 + (d2.month - d1.month)
+                    if d2.day < d1.day:
+                        months -= 1
+                    if months > 6:
+                        messages.error(request, '労働者派遣法（第40条の6および第40条の7）により紹介予定派遣の派遣期間は6ヶ月までです')
+                        # re-render form with errors
+                        raise ValueError('TTP period exceeds 6 months')
+
                 with transaction.atomic():
                     updated_contract = form.save()
 
@@ -367,7 +384,12 @@ def client_contract_update(request, pk):
                     messages.success(request, f'クライアント契約「{contract.contract_name}」を更新しました。')
                     return redirect('contract:client_contract_detail', pk=contract.pk)
             except Exception as e:
-                messages.error(request, f"更新中にエラーが発生しました: {e}")
+                # If the exception was our TTP length validation, just show the message already added
+                if str(e) == 'TTP period exceeds 6 months':
+                    # fall through to re-render
+                    pass
+                else:
+                    messages.error(request, f"更新中にエラーが発生しました: {e}")
         else:
             if not form.is_valid():
                 messages.error(request, "入力内容に誤りがあります。各項目をご確認ください。")
@@ -990,6 +1012,17 @@ def client_contract_approve(request, pk):
             # 「承認する」アクションは「申請中」からのみ可能
             if contract.contract_status == ClientContract.ContractStatus.PENDING:
                 try:
+                    # TTPを想定する場合、クライアント契約の start_date/end_date を使って期間が6か月超でないかチェック
+                    if contract.start_date and contract.end_date:
+                        dstart = contract.start_date
+                        dend = contract.end_date
+                        months = (dend.year - dstart.year) * 12 + (dend.month - dstart.month)
+                        if dend.day < dstart.day:
+                            months -= 1
+                        if months > 6:
+                            messages.error(request, '労働者派遣法（第40条の6および第40条の7）により紹介予定派遣の派遣期間は6ヶ月までです')
+                            return redirect('contract:client_contract_detail', pk=contract.pk)
+
                     # 契約番号を採番
                     contract.contract_number = generate_client_contract_number(contract)
                     contract.contract_status = ClientContract.ContractStatus.APPROVED
@@ -1804,6 +1837,21 @@ def client_contract_ttp_view(request, haken_pk):
     """紹介予定派遣情報の有無に応じて、詳細画面か作成画面にリダイレクトする"""
     haken = get_object_or_404(ClientContractHaken, pk=haken_pk)
     if hasattr(haken, 'ttp_info'):
+        # Use parent client contract's start_date/end_date to validate TTP period
+        contract = haken.client_contract
+        try:
+            if contract.start_date and contract.end_date:
+                dstart = contract.start_date
+                dend = contract.end_date
+                months = (dend.year - dstart.year) * 12 + (dend.month - dstart.month)
+                if dend.day < dstart.day:
+                    months -= 1
+                if months > 6:
+                    messages.error(request, '労働者派遣法（第40条の6および第40条の7）により紹介予定派遣の派遣期間は6ヶ月までです')
+                    return redirect('contract:client_contract_detail', pk=haken.client_contract.pk)
+        except Exception:
+            # any unexpected issue, allow normal flow
+            pass
         return redirect('contract:client_contract_ttp_detail', pk=haken.ttp_info.pk)
     else:
         return redirect('contract:client_contract_ttp_create', haken_pk=haken.pk)
