@@ -51,4 +51,10 @@ urlpatterns = [
     path('staff-select/', views.staff_select, name='staff_select'),
     path('haken-master-select/', views.haken_master_select, name='haken_master_select'),
 
+    # 紹介予定派遣
+    path('client/ttp/<int:haken_pk>/', views.client_contract_ttp_view, name='client_contract_ttp_view'),
+    path('client/ttp/<int:haken_pk>/create/', views.client_contract_ttp_create, name='client_contract_ttp_create'),
+    path('client/ttp/<int:pk>/detail/', views.client_contract_ttp_detail, name='client_contract_ttp_detail'),
+    path('client/ttp/<int:pk>/update/', views.client_contract_ttp_update, name='client_contract_ttp_update'),
+    path('client/ttp/<int:pk>/delete/', views.client_contract_ttp_delete, name='client_contract_ttp_delete'),
 ]

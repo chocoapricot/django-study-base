@@ -7,8 +7,8 @@ from django.db.models import Q, Prefetch
 from django.http import JsonResponse, HttpResponse, Http404
 from django.core.files.base import ContentFile
 from django.forms.models import model_to_dict
-from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken
-from .forms import ClientContractForm, StaffContractForm, ClientContractHakenForm
+from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken, ClientContractTtp
+from .forms import ClientContractForm, StaffContractForm, ClientContractHakenForm, ClientContractTtpForm
 from django.conf import settings
 from django.utils import timezone
 import os
@@ -1787,3 +1787,103 @@ def staff_contract_export(request):
         response['Content-Disposition'] = f'attachment; filename="staff_contracts_{timestamp}.csv"'
 
     return response
+
+
+# 紹介予定派遣
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def client_contract_ttp_view(request, haken_pk):
+    """紹介予定派遣情報の有無に応じて、詳細画面か作成画面にリダイレクトする"""
+    haken = get_object_or_404(ClientContractHaken, pk=haken_pk)
+    if hasattr(haken, 'ttp_info'):
+        return redirect('contract:client_contract_ttp_detail', pk=haken.ttp_info.pk)
+    else:
+        return redirect('contract:client_contract_ttp_create', haken_pk=haken.pk)
+
+
+@login_required
+@permission_required('contract.add_clientcontract', raise_exception=True)
+def client_contract_ttp_create(request, haken_pk):
+    """紹介予定派遣情報 作成"""
+    haken = get_object_or_404(ClientContractHaken, pk=haken_pk)
+    if hasattr(haken, 'ttp_info'):
+        messages.info(request, '既にご紹介予定派遣情報が存在します。')
+        return redirect('contract:client_contract_ttp_detail', pk=haken.ttp_info.pk)
+
+    if request.method == 'POST':
+        form = ClientContractTtpForm(request.POST)
+        if form.is_valid():
+            ttp_info = form.save(commit=False)
+            ttp_info.haken = haken
+            ttp_info.created_by = request.user
+            ttp_info.updated_by = request.user
+            ttp_info.save()
+            messages.success(request, '紹介予定派遣情報を作成しました。')
+            return redirect('contract:client_contract_ttp_detail', pk=ttp_info.pk)
+    else:
+        form = ClientContractTtpForm()
+
+    context = {
+        'form': form,
+        'haken': haken,
+        'contract': haken.client_contract,
+        'title': '紹介予定派遣情報 作成',
+    }
+    return render(request, 'contract/client_contract_ttp_form.html', context)
+
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def client_contract_ttp_detail(request, pk):
+    """紹介予定派遣情報 詳細"""
+    ttp_info = get_object_or_404(ClientContractTtp, pk=pk)
+    context = {
+        'ttp_info': ttp_info,
+        'haken': ttp_info.haken,
+        'contract': ttp_info.haken.client_contract,
+    }
+    return render(request, 'contract/client_contract_ttp_detail.html', context)
+
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def client_contract_ttp_update(request, pk):
+    """紹介予定派遣情報 更新"""
+    ttp_info = get_object_or_404(ClientContractTtp, pk=pk)
+    if request.method == 'POST':
+        form = ClientContractTtpForm(request.POST, instance=ttp_info)
+        if form.is_valid():
+            ttp_info = form.save(commit=False)
+            ttp_info.updated_by = request.user
+            ttp_info.save()
+            messages.success(request, '紹介予定派遣情報を更新しました。')
+            return redirect('contract:client_contract_ttp_detail', pk=ttp_info.pk)
+    else:
+        form = ClientContractTtpForm(instance=ttp_info)
+
+    context = {
+        'form': form,
+        'ttp_info': ttp_info,
+        'haken': ttp_info.haken,
+        'contract': ttp_info.haken.client_contract,
+        'title': '紹介予定派遣情報 編集',
+    }
+    return render(request, 'contract/client_contract_ttp_form.html', context)
+
+
+@login_required
+@permission_required('contract.delete_clientcontract', raise_exception=True)
+def client_contract_ttp_delete(request, pk):
+    """紹介予定派遣情報 削除"""
+    ttp_info = get_object_or_404(ClientContractTtp, pk=pk)
+    contract_pk = ttp_info.haken.client_contract.pk
+    if request.method == 'POST':
+        ttp_info.delete()
+        messages.success(request, '紹介予定派遣情報を削除しました。')
+        return redirect('contract:client_contract_detail', pk=contract_pk)
+
+    context = {
+        'ttp_info': ttp_info,
+        'contract': ttp_info.haken.client_contract,
+    }
+    return render(request, 'contract/client_contract_ttp_delete.html', context)

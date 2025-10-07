@@ -1,0 +1,112 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block breadcrumb %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="{% url 'accounts:index' %}">ホーム</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'contract:contract_index' %}">契約管理</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'contract:client_contract_list' %}">クライアント契約</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'contract:client_contract_detail' pk=contract.pk %}">{{ contract.contract_name }}</a></li>
+                        <li class="breadcrumb-item active">{{ title }}</li>
+                    </ol>
+                </div>
+                <h4 class="page-title">{{ title }}</h4>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.contract_period.id_for_label }}" class="form-label">{{ form.contract_period.label }}</label>
+                            {{ form.contract_period }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.probation_period.id_for_label }}" class="form-label">{{ form.probation_period.label }}</label>
+                            {{ form.probation_period }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.business_content.id_for_label }}" class="form-label">{{ form.business_content.label }}</label>
+                            {{ form.business_content }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.work_location.id_for_label }}" class="form-label">{{ form.work_location.label }}</label>
+                            {{ form.work_location }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.working_hours.id_for_label }}" class="form-label">{{ form.working_hours.label }}</label>
+                            {{ form.working_hours }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.break_time.id_for_label }}" class="form-label">{{ form.break_time.label }}</label>
+                            {{ form.break_time }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.overtime.id_for_label }}" class="form-label">{{ form.overtime.label }}</label>
+                            {{ form.overtime }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.holidays.id_for_label }}" class="form-label">{{ form.holidays.label }}</label>
+                            {{ form.holidays }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.vacations.id_for_label }}" class="form-label">{{ form.vacations.label }}</label>
+                            {{ form.vacations }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                             <label for="{{ form.wages.id_for_label }}" class="form-label">{{ form.wages.label }}</label>
+                            {{ form.wages }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.insurances.id_for_label }}" class="form-label">{{ form.insurances.label }}</label>
+                            {{ form.insurances }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.employer_name.id_for_label }}" class="form-label">{{ form.employer_name.label }}</label>
+                            {{ form.employer_name }}
+                        </div>
+                    </div>
+                     <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="{{ form.other.id_for_label }}" class="form-label">{{ form.other.label }}</label>
+                            {{ form.other }}
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-primary btn-sm">保存</button>
+                        {% if ttp_info %}
+                        <a href="{% url 'contract:client_contract_ttp_detail' pk=ttp_info.pk %}" class="btn btn-secondary btn-sm">戻る</a>
+                        {% else %}
+                        <a href="{% url 'contract:client_contract_detail' pk=contract.pk %}" class="btn btn-secondary btn-sm">戻る</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

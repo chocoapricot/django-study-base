@@ -1,7 +1,7 @@
 from django import forms
 from django.db.models import Subquery, OuterRef
 from django.utils import timezone
-from .models import ClientContract, StaffContract, ClientContractHaken
+from .models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp
 from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from apps.system.settings.models import Dropdowns
@@ -519,3 +519,31 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
                 self.add_error('end_date', f'契約終了日は退職日（{staff.resignation_date}）以前の日付を入力してください。')
         
         return cleaned_data
+
+
+class ClientContractTtpForm(forms.ModelForm):
+    """クライアント契約紹介予定派遣情報フォーム"""
+
+    class Meta:
+        model = ClientContractTtp
+        exclude = ['haken', 'version', 'created_at', 'created_by', 'updated_at', 'updated_by']
+        widgets = {
+            'contract_period': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
+            'probation_period': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
+            'business_content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'work_location': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'working_hours': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
+            'break_time': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
+            'overtime': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
+            'holidays': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
+            'vacations': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
+            'wages': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'insurances': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
+            'employer_name': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
+            'other': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.required = False
