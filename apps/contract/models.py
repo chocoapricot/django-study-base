@@ -97,6 +97,16 @@ class ClientContract(MyModel):
         related_name='issued_client_quotations',
         verbose_name='見積発行者'
     )
+    # 抵触日通知書の共有日時・共有者
+    clash_day_notification_issued_at = models.DateTimeField('抵触日通知書共有日時', blank=True, null=True)
+    clash_day_notification_issued_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='issued_clash_day_notifications',
+        verbose_name='抵触日通知書共有者'
+    )
     confirmed_at = models.DateTimeField('確認日時', blank=True, null=True)
     confirmed_by = models.ForeignKey(
         ClientUser,
