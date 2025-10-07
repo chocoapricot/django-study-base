@@ -449,3 +449,48 @@ class ContractPdfGenerationTest(TestCase):
         # 支払単位と金額が正しく印字されていることを確認
         self.assertIn("契約金額", text)
         self.assertIn("日給 30,000円", text)
+
+    def test_dispatch_contract_pdf_includes_ttp_info(self):
+        """紹介予定派遣の場合に、PDFにTTP情報が正しく印字されることをテストする"""
+        from apps.contract.models import ClientContractTtp
+        # 1. Create TTP info
+        ClientContractTtp.objects.create(
+            haken=self.haken_info,
+            probation_period="3ヶ月の試用期間とする。",
+            working_hours="9:00-18:00 (休憩1時間)",
+            wages="月給30万円",
+            employer_name="Test Client",
+        )
+
+        # 2. Generate PDF content
+        pdf_content, _, _ = generate_contract_pdf_content(self.dispatch_contract)
+        self.assertIsNotNone(pdf_content)
+
+        # 3. Extract text from PDF
+        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
+        text = ""
+        for page in pdf_document:
+            # Note: fitz may convert full-width spaces to half-width spaces
+            text += page.get_text().replace("　", " ")
+        pdf_document.close()
+
+        # 4. Assertions
+        # The title is split by a newline, so check for parts or combined text
+        text_no_newline = text.replace('\n', '')
+        self.assertIn("紹介予定派遣に関する事項", text_no_newline)
+
+        # Check for specific TTP items and their verbose names
+        self.assertIn("試用期間に関する事項", text_no_newline)
+        self.assertIn("3ヶ月の試用期間とする。", text_no_newline)
+
+        self.assertIn("始業・終業", text_no_newline)
+        self.assertIn("9:00-18:00 (休憩1時間)", text_no_newline)
+
+        self.assertIn("賃金", text_no_newline)
+        self.assertIn("月給30万円", text_no_newline)
+
+        self.assertIn("雇用しようとする者の名称", text_no_newline)
+        self.assertIn("Test Client", text_no_newline)
+
+        # Check that a field with no value is not present
+        self.assertNotIn("休日", text_no_newline)

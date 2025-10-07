@@ -224,6 +224,36 @@ def generate_contract_pdf_content(contract):
             if company and company.haken_permit_number:
                 haken_items.append({"title": "許可番号", "text": company.haken_permit_number})
 
+            # 紹介予定派遣(TTP)の場合、追加情報を挿入
+            try:
+                ttp_info = haken_info.ttp_info
+                if ttp_info:
+                    ttp_sub_items = []
+                    # ClientContractTtpのフィールドをループして項目を作成
+                    ttp_fields = [
+                        'contract_period', 'probation_period', 'business_content',
+                        'work_location', 'working_hours', 'break_time', 'overtime',
+                        'holidays', 'vacations', 'wages', 'insurances',
+                        'employer_name', 'other'
+                    ]
+                    for field_name in ttp_fields:
+                        field = ttp_info._meta.get_field(field_name)
+                        value = getattr(ttp_info, field_name)
+                        if value:  # 値が設定されている項目のみ追加
+                            ttp_sub_items.append({
+                                'title': field.verbose_name,
+                                'text': str(value)
+                            })
+
+                    if ttp_sub_items:
+                        ttp_section = {
+                            'title': '紹介予定派遣に\n関する事項',
+                            'rowspan_items': ttp_sub_items
+                        }
+                        haken_items.append(ttp_section)
+            except haken_info.__class__.ttp_info.RelatedObjectDoesNotExist:
+                pass # ttp_infoが存在しない場合は何もしない
+
             # itemsリストに挿入
             notes_index = -1
             for i, item in enumerate(items):

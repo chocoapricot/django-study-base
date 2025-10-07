@@ -16,11 +16,15 @@ def generate_table_based_contract_pdf(buffer, title, intro_text, items, watermar
     """
     テーブルベースの契約書PDFを生成する共通関数。
     2パス処理を行い、フッターに総ページ数付きのページ番号を印字する。
+    rowspanをサポートするために、3列構成のテーブルを基本とし、
+    itemsに 'rowspan_items' が含まれている場合はセルの結合を行う。
 
     :param buffer: PDFを書き込むためのBytesIOなどのバッファ
     :param title: 帳票のメインタイトル
     :param intro_text: タイトルの下に表示する前文
-    :param items: 罫線付きで表示する項目のリスト。各項目は {'title': '項目名', 'text': '内容'} の辞書。
+    :param items: 表示項目のリスト。
+                  通常: {'title': '項目名', 'text': '内容'}
+                  rowspan: {'title': '結合セル項目名', 'rowspan_items': [{'title': '項目名', 'text': '内容'}, ...]}
     :param watermark_text: 透かしとして表示する文字列（オプショナル）
     :param postamble_text: 末文
     """
@@ -35,6 +39,9 @@ def generate_table_based_contract_pdf(buffer, title, intro_text, items, watermar
     styles.add(ParagraphStyle(name='ItemTitle', fontName='IPAPGothic', fontSize=11, leading=14))
     styles.add(ParagraphStyle(name='ItemText', fontName='IPAPGothic', fontSize=11, leading=14))
     styles.add(ParagraphStyle(name='PostambleText', fontName='IPAPGothic', fontSize=11, leading=16, spaceBefore=10))
+    # rowspan用のスタイルを追加
+    styles.add(ParagraphStyle(name='RowSpanTitle', fontName='IPAPGothic', fontSize=11, leading=14, alignment=1))
+
 
     def build_story():
         """PDFの内容(Story)を構築する"""
@@ -48,18 +55,57 @@ def generate_table_based_contract_pdf(buffer, title, intro_text, items, watermar
 
         # 3. 各項目の表示
         table_data = []
+        table_style_commands = []
+        current_row = 0
+
         for item in items:
-            item_title = Paragraph(item.get('title', ''), styles['ItemTitle'])
-            item_text = Paragraph(item.get('text', '').replace('\n', '<br/>'), styles['ItemText'])
-            table_data.append([item_title, item_text])
+            if 'rowspan_items' in item:
+                # rowspan を持つ項目の処理
+                rowspan_title = Paragraph(item.get('title', ''), styles['RowSpanTitle'])
+                sub_items = item['rowspan_items']
+                num_sub_items = len(sub_items)
+
+                if num_sub_items > 0:
+                    # 最初のサブアイテム行
+                    first_sub_item = sub_items[0]
+                    sub_title = Paragraph(first_sub_item.get('title', ''), styles['ItemTitle'])
+                    sub_text = Paragraph(str(first_sub_item.get('text', '')).replace('\n', '<br/>'), styles['ItemText'])
+                    table_data.append([rowspan_title, sub_title, sub_text])
+
+                    # rowspanのスタイルコマンド
+                    table_style_commands.append(('SPAN', (0, current_row), (0, current_row + num_sub_items - 1)))
+                    table_style_commands.append(('VALIGN', (0, current_row), (0, current_row + num_sub_items - 1), 'MIDDLE'))
+
+                    # 残りのサブアイテム行
+                    for i in range(1, num_sub_items):
+                        next_sub_item = sub_items[i]
+                        sub_title = Paragraph(next_sub_item.get('title', ''), styles['ItemTitle'])
+                        sub_text = Paragraph(str(next_sub_item.get('text', '')).replace('\n', '<br/>'), styles['ItemText'])
+                        table_data.append(['', sub_title, sub_text]) # 最初の列は空
+
+                    current_row += num_sub_items
+            else:
+                # 通常の項目の処理
+                item_title = Paragraph(item.get('title', ''), styles['ItemTitle'])
+                item_text = Paragraph(str(item.get('text', '')).replace('\n', '<br/>'), styles['ItemText'])
+                table_data.append([item_title, item_text, '']) # 3列目は空
+
+                # 2列目と3列目を結合
+                table_style_commands.append(('SPAN', (1, current_row), (2, current_row)))
+                current_row += 1
 
         if table_data:
-            table = Table(table_data, colWidths=['20%', '80%'])
-            table.setStyle(TableStyle([
+            table = Table(table_data, colWidths=['20%', '25%', '55%'])
+            style = TableStyle([
                 ('GRID', (0, 0), (-1, -1), 1, colors.black),
                 ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                 ('PADDING', (0, 0), (-1, -1), 6),
-            ]))
+            ])
+            # 動的に生成したスタイルコマンドを追加
+            for cmd in table_style_commands:
+                style.add(*cmd)
+
+            table.setStyle(style)
             story.append(table)
             story.append(Spacer(1, 10))
 

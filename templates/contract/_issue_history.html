@@ -1,7 +1,7 @@
 {% load humanize %}
 <!-- 発行履歴一覧（インクルード用） -->
-{# Only render the card when there is a history_url (for detail pages) or when there's actual history to show (for list pages) #}
-{% if history_url or issue_history %}
+{# 詳細ページ(history_urlあり)では履歴がある場合のみ、履歴一覧ページ(history_urlなし)では常にカードを表示 #}
+{% if history_url and issue_history_count > 0 or not history_url and issue_history %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         {% if title %}{{ title }}{% else %}発行履歴{% endif %}
