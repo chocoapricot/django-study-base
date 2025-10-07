@@ -730,15 +730,15 @@ class StaffContractIssueHistoryViewTest(TestCase):
         self.assertEqual(response.context['issue_history_count'], 5)
         self.assertContains(response, '全て表示')
 
-    def test_detail_view_no_history_shows_link(self):
-        """詳細ページで発行履歴が0件でも「全て表示」リンクが表示される"""
+    def test_detail_view_no_history_hides_card(self):
+        """詳細ページで発行履歴が0件の場合、発行履歴カードが表示されないことをテスト"""
         url = reverse('contract:staff_contract_detail', kwargs={'pk': self.contract_zero.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['issue_history_count'], 0)
-        # The link should still be rendered because the URL is passed to the template
-        self.assertContains(response, '全て表示')
-        self.assertContains(response, f"href=\"{reverse('contract:staff_contract_issue_history_list', kwargs={'pk': self.contract_zero.pk})}\"")
+        # 発行履歴が0件なので、カードのテーブルヘッダが表示されないことを確認
+        # コメントに「発行履歴」が含まれているため、より具体的な要素でチェック
+        self.assertNotContains(response, '<th>発行日時</th>', html=True)
 
     def test_issue_history_list_view_and_pagination(self):
         """発行履歴一覧ページとページネーションをテスト"""
