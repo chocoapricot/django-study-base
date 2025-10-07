@@ -300,7 +300,6 @@ class ContractViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         # スイッチがチェックされているか
         self.assertRegex(response.content.decode('utf-8'), r'<input class="form-check-input" type="checkbox" id="issueClashDayNotificationSwitch"[^>]*checked')
-        self.assertRegex(response.content.decode('utf-8'), r'<input class="form-check-input" type="checkbox" id="issueDispatchNotificationSwitch"[^>]*checked')
         # 発行者情報が表示されているか
         self.assertContains(response, user_full_name)
 
@@ -319,11 +318,89 @@ class ContractViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         # スイッチがチェックされていないか
         self.assertNotRegex(response.content.decode('utf-8'), r'<input class="form-check-input" type="checkbox" id="issueClashDayNotificationSwitch"[^>]*checked')
-        self.assertNotRegex(response.content.decode('utf-8'), r'<input class="form-check-input" type="checkbox" id="issueDispatchNotificationSwitch"[^>]*checked')
 
         # 承認解除により発行者情報が表示されなくなることを確認する。
         # 変更履歴にユーザー名が表示される可能性があるため、より具体的な文字列で検証する。
         self.assertNotContains(response, f'　{user_full_name}）')
+
+    def test_issue_contract_and_dispatch_notification_for_haken(self):
+        """派遣契約の契約書発行時に、個別契約書と派遣通知書が同時に発行されるかテスト"""
+        from ..models import ClientContractPrint
+
+        # 派遣契約を承認済みにする
+        self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
+        self.client_contract.save()
+
+        initial_print_count = ClientContractPrint.objects.filter(client_contract=self.client_contract).count()
+
+        # 契約書発行のURLをPOST
+        issue_url = reverse('contract:client_contract_issue', kwargs={'pk': self.client_contract.pk})
+        response = self.client.post(issue_url, {})
+
+        # 詳細ページにリダイレクトされることを確認
+        self.assertEqual(response.status_code, 302)
+        self.client_contract.refresh_from_db()
+
+        # 契約ステータスが「発行済」になっていることを確認
+        self.assertEqual(self.client_contract.contract_status, ClientContract.ContractStatus.ISSUED)
+
+        # 発行履歴が2件増えていることを確認
+        final_print_count = ClientContractPrint.objects.filter(client_contract=self.client_contract).count()
+        self.assertEqual(final_print_count, initial_print_count + 2)
+
+        # 発行された履歴の種類を確認
+        self.assertTrue(ClientContractPrint.objects.filter(
+            client_contract=self.client_contract,
+            print_type=ClientContractPrint.PrintType.CONTRACT
+        ).exists())
+        self.assertTrue(ClientContractPrint.objects.filter(
+            client_contract=self.client_contract,
+            print_type=ClientContractPrint.PrintType.DISPATCH_NOTIFICATION
+        ).exists())
+
+        # メッセージの確認
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(any('契約書を発行しました' in str(m) for m in messages))
+        self.assertTrue(any('派遣通知書を同時に発行しました' in str(m) for m in messages))
+
+    def test_issue_contract_for_non_haken(self):
+        """非派遣契約の契約書発行時に、個別契約書のみが発行されるかテスト"""
+        from ..models import ClientContractPrint
+
+        # 非派遣契約はsetUpで承認済になっている
+        self.assertEqual(self.non_haken_contract.contract_status, ClientContract.ContractStatus.APPROVED)
+
+        initial_print_count = ClientContractPrint.objects.filter(client_contract=self.non_haken_contract).count()
+
+        # 契約書発行のURLをPOST
+        issue_url = reverse('contract:client_contract_issue', kwargs={'pk': self.non_haken_contract.pk})
+        response = self.client.post(issue_url, {})
+
+        # 詳細ページにリダイレクトされることを確認
+        self.assertEqual(response.status_code, 302)
+        self.non_haken_contract.refresh_from_db()
+
+        # 契約ステータスが「発行済」になっていることを確認
+        self.assertEqual(self.non_haken_contract.contract_status, ClientContract.ContractStatus.ISSUED)
+
+        # 発行履歴が1件増えていることを確認
+        final_print_count = ClientContractPrint.objects.filter(client_contract=self.non_haken_contract).count()
+        self.assertEqual(final_print_count, initial_print_count + 1)
+
+        # 発行された履歴の種類を確認
+        self.assertTrue(ClientContractPrint.objects.filter(
+            client_contract=self.non_haken_contract,
+            print_type=ClientContractPrint.PrintType.CONTRACT
+        ).exists())
+        self.assertFalse(ClientContractPrint.objects.filter(
+            client_contract=self.non_haken_contract,
+            print_type=ClientContractPrint.PrintType.DISPATCH_NOTIFICATION
+        ).exists())
+
+        # メッセージの確認
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(any('契約書を発行しました' in str(m) for m in messages))
+        self.assertFalse(any('派遣通知書を同時に発行しました' in str(m) for m in messages))
 
 
 class ClientContractConfirmListViewTest(TestCase):
