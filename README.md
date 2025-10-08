@@ -90,9 +90,9 @@ django-study-base/
 └── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（82テーブル）
+## データベーステーブル一覧（84テーブル）
 
-### 本アプリケーション独自テーブル（65テーブル）
+### 本アプリケーション独自テーブル（67テーブル）
 
 | テーブル名 | モデル名 | 説明 |
 | --- | --- | --- |
@@ -118,6 +118,7 @@ django-study-base/
 | `apps_contract_client_haken` | `ClientContractHaken` | クライアント契約派遣情報 |
 | `apps_contract_client_number` | `ClientContractNumber` | クライアント契約番号 |
 | `apps_contract_client_print` | `ClientContractPrint` | クライアント契約書発行履歴 |
+| `apps_contract_client_ttp` | `ClientContractTtp` | クライアント契約紹介予定派遣情報 |
 | `apps_contract_staff` | `StaffContract` | スタッフ契約 |
 | `apps_contract_staff_number` | `StaffContractNumber` | スタッフ契約番号 |
 | `apps_contract_staff_print` | `StaffContractPrint` | スタッフ契約書発行履歴 |
@@ -127,6 +128,7 @@ django-study-base/
 | `apps_master_bill_payment` | `BillPayment` | 支払条件マスター |
 | `apps_master_contract_pattern` | `ContractPattern` | 契約書パターンマスター |
 | `apps_master_contract_terms` | `ContractTerms` | 契約文言マスター |
+| `apps_master_default_value` | `DefaultValue` | デフォルト値マスター |
 | `apps_master_haken_business_content` | `HakenBusinessContent` | 派遣業務内容マスター |
 | `apps_master_haken_responsibility_degree` | `HakenResponsibilityDegree` | 派遣責任程度マスター |
 | `apps_master_information` | `Information` | お知らせマスター |
