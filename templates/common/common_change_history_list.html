@@ -6,6 +6,8 @@
 {# company, staff, client_contract オブジェクトは各Viewのcontextで設定されている前提 #}
 {% if info_card_path %}
     {% include info_card_path %}
+{% elif is_client_contract %}
+    {% include 'contract/_client_contract_header.html' with contract=object only %}
 {% endif %}
 
 {# --- 変更履歴 --- #}

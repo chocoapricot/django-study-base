@@ -936,10 +936,10 @@ def client_contract_change_history_list(request, pk):
 
     context = {
         'object': contract,
-        'contract': contract,
         'change_logs': change_logs,
         'page_title': 'クライアント契約 変更履歴一覧',
         'back_url_name': 'contract:client_contract_detail',
+        'is_client_contract': True,
     }
     return render(request, 'common/common_change_history_list.html', context)
 
