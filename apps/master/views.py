@@ -23,6 +23,7 @@ from .models import (
     MinimumPay,
     HakenBusinessContent,
     HakenResponsibilityDegree,
+    DefaultValue,
 )
 from .forms import (
     HakenBusinessContentForm,
@@ -43,6 +44,7 @@ from .forms import (
     ContractPatternForm,
     ContractTermForm,
     MinimumPayForm,
+    DefaultValueForm,
 )
 from apps.company.models import Company
 from django.http import JsonResponse, HttpResponse
@@ -162,6 +164,14 @@ MASTER_CONFIGS = [
         "model": "master.MailTemplate",
         "url_name": "master:mail_template_list",
         "permission": "master.view_mailtemplate",
+    },
+    {
+        "category": "その他",
+        "name": "初期値マスタ",
+        "description": "システムの各項目における初期値を管理します",
+        "model": "master.DefaultValue",
+        "url_name": "master:default_value_list",
+        "permission": "master.view_defaultvalue",
     },
 ]
 
@@ -2706,3 +2716,75 @@ def haken_responsibility_degree_change_history_list(request):
     )
 
 
+@login_required
+@permission_required("master.view_defaultvalue", raise_exception=True)
+def default_value_list(request):
+    """初期値マスタ一覧"""
+    search_query = request.GET.get("search", "")
+    items = DefaultValue.objects.all()
+    if search_query:
+        items = items.filter(
+            Q(target_item__icontains=search_query) | Q(value__icontains=search_query)
+        )
+    items = items.order_by("target_item")
+
+    paginator = Paginator(items, 20)
+    page = request.GET.get("page")
+    items_page = paginator.get_page(page)
+
+    from apps.system.logs.models import AppLog
+    change_logs = AppLog.objects.filter(model_name="DefaultValue", action__in=["update"]).order_by("-timestamp")[:5]
+    change_logs_count = AppLog.objects.filter(model_name="DefaultValue", action__in=["update"]).count()
+
+    context = {
+        "items": items_page,
+        "search_query": search_query,
+        "change_logs": change_logs,
+        "change_logs_count": change_logs_count,
+        "history_url_name": "master:default_value_change_history_list",
+        "title": "初期値マスタ",
+    }
+    return render(request, "master/default_value_list.html", context)
+
+
+@login_required
+@permission_required("master.change_defaultvalue", raise_exception=True)
+def default_value_update(request, pk):
+    """初期値マスタ編集"""
+    item = get_object_or_404(DefaultValue, pk=pk)
+    if request.method == "POST":
+        form = DefaultValueForm(request.POST, instance=item)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"初期値「{item.target_item}」を更新しました。")
+            return redirect("master:default_value_list")
+    else:
+        form = DefaultValueForm(instance=item)
+
+    context = {
+        "form": form,
+        "item": item,
+        "title": f"初期値編集 - {item.target_item}",
+    }
+    return render(request, "master/default_value_form.html", context)
+
+
+@login_required
+@permission_required("master.view_defaultvalue", raise_exception=True)
+def default_value_change_history_list(request):
+    """初期値マスタ変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    logs = AppLog.objects.filter(model_name="DefaultValue", action__in=["update"]).order_by("-timestamp")
+    paginator = Paginator(logs, 20)
+    page = request.GET.get("page")
+    logs_page = paginator.get_page(page)
+    return render(
+        request,
+        "common/common_change_history_list.html",
+        {
+            "change_logs": logs_page,
+            "page_title": "初期値マスタ変更履歴",
+            "back_url_name": "master:default_value_list",
+            "model_name": "DefaultValue",
+        },
+    )

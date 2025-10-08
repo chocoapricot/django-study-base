@@ -878,3 +878,27 @@ class BankBranch(MyModel):
         """この銀行支店の利用件数"""
         # 将来的に他のモデルで銀行支店が参照される場合のために準備
         return 0
+
+
+class DefaultValue(MyModel):
+    """
+    システムの各項目における初期値を管理するマスターデータ。
+    """
+    FORMAT_CHOICES = [
+        ('text', 'テキスト'),
+        ('textarea', 'テキストエリア'),
+    ]
+
+    key = models.CharField('キー', max_length=255, primary_key=True)
+    target_item = models.CharField('対象項目', max_length=255)
+    format = models.CharField('形式', max_length=10, choices=FORMAT_CHOICES, default='text')
+    value = models.TextField('値', blank=True)
+
+    class Meta:
+        db_table = 'apps_master_default_value'
+        verbose_name = '初期値マスタ'
+        verbose_name_plural = '初期値マスタ'
+        ordering = ['target_item']
+
+    def __str__(self):
+        return self.target_item

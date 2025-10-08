@@ -16,6 +16,7 @@ from .models import (
     MinimumPay,
     HakenBusinessContent,
     HakenResponsibilityDegree,
+    DefaultValue,
 )
 from apps.system.settings.models import Dropdowns
 
@@ -535,4 +536,16 @@ class StaffAgreementForm(forms.ModelForm):
             'agreement_text': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 10}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+
+class DefaultValueForm(forms.ModelForm):
+    """初期値マスタフォーム"""
+    class Meta:
+        model = DefaultValue
+        fields = ['target_item', 'format', 'value']
+        widgets = {
+            'target_item': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'readonly': 'readonly'}),
+            'format': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'value': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
         }
