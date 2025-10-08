@@ -18,7 +18,7 @@ from apps.system.logs.models import AppLog
 from apps.common.utils import fill_pdf_from_template
 from apps.client.models import Client, ClientUser
 from apps.staff.models import Staff
-from apps.master.models import ContractPattern, StaffAgreement
+from apps.master.models import ContractPattern, StaffAgreement, DefaultValue
 from apps.connect.models import ConnectStaff, ConnectStaffAgree, ConnectClient, MynumberRequest, ProfileRequest, BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
 from apps.company.models import Company, CompanyDepartment
 from apps.system.settings.models import Dropdowns
@@ -1893,7 +1893,21 @@ def client_contract_ttp_create(request, haken_pk):
             messages.success(request, '紹介予定派遣情報を作成しました。')
             return redirect('contract:client_contract_ttp_detail', pk=ttp_info.pk)
     else:
-        form = ClientContractTtpForm()
+        # GETリクエストの場合、初期値をマスタから設定
+        initial_data = {}
+        default_keys = {
+            'contract_period': 'ClientContractTtp.contract_period',
+            'probation_period': 'ClientContractTtp.probation_period',
+            'working_hours': 'ClientContractTtp.working_hours',
+            'break_time': 'ClientContractTtp.break_time',
+        }
+        for field, key in default_keys.items():
+            try:
+                default_value = DefaultValue.objects.get(pk=key)
+                initial_data[field] = default_value.value
+            except DefaultValue.DoesNotExist:
+                pass  # マスタにキーが存在しない場合は何もしない
+        form = ClientContractTtpForm(initial=initial_data)
 
     context = {
         'form': form,

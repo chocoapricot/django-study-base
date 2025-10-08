@@ -5,7 +5,7 @@ from django.contrib.messages import get_messages
 from ..models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp
 from apps.client.models import Client as TestClient, ClientUser, ClientDepartment
 from apps.staff.models import Staff
-from apps.master.models import ContractPattern
+from apps.master.models import ContractPattern, DefaultValue
 import datetime
 
 User = get_user_model()
@@ -916,3 +916,36 @@ class ClientContractTtpViewTest(TestCase):
         self.assertRedirects(response, reverse('contract:client_contract_ttp_detail', kwargs={'pk': self.approved_ttp.pk}))
         messages = list(get_messages(response.wsgi_request))
         self.assertTrue(any('この契約ステータスでは紹介予定派遣情報は削除できません。' in str(m) for m in messages))
+
+    def test_ttp_create_form_initial_values_from_master(self):
+        """TTP作成画面で、DefaultValueマスタから初期値が設定されるかテスト"""
+        # 1. DefaultValueマスタにテストデータを登録
+        DefaultValue.objects.create(key='ClientContractTtp.contract_period', target_item='契約期間', value='デフォルト契約期間')
+        DefaultValue.objects.create(key='ClientContractTtp.probation_period', target_item='試用期間', value='デフォルト試用期間')
+        # working_hoursは設定しないでおき、キーが存在しない場合もテストする
+
+        # 2. TTP情報を持たない派遣契約を準備
+        ttp_less_contract = ClientContract.objects.create(
+            client=self.test_client_model,
+            contract_name='TTP-less Contract',
+            start_date=datetime.date.today(),
+            contract_pattern=self.contract_pattern,
+            client_contract_type_code='20',
+            contract_status=ClientContract.ContractStatus.DRAFT,
+        )
+        ttp_less_haken = ClientContractHaken.objects.create(client_contract=ttp_less_contract)
+
+        # 3. TTP作成画面にGETリクエスト
+        url = reverse('contract:client_contract_ttp_create', kwargs={'haken_pk': ttp_less_haken.pk})
+        response = self.client.get(url)
+
+        # 4. レスポンスを検証
+        self.assertEqual(response.status_code, 200)
+        form = response.context.get('form')
+        self.assertIsNotNone(form)
+
+        # フォームの初期値が正しく設定されていることを確認
+        self.assertEqual(form.initial.get('contract_period'), 'デフォルト契約期間')
+        self.assertEqual(form.initial.get('probation_period'), 'デフォルト試用期間')
+        # マスタに存在しないキーは設定されていないことを確認
+        self.assertIsNone(form.initial.get('working_hours'))
