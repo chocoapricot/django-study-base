@@ -1922,6 +1922,11 @@ def client_contract_ttp_detail(request, pk):
 def client_contract_ttp_update(request, pk):
     """紹介予定派遣情報 更新"""
     ttp_info = get_object_or_404(ClientContractTtp, pk=pk)
+    contract = ttp_info.haken.client_contract
+    if contract.contract_status != ClientContract.ContractStatus.DRAFT:
+        messages.error(request, 'この契約ステータスでは紹介予定派遣情報は編集できません。')
+        return redirect('contract:client_contract_ttp_detail', pk=pk)
+
     if request.method == 'POST':
         form = ClientContractTtpForm(request.POST, instance=ttp_info)
         if form.is_valid():
@@ -1948,6 +1953,11 @@ def client_contract_ttp_update(request, pk):
 def client_contract_ttp_delete(request, pk):
     """紹介予定派遣情報 削除"""
     ttp_info = get_object_or_404(ClientContractTtp, pk=pk)
+    contract = ttp_info.haken.client_contract
+    if contract.contract_status != ClientContract.ContractStatus.DRAFT:
+        messages.error(request, 'この契約ステータスでは紹介予定派遣情報は削除できません。')
+        return redirect('contract:client_contract_ttp_detail', pk=pk)
+
     contract_pk = ttp_info.haken.client_contract.pk
     if request.method == 'POST':
         ttp_info.delete()
