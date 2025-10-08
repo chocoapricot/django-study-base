@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.contrib.messages import get_messages
-from ..models import ClientContract, StaffContract, ClientContractHaken
+from ..models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp
 from apps.client.models import Client as TestClient, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from apps.master.models import ContractPattern
@@ -90,6 +90,15 @@ class ContractViewTest(TestCase):
             client_contract=self.contract_without_clash_day,
             haken_office=self.haken_office_without_clash_day
         )
+
+        # 紹介予定派遣情報を作成
+        self.ttp_info = ClientContractTtp.objects.create(
+            haken=self.client_contract.haken_info,
+            contract_period='最長6ヶ月',
+            probation_period='なし',
+            business_content='テストTTP業務内容',
+        )
+
         self.non_haken_contract_pattern = ContractPattern.objects.create(name='Non-Haken Pattern', domain='10', contract_type_code='10')
         self.non_haken_contract = ClientContract.objects.create(
             client=self.test_client,
@@ -431,6 +440,29 @@ class ContractViewTest(TestCase):
         messages = list(get_messages(response.wsgi_request))
         self.assertTrue(any('契約書を発行しました' in str(m) for m in messages))
         self.assertFalse(any('派遣通知書を同時に発行しました' in str(m) for m in messages))
+
+    def test_ttp_info_displayed_for_ttp_contract(self):
+        """紹介予定派遣情報を持つ契約詳細ページで、TTP情報が表示されるかテスト"""
+        url = reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '紹介予定派遣情報')
+        self.assertContains(response, self.ttp_info.business_content)
+
+    def test_ttp_info_not_displayed_for_haken_without_ttp(self):
+        """紹介予定派遣情報を持たない派遣契約詳細ページで、TTP情報が表示されないかテスト"""
+        # この契約は派遣だがTTP情報はない
+        url = reverse('contract:client_contract_detail', kwargs={'pk': self.contract_without_clash_day.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, '紹介予定派遣情報')
+
+    def test_ttp_info_not_displayed_for_non_haken_contract(self):
+        """非派遣契約詳細ページで、TTP情報が表示されないかテスト"""
+        url = reverse('contract:client_contract_detail', kwargs={'pk': self.non_haken_contract.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, '紹介予定派遣情報')
 
 
 class ClientContractConfirmListViewTest(TestCase):

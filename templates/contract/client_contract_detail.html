@@ -111,6 +111,70 @@
                 </div>
                 {% endif %}
 
+                {% if contract.haken_info.ttp_info %}
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="text-muted mb-0">紹介予定派遣情報</h6>
+                        </div>
+                        <table class="table table-sm">
+                            <tr>
+                                <th class="w-25 bg-light">契約期間</th>
+                                <td>{{ contract.haken_info.ttp_info.contract_period|linebreaksbr|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">試用期間に関する事項</th>
+                                <td>{{ contract.haken_info.ttp_info.probation_period|linebreaksbr|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">業務内容</th>
+                                <td>{{ contract.haken_info.ttp_info.business_content|linebreaksbr|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">就業場所</th>
+                                <td>{{ contract.haken_info.ttp_info.work_location|linebreaksbr|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">始業・終業</th>
+                                <td>{{ contract.haken_info.ttp_info.working_hours|linebreaksbr|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">休憩時間</th>
+                                <td>{{ contract.haken_info.ttp_info.break_time|linebreaksbr|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">所定時間外労働</th>
+                                <td>{{ contract.haken_info.ttp_info.overtime|linebreaksbr|default:"-" }}</td>
+                            </tr>
+                             <tr>
+                                <th class="w-25 bg-light">休日</th>
+                                <td>{{ contract.haken_info.ttp_info.holidays|linebreaksbr|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">休暇</th>
+                                <td>{{ contract.haken_info.ttp_info.vacations|linebreaksbr|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">賃金</th>
+                                <td>{{ contract.haken_info.ttp_info.wages|linebreaksbr|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">各種保険の加入</th>
+                                <td>{{ contract.haken_info.ttp_info.insurances|linebreaksbr|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">雇用しようとする者の名称</th>
+                                <td>{{ contract.haken_info.ttp_info.employer_name|linebreaksbr|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">その他</th>
+                                <td>{{ contract.haken_info.ttp_info.other|linebreaksbr|default:"-" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
                 <div class="row mt-4">
                     <div class="col-12">
                         <h6 class="text-muted mb-3">詳細情報</h6>
