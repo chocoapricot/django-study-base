@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block title %}クライアント契約削除確認{% endblock %}
 
@@ -41,7 +42,7 @@
                                     <th>契約金額</th>
                                     <td>
                                         {% if contract.contract_amount %}
-                                            ¥{{ contract.contract_amount|floatformat:0 }}
+                                            ¥{{ contract.contract_amount|floatformat:0|intcomma }}
                                         {% else %}
                                             -
                                         {% endif %}
