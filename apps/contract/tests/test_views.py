@@ -815,3 +815,104 @@ class StaffContractIssueHistoryViewTest(TestCase):
         self.assertContains(response, 'Document 5')
         self.assertContains(response, 'Document 1')
         self.assertNotContains(response, 'Document 6')
+
+
+class ClientContractTtpViewTest(TestCase):
+    """紹介予定派遣情報ビューのテスト"""
+
+    def setUp(self):
+        """テストデータの準備"""
+        from django.contrib.auth.models import Permission
+        from django.contrib.contenttypes.models import ContentType
+        from apps.company.models import Company
+
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.client = Client()
+        self.client.login(username='testuser', password='testpassword')
+
+        # 必要な権限を付与
+        content_types = [
+            ContentType.objects.get_for_model(ClientContract),
+            ContentType.objects.get_for_model(ClientContractHaken),
+            ContentType.objects.get_for_model(ClientContractTtp),
+        ]
+        permissions = Permission.objects.filter(content_type__in=content_types)
+        self.user.user_permissions.set(permissions)
+
+        self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
+        self.test_client_model = TestClient.objects.create(name='Test Client', corporate_number='6000000000001')
+        self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='10', contract_type_code='20')
+
+        # ステータスが「作成中」の契約
+        self.draft_contract = ClientContract.objects.create(
+            client=self.test_client_model,
+            contract_name='Draft TTP Contract',
+            start_date=datetime.date.today(),
+            contract_pattern=self.contract_pattern,
+            client_contract_type_code='20',
+            contract_status=ClientContract.ContractStatus.DRAFT,
+        )
+        self.draft_haken = ClientContractHaken.objects.create(client_contract=self.draft_contract)
+        self.draft_ttp = ClientContractTtp.objects.create(haken=self.draft_haken, business_content='Draft Content')
+
+        # ステータスが「承認済」の契約
+        self.approved_contract = ClientContract.objects.create(
+            client=self.test_client_model,
+            contract_name='Approved TTP Contract',
+            start_date=datetime.date.today(),
+            contract_pattern=self.contract_pattern,
+            client_contract_type_code='20',
+            contract_status=ClientContract.ContractStatus.APPROVED,
+        )
+        self.approved_haken = ClientContractHaken.objects.create(client_contract=self.approved_contract)
+        self.approved_ttp = ClientContractTtp.objects.create(haken=self.approved_haken, business_content='Approved Content')
+
+    def test_ttp_buttons_visibility_for_draft_contract(self):
+        """「作成中」の契約では、TTP詳細ページに編集・削除ボタンが表示される"""
+        url = reverse('contract:client_contract_ttp_detail', kwargs={'pk': self.draft_ttp.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        update_url = reverse('contract:client_contract_ttp_update', kwargs={'pk': self.draft_ttp.pk})
+        delete_url = reverse('contract:client_contract_ttp_delete', kwargs={'pk': self.draft_ttp.pk})
+        self.assertContains(response, f'href="{update_url}"')
+        self.assertContains(response, f'href="{delete_url}"')
+
+    def test_ttp_buttons_hidden_for_approved_contract(self):
+        """「作成中」以外の契約では、TTP詳細ページに編集・削除ボタンが表示されない"""
+        url = reverse('contract:client_contract_ttp_detail', kwargs={'pk': self.approved_ttp.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        update_url = reverse('contract:client_contract_ttp_update', kwargs={'pk': self.approved_ttp.pk})
+        delete_url = reverse('contract:client_contract_ttp_delete', kwargs={'pk': self.approved_ttp.pk})
+        self.assertNotContains(response, f'href="{update_url}"')
+        self.assertNotContains(response, f'href="{delete_url}"')
+
+    def test_ttp_update_get_allowed_for_draft_contract(self):
+        """「作成中」の契約では、TTP編集ページにアクセスできる"""
+        url = reverse('contract:client_contract_ttp_update', kwargs={'pk': self.draft_ttp.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_ttp_update_get_denied_for_approved_contract(self):
+        """「作成中」以外の契約では、TTP編集ページへのアクセスが拒否される"""
+        url = reverse('contract:client_contract_ttp_update', kwargs={'pk': self.approved_ttp.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('contract:client_contract_ttp_detail', kwargs={'pk': self.approved_ttp.pk}))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(any('この契約ステータスでは紹介予定派遣情報は編集できません。' in str(m) for m in messages))
+
+    def test_ttp_delete_get_allowed_for_draft_contract(self):
+        """「作成中」の契約では、TTP削除ページにアクセスできる"""
+        url = reverse('contract:client_contract_ttp_delete', kwargs={'pk': self.draft_ttp.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_ttp_delete_get_denied_for_approved_contract(self):
+        """「作成中」以外の契約では、TTP削除ページへのアクセスが拒否される"""
+        url = reverse('contract:client_contract_ttp_delete', kwargs={'pk': self.approved_ttp.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('contract:client_contract_ttp_detail', kwargs={'pk': self.approved_ttp.pk}))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertTrue(any('この契約ステータスでは紹介予定派遣情報は削除できません。' in str(m) for m in messages))
