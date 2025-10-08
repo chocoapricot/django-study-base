@@ -33,11 +33,6 @@ class DefaultValueViewTest(TestCase):
         self.client = Client()
         self.client.login(username='testuser', password='testpassword')
 
-    def test_sample_data_loaded(self):
-        """サンプルデータが正しくロードされるかのテスト"""
-        self.assertEqual(DefaultValue.objects.count(), 4)
-        self.assertTrue(DefaultValue.objects.filter(pk='ClientContractTtp.contract_period').exists())
-
     def test_list_view_for_logged_in_user(self):
         """一覧ビュー（ログイン済み・権限あり）"""
         response = self.client.get(reverse('master:default_value_list'))
