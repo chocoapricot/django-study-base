@@ -42,5 +42,83 @@
             "format": "text",
             "value": "60分（12：00～13：00）"
         }
+    },
+
+    {
+        "model": "master.defaultvalue",
+        "pk": "ClientContractTtp.work_location",
+        "fields": {
+            "created_at": "2025-10-09T00:00:00Z",
+            "updated_at": "2025-10-09T00:00:00Z",
+            "target_item": "紹介予定派遣情報＞就業場所",
+            "format": "text",
+            "value": ""
+        }
+    },
+    {
+        "model": "master.defaultvalue",
+        "pk": "ClientContractTtp.overtime",
+        "fields": {
+            "created_at": "2025-10-09T00:00:00Z",
+            "updated_at": "2025-10-09T00:00:00Z",
+            "target_item": "紹介予定派遣情報＞時間外労働",
+            "format": "text",
+            "value": ""
+        }
+    },
+    {
+        "model": "master.defaultvalue",
+        "pk": "ClientContractTtp.holidays",
+        "fields": {
+            "created_at": "2025-10-09T00:00:00Z",
+            "updated_at": "2025-10-09T00:00:00Z",
+            "target_item": "紹介予定派遣情報＞休日",
+            "format": "text",
+            "value": ""
+        }
+    },
+    {
+        "model": "master.defaultvalue",
+        "pk": "ClientContractTtp.vacations",
+        "fields": {
+            "created_at": "2025-10-09T00:00:00Z",
+            "updated_at": "2025-10-09T00:00:00Z",
+            "target_item": "紹介予定派遣情報＞休暇",
+            "format": "text",
+            "value": ""
+        }
+    },
+    {
+        "model": "master.defaultvalue",
+        "pk": "ClientContractTtp.wages",
+        "fields": {
+            "created_at": "2025-10-09T00:00:00Z",
+            "updated_at": "2025-10-09T00:00:00Z",
+            "target_item": "紹介予定派遣情報＞賃金",
+            "format": "text",
+            "value": ""
+        }
+    },
+    {
+        "model": "master.defaultvalue",
+        "pk": "ClientContractTtp.insurances",
+        "fields": {
+            "created_at": "2025-10-09T00:00:00Z",
+            "updated_at": "2025-10-09T00:00:00Z",
+            "target_item": "紹介予定派遣情報＞社会保険・労働保険",
+            "format": "text",
+            "value": ""
+        }
+    },
+    {
+        "model": "master.defaultvalue",
+        "pk": "ClientContractTtp.other",
+        "fields": {
+            "created_at": "2025-10-09T00:00:00Z",
+            "updated_at": "2025-10-09T00:00:00Z",
+            "target_item": "紹介予定派遣情報＞その他",
+            "format": "text",
+            "value": ""
+        }
     }
 ]
