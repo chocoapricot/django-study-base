@@ -92,6 +92,8 @@
                             <span class="badge bg-primary">派遣業務内容</span>
                         {% elif log.model_name == 'HakenResponsibilityDegree' %}
                             <span class="badge bg-primary">派遣責任程度</span>
+                        {% elif log.model_name == 'DefaultValue' %}
+                            <span class="badge bg-primary">初期値</span>
                         {% elif log.model_name %}
                             <span class="badge bg-primary">{{ log.model_name }}</span>
                         {% else %}
