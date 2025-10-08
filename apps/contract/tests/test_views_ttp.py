@@ -78,6 +78,9 @@ class ClientContractTtpViewsTest(TestCase):
         response = self.client.get(reverse('contract:client_contract_ttp_create', kwargs={'haken_pk': self.haken.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'contract/client_contract_ttp_form.html')
+        # ヘッダーが表示されていることを確認
+        self.assertContains(response, '契約番号')
+        self.assertContains(response, self.contract.contract_name)
 
         # POST
         post_data = {
@@ -102,6 +105,9 @@ class ClientContractTtpViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'テスト期間')
         self.assertTemplateUsed(response, 'contract/client_contract_ttp_detail.html')
+        # ヘッダーが表示されていることを確認
+        self.assertContains(response, '契約番号')
+        self.assertContains(response, self.contract.contract_name)
 
     def test_client_contract_ttp_update_view(self):
         """TTP情報更新ビューのテスト"""
@@ -109,6 +115,9 @@ class ClientContractTtpViewsTest(TestCase):
         # GET
         response = self.client.get(reverse('contract:client_contract_ttp_update', kwargs={'pk': ttp_info.pk}))
         self.assertEqual(response.status_code, 200)
+        # ヘッダーが表示されていることを確認
+        self.assertContains(response, '契約番号')
+        self.assertContains(response, self.contract.contract_name)
 
         # POST
         post_data = {
@@ -125,6 +134,9 @@ class ClientContractTtpViewsTest(TestCase):
         # GET
         response = self.client.get(reverse('contract:client_contract_ttp_delete', kwargs={'pk': ttp_info.pk}))
         self.assertEqual(response.status_code, 200)
+        # ヘッダーが表示されていることを確認
+        self.assertContains(response, '契約番号')
+        self.assertContains(response, self.contract.contract_name)
 
         # POST
         response = self.client.post(reverse('contract:client_contract_ttp_delete', kwargs={'pk': ttp_info.pk}))

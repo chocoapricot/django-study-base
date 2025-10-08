@@ -17,6 +17,12 @@
     </ol>
 </nav>
 
+<div class="card bg-light mb-4">
+    <div class="card-body">
+        {% include 'contract/_client_contract_header.html' %}
+    </div>
+</div>
+
 {% url 'contract:client_contract_detail' contract.pk as back_url_path %}
 {% with issue_history=page_obj title="発行履歴一覧" back_url=back_url_path %}
     {% include 'contract/_issue_history.html' with contract_type='client' download_url_name='contract:download_client_contract_pdf' %}
