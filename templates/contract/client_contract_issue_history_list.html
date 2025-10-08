@@ -7,15 +7,6 @@
 {% block title %}クライアント契約 発行履歴 - {{ contract.contract_name }}{% endblock %}
 
 {% block content %}
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'home:home' %}">ホーム</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'contract:contract_index' %}">契約管理</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'contract:client_contract_list' %}">クライアント契約一覧</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'contract:client_contract_detail' contract.pk %}">{{ contract.contract_name }}</a></li>
-        <li class="breadcrumb-item active" aria-current="page">発行履歴一覧</li>
-    </ol>
-</nav>
 
 <div class="card bg-light mb-4">
     <div class="card-body">

@@ -1,27 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load static %}
 
-{% block breadcrumb %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{% url 'accounts:index' %}">ホーム</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'contract:contract_index' %}">契約管理</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'contract:client_contract_list' %}">クライアント契約</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'contract:client_contract_detail' pk=contract.pk %}">{{ contract.contract_name }}</a></li>
-                        <li class="breadcrumb-item active">紹介予定派遣情報</li>
-                    </ol>
-                </div>
-                <h4 class="page-title">紹介予定派遣情報</h4>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
 {% block content %}
 <div class="card bg-light mb-4">
     <div class="card-body">
