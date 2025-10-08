@@ -1,0 +1,46 @@
+[
+    {
+        "model": "master.defaultvalue",
+        "pk": "ClientContractTtp.contract_period",
+        "fields": {
+            "created_at": "2025-10-08T11:12:00Z",
+            "updated_at": "2025-10-08T11:12:00Z",
+            "target_item": "紹介予定派遣情報＞契約期間",
+            "format": "text",
+            "value": "期間の定めなし"
+        }
+    },
+    {
+        "model": "master.defaultvalue",
+        "pk": "ClientContractTtp.probation_period",
+        "fields": {
+            "created_at": "2025-10-08T11:12:00Z",
+            "updated_at": "2025-10-08T11:12:00Z",
+            "target_item": "紹介予定派遣情報＞試用期間に関する事項",
+            "format": "text",
+            "value": "なし"
+        }
+    },
+    {
+        "model": "master.defaultvalue",
+        "pk": "ClientContractTtp.working_hours",
+        "fields": {
+            "created_at": "2025-10-08T11:12:00Z",
+            "updated_at": "2025-10-08T11:12:00Z",
+            "target_item": "紹介予定派遣情報＞始業・終業",
+            "format": "text",
+            "value": "始業：９時、終業：１８時"
+        }
+    },
+    {
+        "model": "master.defaultvalue",
+        "pk": "ClientContractTtp.break_time",
+        "fields": {
+            "created_at": "2025-10-08T11:12:00Z",
+            "updated_at": "2025-10-08T11:12:00Z",
+            "target_item": "紹介予定派遣情報＞休憩時間",
+            "format": "text",
+            "value": "60分（12：00～13：00）"
+        }
+    }
+]

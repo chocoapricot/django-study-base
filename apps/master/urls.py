@@ -116,6 +116,11 @@ urlpatterns = [
     path('haken-responsibility-degree/<int:pk>/delete/', views.haken_responsibility_degree_delete, name='haken_responsibility_degree_delete'),
     path('haken-responsibility-degree/history/', views.haken_responsibility_degree_change_history_list, name='haken_responsibility_degree_change_history_list'),
 
+    # 初期値マスタ
+    path('default-value/', views.default_value_list, name='default_value_list'),
+    path('default-value/<str:pk>/update/', views.default_value_update, name='default_value_update'),
+    path('default-value/history/', views.default_value_change_history_list, name='default_value_change_history_list'),
+
     # メールテンプレート管理
     path('mail-template/', views.mail_template_list, name='mail_template_list'),
     path('mail-template/<int:pk>/', views.mail_template_detail, name='mail_template_detail'),
