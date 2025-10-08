@@ -649,6 +649,16 @@ class ClientContractIssueHistoryViewTest(TestCase):
         self.assertIn('Document 1', page2_docs)   # Lowest PK
         self.assertNotIn('Document 6', page2_docs) # Should be on page 1
 
+    def test_issue_history_list_view_shows_header(self):
+        """発行履歴一覧ページに契約ヘッダーが表示されるかテスト"""
+        url = reverse('contract:client_contract_issue_history_list', kwargs={'pk': self.contract_many.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # ヘッダー内の特徴的な文字列で存在を確認
+        self.assertContains(response, '契約番号')
+        # 契約名が表示されているかも確認
+        self.assertContains(response, self.contract_many.contract_name)
+
 
 class StaffContractIssueHistoryViewTest(TestCase):
     """スタッフ契約発行履歴ビューのテスト"""
