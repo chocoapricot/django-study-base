@@ -56,12 +56,6 @@
         <!-- ページネーション -->
         {% if issue_history.paginator %}
             {% include 'common/_pagination.html' with page_obj=issue_history %}
-        {% else %}
-            <div class="d-flex justify-content-start align-items-center mt-3">
-                <div>
-                    <span class="text-muted small">（全{{ issue_history_count|default:0|intcomma }}件中　1～{{ issue_history|length|intcomma }}件を表示）</span>
-                </div>
-            </div>
         {% endif %}
 
         <!-- 戻るボタン（全件表示画面でのみ表示） -->
