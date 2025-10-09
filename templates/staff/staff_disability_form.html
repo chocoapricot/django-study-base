@@ -31,11 +31,21 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.severity.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >重度 <span class="text-danger">*</span></label>
+                <label for="{{ form.disability_grade.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >等級 <span class="text-danger">*</span></label>
                 <div class="col-sm-4">
-                    {{ form.severity }}
-                    {% if form.severity.errors %}
-                        <div class="text-danger small">{{ form.severity.errors.0 }}</div>
+                    {{ form.disability_grade }}
+                    {% if form.disability_grade.errors %}
+                        <div class="text-danger small">{{ form.disability_grade.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.disability_severity.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >重度 <span class="text-danger">*</span></label>
+                <div class="col-sm-4">
+                    {{ form.disability_severity }}
+                    {% if form.disability_severity.errors %}
+                        <div class="text-danger small">{{ form.disability_severity.errors.0 }}</div>
                     {% endif %}
                 </div>
             </div>

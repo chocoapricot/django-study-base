@@ -588,9 +588,10 @@ class StaffDisabilityForm(forms.ModelForm):
 
     class Meta:
         model = StaffDisability
-        fields = ['disability_type', 'disability_grade']
+        fields = ['disability_type', 'disability_grade', 'disability_severity']
         widgets = {
             'disability_grade': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'disability_severity': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -601,3 +602,4 @@ class StaffDisabilityForm(forms.ModelForm):
             for opt in Dropdowns.objects.filter(active=True, category='disability_type').order_by('disp_seq')
         ]
         self.fields['disability_grade'].required = True
+        self.fields['disability_severity'].required = True
