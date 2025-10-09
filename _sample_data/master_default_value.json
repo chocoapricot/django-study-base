@@ -1,124 +1,158 @@
 [
-    {
-        "model": "master.defaultvalue",
-        "pk": "ClientContractTtp.contract_period",
-        "fields": {
-            "created_at": "2025-10-08T11:12:00Z",
-            "updated_at": "2025-10-08T11:12:00Z",
-            "target_item": "紹介予定派遣情報＞契約期間",
-            "format": "text",
-            "value": "期間の定めなし"
-        }
-    },
-    {
-        "model": "master.defaultvalue",
-        "pk": "ClientContractTtp.probation_period",
-        "fields": {
-            "created_at": "2025-10-08T11:12:00Z",
-            "updated_at": "2025-10-08T11:12:00Z",
-            "target_item": "紹介予定派遣情報＞試用期間に関する事項",
-            "format": "text",
-            "value": "なし"
-        }
-    },
-    {
-        "model": "master.defaultvalue",
-        "pk": "ClientContractTtp.working_hours",
-        "fields": {
-            "created_at": "2025-10-08T11:12:00Z",
-            "updated_at": "2025-10-08T11:12:00Z",
-            "target_item": "紹介予定派遣情報＞始業・終業",
-            "format": "text",
-            "value": "始業：９時、終業：１８時"
-        }
-    },
-    {
-        "model": "master.defaultvalue",
-        "pk": "ClientContractTtp.break_time",
-        "fields": {
-            "created_at": "2025-10-08T11:12:00Z",
-            "updated_at": "2025-10-08T11:12:00Z",
-            "target_item": "紹介予定派遣情報＞休憩時間",
-            "format": "text",
-            "value": "60分（12：00～13：00）"
-        }
-    },
-
-    {
-        "model": "master.defaultvalue",
-        "pk": "ClientContractTtp.work_location",
-        "fields": {
-            "created_at": "2025-10-09T00:00:00Z",
-            "updated_at": "2025-10-09T00:00:00Z",
-            "target_item": "紹介予定派遣情報＞就業場所",
-            "format": "text",
-            "value": ""
-        }
-    },
-    {
-        "model": "master.defaultvalue",
-        "pk": "ClientContractTtp.overtime",
-        "fields": {
-            "created_at": "2025-10-09T00:00:00Z",
-            "updated_at": "2025-10-09T00:00:00Z",
-            "target_item": "紹介予定派遣情報＞時間外労働",
-            "format": "text",
-            "value": ""
-        }
-    },
-    {
-        "model": "master.defaultvalue",
-        "pk": "ClientContractTtp.holidays",
-        "fields": {
-            "created_at": "2025-10-09T00:00:00Z",
-            "updated_at": "2025-10-09T00:00:00Z",
-            "target_item": "紹介予定派遣情報＞休日",
-            "format": "text",
-            "value": ""
-        }
-    },
-    {
-        "model": "master.defaultvalue",
-        "pk": "ClientContractTtp.vacations",
-        "fields": {
-            "created_at": "2025-10-09T00:00:00Z",
-            "updated_at": "2025-10-09T00:00:00Z",
-            "target_item": "紹介予定派遣情報＞休暇",
-            "format": "text",
-            "value": ""
-        }
-    },
-    {
-        "model": "master.defaultvalue",
-        "pk": "ClientContractTtp.wages",
-        "fields": {
-            "created_at": "2025-10-09T00:00:00Z",
-            "updated_at": "2025-10-09T00:00:00Z",
-            "target_item": "紹介予定派遣情報＞賃金",
-            "format": "text",
-            "value": ""
-        }
-    },
-    {
-        "model": "master.defaultvalue",
-        "pk": "ClientContractTtp.insurances",
-        "fields": {
-            "created_at": "2025-10-09T00:00:00Z",
-            "updated_at": "2025-10-09T00:00:00Z",
-            "target_item": "紹介予定派遣情報＞社会保険・労働保険",
-            "format": "text",
-            "value": ""
-        }
-    },
-    {
-        "model": "master.defaultvalue",
-        "pk": "ClientContractTtp.other",
-        "fields": {
-            "created_at": "2025-10-09T00:00:00Z",
-            "updated_at": "2025-10-09T00:00:00Z",
-            "target_item": "紹介予定派遣情報＞その他",
-            "format": "text",
-            "value": ""
-        }
+{
+    "model": "master.defaultvalue",
+    "pk": "ClientContractTtp.contract_period",
+    "fields": {
+        "version": 1759949519019624,
+        "created_at": "2025-10-08T11:12:00Z",
+        "created_by": null,
+        "updated_at": "2025-10-08T11:12:00Z",
+        "updated_by": null,
+        "target_item": "紹介予定派遣情報＞契約期間",
+        "format": "text",
+        "value": "期間の定めなし",
+        "display_order": 1
     }
+},
+{
+    "model": "master.defaultvalue",
+    "pk": "ClientContractTtp.probation_period",
+    "fields": {
+        "version": 1759949519030371,
+        "created_at": "2025-10-08T11:12:00Z",
+        "created_by": null,
+        "updated_at": "2025-10-08T11:12:00Z",
+        "updated_by": null,
+        "target_item": "紹介予定派遣情報＞試用期間に関する事項",
+        "format": "text",
+        "value": "なし",
+        "display_order": 2
+    }
+},
+{
+    "model": "master.defaultvalue",
+    "pk": "ClientContractTtp.working_hours",
+    "fields": {
+        "version": 1759949519032582,
+        "created_at": "2025-10-08T11:12:00Z",
+        "created_by": null,
+        "updated_at": "2025-10-08T11:12:00Z",
+        "updated_by": null,
+        "target_item": "紹介予定派遣情報＞始業・終業",
+        "format": "text",
+        "value": "始業：９時、終業：１８時",
+        "display_order": 3
+    }
+},
+
+
+
+
+
+
+{
+    "model": "master.defaultvalue",
+    "pk": "ClientContractTtp.break_time",
+    "fields": {
+        "version": 1759949519034233,
+        "created_at": "2025-10-08T11:12:00Z",
+        "created_by": null,
+        "updated_at": "2025-10-08T11:12:00Z",
+        "updated_by": null,
+        "target_item": "紹介予定派遣情報＞休憩時間",
+        "format": "text",
+        "value": "60分（12：00～13：00）",
+        "display_order": 4
+    }
+},
+{
+    "model": "master.defaultvalue",
+    "pk": "ClientContractTtp.overtime",
+    "fields": {
+        "version": 1760024649520551,
+        "created_at": "2025-10-09T00:00:00Z",
+        "created_by": null,
+        "updated_at": "2025-10-09T15:59:56.172Z",
+        "updated_by": null,
+        "target_item": "紹介予定派遣情報＞所定時間外労働",
+        "format": "text",
+        "value": "有（１日4時間、１ヶ月45時間、１年360時間の範囲内）",
+        "display_order": 5
+    }
+},
+{
+    "model": "master.defaultvalue",
+    "pk": "ClientContractTtp.holidays",
+    "fields": {
+        "version": 1760024540793157,
+        "created_at": "2025-10-09T00:00:00Z",
+        "created_by": null,
+        "updated_at": "2025-10-09T15:58:07.445Z",
+        "updated_by": null,
+        "target_item": "紹介予定派遣情報＞休日",
+        "format": "text",
+        "value": "毎週土、日、祝日、年末年始（12月29日から1月3日）、夏季休業（8月13日から8月16日）",
+        "display_order": 6
+    }
+},
+{
+    "model": "master.defaultvalue",
+    "pk": "ClientContractTtp.vacations",
+    "fields": {
+        "version": 1760024553230110,
+        "created_at": "2025-10-09T00:00:00Z",
+        "created_by": null,
+        "updated_at": "2025-10-09T15:58:19.882Z",
+        "updated_by": null,
+        "target_item": "紹介予定派遣情報＞休暇",
+        "format": "text",
+        "value": "年次有給休暇：10日（６ヶ月勤続勤務後）その他、慶弔休暇あり。",
+        "display_order": 7
+    }
+},
+{
+    "model": "master.defaultvalue",
+    "pk": "ClientContractTtp.wages",
+    "fields": {
+        "version": 1760024609722828,
+        "created_at": "2025-10-09T00:00:00Z",
+        "created_by": null,
+        "updated_at": "2025-10-09T15:59:16.375Z",
+        "updated_by": null,
+        "target_item": "紹介予定派遣情報＞賃金",
+        "format": "textarea",
+        "value": "基本賃金：月給180,000～240,000円（毎月15日締切、毎月20日支払）\r\n通勤手当：通勤定期券代の実費相当（上限月額35,000円）\r\n所定時間外、休日又は深夜労働に対して支払われる割増賃金率(所定時間外：法定超(60時間以下)25％・(60時間超)50％、休日：法定休日35％、深夜：25％）\r\n昇給有（0～3,000円／月） 賞与有（年２回、計１ヶ月分）",
+        "display_order": 8
+    }
+},
+{
+    "model": "master.defaultvalue",
+    "pk": "ClientContractTtp.insurances",
+    "fields": {
+        "version": 1760024664072902,
+        "created_at": "2025-10-09T00:00:00Z",
+        "created_by": null,
+        "updated_at": "2025-10-09T16:00:10.725Z",
+        "updated_by": null,
+        "target_item": "紹介予定派遣情報＞社会保険・労働保険",
+        "format": "text",
+        "value": "厚生年金、健康保険、雇用保険、労災保険　有",
+        "display_order": 9
+    }
+},
+{
+    "model": "master.defaultvalue",
+    "pk": "ClientContractTtp.other",
+    "fields": {
+        "version": 1760024695008860,
+        "created_at": "2025-10-09T00:00:00Z",
+        "created_by": null,
+        "updated_at": "2025-10-09T16:00:41.661Z",
+        "updated_by": null,
+        "target_item": "紹介予定派遣情報＞その他",
+        "format": "textarea",
+        "value": "・派遣先は、職業紹介を受けることを希望しなかった又は職業紹介を受けた者を雇用しなかった場合には、その理由を、派遣元事業主に対して書面により明示する。\r\n・紹介予定派遣を経て派遣先が雇用する場合には、年次有給休暇及び退職金の取扱いについて、労働者派遣の期間を勤務時間に含めて算入することとする。",
+        "display_order": 10
+    }
+}
 ]

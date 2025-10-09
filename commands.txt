@@ -71,6 +71,7 @@ python manage.py dumpdata master.contractterms         --format=json --indent=4 
 python manage.py dumpdata master.jobcategory　         --format=json --indent=4 > _sample_data/master_job_category.json
 python manage.py dumpdata master.hakenbusinesscontent      --format=json --indent=4 > _sample_data/master_haken_business_content.json
 python manage.py dumpdata master.hakenresponsibilitydegree --format=json --indent=4 > _sample_data/master_haken_responsibility_degree.json
+python manage.py dumpdata master.defaultvalue              --format=json --indent=4 > _sample_data/master_default_value.json
 
 #   UTF16からUTF8に変更してから取り込む必要あり
 
