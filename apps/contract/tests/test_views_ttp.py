@@ -147,7 +147,7 @@ class ClientContractTtpViewsTest(TestCase):
         """契約詳細画面にTTPメニューが表示されるかテスト"""
         # 派遣契約の場合、表示される
         response = self.client.get(reverse('contract:client_contract_detail', kwargs={'pk': self.contract.pk}))
-        self.assertContains(response, 'TTP')
+        self.assertContains(response, 'その他情報')
         self.assertContains(response, reverse('contract:client_contract_ttp_view', kwargs={'haken_pk': self.haken.pk}))
 
         # 派遣契約でない場合、表示されない
