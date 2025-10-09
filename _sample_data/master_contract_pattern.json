@@ -3,7 +3,7 @@
     "model": "master.contractpattern",
     "pk": 1,
     "fields": {
-        "version": 1758030461926832,
+        "version": 1759949509366740,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -20,7 +20,7 @@
     "model": "master.contractpattern",
     "pk": 2,
     "fields": {
-        "version": 1758030461931334,
+        "version": 1759949509373097,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -37,7 +37,7 @@
     "model": "master.contractpattern",
     "pk": 3,
     "fields": {
-        "version": 1758030461933353,
+        "version": 1759949509376477,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -54,7 +54,7 @@
     "model": "master.contractpattern",
     "pk": 4,
     "fields": {
-        "version": 1758030461935227,
+        "version": 1759949509378629,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -71,7 +71,7 @@
     "model": "master.contractpattern",
     "pk": 5,
     "fields": {
-        "version": 1758030551234655,
+        "version": 1759949509380381,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-16T14:04:57.887Z",
@@ -88,7 +88,7 @@
     "model": "master.contractpattern",
     "pk": 6,
     "fields": {
-        "version": 1758030559777546,
+        "version": 1759949509383833,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-16T14:05:06.429Z",
@@ -105,7 +105,7 @@
     "model": "master.contractpattern",
     "pk": 7,
     "fields": {
-        "version": 1758030567182668,
+        "version": 1759949509386573,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-16T14:05:13.835Z",
@@ -115,6 +115,23 @@
         "contract_type_code": "20",
         "memo": "",
         "display_order": 30,
+        "is_active": true
+    }
+},
+{
+    "model": "master.contractpattern",
+    "pk": 8,
+    "fields": {
+        "version": 1760028036742777,
+        "created_at": "2025-10-09T16:56:23.395Z",
+        "created_by": 1,
+        "updated_at": "2025-10-09T16:56:23.395Z",
+        "updated_by": 1,
+        "name": "紹介予定派遣",
+        "domain": "10",
+        "contract_type_code": "20",
+        "memo": "",
+        "display_order": 40,
         "is_active": true
     }
 }
