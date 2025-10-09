@@ -457,6 +457,59 @@ class ContractViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, '紹介予定派遣情報')
 
+    def test_staff_contract_create_initial_name_from_master(self):
+        """スタッフ契約作成画面で、契約名がマスタから初期設定されるかテスト"""
+        # 1. DefaultValueマスタにテストデータを登録
+        default_name = '雇用契約'
+        DefaultValue.objects.create(
+            pk='StaffContract.contract_name',
+            target_item='スタッフ契約＞契約名',
+            value=default_name
+        )
+
+        # 2. スタッフ契約作成画面にGETリクエスト
+        url = reverse('contract:staff_contract_create')
+        response = self.client.get(url)
+
+        # 3. レスポンスを検証
+        self.assertEqual(response.status_code, 200)
+        form = response.context.get('form')
+        self.assertIsNotNone(form)
+
+        # フォームの初期値が正しく設定されていることを確認
+        self.assertEqual(form.initial.get('contract_name'), default_name)
+
+    def test_staff_contract_create_copy_does_not_use_master_default(self):
+        """スタッフ契約コピー作成画面では、契約名がマスタの初期値で上書きされないことをテスト"""
+        # 1. DefaultValueマスタにテストデータを登録
+        default_name = '雇用契約'
+        DefaultValue.objects.create(
+            pk='StaffContract.contract_name',
+            target_item='スタッフ契約＞契約名',
+            value=default_name
+        )
+
+        # 2. コピー元の契約を作成
+        original_contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='Original Name',
+            start_date=datetime.date.today(),
+            contract_pattern=self.staff_pattern,
+        )
+
+        # 3. スタッフ契約作成画面にコピー用のGETリクエスト
+        url = reverse('contract:staff_contract_create') + f'?copy_from={original_contract.pk}'
+        response = self.client.get(url)
+
+        # 4. レスポンスを検証
+        self.assertEqual(response.status_code, 200)
+        form = response.context.get('form')
+        self.assertIsNotNone(form)
+
+        # フォームの初期値がコピー元の情報になっていることを確認
+        self.assertEqual(form.initial.get('contract_name'), 'Original Nameのコピー')
+        self.assertNotEqual(form.initial.get('contract_name'), default_name)
+
     def test_ttp_info_not_displayed_for_non_haken_contract(self):
         """非派遣契約詳細ページで、TTP情報が表示されないかテスト"""
         url = reverse('contract:client_contract_detail', kwargs={'pk': self.non_haken_contract.pk})

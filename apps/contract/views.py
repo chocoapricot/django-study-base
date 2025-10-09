@@ -671,6 +671,13 @@ def staff_contract_create(request):
                 exclude=['id', 'pk', 'contract_number', 'contract_status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'approved_at', 'approved_by', 'issued_at', 'issued_by', 'confirmed_at']
             )
             initial_data['contract_name'] = f"{initial_data.get('contract_name', '')}のコピー"
+        else:
+            # コピーでない新規作成の場合、マスタからデフォルト値を取得
+            try:
+                default_value = DefaultValue.objects.get(pk='StaffContract.contract_name')
+                initial_data['contract_name'] = default_value.value
+            except DefaultValue.DoesNotExist:
+                pass  # マスタにキーが存在しない場合は何もしない
 
         form = StaffContractForm(initial=initial_data)
 

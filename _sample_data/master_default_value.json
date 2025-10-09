@@ -154,5 +154,20 @@
         "value": "・派遣先は、職業紹介を受けることを希望しなかった又は職業紹介を受けた者を雇用しなかった場合には、その理由を、派遣元事業主に対して書面により明示する。\r\n・紹介予定派遣を経て派遣先が雇用する場合には、年次有給休暇及び退職金の取扱いについて、労働者派遣の期間を勤務時間に含めて算入することとする。",
         "display_order": 10
     }
+},
+{
+    "model": "master.defaultvalue",
+    "pk": "StaffContract.contract_name",
+    "fields": {
+        "version": 1760024700000000,
+        "created_at": "2025-10-09T00:00:00Z",
+        "created_by": null,
+        "updated_at": "2025-10-09T16:01:00.000Z",
+        "updated_by": null,
+        "target_item": "スタッフ契約＞契約名",
+        "format": "text",
+        "value": "雇用契約",
+        "display_order": 11
+    }
 }
 ]
