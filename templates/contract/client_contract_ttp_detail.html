@@ -20,6 +20,10 @@
                     <table class="table table-sm">
                         <tbody>
                             <tr>
+                                <th class="bg-light">雇用しようとする者の名称</th>
+                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ ttp_info.employer_name|default_if_none:"" }}</td>
+                            </tr>
+                            <tr>
                                 <th class="bg-light" style="width: 25%;">契約期間</th>
                                 <td style="white-space: pre-wrap; word-wrap: break-word;">{{ ttp_info.contract_period|default_if_none:"" }}</td>
                             </tr>
@@ -62,10 +66,6 @@
                             <tr>
                                 <th class="bg-light">各種保険の加入</th>
                                 <td style="white-space: pre-wrap; word-wrap: break-word;">{{ ttp_info.insurances|default_if_none:"" }}</td>
-                            </tr>
-                            <tr>
-                                <th class="bg-light">雇用しようとする者の名称</th>
-                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ ttp_info.employer_name|default_if_none:"" }}</td>
                             </tr>
                             <tr>
                                 <th class="bg-light">その他</th>

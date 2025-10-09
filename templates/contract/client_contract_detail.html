@@ -119,6 +119,10 @@
                         </div>
                         <table class="table table-sm">
                             <tr>
+                                <th class="w-25 bg-light">雇用しようとする者の名称</th>
+                                <td>{{ contract.haken_info.ttp_info.employer_name|linebreaksbr|default:"-" }}</td>
+                            </tr>
+                            <tr>
                                 <th class="w-25 bg-light">契約期間</th>
                                 <td>{{ contract.haken_info.ttp_info.contract_period|linebreaksbr|default:"-" }}</td>
                             </tr>
@@ -161,10 +165,6 @@
                             <tr>
                                 <th class="w-25 bg-light">各種保険の加入</th>
                                 <td>{{ contract.haken_info.ttp_info.insurances|linebreaksbr|default:"-" }}</td>
-                            </tr>
-                            <tr>
-                                <th class="w-25 bg-light">雇用しようとする者の名称</th>
-                                <td>{{ contract.haken_info.ttp_info.employer_name|linebreaksbr|default:"-" }}</td>
                             </tr>
                             <tr>
                                 <th class="w-25 bg-light">その他</th>

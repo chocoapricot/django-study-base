@@ -231,10 +231,10 @@ def generate_contract_pdf_content(contract):
                     ttp_sub_items = []
                     # ClientContractTtpのフィールドをループして項目を作成
                     ttp_fields = [
-                        'contract_period', 'probation_period', 'business_content',
+                        'employer_name','contract_period', 'probation_period', 'business_content',
                         'work_location', 'working_hours', 'break_time', 'overtime',
                         'holidays', 'vacations', 'wages', 'insurances',
-                        'employer_name', 'other'
+                         'other'
                     ]
                     for field_name in ttp_fields:
                         field = ttp_info._meta.get_field(field_name)
