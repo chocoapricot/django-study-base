@@ -1900,6 +1900,12 @@ def client_contract_ttp_create(request, haken_pk):
             'probation_period': 'ClientContractTtp.probation_period',
             'working_hours': 'ClientContractTtp.working_hours',
             'break_time': 'ClientContractTtp.break_time',
+            'overtime': 'ClientContractTtp.overtime',
+            'holidays': 'ClientContractTtp.holidays',
+            'vacations': 'ClientContractTtp.vacations',
+            'wages': 'ClientContractTtp.wages',
+            'insurances': 'ClientContractTtp.insurances',
+            'other': 'ClientContractTtp.other',
         }
         for field, key in default_keys.items():
             try:
