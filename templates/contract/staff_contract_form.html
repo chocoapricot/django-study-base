@@ -5,6 +5,13 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
+<style>
+    /* pay_unit のプルダウンを狭くする */
+    #id_pay_unit {
+        width: 110px !important;
+        max-width: 110px !important;
+    }
+</style>
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">{{ title }}</div>
     <div class="card-body">
@@ -23,7 +30,7 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.job_category.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">職種</label>
-                <div class="col-sm-4">
+                <div class="col-sm-3">
                     {{ form.job_category }}
                     {% if form.job_category.errors %}
                         <div class="text-danger small">{{ form.job_category.errors.0 }}</div>
@@ -33,7 +40,7 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.contract_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約書パターン</label>
-                <div class="col-sm-4">
+                <div class="col-sm-3">
                     {{ form.contract_pattern }}
                     {% if form.contract_pattern.errors %}
                         <div class="text-danger small">{{ form.contract_pattern.errors.0 }}</div>
@@ -43,7 +50,7 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.contract_status.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約状況</label>
-                <div class="col-sm-4">
+                <div class="col-sm-3">
                     {{ form.contract_status }}
                     {% if form.contract_status.errors %}
                         <div class="text-danger small">{{ form.contract_status.errors.0 }}</div>
@@ -102,8 +109,10 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_amount.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約金額</label>
-                <div class="col-sm-6">
+                <label for="{{ form.contract_amount.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                    契約金額
+                </label>
+                <div class="col-sm-3">
                     <div class="input-group input-group-sm">
                         {{ form.pay_unit }}
                         {{ form.contract_amount }}
