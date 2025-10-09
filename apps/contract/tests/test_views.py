@@ -949,3 +949,34 @@ class ClientContractTtpViewTest(TestCase):
         self.assertEqual(form.initial.get('probation_period'), 'デフォルト試用期間')
         # マスタに存在しないキーは設定されていないことを確認
         self.assertIsNone(form.initial.get('working_hours'))
+
+    def test_ttp_create_form_initial_values_from_haken(self):
+        """TTP作成画面で、派遣情報から初期値が設定されるかテスト"""
+        # 1. TTP情報を持たない派遣契約を準備
+        haken_contract = ClientContract.objects.create(
+            client=self.test_client_model, # client.name is 'Test Client'
+            contract_name='Haken Initial Value Test',
+            start_date=datetime.date.today(),
+            contract_pattern=self.contract_pattern,
+            client_contract_type_code='20',
+            contract_status=ClientContract.ContractStatus.DRAFT,
+        )
+        haken_info = ClientContractHaken.objects.create(
+            client_contract=haken_contract,
+            business_content='派遣元の業務内容',
+            work_location='派遣元の就業場所',
+        )
+
+        # 2. TTP作成画面にGETリクエスト
+        url = reverse('contract:client_contract_ttp_create', kwargs={'haken_pk': haken_info.pk})
+        response = self.client.get(url)
+
+        # 3. レスポンスを検証
+        self.assertEqual(response.status_code, 200)
+        form = response.context.get('form')
+        self.assertIsNotNone(form)
+
+        # フォームの初期値が正しく設定されていることを確認
+        self.assertEqual(form.initial.get('employer_name'), self.test_client_model.name)
+        self.assertEqual(form.initial.get('business_content'), haken_info.business_content)
+        self.assertEqual(form.initial.get('work_location'), haken_info.work_location)
