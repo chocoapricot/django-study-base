@@ -1342,7 +1342,6 @@ def staff_disability_request_detail(request, staff_pk, pk):
                     defaults={
                         'disability_type': profile_disability.disability_type,
                         'disability_grade': profile_disability.disability_grade,
-                        'notes': profile_disability.notes,
                     }
                 )
 
