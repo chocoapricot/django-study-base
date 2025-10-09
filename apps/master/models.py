@@ -893,12 +893,13 @@ class DefaultValue(MyModel):
     target_item = models.CharField('対象項目', max_length=255)
     format = models.CharField('形式', max_length=10, choices=FORMAT_CHOICES, default='text')
     value = models.TextField('値', blank=True)
+    display_order = models.IntegerField('表示順', default=0)
 
     class Meta:
         db_table = 'apps_master_default_value'
         verbose_name = '初期値マスタ'
         verbose_name_plural = '初期値マスタ'
-        ordering = ['target_item']
+        ordering = ['display_order', 'target_item']
 
     def __str__(self):
         return self.target_item

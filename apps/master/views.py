@@ -2726,7 +2726,6 @@ def default_value_list(request):
         items = items.filter(
             Q(target_item__icontains=search_query) | Q(value__icontains=search_query)
         )
-    items = items.order_by("target_item")
 
     paginator = Paginator(items, 20)
     page = request.GET.get("page")
