@@ -125,8 +125,8 @@
                                 <tr>
                                     <th>社員番号</th>
                                     <th>スタッフ</th>
+                                    <th>雇用形態</th>
                                     <th>契約名</th>
-                                    <th>契約書パターン</th>
                                     <th>契約期間</th>
                                     <th class="text-end">契約金額</th>
                                     <th>契約状況</th>
@@ -151,11 +151,15 @@
                                     </td>
                                     <td>
                                         {{ contract.staff.name_last }} {{ contract.staff.name_first }}
-                                        {% if contract.staff and contract.staff.employment_type %}
-                                            <span class="badge {{ contract.staff.employment_type|badge_class }} ms-2" style="font-size:13px">{% my_name 'employment_type' contract.staff.employment_type %}</span>
-                                        {% endif %}
                                         {% if contract.staff.has_international %}
                                             <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if contract.staff and contract.staff.employment_type %}
+                                            <span class="badge {{ contract.staff.employment_type|badge_class }}">{% my_name 'employment_type' contract.staff.employment_type %}</span>
+                                        {% else %}
+                                            -
                                         {% endif %}
                                     </td>
                                     <td>
@@ -163,7 +167,6 @@
                                             {{ contract.contract_name }}
                                         </a>
                                     </td>
-                                    <td>{{ contract.contract_pattern.name|default:"-" }}</td>
                                     <td>
                                         {{ contract.start_date|date:"Y/m/d" }}
                                         {% if contract.end_date %}
