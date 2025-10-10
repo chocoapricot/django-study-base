@@ -218,6 +218,41 @@
     <div class="col-md-4">
         <!-- 状況カード -->
         {% include 'contract/_client_contract_status_card.html' %}
+
+        <!-- 契約アサインカード -->
+        <div class="card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header">
+                契約アサイン
+            </div>
+            <div class="card-body">
+                {% if contract.staff_contracts.all %}
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>スタッフ名</th>
+                                <th>契約期間</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for staff_contract in contract.staff_contracts.all %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'contract:staff_contract_detail' staff_contract.pk %}">
+                                        {{ staff_contract.staff.name_last }} {{ staff_contract.staff.name_first }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {{ staff_contract.start_date|date:"Y/m/d" }}～{% if staff_contract.end_date %}{{ staff_contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="card-text">アサインされているスタッフ契約はありません。</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 
