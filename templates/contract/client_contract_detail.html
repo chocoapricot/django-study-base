@@ -179,12 +179,6 @@
                     <div class="col-12">
                         <h6 class="text-muted mb-3">詳細情報</h6>
                         <table class="table table-sm">
-                            {% if contract.description %}
-                            <tr>
-                                <th class="w-25 bg-light">契約内容</th>
-                                <td>{{ contract.description|linebreaksbr }}</td>
-                            </tr>
-                            {% endif %}
                             {% if contract.notes %}
                             <tr>
                                 <th class="w-25 bg-light">備考</th>

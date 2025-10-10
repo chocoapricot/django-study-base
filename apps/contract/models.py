@@ -59,7 +59,6 @@ class ClientContract(MyModel):
     end_date = models.DateField('契約終了日', blank=True, null=True)
     contract_amount = models.DecimalField('契約金額', max_digits=12, decimal_places=0, blank=True, null=True)
     bill_unit = models.CharField('請求単位', max_length=10, blank=True, null=True)
-    description = models.TextField('契約内容', blank=True, null=True)
     notes = models.TextField('備考', blank=True, null=True)
     memo = models.TextField('メモ', blank=True, null=True)
     payment_site = models.ForeignKey(
