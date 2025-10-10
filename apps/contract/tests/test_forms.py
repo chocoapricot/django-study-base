@@ -99,12 +99,16 @@ class ContractFormTest(TestCase):
             'start_date': date(2024, 5, 1),
             'end_date': date(2024, 12, 31),
             'pay_unit': self.pay_unit.value,
+            'work_location': 'テスト就業場所',
+            'business_content': 'テスト業務内容',
         }
         form = StaffContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
         instance = form.save()
         self.assertEqual(instance.job_category, self.job_category)
         self.assertEqual(instance.contract_pattern, self.staff_pattern)
+        self.assertEqual(instance.work_location, 'テスト就業場所')
+        self.assertEqual(instance.business_content, 'テスト業務内容')
     
     def test_client_contract_form_initial_display_new(self):
         """クライアント契約フォーム新規作成時の初期表示テスト"""

@@ -450,6 +450,24 @@ class ContractPdfGenerationTest(TestCase):
         self.assertIn("契約金額", text)
         self.assertIn("日給 30,000円", text)
 
+    @patch('apps.contract.utils.generate_table_based_contract_pdf')
+    def test_staff_contract_pdf_includes_new_fields(self, mock_generate_pdf):
+        """スタッフ契約書PDFに就業場所と業務内容が含まれることをテスト"""
+        self.staff_contract.work_location = "テスト用就業場所"
+        self.staff_contract.business_content = "テスト用業務内容"
+        self.staff_contract.save()
+
+        generate_contract_pdf_content(self.staff_contract)
+
+        self.assertTrue(mock_generate_pdf.called)
+        items = mock_generate_pdf.call_args[0][3]
+        items_dict = {item['title']: item['text'] for item in items}
+
+        self.assertIn("就業場所", items_dict)
+        self.assertEqual(items_dict["就業場所"], "テスト用就業場所")
+        self.assertIn("業務内容", items_dict)
+        self.assertEqual(items_dict["業務内容"], "テスト用業務内容")
+
     def test_dispatch_contract_pdf_includes_ttp_info(self):
         """紹介予定派遣の場合に、PDFにTTP情報が正しく印字されることをテストする"""
         from apps.contract.models import ClientContractTtp
