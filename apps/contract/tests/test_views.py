@@ -512,6 +512,64 @@ class ContractViewTest(TestCase):
         self.assertEqual(form.initial.get('contract_name'), 'Original Nameのコピー')
         self.assertNotEqual(form.initial.get('contract_name'), default_name)
 
+    def test_contract_assignment_card_display(self):
+        """契約詳細ページでの契約アサインカードの表示をテストする"""
+        from ..models import ContractAssignment
+
+        # アサイン用のスタッフ契約を作成
+        assigned_staff_contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='Assigned Staff Contract',
+            start_date=datetime.date(2025, 1, 1),
+            end_date=datetime.date(2025, 12, 31),
+            contract_pattern=self.staff_pattern,
+        )
+
+        # --- シナリオ1: アサインなし ---
+        # クライアント契約詳細ページ
+        client_detail_url = reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract.pk})
+        response = self.client.get(client_detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '契約アサイン')
+        self.assertContains(response, 'アサインされているスタッフ契約はありません。')
+
+        # スタッフ契約詳細ページ
+        staff_detail_url = reverse('contract:staff_contract_detail', kwargs={'pk': assigned_staff_contract.pk})
+        response = self.client.get(staff_detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '契約アサイン')
+        self.assertContains(response, 'アサインされているクライアント契約はありません。')
+
+        # --- シナリオ2: アサインあり ---
+        # 契約をアサイン
+        ContractAssignment.objects.create(
+            client_contract=self.client_contract,
+            staff_contract=assigned_staff_contract
+        )
+
+        # クライアント契約詳細ページ
+        response = self.client.get(client_detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '契約アサイン')
+        self.assertNotContains(response, 'アサインされているスタッフ契約はありません。')
+        # スタッフ名と契約期間が表示されていることを確認
+        self.assertContains(response, f'{assigned_staff_contract.staff.name_last} {assigned_staff_contract.staff.name_first}')
+        self.assertContains(response, '2025/01/01～2025/12/31')
+        # スタッフ契約へのリンクがあることを確認
+        self.assertContains(response, f'href="{staff_detail_url}"')
+
+        # スタッフ契約詳細ページ
+        response = self.client.get(staff_detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '契約アサイン')
+        self.assertNotContains(response, 'アサインされているクライアント契約はありません。')
+        # クライアント名と契約期間が表示されていることを確認
+        self.assertContains(response, self.client_contract.client.name)
+        expected_end_date = self.client_contract.end_date.strftime("%Y/%m/%d")
+        self.assertContains(response, expected_end_date)
+        # クライアント契約へのリンクがあることを確認
+        self.assertContains(response, f'href="{client_detail_url}"')
+
     def test_ttp_info_not_displayed_for_non_haken_contract(self):
         """非派遣契約詳細ページで、TTP情報が表示されないかテスト"""
         url = reverse('contract:client_contract_detail', kwargs={'pk': self.non_haken_contract.pk})

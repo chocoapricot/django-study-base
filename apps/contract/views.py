@@ -179,7 +179,11 @@ def staff_contract_issue_history_list(request, pk):
 def client_contract_detail(request, pk):
     """クライアント契約詳細"""
     contract = get_object_or_404(
-        ClientContract.objects.select_related('client', 'job_category', 'contract_pattern', 'payment_site', 'haken_info__ttp_info'),
+        ClientContract.objects.select_related(
+            'client', 'job_category', 'contract_pattern', 'payment_site', 'haken_info__ttp_info'
+        ).prefetch_related(
+            'staff_contracts__staff'
+        ),
         pk=pk
     )
     haken_info = getattr(contract, 'haken_info', None)
@@ -583,7 +587,12 @@ def staff_contract_list(request):
 @permission_required('contract.view_staffcontract', raise_exception=True)
 def staff_contract_detail(request, pk):
     """スタッフ契約詳細"""
-    contract = get_object_or_404(StaffContract, pk=pk)
+    contract = get_object_or_404(
+        StaffContract.objects.prefetch_related(
+            'client_contracts__client'
+        ),
+        pk=pk
+    )
     
     # スタッフフィルタ情報を取得
     staff_filter = request.GET.get('staff', '')
