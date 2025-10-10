@@ -151,6 +151,9 @@
                                     </td>
                                     <td>
                                         {{ contract.staff.name_last }} {{ contract.staff.name_first }}
+                                        {% if contract.staff and contract.staff.employment_type %}
+                                            <span class="badge {{ contract.staff.employment_type|badge_class }} ms-2" style="font-size:13px">{% my_name 'employment_type' contract.staff.employment_type %}</span>
+                                        {% endif %}
                                         {% if contract.staff.has_international %}
                                             <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
                                         {% endif %}
@@ -159,9 +162,6 @@
                                         <a href="{% url 'contract:staff_contract_detail' contract.pk %}{% if staff_filter %}?staff={{ staff_filter }}{% endif %}" class="text-decoration-none">
                                             {{ contract.contract_name }}
                                         </a>
-                                        {% if contract.staff and contract.staff.employment_type %}
-                                            <span class="badge {{ contract.staff.employment_type|badge_class }} ms-2" style="font-size:13px">{% my_name 'employment_type' contract.staff.employment_type %}</span>
-                                        {% endif %}
                                     </td>
                                     <td>{{ contract.contract_pattern.name|default:"-" }}</td>
                                     <td>

@@ -42,6 +42,9 @@
                                     <a href="{% url 'staff:staff_detail' contract.staff.pk %}" class="text-decoration-none">
                                         {{ contract.staff.name_last }} {{ contract.staff.name_first }}
                                     </a>
+                                    {% if contract.staff and contract.staff.employment_type %}
+                                        <span class="badge {{ contract.staff.employment_type|badge_class }} ms-2" style="font-size:13px">{% my_name 'employment_type' contract.staff.employment_type %}</span>
+                                    {% endif %}
                                 </td>
                             </tr>
                             <tr>
