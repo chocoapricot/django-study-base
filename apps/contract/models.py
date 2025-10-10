@@ -19,6 +19,12 @@ class ClientContract(MyModel):
         ISSUED = '20', '発行済'
         CONFIRMED = '30', '確認済'
 
+    staff_contracts = models.ManyToManyField(
+        'StaffContract',
+        through='ContractAssignment',
+        related_name='client_contracts',
+        verbose_name='関連スタッフ契約'
+    )
     client = models.ForeignKey(
         Client,
         on_delete=models.CASCADE,
@@ -505,3 +511,29 @@ class ClientContractTtp(MyModel):
 
     def __str__(self):
         return f"{self.haken.client_contract}"
+
+
+class ContractAssignment(MyModel):
+    """
+    クライアント契約とスタッフ契約の関連付けを管理するモデル。
+    """
+    client_contract = models.ForeignKey(
+        ClientContract,
+        on_delete=models.CASCADE,
+        verbose_name='クライアント契約'
+    )
+    staff_contract = models.ForeignKey(
+        'StaffContract',
+        on_delete=models.CASCADE,
+        verbose_name='スタッフ契約'
+    )
+    assigned_at = models.DateTimeField('アサイン日時', auto_now_add=True)
+
+    class Meta:
+        db_table = 'apps_contract_assignment'
+        verbose_name = '契約アサイン'
+        verbose_name_plural = '契約アサイン'
+        unique_together = ('client_contract', 'staff_contract')
+
+    def __str__(self):
+        return f"{self.client_contract} - {self.staff_contract}"

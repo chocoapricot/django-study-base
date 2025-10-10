@@ -8,6 +8,7 @@ from django.http import JsonResponse, HttpResponse, Http404
 import re
 from datetime import datetime, date
 from django.core.files.base import ContentFile
+from datetime import date
 from django.forms.models import model_to_dict
 from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken, ClientContractTtp
 from .forms import ClientContractForm, StaffContractForm, ClientContractHakenForm, ClientContractTtpForm
@@ -29,6 +30,8 @@ from reportlab.pdfbase.ttfonts import TTFont
 import io
 from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number, generate_clash_day_notification_pdf, generate_dispatch_notification_pdf, generate_dispatch_ledger_pdf
 from .resources import ClientContractResource, StaffContractResource
+from .models import ContractAssignment
+from django.urls import reverse
 
 # 契約管理トップページ
 @login_required
@@ -179,7 +182,11 @@ def staff_contract_issue_history_list(request, pk):
 def client_contract_detail(request, pk):
     """クライアント契約詳細"""
     contract = get_object_or_404(
-        ClientContract.objects.select_related('client', 'job_category', 'contract_pattern', 'payment_site', 'haken_info__ttp_info'),
+        ClientContract.objects.select_related(
+            'client', 'job_category', 'contract_pattern', 'payment_site', 'haken_info__ttp_info'
+        ).prefetch_related(
+            'staff_contracts__staff'
+        ),
         pk=pk
     )
     haken_info = getattr(contract, 'haken_info', None)
@@ -583,7 +590,12 @@ def staff_contract_list(request):
 @permission_required('contract.view_staffcontract', raise_exception=True)
 def staff_contract_detail(request, pk):
     """スタッフ契約詳細"""
-    contract = get_object_or_404(StaffContract, pk=pk)
+    contract = get_object_or_404(
+        StaffContract.objects.prefetch_related(
+            'client_contracts__client'
+        ),
+        pk=pk
+    )
     
     # スタッフフィルタ情報を取得
     staff_filter = request.GET.get('staff', '')
@@ -2005,3 +2017,104 @@ def client_contract_ttp_delete(request, pk):
         'contract': ttp_info.haken.client_contract,
     }
     return render(request, 'contract/client_contract_ttp_delete.html', context)
+
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def client_contract_assignment_view(request, pk):
+    """クライアント契約へのスタッフ契約割当画面"""
+    client_contract = get_object_or_404(ClientContract, pk=pk)
+
+    if client_contract.contract_status != ClientContract.ContractStatus.DRAFT:
+        messages.error(request, 'この契約は作成中でないため、割当できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
+    # 既に割り当て済みのスタッフ契約IDを取得
+    assigned_staff_contract_ids = client_contract.staff_contracts.values_list('id', flat=True)
+
+    # 期間が重複し、まだ割り当てられていないスタッフ契約を検索
+    staff_contracts = StaffContract.objects.filter(
+        Q(end_date__gte=client_contract.start_date) | Q(end_date__isnull=True),
+        start_date__lte=client_contract.end_date if client_contract.end_date else date.max
+    ).exclude(id__in=assigned_staff_contract_ids)
+
+    context = {
+        'client_contract': client_contract,
+        'assignable_contracts': staff_contracts,
+        'title': 'スタッフ契約の割当',
+        'assignment_type': 'staff',
+    }
+    return render(request, 'contract/contract_assignment_list.html', context)
+
+
+@login_required
+@permission_required('contract.change_staffcontract', raise_exception=True)
+def staff_contract_assignment_view(request, pk):
+    """スタッフ契約へのクライアント契約割当画面"""
+    staff_contract = get_object_or_404(StaffContract, pk=pk)
+
+    if staff_contract.contract_status != StaffContract.ContractStatus.DRAFT:
+        messages.error(request, 'この契約は作成中でないため、割当できません。')
+        return redirect('contract:staff_contract_detail', pk=pk)
+
+    # 既に割り当て済みのクライアント契約IDを取得
+    assigned_client_contract_ids = staff_contract.client_contracts.values_list('id', flat=True)
+
+    # 期間が重複し、まだ割り当てられていないクライアント契約を検索
+    client_contracts = ClientContract.objects.filter(
+        Q(end_date__gte=staff_contract.start_date) | Q(end_date__isnull=True),
+        start_date__lte=staff_contract.end_date if staff_contract.end_date else date.max
+    ).exclude(id__in=assigned_client_contract_ids)
+
+    context = {
+        'staff_contract': staff_contract,
+        'assignable_contracts': client_contracts,
+        'title': 'クライアント契約の割当',
+        'assignment_type': 'client',
+    }
+    return render(request, 'contract/contract_assignment_list.html', context)
+
+
+@login_required
+def create_contract_assignment_view(request):
+    """契約アサインを作成するビュー"""
+    if request.method == 'POST':
+        client_contract_id = request.POST.get('client_contract_id')
+        staff_contract_id = request.POST.get('staff_contract_id')
+        from_view = request.POST.get('from')
+
+        client_contract = get_object_or_404(ClientContract, pk=client_contract_id)
+        staff_contract = get_object_or_404(StaffContract, pk=staff_contract_id)
+
+        # ステータスチェック
+        if client_contract.contract_status != ClientContract.ContractStatus.DRAFT or \
+           staff_contract.contract_status != StaffContract.ContractStatus.DRAFT:
+            messages.error(request, '作成中の契約間でのみ割当が可能です。')
+            if from_view == 'client':
+                return redirect('contract:client_contract_detail', pk=client_contract_id)
+            else:
+                return redirect('contract:staff_contract_detail', pk=staff_contract_id)
+
+        try:
+            with transaction.atomic():
+                assignment, created = ContractAssignment.objects.get_or_create(
+                    client_contract=client_contract,
+                    staff_contract=staff_contract,
+                    defaults={'created_by': request.user, 'updated_by': request.user}
+                )
+
+                if created:
+                    messages.success(request, '契約の割当が完了しました。')
+                else:
+                    messages.info(request, 'この割当は既に存在します。')
+
+        except Exception as e:
+            messages.error(request, f'割当処理中にエラーが発生しました: {e}')
+
+        # 元の画面にリダイレクト
+        if from_view == 'client':
+            return redirect('contract:client_contract_detail', pk=client_contract_id)
+        elif from_view == 'staff':
+            return redirect('contract:staff_contract_detail', pk=staff_contract_id)
+
+    return redirect('contract:contract_index')

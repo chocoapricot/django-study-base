@@ -142,6 +142,44 @@
     </div>
     <div class="col-md-4">
         {% include 'contract/_staff_contract_status_card.html' %}
+
+        <!-- 契約アサインカード -->
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                契約アサイン
+                {% if contract.contract_status == '1' %}
+                <a href="{% url 'contract:staff_contract_assignment' contract.pk %}" class="btn btn-sm btn-primary">割当</a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if contract.client_contracts.all %}
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>クライアント名</th>
+                                <th>契約期間</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for client_contract in contract.client_contracts.all %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'contract:client_contract_detail' client_contract.pk %}">
+                                        {{ client_contract.client.name }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {{ client_contract.start_date|date:"Y/m/d" }}～{% if client_contract.end_date %}{{ client_contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="card-text">アサインされているクライアントはありません。</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 

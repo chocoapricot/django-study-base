@@ -512,6 +512,64 @@ class ContractViewTest(TestCase):
         self.assertEqual(form.initial.get('contract_name'), 'Original Nameのコピー')
         self.assertNotEqual(form.initial.get('contract_name'), default_name)
 
+    def test_contract_assignment_card_display(self):
+        """契約詳細ページでの契約アサインカードの表示をテストする"""
+        from ..models import ContractAssignment
+
+        # アサイン用のスタッフ契約を作成
+        assigned_staff_contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='Assigned Staff Contract',
+            start_date=datetime.date(2025, 1, 1),
+            end_date=datetime.date(2025, 12, 31),
+            contract_pattern=self.staff_pattern,
+        )
+
+        # --- シナリオ1: アサインなし ---
+        # クライアント契約詳細ページ
+        client_detail_url = reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract.pk})
+        response = self.client.get(client_detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '契約アサイン')
+        self.assertContains(response, 'アサインされているスタッフはいません。')
+
+        # スタッフ契約詳細ページ
+        staff_detail_url = reverse('contract:staff_contract_detail', kwargs={'pk': assigned_staff_contract.pk})
+        response = self.client.get(staff_detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '契約アサイン')
+        self.assertContains(response, 'アサインされているクライアントはありません。')
+
+        # --- シナリオ2: アサインあり ---
+        # 契約をアサイン
+        ContractAssignment.objects.create(
+            client_contract=self.client_contract,
+            staff_contract=assigned_staff_contract
+        )
+
+        # クライアント契約詳細ページ
+        response = self.client.get(client_detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '契約アサイン')
+        self.assertNotContains(response, 'アサインされているスタッフ契約はありません。')
+        # スタッフ名と契約期間が表示されていることを確認
+        self.assertContains(response, f'{assigned_staff_contract.staff.name_last} {assigned_staff_contract.staff.name_first}')
+        self.assertContains(response, '2025/01/01～2025/12/31')
+        # スタッフ契約へのリンクがあることを確認
+        self.assertContains(response, f'href="{staff_detail_url}"')
+
+        # スタッフ契約詳細ページ
+        response = self.client.get(staff_detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '契約アサイン')
+        self.assertNotContains(response, 'アサインされているクライアント契約はありません。')
+        # クライアント名と契約期間が表示されていることを確認
+        self.assertContains(response, self.client_contract.client.name)
+        expected_end_date = self.client_contract.end_date.strftime("%Y/%m/%d")
+        self.assertContains(response, expected_end_date)
+        # クライアント契約へのリンクがあることを確認
+        self.assertContains(response, f'href="{client_detail_url}"')
+
     def test_ttp_info_not_displayed_for_non_haken_contract(self):
         """非派遣契約詳細ページで、TTP情報が表示されないかテスト"""
         url = reverse('contract:client_contract_detail', kwargs={'pk': self.non_haken_contract.pk})
@@ -601,6 +659,37 @@ class ContractViewTest(TestCase):
 
         self.non_haken_contract.refresh_from_db()
         self.assertEqual(self.non_haken_contract.business_content, 'これは請負契約の業務内容です。')
+
+    def test_business_content_and_notes_order_in_detail_view(self):
+        """クライアント契約詳細ページで、業務内容が備考の上に表示されることをテスト"""
+        # テスト用の契約に業務内容と備考を設定
+        contract_to_test = self.client_contract
+        contract_to_test.business_content = "テスト業務内容です。"
+        contract_to_test.notes = "テスト備考です。"
+        contract_to_test.save()
+
+        # 詳細ページにアクセス
+        url = reverse('contract:client_contract_detail', kwargs={'pk': contract_to_test.pk})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        # 業務内容と備考が表示されていることを確認
+        self.assertContains(response, "テスト業務内容です。")
+        self.assertContains(response, "テスト備考です。")
+
+        # HTMLコンテンツをデコード
+        content = response.content.decode('utf-8')
+
+        # 業務内容が備考より前に出現することを確認
+        business_content_index = content.find("テスト業務内容です。")
+        notes_index = content.find("テスト備考です。")
+        self.assertTrue(business_content_index != -1, "業務内容がレスポンスに見つかりません。")
+        self.assertTrue(notes_index != -1, "備考がレスポンスに見つかりません。")
+        self.assertLess(business_content_index, notes_index, "業務内容が備考の後に表示されています。")
+
+        # 以前の独立した「業務内容」セクション（h6ヘッダーを持つ）が存在しないことを確認
+        self.assertNotContains(response, '<h6 class="text-muted mb-3">業務内容</h6>', html=True)
 
 
 class ClientContractConfirmListViewTest(TestCase):
@@ -1118,3 +1207,184 @@ class ClientContractTtpViewTest(TestCase):
         self.assertEqual(form.initial.get('employer_name'), self.test_client_model.name)
         self.assertEqual(form.initial.get('business_content'), haken_info.client_contract.business_content)
         self.assertEqual(form.initial.get('work_location'), haken_info.work_location)
+
+
+class ContractAssignmentViewTest(TestCase):
+    """契約アサイン関連ビューのテスト"""
+
+    def setUp(self):
+        """テストデータの準備"""
+        from django.contrib.auth.models import Permission
+        from django.contrib.contenttypes.models import ContentType
+        from apps.company.models import Company
+        from ..models import ContractAssignment
+
+        # ユーザーと権限
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        content_types = [
+            ContentType.objects.get_for_model(ClientContract),
+            ContentType.objects.get_for_model(StaffContract),
+        ]
+        permissions = Permission.objects.filter(content_type__in=content_types)
+        self.user.user_permissions.set(permissions)
+        self.client.login(username='testuser', password='testpassword')
+
+        # 会社、クライアント、スタッフ
+        self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
+        self.test_client_model = TestClient.objects.create(name='Test Client', corporate_number='6000000000001')
+        self.staff1 = Staff.objects.create(name_last='Staff', name_first='One', employee_no='S001', hire_date=datetime.date(2024, 1, 1))
+        self.staff2 = Staff.objects.create(name_last='Staff', name_first='Two', employee_no='S002', hire_date=datetime.date(2024, 1, 1))
+
+        # 契約パターン
+        self.client_pattern = ContractPattern.objects.create(name='Client Pattern', domain='10')
+        self.staff_pattern = ContractPattern.objects.create(name='Staff Pattern', domain='1')
+
+        # --- テストデータ ---
+        # 1. ベースとなるクライアント契約（作成中）
+        self.client_contract_draft = ClientContract.objects.create(
+            client=self.test_client_model, contract_name='Client Draft',
+            start_date=datetime.date(2025, 4, 1), end_date=datetime.date(2025, 6, 30),
+            contract_pattern=self.client_pattern, contract_status=ClientContract.ContractStatus.DRAFT,
+        )
+        # 2. ベースとなるスタッフ契約（作成中）
+        self.staff_contract_draft = StaffContract.objects.create(
+            staff=self.staff1, contract_name='Staff Draft',
+            start_date=datetime.date(2025, 5, 1), end_date=datetime.date(2025, 7, 31),
+            contract_pattern=self.staff_pattern, contract_status=StaffContract.ContractStatus.DRAFT,
+        )
+        # 3. 期間が重複するスタッフ契約（割当可能）
+        self.assignable_staff_contract = StaffContract.objects.create(
+            staff=self.staff2, contract_name='Assignable Staff',
+            start_date=datetime.date(2025, 6, 1), end_date=datetime.date(2025, 8, 31),
+            contract_pattern=self.staff_pattern, contract_status=StaffContract.ContractStatus.DRAFT,
+        )
+        # 4. 期間が重複しないスタッフ契約（割当不可）
+        self.non_overlapping_staff_contract = StaffContract.objects.create(
+            staff=self.staff2, contract_name='Non Overlapping Staff',
+            start_date=datetime.date(2026, 1, 1), end_date=datetime.date(2026, 3, 31),
+            contract_pattern=self.staff_pattern, contract_status=StaffContract.ContractStatus.DRAFT,
+        )
+        # 5. 承認済のクライアント契約（割当不可）
+        self.client_contract_approved = ClientContract.objects.create(
+            client=self.test_client_model, contract_name='Client Approved',
+            start_date=datetime.date(2025, 4, 1), end_date=datetime.date(2025, 6, 30),
+            contract_pattern=self.client_pattern, contract_status=ClientContract.ContractStatus.APPROVED,
+        )
+        # 6. 既に割り当て済みのスタッフ契約
+        self.already_assigned_staff_contract = StaffContract.objects.create(
+            staff=self.staff1, contract_name='Already Assigned Staff',
+            start_date=datetime.date(2025, 4, 15), end_date=datetime.date(2025, 5, 15),
+            contract_pattern=self.staff_pattern, contract_status=StaffContract.ContractStatus.DRAFT,
+        )
+        ContractAssignment.objects.create(
+            client_contract=self.client_contract_draft, staff_contract=self.already_assigned_staff_contract
+        )
+
+    def test_assign_button_visibility(self):
+        """詳細ページで「割当」ボタンが正しく表示/非表示になるかテスト"""
+        # 作成中の契約詳細ページ -> ボタン表示
+        url_draft = reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract_draft.pk})
+        response_draft = self.client.get(url_draft)
+        self.assertContains(response_draft, '割当')
+
+        # 承認済の契約詳細ページ -> ボタン非表示
+        url_approved = reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract_approved.pk})
+        response_approved = self.client.get(url_approved)
+        self.assertNotContains(response_approved, '割当')
+
+    def test_client_contract_assignment_view(self):
+        """クライアント契約への割当一覧ビューのテスト"""
+        url = reverse('contract:client_contract_assignment', kwargs={'pk': self.client_contract_draft.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # 割当可能な契約が表示されている
+        self.assertContains(response, self.assignable_staff_contract.contract_name)
+        # 期間が重複しない契約は表示されない
+        self.assertNotContains(response, self.non_overlapping_staff_contract.contract_name)
+        # 既に割当済の契約は表示されない
+        self.assertNotContains(response, self.already_assigned_staff_contract.contract_name)
+
+    def test_assignment_view_for_non_draft_contract(self):
+        """作成中以外の契約で割当一覧ページにアクセスするとリダイレクトされるか"""
+        url = reverse('contract:client_contract_assignment', kwargs={'pk': self.client_contract_approved.pk})
+        response = self.client.get(url, follow=True)
+        # 最終的なURLが詳細ページになっていることを確認
+        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract_approved.pk}))
+        # エラーメッセージが表示されていることを確認
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'この契約は作成中でないため、割当できません。')
+
+    def test_create_contract_assignment(self):
+        """契約アサインの作成テスト"""
+        from ..models import ContractAssignment
+        from apps.system.logs.models import AppLog
+
+        initial_assignment_count = ContractAssignment.objects.count()
+        initial_log_count = AppLog.objects.count()
+
+        url = reverse('contract:create_contract_assignment')
+        post_data = {
+            'client_contract_id': self.client_contract_draft.pk,
+            'staff_contract_id': self.assignable_staff_contract.pk,
+            'from': 'client',
+        }
+        response = self.client.post(url, post_data, follow=True)
+
+        # 詳細ページにリダイレクトされる
+        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract_draft.pk}))
+        # 成功メッセージ
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), '契約の割当が完了しました。')
+
+        # ContractAssignmentが作成されている
+        self.assertEqual(ContractAssignment.objects.count(), initial_assignment_count + 1)
+        self.assertTrue(
+            ContractAssignment.objects.filter(
+                client_contract=self.client_contract_draft,
+                staff_contract=self.assignable_staff_contract
+            ).exists()
+        )
+        # AppLogが記録されている（MyModelのシグナルにより自動で1件作成されるはず）
+        self.assertEqual(AppLog.objects.count(), initial_log_count + 1)
+        log = AppLog.objects.latest('timestamp')
+        self.assertEqual(log.model_name, 'ContractAssignment')
+        self.assertEqual(log.action, 'create') # 自動作成なのでactionは'create'になる
+        self.assertEqual(log.object_id, str(ContractAssignment.objects.latest('pk').pk))
+
+    def test_create_contract_assignment_from_staff(self):
+        """スタッフ契約側からの契約アサイン作成テスト"""
+        from ..models import ContractAssignment
+        from apps.system.logs.models import AppLog
+
+        # アサイン可能なクライアント契約を作成
+        assignable_client_contract = ClientContract.objects.create(
+            client=self.test_client_model, contract_name='Assignable Client',
+            start_date=datetime.date(2025, 7, 1), end_date=datetime.date(2025, 9, 30),
+            contract_pattern=self.client_pattern, contract_status=ClientContract.ContractStatus.DRAFT,
+        )
+
+        initial_assignment_count = ContractAssignment.objects.count()
+        initial_log_count = AppLog.objects.count()
+
+        url = reverse('contract:create_contract_assignment')
+        post_data = {
+            'client_contract_id': assignable_client_contract.pk,
+            'staff_contract_id': self.staff_contract_draft.pk,
+            'from': 'staff',
+        }
+        response = self.client.post(url, post_data, follow=True)
+
+        # スタッフ詳細ページにリダイレクトされる
+        self.assertRedirects(response, reverse('contract:staff_contract_detail', kwargs={'pk': self.staff_contract_draft.pk}))
+        # 成功メッセージ
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), '契約の割当が完了しました。')
+
+        # ContractAssignmentが作成されている
+        self.assertEqual(ContractAssignment.objects.count(), initial_assignment_count + 1)
+        # AppLogが記録されている
+        self.assertEqual(AppLog.objects.count(), initial_log_count + 1)

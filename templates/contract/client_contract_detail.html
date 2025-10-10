@@ -107,17 +107,6 @@
                 </div>
                 {% endif %}
 
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <h6 class="text-muted mb-3">業務内容</h6>
-                        <table class="table table-sm">
-                            <tr>
-                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ contract.business_content|default_if_none:"" }}</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-
                 {% if contract.haken_info.ttp_info %}
                 <div class="row mt-4">
                     <div class="col-12">
@@ -186,6 +175,12 @@
                     <div class="col-12">
                         <h6 class="text-muted mb-3">詳細情報</h6>
                         <table class="table table-sm">
+                            {% if contract.business_content %}
+                            <tr>
+                                <th class="w-25 bg-light">業務内容</th>
+                                <td>{{ contract.business_content|linebreaksbr }}</td>
+                            </tr>
+                            {% endif %}
                             {% if contract.notes %}
                             <tr>
                                 <th class="w-25 bg-light">備考</th>
@@ -225,6 +220,44 @@
     <div class="col-md-4">
         <!-- 状況カード -->
         {% include 'contract/_client_contract_status_card.html' %}
+
+        <!-- 契約アサインカード -->
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                契約アサイン
+                {% if contract.contract_status == '1' %}
+                <a href="{% url 'contract:client_contract_assignment' contract.pk %}" class="btn btn-sm btn-primary">割当</a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if contract.staff_contracts.all %}
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>スタッフ名</th>
+                                <th>契約期間</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for staff_contract in contract.staff_contracts.all %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'contract:staff_contract_detail' staff_contract.pk %}">
+                                        {{ staff_contract.staff.name_last }} {{ staff_contract.staff.name_first }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {{ staff_contract.start_date|date:"Y/m/d" }}～{% if staff_contract.end_date %}{{ staff_contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="card-text">アサインされているスタッフはいません。</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 
