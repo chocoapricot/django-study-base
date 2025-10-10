@@ -129,7 +129,7 @@ django-study-base/
 | `apps_master_contract_pattern` | `ContractPattern` | 契約書パターンマスター |
 | `apps_master_contract_terms` | `ContractTerms` | 契約文言マスター |
 | `apps_master_default_value` | `DefaultValue` | デフォルト値マスター |
-| `apps_master_haken_business_content` | `HakenBusinessContent` | 派遣業務内容マスター |
+| `apps_master_business_content` | `BusinessContent` | 業務内容マスター |
 | `apps_master_haken_responsibility_degree` | `HakenResponsibilityDegree` | 派遣責任程度マスター |
 | `apps_master_information` | `Information` | お知らせマスター |
 | `apps_master_information_file` | `InformationFile` | お知らせファイル |

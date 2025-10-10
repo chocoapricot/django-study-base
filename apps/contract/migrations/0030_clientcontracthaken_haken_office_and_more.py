@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("client", "0023_clientdepartment_haken_jigyosho_teishokubi"),
-        ("contract", "0029_clientcontracthaken_business_content_and_more"),
+        ("contract", "0029_clientcontractbusiness_content_and_more"),
     ]
 
     operations = [

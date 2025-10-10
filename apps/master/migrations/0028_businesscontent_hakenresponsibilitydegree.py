@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="HakenBusinessContent",
+            name="BusinessContent",
             fields=[
                 (
                     "id",
@@ -72,9 +72,9 @@ class Migration(migrations.Migration):
                 ),
             ],
             options={
-                "verbose_name": "派遣業務内容",
-                "verbose_name_plural": "派遣業務内容",
-                "db_table": "apps_master_haken_business_content",
+                "verbose_name": "業務内容",
+                "verbose_name_plural": "業務内容",
+                "db_table": "apps_master_business_content",
                 "ordering": ["display_order"],
             },
         ),

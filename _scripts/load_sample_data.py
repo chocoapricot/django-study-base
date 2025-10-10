@@ -46,7 +46,7 @@ def main():
         "_sample_data/master_minimum_pay.json",
         "_sample_data/master_contract_pattern.json",
         "_sample_data/master_contract_terms.json",
-        "_sample_data/master_haken_business_content.json",
+        "_sample_data/master_business_content.json",
         "_sample_data/master_haken_responsibility_degree.json",
         "_sample_data/master_default_value.json",
         "_sample_data/company.json",
@@ -98,7 +98,7 @@ def main():
         ("python manage.py loaddata _sample_data/master_minimum_pay.json", "最低賃金マスタデータ"),
         ("python manage.py loaddata _sample_data/master_contract_pattern.json", "契約書パターンマスタデータ"),
         ("python manage.py loaddata _sample_data/master_contract_terms.json", "契約文言マスタデータ"),
-        ("python manage.py loaddata _sample_data/master_haken_business_content.json", "派遣業務内容マスタデータ"),
+        ("python manage.py loaddata _sample_data/master_business_content.json", "業務内容マスタデータ"),
         ("python manage.py loaddata _sample_data/master_haken_responsibility_degree.json", "派遣責任の程度マスタデータ"),
         ("python manage.py loaddata _sample_data/master_default_value.json", "初期値マスタデータ"),
         ("python manage.py loaddata _sample_data/staff.json", "スタッフデータ"),
@@ -143,7 +143,7 @@ def main():
     print("- 最低賃金マスタ")
     print("- 契約書パターンマスタ")
     print("- 契約文言マスタ")
-    print("- 派遣業務内容マスタ")
+    print("- 業務内容マスタ")
     print("- 派遣責任の程度マスタ")
     print("- 初期値マスタ")
     print("- 会社データ")

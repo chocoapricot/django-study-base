@@ -14,17 +14,17 @@ from .models import (
     ContractPattern,
     ContractTerms,
     MinimumPay,
-    HakenBusinessContent,
+    BusinessContent,
     HakenResponsibilityDegree,
     DefaultValue,
 )
 from apps.system.settings.models import Dropdowns
 
 
-class HakenBusinessContentForm(forms.ModelForm):
-    """派遣業務内容フォーム"""
+class BusinessContentForm(forms.ModelForm):
+    """業務内容フォーム"""
     class Meta:
-        model = HakenBusinessContent
+        model = BusinessContent
         fields = ['content', 'display_order', 'is_active']
         widgets = {
             'content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
