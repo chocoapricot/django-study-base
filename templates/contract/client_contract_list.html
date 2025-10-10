@@ -134,8 +134,8 @@
                                 <tr>
                                     <th>法人番号</th>
                                     <th>クライアント</th>
-                                    <th>契約名</th>
                                     <th>契約種別</th>
+                                    <th>契約名</th>
                                     <th>契約期間</th>
                                     <th class="text-end">契約金額</th>
                                     <th>契約状況</th>
@@ -158,14 +158,14 @@
                                         {{ contract.client.name }}
                                     </td>
                                     <td>
-                                        <a href="{% url 'contract:client_contract_detail' contract.pk %}{% if client_filter %}?client={{ client_filter }}{% endif %}" class="text-decoration-none">
-                                            {{ contract.contract_name }}
-                                        </a>
-                                    </td>
-                                    <td>
                                         <span class="badge {{contract.client_contract_type_code|badge_class}}">
                                             {{ contract.contract_type_display_name }}
                                         </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'contract:client_contract_detail' contract.pk %}{% if client_filter %}?client={{ client_filter }}{% endif %}" class="text-decoration-none">
+                                            {{ contract.contract_name }}
+                                        </a>
                                     </td>
                                     <td>
                                         {{ contract.start_date|date:"Y/m/d" }}
