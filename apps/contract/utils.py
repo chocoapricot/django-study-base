@@ -123,7 +123,6 @@ def generate_contract_pdf_content(contract):
             {"title": contract_period_title, "text": contract_period},
             {"title": "契約金額", "text": contract_amount_text},
             {"title": "支払条件", "text": str(contract.payment_site.name if contract.payment_site else "N/A")},
-            {"title": "契約内容", "text": str(contract.description)},
             {"title": "備考", "text": str(contract.notes)},
         ]
 

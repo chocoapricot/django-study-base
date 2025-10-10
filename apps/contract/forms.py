@@ -98,7 +98,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         fields = [
             'client', 'client_contract_type_code', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
             'start_date', 'end_date', 'contract_amount', 'bill_unit',
-            'description', 'notes', 'memo', 'payment_site'
+            'notes', 'memo', 'payment_site'
         ]
         widgets = {
             'client': forms.HiddenInput(),
@@ -111,7 +111,6 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
             'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'contract_amount': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
             'bill_unit': forms.Select(attrs={'class': 'form-select form-select-sm'}),
-            'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 4}),
             'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'payment_site': forms.Select(attrs={'class': 'form-select form-select-sm'}),
