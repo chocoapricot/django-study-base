@@ -531,14 +531,14 @@ class ContractViewTest(TestCase):
         response = self.client.get(client_detail_url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '契約アサイン')
-        self.assertContains(response, 'アサインされているスタッフ契約はありません。')
+        self.assertContains(response, 'アサインされているスタッフはいません。')
 
         # スタッフ契約詳細ページ
         staff_detail_url = reverse('contract:staff_contract_detail', kwargs={'pk': assigned_staff_contract.pk})
         response = self.client.get(staff_detail_url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '契約アサイン')
-        self.assertContains(response, 'アサインされているクライアント契約はありません。')
+        self.assertContains(response, 'アサインされているクライアントはありません。')
 
         # --- シナリオ2: アサインあり ---
         # 契約をアサイン
