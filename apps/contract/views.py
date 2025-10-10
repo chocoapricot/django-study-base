@@ -5,6 +5,7 @@ from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Q, Prefetch
 from django.http import JsonResponse, HttpResponse, Http404
+from django.views.decorators.http import require_POST
 import re
 from datetime import datetime, date
 from django.core.files.base import ContentFile
@@ -185,7 +186,11 @@ def client_contract_detail(request, pk):
         ClientContract.objects.select_related(
             'client', 'job_category', 'contract_pattern', 'payment_site', 'haken_info__ttp_info'
         ).prefetch_related(
-            'staff_contracts__staff'
+            Prefetch(
+                'contractassignment_set',
+                queryset=ContractAssignment.objects.select_related('staff_contract__staff'),
+                to_attr='assigned_assignments'
+            )
         ),
         pk=pk
     )
@@ -592,7 +597,11 @@ def staff_contract_detail(request, pk):
     """スタッフ契約詳細"""
     contract = get_object_or_404(
         StaffContract.objects.prefetch_related(
-            'client_contracts__client'
+            Prefetch(
+                'contractassignment_set',
+                queryset=ContractAssignment.objects.select_related('client_contract__client'),
+                to_attr='assigned_assignments'
+            )
         ),
         pk=pk
     )
@@ -2118,3 +2127,37 @@ def create_contract_assignment_view(request):
             return redirect('contract:staff_contract_detail', pk=staff_contract_id)
 
     return redirect('contract:contract_index')
+
+
+@login_required
+@require_POST
+def delete_contract_assignment(request, assignment_pk):
+    """契約アサインを削除するビュー"""
+    assignment = get_object_or_404(
+        ContractAssignment.objects.select_related('client_contract', 'staff_contract'),
+        pk=assignment_pk
+    )
+    client_contract = assignment.client_contract
+    staff_contract = assignment.staff_contract
+
+    # どの詳細画面に戻るかを判断するためのクエリパラメータ
+    redirect_to = request.GET.get('from', 'client')
+
+    # クライアント契約が「作成中」でない場合は削除させない
+    if client_contract.contract_status != ClientContract.ContractStatus.DRAFT:
+        messages.error(request, 'このアサインは解除できません。クライアント契約が「作成中」ではありません。')
+        if redirect_to == 'staff':
+            return redirect('contract:staff_contract_detail', pk=staff_contract.pk)
+        return redirect('contract:client_contract_detail', pk=client_contract.pk)
+
+    try:
+        assignment.delete()
+        messages.success(request, '契約アサインを解除しました。')
+    except Exception as e:
+        messages.error(request, f'解除処理中にエラーが発生しました: {e}')
+
+    # 元の画面にリダイレクト
+    if redirect_to == 'staff':
+        return redirect('contract:staff_contract_detail', pk=staff_contract.pk)
+
+    return redirect('contract:client_contract_detail', pk=client_contract.pk)

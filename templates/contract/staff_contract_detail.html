@@ -147,29 +147,38 @@
         <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
             <div class="card-header d-flex justify-content-between align-items-center">
                 契約アサイン
-                {% if contract.contract_status == '1' %}
+                {% if contract.contract_status == contract.ContractStatus.DRAFT %}
                 <a href="{% url 'contract:staff_contract_assignment' contract.pk %}" class="btn btn-sm btn-primary">割当</a>
                 {% endif %}
             </div>
             <div class="card-body">
-                {% if contract.client_contracts.all %}
+                {% if contract.assigned_assignments %}
                     <table class="table table-sm table-hover">
                         <thead>
                             <tr>
                                 <th>クライアント名</th>
                                 <th>契約期間</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for client_contract in contract.client_contracts.all %}
+                            {% for assignment in contract.assigned_assignments %}
                             <tr>
                                 <td>
-                                    <a href="{% url 'contract:client_contract_detail' client_contract.pk %}">
-                                        {{ client_contract.client.name }}
+                                    <a href="{% url 'contract:client_contract_detail' assignment.client_contract.pk %}">
+                                        {{ assignment.client_contract.client.name }}
                                     </a>
                                 </td>
                                 <td>
-                                    {{ client_contract.start_date|date:"Y/m/d" }}～{% if client_contract.end_date %}{{ client_contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}
+                                    {{ assignment.client_contract.start_date|date:"Y/m/d" }}～{% if assignment.client_contract.end_date %}{{ assignment.client_contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}
+                                </td>
+                                <td>
+                                    {% if assignment.client_contract.contract_status == assignment.client_contract.ContractStatus.DRAFT %}
+                                    <form action="{% url 'contract:delete_contract_assignment' assignment_pk=assignment.pk %}?from=staff" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-dark" onclick="return confirm('このアサインを解除しますか？')">解除</button>
+                                    </form>
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% endfor %}
