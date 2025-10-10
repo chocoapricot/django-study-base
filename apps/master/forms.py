@@ -549,3 +549,13 @@ class DefaultValueForm(forms.ModelForm):
             'format': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'value': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields['format'].widget.attrs['disabled'] = True
+            if self.instance.format == 'text':
+                self.fields['value'].widget.attrs.update({
+                    'rows': '1',
+                    'style': 'resize: none;'
+                })
