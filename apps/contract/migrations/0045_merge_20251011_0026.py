@@ -6,8 +6,9 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("contract", "0044_remove_clientcontract_description"),
-        ("contract", "0044_remove_staffcontract_description"),
+        ('contract', '0044_remove_clientcontract_description'),
+        ('contract', '0044_remove_staffcontract_description'),
     ]
 
-    operations = []
+    operations = [
+    ]
