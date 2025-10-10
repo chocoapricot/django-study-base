@@ -58,7 +58,7 @@
                         </td>
                         <td>{{ staff.department_name|default:"-" }}</td>
                         <td>
-                            <button type="button" class="btn btn-sm btn-primary" onclick="selectStaff('{{ staff.pk }}', '{{ staff.name_last|escapejs }} {{ staff.name_first|escapejs }}', '{{ staff.employment_type|default:""|escapejs }}', '{% if staff.employment_type %}{% my_name "employment_type" staff.employment_type %}{% endif %}')">
+                            <button type="button" class="btn btn-sm btn-primary" onclick="selectStaff('{{ staff.pk }}', '{{ staff.name_last|escapejs }} {{ staff.name_first|escapejs }}', '{{ staff.employment_type|default:""|escapejs }}', '{% if staff.employment_type %}{% my_name "employment_type" staff.employment_type %}{% endif %}', '{% if staff.employment_type %}{{ staff.employment_type|badge_class }}{% endif %}')">
                                 選択
                             </button>
                         </td>
