@@ -98,7 +98,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         fields = [
             'client', 'client_contract_type_code', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
             'start_date', 'end_date', 'contract_amount', 'bill_unit',
-            'notes', 'memo', 'payment_site'
+            'business_content', 'notes', 'memo', 'payment_site'
         ]
         widgets = {
             'client': forms.HiddenInput(),
@@ -111,6 +111,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
             'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'contract_amount': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
             'bill_unit': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'business_content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'payment_site': forms.Select(attrs={'class': 'form-select form-select-sm'}),
@@ -304,7 +305,6 @@ class ClientContractHakenForm(forms.ModelForm):
         exclude = ['client_contract', 'version', 'created_at', 'created_by', 'updated_at', 'updated_by']
         widgets = {
             'work_location': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
-            'business_content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'responsibility_degree': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'complaint_officer_company': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'responsible_person_company': forms.Select(attrs={'class': 'form-select form-select-sm'}),
@@ -319,8 +319,8 @@ class ClientContractHakenForm(forms.ModelForm):
 
         # 全てのフィールドを必須にする
         for field_name, field in self.fields.items():
-            # business_content, responsibility_degree, work_locationは任意入力
-            if field_name in ['business_content', 'responsibility_degree', 'work_location']:
+            # responsibility_degree, work_locationは任意入力
+            if field_name in ['responsibility_degree', 'work_location']:
                 field.required = False
                 continue
 

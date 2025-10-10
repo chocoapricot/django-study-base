@@ -123,8 +123,12 @@ def generate_contract_pdf_content(contract):
             {"title": contract_period_title, "text": contract_period},
             {"title": "契約金額", "text": contract_amount_text},
             {"title": "支払条件", "text": str(contract.payment_site.name if contract.payment_site else "N/A")},
-            {"title": "備考", "text": str(contract.notes)},
         ]
+        # 業務内容を備考の前に追加
+        if contract.business_content:
+            items.append({"title": "業務内容", "text": str(contract.business_content)})
+
+        items.append({"title": "備考", "text": str(contract.notes)})
 
         # 派遣契約の場合、追加情報を挿入
         if contract.contract_pattern and contract.contract_pattern.contract_type_code == '20' and hasattr(contract, 'haken_info'):
@@ -166,7 +170,12 @@ def generate_contract_pdf_content(contract):
                     return f"{base_info} 電話番号：{user.phone_number}"
                 return base_info
 
-            haken_items.append({"title": "業務内容", "text": str(haken_info.business_content or "")})
+            # 業務内容を haken_items にも追加（派遣契約PDFのレイアウトを維持するため）
+            if contract.business_content:
+                 # 派遣の場合は、基本情報の業務内容を削除して、派遣情報セクションに含める
+                items = [item for item in items if item.get("title") != "業務内容"]
+                haken_items.append({"title": "業務内容", "text": str(contract.business_content or "")})
+
             haken_items.append({"title": "責任の程度", "text": str(haken_info.responsibility_degree or "")})
 
             # 派遣先事業所
