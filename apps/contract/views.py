@@ -2161,3 +2161,32 @@ def delete_contract_assignment(request, assignment_pk):
         return redirect('contract:staff_contract_detail', pk=staff_contract.pk)
 
     return redirect('contract:client_contract_detail', pk=client_contract.pk)
+
+@login_required
+def get_contract_patterns_by_employment_type(request):
+    """雇用形態に応じた契約書パターンを取得するAPI"""
+    employment_type = request.GET.get('employment_type')
+    
+    if not employment_type:
+        return JsonResponse({'patterns': []})
+    
+    from apps.master.models import ContractPattern
+    
+    # スタッフ用で、指定された雇用形態の契約書パターンを取得
+    patterns = ContractPattern.objects.filter(
+        is_active=True,
+        domain='1',  # スタッフ
+        employment_type=employment_type
+    ).values('id', 'name').order_by('display_order')
+    
+    # 雇用形態が指定されていない契約書パターンも含める
+    patterns_without_employment = ContractPattern.objects.filter(
+        is_active=True,
+        domain='1',  # スタッフ
+        employment_type__isnull=True
+    ).values('id', 'name').order_by('display_order')
+    
+    # 両方を結合
+    all_patterns = list(patterns) + list(patterns_without_employment)
+    
+    return JsonResponse({'patterns': all_patterns})

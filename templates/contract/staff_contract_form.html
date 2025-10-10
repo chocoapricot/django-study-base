@@ -76,7 +76,7 @@
                 <label for="{{ form.contract_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約書パターン</label>
                 <div class="col-sm-4">
                     <div class="d-flex align-items-center">
-                        <span id="staff-employment-type-badge" style="margin-right: 10px; min-width: 80px;">-</span>
+                        <span id="staff-employment-type-badge" style="margin-right: 40px; min-width: 80px;">-</span>
                         {{ form.contract_pattern }}
                     </div>
                     {% if form.contract_pattern.errors %}
@@ -339,9 +339,48 @@ function updateEmploymentTypeBadge(employmentType, employmentTypeName, badgeClas
         }
         
         badgeElement.innerHTML = `<span class="badge ${badgeClass}" style="font-size:13px">${employmentTypeName}</span>`;
+        
+        // 雇用形態に応じて契約書パターンを更新
+        updateContractPatterns(employmentType);
     } else {
         badgeElement.textContent = '-';
+        // 雇用形態がない場合は全ての契約書パターンを表示
+        updateContractPatterns(null);
     }
+}
+
+// 契約書パターンのプルダウンを更新する関数
+function updateContractPatterns(employmentType) {
+    const contractPatternSelect = document.getElementById('{{ form.contract_pattern.id_for_label }}');
+    const currentValue = contractPatternSelect.value;
+    
+    let url = '{% url "contract:get_contract_patterns_by_employment_type" %}';
+    if (employmentType) {
+        url += `?employment_type=${employmentType}`;
+    }
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            // プルダウンをクリア
+            contractPatternSelect.innerHTML = '<option value="">---------</option>';
+            
+            // 新しい選択肢を追加
+            data.patterns.forEach(pattern => {
+                const option = document.createElement('option');
+                option.value = pattern.id;
+                option.textContent = pattern.name;
+                contractPatternSelect.appendChild(option);
+            });
+            
+            // 以前の選択値があれば復元を試みる
+            if (currentValue) {
+                contractPatternSelect.value = currentValue;
+            }
+        })
+        .catch(error => {
+            console.error('契約書パターンの取得に失敗しました:', error);
+        });
 }
 
 // スタッフクリア関数
