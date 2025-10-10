@@ -517,6 +517,63 @@ class ContractViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, '紹介予定派遣情報')
 
+    def test_staff_contract_create_view_with_new_fields(self):
+        """スタッフ契約作成ビューで新しいフィールドが保存されるかテスト"""
+        url = reverse('contract:staff_contract_create')
+        post_data = {
+            'staff': self.staff.pk,
+            'contract_name': 'Create View Test Contract',
+            'start_date': datetime.date(2024, 4, 1),
+            'end_date': datetime.date(2024, 12, 31),
+            'contract_pattern': self.staff_pattern.pk,
+            'pay_unit': self.pay_unit_daily.value,
+            'work_location': '本社ビル',
+            'business_content': 'プログラミング業務',
+        }
+        response = self.client.post(url, post_data)
+
+        # リダイレクトを確認
+        self.assertEqual(response.status_code, 302)
+
+        # 契約が作成され、値が正しいか確認
+        new_contract = StaffContract.objects.get(contract_name='Create View Test Contract')
+        self.assertEqual(new_contract.work_location, '本社ビル')
+        self.assertEqual(new_contract.business_content, 'プログラミング業務')
+
+    def test_staff_contract_update_view_with_new_fields(self):
+        """スタッフ契約更新ビューで新しいフィールドが保存されるかテスト"""
+        # テスト用の契約を作成
+        staff_contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='Update View Test Contract',
+            start_date=datetime.date(2024, 4, 1),
+            contract_pattern=self.staff_pattern,
+            work_location='旧就業場所',
+            business_content='旧業務内容',
+        )
+
+        url = reverse('contract:staff_contract_update', kwargs={'pk': staff_contract.pk})
+        post_data = {
+            'staff': self.staff.pk,
+            'contract_name': 'Update View Test Contract', # 必須フィールド
+            'start_date': datetime.date(2024, 4, 1), # 必須フィールド
+            'end_date': datetime.date(2024, 12, 31), # 必須フィールド
+            'contract_pattern': self.staff_pattern.pk, # 必須フィールド
+            'pay_unit': self.pay_unit_daily.value, # 必須フィールド
+            'work_location': '新就業場所',
+            'business_content': '新業務内容',
+        }
+
+        response = self.client.post(url, post_data)
+
+        # リダイレクトを確認
+        self.assertEqual(response.status_code, 302)
+
+        # 契約が更新され、値が正しいか確認
+        staff_contract.refresh_from_db()
+        self.assertEqual(staff_contract.work_location, '新就業場所')
+        self.assertEqual(staff_contract.business_content, '新業務内容')
+
 
 class ClientContractConfirmListViewTest(TestCase):
     """クライアント契約確認一覧ビューのテスト"""

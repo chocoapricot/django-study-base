@@ -100,6 +100,18 @@
                     <div class="col-12">
                         <h6 class="text-muted mb-3">詳細情報</h6>
                         <table class="table table-sm">
+                            {% if contract.work_location %}
+                            <tr>
+                                <th class="w-25 bg-light">就業場所</th>
+                                <td>{{ contract.work_location|linebreaksbr }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if contract.business_content %}
+                            <tr>
+                                <th class="w-25 bg-light">業務内容</th>
+                                <td>{{ contract.business_content|linebreaksbr }}</td>
+                            </tr>
+                            {% endif %}
                             {% if contract.description %}
                             <tr>
                                 <th class="w-25 bg-light">契約内容</th>

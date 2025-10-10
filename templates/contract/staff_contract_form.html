@@ -129,6 +129,26 @@
 
 
 
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.work_location.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">就業場所</label>
+                <div class="col-sm-10">
+                    {{ form.work_location }}
+                    {% if form.work_location.errors %}
+                        <div class="text-danger small">{{ form.work_location.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.business_content.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">業務内容</label>
+                <div class="col-sm-10">
+                    {{ form.business_content }}
+                    {% if form.business_content.errors %}
+                        <div class="text-danger small">{{ form.business_content.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
             <div class="row mb-1 align-items-center">
                 <label for="{{ form.description.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約内容</label>
                 <div class="col-sm-10">

@@ -100,6 +100,22 @@ class ContractModelTest(TestCase):
         self.assertEqual(contract.staff, self.staff)
         self.assertEqual(contract.contract_name, '雇用契約')
 
+    def test_staff_contract_with_work_location_and_business_content(self):
+        """スタッフ契約モデルに就業場所と業務内容が保存されることをテスト"""
+        work_location_text = "東京都千代田区"
+        business_content_text = "システム開発"
+        contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='雇用契約（就業場所・業務内容あり）',
+            start_date=timezone.now().date(),
+            work_location=work_location_text,
+            business_content=business_content_text,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        self.assertEqual(contract.work_location, work_location_text)
+        self.assertEqual(contract.business_content, business_content_text)
+
 
 from django.core.exceptions import ValidationError
 from datetime import date
