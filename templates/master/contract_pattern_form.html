@@ -47,9 +47,12 @@
                         <div class="text-danger small">{{ form.contract_type_code.errors.0 }}</div>
                     {% endif %}
                 </div>
-            </div>
-
-            <div id="contract_type_code_row" class="row mb-3 align-items-center">
+                <div class="col-sm-3" id="employment_type_dropdowns">
+                    {{ form.employment_type }}
+                    {% if form.employment_type.errors %}
+                        <div class="text-danger small">{{ form.employment_type.errors.0 }}</div>
+                    {% endif %}
+                </div>
             </div>
 
             <div class="row mb-3 align-items-center">
@@ -105,25 +108,31 @@
 document.addEventListener('DOMContentLoaded', function() {
     const domainRadios = document.querySelectorAll('input[name="domain"]');
     const contractTypeRow = document.getElementById('contract_type_code_dropdowns');
+    const employmentTypeRow = document.getElementById('employment_type_dropdowns');
     const contractTypeCodeSelect = document.getElementById('{{ form.contract_type_code.id_for_label }}');
+    const employmentTypeSelect = document.getElementById('{{ form.employment_type.id_for_label }}');
 
-    function toggleContractTypeRow() {
+    function toggleDropdowns() {
         const selectedDomain = document.querySelector('input[name="domain"]:checked').value;
         if (selectedDomain === '10') { // 10 is for 'クライアント'
             contractTypeRow.style.display = '';
+            employmentTypeRow.style.display = 'none';
             contractTypeCodeSelect.required = true;
-        } else {
+            employmentTypeSelect.required = false;
+        } else { // 1 is for 'スタッフ'
             contractTypeRow.style.display = 'none';
+            employmentTypeRow.style.display = '';
             contractTypeCodeSelect.required = false;
+            employmentTypeSelect.required = false;
         }
     }
 
     // Initial check
-    toggleContractTypeRow();
+    toggleDropdowns();
 
     // Add event listener to each radio button
     domainRadios.forEach(function(radio) {
-        radio.addEventListener('change', toggleContractTypeRow);
+        radio.addEventListener('change', toggleDropdowns);
     });
 });
 </script>

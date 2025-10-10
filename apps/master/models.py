@@ -553,6 +553,7 @@ class ContractPattern(MyModel):
         default='1',
     )
     contract_type_code = models.CharField('契約種別', max_length=2, blank=True, null=True)
+    employment_type = models.CharField('雇用形態', max_length=2, blank=True, null=True)
     memo = models.TextField('メモ', blank=True, null=True)
     display_order = models.IntegerField('表示順', default=0)
     is_active = models.BooleanField('有効', default=True)

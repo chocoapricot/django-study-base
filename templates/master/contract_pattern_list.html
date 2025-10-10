@@ -34,6 +34,7 @@
                 <thead>
                     <tr>
                         <th>対象</th>
+                        <th>種別</th>
                         <th>名称</th>
                         <th>状態</th>
                         <th>表示順</th>
@@ -46,6 +47,15 @@
                     <tr>
                         <td>
                             <span class="badge {{ pattern.domain|badge_class }}">{% my_name 'domain' pattern.domain %}</span>
+                        </td>
+                        <td>
+                            {% if pattern.domain == '10' and pattern.contract_type_code %}
+                                <span class="badge {{ pattern.contract_type_code|badge_class }}">{% my_name 'client_contract_type' pattern.contract_type_code %}</span>
+                            {% elif pattern.domain == '1' and pattern.employment_type %}
+                                <span class="badge {{ pattern.employment_type|badge_class }}">{% my_name 'employment_type' pattern.employment_type %}</span>
+                            {% else %}
+                                -
+                            {% endif %}
                         </td>
                         <td>
                             <a href="{% url 'master:contract_pattern_detail' pattern.pk %}">{{ pattern.name }}</a>
@@ -70,7 +80,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center">契約書パターンが登録されていません。</td>
+                        <td colspan="7" class="text-center">契約書パターンが登録されていません。</td>
                     </tr>
                     {% endfor %}
                 </tbody>

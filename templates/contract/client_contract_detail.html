@@ -107,17 +107,6 @@
                 </div>
                 {% endif %}
 
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <h6 class="text-muted mb-3">業務内容</h6>
-                        <table class="table table-sm">
-                            <tr>
-                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ contract.business_content|default_if_none:"" }}</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-
                 {% if contract.haken_info.ttp_info %}
                 <div class="row mt-4">
                     <div class="col-12">
@@ -186,6 +175,12 @@
                     <div class="col-12">
                         <h6 class="text-muted mb-3">詳細情報</h6>
                         <table class="table table-sm">
+                            {% if contract.business_content %}
+                            <tr>
+                                <th class="w-25 bg-light">業務内容</th>
+                                <td>{{ contract.business_content|linebreaksbr }}</td>
+                            </tr>
+                            {% endif %}
                             {% if contract.notes %}
                             <tr>
                                 <th class="w-25 bg-light">備考</th>

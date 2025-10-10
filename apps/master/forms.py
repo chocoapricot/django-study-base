@@ -126,11 +126,12 @@ class ContractPatternForm(forms.ModelForm):
     """契約書パターンフォーム"""
     class Meta:
         model = ContractPattern
-        fields = ['name', 'domain', 'contract_type_code', 'memo', 'display_order', 'is_active']
+        fields = ['name', 'domain', 'contract_type_code', 'employment_type', 'memo', 'display_order', 'is_active']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'domain': forms.RadioSelect(),
             'contract_type_code': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'employment_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
@@ -138,13 +139,21 @@ class ContractPatternForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        choices = [('', '---------')] + [
-            (d.value, d.name) for d in Dropdowns.objects.filter(category='client_contract_type', active=True)
-        ]
+        # 契約種別の選択肢（クライアント用）
         self.fields['contract_type_code'] = forms.ChoiceField(
             label='契約種別',
             choices=[('', '---------')] + [
                 (d.value, d.name) for d in Dropdowns.objects.filter(category='client_contract_type', active=True)
+            ],
+            required=False,
+            widget=forms.Select(attrs={'class': 'form-control form-control-sm'})
+        )
+        
+        # 雇用形態の選択肢（スタッフ用）
+        self.fields['employment_type'] = forms.ChoiceField(
+            label='雇用形態',
+            choices=[('', '---------')] + [
+                (d.value, d.name) for d in Dropdowns.objects.filter(category='employment_type', active=True)
             ],
             required=False,
             widget=forms.Select(attrs={'class': 'form-control form-control-sm'})
@@ -154,12 +163,15 @@ class ContractPatternForm(forms.ModelForm):
         cleaned_data = super().clean()
         domain = cleaned_data.get('domain')
         contract_type_code = cleaned_data.get('contract_type_code')
+        employment_type = cleaned_data.get('employment_type')
 
-        if domain == '10':
+        if domain == '10':  # クライアント
             if not contract_type_code:
                 self.add_error('contract_type_code', 'クライアントが対象の場合、契約種別は必須です。')
-        else:
-            # If domain is not client, clear the contract_type_code
+            # クライアントの場合は雇用形態をクリア
+            cleaned_data['employment_type'] = None
+        else:  # スタッフ
+            # スタッフの場合は契約種別をクリア
             cleaned_data['contract_type_code'] = None
 
         return cleaned_data
