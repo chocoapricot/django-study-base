@@ -1245,8 +1245,13 @@ class ContractAssignmentViewTest(TestCase):
             start_date=datetime.date(2025, 4, 15), end_date=datetime.date(2025, 5, 15),
             contract_pattern=self.staff_pattern, contract_status=StaffContract.ContractStatus.DRAFT,
         )
-        ContractAssignment.objects.create(
+        self.assignment = ContractAssignment.objects.create(
             client_contract=self.client_contract_draft, staff_contract=self.already_assigned_staff_contract
+        )
+
+        # 承認済み契約とのアサインも作成
+        self.assignment_approved = ContractAssignment.objects.create(
+            client_contract=self.client_contract_approved, staff_contract=self.staff_contract_draft
         )
 
     def test_assign_button_visibility(self):
@@ -1357,3 +1362,61 @@ class ContractAssignmentViewTest(TestCase):
         self.assertEqual(ContractAssignment.objects.count(), initial_assignment_count + 1)
         # AppLogが記録されている
         self.assertEqual(AppLog.objects.count(), initial_log_count + 1)
+
+    def test_delete_contract_assignment_success(self):
+        """契約アサインの解除が成功するテスト"""
+        from ..models import ContractAssignment
+        initial_count = ContractAssignment.objects.count()
+        url = reverse('contract:delete_contract_assignment', kwargs={'assignment_pk': self.assignment.pk})
+        response = self.client.post(url, follow=True)
+
+        # 詳細ページにリダイレクトされる
+        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract_draft.pk}))
+        # 成功メッセージ
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), '契約アサインを解除しました。')
+        # アサインが削除されている
+        self.assertEqual(ContractAssignment.objects.count(), initial_count - 1)
+
+    def test_delete_contract_assignment_fail_for_non_draft(self):
+        """作成中以外の契約のアサイン解除が失敗するテスト"""
+        from ..models import ContractAssignment
+        initial_count = ContractAssignment.objects.count()
+        url = reverse('contract:delete_contract_assignment', kwargs={'assignment_pk': self.assignment_approved.pk})
+        response = self.client.post(url, follow=True)
+
+        # 詳細ページにリダイレクトされる
+        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract_approved.pk}))
+        # エラーメッセージ
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertTrue('このアサインは解除できません' in str(messages[0]))
+        # アサインは削除されていない
+        self.assertEqual(ContractAssignment.objects.count(), initial_count)
+
+    def test_unassign_button_visibility_on_client_detail(self):
+        """クライアント契約詳細ページでの解除ボタンの表示テスト"""
+        # 作成中の契約 -> ボタン表示
+        url_draft = reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract_draft.pk})
+        response_draft = self.client.get(url_draft)
+        self.assertContains(response_draft, '解除')
+
+        # 承認済みの契約 -> ボタン非表示
+        # 承認済み契約に紐づくスタッフ契約のアサインをセットアップ
+        self.client_contract_approved.staff_contracts.add(self.staff_contract_draft)
+        url_approved = reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract_approved.pk})
+        response_approved = self.client.get(url_approved)
+        self.assertNotContains(response_approved, '解除')
+
+    def test_unassign_button_visibility_on_staff_detail(self):
+        """スタッフ契約詳細ページでの解除ボタンの表示テスト"""
+        # 作成中のクライアント契約に紐づいている -> ボタン表示
+        url_draft = reverse('contract:staff_contract_detail', kwargs={'pk': self.already_assigned_staff_contract.pk})
+        response_draft = self.client.get(url_draft)
+        self.assertContains(response_draft, '解除')
+
+        # 承認済みのクライアント契約に紐づいている -> ボタン非表示
+        url_approved = reverse('contract:staff_contract_detail', kwargs={'pk': self.staff_contract_draft.pk})
+        response_approved = self.client.get(url_approved)
+        self.assertNotContains(response_approved, '解除')
