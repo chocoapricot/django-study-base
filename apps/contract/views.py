@@ -1924,8 +1924,8 @@ def client_contract_ttp_create(request, haken_pk):
         # 派遣情報から初期値を設定
         if haken.client_contract and haken.client_contract.client:
             initial_data['employer_name'] = haken.client_contract.client.name
-        if haken.business_content:
-            initial_data['business_content'] = haken.business_content
+        if haken.client_contract.business_content:
+            initial_data['business_content'] = haken.client_contract.business_content
         if haken.work_location:
             initial_data['work_location'] = haken.work_location
 

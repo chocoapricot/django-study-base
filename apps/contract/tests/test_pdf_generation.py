@@ -209,6 +209,21 @@ class ContractPdfGenerationTest(TestCase):
         self.assertNotIn("派遣元責任者", items_dict)
         self.assertNotIn("協定対象派遣労働者に限定するか否かの別", items_dict)
 
+    def test_normal_contract_pdf_includes_business_content(self):
+        """Test that PDF for normal contract includes business_content."""
+        self.normal_contract.business_content = "This is a test for business content in a normal contract."
+        self.normal_contract.save()
+
+        pdf_content, _, _ = generate_contract_pdf_content(self.normal_contract)
+        self.assertIsNotNone(pdf_content)
+
+        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
+        text = "".join(page.get_text() for page in pdf_document)
+        pdf_document.close()
+
+        self.assertIn("業務内容", text)
+        self.assertIn("This is a test for business content in a normal contract.", text)
+
     @patch('apps.contract.utils.generate_table_based_contract_pdf')
     def test_responsible_person_title_changes_for_manufacturing_dispatch(self, mock_generate_pdf):
         """

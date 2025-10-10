@@ -107,7 +107,7 @@ class ContractViewTest(TestCase):
             end_date=datetime.date.today() + datetime.timedelta(days=30),
             contract_pattern=self.non_haken_contract_pattern,
             client_contract_type_code='10',
-            contract_status=ClientContract.ContractStatus.APPROVED,
+            contract_status=ClientContract.ContractStatus.DRAFT, # 編集可能にするためDRAFTに
             corporate_number=self.company.corporate_number
         )
 
@@ -121,6 +121,7 @@ class ContractViewTest(TestCase):
 
         from apps.system.settings.models import Dropdowns
         self.pay_unit_daily = Dropdowns.objects.create(category='pay_unit', value='20', name='日給', active=True)
+        self.bill_unit_monthly = Dropdowns.objects.create(category='bill_unit', value='10', name='月額', active=True)
 
         self.client = Client()
         self.client.login(username='testuser', password='testpass123')
@@ -406,8 +407,9 @@ class ContractViewTest(TestCase):
         """非派遣契約の契約書発行時に、個別契約書のみが発行されるかテスト"""
         from ..models import ClientContractPrint
 
-        # 非派遣契約はsetUpで承認済になっている
-        self.assertEqual(self.non_haken_contract.contract_status, ClientContract.ContractStatus.APPROVED)
+        # このテストケースでは承認済みの契約が必要なため、ステータスを更新
+        self.non_haken_contract.contract_status = ClientContract.ContractStatus.APPROVED
+        self.non_haken_contract.save()
 
         initial_print_count = ClientContractPrint.objects.filter(client_contract=self.non_haken_contract).count()
 
@@ -573,6 +575,32 @@ class ContractViewTest(TestCase):
         staff_contract.refresh_from_db()
         self.assertEqual(staff_contract.work_location, '新就業場所')
         self.assertEqual(staff_contract.business_content, '新業務内容')
+
+    def test_client_contract_business_content_for_non_haken(self):
+        """非派遣契約で業務内容が保存されるかテスト"""
+        url = reverse('contract:client_contract_update', kwargs={'pk': self.non_haken_contract.pk})
+        post_data = {
+            'client': self.test_client.pk,
+            'contract_name': self.non_haken_contract.contract_name,
+            'start_date': self.non_haken_contract.start_date,
+            'end_date': self.non_haken_contract.end_date,
+            'contract_pattern': self.non_haken_contract_pattern.pk,
+            'client_contract_type_code': '10',
+            'business_content': 'これは請負契約の業務内容です。',
+            'bill_unit': '10', # 月額
+        }
+        response = self.client.post(url, post_data)
+
+        # フォームが無効な場合はエラーを表示
+        if response.status_code != 302:
+            form = response.context.get('form')
+            if form:
+                print("Form errors:", form.errors.as_json())
+
+        self.assertEqual(response.status_code, 302, "POSTリクエストがリダイレクトされませんでした。")
+
+        self.non_haken_contract.refresh_from_db()
+        self.assertEqual(self.non_haken_contract.business_content, 'これは請負契約の業務内容です。')
 
 
 class ClientContractConfirmListViewTest(TestCase):
@@ -1070,10 +1098,10 @@ class ClientContractTtpViewTest(TestCase):
             contract_pattern=self.contract_pattern,
             client_contract_type_code='20',
             contract_status=ClientContract.ContractStatus.DRAFT,
+            business_content='派遣元の業務内容',
         )
         haken_info = ClientContractHaken.objects.create(
             client_contract=haken_contract,
-            business_content='派遣元の業務内容',
             work_location='派遣元の就業場所',
         )
 
@@ -1088,5 +1116,5 @@ class ClientContractTtpViewTest(TestCase):
 
         # フォームの初期値が正しく設定されていることを確認
         self.assertEqual(form.initial.get('employer_name'), self.test_client_model.name)
-        self.assertEqual(form.initial.get('business_content'), haken_info.business_content)
+        self.assertEqual(form.initial.get('business_content'), haken_info.client_contract.business_content)
         self.assertEqual(form.initial.get('work_location'), haken_info.work_location)

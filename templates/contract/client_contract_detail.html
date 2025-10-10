@@ -99,10 +99,6 @@
                                 <td >{{ haken_info.get_limit_indefinite_or_senior_display|default:"-" }}</td>
                             </tr>
                             <tr>
-                                <th class="bg-light">業務内容</th>
-                                <td colspan="3">{{ haken_info.business_content|default:"-" }}</td>
-                            </tr>
-                            <tr>
                                 <th class="bg-light">責任の程度</th>
                                 <td colspan="3">{{ haken_info.responsibility_degree|default:"-" }}</td>
                             </tr>
@@ -110,6 +106,17 @@
                     </div>
                 </div>
                 {% endif %}
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h6 class="text-muted mb-3">業務内容</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ contract.business_content|default_if_none:"" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
 
                 {% if contract.haken_info.ttp_info %}
                 <div class="row mt-4">
