@@ -463,7 +463,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
             self.fields['staff_display'].initial = f"{self.instance.staff.name_last} {self.instance.staff.name_first}"
 
         # 支払単位の選択肢を設定
-        pay_unit_choices = [('', '単位を選択')] + [
+        pay_unit_choices = [('', '---------')] + [
             (d.value, d.name) for d in Dropdowns.objects.filter(category='pay_unit', active=True).order_by('disp_seq')
         ]
         self.fields['pay_unit'].choices = pay_unit_choices
