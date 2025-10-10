@@ -1,6 +1,7 @@
 {% extends 'common/_base.html' %}
 {% load static %}
 {% load help_tags %}
+{% load dropdowns %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -66,6 +67,7 @@
                         <button type="button" class="btn btn-sm btn-secondary" onclick="clearStaff()">
                             クリア
                         </button>
+                        <span id="staff-employment-type-badge" style="margin-left: 8px;"></span>
                     </div>
                 </div>
             </div>
@@ -274,8 +276,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // 既存のスタッフが選択されている場合（編集時）
         {% if contract and contract.staff %}
             staffDisplayText.textContent = '{{ contract.staff.name_last|escapejs }} {{ contract.staff.name_first|escapejs }}';
+            {% if contract.staff.employment_type %}
+                updateEmploymentTypeBadge('{{ contract.staff.employment_type|escapejs }}', '{% my_name "employment_type" contract.staff.employment_type %}');
+            {% endif %}
         {% elif staff %}
             staffDisplayText.textContent = '{{ staff.name_last|escapejs }} {{ staff.name_first|escapejs }}';
+            {% if staff.employment_type %}
+                updateEmploymentTypeBadge('{{ staff.employment_type|escapejs }}', '{% my_name "employment_type" staff.employment_type %}');
+            {% endif %}
         {% endif %}
     }
 
@@ -295,9 +303,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-function selectStaff(staffId, staffName) {
+function selectStaff(staffId, staffName, employmentType = null, employmentTypeName = null) {
     document.getElementById('{{ form.staff.id_for_label }}').value = staffId;
     document.getElementById('staff-display-text').textContent = staffName;
+    
+    // 雇用形態バッジを更新
+    updateEmploymentTypeBadge(employmentType, employmentTypeName);
 
     // どちらのモーダルからでも閉じる
     const modalIds = [ 'selectModal'];
@@ -314,8 +325,33 @@ function selectStaff(staffId, staffName) {
         }
     }
 }
+
+// 雇用形態バッジを更新する関数
+function updateEmploymentTypeBadge(employmentType, employmentTypeName) {
+    const badgeElement = document.getElementById('staff-employment-type-badge');
+    if (employmentType && employmentTypeName) {
+        // バッジクラスを決定（簡易版）
+        let badgeClass = 'bg-primary';
+        if (employmentType === '1') badgeClass = 'bg-primary';
+        else if (employmentType === '2') badgeClass = 'bg-info';
+        else if (employmentType === '3') badgeClass = 'bg-success';
+        
+        badgeElement.innerHTML = `<span class="badge ${badgeClass}" style="font-size:13px">${employmentTypeName}</span>`;
+    } else {
+        badgeElement.innerHTML = '';
+    }
+}
+
+// スタッフクリア関数
+function clearStaff() {
+    document.getElementById('{{ form.staff.id_for_label }}').value = '';
+    document.getElementById('staff-display-text').textContent = '未選択';
+    updateEmploymentTypeBadge(null, null);
+}
+
 // グローバル公開
 window.selectStaff = selectStaff;
+window.clearStaff = clearStaff;
 
 
 

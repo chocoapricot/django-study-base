@@ -1,5 +1,7 @@
 <script>window.parentModalType = window.parentModalType || 'standardTestModal';</script>
 {% load help_tags %}
+{% load dropdowns %}
+{% load badge_tags %}
 
         <small class="text-muted">※社員番号・入社日が登録されているスタッフのみ表示されます</small>
         <!-- 検索フォーム -->
@@ -20,11 +22,12 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th>スタッフ名</th>
                         <th>
                             社員番号
                             {% my_help_preset "staff_employee_no" %}
                         </th>
+                        <th>スタッフ名</th>
+                        <th>雇用形態</th>
                         <th>
                             入社日
                             {% my_help_preset "staff_hire_date" %}
@@ -36,9 +39,16 @@
                 <tbody>
                     {% for staff in page_obj.object_list %}
                     <tr>
-                        <td>{{ staff.name_last }} {{ staff.name_first }}</td>
                         <td>
                             {{ staff.employee_no }}
+                        </td>
+                        <td>{{ staff.name_last }} {{ staff.name_first }}</td>
+                        <td>
+                            {% if staff.employment_type %}
+                                <span class="badge {{ staff.employment_type|badge_class }}" style="font-size:13px">{% my_name "employment_type" staff.employment_type %}</span>
+                            {% else %}
+                                -
+                            {% endif %}
                         </td>
                         <td>
                             {{ staff.hire_date }}
@@ -48,14 +58,14 @@
                         </td>
                         <td>{{ staff.department_name|default:"-" }}</td>
                         <td>
-                            <button type="button" class="btn btn-sm btn-primary" onclick="selectStaff('{{ staff.pk }}', '{{ staff.name_last|escapejs }} {{ staff.name_first|escapejs }}')">
+                            <button type="button" class="btn btn-sm btn-primary" onclick="selectStaff('{{ staff.pk }}', '{{ staff.name_last|escapejs }} {{ staff.name_first|escapejs }}', '{{ staff.employment_type|default:""|escapejs }}', '{% if staff.employment_type %}{% my_name "employment_type" staff.employment_type %}{% endif %}')">
                                 選択
                             </button>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="text-center text-muted">該当するスタッフが見つかりません</td>
+                        <td colspan="6" class="text-center text-muted">該当するスタッフが見つかりません</td>
                     </tr>
                     {% endfor %}
                 </tbody>
