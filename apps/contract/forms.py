@@ -435,7 +435,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         fields = [
             'staff', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
             'start_date', 'end_date', 'contract_amount', 'pay_unit',
-            'work_location', 'business_content', 'description', 'notes', 'memo'
+            'work_location', 'business_content', 'notes', 'memo'
         ]
         widgets = {
             'staff': forms.HiddenInput(),
@@ -449,7 +449,6 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
             'pay_unit': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'work_location': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'business_content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 4}),
-            'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 4}),
             'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }

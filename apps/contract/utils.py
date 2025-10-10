@@ -295,7 +295,6 @@ def generate_contract_pdf_content(contract):
             {"title": "契約金額", "text": contract_amount_text},
             {"title": "就業場所", "text": str(contract.work_location or "")},
             {"title": "業務内容", "text": str(contract.business_content or "")},
-            {"title": "契約内容", "text": str(contract.description or "")},
             {"title": "備考", "text": str(contract.notes or "")},
         ]
     else:
