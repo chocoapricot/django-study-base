@@ -6,6 +6,8 @@
 
 {% block title %}{{ title }}{% endblock %}
 
+
+
 {% block content %}
 <style>
     /* bill_unit のプルダウンを狭くする */
@@ -385,6 +387,7 @@
 </div>
 
 
+<script src="{% static 'js/contract-modal.js' %}"></script>
 <script>
 // 編集時の初期値を保存
 const initialDispatchValues = {
@@ -404,46 +407,40 @@ const initialDispatchValues = {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
-    const clientSelectFetchButton = document.getElementById('clientSelectFetchButton');
-    if (clientSelectFetchButton) {
-        clientSelectFetchButton.addEventListener('click', function(e) {
+    // クライアント選択ボタンのイベントリスナーを設定
+    const clientSelectButton = document.getElementById('clientSelectFetchButton');
+    if (clientSelectButton) {
+        clientSelectButton.addEventListener('click', function(e) {
             e.preventDefault();
-            const clientContractTypeCode = document.getElementById('{{ form.client_contract_type_code.id_for_label }}').value;
-            fetch(`{% url "contract:client_select" %}?from_modal=1&client_contract_type_code=${clientContractTypeCode}`)
-                .then(response => response.text())
-                .then(html => {
-                    const modalBody = document.querySelector('#selectModal .modal-body');
-                    if (modalBody) {
-                        modalBody.innerHTML = html;
-                    }
-                    const modalElement = document.getElementById('selectModal');
-                    if (modalElement) {
-                        let modal = bootstrap.Modal.getInstance(modalElement);
-                        if (!modal) {
-                            modal = new bootstrap.Modal(modalElement, {
-                                backdrop: true,
-                                keyboard: true,
-                                focus: true
-                            });
-                        }
-                        modal.show();
-                    }
-                })
-                .catch(error => {
-                    alert('取得失敗: ' + error);
-                });
+            const contractTypeCode = document.getElementById('{{ form.client_contract_type_code.id_for_label }}').value;
+            loadClientModal('{% url "contract:client_select" %}', contractTypeCode);
         });
     }
 
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
+    // 派遣マスター参照ボタンのイベントリスナーを設定
+    document.addEventListener('click', function(e) {
+        if (e.target.hasAttribute('data-master-type')) {
+            e.preventDefault();
+            const masterType = e.target.getAttribute('data-master-type');
+            const targetId = e.target.getAttribute('data-target-id');
+            const modalTitle = e.target.getAttribute('data-modal-title');
+            
+            loadHakenMasterModal('{% url "contract:haken_master_select" %}', masterType, targetId, modalTitle);
+        }
     });
+
+    // ツールチップを初期化
+    if (typeof bootstrap !== 'undefined') {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
     
     const clientField = document.getElementById('{{ form.client.id_for_label }}');
     const clientDisplayText = document.getElementById('client-display-text');
     
-    if (clientField.value) {
+    if (clientField && clientField.value) {
         {% if contract and contract.client %}
             clientDisplayText.textContent = '{{ contract.client.name|escapejs }}';
         {% elif selected_client %}
@@ -477,27 +474,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function selectClient(clientId, clientName) {
-    document.getElementById('{{ form.client.id_for_label }}').value = clientId;
-    document.getElementById('client-display-text').textContent = clientName;
-    const modalElement = document.getElementById('selectModal');
-    if (modalElement) {
-        const modal = bootstrap.Modal.getInstance(modalElement);
-        if (modal) {
-            modal.hide();
-        }
-    }
-
-    // 派遣契約の場合、関連フィールドを更新
-    if (document.getElementById('{{ form.client_contract_type_code.id_for_label }}').value === '20') {
-        updateDispatchFields(clientId);
-        // 就業場所をクリア
-        const workLocation = document.getElementById('{{ haken_form.work_location.id_for_label }}');
-        if (workLocation) {
-            workLocation.value = '';
-        }
-    }
-}
+// selectClient関数は共通JSで定義済み（後方互換性のため残す）
 
 function updateDispatchFields(clientId) {
     const fieldConfigs = {
@@ -605,48 +582,12 @@ function loadClientModalContent(event, page, clearSearch = false, modalType = 's
         });
 }
 
-const selectModal = document.getElementById('selectModal');
-if (selectModal) {
-    selectModal.addEventListener('submit', function(e) {
-        if (e.target && e.target.id === 'client-search-form') {
-            loadClientModalContent(e, 1, false, 'selectModal');
-        }
-    });
-
-    const modalBody = selectModal.querySelector('.modal-body');
-    if (modalBody) {
-        modalBody.addEventListener('click', function(e) {
-            const target = e.target;
-            if (target.classList.contains('page-link')) {
-                e.preventDefault();
-                const url = new URL(target.href);
-                const page = url.searchParams.get('page');
-                if (page) {
-                    loadClientModalContent(null, page, false, 'selectModal');
-                }
-            }
-        });
-    }
-}
-
-// 派遣マスターモーダル内のイベント処理
-document.addEventListener('submit', function(e) {
-    if (e.target.id === 'haken-search-form') {
-        loadHakenMasterModalContent(e, 1);
-    }
-});
-
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('page-link') && e.target.closest('#hakenMasterModal')) {
-        e.preventDefault();
-        const page = new URL(e.target.href).searchParams.get('page');
-        if (page) loadHakenMasterModalContent(null, page);
-    }
-});
+// モーダル内のイベント処理は共通JSで管理
 
 function clearClient() {
     document.getElementById('{{ form.client.id_for_label }}').value = '';
     document.getElementById('client-display-text').textContent = '未選択';
+    
     // 派遣関連フィールドもクリア
     if (document.getElementById('{{ form.client_contract_type_code.id_for_label }}').value === '20') {
         updateDispatchFields(null);
@@ -690,25 +631,7 @@ function setEndDate(months) {
 }
 
 
-// Haken Master Modal - 簡素化版
-document.addEventListener('click', function(e) {
-    // 派遣マスター参照ボタンのクリック処理
-    if (e.target.hasAttribute('data-master-type')) {
-        e.preventDefault();
-        const masterType = e.target.getAttribute('data-master-type');
-        const targetId = e.target.getAttribute('data-target-id');
-        const modalTitle = e.target.getAttribute('data-modal-title');
-        
-        const modal = document.getElementById('hakenMasterModal');
-        modal.querySelector('.modal-title').textContent = modalTitle;
-        modal.setAttribute('data-current-target-id', targetId);
-        modal.setAttribute('data-current-master-type', masterType);
-        
-        loadHakenMasterModalContent(null, 1);
-        new bootstrap.Modal(modal).show();
-    }
-});
-
+// 派遣マスター関連の関数（後方互換性のため）
 function loadHakenMasterModalContent(event, page = 1, clearSearch = false) {
     if (event) event.preventDefault();
     
@@ -733,17 +656,6 @@ function loadHakenMasterModalContent(event, page = 1, clearSearch = false) {
             console.error('Error:', error);
             modalBody.innerHTML = '<p class="text-center text-danger">データの取得に失敗しました。</p>';
         });
-}
-
-// 派遣マスター選択関数
-function selectHakenMaster(content) {
-    const modal = document.getElementById('hakenMasterModal');
-    const targetId = modal.getAttribute('data-current-target-id');
-    if (targetId) {
-        document.getElementById(targetId).value = content;
-    }
-    const modalInstance = bootstrap.Modal.getInstance(modal);
-    modalInstance.hide();
 }
 </script>
 {% endblock %}
