@@ -48,6 +48,8 @@ class StaffViewsTest(TestCase):
         Dropdowns.objects.create(category='sex', value='2', name='女性', active=True, disp_seq=2)
         Dropdowns.objects.create(category='staff_regist_status', value='1', name='正社員', active=True, disp_seq=1)
         Dropdowns.objects.create(category='staff_regist_status', value='2', name='契約社員', active=True, disp_seq=2)
+        Dropdowns.objects.create(category='employment_type', value='1', name='正社員', active=True, disp_seq=1)
+        Dropdowns.objects.create(category='employment_type', value='2', name='契約社員', active=True, disp_seq=2)
         Dropdowns.objects.create(category='staff_regist_status', value='10', name='派遣社員', active=True, disp_seq=3)
         # Create necessary Dropdowns for StaffContactedForm
         Dropdowns.objects.create(category='contact_type', value='1', name='電話', active=True, disp_seq=1)
@@ -258,6 +260,7 @@ class StaffViewsTest(TestCase):
             'sex': 2,
             'staff_regist_status_code': 2,
             'employee_no': 'EMP999',
+            'employment_type': 2,  # 雇用形態を追加
             'hire_date': '2024-04-01',  # 社員番号と入社日をセットで設定
             'email': 'newstaff@example.com'
         }
@@ -289,6 +292,7 @@ class StaffViewsTest(TestCase):
             'sex': 1,
             'staff_regist_status_code': 1,
             'employee_no': 'EMP998',
+            'employment_type': 1,  # 雇用形態を追加
             'hire_date': '2020-04-01',  # 社員番号と入社日をセットで設定
             'email': 'test@example.com'
         }
