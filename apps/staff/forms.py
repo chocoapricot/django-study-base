@@ -79,13 +79,20 @@ class StaffForm(forms.ModelForm):
         hire_date = cleaned_data.get('hire_date')
         resignation_date = cleaned_data.get('resignation_date')
         employee_no = cleaned_data.get('employee_no')
+        employment_type = cleaned_data.get('employment_type')
         
-        # 入社日と社員番号のセットバリデーション
+        # 入社日、社員番号、雇用形態のセットバリデーション
         if hire_date and not employee_no:
             raise forms.ValidationError('入社日を入力する場合は、社員番号も入力してください。')
         
+        if hire_date and not employment_type:
+            raise forms.ValidationError('入社日を入力する場合は、雇用形態も選択してください。')
+        
         if employee_no and not hire_date:
             raise forms.ValidationError('社員番号を入力する場合は、入社日も入力してください。')
+        
+        if employment_type and not hire_date:
+            raise forms.ValidationError('雇用形態を選択する場合は、入社日も入力してください。')
         
         # 入社日なしに退職日入力はNG
         if resignation_date and not hire_date:
