@@ -211,4 +211,61 @@
 {% with change_logs=change_logs change_logs_count=change_logs_count history_url=staff_contract_history_url show_full_content=False %}
     {% include 'common/_change_history_list.html' %}
 {% endwith %}
+
+<script>
+// ページロジック情報を設定
+document.addEventListener('DOMContentLoaded', function() {
+    // このページにロジック情報があることを通知
+    document.body.setAttribute('data-has-logic', 'true');
+    
+    const logicContent = document.getElementById('logic-info-content');
+    if (logicContent) {
+        logicContent.innerHTML = `
+            <div class="alert alert-info mb-3">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>スタッフ契約詳細画面のロジック情報</h6>
+            </div>
+            
+            <!-- 単項目チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-shield-check text-primary me-2"></i>単項目チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 契約状況: 「作成中」「申請中」のみ編集・削除可能</div>
+                    <div class="mb-0">• 印刷権限: 「作成中」「申請中」のみ印刷機能利用可能</div>
+                </div>
+            </div>
+
+            <!-- 相関チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-check-circle text-success me-2"></i>相関チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 契約アサイン: 「作成中」状態のクライアント契約のみアサイン可能</div>
+                    <div class="mb-0">• アサイン解除: 「作成中」状態のクライアント契約のみ解除可能</div>
+                </div>
+            </div>
+
+            <!-- 自動処理 -->
+            <div class="card" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-gear text-secondary me-2"></i>自動処理</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 最低賃金表示: 就業場所から都道府県を判定し、該当する最低時給を自動表示</div>
+                    <div class="mb-2">• 遷移元判定: リファラー情報から戻るボタンの遷移先を自動判定</div>
+                    <div class="mb-2">• 関連データ取得: 契約アサイン情報を自動取得・表示</div>
+                    <div class="mb-2">• 発行履歴管理: 契約書印刷履歴を自動記録・表示</div>
+                    <div class="mb-0">• 変更履歴表示: AppLogから契約の変更履歴を自動取得・表示</div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // ロジック情報設定完了を通知
+    document.dispatchEvent(new Event('logicInfoSet'));
+});
+</script>
+
 {% endblock %}

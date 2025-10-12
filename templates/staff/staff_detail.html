@@ -485,6 +485,62 @@
 </style>
 <script src="{% static 'js/copy-to-clipboard.js' %}"></script>
 
+<script>
+// ページロジック情報を設定
+document.addEventListener('DOMContentLoaded', function() {
+    // このページにロジック情報があることを通知
+    document.body.setAttribute('data-has-logic', 'true');
+    
+    const logicContent = document.getElementById('logic-info-content');
+    if (logicContent) {
+        logicContent.innerHTML = `
+            <div class="alert alert-info mb-3">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>スタッフ詳細画面のロジック情報</h6>
+            </div>
+            
+            <!-- 単項目チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-shield-check text-primary me-2"></i>単項目チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-0">• メールアドレス: 接続機能を利用するには必須</div>
+                </div>
+            </div>
+
+            <!-- 相関チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-check-circle text-success me-2"></i>相関チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 接続依頼: 既存の接続依頼がある場合はスイッチOFFで削除</div>
+                    <div class="mb-0">• 接続承認: スタッフ側での承認が必要（管理者は制御不可）</div>
+                </div>
+            </div>
+
+            <!-- 自動処理 -->
+            <div class="card" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-gear text-secondary me-2"></i>自動処理</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 接続依頼作成: 会社の法人番号とスタッフのメールアドレスで接続レコード作成</div>
+                    <div class="mb-2">• メール送信: 接続依頼・解除時に自動でメール送信</div>
+                    <div class="mb-2">• 権限付与: 既存ユーザーがいる場合は接続権限を自動付与</div>
+                    <div class="mb-2">• 変更履歴記録: 接続依頼の作成・削除をAppLogに自動記録</div>
+                    <div class="mb-2">• 申請状況表示: 承認済みの場合、各種変更申請の有無を自動表示</div>
+                    <div class="mb-0">• 最終ログイン表示: 承認済みユーザーの最終ログイン日時を自動取得・表示</div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // ロジック情報設定完了を通知
+    document.dispatchEvent(new Event('logicInfoSet'));
+});
+</script>
+
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
