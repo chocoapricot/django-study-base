@@ -126,11 +126,11 @@
                                     <th>社員番号</th>
                                     <th>スタッフ</th>
                                     <th>雇用形態</th>
-                                    <th>契約名</th>
                                     <th>契約期間</th>
                                     <th class="text-end">契約金額</th>
                                     <th>契約状況</th>
                                     <th>契約番号</th>
+                                    <th>割当</th>
                                     <th>操作</th>
                                 </tr>
                             </thead>
@@ -163,11 +163,6 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <a href="{% url 'contract:staff_contract_detail' contract.pk %}{% if staff_filter %}?staff={{ staff_filter }}{% endif %}" class="text-decoration-none">
-                                            {{ contract.contract_name }}
-                                        </a>
-                                    </td>
-                                    <td>
                                         {{ contract.start_date|date:"Y/m/d" }}
                                         {% if contract.end_date %}
                                             ～ {{ contract.end_date|date:"Y/m/d" }}
@@ -187,8 +182,12 @@
                                     </td>
                                     <td>
                                         {{ contract.contract_number|default:"-" }}
+                                    </td>
+                                    <td>
                                         {% if contract.client_contract_count > 0 %}
-                                            <span class="badge bg-success ms-1">割当済</span>
+                                            <span class="badge bg-success">割当済</span>
+                                        {% else %}
+                                            -
                                         {% endif %}
                                     </td>
                                     <td>
