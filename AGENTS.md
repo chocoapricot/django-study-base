@@ -361,3 +361,47 @@ python manage.py test apps.staff.tests.test_staff_form.StaffFormTest.test_valid_
 1. **Unit Tests**: Test individual functions
 2. **Integration Tests**: Test the interaction between multiple components
 3. **Functional Tests**: Test user operation flows
+
+## Logic Information Display System
+
+### Overview
+This system provides users with information about validation logic and automatic processing for each page through a modal interface.
+
+### Implementation Rules
+- **Coffee Cup Icon**: Display in the header to indicate the presence/absence of page logic information
+  - `bi-cup`: No logic information (empty cup)
+  - `bi-cup-hot`: Logic information available (steaming cup)
+- **Modal Display**: Click to show page-specific validation logic
+- **Category Classification**:
+  - **Single Item Check**: Individual field validation
+  - **Correlation Check**: Relationship checks between multiple fields
+  - **Automatic Processing**: System automatic conversion/acquisition processing
+- **Unified Design**: Organized in card format with shadows for visual distinction
+
+### Technical Implementation
+1. **Base Template Setup**: Add modal structure and JavaScript to `templates/common/_base.html`
+2. **Page-Specific Logic**: Add logic information in each form template's JavaScript
+3. **Icon State Management**: Use `data-has-logic` attribute to control icon state
+4. **Content Structure**: Use card-based layout with consistent styling
+
+### Maintenance Rule
+**IMPORTANT**: When adding or modifying validation logic or automatic processing in forms, always update the corresponding logic information display. This ensures users have accurate information about page behavior.
+
+### Example Implementation
+```javascript
+// Set page logic information
+document.addEventListener('DOMContentLoaded', function() {
+    // Notify that this page has logic information
+    document.body.setAttribute('data-has-logic', 'true');
+    
+    const logicContent = document.getElementById('logic-info-content');
+    if (logicContent) {
+        logicContent.innerHTML = `
+            <!-- Logic information content -->
+        `;
+    }
+    
+    // Notify completion of logic information setup
+    document.dispatchEvent(new Event('logicInfoSet'));
+});
+```
