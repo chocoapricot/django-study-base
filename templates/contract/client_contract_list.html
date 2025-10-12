@@ -163,10 +163,12 @@
                                         </span>
                                     </td>
                                     <td>
-                                        {{ contract.start_date|date:"Y/m/d" }}
-                                        {% if contract.end_date %}
-                                            ～ {{ contract.end_date|date:"Y/m/d" }}
-                                        {% endif %}
+                                        <a href="{% url 'contract:client_contract_detail' contract.pk %}{% if client_filter %}?client={{ client_filter }}{% endif %}" class="text-decoration-none">
+                                            {{ contract.start_date|date:"Y/m/d" }}
+                                            {% if contract.end_date %}
+                                                ～ {{ contract.end_date|date:"Y/m/d" }}
+                                            {% endif %}
+                                        </a>
                                     </td>
                                     <td class="text-end">
                                         {% if contract.contract_amount %}
