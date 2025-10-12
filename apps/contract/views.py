@@ -2239,10 +2239,15 @@ def staff_contract_teishokubi_list(request):
     teishokubi_list = StaffContractTeishokubi.objects.all()
 
     if search_query:
+        staff_emails_from_name_search = list(Staff.objects.filter(name__icontains=search_query).values_list('email', flat=True))
+        client_corp_numbers_from_name_search = list(Client.objects.filter(name__icontains=search_query).values_list('corporate_number', flat=True))
+
         teishokubi_list = teishokubi_list.filter(
             Q(staff_email__icontains=search_query) |
             Q(organization_name__icontains=search_query) |
-            Q(client_corporate_number__icontains=search_query)
+            Q(client_corporate_number__icontains=search_query) |
+            Q(staff_email__in=staff_emails_from_name_search) |
+            Q(client_corporate_number__in=client_corp_numbers_from_name_search)
         )
 
     teishokubi_list = teishokubi_list.order_by('-dispatch_start_date', 'staff_email')
@@ -2250,6 +2255,16 @@ def staff_contract_teishokubi_list(request):
     paginator = Paginator(teishokubi_list, 20)
     page = request.GET.get('page')
     teishokubi_page = paginator.get_page(page)
+
+    staff_emails = [item.staff_email for item in teishokubi_page if item.staff_email]
+    client_corporate_numbers = [item.client_corporate_number for item in teishokubi_page if item.client_corporate_number]
+
+    staff_map = {staff.email: staff.name for staff in Staff.objects.filter(email__in=staff_emails)}
+    client_map = {client.corporate_number: client.name for client in Client.objects.filter(corporate_number__in=client_corporate_numbers)}
+
+    for item in teishokubi_page:
+        item.staff_name = staff_map.get(item.staff_email)
+        item.client_name = client_map.get(item.client_corporate_number)
 
     context = {
         'teishokubi_list': teishokubi_page,

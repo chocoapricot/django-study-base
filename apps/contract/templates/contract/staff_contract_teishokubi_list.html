@@ -15,7 +15,7 @@
                 <span class="input-group-text">
                     <i class="bi bi-search"></i>
                 </span>
-                <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-sm" placeholder="スタッフメールアドレス、組織名、クライアント法人番号で検索">
+                <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-sm" placeholder="スタッフ名、クライアント名、組織名などで検索">
                 <span class="input-group-text" style="cursor: pointer;" onclick="document.querySelector('input[name=q]').value = '';">
                     <i class="bi bi-x"></i>
                 </span>
@@ -27,8 +27,8 @@
         <table class="table table-striped table-hover me-2 mt-2" style="border-top: 1px solid #ddd;">
             <thead>
                 <tr>
-                    <th>スタッフメールアドレス</th>
-                    <th>クライアント法人番号</th>
+                    <th>スタッフ名</th>
+                    <th>クライアント名</th>
                     <th>組織名</th>
                     <th>派遣開始日</th>
                     <th>抵触日</th>
@@ -37,8 +37,8 @@
             <tbody>
                 {% for item in teishokubi_list %}
                 <tr>
-                    <td>{{ item.staff_email }}</td>
-                    <td>{{ item.client_corporate_number }}</td>
+                    <td>{{ item.staff_name|default_if_none:item.staff_email }}</td>
+                    <td>{{ item.client_name|default_if_none:item.client_corporate_number }}</td>
                     <td>{{ item.organization_name }}</td>
                     <td>{{ item.dispatch_start_date|date:"Y/m/d" }}</td>
                     <td>{{ item.conflict_date|date:"Y/m/d" }}</td>
