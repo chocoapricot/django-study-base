@@ -1400,26 +1400,28 @@ class ContractAssignmentViewTest(TestCase):
         # 作成中の契約 -> ボタン表示
         url_draft = reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract_draft.pk})
         response_draft = self.client.get(url_draft)
-        self.assertContains(response_draft, '解除')
+        self.assertContains(response_draft, '<button type="submit" class="btn btn-sm btn-dark"')
+        self.assertContains(response_draft, '>解除</button>')
 
         # 承認済みの契約 -> ボタン非表示
         # 承認済み契約に紐づくスタッフ契約のアサインをセットアップ
         self.client_contract_approved.staff_contracts.add(self.staff_contract_draft)
         url_approved = reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract_approved.pk})
         response_approved = self.client.get(url_approved)
-        self.assertNotContains(response_approved, '解除')
+        self.assertNotContains(response_approved, '>解除</button>')
 
     def test_unassign_button_visibility_on_staff_detail(self):
         """スタッフ契約詳細ページでの解除ボタンの表示テスト"""
         # 作成中のクライアント契約に紐づいている -> ボタン表示
         url_draft = reverse('contract:staff_contract_detail', kwargs={'pk': self.already_assigned_staff_contract.pk})
         response_draft = self.client.get(url_draft)
-        self.assertContains(response_draft, '解除')
+        self.assertContains(response_draft, '<button type="submit" class="btn btn-sm btn-dark"')
+        self.assertContains(response_draft, '>解除</button>')
 
         # 承認済みのクライアント契約に紐づいている -> ボタン非表示
         url_approved = reverse('contract:staff_contract_detail', kwargs={'pk': self.staff_contract_draft.pk})
         response_approved = self.client.get(url_approved)
-        self.assertNotContains(response_approved, '解除')
+        self.assertNotContains(response_approved, '>解除</button>')
 
 
 class ContractAssignmentDisplayTest(TestCase):
