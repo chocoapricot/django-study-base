@@ -17,6 +17,7 @@ from apps.system.settings.utils import my_parameter
 from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
 from apps.common.utils import fill_excel_from_template, fill_pdf_from_template
+from apps.common.constants import Constants
 from django.http import HttpResponse
 from .resources import StaffResource
 import datetime
@@ -677,9 +678,9 @@ def staff_face(request, pk):
     # 画像が存在しない場合、名前を使って画像を生成
     response = HttpResponse(content_type="image/jpeg")
     image = Image.new("RGB", (200, 200), (200, 200, 200))  # 背景色の指定
-    if staff.sex == 1:
+    if staff.sex == Constants.SEX.MALE:
         image = Image.new("RGB", (200, 200), (140, 140, 240))  # 背景色の指定
-    elif staff.sex == 2:
+    elif staff.sex == Constants.SEX.FEMALE:
         image = Image.new("RGB", (200, 200), (240, 140, 140))  # 背景色の指定
     
     
