@@ -457,7 +457,12 @@ class ContractViewTest(TestCase):
         url = reverse('contract:client_contract_detail', kwargs={'pk': self.contract_without_clash_day.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, '紹介予定派遣情報')
+        # TTP情報のセクションが表示されないことを確認（より具体的なチェック）
+        self.assertNotContains(response, '<h6 class="text-muted mb-0">紹介予定派遣情報</h6>')
+        # TTP情報の具体的な項目が表示されないことを確認
+        self.assertNotContains(response, '雇用しようとする者の名称')
+        self.assertNotContains(response, '契約期間')
+        self.assertNotContains(response, '試用期間に関する事項')
 
     def test_staff_contract_create_initial_name_from_master(self):
         """スタッフ契約作成画面で、契約名がマスタから初期設定されるかテスト"""
