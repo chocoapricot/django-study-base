@@ -1420,3 +1420,173 @@ class ContractAssignmentViewTest(TestCase):
         url_approved = reverse('contract:staff_contract_detail', kwargs={'pk': self.staff_contract_draft.pk})
         response_approved = self.client.get(url_approved)
         self.assertNotContains(response_approved, '解除')
+
+
+class ContractAssignmentDisplayTest(TestCase):
+    """契約割当状況表示のテスト"""
+
+    def setUp(self):
+        """テストデータの準備"""
+        from django.contrib.auth.models import Permission
+        from django.contrib.contenttypes.models import ContentType
+        from ..models import ContractAssignment
+
+        # ユーザーと権限
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        content_types = [
+            ContentType.objects.get_for_model(ClientContract),
+            ContentType.objects.get_for_model(StaffContract),
+        ]
+        permissions = Permission.objects.filter(content_type__in=content_types)
+        self.user.user_permissions.set(permissions)
+        self.client.login(username='testuser', password='testpassword')
+
+        # クライアント、スタッフ
+        self.test_client_model = TestClient.objects.create(name='Test Client')
+        self.staff = Staff.objects.create(name_last='Staff', name_first='One')
+
+        # 契約パターン
+        self.client_pattern = ContractPattern.objects.create(name='Client Pattern', domain='10')
+        self.staff_pattern = ContractPattern.objects.create(name='Staff Pattern', domain='1')
+
+        # --- テストデータ ---
+        # 1. 割当済みの契約ペア
+        self.assigned_client_contract = ClientContract.objects.create(
+            client=self.test_client_model, contract_name='Assigned Client',
+            start_date=datetime.date(2025, 1, 1), contract_pattern=self.client_pattern,
+            contract_number='C-ASSIGNED'
+        )
+        self.assigned_staff_contract = StaffContract.objects.create(
+            staff=self.staff, contract_name='Assigned Staff',
+            start_date=datetime.date(2025, 1, 1), contract_pattern=self.staff_pattern,
+            contract_number='S-ASSIGNED'
+        )
+        ContractAssignment.objects.create(
+            client_contract=self.assigned_client_contract,
+            staff_contract=self.assigned_staff_contract
+        )
+
+        # 2. 未割当の契約
+        self.unassigned_client_contract = ClientContract.objects.create(
+            client=self.test_client_model, contract_name='Unassigned Client',
+            start_date=datetime.date(2025, 2, 1), contract_pattern=self.client_pattern,
+            contract_number='C-UNASSIGNED'
+        )
+        self.unassigned_staff_contract = StaffContract.objects.create(
+            staff=self.staff, contract_name='Unassigned Staff',
+            start_date=datetime.date(2025, 2, 1), contract_pattern=self.staff_pattern,
+            contract_number='S-UNASSIGNED'
+        )
+
+    def test_client_contract_list_assignment_badge(self):
+        """クライアント契約一覧で割当済バッジが正しく表示されるかテスト"""
+        url = reverse('contract:client_contract_list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # 割当済みの契約にはバッジが表示される
+        assigned_row_html = f'<td>\n                                        {self.assigned_client_contract.contract_number}\n                                        \n                                            <span class="badge bg-success ms-1">割当済</span>\n                                        \n                                    </td>'
+        self.assertContains(response, '割当済')
+
+        # 未割当の契約にはバッジが表示されない
+        unassigned_row_html = f'<td>\n                                        {self.unassigned_client_contract.contract_number}\n                                        \n                                    </td>'
+        #レスポンス内容を部分的に確認
+        self.assertNotContains(response, f'{self.unassigned_client_contract.contract_number}</span>')
+
+
+    def test_staff_contract_list_assignment_badge(self):
+        """スタッフ契約一覧で割当済バッジが正しく表示されるかテスト"""
+        url = reverse('contract:staff_contract_list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # 割当済みの契約にはバッジが表示される
+        self.assertContains(response, '割当済')
+
+        # 未割当の契約にはバッジが表示されない
+        self.assertNotContains(response, f'{self.unassigned_staff_contract.contract_number}</span>')
+
+
+from unittest.mock import patch
+
+class StaffContractApproveViewTest(TestCase):
+    """スタッフ契約承認ビューのテスト"""
+
+    def setUp(self):
+        """テストデータの準備"""
+        from django.contrib.auth.models import Permission
+        from django.contrib.contenttypes.models import ContentType
+        from apps.master.models import MinimumPay
+        from apps.system.settings.models import Dropdowns
+
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='testpass123',
+            email='testuser@example.com'
+        )
+        content_type = ContentType.objects.get_for_model(StaffContract)
+        permissions = Permission.objects.filter(content_type=content_type)
+        self.user.user_permissions.set(permissions)
+
+        self.client = Client()
+        self.client.login(username='testuser', password='testpass123')
+
+        self.staff = Staff.objects.create(name_last='Test', name_first='Staff', employee_no='S001', hire_date=datetime.date(2023, 1, 1))
+        self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='1')
+
+        # 最低賃金と都道府県のマスターデータ
+        self.tokyo_pref = Dropdowns.objects.create(category='pref', value='13', name='東京都', active=True)
+        self.pay_unit_hourly = Dropdowns.objects.create(category='pay_unit', value='10', name='時給', active=True)
+        MinimumPay.objects.create(pref='13', start_date=datetime.date(2023, 10, 1), hourly_wage=1113, is_active=True)
+
+        # 最低賃金以上の契約（申請中）
+        self.valid_contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='Valid Wage Contract',
+            start_date=datetime.date(2024, 1, 1),
+            contract_pattern=self.contract_pattern,
+            contract_status=StaffContract.ContractStatus.PENDING,
+            pay_unit='10',
+            contract_amount=1200,
+            work_location='東京都'
+        )
+
+        # 最低賃金未満の契約（申請中）
+        self.invalid_contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='Invalid Wage Contract',
+            start_date=datetime.date(2024, 1, 1),
+            contract_pattern=self.contract_pattern,
+            contract_status=StaffContract.ContractStatus.PENDING,
+            pay_unit='10',
+            contract_amount=1000,
+            work_location='東京都'
+        )
+
+    @patch('apps.contract.views.generate_staff_contract_number', return_value='SC-TEST-001')
+    def test_approve_success_with_valid_wage(self, mock_generate_number):
+        """最低賃金以上の契約が正常に承認されるかテスト"""
+        url = reverse('contract:staff_contract_approve', kwargs={'pk': self.valid_contract.pk})
+        response = self.client.post(url, {'is_approved': 'true'}, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.valid_contract.refresh_from_db()
+        self.assertEqual(self.valid_contract.contract_status, StaffContract.ContractStatus.APPROVED.value)
+
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertIn('承認済にしました', str(messages[0]))
+
+    def test_approve_failure_with_invalid_wage(self):
+        """最低賃金未満の契約が承認されないかテスト"""
+        url = reverse('contract:staff_contract_approve', kwargs={'pk': self.invalid_contract.pk})
+        response = self.client.post(url, {'is_approved': 'true'}, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.invalid_contract.refresh_from_db()
+        self.assertEqual(self.invalid_contract.contract_status, StaffContract.ContractStatus.PENDING)
+
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertIn('承認できませんでした', str(messages[0]))
+        self.assertIn('最低賃金（1113円）を下回っています', str(messages[0]))

@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Q, Prefetch
+from django.db.models import Q, Prefetch, Count
 from django.http import JsonResponse, HttpResponse, Http404
 from django.views.decorators.http import require_POST
 import re
@@ -69,7 +69,9 @@ def client_contract_list(request):
     client_filter = request.GET.get('client', '')
     contract_type_filter = request.GET.get('contract_type', '')
 
-    contracts = ClientContract.objects.select_related('client', 'haken_info__ttp_info').all()
+    contracts = ClientContract.objects.select_related('client', 'haken_info__ttp_info').annotate(
+        staff_contract_count=Count('staff_contracts')
+    )
 
     if client_filter:
         contracts = contracts.filter(client_id=client_filter)
@@ -479,7 +481,9 @@ def staff_contract_list(request):
     staff_filter = request.GET.get('staff', '')  # スタッフフィルタを追加
     contract_pattern_filter = request.GET.get('contract_pattern', '')
     
-    contracts = StaffContract.objects.select_related('staff', 'contract_pattern').all()
+    contracts = StaffContract.objects.select_related('staff', 'contract_pattern').annotate(
+        client_contract_count=Count('client_contracts')
+    )
     
     # スタッフフィルタを適用
     if staff_filter:
@@ -1259,7 +1263,11 @@ def staff_contract_approve(request, pk):
         is_approved = request.POST.get('is_approved')
         if is_approved:
             if contract.contract_status == StaffContract.ContractStatus.PENDING:
+                from django.core.exceptions import ValidationError
                 try:
+                    # 最低賃金チェック
+                    contract.validate_minimum_wage()
+
                     contract.contract_number = generate_staff_contract_number(contract)
                     contract.contract_status = StaffContract.ContractStatus.APPROVED
                     contract.approved_at = timezone.now()
@@ -1268,6 +1276,9 @@ def staff_contract_approve(request, pk):
                     messages.success(request, f'契約「{contract.contract_name}」を承認済にしました。契約番号: {contract.contract_number}')
                 except ValueError as e:
                     messages.error(request, f'契約番号の採番に失敗しました。理由: {e}')
+                except ValidationError as e:
+                    messages.error(request, f'承認できませんでした。{e.message}')
+                    return redirect('contract:staff_contract_detail', pk=contract.pk)
             else:
                 messages.error(request, 'このステータスからは承認できません。')
         else:

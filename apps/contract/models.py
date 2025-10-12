@@ -321,6 +321,32 @@ class StaffContract(MyModel):
         if self.start_date and self.end_date and self.start_date > self.end_date:
             raise ValidationError('契約開始日は終了日より前の日付を入力してください。')
 
+    def validate_minimum_wage(self):
+        """最低賃金バリデーション"""
+        from django.core.exceptions import ValidationError
+        if self.pay_unit == '10' and self.contract_amount is not None and self.work_location:
+            from apps.master.models import MinimumPay
+            from apps.system.settings.models import Dropdowns
+
+            prefectures = Dropdowns.objects.filter(category='pref', active=True)
+            found_prefecture = None
+            for pref_dropdown in prefectures:
+                if pref_dropdown.name in self.work_location:
+                    found_prefecture = pref_dropdown
+                    break
+
+            if found_prefecture:
+                minimum_wage_record = MinimumPay.objects.filter(
+                    pref=found_prefecture.value,
+                    start_date__lte=self.start_date,
+                    is_active=True
+                ).order_by('-start_date').first()
+
+                if minimum_wage_record and self.contract_amount < minimum_wage_record.hourly_wage:
+                    raise ValidationError(
+                        f'{found_prefecture.name}の最低賃金（{minimum_wage_record.hourly_wage}円）を下回っています。'
+                    )
+
 
 class StaffContractPrint(MyModel):
     """

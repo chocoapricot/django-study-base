@@ -503,21 +503,37 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         start_date = cleaned_data.get('start_date')
         end_date = cleaned_data.get('end_date')
         staff = cleaned_data.get('staff')
-        
+        pay_unit = cleaned_data.get('pay_unit')
+        contract_amount = cleaned_data.get('contract_amount')
+        work_location = cleaned_data.get('work_location')
+
         # 開始日と終了日の関係チェック
         if start_date and end_date and start_date > end_date:
             raise forms.ValidationError('契約開始日は終了日より前の日付を入力してください。')
-        
+
         # スタッフの入社日・退職日との関係チェック
         if staff and start_date:
             # 入社日より前の開始日はエラー
             if staff.hire_date and start_date < staff.hire_date:
                 self.add_error('start_date', f'契約開始日は入社日（{staff.hire_date}）以降の日付を入力してください。')
-            
+
             # 退職日より後の終了日はエラー
             if staff.resignation_date and end_date and end_date > staff.resignation_date:
                 self.add_error('end_date', f'契約終了日は退職日（{staff.resignation_date}）以前の日付を入力してください。')
-        
+
+        # 最低賃金チェック
+        try:
+            # self.instanceはフォームのインスタンス（モデルオブジェクト）
+            # cleaned_dataから取得した値でインスタンスを更新してバリデーション
+            instance = self.instance or StaffContract()
+            instance.start_date = start_date
+            instance.pay_unit = pay_unit
+            instance.contract_amount = contract_amount
+            instance.work_location = work_location
+            instance.validate_minimum_wage()
+        except forms.ValidationError as e:
+            self.add_error('contract_amount', e)
+
         return cleaned_data
 
 
