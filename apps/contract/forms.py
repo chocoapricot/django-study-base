@@ -432,12 +432,13 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
     class Meta:
         model = StaffContract
         fields = [
-            'staff', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
+            'staff', 'employment_type', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
             'start_date', 'end_date', 'contract_amount', 'pay_unit',
             'work_location', 'business_content', 'notes', 'memo'
         ]
         widgets = {
             'staff': forms.HiddenInput(),
+            'employment_type': forms.HiddenInput(),
             'contract_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'job_category': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'contract_pattern': forms.Select(attrs={'class': 'form-select form-select-sm'}),
@@ -459,6 +460,8 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, domain='1')
         if self.instance and self.instance.pk and hasattr(self.instance, 'staff') and self.instance.staff:
             self.fields['staff_display'].initial = f"{self.instance.staff.name_last} {self.instance.staff.name_first}"
+
+
 
         # 支払単位の選択肢を設定
         pay_unit_choices = [('', '---------')] + [

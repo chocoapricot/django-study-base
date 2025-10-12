@@ -243,6 +243,13 @@ class StaffContract(MyModel):
         related_name='contracts',
         verbose_name='スタッフ'
     )
+    employment_type = models.CharField(
+        '雇用形態',
+        max_length=10,
+        blank=True,
+        null=True,
+        help_text='契約作成時点のスタッフの雇用形態を保存'
+    )
     corporate_number = models.CharField('法人番号', max_length=13, blank=True, null=True)
     contract_name = models.CharField('契約名', max_length=200)
     job_category = models.ForeignKey(

@@ -74,6 +74,8 @@
                 </div>
             </div>
 
+            {{ form.employment_type }}
+
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.contract_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約種別</label>
                 <div class="col-sm-4">
@@ -324,6 +326,7 @@ function updateContractPatterns(employmentType) {
 // スタッフクリア関数
 function clearStaff() {
     document.getElementById('{{ form.staff.id_for_label }}').value = '';
+    document.getElementById('{{ form.employment_type.id_for_label }}').value = '';
     document.getElementById('staff-display-text').textContent = '未選択';
     updateEmploymentTypeBadge(null, null);
 }

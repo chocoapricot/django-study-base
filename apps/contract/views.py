@@ -704,6 +704,11 @@ def staff_contract_create(request):
             # 新規作成・コピー作成時はステータスを「作成中」に戻す
             contract.contract_status = StaffContract.ContractStatus.DRAFT
             contract.contract_number = None  # 契約番号はクリア
+            
+            # 雇用形態が設定されていない場合、スタッフの現在の雇用形態を設定
+            if not contract.employment_type and contract.staff and contract.staff.employment_type:
+                contract.employment_type = contract.staff.employment_type
+            
             contract.save()
             messages.success(request, f'スタッフ契約「{contract.contract_name}」を作成しました。')
             return redirect('contract:staff_contract_detail', pk=contract.pk)

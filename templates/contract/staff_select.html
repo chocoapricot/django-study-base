@@ -57,9 +57,10 @@
                         </td>
                         <td>{{ staff.department_name|default:"-" }}</td>
                         <td>
-                            <a href="{{ return_url }}?selected_staff_id={{ staff.pk }}&selected_staff_name={{ staff.name_last|urlencode }}%20{{ staff.name_first|urlencode }}" class="btn btn-sm btn-primary">
-                                選択
-                            </a>
+                                <button type="button" class="btn btn-sm btn-primary" 
+                                        onclick="selectStaff('{{ staff.pk }}', '{{ staff.name_last|escapejs }} {{ staff.name_first|escapejs }}', '{{ staff.employment_type|default:""|escapejs }}', '{% load dropdowns %}{% my_name "employment_type" staff.employment_type %}', '{{ staff.employment_type|badge_class }}')">
+                                    選択
+                                </button>
                         </td>
                     </tr>
                     {% empty %}

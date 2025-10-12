@@ -65,6 +65,12 @@ window.selectStaff = function(staffId, staffName, employmentType, employmentType
         staffField.value = staffId;
     }
     
+    // 雇用形態フィールドに値を設定
+    const employmentTypeField = document.querySelector('input[name="employment_type"]');
+    if (employmentTypeField && employmentType) {
+        employmentTypeField.value = employmentType;
+    }
+    
     // 表示テキストを更新
     const displayText = document.getElementById('staff-display-text');
     if (displayText) {

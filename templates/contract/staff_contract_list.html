@@ -156,8 +156,8 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if contract.staff and contract.staff.employment_type %}
-                                            <span class="badge {{ contract.staff.employment_type|badge_class }}">{% my_name 'employment_type' contract.staff.employment_type %}</span>
+                                        {% if contract.employment_type %}
+                                            <span class="badge {{ contract.employment_type|badge_class }}">{% my_name 'employment_type' contract.employment_type %}</span>
                                         {% else %}
                                             -
                                         {% endif %}
