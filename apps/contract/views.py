@@ -2061,10 +2061,8 @@ def client_contract_assignment_view(request, pk):
     context = {
         'client_contract': client_contract,
         'assignable_contracts': staff_contracts,
-        'title': 'スタッフ契約の割当',
-        'assignment_type': 'staff',
     }
-    return render(request, 'contract/contract_assignment_list.html', context)
+    return render(request, 'contract/staff_assignment_list.html', context)
 
 
 @login_required
@@ -2089,10 +2087,8 @@ def staff_contract_assignment_view(request, pk):
     context = {
         'staff_contract': staff_contract,
         'assignable_contracts': client_contracts,
-        'title': 'クライアント契約の割当',
-        'assignment_type': 'client',
     }
-    return render(request, 'contract/contract_assignment_list.html', context)
+    return render(request, 'contract/client_assignment_list.html', context)
 
 
 @login_required
