@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Q, Prefetch
+from django.db.models import Q, Prefetch, Count
 from django.http import JsonResponse, HttpResponse, Http404
 from django.views.decorators.http import require_POST
 import re
@@ -69,7 +69,9 @@ def client_contract_list(request):
     client_filter = request.GET.get('client', '')
     contract_type_filter = request.GET.get('contract_type', '')
 
-    contracts = ClientContract.objects.select_related('client', 'haken_info__ttp_info').all()
+    contracts = ClientContract.objects.select_related('client', 'haken_info__ttp_info').annotate(
+        staff_contract_count=Count('staff_contracts')
+    )
 
     if client_filter:
         contracts = contracts.filter(client_id=client_filter)
@@ -479,7 +481,9 @@ def staff_contract_list(request):
     staff_filter = request.GET.get('staff', '')  # スタッフフィルタを追加
     contract_pattern_filter = request.GET.get('contract_pattern', '')
     
-    contracts = StaffContract.objects.select_related('staff', 'contract_pattern').all()
+    contracts = StaffContract.objects.select_related('staff', 'contract_pattern').annotate(
+        client_contract_count=Count('client_contracts')
+    )
     
     # スタッフフィルタを適用
     if staff_filter:
