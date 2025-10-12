@@ -82,6 +82,9 @@
                                 <td>
                                     {% if contract.contract_amount %}
                                         {% if contract.pay_unit %}{% my_name 'pay_unit' contract.pay_unit %}&nbsp;{% endif %}{{ contract.contract_amount|floatformat:0|intcomma }}円
+                                        {% if minimum_wage and minimum_wage_pref_name %}
+                                            <span class="text-muted small">（{{ minimum_wage_pref_name }} 最低時給 ¥{{ minimum_wage|intcomma }}）</span>
+                                        {% endif %}
                                     {% else %}
                                         -
                                     {% endif %}

@@ -636,6 +636,31 @@ def staff_contract_detail(request, pk):
     issue_history_count = all_issue_history.count()
     issue_history_for_display = all_issue_history[:10]
 
+    # 最低時給を取得（表示用なので時給単位に関係なく取得）
+    minimum_wage = None
+    minimum_wage_pref_name = None
+    if contract.work_location:
+        from apps.master.models import MinimumPay
+        from apps.system.settings.models import Dropdowns
+        
+        prefectures = Dropdowns.objects.filter(category='pref', active=True)
+        found_prefecture = None
+        for pref_dropdown in prefectures:
+            if pref_dropdown.name in contract.work_location:
+                found_prefecture = pref_dropdown
+                break
+        
+        if found_prefecture:
+            minimum_wage_record = MinimumPay.objects.filter(
+                is_active=True,
+                pref=found_prefecture.value,
+                start_date__lte=contract.start_date,
+            ).order_by('-start_date').first()
+            
+            if minimum_wage_record:
+                minimum_wage = minimum_wage_record.hourly_wage
+                minimum_wage_pref_name = found_prefecture.name
+
     context = {
         'contract': contract,
         'issue_history': all_issue_history,
@@ -646,6 +671,8 @@ def staff_contract_detail(request, pk):
         'staff_filter': staff_filter,
         'from_staff_detail': from_staff_detail,
         'from_staff_detail_direct': from_staff_detail_direct,
+        'minimum_wage': minimum_wage,
+        'minimum_wage_pref_name': minimum_wage_pref_name,
         'ContractStatus': StaffContract.ContractStatus,
     }
     return render(request, 'contract/staff_contract_detail.html', context)
