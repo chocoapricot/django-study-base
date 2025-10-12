@@ -85,8 +85,13 @@ class MinimumPayViewTest(TestCase):
 
     def test_minimum_pay_list_view_default_filter_from_master_index(self):
         """マスタ一覧からの遷移でデフォルトフィルタが適用されるかのテスト"""
-        response = self.test_client.get(reverse('master:minimum_pay_list'), HTTP_REFERER='/master/')
+        # follow=True を追加してリダイレクトを追跡する
+        response = self.test_client.get(reverse('master:minimum_pay_list'), HTTP_REFERER='/master/', follow=True)
         self.assertEqual(response.status_code, 200)
+
+        # リダイレクト後のURLにクエリパラメータが含まれているか確認
+        self.assertIn('date_filter=future', response.request['QUERY_STRING'])
+
         pays_in_context = response.context['minimum_pays']
 
         expected_pays = {
