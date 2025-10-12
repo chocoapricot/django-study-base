@@ -530,3 +530,83 @@ class StaffContractFormStatusTest(TestCase):
         for field_name, field in form.fields.items():
             self.assertIsNone(field.widget.attrs.get('disabled'))
 
+
+class StaffContractFormMinimumWageValidationTest(TestCase):
+    """スタッフ契約フォームの最低賃金バリデーションテスト"""
+
+    def setUp(self):
+        """テストデータの準備"""
+        User = get_user_model()
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+        self.staff = Staff.objects.create(
+            name_last='テスト',
+            name_first='スタッフ',
+            employee_no='EMP001',
+            hire_date=date(2024, 4, 1),
+            created_by=self.user,
+            updated_by=self.user
+        )
+        self.job_category = JobCategory.objects.create(name='エンジニア', is_active=True)
+        self.staff_pattern = ContractPattern.objects.create(name='スタッフ向け雇用契約', domain='1', is_active=True)
+
+        # Dropdowns for pay_unit
+        self.pay_unit_hourly = Dropdowns.objects.create(category='pay_unit', value='10', name='時給', active=True)
+        self.pay_unit_monthly = Dropdowns.objects.create(category='pay_unit', value='30', name='月給', active=True)
+
+        # Dropdowns for prefecture
+        self.tokyo_pref = Dropdowns.objects.create(category='pref', value='13', name='東京都', active=True)
+
+        # MinimumPay data
+        from apps.master.models import MinimumPay
+        MinimumPay.objects.create(pref='13', start_date=date(2023, 10, 1), hourly_wage=1113, is_active=True)
+
+        self.base_form_data = {
+            'staff': self.staff.pk,
+            'contract_name': '最低賃金テスト契約',
+            'job_category': self.job_category.pk,
+            'contract_pattern': self.staff_pattern.pk,
+            'start_date': date(2024, 5, 1),
+            'end_date': date(2024, 12, 31),
+            'pay_unit': self.pay_unit_hourly.value,
+            'work_location': '東京都新宿区',
+        }
+
+    def test_minimum_wage_validation_success(self):
+        """最低賃金バリデーション成功テスト（最低賃金以上）"""
+        form_data = self.base_form_data.copy()
+        form_data['contract_amount'] = 1200
+
+        form = StaffContractForm(data=form_data)
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_minimum_wage_validation_failure(self):
+        """最低賃金バリデーション失敗テスト（最低賃金未満）"""
+        form_data = self.base_form_data.copy()
+        form_data['contract_amount'] = 1000
+
+        form = StaffContractForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('contract_amount', form.errors)
+        self.assertIn('東京都の最低賃金（1113円）を下回っています。', str(form.errors['contract_amount']))
+
+    def test_minimum_wage_validation_no_prefecture(self):
+        """最低賃金バリデーションスキップテスト（勤務地に都道府県なし）"""
+        form_data = self.base_form_data.copy()
+        form_data['work_location'] = '新宿区'
+        form_data['contract_amount'] = 1000 # This would fail if validation ran
+
+        form = StaffContractForm(data=form_data)
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_minimum_wage_validation_not_hourly(self):
+        """最低賃金バリデーションスキップテスト（時給でない）"""
+        form_data = self.base_form_data.copy()
+        form_data['pay_unit'] = self.pay_unit_monthly.value
+        form_data['contract_amount'] = 1000 # This would fail if validation ran
+
+        form = StaffContractForm(data=form_data)
+        self.assertTrue(form.is_valid(), form.errors)

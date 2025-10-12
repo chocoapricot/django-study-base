@@ -1263,7 +1263,11 @@ def staff_contract_approve(request, pk):
         is_approved = request.POST.get('is_approved')
         if is_approved:
             if contract.contract_status == StaffContract.ContractStatus.PENDING:
+                from django.core.exceptions import ValidationError
                 try:
+                    # 最低賃金チェック
+                    contract.validate_minimum_wage()
+
                     contract.contract_number = generate_staff_contract_number(contract)
                     contract.contract_status = StaffContract.ContractStatus.APPROVED
                     contract.approved_at = timezone.now()
@@ -1272,6 +1276,9 @@ def staff_contract_approve(request, pk):
                     messages.success(request, f'契約「{contract.contract_name}」を承認済にしました。契約番号: {contract.contract_number}')
                 except ValueError as e:
                     messages.error(request, f'契約番号の採番に失敗しました。理由: {e}')
+                except ValidationError as e:
+                    messages.error(request, f'承認できませんでした。{e.message}')
+                    return redirect('contract:staff_contract_detail', pk=contract.pk)
             else:
                 messages.error(request, 'このステータスからは承認できません。')
         else:
