@@ -64,15 +64,27 @@ class StaffContractTeishokubiListViewTest(TestCase):
         self.client = Client()
         self.client.login(username='testuser', password='testpass123')
 
-    def test_teishokubi_list_view_displays_names(self):
-        """一覧にスタッフ名とクライアント名が表示されるかテスト"""
+    def test_teishokubi_list_view_displays_names_and_links(self):
+        """一覧にスタッフ名とクライアント名が表示され、リンクが正しいかテスト"""
         url = reverse('contract:staff_contract_teishokubi_list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.staff1.name)
-        self.assertContains(response, self.client1.name)
-        self.assertContains(response, self.staff2.name)
-        self.assertContains(response, self.client2.name)
+
+        # Staff 1
+        staff1_url = reverse('staff:staff_detail', kwargs={'pk': self.staff1.pk})
+        self.assertContains(response, f'<a href="{staff1_url}">{self.staff1.name}</a>')
+
+        # Client 1
+        client1_url = reverse('client:client_detail', kwargs={'pk': self.client1.pk})
+        self.assertContains(response, f'<a href="{client1_url}">{self.client1.name}</a>')
+
+        # Staff 2
+        staff2_url = reverse('staff:staff_detail', kwargs={'pk': self.staff2.pk})
+        self.assertContains(response, f'<a href="{staff2_url}">{self.staff2.name}</a>')
+
+        # Client 2
+        client2_url = reverse('client:client_detail', kwargs={'pk': self.client2.pk})
+        self.assertContains(response, f'<a href="{client2_url}">{self.client2.name}</a>')
 
     def test_search_by_staff_name(self):
         """スタッフ名で検索できるかテスト"""

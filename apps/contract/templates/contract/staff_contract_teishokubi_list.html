@@ -37,8 +37,20 @@
             <tbody>
                 {% for item in teishokubi_list %}
                 <tr>
-                    <td>{{ item.staff_name|default_if_none:item.staff_email }}</td>
-                    <td>{{ item.client_name|default_if_none:item.client_corporate_number }}</td>
+                    <td>
+                        {% if item.staff_id %}
+                            <a href="{% url 'staff:staff_detail' item.staff_id %}">{{ item.staff_name }}</a>
+                        {% else %}
+                            {{ item.staff_email }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item.client_id %}
+                            <a href="{% url 'client:client_detail' item.client_id %}">{{ item.client_name }}</a>
+                        {% else %}
+                            {{ item.client_corporate_number }}
+                        {% endif %}
+                    </td>
                     <td>{{ item.organization_name }}</td>
                     <td>{{ item.dispatch_start_date|date:"Y/m/d" }}</td>
                     <td>{{ item.conflict_date|date:"Y/m/d" }}</td>

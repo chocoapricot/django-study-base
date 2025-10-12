@@ -2259,12 +2259,25 @@ def staff_contract_teishokubi_list(request):
     staff_emails = [item.staff_email for item in teishokubi_page if item.staff_email]
     client_corporate_numbers = [item.client_corporate_number for item in teishokubi_page if item.client_corporate_number]
 
-    staff_map = {staff.email: staff.name for staff in Staff.objects.filter(email__in=staff_emails)}
-    client_map = {client.corporate_number: client.name for client in Client.objects.filter(corporate_number__in=client_corporate_numbers)}
+    staff_map = {staff.email: {'id': staff.id, 'name': staff.name} for staff in Staff.objects.filter(email__in=staff_emails)}
+    client_map = {client.corporate_number: {'id': client.id, 'name': client.name} for client in Client.objects.filter(corporate_number__in=client_corporate_numbers)}
 
     for item in teishokubi_page:
-        item.staff_name = staff_map.get(item.staff_email)
-        item.client_name = client_map.get(item.client_corporate_number)
+        staff_info = staff_map.get(item.staff_email)
+        if staff_info:
+            item.staff_id = staff_info['id']
+            item.staff_name = staff_info['name']
+        else:
+            item.staff_id = None
+            item.staff_name = None
+
+        client_info = client_map.get(item.client_corporate_number)
+        if client_info:
+            item.client_id = client_info['id']
+            item.client_name = client_info['name']
+        else:
+            item.client_id = None
+            item.client_name = None
 
     context = {
         'teishokubi_list': teishokubi_page,
