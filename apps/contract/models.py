@@ -563,3 +563,23 @@ class ContractAssignment(MyModel):
 
     def __str__(self):
         return f"{self.client_contract} - {self.staff_contract}"
+
+
+class StaffContractTeishokubi(MyModel):
+    """
+    スタッフの個人抵触日を管理するモデル。
+    """
+    staff_email = models.EmailField('スタッフメールアドレス', blank=True, null=True)
+    client_corporate_number = models.CharField('クライアント法人番号', max_length=13, blank=True, null=True)
+    organization_name = models.CharField('組織名', max_length=255)
+    dispatch_start_date = models.DateField('派遣開始日')
+    conflict_date = models.DateField('抵触日')
+
+    class Meta:
+        db_table = 'apps_contract_staff_teishokubi'
+        verbose_name = '個人抵触日'
+        verbose_name_plural = '個人抵触日'
+        ordering = ['-dispatch_start_date', 'staff_email']
+
+    def __str__(self):
+        return f"{self.staff_email} - {self.organization_name}"

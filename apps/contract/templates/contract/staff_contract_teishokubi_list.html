@@ -1,0 +1,49 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}個人抵触日管理一覧{% endblock %}
+
+{% block content %}
+<div class="card bg-light mt-4">
+    <div class="card-header">個人抵触日管理一覧</div>
+    <div class="card-body">
+        <form method="get" class="form-inline mb-3">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" value="{{ search_query }}" placeholder="スタッフメールアドレス、組織名、クライアント法人番号で検索">
+                <button type="submit" class="btn btn-primary">検索</button>
+            </div>
+        </form>
+
+        {% if teishokubi_list %}
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>スタッフメールアドレス</th>
+                    <th>クライアント法人番号</th>
+                    <th>組織名</th>
+                    <th>派遣開始日</th>
+                    <th>抵触日</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in teishokubi_list %}
+                <tr>
+                    <td>{{ item.staff_email }}</td>
+                    <td>{{ item.client_corporate_number }}</td>
+                    <td>{{ item.organization_name }}</td>
+                    <td>{{ item.dispatch_start_date|date:"Y/m/d" }}</td>
+                    <td>{{ item.conflict_date|date:"Y/m/d" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% include 'common/_pagination.html' with page_obj=teishokubi_list %}
+
+        {% else %}
+        <p class="text-center">データがありません。</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

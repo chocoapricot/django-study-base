@@ -502,5 +502,26 @@
         "disp_seq": 1010,
         "active": true
     }
+},
+{
+    "model": "settings.menu",
+    "pk": 26,
+    "fields": {
+        "version": 1757860081041161,
+        "created_at": "2025-10-12T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-10-12T00:00:00Z",
+        "updated_by": 1,
+        "name": "個人抵触日管理",
+        "url": "/contract/staff/teishokubi/",
+        "icon": "bi-calendar-x",
+        "icon_style": "color:#dc3545;",
+        "parent": 11,
+        "level": 1,
+        "exact_match": true,
+        "required_permission": "contract.view_staffcontractteishokubi",
+        "disp_seq": 55,
+        "active": true
+    }
 }
 ]

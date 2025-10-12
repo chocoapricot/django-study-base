@@ -11,7 +11,7 @@ from datetime import datetime, date
 from django.core.files.base import ContentFile
 from datetime import date
 from django.forms.models import model_to_dict
-from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken, ClientContractTtp
+from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken, ClientContractTtp, StaffContractTeishokubi
 from .forms import ClientContractForm, StaffContractForm, ClientContractHakenForm, ClientContractTtpForm
 from django.conf import settings
 from django.utils import timezone
@@ -2224,3 +2224,30 @@ def get_contract_patterns_by_employment_type(request):
     all_patterns = list(patterns) + list(patterns_without_employment)
     
     return JsonResponse({'patterns': all_patterns})
+
+
+@login_required
+def staff_contract_teishokubi_list(request):
+    """個人抵触日管理一覧"""
+    search_query = request.GET.get('q', '')
+
+    teishokubi_list = StaffContractTeishokubi.objects.all()
+
+    if search_query:
+        teishokubi_list = teishokubi_list.filter(
+            Q(staff_email__icontains=search_query) |
+            Q(organization_name__icontains=search_query) |
+            Q(client_corporate_number__icontains=search_query)
+        )
+
+    teishokubi_list = teishokubi_list.order_by('-dispatch_start_date', 'staff_email')
+
+    paginator = Paginator(teishokubi_list, 20)
+    page = request.GET.get('page')
+    teishokubi_page = paginator.get_page(page)
+
+    context = {
+        'teishokubi_list': teishokubi_page,
+        'search_query': search_query,
+    }
+    return render(request, 'contract/staff_contract_teishokubi_list.html', context)
