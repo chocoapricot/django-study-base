@@ -60,6 +60,9 @@ class Staff(MyModel):
     def save(self, *args, **kwargs):
         # 姓と名を結合して full_name に保存
         self.name = f"{self.name_last}{self.name_first}"
+        # emailを小文字に変換
+        if self.email:
+            self.email = self.email.lower()
         # 年齢を計算して保存
         if self.birth_date:
             today = date.today()

@@ -152,6 +152,11 @@ class ClientUser(MyModel):
     def name(self):
         return f"{self.name_last} {self.name_first}"
 
+    def save(self, *args, **kwargs):
+        if self.email:
+            self.email = self.email.lower()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         parts = []
         if self.department:
