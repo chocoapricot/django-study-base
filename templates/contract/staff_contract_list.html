@@ -185,7 +185,12 @@
                                             {% my_name 'contract_status' contract.contract_status %}
                                         </span>
                                     </td>
-                                    <td>{{ contract.contract_number|default:"-" }}</td>
+                                    <td>
+                                        {{ contract.contract_number|default:"-" }}
+                                        {% if contract.client_contract_count > 0 %}
+                                            <span class="badge bg-success ms-1">割当済</span>
+                                        {% endif %}
+                                    </td>
                                     <td>
                                         {% if not staff_filter %}
                                         <a href="{% url 'contract:staff_contract_update' contract.pk %}" class="btn btn-dark btn-sm me-1" title="編集">

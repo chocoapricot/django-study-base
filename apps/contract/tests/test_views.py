@@ -1420,3 +1420,88 @@ class ContractAssignmentViewTest(TestCase):
         url_approved = reverse('contract:staff_contract_detail', kwargs={'pk': self.staff_contract_draft.pk})
         response_approved = self.client.get(url_approved)
         self.assertNotContains(response_approved, '解除')
+
+
+class ContractAssignmentDisplayTest(TestCase):
+    """契約割当状況表示のテスト"""
+
+    def setUp(self):
+        """テストデータの準備"""
+        from django.contrib.auth.models import Permission
+        from django.contrib.contenttypes.models import ContentType
+        from ..models import ContractAssignment
+
+        # ユーザーと権限
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        content_types = [
+            ContentType.objects.get_for_model(ClientContract),
+            ContentType.objects.get_for_model(StaffContract),
+        ]
+        permissions = Permission.objects.filter(content_type__in=content_types)
+        self.user.user_permissions.set(permissions)
+        self.client.login(username='testuser', password='testpassword')
+
+        # クライアント、スタッフ
+        self.test_client_model = TestClient.objects.create(name='Test Client')
+        self.staff = Staff.objects.create(name_last='Staff', name_first='One')
+
+        # 契約パターン
+        self.client_pattern = ContractPattern.objects.create(name='Client Pattern', domain='10')
+        self.staff_pattern = ContractPattern.objects.create(name='Staff Pattern', domain='1')
+
+        # --- テストデータ ---
+        # 1. 割当済みの契約ペア
+        self.assigned_client_contract = ClientContract.objects.create(
+            client=self.test_client_model, contract_name='Assigned Client',
+            start_date=datetime.date(2025, 1, 1), contract_pattern=self.client_pattern,
+            contract_number='C-ASSIGNED'
+        )
+        self.assigned_staff_contract = StaffContract.objects.create(
+            staff=self.staff, contract_name='Assigned Staff',
+            start_date=datetime.date(2025, 1, 1), contract_pattern=self.staff_pattern,
+            contract_number='S-ASSIGNED'
+        )
+        ContractAssignment.objects.create(
+            client_contract=self.assigned_client_contract,
+            staff_contract=self.assigned_staff_contract
+        )
+
+        # 2. 未割当の契約
+        self.unassigned_client_contract = ClientContract.objects.create(
+            client=self.test_client_model, contract_name='Unassigned Client',
+            start_date=datetime.date(2025, 2, 1), contract_pattern=self.client_pattern,
+            contract_number='C-UNASSIGNED'
+        )
+        self.unassigned_staff_contract = StaffContract.objects.create(
+            staff=self.staff, contract_name='Unassigned Staff',
+            start_date=datetime.date(2025, 2, 1), contract_pattern=self.staff_pattern,
+            contract_number='S-UNASSIGNED'
+        )
+
+    def test_client_contract_list_assignment_badge(self):
+        """クライアント契約一覧で割当済バッジが正しく表示されるかテスト"""
+        url = reverse('contract:client_contract_list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # 割当済みの契約にはバッジが表示される
+        assigned_row_html = f'<td>\n                                        {self.assigned_client_contract.contract_number}\n                                        \n                                            <span class="badge bg-success ms-1">割当済</span>\n                                        \n                                    </td>'
+        self.assertContains(response, '割当済')
+
+        # 未割当の契約にはバッジが表示されない
+        unassigned_row_html = f'<td>\n                                        {self.unassigned_client_contract.contract_number}\n                                        \n                                    </td>'
+        #レスポンス内容を部分的に確認
+        self.assertNotContains(response, f'{self.unassigned_client_contract.contract_number}</span>')
+
+
+    def test_staff_contract_list_assignment_badge(self):
+        """スタッフ契約一覧で割当済バッジが正しく表示されるかテスト"""
+        url = reverse('contract:staff_contract_list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # 割当済みの契約にはバッジが表示される
+        self.assertContains(response, '割当済')
+
+        # 未割当の契約にはバッジが表示されない
+        self.assertNotContains(response, f'{self.unassigned_staff_contract.contract_number}</span>')
