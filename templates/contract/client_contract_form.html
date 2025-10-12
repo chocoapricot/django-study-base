@@ -657,5 +657,64 @@ function loadHakenMasterModalContent(event, page = 1, clearSearch = false) {
             modalBody.innerHTML = '<p class="text-center text-danger">データの取得に失敗しました。</p>';
         });
 }
+
+// ページロジック情報を設定
+document.addEventListener('DOMContentLoaded', function() {
+    // このページにロジック情報があることを通知
+    document.body.setAttribute('data-has-logic', 'true');
+    
+    const logicContent = document.getElementById('logic-info-content');
+    if (logicContent) {
+        logicContent.innerHTML = `
+            <div class="alert alert-info mb-3">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>クライアント契約編集画面のバリデーションロジック</h6>
+            </div>
+            
+            <!-- 単項目チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-shield-check text-primary me-2"></i>単項目チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 契約金額: 0以上の数値</div>
+                    <div class="mb-2">• 請求単位: 必須選択</div>
+                    <div class="mb-2">• 契約終了日: 必須入力</div>
+                    <div class="mb-0">• 法人番号: クライアントに法人番号が設定されていることが必須</div>
+                </div>
+            </div>
+
+            <!-- 相関チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-check-circle text-success me-2"></i>相関チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 契約開始日は終了日より前の日付でないとエラー</div>
+                    <div class="mb-2">• 契約開始日はクライアントの基本契約締結日以降でないとエラー</div>
+                    <div class="mb-2">• 支払条件: クライアントに設定されている場合は必須かつ同一条件</div>
+                    <div class="mb-0">• 派遣契約の場合: 派遣先事業所・組織単位・指揮命令者等の必須入力</div>
+                </div>
+            </div>
+
+            <!-- 自動処理 -->
+            <div class="card" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-gear text-secondary me-2"></i>自動処理</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 契約番号: 自動採番</div>
+                    <div class="mb-2">• 法人番号: 自社の法人番号を自動設定</div>
+                    <div class="mb-2">• 契約終了日計算: 開始日から1ヶ月/3ヶ月/6ヶ月後を自動計算</div>
+                    <div class="mb-2">• 派遣先情報: クライアント選択時に派遣先事業所・組織単位・担当者を自動取得</div>
+                    <div class="mb-2">• 就業場所: 派遣先事業所選択時に住所を自動設定</div>
+                    <div class="mb-0">• 業務内容・責任程度: マスターデータから選択・挿入</div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // ロジック情報設定完了を通知
+    document.dispatchEvent(new Event('logicInfoSet'));
+});
 </script>
 {% endblock %}
