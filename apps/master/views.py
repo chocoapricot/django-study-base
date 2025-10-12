@@ -2364,14 +2364,31 @@ def contract_term_delete(request, pk):
 @permission_required("master.view_minimumpay", raise_exception=True)
 def minimum_pay_list(request):
     """最低賃金一覧"""
+    from django.http import HttpResponseRedirect
+    from urllib.parse import urlencode
+    
     search_query = request.GET.get("search", "")
     pref_filter = request.GET.get("pref", "")
     date_filter = request.GET.get("date_filter", "")
+    sort_by = request.GET.get("sort", "display_order")
+    order = request.GET.get("order", "asc")
 
-    # /master/ からの遷移の場合、デフォルトで「現在以降」を選択
+    # /master/ からの遷移の場合、デフォルトで「現在以降」を選択してリダイレクト
     referer = request.META.get('HTTP_REFERER')
-    if referer and referer.endswith('/master/') and not request.GET:
-        date_filter = 'future'
+    if referer and referer.endswith('/master/') and not any(key in request.GET for key in ['search', 'pref', 'date_filter']):
+        params = {
+            'sort': sort_by,
+            'order': order,
+            'search': '',
+            'pref': '',
+            'date_filter': 'future'
+        }
+        # pageパラメータがある場合は保持
+        if 'page' in request.GET:
+            params['page'] = request.GET.get('page')
+        
+        query_string = urlencode(params)
+        return HttpResponseRedirect(f"{request.path}?{query_string}")
 
     minimum_pays_query = MinimumPay.objects.all()
 
@@ -2405,7 +2422,21 @@ def minimum_pay_list(request):
     else:
         minimum_pays = minimum_pays_query
 
-    minimum_pays = minimum_pays.order_by("display_order", "pref", "-start_date")
+    # ソート処理
+    valid_sort_fields = {
+        'pref': 'pref',
+        'start_date': 'start_date', 
+        'hourly_wage': 'hourly_wage',
+        'display_order': 'display_order'
+    }
+    
+    if sort_by in valid_sort_fields:
+        sort_field = valid_sort_fields[sort_by]
+        if order == 'desc':
+            sort_field = f'-{sort_field}'
+        minimum_pays = minimum_pays.order_by(sort_field, "pref", "-start_date")
+    else:
+        minimum_pays = minimum_pays.order_by("display_order", "pref", "-start_date")
 
     paginator = Paginator(minimum_pays, 20)
     page = request.GET.get("page")
@@ -2429,6 +2460,8 @@ def minimum_pay_list(request):
         "search_query": search_query,
         "pref_filter": pref_filter,
         "date_filter": date_filter,
+        "sort_by": sort_by,
+        "order": order,
         "pref_choices": pref_choices,
         "change_logs": change_logs,
         "change_logs_count": change_logs_count,
