@@ -1,13 +1,13 @@
-Django==5.2.6
-django-allauth==65.11.2
+Django==5.2.7
+django-allauth==65.12.0
 django-concurrency==2.7
 django-currentuser==0.9.0
-django-import-export==4.3.9
+django-import-export==4.3.10
 django-storages==1.14.6
 openpyxl==3.1.5
 pdfrw==0.4
 pillow==11.3.0
-PyMuPDF==1.26.4
+PyMuPDF==1.26.5
 reportlab==4.4.4
 requests==2.32.5
 python-stdnum==2.1
