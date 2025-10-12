@@ -33,6 +33,24 @@ class Constants:
         MALE = '1'    # 男性
         FEMALE = '2'  # 女性
 
+    # 契約書パターン ドメイン (contract_pattern domain)
+    class CONTRACT_PATTERN_DOMAIN:
+        STAFF = '1'    # スタッフ
+        CLIENT = '10'  # クライアント
+
+    # 契約種別 (client_contract_type)
+    class CLIENT_CONTRACT_TYPE:
+        DISPATCH = '20' # 派遣
+
+    # 支払単位 (pay_unit)
+    class PAY_UNIT:
+        HOURLY = '10' # 時間給
+
+    # 限定の別 (limit_by_agreement)
+    class LIMIT_BY_AGREEMENT:
+        NOT_LIMITED = '0' # 限定しない
+        LIMITED = '1'     # 限定する
+
 
 # 使用例
 """

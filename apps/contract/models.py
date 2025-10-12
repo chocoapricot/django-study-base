@@ -45,14 +45,22 @@ class ClientContract(MyModel):
         'master.ContractPattern',
         on_delete=models.PROTECT,
         verbose_name='契約書パターン',
-        limit_choices_to={'domain': '10'},
+        limit_choices_to={'domain': Constants.CONTRACT_PATTERN_DOMAIN.CLIENT},
     )
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
+
+    class ContractStatus(models.TextChoices):
+        DRAFT = Constants.CONTRACT_STATUS.DRAFT, '作成中'
+        PENDING = Constants.CONTRACT_STATUS.PENDING, '申請中'
+        APPROVED = Constants.CONTRACT_STATUS.APPROVED, '承認済'
+        ISSUED = Constants.CONTRACT_STATUS.ISSUED, '発行済'
+        CONFIRMED = Constants.CONTRACT_STATUS.CONFIRMED, '契約済'
+
     contract_status = models.CharField(
         '契約状況',
         max_length=2,
-        choices=[],  # 動的に設定される
-        default=Constants.CONTRACT_STATUS.DRAFT,  # 作成中
+        choices=ContractStatus.choices,
+        default=ContractStatus.DRAFT,
         blank=True,
         null=True
     )
@@ -163,7 +171,7 @@ class ClientContract(MyModel):
         except Dropdowns.DoesNotExist:
             base_name = "不明"
 
-        if self.client_contract_type_code == '20':  # 派遣
+        if self.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:  # 派遣
             try:
                 # 関連オブジェクトが存在するかどうかを堅牢にチェック
                 if self.haken_info and self.haken_info.ttp_info:
@@ -226,11 +234,11 @@ class StaffContract(MyModel):
     雇用形態、契約期間、金額などを記録する。
     """
     class ContractStatus(models.TextChoices):
-        DRAFT = '1', '作成中'
-        PENDING = '5', '申請中'
-        APPROVED = '10', '承認済'
-        ISSUED = '20', '発行済'
-        CONFIRMED = '30', '確認済'
+        DRAFT = Constants.CONTRACT_STATUS.DRAFT, '作成中'
+        PENDING = Constants.CONTRACT_STATUS.PENDING, '申請中'
+        APPROVED = Constants.CONTRACT_STATUS.APPROVED, '承認済'
+        ISSUED = Constants.CONTRACT_STATUS.ISSUED, '発行済'
+        CONFIRMED = Constants.CONTRACT_STATUS.CONFIRMED, '契約済'
 
     staff = models.ForeignKey(
         Staff,
@@ -260,7 +268,7 @@ class StaffContract(MyModel):
         verbose_name='契約書パターン',
         null=True,
         blank=True,
-        limit_choices_to={'domain': '1'},
+        limit_choices_to={'domain': Constants.CONTRACT_PATTERN_DOMAIN.STAFF},
     )
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
     contract_status = models.CharField(
@@ -326,7 +334,7 @@ class StaffContract(MyModel):
     def validate_minimum_wage(self):
         """最低賃金バリデーション"""
         from django.core.exceptions import ValidationError
-        if self.pay_unit == '10' and self.contract_amount is not None and self.work_location:
+        if self.pay_unit == Constants.PAY_UNIT.HOURLY and self.contract_amount is not None and self.work_location:
             from apps.master.models import MinimumPay
             from apps.system.settings.models import Dropdowns
 
@@ -487,13 +495,19 @@ class ClientContractHaken(MyModel):
     limit_by_agreement = models.CharField(
         '協定対象派遣労働者に限定するか否かの別',
         max_length=1,
-        choices=[('0', '限定しない'), ('1', '限定する')],
+        choices=[
+            (Constants.LIMIT_BY_AGREEMENT.NOT_LIMITED, '限定しない'),
+            (Constants.LIMIT_BY_AGREEMENT.LIMITED, '限定する')
+        ],
         null=True, blank=True,
     )
     limit_indefinite_or_senior = models.CharField(
         '無期雇用派遣労働者又は60歳以上の者に限定するか否かの別',
         max_length=1,
-        choices=[('0', '限定しない'), ('1', '限定する')],
+        choices=[
+            (Constants.LIMIT_BY_AGREEMENT.NOT_LIMITED, '限定しない'),
+            (Constants.LIMIT_BY_AGREEMENT.LIMITED, '限定する')
+        ],
         null=True, blank=True,
     )
     work_location = models.TextField('就業場所', blank=True, null=True)

@@ -678,9 +678,9 @@ def staff_face(request, pk):
     # 画像が存在しない場合、名前を使って画像を生成
     response = HttpResponse(content_type="image/jpeg")
     image = Image.new("RGB", (200, 200), (200, 200, 200))  # 背景色の指定
-    if staff.sex == Constants.SEX.MALE:
+    if staff.sex == int(Constants.SEX.MALE):
         image = Image.new("RGB", (200, 200), (140, 140, 240))  # 背景色の指定
-    elif staff.sex == Constants.SEX.FEMALE:
+    elif staff.sex == int(Constants.SEX.FEMALE):
         image = Image.new("RGB", (200, 200), (240, 140, 140))  # 背景色の指定
     
     
