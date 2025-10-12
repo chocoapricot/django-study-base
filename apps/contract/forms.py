@@ -6,6 +6,7 @@ from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from apps.system.settings.models import Dropdowns
 from apps.company.models import Company, CompanyUser, CompanyDepartment
+from apps.common.constants import Constants
 
 
 class DynamicClientUserField(forms.CharField):
@@ -160,8 +161,8 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
 
         # 編集画面では「作成中」「申請中」のみ選択可能にする
         choices = [
-            (ClientContract.ContractStatus.DRAFT.value, ClientContract.ContractStatus.DRAFT.label),
-            (ClientContract.ContractStatus.PENDING.value, ClientContract.ContractStatus.PENDING.label),
+            (Constants.CONTRACT_STATUS.DRAFT, '作成中'),
+            (Constants.CONTRACT_STATUS.PENDING, '申請中'),
         ]
         if self.instance and self.instance.pk and self.instance.contract_status:
             current_choice = (self.instance.contract_status, self.instance.get_contract_status_display())
@@ -206,7 +207,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         # 契約状況に応じたフォームの制御
         if self.instance and self.instance.pk:
             # 「作成中」「申請中」以外は全フィールドを編集不可にする
-            if self.instance.contract_status not in [ClientContract.ContractStatus.DRAFT, ClientContract.ContractStatus.PENDING]:
+            if self.instance.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
                 for field_name, field in self.fields.items():
                     # payment_siteはクライアント設定でロックされている場合、そのスタイルを維持
                     if field_name == 'payment_site' and 'data-client-locked' in field.widget.attrs:

@@ -1,5 +1,6 @@
 from django.db import models
 from apps.common.models import MyModel
+from apps.common.constants import Constants
 from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from django.contrib.auth import get_user_model
@@ -12,12 +13,6 @@ class ClientContract(MyModel):
     クライアント（取引先企業）との契約情報を管理するモデル。
     契約期間、金額、契約種別などを記録する。
     """
-    class ContractStatus(models.TextChoices):
-        DRAFT = '1', '作成中'
-        PENDING = '5', '申請中'
-        APPROVED = '10', '承認済'
-        ISSUED = '20', '発行済'
-        CONFIRMED = '30', '確認済'
 
     staff_contracts = models.ManyToManyField(
         'StaffContract',
@@ -56,8 +51,8 @@ class ClientContract(MyModel):
     contract_status = models.CharField(
         '契約状況',
         max_length=2,
-        choices=ContractStatus.choices,
-        default=ContractStatus.DRAFT,
+        choices=[],  # 動的に設定される
+        default=Constants.CONTRACT_STATUS.DRAFT,  # 作成中
         blank=True,
         null=True
     )
@@ -143,12 +138,12 @@ class ClientContract(MyModel):
     @property
     def is_approved_or_later(self):
         """承認済、またはそれ以降のステータスかどうかを判定する"""
-        return int(self.contract_status) >= int(self.ContractStatus.APPROVED)
+        return int(self.contract_status) >= int(Constants.CONTRACT_STATUS.APPROVED)
 
     @property
     def is_issued_or_later(self):
         """発行済、またはそれ以降のステータスかどうかを判定する"""
-        return int(self.contract_status) >= int(self.ContractStatus.ISSUED)
+        return int(self.contract_status) >= int(Constants.CONTRACT_STATUS.ISSUED)
 
     def clean(self):
         """バリデーション"""
