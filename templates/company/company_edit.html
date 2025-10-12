@@ -137,6 +137,47 @@ $(document).ready(function() {
         apiMessageId: 'api-message'
     });
 });
+
+// ページロジック情報を設定
+document.addEventListener('DOMContentLoaded', function() {
+    // このページにロジック情報があることを通知
+    document.body.setAttribute('data-has-logic', 'true');
+    
+    const logicContent = document.getElementById('logic-info-content');
+    if (logicContent) {
+        logicContent.innerHTML = `
+            <div class="alert alert-info mb-3">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>会社情報編集画面のバリデーションロジック</h6>
+            </div>
+            
+            <!-- 単項目チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-shield-check text-primary me-2"></i>単項目チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 法人番号: 半角数字13桁（チェックデジット検証あり）</div>
+                    <div class="mb-2">• 郵便番号: 半角数字7桁（ハイフンなし）</div>
+                    <div class="mb-0">• 電話番号: 半角数字とハイフンのみ</div>
+                </div>
+            </div>
+
+            <!-- 自動処理 -->
+            <div class="card" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-gear text-secondary me-2"></i>自動処理</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• gBiz API: 法人番号から企業情報を自動取得</div>
+                    <div class="mb-0">• 住所取得: 郵便番号から住所を自動取得（APIボタン）</div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // ロジック情報設定完了を通知
+    document.dispatchEvent(new Event('logicInfoSet'));
+});
 </script>
 
 {% endblock %}
