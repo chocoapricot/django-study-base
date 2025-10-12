@@ -149,7 +149,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
 
         if contract_type_code:
             self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(
-                is_active=True, domain='10', contract_type_code=contract_type_code
+                is_active=True, domain=Constants.CONTRACT_PATTERN_DOMAIN.CLIENT, contract_type_code=contract_type_code
             )
             try:
                 dropdown = Dropdowns.objects.get(category='client_contract_type', value=contract_type_code)
@@ -246,7 +246,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         # クライアントの基本契約締結日との関係チェック
         if client and start_date:
             contract_type_code = self.cleaned_data.get('client_contract_type_code')
-            if contract_type_code == '20':  # 派遣契約の場合
+            if contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:  # 派遣契約の場合
                 if client.basic_contract_date_haken and start_date < client.basic_contract_date_haken:
                     self.add_error('start_date', f'契約開始日は基本契約締結日（派遣）（{client.basic_contract_date_haken}）以降の日付を入力してください。')
             else:  # 業務委託などの場合
@@ -458,7 +458,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         from apps.master.models import ContractPattern, JobCategory
         self.fields['job_category'].queryset = JobCategory.objects.filter(is_active=True)
-        self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, domain='1')
+        self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, domain=Constants.CONTRACT_PATTERN_DOMAIN.STAFF)
         if self.instance and self.instance.pk and hasattr(self.instance, 'staff') and self.instance.staff:
             self.fields['staff_display'].initial = f"{self.instance.staff.name_last} {self.instance.staff.name_first}"
 

@@ -13,6 +13,7 @@ from datetime import date
 from django.forms.models import model_to_dict
 from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken, ClientContractTtp, StaffContractTeishokubi
 from .forms import ClientContractForm, StaffContractForm, ClientContractHakenForm, ClientContractTtpForm
+from apps.common.constants import Constants
 from django.conf import settings
 from django.utils import timezone
 import os
@@ -248,6 +249,7 @@ def client_contract_detail(request, pk):
         'client_filter': client_filter,
         'from_client_detail': from_client_detail,
         'from_client_detail_direct': from_client_detail_direct,
+        'Constants': Constants,
     }
     return render(request, 'contract/client_contract_detail.html', context)
 
@@ -510,7 +512,7 @@ def staff_contract_list(request):
 
     # 契約状況のドロップダウンリストを取得
     contract_status_list = [{'value': v, 'name': n} for v, n in StaffContract.ContractStatus.choices]
-    contract_pattern_list = ContractPattern.objects.filter(domain='1')
+    contract_pattern_list = ContractPattern.objects.filter(domain=Constants.CONTRACT_PATTERN_DOMAIN.STAFF)
     
     # ページネーション
     paginator = Paginator(contracts, 20)
@@ -674,6 +676,7 @@ def staff_contract_detail(request, pk):
         'minimum_wage': minimum_wage,
         'minimum_wage_pref_name': minimum_wage_pref_name,
         'ContractStatus': StaffContract.ContractStatus,
+        'Constants': Constants,
     }
     return render(request, 'contract/staff_contract_detail.html', context)
 
@@ -2214,14 +2217,14 @@ def get_contract_patterns_by_employment_type(request):
     # スタッフ用で、指定された雇用形態の契約書パターンを取得
     patterns = ContractPattern.objects.filter(
         is_active=True,
-        domain='1',  # スタッフ
+        domain=Constants.CONTRACT_PATTERN_DOMAIN.STAFF,  # スタッフ
         employment_type=employment_type
     ).values('id', 'name').order_by('display_order')
     
     # 雇用形態が指定されていない契約書パターンも含める
     patterns_without_employment = ContractPattern.objects.filter(
         is_active=True,
-        domain='1',  # スタッフ
+        domain=Constants.CONTRACT_PATTERN_DOMAIN.STAFF,  # スタッフ
         employment_type__isnull=True
     ).values('id', 'name').order_by('display_order')
     
