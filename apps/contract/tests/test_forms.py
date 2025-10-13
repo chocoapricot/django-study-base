@@ -6,6 +6,7 @@ from apps.staff.models import Staff
 from apps.master.models import JobCategory, ContractPattern, Dropdowns
 from ..models import ClientContract, StaffContract
 from ..forms import ClientContractForm, StaffContractForm
+from apps.common.constants import Constants
 from datetime import date
 
 User = get_user_model()
@@ -524,7 +525,7 @@ class StaffContractFormStatusTest(TestCase):
             staff=self.staff,
             contract_name='Draft Contract',
             start_date=date(2024, 1, 1),
-            contract_status=StaffContract.ContractStatus.DRAFT
+            contract_status=Constants.CONTRACT_STATUS.DRAFT
         )
         form = StaffContractForm(instance=contract)
         for field_name, field in form.fields.items():

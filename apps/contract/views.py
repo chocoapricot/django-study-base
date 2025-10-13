@@ -301,7 +301,7 @@ def client_contract_create(request):
                     contract.created_by = request.user
                     contract.updated_by = request.user
                     # コピー作成時はステータスを「作成中」に戻す
-                    contract.contract_status = ClientContract.ContractStatus.DRAFT
+                    contract.contract_status = Constants.CONTRACT_STATUS.DRAFT
                     contract.contract_number = None  # 契約番号はクリア
                     contract.save()
 
@@ -360,7 +360,7 @@ def client_contract_update(request, pk):
     )
     haken_info = getattr(contract, 'haken_info', None)
     
-    if contract.contract_status not in [ClientContract.ContractStatus.DRAFT, ClientContract.ContractStatus.PENDING]:
+    if contract.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
         messages.error(request, 'この契約は編集できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
@@ -511,7 +511,7 @@ def staff_contract_list(request):
     contracts = contracts.order_by('-start_date', 'staff__name_last', 'staff__name_first')
 
     # 契約状況のドロップダウンリストを取得
-    contract_status_list = [{'value': v, 'name': n} for v, n in StaffContract.ContractStatus.choices]
+    contract_status_list = [{'value': d.value, 'name': d.name} for d in Dropdowns.objects.filter(category='contract_status', active=True).order_by('disp_seq')]
     contract_pattern_list = ContractPattern.objects.filter(domain=Constants.CONTRACT_PATTERN_DOMAIN.STAFF)
     
     # ページネーション
@@ -675,7 +675,7 @@ def staff_contract_detail(request, pk):
         'from_staff_detail_direct': from_staff_detail_direct,
         'minimum_wage': minimum_wage,
         'minimum_wage_pref_name': minimum_wage_pref_name,
-        'ContractStatus': StaffContract.ContractStatus,
+        'CONTRACT_STATUS': Constants.CONTRACT_STATUS,
         'Constants': Constants,
     }
     return render(request, 'contract/staff_contract_detail.html', context)
@@ -1510,7 +1510,7 @@ def staff_contract_confirm_list(request):
         'contracts_with_status': contracts_with_status,
         'page_obj': page_obj,
         'title': 'スタッフ契約確認',
-        'ContractStatus': StaffContract.ContractStatus,
+        'CONTRACT_STATUS': Constants.CONTRACT_STATUS,
     }
     return render(request, 'contract/staff_contract_confirm_list.html', context)
 

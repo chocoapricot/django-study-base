@@ -6,6 +6,7 @@ from ..models import ClientContract, StaffContract, ClientContractHaken, ClientC
 from apps.client.models import Client as TestClient, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from apps.master.models import ContractPattern, DefaultValue
+from apps.common.constants import Constants
 import datetime
 
 User = get_user_model()
@@ -107,7 +108,7 @@ class ContractViewTest(TestCase):
             end_date=datetime.date.today() + datetime.timedelta(days=30),
             contract_pattern=self.non_haken_contract_pattern,
             client_contract_type_code='10',
-            contract_status=ClientContract.ContractStatus.DRAFT, # 編集可能にするためDRAFTに
+            contract_status=Constants.CONTRACT_STATUS.DRAFT, # 編集可能にするためDRAFTに
             corporate_number=self.company.corporate_number
         )
 

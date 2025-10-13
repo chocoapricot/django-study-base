@@ -8,6 +8,7 @@ from .models import ClientContract, StaffContract, ClientContractPrint, StaffCon
 from apps.common.pdf_utils import generate_table_based_contract_pdf, generate_article_based_contract_pdf
 from apps.system.logs.models import AppLog
 from apps.company.models import Company
+from apps.common.constants import Constants
 
 def generate_client_contract_number(contract: ClientContract) -> str:
     """
@@ -367,7 +368,7 @@ def generate_contract_pdf_content(contract):
     pdf_filename = f"{contract_type}_contract_{contract.pk}_{timestamp}.pdf"
     
     watermark_text = None
-    if contract.contract_status in [contract.ContractStatus.DRAFT, contract.ContractStatus.PENDING]:
+    if contract.contract_status in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
         watermark_text = "DRAFT"
 
     buffer = io.BytesIO()
