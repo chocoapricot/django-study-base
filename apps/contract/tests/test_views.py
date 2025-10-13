@@ -1456,6 +1456,122 @@ class ContractAssignmentViewTest(TestCase):
         response_approved = self.client.get(url_approved)
         self.assertNotContains(response_approved, '>解除</button>')
 
+    def test_create_assignment_business_content_synchronization(self):
+        """契約アサイン時に業務内容が同期されるかテスト"""
+        # --- シナリオ1: StaffContractからClientContractへ同期 ---
+        client_contract_1 = ClientContract.objects.create(
+            client=self.test_client_model, contract_name='Client for Sync 1',
+            start_date=datetime.date(2025, 1, 1), contract_pattern=self.client_pattern,
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            business_content='' # Empty
+        )
+        staff_contract_1 = StaffContract.objects.create(
+            staff=self.staff1, contract_name='Staff for Sync 1',
+            start_date=datetime.date(2025, 1, 1), contract_pattern=self.staff_pattern,
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            business_content='Staff content' # Not empty
+        )
+
+        url = reverse('contract:create_contract_assignment')
+        post_data_1 = {
+            'client_contract_id': client_contract_1.pk,
+            'staff_contract_id': staff_contract_1.pk,
+            'from': 'client',
+        }
+        response_1 = self.client.post(url, post_data_1, follow=True)
+        messages_1 = list(response_1.context['messages'])
+        self.assertEqual(len(messages_1), 1)
+        expected_message_1 = '契約の割当が完了しました。（クライアント契約の業務内容をスタッフ契約の業務内容で更新しました。）'
+        self.assertEqual(str(messages_1[0]), expected_message_1)
+
+        client_contract_1.refresh_from_db()
+        self.assertEqual(client_contract_1.business_content, 'Staff content')
+
+        # --- シナリオ2: ClientContractからStaffContractへ同期 ---
+        client_contract_2 = ClientContract.objects.create(
+            client=self.test_client_model, contract_name='Client for Sync 2',
+            start_date=datetime.date(2025, 1, 1), contract_pattern=self.client_pattern,
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            business_content='Client content' # Not empty
+        )
+        staff_contract_2 = StaffContract.objects.create(
+            staff=self.staff1, contract_name='Staff for Sync 2',
+            start_date=datetime.date(2025, 1, 1), contract_pattern=self.staff_pattern,
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            business_content='' # Empty
+        )
+
+        post_data_2 = {
+            'client_contract_id': client_contract_2.pk,
+            'staff_contract_id': staff_contract_2.pk,
+            'from': 'client',
+        }
+        response_2 = self.client.post(url, post_data_2, follow=True)
+        messages_2 = list(response_2.context['messages'])
+        self.assertEqual(len(messages_2), 1)
+        expected_message_2 = '契約の割当が完了しました。（スタッフ契約の業務内容をクライアント契約の業務内容で更新しました。）'
+        self.assertEqual(str(messages_2[0]), expected_message_2)
+
+        staff_contract_2.refresh_from_db()
+        self.assertEqual(staff_contract_2.business_content, 'Client content')
+
+        # --- シナリオ3: 両方入力済みの場合は同期しない ---
+        client_contract_3 = ClientContract.objects.create(
+            client=self.test_client_model, contract_name='Client for Sync 3',
+            start_date=datetime.date(2025, 1, 1), contract_pattern=self.client_pattern,
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            business_content='Original client content'
+        )
+        staff_contract_3 = StaffContract.objects.create(
+            staff=self.staff1, contract_name='Staff for Sync 3',
+            start_date=datetime.date(2025, 1, 1), contract_pattern=self.staff_pattern,
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            business_content='Original staff content'
+        )
+        post_data_3 = {
+            'client_contract_id': client_contract_3.pk,
+            'staff_contract_id': staff_contract_3.pk,
+            'from': 'client',
+        }
+        response_3 = self.client.post(url, post_data_3, follow=True)
+        messages_3 = list(response_3.context['messages'])
+        self.assertEqual(len(messages_3), 1)
+        self.assertEqual(str(messages_3[0]), '契約の割当が完了しました。')
+
+        client_contract_3.refresh_from_db()
+        staff_contract_3.refresh_from_db()
+        self.assertEqual(client_contract_3.business_content, 'Original client content')
+        self.assertEqual(staff_contract_3.business_content, 'Original staff content')
+
+        # --- シナリオ4: 両方空の場合は何もしない ---
+        client_contract_4 = ClientContract.objects.create(
+            client=self.test_client_model, contract_name='Client for Sync 4',
+            start_date=datetime.date(2025, 1, 1), contract_pattern=self.client_pattern,
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            business_content=''
+        )
+        staff_contract_4 = StaffContract.objects.create(
+            staff=self.staff1, contract_name='Staff for Sync 4',
+            start_date=datetime.date(2025, 1, 1), contract_pattern=self.staff_pattern,
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            business_content=''
+        )
+        post_data_4 = {
+            'client_contract_id': client_contract_4.pk,
+            'staff_contract_id': staff_contract_4.pk,
+            'from': 'client',
+        }
+        response_4 = self.client.post(url, post_data_4, follow=True)
+        messages_4 = list(response_4.context['messages'])
+        self.assertEqual(len(messages_4), 1)
+        self.assertEqual(str(messages_4[0]), '契約の割当が完了しました。')
+
+
+        client_contract_4.refresh_from_db()
+        staff_contract_4.refresh_from_db()
+        self.assertEqual(client_contract_4.business_content, '')
+        self.assertEqual(staff_contract_4.business_content, '')
+
 
 class ContractAssignmentDisplayTest(TestCase):
     """契約割当状況表示のテスト"""

@@ -2168,7 +2168,22 @@ def create_contract_assignment_view(request):
                     # バリデーションを実行
                     assignment.full_clean()
                     assignment.save()
-                    messages.success(request, '契約の割当が完了しました。')
+                    success_message = '契約の割当が完了しました。'
+                    sync_message = None
+                    # 業務内容の同期処理
+                    # Note: HTMLのロジック情報にもこの旨を追記しておくこと
+                    if not client_contract.business_content and staff_contract.business_content:
+                        client_contract.business_content = staff_contract.business_content
+                        client_contract.save()
+                        sync_message = 'クライアント契約の業務内容をスタッフ契約の業務内容で更新しました。'
+                    elif client_contract.business_content and not staff_contract.business_content:
+                        staff_contract.business_content = client_contract.business_content
+                        staff_contract.save()
+                        sync_message = 'スタッフ契約の業務内容をクライアント契約の業務内容で更新しました。'
+
+                    if sync_message:
+                        success_message = f'{success_message}（{sync_message}）'
+                    messages.success(request, success_message)
 
         except ValidationError as e:
             # messages.error(request, f'割当に失敗しました。理由：{e.message_dict}')
