@@ -226,11 +226,6 @@
                 {% endif %}
             </div>
             <div class="card-body">
-                {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT %}
-                <p class="small text-muted mb-2">
-                    <i class="fas fa-info-circle"></i> 補足: 割当時に片方の契約の業務内容が空で、もう一方に業務内容が入力されている場合、入力されている内容が空の契約に自動でコピーされます。
-                </p>
-                {% endif %}
                 {% if contract.assigned_assignments %}
                     <table class="table table-sm table-hover">
                         <thead>
