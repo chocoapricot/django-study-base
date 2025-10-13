@@ -24,6 +24,14 @@ class ClientContractHakenLogTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         """テスト全体の準備"""
+        # Dropdownsデータを作成
+        Dropdowns.objects.create(
+            category='contract_status',
+            value=Constants.CONTRACT_STATUS.DRAFT,
+            name='作成中',
+            active=True
+        )
+        
         # ユーザーと権限の設定
         cls.user = User.objects.create_user(username='logtestuser', password='password')
         content_type = ContentType.objects.get_for_model(ClientContract)

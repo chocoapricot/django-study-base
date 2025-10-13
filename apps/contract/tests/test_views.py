@@ -21,6 +21,33 @@ class ContractViewTest(TestCase):
         from django.contrib.auth.models import Permission
         from django.contrib.contenttypes.models import ContentType
         from apps.company.models import Company
+        from apps.system.settings.models import Dropdowns
+        
+        # Dropdownsデータを作成
+        Dropdowns.objects.create(
+            category='contract_status',
+            value=Constants.CONTRACT_STATUS.DRAFT,
+            name='作成中',
+            active=True
+        )
+        Dropdowns.objects.create(
+            category='contract_status',
+            value=Constants.CONTRACT_STATUS.APPROVED,
+            name='承認済',
+            active=True
+        )
+        Dropdowns.objects.create(
+            category='contract_status',
+            value=Constants.CONTRACT_STATUS.ISSUED,
+            name='発行済',
+            active=True
+        )
+        Dropdowns.objects.create(
+            category='contract_status',
+            value=Constants.CONTRACT_STATUS.CONFIRMED,
+            name='契約済',
+            active=True
+        )
 
         self.user = User.objects.create_user(
             username='testuser',
@@ -1579,7 +1606,7 @@ class StaffContractApproveViewTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.valid_contract.refresh_from_db()
-        self.assertEqual(self.valid_contract.contract_status, Constants.CONTRACT_STATUS.APPROVED.value)
+        self.assertEqual(self.valid_contract.contract_status, Constants.CONTRACT_STATUS.APPROVED)
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)

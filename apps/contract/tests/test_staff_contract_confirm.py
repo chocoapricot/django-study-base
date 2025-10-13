@@ -7,9 +7,18 @@ from apps.connect.models import ConnectStaff, ConnectStaffAgree
 from apps.master.models import StaffAgreement
 from apps.contract.models import StaffContract
 from apps.common.constants import Constants
+from apps.system.settings.models import Dropdowns
 
 class StaffContractConfirmTest(TestCase):
     def setUp(self):
+        # Dropdownsデータを作成
+        Dropdowns.objects.create(
+            category='contract_status',
+            value=Constants.CONTRACT_STATUS.ISSUED,
+            name='発行済',
+            active=True
+        )
+        
         self.user = get_user_model().objects.create_user(
             username='testuser@example.com',
             email='testuser@example.com',

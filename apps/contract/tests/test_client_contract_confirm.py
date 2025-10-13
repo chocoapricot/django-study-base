@@ -10,11 +10,26 @@ from django.utils import timezone
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from apps.common.constants import Constants
+from apps.system.settings.models import Dropdowns
 
 from django.test import Client as TestClient
 
 class ClientContractConfirmTest(TestCase):
     def setUp(self):
+        # Dropdownsデータを作成
+        Dropdowns.objects.create(
+            category='contract_status',
+            value=Constants.CONTRACT_STATUS.ISSUED,
+            name='発行済',
+            active=True
+        )
+        Dropdowns.objects.create(
+            category='contract_status',
+            value=Constants.CONTRACT_STATUS.CONFIRMED,
+            name='契約済',
+            active=True
+        )
+        
         self.user_model = get_user_model()
         self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
 
