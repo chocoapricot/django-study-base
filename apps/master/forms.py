@@ -165,14 +165,9 @@ class ContractPatternForm(forms.ModelForm):
         )
         
         # 雇用形態の選択肢（スタッフ用）
-        self.fields['employment_type'] = forms.ChoiceField(
-            label='雇用形態',
-            choices=[('', '---------')] + [
-                (d.value, d.name) for d in Dropdowns.objects.filter(category='employment_type', active=True)
-            ],
-            required=False,
-            widget=forms.Select(attrs={'class': 'form-control form-control-sm'})
-        )
+        from .models import EmploymentType
+        self.fields['employment_type'].queryset = EmploymentType.objects.filter(is_active=True).order_by('display_order', 'name')
+        self.fields['employment_type'].empty_label = '---------'
 
     def clean(self):
         cleaned_data = super().clean()

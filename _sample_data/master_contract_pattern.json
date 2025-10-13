@@ -11,7 +11,7 @@
         "name": "正社員",
         "domain": "1",
         "contract_type_code": null,
-        "employment_type": "15",
+        "employment_type": 1,
         "memo": "",
         "display_order": 10,
         "is_active": true
@@ -29,7 +29,7 @@
         "name": "契約社員",
         "domain": "1",
         "contract_type_code": null,
-        "employment_type": "20",
+        "employment_type": 2,
         "memo": "",
         "display_order": 20,
         "is_active": true
@@ -47,7 +47,7 @@
         "name": "派遣契約",
         "domain": "1",
         "contract_type_code": null,
-        "employment_type": "30",
+        "employment_type": 4,
         "memo": "",
         "display_order": 30,
         "is_active": true
@@ -65,7 +65,7 @@
         "name": "紹介予定派遣",
         "domain": "1",
         "contract_type_code": null,
-        "employment_type": "30",
+        "employment_type": 4,
         "memo": "",
         "display_order": 40,
         "is_active": true

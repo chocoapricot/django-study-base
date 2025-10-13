@@ -2241,12 +2241,17 @@ def delete_contract_assignment(request, assignment_pk):
 @login_required
 def get_contract_patterns_by_employment_type(request):
     """雇用形態に応じた契約書パターンを取得するAPI"""
-    employment_type = request.GET.get('employment_type')
+    employment_type_id = request.GET.get('employment_type')
     
-    if not employment_type:
+    if not employment_type_id:
         return JsonResponse({'patterns': []})
     
-    from apps.master.models import ContractPattern
+    from apps.master.models import ContractPattern, EmploymentType
+    
+    try:
+        employment_type = EmploymentType.objects.get(pk=employment_type_id)
+    except EmploymentType.DoesNotExist:
+        return JsonResponse({'patterns': []})
     
     # スタッフ用で、指定された雇用形態の契約書パターンを取得
     patterns = ContractPattern.objects.filter(

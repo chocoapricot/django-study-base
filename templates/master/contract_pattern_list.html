@@ -52,7 +52,7 @@
                             {% if pattern.domain == Constants.DOMAIN.CLIENT and pattern.contract_type_code %}
                                 <span class="badge {{ pattern.contract_type_code|badge_class }}">{% my_name 'client_contract_type' pattern.contract_type_code %}</span>
                             {% elif pattern.domain == Constants.DOMAIN.STAFF and pattern.employment_type %}
-                                <span class="badge {{ pattern.employment_type|badge_class }}">{% my_name 'employment_type' pattern.employment_type %}</span>
+                                <span class="badge {{ pattern.employment_type.display_order|badge_class }}">{{ pattern.employment_type.name }}</span>
                             {% else %}
                                 -
                             {% endif %}
