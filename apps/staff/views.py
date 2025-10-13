@@ -282,12 +282,10 @@ def staff_list(request):
         option.is_selected = (staff_regist_status_filter == option.value)
 
     # 雇用形態の選択肢を取得
-    employment_type_options = Dropdowns.objects.filter(
-        category='employment_type',
-        active=True
-    ).order_by('disp_seq')
+    from apps.master.models import EmploymentType
+    employment_type_options = EmploymentType.objects.filter(is_active=True).order_by('display_order', 'name')
     for option in employment_type_options:
-        option.is_selected = (employment_type_filter == option.value)
+        option.is_selected = (employment_type_filter == str(option.pk))
     
     # 所属部署の選択肢を取得（現在有効な部署のみ）
     from apps.company.models import CompanyDepartment

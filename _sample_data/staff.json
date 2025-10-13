@@ -27,7 +27,7 @@
             "hire_date": "2020-04-01",
             "resignation_date": null,
             "department_code": "SOMU",
-            "employment_type": "15",
+            "employment_type": 1,
             "memo": "楽市楽座による経済活性化、および長篠の戦いでの戦術的勝利。"
         }
     },
@@ -59,7 +59,7 @@
             "hire_date": "2021-07-01",
             "resignation_date": null,
             "department_code": "EIGYO",
-            "employment_type": "20",
+            "employment_type": 2,
             "memo": "人懐っこく交渉上手。派手好きで、モチベーション維持に報酬が効果的。"
         }
     },
@@ -91,7 +91,7 @@
             "hire_date": "2019-10-01",
             "resignation_date": "2024-03-31",
             "department_code": "DEV",
-            "employment_type": "30",
+            "employment_type": 4,
             "memo": "忍耐強く、慎重な性格。長期的な視点での計画を得意とする。"
         }
     },
@@ -187,7 +187,7 @@
             "hire_date": "2021-03-01",
             "resignation_date": null,
             "department_code": "DEV",
-            "employment_type": "15",
+            "employment_type": 1,
             "memo": "奥州地域での勢力拡大と、仙台藩の礎を築いた。外交手腕も評価が高い。"
         }
     },
@@ -219,7 +219,7 @@
             "hire_date": "2019-06-01",
             "resignation_date": null,
             "department_code": "SOMU",
-            "employment_type": "20",
+            "employment_type": 2,
             "memo": "三本の矢の教えで知られる。チームワークと情報収集を重視する慎重派。"
         }
     },
@@ -315,7 +315,7 @@
             "hire_date": "2021-11-01",
             "resignation_date": null,
             "department_code": "SOMU",
-            "employment_type": "30",
+            "employment_type": 4,
             "memo": "領民思いの民政家。リスク管理に長け、安定した組織運営を行う。"
         }
     },
@@ -347,7 +347,7 @@
             "hire_date": "2019-05-01",
             "resignation_date": "2023-12-31",
             "department_code": "EIGYO",
-            "employment_type": "15",
+            "employment_type": 1,
             "memo": "一乗谷文化の発展に貢献。領内の安定統治に努めた。"
         }
     },
@@ -379,7 +379,7 @@
             "hire_date": "2020-02-01",
             "resignation_date": null,
             "department_code": "DEV",
-            "employment_type": "20",
+            "employment_type": 2,
             "memo": "先進的な思考を持ち、一時は天下人とも称された。体調管理に注意が必要。"
         }
     },
@@ -411,7 +411,7 @@
             "hire_date": "2021-08-01",
             "resignation_date": null,
             "department_code": "SOMU",
-            "employment_type": "30",
+            "employment_type": 4,
             "memo": "名門出身でプライドが高い。他者との連携を模索するが、しばしば対立する。"
         }
     },
@@ -443,7 +443,7 @@
             "hire_date": "2022-04-01",
             "resignation_date": null,
             "department_code": "EIGYO",
-            "employment_type": "15",
+            "employment_type": 1,
             "memo": "高天神城の攻略など、武田家の最大版図を築いた実績を持つ。"
         }
     },
@@ -506,7 +506,7 @@
             "hire_date": "2020-07-01",
             "resignation_date": null,
             "department_code": "SOMU",
-            "employment_type": "20",
+            "employment_type": 2,
             "memo": "「鬼柴田」と恐れられる猛将。猪突猛進タイプだが、義理人情に厚い。"
         }
     },
@@ -633,7 +633,7 @@
             "hire_date": "2020-10-01",
             "resignation_date": null,
             "department_code": "EIGYO",
-            "employment_type": "30",
+            "employment_type": 4,
             "memo": "実務能力に長けた秀才。正義感が強く、融通が利かない面がある。"
         }
     },
@@ -665,7 +665,7 @@
             "hire_date": "2021-05-01",
             "resignation_date": null,
             "department_code": "DEV",
-            "employment_type": "15",
+            "employment_type": 1,
             "memo": "関ヶ原の戦いで先鋒を務め、徳川軍の勝利に大きく貢献。彦根藩の初代藩主。"
         }
     },
@@ -761,7 +761,7 @@
             "hire_date": "2021-12-01",
             "resignation_date": null,
             "department_code": "DEV",
-            "employment_type": "20",
+            "employment_type": 2,
             "memo": "「我に七難八苦を与えたまえ」と願った不屈の精神の持ち主。逆境に強い。"
         }
     },
@@ -793,7 +793,7 @@
             "hire_date": "2020-01-01",
             "resignation_date": null,
             "department_code": "SOMU",
-            "employment_type": "30",
+            "employment_type": 4,
             "memo": "主君を支える補佐役として有能。実直な仕事ぶりで信頼が厚い。"
         }
     },
@@ -825,7 +825,7 @@
             "hire_date": "2023-04-01",
             "resignation_date": null,
             "department_code": "EIGYO",
-            "employment_type": "15",
+            "employment_type": 1,
             "memo": "ラテン語に堪能で、西洋文化の知識が豊富。多様な価値観の橋渡し役を担う。"
         }
     },
@@ -857,7 +857,7 @@
             "hire_date": "2023-07-01",
             "resignation_date": null,
             "department_code": "DEV",
-            "employment_type": "20",
+            "employment_type": 2,
             "memo": "面倒見が良く、多くの人々から慕われる姉御肌。組織の潤滑油的存在。"
         }
     },
@@ -953,7 +953,7 @@
             "hire_date": "2023-11-01",
             "resignation_date": null,
             "department_code": "DEV",
-            "employment_type": "30",
+            "employment_type": 4,
             "memo": "絶世の美女と名高い。運命に翻弄されることが多いが、芯は強い。"
         }
     },
@@ -1049,7 +1049,7 @@
             "hire_date": "2020-05-01",
             "resignation_date": null,
             "department_code": "DEV",
-            "employment_type": "15",
+            "employment_type": 1,
             "memo": "外交顧問として幕府に仕え、航海術や造船技術を伝えた。日英間の架け橋となった。"
         }
     }
