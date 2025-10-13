@@ -77,7 +77,7 @@ def get_contract_pdf_title(contract):
     契約書の種類に応じてPDFのタイトルを決定する。
     """
     if isinstance(contract, ClientContract):
-        if contract.contract_pattern and contract.contract_pattern.contract_type_code == '20':
+        if contract.contract_pattern and contract.contract_pattern.contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
             return "労働者派遣個別契約書"
         else:
             return "業務委託個別契約書"
@@ -98,7 +98,7 @@ def generate_contract_pdf_content(contract):
 
         # 派遣契約の場合、契約期間の名称を「派遣期間」とする
         contract_period_title = "契約期間"
-        if contract.contract_pattern and contract.contract_pattern.contract_type_code == '20':
+        if contract.contract_pattern and contract.contract_pattern.contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
             contract_period_title = "派遣期間"
 
         bill_unit_name = ""
@@ -132,7 +132,7 @@ def generate_contract_pdf_content(contract):
         items.append({"title": "備考", "text": str(contract.notes)})
 
         # 派遣契約の場合、追加情報を挿入
-        if contract.contract_pattern and contract.contract_pattern.contract_type_code == '20' and hasattr(contract, 'haken_info'):
+        if contract.contract_pattern and contract.contract_pattern.contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and hasattr(contract, 'haken_info'):
             from apps.company.models import Company, CompanyDepartment
             haken_info = contract.haken_info
             haken_items = []

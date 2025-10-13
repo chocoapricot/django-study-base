@@ -272,7 +272,7 @@ def client_contract_create(request):
             messages.error(request, "コピー元の契約が見つかりませんでした。")
             return redirect('contract:client_contract_list')
 
-    is_haken = client_contract_type_code == '20'
+    is_haken = client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH
     selected_client = None
     if selected_client_id:
         try:
@@ -282,7 +282,7 @@ def client_contract_create(request):
 
     if request.method == 'POST':
         form = ClientContractForm(request.POST)
-        post_is_haken = request.POST.get('client_contract_type_code') == '20'
+        post_is_haken = request.POST.get('client_contract_type_code') == Constants.CLIENT_CONTRACT_TYPE.DISPATCH
 
         client_id = request.POST.get('client')
         post_client = None
@@ -364,7 +364,7 @@ def client_contract_update(request, pk):
         messages.error(request, 'この契約は編集できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
-    post_is_haken = request.POST.get('client_contract_type_code') == '20'
+    post_is_haken = request.POST.get('client_contract_type_code') == Constants.CLIENT_CONTRACT_TYPE.DISPATCH
 
     if request.method == 'POST':
         form = ClientContractForm(request.POST, instance=contract)
@@ -433,11 +433,11 @@ def client_contract_update(request, pk):
                         messages.warning(request, f"{label}: {error}")
     else: # GET
         form = ClientContractForm(instance=contract)
-        is_haken = contract.client_contract_type_code == '20'
+        is_haken = contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH
         haken_form = ClientContractHakenForm(instance=haken_info, client=contract.client) if is_haken else None
 
     # is_hakenをコンテキストに渡す
-    context_is_haken = contract.client_contract_type_code == '20'
+    context_is_haken = contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH
     if request.method == 'POST':
         context_is_haken = post_is_haken
 
@@ -811,7 +811,7 @@ def client_select(request):
     client_contract_type_code = request.GET.get('client_contract_type_code')
 
     # 契約種別に応じて、適切な基本契約締結日でフィルタリング
-    if client_contract_type_code == '20':  # 派遣の場合
+    if client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:  # 派遣の場合
         clients = Client.objects.filter(basic_contract_date_haken__isnull=False)
     else:  # それ以外（業務委託など）の場合
         clients = Client.objects.filter(basic_contract_date__isnull=False)
@@ -1179,7 +1179,7 @@ def client_contract_issue(request, pk):
                     )
 
                     # 2. 派遣契約の場合、派遣通知書も発行
-                    if contract.client_contract_type_code == '20':
+                    if contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
                         issued_at = timezone.now()
                         pdf_content_dispatch, pdf_filename_dispatch, document_title_dispatch = generate_dispatch_notification_pdf(contract, request.user, issued_at)
                         if not pdf_content_dispatch:

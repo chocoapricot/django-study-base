@@ -571,7 +571,7 @@ class ContractAssignment(MyModel):
         from .teishokubi_calculator import TeishokubiCalculator
 
         # 派遣契約かつ派遣社員(有期)の場合のみチェック
-        if (self.client_contract.client_contract_type_code == '20' and
+        if (self.client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and
                 self.staff_contract.employment_type == '30'):
 
             staff_email = self.staff_contract.staff.email
