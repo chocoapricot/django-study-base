@@ -457,7 +457,7 @@ def client_contract_delete(request, pk):
     """クライアント契約削除"""
     contract = get_object_or_404(ClientContract, pk=pk)
     
-    if contract.contract_status not in [ClientContract.ContractStatus.DRAFT, ClientContract.ContractStatus.PENDING]:
+    if contract.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
         messages.error(request, 'この契約は削除できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
@@ -705,7 +705,7 @@ def staff_contract_create(request):
             contract.created_by = request.user
             contract.updated_by = request.user
             # 新規作成・コピー作成時はステータスを「作成中」に戻す
-            contract.contract_status = StaffContract.ContractStatus.DRAFT
+            contract.contract_status = Constants.CONTRACT_STATUS.DRAFT
             contract.contract_number = None  # 契約番号はクリア
             
             # 雇用形態が設定されていない場合、スタッフの現在の雇用形態を設定
@@ -755,7 +755,7 @@ def staff_contract_update(request, pk):
     """スタッフ契約更新"""
     contract = get_object_or_404(StaffContract, pk=pk)
     
-    if contract.contract_status not in [StaffContract.ContractStatus.DRAFT, StaffContract.ContractStatus.PENDING]:
+    if contract.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
         messages.error(request, 'この契約は編集できません。')
         return redirect('contract:staff_contract_detail', pk=pk)
 
@@ -784,7 +784,7 @@ def staff_contract_delete(request, pk):
     """スタッフ契約削除"""
     contract = get_object_or_404(StaffContract, pk=pk)
 
-    if contract.contract_status not in [StaffContract.ContractStatus.DRAFT, StaffContract.ContractStatus.PENDING]:
+    if contract.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
         messages.error(request, 'この契約は削除できません。')
         return redirect('contract:staff_contract_detail', pk=pk)
     
@@ -1049,8 +1049,8 @@ def client_contract_pdf(request, pk):
     contract = get_object_or_404(ClientContract, pk=pk)
 
     # 承認済みの場合は発行済みに更新
-    if contract.contract_status == ClientContract.ContractStatus.APPROVED:
-        contract.contract_status = ClientContract.ContractStatus.ISSUED
+    if contract.contract_status == Constants.CONTRACT_STATUS.APPROVED:
+        contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
         contract.issued_at = timezone.now()
         contract.issued_by = request.user
         contract.save()
@@ -1093,7 +1093,7 @@ def client_contract_approve(request, pk):
         is_approved = request.POST.get('is_approved')
         if is_approved:
             # 「承認する」アクションは「申請中」からのみ可能
-            if contract.contract_status == ClientContract.ContractStatus.PENDING:
+            if contract.contract_status == Constants.CONTRACT_STATUS.PENDING:
                 try:
                     # TTPを想定する場合、クライアント契約の start_date/end_date を使って期間が6か月超でないかチェック
                     if contract.start_date and contract.end_date:
@@ -1108,7 +1108,7 @@ def client_contract_approve(request, pk):
 
                     # 契約番号を採番
                     contract.contract_number = generate_client_contract_number(contract)
-                    contract.contract_status = ClientContract.ContractStatus.APPROVED
+                    contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
                     contract.approved_at = timezone.now()
                     contract.approved_by = request.user
                     contract.save()
@@ -1119,10 +1119,10 @@ def client_contract_approve(request, pk):
                 messages.error(request, 'このステータスからは承認できません。')
         else:
             # 「承認解除」アクションは「承認済」以降からのみ可能
-            if int(contract.contract_status) >= int(ClientContract.ContractStatus.APPROVED):
+            if int(contract.contract_status) >= int(Constants.CONTRACT_STATUS.APPROVED):
                 # 承認解除: 発行履歴そのものは過去の発行記録として保持する。
                 # 契約のステータスと承認/発行関連の日時・ユーザーはクリアする。
-                contract.contract_status = ClientContract.ContractStatus.DRAFT
+                contract.contract_status = Constants.CONTRACT_STATUS.DRAFT
                 contract.contract_number = None  # 契約番号をクリア
                 contract.approved_at = None
                 contract.approved_by = None
@@ -1153,7 +1153,7 @@ def client_contract_issue(request, pk):
     """クライアント契約を発行済にする"""
     contract = get_object_or_404(ClientContract, pk=pk)
     if request.method == 'POST':
-        if contract.contract_status == ClientContract.ContractStatus.APPROVED:
+        if contract.contract_status == Constants.CONTRACT_STATUS.APPROVED:
             try:
                 with transaction.atomic():
                     # 1. 個別契約書の発行
@@ -1205,7 +1205,7 @@ def client_contract_issue(request, pk):
                         messages.success(request, f'派遣通知書を同時に発行しました。')
 
                     # 3. 契約ステータスを更新
-                    contract.contract_status = ClientContract.ContractStatus.ISSUED
+                    contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
                     contract.issued_at = timezone.now()
                     contract.issued_by = request.user
                     contract.save()
@@ -1225,7 +1225,7 @@ def issue_quotation(request, pk):
     """クライアント契約の見積書を発行する"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
-    if int(contract.contract_status) < int(ClientContract.ContractStatus.APPROVED):
+    if int(contract.contract_status) < int(Constants.CONTRACT_STATUS.APPROVED):
         messages.error(request, 'この契約の見積書は発行できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
@@ -1275,14 +1275,14 @@ def client_contract_confirm(request, pk):
     if request.method == 'POST':
         is_confirmed = 'is_confirmed' in request.POST
         if is_confirmed:
-            if contract.contract_status == ClientContract.ContractStatus.ISSUED:
-                contract.contract_status = ClientContract.ContractStatus.CONFIRMED
+            if contract.contract_status == Constants.CONTRACT_STATUS.ISSUED:
+                contract.contract_status = Constants.CONTRACT_STATUS.CONFIRMED
                 contract.confirmed_at = timezone.now()
                 contract.save()
                 messages.success(request, f'契約「{contract.contract_name}」を確認済にしました。')
         else:
-            if contract.contract_status == ClientContract.ContractStatus.CONFIRMED:
-                contract.contract_status = ClientContract.ContractStatus.ISSUED
+            if contract.contract_status == Constants.CONTRACT_STATUS.CONFIRMED:
+                contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
                 contract.confirmed_at = None
                 contract.save()
                 messages.success(request, f'契約「{contract.contract_name}」を未確認に戻しました。')
@@ -1297,14 +1297,14 @@ def staff_contract_approve(request, pk):
     if request.method == 'POST':
         is_approved = request.POST.get('is_approved')
         if is_approved:
-            if contract.contract_status == StaffContract.ContractStatus.PENDING:
+            if contract.contract_status == Constants.CONTRACT_STATUS.PENDING:
                 from django.core.exceptions import ValidationError
                 try:
                     # 最低賃金チェック
                     contract.validate_minimum_wage()
 
                     contract.contract_number = generate_staff_contract_number(contract)
-                    contract.contract_status = StaffContract.ContractStatus.APPROVED
+                    contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
                     contract.approved_at = timezone.now()
                     contract.approved_by = request.user
                     contract.save()
@@ -1317,9 +1317,9 @@ def staff_contract_approve(request, pk):
             else:
                 messages.error(request, 'このステータスからは承認できません。')
         else:
-            if int(contract.contract_status) >= int(StaffContract.ContractStatus.APPROVED):
+            if int(contract.contract_status) >= int(Constants.CONTRACT_STATUS.APPROVED):
                 # 承認解除時も過去の発行履歴は削除しない
-                contract.contract_status = StaffContract.ContractStatus.DRAFT
+                contract.contract_status = Constants.CONTRACT_STATUS.DRAFT
                 contract.contract_number = None
                 contract.approved_at = None
                 contract.approved_by = None
@@ -1348,7 +1348,7 @@ def staff_contract_issue(request, pk):
     if request.method == 'POST':
         is_issued = 'is_issued' in request.POST
         if is_issued:
-            if contract.contract_status == StaffContract.ContractStatus.APPROVED:
+            if contract.contract_status == Constants.CONTRACT_STATUS.APPROVED:
                 pdf_content, pdf_filename, document_title = generate_contract_pdf_content(contract)
                 if pdf_content:
                     new_print = StaffContractPrint(
@@ -1366,7 +1366,7 @@ def staff_contract_issue(request, pk):
                         object_id=str(contract.pk),
                         object_repr=f'契約書PDF出力: {contract.contract_name}'
                     )
-                    contract.contract_status = StaffContract.ContractStatus.ISSUED
+                    contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
                     contract.issued_at = timezone.now()
                     contract.issued_by = request.user
                     contract.save()
@@ -1374,8 +1374,8 @@ def staff_contract_issue(request, pk):
                 else:
                     messages.error(request, "契約書の発行に失敗しました。")
         else:
-            if contract.contract_status == StaffContract.ContractStatus.ISSUED:
-                contract.contract_status = StaffContract.ContractStatus.APPROVED
+            if contract.contract_status == Constants.CONTRACT_STATUS.ISSUED:
+                contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
                 contract.issued_at = None
                 contract.issued_by = None
                 contract.save()
@@ -1434,7 +1434,7 @@ def staff_contract_confirm_list(request):
                     staff_agreement=staff_agreement,
                     defaults={'is_agreed': True}
                 )
-                contract.contract_status = StaffContract.ContractStatus.CONFIRMED
+                contract.contract_status = Constants.CONTRACT_STATUS.CONFIRMED
                 contract.confirmed_at = timezone.now()
                 contract.save()
                 messages.success(request, f'契約「{contract.contract_name}」を確認しました。')
@@ -1442,7 +1442,7 @@ def staff_contract_confirm_list(request):
                 messages.error(request, '確認可能な同意文言が見つかりませんでした。')
 
         elif action == 'unconfirm':
-            contract.contract_status = StaffContract.ContractStatus.ISSUED
+            contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
             contract.confirmed_at = None
             contract.save()
             messages.success(request, f'契約「{contract.contract_name}」を未確認に戻しました。')
@@ -1471,7 +1471,7 @@ def staff_contract_confirm_list(request):
     contracts_query = StaffContract.objects.filter(
         staff=staff,
         corporate_number__in=approved_corporate_numbers,
-        contract_status__in=[StaffContract.ContractStatus.ISSUED, StaffContract.ContractStatus.CONFIRMED]
+        contract_status__in=[Constants.CONTRACT_STATUS.ISSUED, Constants.CONTRACT_STATUS.CONFIRMED]
     ).select_related('staff').order_by('-start_date')
 
     # ページネーション
@@ -1533,14 +1533,14 @@ def client_contract_confirm_list(request):
         contract = get_object_or_404(ClientContract, pk=contract_id)
 
         if action == 'confirm':
-            contract.contract_status = ClientContract.ContractStatus.CONFIRMED
+            contract.contract_status = Constants.CONTRACT_STATUS.CONFIRMED
             contract.confirmed_at = timezone.now()
             contract.confirmed_by = client_user
             contract.save()
             messages.success(request, f'契約「{contract.contract_name}」を確認しました。')
 
         elif action == 'unconfirm':
-            contract.contract_status = ClientContract.ContractStatus.ISSUED
+            contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
             contract.confirmed_at = None
             contract.confirmed_by = None
             contract.save()
