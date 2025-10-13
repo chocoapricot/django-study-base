@@ -91,9 +91,9 @@ django-study-base/
 └── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（85テーブル）
+## データベーステーブル一覧（87テーブル）
 
-### 本アプリケーション独自テーブル（68テーブル）
+### 本アプリケーション独自テーブル（70テーブル）
 
 | テーブル名 | モデル名 | 説明 |
 | --- | --- | --- |
@@ -124,6 +124,7 @@ django-study-base/
 | `apps_contract_staff` | `StaffContract` | スタッフ契約 |
 | `apps_contract_staff_number` | `StaffContractNumber` | スタッフ契約番号 |
 | `apps_contract_staff_print` | `StaffContractPrint` | スタッフ契約書発行履歴 |
+| `apps_contract_staff_teishokubi` | `StaffContractTeishokubi` | スタッフの個人抵触日 |
 | `apps_master_bank` | `Bank` | 銀行マスター |
 | `apps_master_bank_branch` | `BankBranch` | 銀行支店マスター |
 | `apps_master_bill_bank` | `BillBank` | 会社銀行マスター |
@@ -131,6 +132,7 @@ django-study-base/
 | `apps_master_contract_pattern` | `ContractPattern` | 契約書パターンマスター |
 | `apps_master_contract_terms` | `ContractTerms` | 契約文言マスター |
 | `apps_master_default_value` | `DefaultValue` | デフォルト値マスター |
+| `apps_master_employment_type` | `EmploymentType` | 雇用形態マスター |
 | `apps_master_business_content` | `BusinessContent` | 業務内容マスター |
 | `apps_master_haken_responsibility_degree` | `HakenResponsibilityDegree` | 派遣責任程度マスター |
 | `apps_master_information` | `Information` | お知らせマスター |
