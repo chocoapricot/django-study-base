@@ -1,4 +1,5 @@
 {% load contract_tags %}
+{% load dropdowns %}
 <div class="content-box card bg-light mt-2 mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         状況
@@ -11,7 +12,7 @@
                 <input class="form-check-input" type="checkbox" id="approvalSwitch" name="is_approved"
                        onchange="this.form.submit()"
                        {% if contract.is_approved_or_later %}checked{% endif %}
-                       {% if contract.contract_status == contract.ContractStatus.DRAFT %}disabled{% endif %}>
+                       {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT %}disabled{% endif %}>
                 <label class="form-check-label" for="approvalSwitch">
                     <i class="bi bi-check-circle" style="font-size: 20px; color: #17a2b8;"></i>
                     契約承認
@@ -67,7 +68,7 @@
                 <input class="form-check-input" type="checkbox" id="issueSwitch" name="is_issued"
                        onchange="this.form.submit()"
                        {% if contract.is_issued_or_later %}checked disabled{% endif %}
-                       {% if contract.contract_status != contract.ContractStatus.APPROVED %}disabled{% endif %}>
+                       {% if contract.contract_status != Constants.CONTRACT_STATUS.APPROVED %}disabled{% endif %}>
                 <label class="form-check-label" for="issueSwitch">
                     <i class="bi bi-filetype-pdf" style="font-size: 20px; color: #17a2b8;"></i>
                     契約書発行
@@ -84,7 +85,7 @@
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="confirmSwitch" name="is_confirmed"
                        disabled
-                       {% if contract.contract_status == contract.ContractStatus.CONFIRMED %}checked{% endif %}>
+                       {% if contract.contract_status == Constants.CONTRACT_STATUS.CONFIRMED %}checked{% endif %}>
                 <label class="form-check-label" for="confirmSwitch">
                     <i class="bi bi-link" style="font-size: 20px; color: #17a2b8;"></i>
                     クライアント確認

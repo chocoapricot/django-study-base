@@ -2016,6 +2016,7 @@ def client_contract_ttp_detail(request, pk):
         'ttp_info': ttp_info,
         'haken': ttp_info.haken,
         'contract': ttp_info.haken.client_contract,
+        'Constants': Constants,
     }
     return render(request, 'contract/client_contract_ttp_detail.html', context)
 

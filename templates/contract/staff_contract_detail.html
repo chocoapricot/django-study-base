@@ -155,7 +155,7 @@
         <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
             <div class="card-header d-flex justify-content-between align-items-center">
                 契約アサイン
-                {% if contract.contract_status == contract.ContractStatus.DRAFT %}
+                {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT %}
                 <a href="{% url 'contract:staff_contract_assignment' contract.pk %}" class="btn btn-sm btn-primary">割当</a>
                 {% endif %}
             </div>
@@ -181,7 +181,7 @@
                                     {{ assignment.client_contract.start_date|date:"Y/m/d" }}～{% if assignment.client_contract.end_date %}{{ assignment.client_contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}
                                 </td>
                                 <td>
-                                    {% if assignment.client_contract.contract_status == assignment.client_contract.ContractStatus.DRAFT %}
+                                    {% if assignment.client_contract.contract_status == Constants.CONTRACT_STATUS.DRAFT %}
                                     <form action="{% url 'contract:delete_contract_assignment' assignment_pk=assignment.pk %}?from=staff" method="post" class="d-inline">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-sm btn-dark" onclick="return confirm('このアサインを解除しますか？')">解除</button>
