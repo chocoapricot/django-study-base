@@ -33,8 +33,8 @@ class Constants:
         MALE = '1'    # 男性
         FEMALE = '2'  # 女性
 
-    # 契約書パターン ドメイン (contract_pattern domain)
-    class CONTRACT_PATTERN_DOMAIN:
+    # 契約書パターン ドメイン (domain)
+    class DOMAIN:
         STAFF = '1'    # スタッフ
         CLIENT = '10'  # クライアント
 

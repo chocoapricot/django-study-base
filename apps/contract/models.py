@@ -45,7 +45,7 @@ class ClientContract(MyModel):
         'master.ContractPattern',
         on_delete=models.PROTECT,
         verbose_name='契約書パターン',
-        limit_choices_to={'domain': Constants.CONTRACT_PATTERN_DOMAIN.CLIENT},
+        limit_choices_to={'domain': Constants.DOMAIN.CLIENT},
     )
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
 
@@ -252,7 +252,7 @@ class StaffContract(MyModel):
         verbose_name='契約書パターン',
         null=True,
         blank=True,
-        limit_choices_to={'domain': Constants.CONTRACT_PATTERN_DOMAIN.STAFF},
+        limit_choices_to={'domain': Constants.DOMAIN.STAFF},
     )
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
     contract_status = models.CharField(

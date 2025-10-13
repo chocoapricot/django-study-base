@@ -107,8 +107,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // 定数定義
-    const CLIENT_DOMAIN = '{{ Constants.CONTRACT_PATTERN_DOMAIN.CLIENT }}';
-    const STAFF_DOMAIN = '{{ Constants.CONTRACT_PATTERN_DOMAIN.STAFF }}';
+    const CLIENT_DOMAIN = '{{ Constants.DOMAIN.CLIENT }}';
+    const STAFF_DOMAIN = '{{ Constants.DOMAIN.STAFF }}';
     
     const domainRadios = document.querySelectorAll('input[name="domain"]');
     const contractTypeRow = document.getElementById('contract_type_code_dropdowns');

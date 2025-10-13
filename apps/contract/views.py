@@ -514,7 +514,7 @@ def staff_contract_list(request):
 
     # 契約状況のドロップダウンリストを取得
     contract_status_list = [{'value': d.value, 'name': d.name} for d in Dropdowns.objects.filter(category='contract_status', active=True).order_by('disp_seq')]
-    contract_pattern_list = ContractPattern.objects.filter(domain=Constants.CONTRACT_PATTERN_DOMAIN.STAFF)
+    contract_pattern_list = ContractPattern.objects.filter(domain=Constants.DOMAIN.STAFF)
     
     # ページネーション
     paginator = Paginator(contracts, 20)
@@ -2236,14 +2236,14 @@ def get_contract_patterns_by_employment_type(request):
     # スタッフ用で、指定された雇用形態の契約書パターンを取得
     patterns = ContractPattern.objects.filter(
         is_active=True,
-        domain=Constants.CONTRACT_PATTERN_DOMAIN.STAFF,  # スタッフ
+        domain=Constants.DOMAIN.STAFF,  # スタッフ
         employment_type=employment_type
     ).values('id', 'name').order_by('display_order')
     
     # 雇用形態が指定されていない契約書パターンも含める
     patterns_without_employment = ContractPattern.objects.filter(
         is_active=True,
-        domain=Constants.CONTRACT_PATTERN_DOMAIN.STAFF,  # スタッフ
+        domain=Constants.DOMAIN.STAFF,  # スタッフ
         employment_type__isnull=True
     ).values('id', 'name').order_by('display_order')
     

@@ -145,7 +145,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
 
         if contract_type_code:
             self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(
-                is_active=True, domain=Constants.CONTRACT_PATTERN_DOMAIN.CLIENT, contract_type_code=contract_type_code
+                is_active=True, domain=Constants.DOMAIN.CLIENT, contract_type_code=contract_type_code
             )
             try:
                 dropdown = Dropdowns.objects.get(category='client_contract_type', value=contract_type_code)
@@ -458,7 +458,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         from apps.master.models import ContractPattern, JobCategory
         self.fields['job_category'].queryset = JobCategory.objects.filter(is_active=True)
-        self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, domain=Constants.CONTRACT_PATTERN_DOMAIN.STAFF)
+        self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, domain=Constants.DOMAIN.STAFF)
         if self.instance and self.instance.pk and hasattr(self.instance, 'staff') and self.instance.staff:
             self.fields['staff_display'].initial = f"{self.instance.staff.name_last} {self.instance.staff.name_first}"
 

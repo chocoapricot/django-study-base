@@ -166,7 +166,7 @@ class ContractPatternForm(forms.ModelForm):
         contract_type_code = cleaned_data.get('contract_type_code')
         employment_type = cleaned_data.get('employment_type')
 
-        if domain == Constants.CONTRACT_PATTERN_DOMAIN.CLIENT:  # クライアント
+        if domain == Constants.DOMAIN.CLIENT:  # クライアント
             if not contract_type_code:
                 self.add_error('contract_type_code', 'クライアントが対象の場合、契約種別は必須です。')
             # クライアントの場合は雇用形態をクリア
