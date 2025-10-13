@@ -35,6 +35,7 @@ def main():
         "_sample_data/menus.json",
         "_sample_data/master_qualifications.json",
         "_sample_data/master_skills.json",
+        "_sample_data/master_employment_type.json",
         "_sample_data/master_bill_payment.json",
         "_sample_data/master_bill_bank.json",
         "_sample_data/master_bank.json",
@@ -87,6 +88,7 @@ def main():
         ("python manage.py loaddata _sample_data/menus.json", "メニューデータ"),
         ("python manage.py loaddata _sample_data/master_qualifications.json", "資格マスタデータ"),
         ("python manage.py loaddata _sample_data/master_skills.json", "技能マスタデータ"),
+        ("python manage.py loaddata _sample_data/master_employment_type.json", "雇用形態マスタデータ"),
         ("python manage.py loaddata _sample_data/master_bill_payment.json", "支払いサイトマスタデータ"),
         ("python manage.py loaddata _sample_data/master_bill_bank.json", "会社銀行マスタデータ"),
         ("python manage.py loaddata _sample_data/master_bank.json", "銀行マスタデータ"),
@@ -133,6 +135,7 @@ def main():
     print("- メニュー設定")
     print("- 資格マスタ")
     print("- 技能マスタ")
+    print("- 雇用形態マスタ")
     print("- 支払いサイトマスタ")
     print("- 会社銀行マスタ")
     print("- 銀行マスタ")
