@@ -200,6 +200,9 @@ class ContractAssignmentValidationTest(TestCase):
             contract_type_code='20', # Haken
             is_active=True
         )
+        from apps.master.models import EmploymentType
+        self.employment_type_haken = EmploymentType.objects.create(name='派遣社員(有期)', is_fixed_term=True)
+
 
     def test_conflict_date_validation(self):
         """割当終了日が抵触日を超える場合にValidationErrorが発生することを確認"""
@@ -220,7 +223,7 @@ class ContractAssignmentValidationTest(TestCase):
         staff_contract_ng = StaffContract.objects.create(
             staff=self.staff,
             contract_name='長期スタッフ契約',
-            employment_type='30',  # 派遣社員(有期)
+            employment_type=self.employment_type_haken,  # 派遣社員(有期)
             start_date=date.today(),
             end_date=date.today() + timedelta(days=365 * 4), # 4年後
             created_by=self.user
@@ -251,7 +254,7 @@ class ContractAssignmentValidationTest(TestCase):
         staff_contract_ok = StaffContract.objects.create(
             staff=self.staff,
             contract_name='短期スタッフ契約',
-            employment_type='30',  # 派遣社員(有期)
+            employment_type=self.employment_type_haken,  # 派遣社員(有期)
             start_date=date.today(),
             end_date=date.today() + timedelta(days=365), # 1年後
             created_by=self.user
