@@ -22,9 +22,9 @@
             <label class="col-sm-2 col-form-label text-start text-md-end"><strong>対象</strong></label>
             <div class="col-sm-5">
                 <span class="badge {{ pattern.domain|badge_class }}">{% my_name 'domain' pattern.domain %}</span>
-                {% if pattern.domain == '10' and pattern.contract_type_code %}
+                {% if pattern.domain == Constants.CONTRACT_PATTERN_DOMAIN.CLIENT and pattern.contract_type_code %}
                     <span class="badge {{ pattern.contract_type_code|badge_class }}">{% my_name 'client_contract_type' pattern.contract_type_code %}</span>
-                {% elif pattern.domain == '1' and pattern.employment_type %}
+                {% elif pattern.domain == Constants.CONTRACT_PATTERN_DOMAIN.STAFF and pattern.employment_type %}
                     <span class="badge {{ pattern.employment_type|badge_class }}">{% my_name 'employment_type' pattern.employment_type %}</span>
                 {% endif %}
             </div>

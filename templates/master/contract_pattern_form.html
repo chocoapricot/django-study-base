@@ -106,6 +106,10 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // 定数定義
+    const CLIENT_DOMAIN = '{{ Constants.CONTRACT_PATTERN_DOMAIN.CLIENT }}';
+    const STAFF_DOMAIN = '{{ Constants.CONTRACT_PATTERN_DOMAIN.STAFF }}';
+    
     const domainRadios = document.querySelectorAll('input[name="domain"]');
     const contractTypeRow = document.getElementById('contract_type_code_dropdowns');
     const employmentTypeRow = document.getElementById('employment_type_dropdowns');
@@ -114,12 +118,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function toggleDropdowns() {
         const selectedDomain = document.querySelector('input[name="domain"]:checked').value;
-        if (selectedDomain === '10') { // 10 is for 'クライアント'
+        if (selectedDomain === CLIENT_DOMAIN) { // クライアント
             contractTypeRow.style.display = '';
             employmentTypeRow.style.display = 'none';
             contractTypeCodeSelect.required = true;
             employmentTypeSelect.required = false;
-        } else { // 1 is for 'スタッフ'
+        } else { // スタッフ
             contractTypeRow.style.display = 'none';
             employmentTypeRow.style.display = '';
             contractTypeCodeSelect.required = false;
