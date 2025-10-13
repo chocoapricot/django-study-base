@@ -573,7 +573,7 @@ class ContractAssignment(MyModel):
 
         # 派遣契約かつ派遣社員(有期)の場合のみチェック
         if (self.client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and
-                self.staff_contract.employment_type == '30'):
+                self.staff_contract.employment_type and self.staff_contract.employment_type.is_fixed_term):
 
             staff_email = self.staff_contract.staff.email
             client_corporate_number = self.client_contract.client.corporate_number

@@ -14,8 +14,22 @@ class TeishokubiCalculatorTest(TestCase):
     def setUpTestData(cls):
         # Dropdowns for contract types and domains
         Dropdowns.objects.create(category='client_contract_type', name='派遣', value='20', disp_seq=1)
-        Dropdowns.objects.create(category='employment_type', name='派遣社員(有期)', value='30', disp_seq=1)
         Dropdowns.objects.create(category='domain', name='クライアント', value='10', disp_seq=2)
+        
+        # 雇用形態マスタを作成
+        from apps.master.models import EmploymentType
+        cls.employment_type_fixed = EmploymentType.objects.create(
+            name='派遣社員(有期)',
+            display_order=30,
+            is_fixed_term=True,
+            is_active=True
+        )
+        cls.employment_type_indefinite = EmploymentType.objects.create(
+            name='派遣社員(無期)',
+            display_order=35,
+            is_fixed_term=False,
+            is_active=True
+        )
 
         # Required ContractPattern
         cls.contract_pattern = ContractPattern.objects.create(
@@ -28,7 +42,7 @@ class TeishokubiCalculatorTest(TestCase):
             name_last='Test',
             name_first='Staff',
             email='teststaff@example.com',
-            employment_type='30' # 派遣社員(有期)
+            employment_type=cls.employment_type_fixed  # 派遣社員(有期)
         )
         cls.client_instance = Client.objects.create(
             name='Test Client',
@@ -58,7 +72,7 @@ class TeishokubiCalculatorTest(TestCase):
             contract_name=f'Staff Contract {contract_name}',
             start_date=staff_start,
             end_date=staff_end,
-            employment_type='30' # 派遣社員(有期)
+            employment_type=self.employment_type_fixed  # 派遣社員(有期)
         )
         ContractAssignment.objects.create(
             client_contract=client_contract,
@@ -171,7 +185,7 @@ class TeishokubiCalculatorTest(TestCase):
             contract_name='Test Staff Contract',
             start_date=date(2020, 1, 1),
             end_date=date(2020, 12, 31),
-            employment_type='30'
+            employment_type=self.employment_type_fixed
         )
         ContractAssignment.objects.create(
             client_contract=client_contract,
@@ -181,7 +195,7 @@ class TeishokubiCalculatorTest(TestCase):
         self.assertFalse(StaffContractTeishokubi.objects.filter(staff_email=self.staff.email).exists())
 
     def test_non_relevant_employment_type_is_ignored(self):
-        """対象外の雇用形態の割り当てでは抵触日が作成されないことをテスト"""
+        """無期雇用の場合は抵触日が作成されないことをテスト"""
         client_contract = ClientContract.objects.create(
             client=self.client_instance,
             contract_name='Haken Contract',
@@ -199,7 +213,7 @@ class TeishokubiCalculatorTest(TestCase):
             contract_name='Non-Yuki Haken Contract',
             start_date=date(2020, 1, 1),
             end_date=date(2020, 12, 31),
-            employment_type='35' # Not '30' (派遣社員(有期))
+            employment_type=self.employment_type_indefinite  # 派遣社員(無期)
         )
         ContractAssignment.objects.create(
             client_contract=client_contract,

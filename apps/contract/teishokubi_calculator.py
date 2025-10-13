@@ -77,7 +77,7 @@ class TeishokubiCalculator:
             client_contract__client__corporate_number=self.client_corporate_number,
             client_contract__haken_info__haken_unit__name=self.organization_name,
             client_contract__client_contract_type_code='20',  # 派遣
-            staff_contract__employment_type='30'  # 派遣社員(有期)
+            staff_contract__employment_type__is_fixed_term=True  # 有期雇用
         ).select_related('client_contract', 'staff_contract')
 
     def _get_assignment_periods(self, assignments):
