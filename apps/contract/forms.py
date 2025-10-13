@@ -128,11 +128,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         self.fields['payment_site'].queryset = BillPayment.get_active_list()
 
         # 請求単位の選択肢を設定
-        # Dropdownsモデルからactiveな請求単位を取得して選択肢を組み立てる
-        bill_choices = [('', '---------')] + [
-            (d.value, d.name) for d in Dropdowns.objects.filter(category='bill_unit', active=True).order_by('disp_seq')
-        ]
-        self.fields['bill_unit'].choices = bill_choices
+        self.fields['bill_unit'].choices = Dropdowns.get_choices('bill_unit')
         # 要求により請求単位は保存時に必須
         self.fields['bill_unit'].required = True
 
@@ -160,14 +156,18 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
             self.fields['contract_pattern'].queryset = ContractPattern.objects.none()
 
         # 編集画面では「作成中」「申請中」のみ選択可能にする
-        choices = [
-            (Constants.CONTRACT_STATUS.DRAFT, '作成中'),
-            (Constants.CONTRACT_STATUS.PENDING, '申請中'),
-        ]
+        editable_statuses = [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]
+        choices = []
+        for dropdown in Dropdowns.objects.filter(category='contract_status', active=True).order_by('disp_seq'):
+            if dropdown.value in editable_statuses:
+                choices.append((dropdown.value, dropdown.name))
+        
+        # 現在の契約状況が編集可能範囲外の場合は追加
         if self.instance and self.instance.pk and self.instance.contract_status:
-            current_choice = (self.instance.contract_status, self.instance.get_contract_status_display())
-            if current_choice not in choices:
-                choices.append(current_choice)
+            if self.instance.contract_status not in editable_statuses:
+                display_name = Dropdowns.get_display_name('contract_status', self.instance.contract_status)
+                choices.append((self.instance.contract_status, display_name))
+        
         self.fields['contract_status'].choices = choices
 
         # クライアントを取得
@@ -465,30 +465,31 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
 
 
         # 支払単位の選択肢を設定
-        pay_unit_choices = [('', '---------')] + [
-            (d.value, d.name) for d in Dropdowns.objects.filter(category='pay_unit', active=True).order_by('disp_seq')
-        ]
-        self.fields['pay_unit'].choices = pay_unit_choices
+        self.fields['pay_unit'].choices = Dropdowns.get_choices('pay_unit')
         self.fields['pay_unit'].required = True
 
         # 契約番号は自動採番のため非表示
         self.fields['contract_number'].required = False
 
         # 編集画面では「作成中」「申請中」のみ選択可能にする
-        choices = [
-            (StaffContract.ContractStatus.DRAFT.value, StaffContract.ContractStatus.DRAFT.label),
-            (StaffContract.ContractStatus.PENDING.value, StaffContract.ContractStatus.PENDING.label),
-        ]
+        editable_statuses = [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]
+        choices = []
+        for dropdown in Dropdowns.objects.filter(category='contract_status', active=True).order_by('disp_seq'):
+            if dropdown.value in editable_statuses:
+                choices.append((dropdown.value, dropdown.name))
+        
+        # 現在の契約状況が編集可能範囲外の場合は追加
         if self.instance and self.instance.pk and self.instance.contract_status:
-            current_choice = (self.instance.contract_status, self.instance.get_contract_status_display())
-            if current_choice not in choices:
-                choices.append(current_choice)
+            if self.instance.contract_status not in editable_statuses:
+                display_name = Dropdowns.get_display_name('contract_status', self.instance.contract_status)
+                choices.append((self.instance.contract_status, display_name))
+        
         self.fields['contract_status'].choices = choices
 
         # 契約状況に応じたフォームの制御
         if self.instance and self.instance.pk:
             # 「作成中」「申請中」以外は全フィールドを編集不可にする
-            if self.instance.contract_status not in [StaffContract.ContractStatus.DRAFT, StaffContract.ContractStatus.PENDING]:
+            if self.instance.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
                 for field_name, field in self.fields.items():
                     if hasattr(field.widget, 'attrs'):
                         if isinstance(field.widget, forms.Select):

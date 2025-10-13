@@ -49,18 +49,10 @@ class ClientContract(MyModel):
     )
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
 
-    class ContractStatus(models.TextChoices):
-        DRAFT = Constants.CONTRACT_STATUS.DRAFT, '作成中'
-        PENDING = Constants.CONTRACT_STATUS.PENDING, '申請中'
-        APPROVED = Constants.CONTRACT_STATUS.APPROVED, '承認済'
-        ISSUED = Constants.CONTRACT_STATUS.ISSUED, '発行済'
-        CONFIRMED = Constants.CONTRACT_STATUS.CONFIRMED, '契約済'
-
     contract_status = models.CharField(
         '契約状況',
         max_length=2,
-        choices=ContractStatus.choices,
-        default=ContractStatus.DRAFT,
+        default=Constants.CONTRACT_STATUS.DRAFT,
         blank=True,
         null=True
     )
@@ -141,7 +133,6 @@ class ClientContract(MyModel):
     
     def __str__(self):
         return f"{self.client.name} - {self.contract_name}"
-    
     
     @property
     def is_approved_or_later(self):
@@ -233,13 +224,6 @@ class StaffContract(MyModel):
     スタッフ（従業員・フリーランス等）との契約情報を管理するモデル。
     雇用形態、契約期間、金額などを記録する。
     """
-    class ContractStatus(models.TextChoices):
-        DRAFT = Constants.CONTRACT_STATUS.DRAFT, '作成中'
-        PENDING = Constants.CONTRACT_STATUS.PENDING, '申請中'
-        APPROVED = Constants.CONTRACT_STATUS.APPROVED, '承認済'
-        ISSUED = Constants.CONTRACT_STATUS.ISSUED, '発行済'
-        CONFIRMED = Constants.CONTRACT_STATUS.CONFIRMED, '契約済'
-
     staff = models.ForeignKey(
         Staff,
         on_delete=models.CASCADE,
@@ -274,8 +258,7 @@ class StaffContract(MyModel):
     contract_status = models.CharField(
         '契約状況',
         max_length=2,
-        choices=ContractStatus.choices,
-        default=ContractStatus.DRAFT,
+        default=Constants.CONTRACT_STATUS.DRAFT,
         blank=True,
         null=True
     )
@@ -322,8 +305,7 @@ class StaffContract(MyModel):
 
     def __str__(self):
         return f"{self.staff.name_last} {self.staff.name_first} - {self.contract_name}"
-
-
+    
     def clean(self):
         """バリデーション"""
         from django.core.exceptions import ValidationError

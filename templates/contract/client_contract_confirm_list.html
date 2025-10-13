@@ -63,7 +63,7 @@
                         </div>
                     </td>
                     <td>
-                        <span class="badge {{ item.contract.contract_status|badge_class }}">{{ item.contract.get_contract_status_display }}</span>
+                        <span class="badge {{ item.contract.contract_status|badge_class }}">{% my_name "contract_status" item.contract.contract_status %}</span>
                     </td>
                     <td>
                         {{ item.contract.confirmed_at|date:"Y/m/d H:i"|default:"-" }}

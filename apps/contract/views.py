@@ -92,7 +92,7 @@ def client_contract_list(request):
 
     contracts = contracts.order_by('-start_date', 'client__name')
 
-    contract_status_list = [{'value': v, 'name': n} for v, n in ClientContract.ContractStatus.choices]
+    contract_status_list = [{'value': d.value, 'name': d.name} for d in Dropdowns.objects.filter(category='contract_status', active=True).order_by('disp_seq')]
     client_contract_type_list = [{'value': d.value, 'name': d.name} for d in Dropdowns.objects.filter(category='client_contract_type', active=True).order_by('disp_seq')]
 
 
