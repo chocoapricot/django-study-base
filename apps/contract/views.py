@@ -2146,21 +2146,34 @@ def create_contract_assignment_view(request):
             else:
                 return redirect('contract:staff_contract_detail', pk=staff_contract_id)
 
+        from django.core.exceptions import ValidationError
         try:
-            with transaction.atomic():
-                assignment, created = ContractAssignment.objects.get_or_create(
-                    client_contract=client_contract,
-                    staff_contract=staff_contract,
-                    defaults={'created_by': request.user, 'updated_by': request.user}
-                )
-
-                if created:
+            # 既に存在するかチェック
+            if ContractAssignment.objects.filter(client_contract=client_contract, staff_contract=staff_contract).exists():
+                messages.info(request, 'この割当は既に存在します。')
+            else:
+                with transaction.atomic():
+                    assignment = ContractAssignment(
+                        client_contract=client_contract,
+                        staff_contract=staff_contract,
+                        created_by=request.user,
+                        updated_by=request.user
+                    )
+                    # バリデーションを実行
+                    assignment.full_clean()
+                    assignment.save()
                     messages.success(request, '契約の割当が完了しました。')
-                else:
-                    messages.info(request, 'この割当は既に存在します。')
+
+        except ValidationError as e:
+            # messages.error(request, f'割当に失敗しました。理由：{e.message_dict}')
+            # ToDo: a better way to flatten the error messages
+            error_messages = []
+            for field, errors in e.message_dict.items():
+                error_messages.extend(errors)
+            messages.error(request, f'割当に失敗しました。理由：{" ".join(error_messages)}')
 
         except Exception as e:
-            messages.error(request, f'割当処理中にエラーが発生しました: {e}')
+            messages.error(request, f'割当処理中に予期せぬエラーが発生しました: {e}')
 
         # 元の画面にリダイレクト
         if from_view == 'client':

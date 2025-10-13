@@ -1,0 +1,61 @@
+{% extends "common/base.html" %}
+
+{% block title %}クライアント契約割当 - {{ staff_contract.contract_name }}{% endblock %}
+
+{% block content %}
+<!--
+Screen Logic:
+- This screen lists client contracts that can be assigned to a specific staff contract.
+- The list is filtered to show only contracts with overlapping periods.
+- Each item has an "Assign" button which creates a ContractAssignment instance.
+- **Conflict Date Validation**: Before creating the assignment, the system recalculates the staff's conflict date (`teishokubi`). If the assignment's end date (the earlier of the client contract's end date and the staff contract's end date) is after the recalculated conflict date, the assignment will fail with a validation error message. This check is performed in the `ContractAssignment` model's `clean` method, which is triggered by the `create_contract_assignment_view`.
+-->
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">クライアント契約割当</h1>
+    <p class="mb-4">スタッフ契約「{{ staff_contract.contract_name }}」に割り当てるクライアント契約を選択してください。</p>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">割当可能なクライアント契約</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>クライアント名</th>
+                            <th>契約名</th>
+                            <th>契約期間</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for contract in assignable_contracts %}
+                        <tr>
+                            <td>{{ contract.client.name }}</td>
+                            <td>{{ contract.contract_name }}</td>
+                            <td>{{ contract.start_date|date:"Y/m/d" }} - {{ contract.end_date|date:"Y/m/d"|default:"未定" }}</td>
+                            <td>
+                                <form action="{% url 'contract:create_contract_assignment' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="client_contract_id" value="{{ contract.pk }}">
+                                    <input type="hidden" name="staff_contract_id" value="{{ staff_contract.pk }}">
+                                    <input type="hidden" name="from" value="staff">
+                                    <button type="submit" class="btn btn-primary btn-sm">割当</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4">割当可能なクライアント契約はありません。</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <a href="{% url 'contract:staff_contract_detail' pk=staff_contract.pk %}" class="btn btn-secondary">戻る</a>
+</div>
+{% endblock %}
