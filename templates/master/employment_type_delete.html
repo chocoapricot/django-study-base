@@ -1,0 +1,35 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">{{ title }}</div>
+    <div class="card-body">
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            雇用形態「{{ item.name|truncatechars:30 }}」を削除しますか？この操作は取り消せません。
+        </div>
+
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-3 text-start text-md-end">
+                <strong>名称</strong>
+            </div>
+            <div class="col-sm-9">
+                {{ item.name }}
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <button type="submit" class="btn btn-sm btn-dark me-2">削除</button>
+                    <a href="{% url 'master:employment_type_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

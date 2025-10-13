@@ -25,10 +25,12 @@ from .models import (
     BusinessContent,
     HakenResponsibilityDegree,
     DefaultValue,
+    EmploymentType,
 )
 from .forms import (
     BusinessContentForm,
     HakenResponsibilityDegreeForm,
+    EmploymentTypeForm,
     QualificationForm,
     QualificationCategoryForm,
     SkillForm,
@@ -85,6 +87,14 @@ MASTER_CONFIGS = [
         "model": "master.StaffAgreement",
         "url_name": "master:staff_agreement_list",
         "permission": "master.view_staffagreement",
+    },
+    {
+        "category": "スタッフ",
+        "name": "雇用形態管理",
+        "description": "雇用形態の管理",
+        "model": "master.EmploymentType",
+        "url_name": "master:employment_type_list",
+        "permission": "master.view_employmenttype",
     },
     {
         "category": "契約",
@@ -976,6 +986,100 @@ def mail_template_change_history_list(request):
             "page_title": "メールテンプレート変更履歴",
             "back_url_name": "master:mail_template_list",
             "model_name": "MailTemplate",
+        },
+    )
+
+
+# 雇用形態管理ビュー
+@login_required
+@permission_required("master.view_employmenttype", raise_exception=True)
+def employment_type_list(request):
+    """雇用形態一覧"""
+    search_query = request.GET.get("search", "")
+    items = EmploymentType.objects.all()
+    if search_query:
+        items = items.filter(name__icontains=search_query)
+    items = items.order_by("display_order")
+    paginator = Paginator(items, 20)
+    page = request.GET.get("page")
+    items_page = paginator.get_page(page)
+    from apps.system.logs.models import AppLog
+    change_logs = AppLog.objects.filter(model_name="EmploymentType", action__in=["create", "update", "delete"]).order_by("-timestamp")[:5]
+    change_logs_count = AppLog.objects.filter(model_name="EmploymentType", action__in=["create", "update", "delete"]).count()
+    context = {
+        "items": items_page,
+        "search_query": search_query,
+        "change_logs": change_logs,
+        "change_logs_count": change_logs_count,
+        "history_url_name": "master:employment_type_change_history_list",
+    }
+    return render(request, "master/employment_type_list.html", context)
+
+
+@login_required
+@permission_required("master.add_employmenttype", raise_exception=True)
+def employment_type_create(request):
+    """雇用形態作成"""
+    if request.method == "POST":
+        form = EmploymentTypeForm(request.POST)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"雇用形態「{item.name}」を作成しました。")
+            return redirect("master:employment_type_list")
+    else:
+        form = EmploymentTypeForm()
+    context = {"form": form, "title": "雇用形態作成"}
+    return render(request, "master/employment_type_form.html", context)
+
+
+@login_required
+@permission_required("master.change_employmenttype", raise_exception=True)
+def employment_type_update(request, pk):
+    """雇用形態編集"""
+    item = get_object_or_404(EmploymentType, pk=pk)
+    if request.method == "POST":
+        form = EmploymentTypeForm(request.POST, instance=item)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"雇用形態「{item.name}」を更新しました。")
+            return redirect("master:employment_type_list")
+    else:
+        form = EmploymentTypeForm(instance=item)
+    context = {"form": form, "item": item, "title": f"雇用形態編集"}
+    return render(request, "master/employment_type_form.html", context)
+
+
+@login_required
+@permission_required("master.delete_employmenttype", raise_exception=True)
+def employment_type_delete(request, pk):
+    """雇用形態削除"""
+    item = get_object_or_404(EmploymentType, pk=pk)
+    if request.method == "POST":
+        item_name = item.name
+        item.delete()
+        messages.success(request, f"雇用形態「{item_name}」を削除しました。")
+        return redirect("master:employment_type_list")
+    context = {"item": item, "title": f"雇用形態削除"}
+    return render(request, "master/employment_type_delete.html", context)
+
+
+@login_required
+@permission_required("master.view_employmenttype", raise_exception=True)
+def employment_type_change_history_list(request):
+    """雇用形態変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    logs = AppLog.objects.filter(model_name="EmploymentType", action__in=["create", "update", "delete"]).order_by("-timestamp")
+    paginator = Paginator(logs, 20)
+    page = request.GET.get("page")
+    logs_page = paginator.get_page(page)
+    return render(
+        request,
+        "common/common_change_history_list.html",
+        {
+            "change_logs": logs_page,
+            "page_title": "雇用形態変更履歴",
+            "back_url_name": "master:employment_type_list",
+            "model_name": "EmploymentType",
         },
     )
 

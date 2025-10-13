@@ -116,6 +116,13 @@ urlpatterns = [
     path('haken-responsibility-degree/<int:pk>/delete/', views.haken_responsibility_degree_delete, name='haken_responsibility_degree_delete'),
     path('haken-responsibility-degree/history/', views.haken_responsibility_degree_change_history_list, name='haken_responsibility_degree_change_history_list'),
 
+    # 雇用形態管理
+    path('employment-type/', views.employment_type_list, name='employment_type_list'),
+    path('employment-type/create/', views.employment_type_create, name='employment_type_create'),
+    path('employment-type/<int:pk>/update/', views.employment_type_update, name='employment_type_update'),
+    path('employment-type/<int:pk>/delete/', views.employment_type_delete, name='employment_type_delete'),
+    path('employment-type/history/', views.employment_type_change_history_list, name='employment_type_change_history_list'),
+
     # 初期値マスタ
     path('default-value/', views.default_value_list, name='default_value_list'),
     path('default-value/<str:pk>/update/', views.default_value_update, name='default_value_update'),
