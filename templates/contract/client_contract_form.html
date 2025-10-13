@@ -389,6 +389,9 @@
 
 <script src="{% static 'js/contract-modal.js' %}"></script>
 <script>
+// 定数定義
+const DISPATCH_CONTRACT_TYPE = '{{ Constants.CLIENT_CONTRACT_TYPE.DISPATCH }}';
+
 // 編集時の初期値を保存
 const initialDispatchValues = {
     {% if haken_form %}
@@ -448,7 +451,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {% endif %}
         
         // 編集時：派遣契約の場合、既存のクライアントに基づいて派遣先フィールドを初期化
-        if (document.getElementById('{{ form.client_contract_type_code.id_for_label }}').value === '20') {
+        if (document.getElementById('{{ form.client_contract_type_code.id_for_label }}').value === DISPATCH_CONTRACT_TYPE) {
             updateDispatchFields(clientField.value);
         }
     }
@@ -589,7 +592,7 @@ function clearClient() {
     document.getElementById('client-display-text').textContent = '未選択';
     
     // 派遣関連フィールドもクリア
-    if (document.getElementById('{{ form.client_contract_type_code.id_for_label }}').value === '20') {
+    if (document.getElementById('{{ form.client_contract_type_code.id_for_label }}').value === DISPATCH_CONTRACT_TYPE) {
         updateDispatchFields(null);
         // 就業場所をクリア
         const workLocation = document.getElementById('{{ haken_form.work_location.id_for_label }}');

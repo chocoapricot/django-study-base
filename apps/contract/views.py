@@ -346,6 +346,7 @@ def client_contract_create(request):
         'title': 'クライアント契約作成',
         'is_haken': is_haken,
         'selected_client': selected_client,
+        'Constants': Constants,
     }
     return render(request, 'contract/client_contract_form.html', context)
 
@@ -447,6 +448,7 @@ def client_contract_update(request, pk):
         'contract': contract,
         'title': 'クライアント契約編集',
         'is_haken': context_is_haken,
+        'Constants': Constants,
     }
     return render(request, 'contract/client_contract_form.html', context)
 
