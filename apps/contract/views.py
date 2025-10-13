@@ -2169,20 +2169,32 @@ def create_contract_assignment_view(request):
                     assignment.full_clean()
                     assignment.save()
                     success_message = '契約の割当が完了しました。'
-                    sync_message = None
+                    sync_messages = []
                     # 業務内容の同期処理
                     # Note: HTMLのロジック情報にもこの旨を追記しておくこと
                     if not client_contract.business_content and staff_contract.business_content:
                         client_contract.business_content = staff_contract.business_content
                         client_contract.save()
-                        sync_message = 'クライアント契約の業務内容をスタッフ契約の業務内容で更新しました。'
+                        sync_messages.append('クライアント契約の業務内容をスタッフ契約の業務内容で更新しました。')
                     elif client_contract.business_content and not staff_contract.business_content:
                         staff_contract.business_content = client_contract.business_content
                         staff_contract.save()
-                        sync_message = 'スタッフ契約の業務内容をクライアント契約の業務内容で更新しました。'
+                        sync_messages.append('スタッフ契約の業務内容をクライアント契約の業務内容で更新しました。')
 
-                    if sync_message:
-                        success_message = f'{success_message}（{sync_message}）'
+                    # 就業場所の同期処理
+                    client_haken_info = getattr(client_contract, 'haken_info', None)
+                    if client_haken_info:
+                        if not client_haken_info.work_location and staff_contract.work_location:
+                            client_haken_info.work_location = staff_contract.work_location
+                            client_haken_info.save()
+                            sync_messages.append('クライアント契約の派遣の就業場所をスタッフ契約の就業場所で更新しました。')
+                        elif client_haken_info.work_location and not staff_contract.work_location:
+                            staff_contract.work_location = client_haken_info.work_location
+                            staff_contract.save()
+                            sync_messages.append('スタッフ契約の就業場所をクライアント契約の派遣の就業場所で更新しました。')
+
+                    if sync_messages:
+                        success_message = f'{success_message}（{" ".join(sync_messages)}）'
                     messages.success(request, success_message)
 
         except ValidationError as e:

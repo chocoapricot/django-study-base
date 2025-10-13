@@ -10,13 +10,14 @@ Screen Logic:
 - Each item has an "Assign" button which creates a ContractAssignment instance.
 - **Conflict Date Validation**: Before creating the assignment, the system recalculates the staff's conflict date (`teishokubi`). If the assignment's end date (the earlier of the client contract's end date and the staff contract's end date) is after the recalculated conflict date, the assignment will fail with a validation error message. This check is performed in the `ContractAssignment` model's `clean` method, which is triggered by the `create_contract_assignment_view`.
 - **Business Content Synchronization**: Upon assignment, if one contract's business content is empty and the other's is not, the content will be copied from the non-empty to the empty one. A message will be displayed to confirm the update.
+- **Work Location Synchronization**: Similarly, the work location is synchronized between the client contract (dispatch) and the staff contract.
 -->
 
 <div class="container-fluid">
     <h1 class="h3 mb-2 text-gray-800">スタッフ契約割当</h1>
     <p class="mb-4">クライアント契約「{{ client_contract.contract_name }}」に割り当てるスタッフ契約を選択してください。</p>
     <p class="mb-4 small text-muted">
-        <i class="fas fa-info-circle"></i> 補足: 割当時に片方の契約の業務内容が空で、もう一方に業務内容が入力されている場合、入力されている内容が空の契約に自動でコピーされます。
+        <i class="fas fa-info-circle"></i> 補足: 割当時に片方の契約の業務内容や就業場所が空で、もう一方に情報が入力されている場合、入力されている内容が空の契約に自動でコピーされます。
     </p>
 
     <div class="card shadow mb-4">
