@@ -28,15 +28,33 @@ class TeishokubiCalculator:
             # 該当する割当がない場合は、既存の抵触日レコードを削除
             self._delete_teishokubi()
 
-    def _calculate_haken_start_date(self):
+    def calculate_conflict_date_without_update(self, new_assignment_instance=None):
+        """
+        抵触日を計算して返す（DB更新は行わない）
+        """
+        haken_start_date = self._calculate_haken_start_date(new_assignment_instance=new_assignment_instance)
+        if haken_start_date:
+            return self._calculate_conflict_date(haken_start_date)
+        return None
+
+    def _calculate_haken_start_date(self, new_assignment_instance=None):
         """
         派遣開始日を計算する
         """
         assignments = self._get_relevant_assignments()
-        if not assignments:
+        assignment_periods = self._get_assignment_periods(assignments)
+
+        if new_assignment_instance:
+            start_date = max(new_assignment_instance.client_contract.start_date, new_assignment_instance.staff_contract.start_date)
+            end_date = min(
+                new_assignment_instance.client_contract.end_date if new_assignment_instance.client_contract.end_date else date.max,
+                new_assignment_instance.staff_contract.end_date if new_assignment_instance.staff_contract.end_date else date.max
+            )
+            assignment_periods.append({'start_date': start_date, 'end_date': end_date})
+
+        if not assignment_periods:
             return None
 
-        assignment_periods = self._get_assignment_periods(assignments)
         sorted_periods = sorted(assignment_periods, key=lambda p: p['start_date'])
 
         haken_start_date = sorted_periods[0]['start_date']
