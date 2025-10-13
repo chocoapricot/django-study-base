@@ -11,6 +11,7 @@ from apps.company.models import Company, CompanyUser
 from apps.master.models import ContractPattern
 from apps.system.logs.models import AppLog
 from apps.system.settings.models import Dropdowns
+from apps.common.constants import Constants
 
 User = get_user_model()
 
@@ -61,7 +62,7 @@ class ClientContractHakenLogTest(TestCase):
             contract_pattern=self.pattern,
             client_contract_type_code='20', # 派遣
             start_date=datetime.date.today(),
-            contract_status=ClientContract.ContractStatus.DRAFT,
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
         )
         self.client.login(username='logtestuser', password='password')
         self.update_url = reverse('contract:client_contract_update', kwargs={'pk': self.contract.pk})

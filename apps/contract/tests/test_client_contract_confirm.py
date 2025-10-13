@@ -9,6 +9,7 @@ from apps.master.models import ContractPattern
 from django.utils import timezone
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
+from apps.common.constants import Constants
 
 from django.test import Client as TestClient
 
@@ -61,7 +62,7 @@ class ClientContractConfirmTest(TestCase):
             corporate_number=self.company.corporate_number,
             contract_name='Test Contract',
             start_date=timezone.now().date(),
-            contract_status=ClientContract.ContractStatus.ISSUED,
+            contract_status=Constants.CONTRACT_STATUS.ISSUED,
             contract_pattern=self.contract_pattern
         )
 
@@ -104,13 +105,13 @@ class ClientContractConfirmTest(TestCase):
         })
         self.assertEqual(response.status_code, 302)
         self.contract.refresh_from_db()
-        self.assertEqual(self.contract.contract_status, ClientContract.ContractStatus.CONFIRMED)
+        self.assertEqual(self.contract.contract_status, Constants.CONTRACT_STATUS.CONFIRMED)
         self.assertIsNotNone(self.contract.confirmed_at)
         self.assertEqual(self.contract.confirmed_by, self.client_user)
 
     def test_client_contract_unconfirm_action(self):
         """契約確認取り消し時に、確認者と日時がクリアされることをテスト"""
-        self.contract.contract_status = ClientContract.ContractStatus.CONFIRMED
+        self.contract.contract_status = Constants.CONTRACT_STATUS.CONFIRMED
         self.contract.confirmed_at = timezone.now()
         self.contract.confirmed_by = self.client_user
         self.contract.save()
@@ -122,7 +123,7 @@ class ClientContractConfirmTest(TestCase):
         })
         self.assertEqual(response.status_code, 302)
         self.contract.refresh_from_db()
-        self.assertEqual(self.contract.contract_status, ClientContract.ContractStatus.ISSUED)
+        self.assertEqual(self.contract.contract_status, Constants.CONTRACT_STATUS.ISSUED)
         self.assertIsNone(self.contract.confirmed_at)
         self.assertIsNone(self.contract.confirmed_by)
 
@@ -139,7 +140,7 @@ class ClientContractConfirmTest(TestCase):
         """
         ステータスが「確認済み」の契約に対して「未確認に戻す」ボタンが表示されることを確認
         """
-        self.contract.contract_status = ClientContract.ContractStatus.CONFIRMED
+        self.contract.contract_status = Constants.CONTRACT_STATUS.CONFIRMED
         self.contract.save()
         self.client.login(username='clientuser', password='password')
         response = self.client.get(reverse('contract:client_contract_confirm_list'))
@@ -174,7 +175,7 @@ class ClientContractConfirmTest(TestCase):
         """
         契約詳細画面で確認者名が表示されることを確認
         """
-        self.contract.contract_status = ClientContract.ContractStatus.CONFIRMED
+        self.contract.contract_status = Constants.CONTRACT_STATUS.CONFIRMED
         self.contract.confirmed_by = self.client_user
         self.contract.confirmed_at = timezone.now()
         self.contract.save()

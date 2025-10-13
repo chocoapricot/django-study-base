@@ -1571,9 +1571,9 @@ def client_contract_confirm_list(request):
         client=client,
         corporate_number__in=approved_corporate_numbers,
         contract_status__in=[
-            ClientContract.ContractStatus.APPROVED,
-            ClientContract.ContractStatus.ISSUED,
-            ClientContract.ContractStatus.CONFIRMED
+            Constants.CONTRACT_STATUS.APPROVED,
+            Constants.CONTRACT_STATUS.ISSUED,
+            Constants.CONTRACT_STATUS.CONFIRMED
         ]
     ).select_related('client', 'confirmed_by').prefetch_related(prefetch_prints).order_by('-start_date')
 
@@ -1617,8 +1617,8 @@ def staff_contract_pdf(request, pk):
     contract = get_object_or_404(StaffContract, pk=pk)
 
     # 承認済みの場合は発行済みに更新
-    if contract.contract_status == StaffContract.ContractStatus.APPROVED:
-        contract.contract_status = StaffContract.ContractStatus.ISSUED
+    if contract.contract_status == Constants.CONTRACT_STATUS.APPROVED:
+        contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
         contract.issued_at = timezone.now()
         contract.issued_by = request.user
         contract.save()
@@ -1777,7 +1777,7 @@ def issue_clash_day_notification(request, pk):
     """クライアント契約の抵触日通知書を発行する"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
-    if int(contract.contract_status) < int(ClientContract.ContractStatus.APPROVED) or contract.client_contract_type_code != '20':
+    if int(contract.contract_status) < int(Constants.CONTRACT_STATUS.APPROVED) or contract.client_contract_type_code != '20':
         messages.error(request, 'この契約の抵触日通知書は共有できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
@@ -2026,7 +2026,7 @@ def client_contract_ttp_update(request, pk):
     """紹介予定派遣情報 更新"""
     ttp_info = get_object_or_404(ClientContractTtp, pk=pk)
     contract = ttp_info.haken.client_contract
-    if contract.contract_status != ClientContract.ContractStatus.DRAFT:
+    if contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
         messages.error(request, 'この契約ステータスでは紹介予定派遣情報は編集できません。')
         return redirect('contract:client_contract_ttp_detail', pk=pk)
 
@@ -2057,7 +2057,7 @@ def client_contract_ttp_delete(request, pk):
     """紹介予定派遣情報 削除"""
     ttp_info = get_object_or_404(ClientContractTtp, pk=pk)
     contract = ttp_info.haken.client_contract
-    if contract.contract_status != ClientContract.ContractStatus.DRAFT:
+    if contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
         messages.error(request, 'この契約ステータスでは紹介予定派遣情報は削除できません。')
         return redirect('contract:client_contract_ttp_detail', pk=pk)
 
@@ -2080,7 +2080,7 @@ def client_contract_assignment_view(request, pk):
     """クライアント契約へのスタッフ契約割当画面"""
     client_contract = get_object_or_404(ClientContract, pk=pk)
 
-    if client_contract.contract_status != ClientContract.ContractStatus.DRAFT:
+    if client_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
         messages.error(request, 'この契約は作成中でないため、割当できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
@@ -2106,7 +2106,7 @@ def staff_contract_assignment_view(request, pk):
     """スタッフ契約へのクライアント契約割当画面"""
     staff_contract = get_object_or_404(StaffContract, pk=pk)
 
-    if staff_contract.contract_status != StaffContract.ContractStatus.DRAFT:
+    if staff_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
         messages.error(request, 'この契約は作成中でないため、割当できません。')
         return redirect('contract:staff_contract_detail', pk=pk)
 
@@ -2138,8 +2138,8 @@ def create_contract_assignment_view(request):
         staff_contract = get_object_or_404(StaffContract, pk=staff_contract_id)
 
         # ステータスチェック
-        if client_contract.contract_status != ClientContract.ContractStatus.DRAFT or \
-           staff_contract.contract_status != StaffContract.ContractStatus.DRAFT:
+        if client_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT or \
+           staff_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
             messages.error(request, '作成中の契約間でのみ割当が可能です。')
             if from_view == 'client':
                 return redirect('contract:client_contract_detail', pk=client_contract_id)
@@ -2199,7 +2199,7 @@ def delete_contract_assignment(request, assignment_pk):
     redirect_to = request.GET.get('from', 'client')
 
     # クライアント契約が「作成中」でない場合は削除させない
-    if client_contract.contract_status != ClientContract.ContractStatus.DRAFT:
+    if client_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
         messages.error(request, 'このアサインは解除できません。クライアント契約が「作成中」ではありません。')
         if redirect_to == 'staff':
             return redirect('contract:staff_contract_detail', pk=staff_contract.pk)

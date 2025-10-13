@@ -130,7 +130,7 @@ class ContractViewTest(TestCase):
     def test_issue_clash_day_notification_updates_contract(self):
         """抵触日通知書を共有した際に、契約の共有日時と共有者が更新されるかテスト"""
         # 契約を承認済みにする
-        self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
+        self.client_contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
         self.client_contract.save()
 
         # 初期状態では共有日時はNone
@@ -156,7 +156,7 @@ class ContractViewTest(TestCase):
         from django.utils import timezone
 
         # 契約を承認済みにし、抵触日通知書を共有済みの状態にする
-        self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
+        self.client_contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
         self.client_contract.clash_day_notification_issued_at = timezone.now()
         self.client_contract.clash_day_notification_issued_by = self.user
         self.client_contract.save()
@@ -240,7 +240,7 @@ class ContractViewTest(TestCase):
             staff=staff,
             contract_name='Test Staff Contract',
             start_date=datetime.date.today(),
-            contract_status=StaffContract.ContractStatus.APPROVED,
+            contract_status=Constants.CONTRACT_STATUS.APPROVED,
             contract_pattern=staff_pattern
         )
         self.assertEqual(StaffContractPrint.objects.count(), 0)
@@ -249,7 +249,7 @@ class ContractViewTest(TestCase):
 
         # ステータスが発行済に変わっていることを確認
         staff_contract.refresh_from_db()
-        self.assertEqual(staff_contract.contract_status, StaffContract.ContractStatus.ISSUED)
+        self.assertEqual(staff_contract.contract_status, Constants.CONTRACT_STATUS.ISSUED)
 
         # 発行履歴が作成されていることを確認
         self.assertEqual(StaffContractPrint.objects.count(), 1)
@@ -260,7 +260,7 @@ class ContractViewTest(TestCase):
     def test_client_contract_pdf_approved_to_issued(self):
         """承認済みのクライアント契約書を印刷すると発行済になるテスト"""
         from ..models import ClientContractPrint
-        self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
+        self.client_contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
         self.client_contract.save()
 
         self.assertEqual(ClientContractPrint.objects.count(), 0)
@@ -269,7 +269,7 @@ class ContractViewTest(TestCase):
 
         # ステータスが発行済に変わっていることを確認
         self.client_contract.refresh_from_db()
-        self.assertEqual(self.client_contract.contract_status, ClientContract.ContractStatus.ISSUED)
+        self.assertEqual(self.client_contract.contract_status, Constants.CONTRACT_STATUS.ISSUED)
 
         # 発行履歴が作成されていることを確認
         self.assertEqual(ClientContractPrint.objects.count(), 1)
@@ -284,7 +284,7 @@ class ContractViewTest(TestCase):
         from django.conf import settings
 
         # クライアント契約のテスト
-        self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
+        self.client_contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
         self.client_contract.save()
         self.client.get(reverse('contract:client_contract_pdf', kwargs={'pk': self.client_contract.pk}))
         print_history = ClientContractPrint.objects.first()
@@ -334,7 +334,7 @@ class ContractViewTest(TestCase):
         user_full_name = self.user.get_full_name_japanese()
 
         # 2. 契約を承認済みにし、通知書も共有済みの状態にする
-        self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
+        self.client_contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
         self.client_contract.clash_day_notification_issued_at = timezone.now()
         self.client_contract.clash_day_notification_issued_by = self.user
         self.client_contract.save()
@@ -353,7 +353,7 @@ class ContractViewTest(TestCase):
         response = self.client.post(approve_url, data={}) # is_approved がないので解除になる
         self.assertEqual(response.status_code, 302) # 詳細ページへリダイレクト
         self.client_contract.refresh_from_db()
-        self.assertEqual(self.client_contract.contract_status, ClientContract.ContractStatus.DRAFT)
+        self.assertEqual(self.client_contract.contract_status, Constants.CONTRACT_STATUS.DRAFT)
 
         # 5. 詳細ページでスイッチがチェックされておらず、発行者情報も表示されていないことを確認
         response = self.client.get(detail_url)
@@ -369,7 +369,7 @@ class ContractViewTest(TestCase):
         from ..models import ClientContractPrint
 
         # 派遣契約を承認済みにする
-        self.client_contract.contract_status = ClientContract.ContractStatus.APPROVED
+        self.client_contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
         self.client_contract.save()
 
         initial_print_count = ClientContractPrint.objects.filter(client_contract=self.client_contract).count()
@@ -383,7 +383,7 @@ class ContractViewTest(TestCase):
         self.client_contract.refresh_from_db()
 
         # 契約ステータスが「発行済」になっていることを確認
-        self.assertEqual(self.client_contract.contract_status, ClientContract.ContractStatus.ISSUED)
+        self.assertEqual(self.client_contract.contract_status, Constants.CONTRACT_STATUS.ISSUED)
 
         # 発行履歴が2件増えていることを確認
         final_print_count = ClientContractPrint.objects.filter(client_contract=self.client_contract).count()
@@ -409,7 +409,7 @@ class ContractViewTest(TestCase):
         from ..models import ClientContractPrint
 
         # このテストケースでは承認済みの契約が必要なため、ステータスを更新
-        self.non_haken_contract.contract_status = ClientContract.ContractStatus.APPROVED
+        self.non_haken_contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
         self.non_haken_contract.save()
 
         initial_print_count = ClientContractPrint.objects.filter(client_contract=self.non_haken_contract).count()
@@ -423,7 +423,7 @@ class ContractViewTest(TestCase):
         self.non_haken_contract.refresh_from_db()
 
         # 契約ステータスが「発行済」になっていることを確認
-        self.assertEqual(self.non_haken_contract.contract_status, ClientContract.ContractStatus.ISSUED)
+        self.assertEqual(self.non_haken_contract.contract_status, Constants.CONTRACT_STATUS.ISSUED)
 
         # 発行履歴が1件増えていることを確認
         final_print_count = ClientContractPrint.objects.filter(client_contract=self.non_haken_contract).count()
@@ -709,7 +709,7 @@ class ClientContractConfirmListViewTest(TestCase):
             contract_name='Approved Contract',
             start_date=datetime.date.today(),
             contract_pattern=self.contract_pattern,
-            contract_status=ClientContract.ContractStatus.APPROVED,
+            contract_status=Constants.CONTRACT_STATUS.APPROVED,
             corporate_number=self.company.corporate_number,
         )
 
@@ -719,7 +719,7 @@ class ClientContractConfirmListViewTest(TestCase):
             contract_name='Issued Contract',
             start_date=datetime.date.today(),
             contract_pattern=self.contract_pattern,
-            contract_status=ClientContract.ContractStatus.ISSUED,
+            contract_status=Constants.CONTRACT_STATUS.ISSUED,
             corporate_number=self.company.corporate_number,
         )
         # 発行済契約には、確認ボタンの表示条件である発行済みPDFが必要
@@ -735,7 +735,7 @@ class ClientContractConfirmListViewTest(TestCase):
             contract_name='Draft Contract',
             start_date=datetime.date.today(),
             contract_pattern=self.contract_pattern,
-            contract_status=ClientContract.ContractStatus.DRAFT,
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
             corporate_number=self.company.corporate_number,
         )
 
@@ -1052,7 +1052,7 @@ class ClientContractTtpViewTest(TestCase):
             start_date=datetime.date.today(),
             contract_pattern=self.contract_pattern,
             client_contract_type_code='20',
-            contract_status=ClientContract.ContractStatus.DRAFT,
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
         )
         self.draft_haken = ClientContractHaken.objects.create(client_contract=self.draft_contract)
         self.draft_ttp = ClientContractTtp.objects.create(haken=self.draft_haken, business_content='Draft Content')
@@ -1064,7 +1064,7 @@ class ClientContractTtpViewTest(TestCase):
             start_date=datetime.date.today(),
             contract_pattern=self.contract_pattern,
             client_contract_type_code='20',
-            contract_status=ClientContract.ContractStatus.APPROVED,
+            contract_status=Constants.CONTRACT_STATUS.APPROVED,
         )
         self.approved_haken = ClientContractHaken.objects.create(client_contract=self.approved_contract)
         self.approved_ttp = ClientContractTtp.objects.create(haken=self.approved_haken, business_content='Approved Content')
@@ -1133,7 +1133,7 @@ class ClientContractTtpViewTest(TestCase):
             start_date=datetime.date.today(),
             contract_pattern=self.contract_pattern,
             client_contract_type_code='20',
-            contract_status=ClientContract.ContractStatus.DRAFT,
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
         )
         ttp_less_haken = ClientContractHaken.objects.create(client_contract=ttp_less_contract)
 
@@ -1161,7 +1161,7 @@ class ClientContractTtpViewTest(TestCase):
             start_date=datetime.date.today(),
             contract_pattern=self.contract_pattern,
             client_contract_type_code='20',
-            contract_status=ClientContract.ContractStatus.DRAFT,
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
             business_content='派遣元の業務内容',
         )
         haken_info = ClientContractHaken.objects.create(
@@ -1219,37 +1219,37 @@ class ContractAssignmentViewTest(TestCase):
         self.client_contract_draft = ClientContract.objects.create(
             client=self.test_client_model, contract_name='Client Draft',
             start_date=datetime.date(2025, 4, 1), end_date=datetime.date(2025, 6, 30),
-            contract_pattern=self.client_pattern, contract_status=ClientContract.ContractStatus.DRAFT,
+            contract_pattern=self.client_pattern, contract_status=Constants.CONTRACT_STATUS.DRAFT,
         )
         # 2. ベースとなるスタッフ契約（作成中）
         self.staff_contract_draft = StaffContract.objects.create(
             staff=self.staff1, contract_name='Staff Draft',
             start_date=datetime.date(2025, 5, 1), end_date=datetime.date(2025, 7, 31),
-            contract_pattern=self.staff_pattern, contract_status=StaffContract.ContractStatus.DRAFT,
+            contract_pattern=self.staff_pattern, contract_status=Constants.CONTRACT_STATUS.DRAFT,
         )
         # 3. 期間が重複するスタッフ契約（割当可能）
         self.assignable_staff_contract = StaffContract.objects.create(
             staff=self.staff2, contract_name='Assignable Staff',
             start_date=datetime.date(2025, 6, 1), end_date=datetime.date(2025, 8, 31),
-            contract_pattern=self.staff_pattern, contract_status=StaffContract.ContractStatus.DRAFT,
+            contract_pattern=self.staff_pattern, contract_status=Constants.CONTRACT_STATUS.DRAFT,
         )
         # 4. 期間が重複しないスタッフ契約（割当不可）
         self.non_overlapping_staff_contract = StaffContract.objects.create(
             staff=self.staff2, contract_name='Non Overlapping Staff',
             start_date=datetime.date(2026, 1, 1), end_date=datetime.date(2026, 3, 31),
-            contract_pattern=self.staff_pattern, contract_status=StaffContract.ContractStatus.DRAFT,
+            contract_pattern=self.staff_pattern, contract_status=Constants.CONTRACT_STATUS.DRAFT,
         )
         # 5. 承認済のクライアント契約（割当不可）
         self.client_contract_approved = ClientContract.objects.create(
             client=self.test_client_model, contract_name='Client Approved',
             start_date=datetime.date(2025, 4, 1), end_date=datetime.date(2025, 6, 30),
-            contract_pattern=self.client_pattern, contract_status=ClientContract.ContractStatus.APPROVED,
+            contract_pattern=self.client_pattern, contract_status=Constants.CONTRACT_STATUS.APPROVED,
         )
         # 6. 既に割り当て済みのスタッフ契約
         self.already_assigned_staff_contract = StaffContract.objects.create(
             staff=self.staff1, contract_name='Already Assigned Staff',
             start_date=datetime.date(2025, 4, 15), end_date=datetime.date(2025, 5, 15),
-            contract_pattern=self.staff_pattern, contract_status=StaffContract.ContractStatus.DRAFT,
+            contract_pattern=self.staff_pattern, contract_status=Constants.CONTRACT_STATUS.DRAFT,
         )
         self.assignment = ContractAssignment.objects.create(
             client_contract=self.client_contract_draft, staff_contract=self.already_assigned_staff_contract
@@ -1343,7 +1343,7 @@ class ContractAssignmentViewTest(TestCase):
         assignable_client_contract = ClientContract.objects.create(
             client=self.test_client_model, contract_name='Assignable Client',
             start_date=datetime.date(2025, 7, 1), end_date=datetime.date(2025, 9, 30),
-            contract_pattern=self.client_pattern, contract_status=ClientContract.ContractStatus.DRAFT,
+            contract_pattern=self.client_pattern, contract_status=Constants.CONTRACT_STATUS.DRAFT,
         )
 
         initial_assignment_count = ContractAssignment.objects.count()
@@ -1553,7 +1553,7 @@ class StaffContractApproveViewTest(TestCase):
             contract_name='Valid Wage Contract',
             start_date=datetime.date(2024, 1, 1),
             contract_pattern=self.contract_pattern,
-            contract_status=StaffContract.ContractStatus.PENDING,
+            contract_status=Constants.CONTRACT_STATUS.PENDING,
             pay_unit='10',
             contract_amount=1200,
             work_location='東京都'
@@ -1565,7 +1565,7 @@ class StaffContractApproveViewTest(TestCase):
             contract_name='Invalid Wage Contract',
             start_date=datetime.date(2024, 1, 1),
             contract_pattern=self.contract_pattern,
-            contract_status=StaffContract.ContractStatus.PENDING,
+            contract_status=Constants.CONTRACT_STATUS.PENDING,
             pay_unit='10',
             contract_amount=1000,
             work_location='東京都'
@@ -1579,7 +1579,7 @@ class StaffContractApproveViewTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.valid_contract.refresh_from_db()
-        self.assertEqual(self.valid_contract.contract_status, StaffContract.ContractStatus.APPROVED.value)
+        self.assertEqual(self.valid_contract.contract_status, Constants.CONTRACT_STATUS.APPROVED.value)
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -1592,7 +1592,7 @@ class StaffContractApproveViewTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.invalid_contract.refresh_from_db()
-        self.assertEqual(self.invalid_contract.contract_status, StaffContract.ContractStatus.PENDING)
+        self.assertEqual(self.invalid_contract.contract_status, Constants.CONTRACT_STATUS.PENDING)
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
