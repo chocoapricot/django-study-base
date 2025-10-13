@@ -837,6 +837,7 @@ def client_select(request):
         'search_query': search_query,
         'return_url': return_url,
         'client_contract_type_code': client_contract_type_code,
+        'Constants': Constants,
     }
 
     if from_modal:
@@ -1552,6 +1553,7 @@ def client_contract_confirm_list(request):
         context = {
             'contracts_with_status': [],
             'title': 'クライアント契約確認',
+            'Constants': Constants,
         }
         return render(request, 'contract/client_contract_confirm_list.html', context)
 
@@ -1606,6 +1608,7 @@ def client_contract_confirm_list(request):
         'contracts_with_status': contracts_with_status,
         'page_obj': page_obj,
         'title': 'クライアント契約確認',
+        'Constants': Constants,
     }
     return render(request, 'contract/client_contract_confirm_list.html', context)
 

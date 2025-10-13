@@ -69,14 +69,14 @@
                         {{ item.contract.confirmed_at|date:"Y/m/d H:i"|default:"-" }}
                     </td>
                     <td>
-                        {% if item.contract.contract_status == '20' and item.latest_contract_pdf %} {# ISSUED and contract exists #}
+                        {% if item.contract.contract_status == Constants.CONTRACT_STATUS.ISSUED and item.latest_contract_pdf %} {# ISSUED and contract exists #}
                             <form method="post" action="{% url 'contract:client_contract_confirm_list' %}" class="d-inline">
                                 {% csrf_token %}
                                 <input type="hidden" name="contract_id" value="{{ item.contract.pk }}">
                                 <input type="hidden" name="action" value="confirm">
                                 <button type="submit" class="btn btn-sm btn-primary">確認</button>
                             </form>
-                        {% elif item.contract.contract_status == '30' %} {# CONFIRMED #}
+                        {% elif item.contract.contract_status == Constants.CONTRACT_STATUS.CONFIRMED %} {# CONFIRMED #}
                             <form method="post" action="{% url 'contract:client_contract_confirm_list' %}" class="d-inline">
                                 {% csrf_token %}
                                 <input type="hidden" name="contract_id" value="{{ item.contract.pk }}">
