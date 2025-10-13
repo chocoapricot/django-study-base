@@ -17,6 +17,7 @@ from .models import (
     BusinessContent,
     HakenResponsibilityDegree,
     DefaultValue,
+    EmploymentType,
 )
 from apps.system.settings.models import Dropdowns
 from apps.common.constants import Constants
@@ -42,6 +43,19 @@ class HakenResponsibilityDegreeForm(forms.ModelForm):
         widgets = {
             'content': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+
+class EmploymentTypeForm(forms.ModelForm):
+    """雇用形態フォーム"""
+    class Meta:
+        model = EmploymentType
+        fields = ['name', 'display_order', 'is_fixed_term', 'is_active']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_fixed_term': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 

@@ -751,6 +751,29 @@ class HakenResponsibilityDegree(MyModel):
         return self.content
 
 
+class EmploymentType(MyModel):
+    """
+    雇用形態マスタ
+    """
+    name = models.CharField('名称', max_length=100)
+    display_order = models.IntegerField('表示順', default=0)
+    is_fixed_term = models.BooleanField('有期', default=True)
+    is_active = models.BooleanField('有効', default=True)
+
+    class Meta:
+        db_table = 'apps_master_employment_type'
+        verbose_name = '雇用形態'
+        verbose_name_plural = '雇用形態'
+        ordering = ['display_order', 'name']
+        indexes = [
+            models.Index(fields=['is_active']),
+            models.Index(fields=['display_order']),
+        ]
+
+    def __str__(self):
+        return self.name
+
+
 class Information(MyModel):
     """
     お知らせ情報を管理するマスターデータモデル。
