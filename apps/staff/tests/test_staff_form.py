@@ -56,15 +56,15 @@ class StaffFormTest(TestCase):
         
         # 雇用形態マスタを作成
         from apps.master.models import EmploymentType
-        cls.employment_type_1 = EmploymentType.objects.create(name='正社員', display_order=1, is_fixed_term=False, is_active=True)
-        cls.employment_type_2 = EmploymentType.objects.create(name='契約社員', display_order=2, is_fixed_term=True, is_active=True)
-        cls.employment_type_3 = EmploymentType.objects.create(name='派遣社員', display_order=3, is_fixed_term=True, is_active=True)
+        self.employment_type_1 = EmploymentType.objects.create(name='正社員', display_order=1, is_fixed_term=False, is_active=True)
+        self.employment_type_2 = EmploymentType.objects.create(name='契約社員', display_order=2, is_fixed_term=True, is_active=True)
+        self.employment_type_3 = EmploymentType.objects.create(name='派遣社員', display_order=3, is_fixed_term=True, is_active=True)
         
         # テスト用スタッフを作成
         self.staff = Staff.objects.create(
             staff_regist_status_code=1,  # 数値で指定
             employee_no='EMP001',
-            employment_type=1,  # 雇用形態を追加
+            employment_type=self.employment_type_1,  # 雇用形態を追加
             name_last='田中',
             name_first='太郎',
             name_kana_last='タナカ',
@@ -98,7 +98,7 @@ class StaffFormTest(TestCase):
         form_data = {
             'staff_regist_status_code': '1',
             'employee_no': 'EMP001',
-            'employment_type': '1',  # 雇用形態を追加
+            'employment_type': self.employment_type_1.pk,  # 雇用形態を追加
             'name_last': '田中',
             'name_first': '太郎',
             'name_kana_last': 'タナカ',
@@ -135,7 +135,7 @@ class StaffFormTest(TestCase):
         form_data = {
             'staff_regist_status_code': '1',
             'employee_no': 'EMP001',
-            'employment_type': '1',  # 雇用形態を追加
+            'employment_type': self.employment_type_1.pk,  # 雇用形態を追加
             'name_last': '田中',
             'name_first': '太郎',
             'name_kana_last': 'タナカ',
@@ -171,7 +171,7 @@ class StaffFormTest(TestCase):
         form_data = {
             'staff_regist_status_code': '1',
             'employee_no': 'EMP001',
-            'employment_type': '1',  # 雇用形態を追加
+            'employment_type': self.employment_type_1.pk,  # 雇用形態を追加
             'name_last': '田中',
             'name_first': '太郎',
             'name_kana_last': 'タナカ',
@@ -207,7 +207,7 @@ class StaffFormTest(TestCase):
         form_data = {
             'staff_regist_status_code': '1',
             'employee_no': 'EMP001',
-            'employment_type': '1',  # 雇用形態を追加
+            'employment_type': self.employment_type_1.pk,  # 雇用形態を追加
             'name_last': '田中',
             'name_first': '太郎',
             'name_kana_last': 'タナカ',
@@ -231,7 +231,7 @@ class StaffFormTest(TestCase):
         form_data = {
             'staff_regist_status_code': '1',
             'employee_no': 'EMP002',
-            'employment_type': '2',  # 雇用形態を追加
+            'employment_type': self.employment_type_2.pk,  # 雇用形態を追加
             'name_last': '佐藤',
             'name_first': '花子',
             'name_kana_last': 'サトウ',
@@ -345,7 +345,7 @@ class StaffFormTest(TestCase):
         form_data = {
             'staff_regist_status_code': '1',
             'employee_no': 'EMP002',  # 異なる社員番号
-            'employment_type': '1',  # 雇用形態を追加
+            'employment_type': self.employment_type_1.pk,  # 雇用形態を追加
             'name_last': '鈴木',
             'name_first': '一郎',
             'name_kana_last': 'スズキ',
@@ -369,7 +369,7 @@ class StaffFormTest(TestCase):
         form_data = {
             'staff_regist_status_code': '1',
             'employee_no': 'EMP003',
-            'employment_type': '2',  # 雇用形態を追加
+            'employment_type': self.employment_type_2.pk,  # 雇用形態を追加
             'name_last': '高橋',
             'name_first': '美咲',
             'name_kana_last': 'タカハシ',
@@ -394,7 +394,7 @@ class StaffFormTest(TestCase):
         form_data = {
             'staff_regist_status_code': '1',
             'employee_no': 'EMP004',
-            'employment_type': '1',  # 雇用形態を追加
+            'employment_type': self.employment_type_1.pk,  # 雇用形態を追加
             'name_last': '山田',
             'name_first': '次郎',
             'name_kana_last': 'ヤマダ',
@@ -441,7 +441,7 @@ class StaffFormTest(TestCase):
         form_data = {
             'staff_regist_status_code': '1',
             'employee_no': '',
-            'employment_type': '1',  # 雇用形態あり
+            'employment_type': self.employment_type_1.pk,  # 雇用形態あり
             'name_last': '田中',
             'name_first': '太郎',
             'name_kana_last': 'タナカ',
@@ -464,7 +464,7 @@ class StaffFormTest(TestCase):
         form_data = {
             'staff_regist_status_code': '1',
             'employee_no': 'EMP006',
-            'employment_type': '3',  # 派遣社員
+            'employment_type': self.employment_type_3.pk,  # 派遣社員
             'name_last': '佐藤',
             'name_first': '花子',
             'name_kana_last': 'サトウ',

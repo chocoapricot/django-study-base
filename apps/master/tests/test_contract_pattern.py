@@ -328,12 +328,15 @@ class ContractPatternEmploymentTypeTest(TestCase):
         self.user = User.objects.create_superuser(username='testuser', password='password', email='test@test.com')
         self.client.login(username='testuser', password='password')
 
+        # 雇用形態マスタを作成
+        from apps.master.models import EmploymentType
+        self.employment_type_1 = EmploymentType.objects.create(name='正社員')
+        self.employment_type_2 = EmploymentType.objects.create(name='契約社員')
+        self.employment_type_3 = EmploymentType.objects.create(name='派遣社員')
+
         # ドロップダウンデータを作成
         Dropdowns.objects.create(category='domain', value='1', name='スタッフ')
         Dropdowns.objects.create(category='domain', value='10', name='クライアント')
-        Dropdowns.objects.create(category='employment_type', value='1', name='正社員')
-        Dropdowns.objects.create(category='employment_type', value='2', name='契約社員')
-        Dropdowns.objects.create(category='employment_type', value='3', name='派遣社員')
         Dropdowns.objects.create(category='client_contract_type', value='1', name='準委任')
         Dropdowns.objects.create(category='client_contract_type', value='2', name='派遣')
 
@@ -343,98 +346,96 @@ class ContractPatternEmploymentTypeTest(TestCase):
         post_data = {
             'name': 'スタッフ契約書パターン',
             'domain': '1',  # スタッフ
-            'employment_type': '1',  # 正社員
+            'employment_type': self.employment_type_1.pk,
             'memo': 'テストメモ',
             'display_order': 1,
             'is_active': True,
         }
 
         response = self.client.post(create_url, post_data)
-        self.assertEqual(response.status_code, 302)  # リダイレクト成功
+        self.assertEqual(response.status_code, 302)
 
-        # 作成されたパターンを確認
         pattern = ContractPattern.objects.get(name='スタッフ契約書パターン')
         self.assertEqual(pattern.domain, '1')
-        self.assertEqual(pattern.employment_type, '1')
-        self.assertIsNone(pattern.contract_type_code)  # スタッフの場合は契約種別はNone
+        self.assertEqual(pattern.employment_type, self.employment_type_1)
+        self.assertIsNone(pattern.contract_type_code)
 
     def test_create_client_pattern_with_contract_type(self):
         """クライアント契約書パターンを契約種別付きで作成するテスト"""
         create_url = reverse('master:contract_pattern_create')
         post_data = {
             'name': 'クライアント契約書パターン',
-            'domain': '10',  # クライアント
-            'contract_type_code': '1',  # 準委任
+            'domain': '10',
+            'contract_type_code': '1',
             'memo': 'テストメモ',
             'display_order': 1,
             'is_active': True,
         }
 
         response = self.client.post(create_url, post_data)
-        self.assertEqual(response.status_code, 302)  # リダイレクト成功
+        self.assertEqual(response.status_code, 302)
 
-        # 作成されたパターンを確認
         pattern = ContractPattern.objects.get(name='クライアント契約書パターン')
         self.assertEqual(pattern.domain, '10')
         self.assertEqual(pattern.contract_type_code, '1')
-        self.assertIsNone(pattern.employment_type)  # クライアントの場合は雇用形態はNone
+        self.assertIsNone(pattern.employment_type)
 
     def test_create_staff_pattern_ignores_contract_type(self):
         """スタッフ契約書パターン作成時に契約種別が無視されることをテスト"""
         create_url = reverse('master:contract_pattern_create')
         post_data = {
             'name': 'スタッフ契約書パターン',
-            'domain': '1',  # スタッフ
-            'employment_type': '2',  # 契約社員
-            'contract_type_code': '1',  # これは無視される
+            'domain': '1',
+            'employment_type': self.employment_type_2.pk,
+            'contract_type_code': '1',  # This should be ignored
             'memo': 'テストメモ',
             'display_order': 1,
             'is_active': True,
         }
 
         response = self.client.post(create_url, post_data)
-        self.assertEqual(response.status_code, 302)  # リダイレクト成功
+        self.assertEqual(response.status_code, 302)
 
-        # 作成されたパターンを確認
         pattern = ContractPattern.objects.get(name='スタッフ契約書パターン')
         self.assertEqual(pattern.domain, '1')
-        self.assertEqual(pattern.employment_type, '2')
-        self.assertIsNone(pattern.contract_type_code)  # 契約種別は無視される
+        self.assertEqual(pattern.employment_type, self.employment_type_2)
+        self.assertIsNone(pattern.contract_type_code)
 
     def test_create_client_pattern_ignores_employment_type(self):
         """クライアント契約書パターン作成時に雇用形態が無視されることをテスト"""
         create_url = reverse('master:contract_pattern_create')
         post_data = {
             'name': 'クライアント契約書パターン',
-            'domain': '10',  # クライアント
-            'contract_type_code': '2',  # 派遣
-            'employment_type': '1',  # これは無視される
+            'domain': '10',
+            'contract_type_code': '2',
+            'employment_type': self.employment_type_1.pk,  # This should be ignored
             'memo': 'テストメモ',
             'display_order': 1,
             'is_active': True,
         }
 
         response = self.client.post(create_url, post_data)
-        self.assertEqual(response.status_code, 302)  # リダイレクト成功
+        self.assertEqual(response.status_code, 302)
 
-        # 作成されたパターンを確認
         pattern = ContractPattern.objects.get(name='クライアント契約書パターン')
         self.assertEqual(pattern.domain, '10')
         self.assertEqual(pattern.contract_type_code, '2')
-        self.assertIsNone(pattern.employment_type)  # 雇用形態は無視される
+        self.assertIsNone(pattern.employment_type)
 
     def test_form_employment_type_choices_are_correct(self):
         """フォームの雇用形態選択肢が正しく設定されることをテスト"""
         from apps.master.forms import ContractPatternForm
         
         form = ContractPatternForm()
-        employment_type_choices = form.fields['employment_type'].choices
+        choices = list(form.fields['employment_type'].choices)
+
+        # Get the primary keys of the choices, excluding the empty choice
+        choice_pks = [choice[0] for choice in choices if choice[0]]
         
-        # 空の選択肢が最初にあることを確認
-        self.assertEqual(employment_type_choices[0], ('', '---------'))
+        # Check that the primary keys of the objects created in setUp are in the choices
+        self.assertIn(self.employment_type_1.pk, choice_pks)
+        self.assertIn(self.employment_type_2.pk, choice_pks)
+        self.assertIn(self.employment_type_3.pk, choice_pks)
         
-        # ドロップダウンから取得した選択肢があることを確認
-        choice_values = [choice[0] for choice in employment_type_choices[1:]]
-        self.assertIn('1', choice_values)
-        self.assertIn('2', choice_values)
-        self.assertIn('3', choice_values)
+        # Check the total number of choices (3 objects + 1 empty choice)
+        self.assertEqual(len(choices), 4)
