@@ -230,9 +230,10 @@ class StaffContract(MyModel):
         related_name='contracts',
         verbose_name='スタッフ'
     )
-    employment_type = models.CharField(
-        '雇用形態',
-        max_length=10,
+    employment_type = models.ForeignKey(
+        'master.EmploymentType',
+        on_delete=models.SET_NULL,
+        verbose_name='雇用形態',
         blank=True,
         null=True,
         help_text='契約作成時点のスタッフの雇用形態を保存'

@@ -94,7 +94,7 @@
                                 <th>契約種別</th>
                                 <td>
                                     {% if contract.employment_type %}
-                                        <span class="badge {{ contract.employment_type|badge_class }} me-2" style="font-size:13px">{% my_name 'employment_type' contract.employment_type %}</span>
+                                        <span class="badge {{ contract.employment_type.display_order|badge_class }} me-2" style="font-size:13px">{{ contract.employment_type.name }}</span>
                                     {% endif %}
                                     {{ contract.contract_pattern.name|default:"-" }}
                                 </td>

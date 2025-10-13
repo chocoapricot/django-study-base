@@ -259,12 +259,12 @@ document.addEventListener('DOMContentLoaded', function() {
         {% if contract and contract.staff %}
             staffDisplayText.textContent = '{{ contract.staff.name_last|escapejs }} {{ contract.staff.name_first|escapejs }}';
             {% if contract.staff.employment_type %}
-                updateEmploymentTypeBadge('{{ contract.staff.employment_type|escapejs }}', '{% my_name "employment_type" contract.staff.employment_type %}', '{{ contract.staff.employment_type|badge_class }}');
+                updateEmploymentTypeBadge('{{ contract.staff.employment_type.pk|escapejs }}', '{{ contract.staff.employment_type.name|escapejs }}', '{{ contract.staff.employment_type.display_order|badge_class }}');
             {% endif %}
         {% elif staff %}
             staffDisplayText.textContent = '{{ staff.name_last|escapejs }} {{ staff.name_first|escapejs }}';
             {% if staff.employment_type %}
-                updateEmploymentTypeBadge('{{ staff.employment_type|escapejs }}', '{% my_name "employment_type" staff.employment_type %}', '{{ staff.employment_type|badge_class }}');
+                updateEmploymentTypeBadge('{{ staff.employment_type.pk|escapejs }}', '{{ staff.employment_type.name|escapejs }}', '{{ staff.employment_type.display_order|badge_class }}');
             {% endif %}
         {% endif %}
     }
