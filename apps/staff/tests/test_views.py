@@ -48,8 +48,10 @@ class StaffViewsTest(TestCase):
         Dropdowns.objects.create(category='sex', value='2', name='女性', active=True, disp_seq=2)
         Dropdowns.objects.create(category='staff_regist_status', value='1', name='正社員', active=True, disp_seq=1)
         Dropdowns.objects.create(category='staff_regist_status', value='2', name='契約社員', active=True, disp_seq=2)
-        Dropdowns.objects.create(category='employment_type', value='1', name='正社員', active=True, disp_seq=1)
-        Dropdowns.objects.create(category='employment_type', value='2', name='契約社員', active=True, disp_seq=2)
+        # 雇用形態マスタを作成
+        from apps.master.models import EmploymentType
+        EmploymentType.objects.create(name='正社員', display_order=1, is_fixed_term=False, is_active=True)
+        EmploymentType.objects.create(name='契約社員', display_order=2, is_fixed_term=True, is_active=True)
         Dropdowns.objects.create(category='staff_regist_status', value='10', name='派遣社員', active=True, disp_seq=3)
         # Create necessary Dropdowns for StaffContactedForm
         Dropdowns.objects.create(category='contact_type', value='1', name='電話', active=True, disp_seq=1)

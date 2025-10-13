@@ -54,28 +54,11 @@ class StaffFormTest(TestCase):
             active=True
         )
         
-        # 雇用形態のドロップダウン
-        Dropdowns.objects.create(
-            category='employment_type',
-            value='1',
-            name='正社員',
-            disp_seq=1,
-            active=True
-        )
-        Dropdowns.objects.create(
-            category='employment_type',
-            value='2',
-            name='契約社員',
-            disp_seq=2,
-            active=True
-        )
-        Dropdowns.objects.create(
-            category='employment_type',
-            value='3',
-            name='派遣社員',
-            disp_seq=3,
-            active=True
-        )
+        # 雇用形態マスタを作成
+        from apps.master.models import EmploymentType
+        cls.employment_type_1 = EmploymentType.objects.create(name='正社員', display_order=1, is_fixed_term=False, is_active=True)
+        cls.employment_type_2 = EmploymentType.objects.create(name='契約社員', display_order=2, is_fixed_term=True, is_active=True)
+        cls.employment_type_3 = EmploymentType.objects.create(name='派遣社員', display_order=3, is_fixed_term=True, is_active=True)
         
         # テスト用スタッフを作成
         self.staff = Staff.objects.create(

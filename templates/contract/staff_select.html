@@ -58,7 +58,7 @@
                         <td>{{ staff.department_name|default:"-" }}</td>
                         <td>
                                 <button type="button" class="btn btn-sm btn-primary" 
-                                        onclick="selectStaff('{{ staff.pk }}', '{{ staff.name_last|escapejs }} {{ staff.name_first|escapejs }}', '{{ staff.employment_type|default:""|escapejs }}', '{% load dropdowns %}{% my_name "employment_type" staff.employment_type %}', '{{ staff.employment_type|badge_class }}')">
+                                        onclick="selectStaff('{{ staff.pk }}', '{{ staff.name_last|escapejs }} {{ staff.name_first|escapejs }}', '{% if staff.employment_type %}{{ staff.employment_type.pk }}{% endif %}', '{% if staff.employment_type %}{{ staff.employment_type.name|escapejs }}{% endif %}', '{% if staff.employment_type %}{{ staff.employment_type.display_order|badge_class }}{% endif %}')">
                                     選択
                                 </button>
                         </td>

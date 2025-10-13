@@ -27,7 +27,9 @@ class StaffFormPhoneKanaTest(TestCase):
     def setUp(self):
         Dropdowns.objects.create(category='staff_regist_status', value='1', name='正社員', disp_seq=1, active=True)
         Dropdowns.objects.create(category='sex', value='1', name='男性', disp_seq=1, active=True)
-        Dropdowns.objects.create(category='employment_type', value='1', name='正社員', disp_seq=1, active=True)
+        # 雇用形態マスタを作成
+        from apps.master.models import EmploymentType
+        EmploymentType.objects.create(name='正社員', display_order=1, is_fixed_term=False, is_active=True)
     def test_phone_rejects_alpha(self):
         # 電話番号に英字が含まれる場合はバリデーションエラー
         form = StaffForm(data={

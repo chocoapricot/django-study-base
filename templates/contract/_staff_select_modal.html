@@ -45,7 +45,7 @@
                         <td>{{ staff.name_last }} {{ staff.name_first }}</td>
                         <td>
                             {% if staff.employment_type %}
-                                <span class="badge {{ staff.employment_type|badge_class }}" style="font-size:13px">{% my_name "employment_type" staff.employment_type %}</span>
+                                <span class="badge {{ staff.employment_type.display_order|badge_class }}" style="font-size:13px">{{ staff.employment_type.name }}</span>
                             {% else %}
                                 -
                             {% endif %}
@@ -58,7 +58,7 @@
                         </td>
                         <td>{{ staff.department_name|default:"-" }}</td>
                         <td>
-                            <button type="button" class="btn btn-sm btn-primary" onclick="selectStaff('{{ staff.pk }}', '{{ staff.name_last|escapejs }} {{ staff.name_first|escapejs }}', '{{ staff.employment_type|default:""|escapejs }}', '{% if staff.employment_type %}{% my_name "employment_type" staff.employment_type %}{% endif %}', '{% if staff.employment_type %}{{ staff.employment_type|badge_class }}{% endif %}')">
+                            <button type="button" class="btn btn-sm btn-primary" onclick="selectStaff('{{ staff.pk }}', '{{ staff.name_last|escapejs }} {{ staff.name_first|escapejs }}', '{% if staff.employment_type %}{{ staff.employment_type.pk }}{% endif %}', '{% if staff.employment_type %}{{ staff.employment_type.name|escapejs }}{% endif %}', '{% if staff.employment_type %}{{ staff.employment_type.display_order|badge_class }}{% endif %}')">
                                 選択
                             </button>
                         </td>
