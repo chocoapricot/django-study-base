@@ -1572,6 +1572,71 @@ class ContractAssignmentViewTest(TestCase):
         self.assertEqual(client_contract_4.business_content, '')
         self.assertEqual(staff_contract_4.business_content, '')
 
+    def test_create_assignment_work_location_synchronization(self):
+        """契約アサイン時に就業場所が同期されるかテスト"""
+        # --- シナリオ1: StaffContractからClientContractHakenへ同期 ---
+        client_contract_1 = ClientContract.objects.create(
+            client=self.test_client_model, contract_name='Client for Work Location Sync 1',
+            start_date=datetime.date(2025, 1, 1), contract_pattern=self.client_pattern,
+            contract_status=Constants.CONTRACT_STATUS.DRAFT
+        )
+        haken_info_1 = ClientContractHaken.objects.create(
+            client_contract=client_contract_1,
+            work_location='' # Empty
+        )
+        staff_contract_1 = StaffContract.objects.create(
+            staff=self.staff1, contract_name='Staff for Work Location Sync 1',
+            start_date=datetime.date(2025, 1, 1), contract_pattern=self.staff_pattern,
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            work_location='Staff Work Location' # Not empty
+        )
+
+        url = reverse('contract:create_contract_assignment')
+        post_data_1 = {
+            'client_contract_id': client_contract_1.pk,
+            'staff_contract_id': staff_contract_1.pk,
+            'from': 'client',
+        }
+        response_1 = self.client.post(url, post_data_1, follow=True)
+        messages_1 = list(response_1.context['messages'])
+        self.assertEqual(len(messages_1), 1)
+        expected_message_1 = '契約の割当が完了しました。（クライアント契約の派遣の就業場所をスタッフ契約の就業場所で更新しました。）'
+        self.assertEqual(str(messages_1[0]), expected_message_1)
+
+        haken_info_1.refresh_from_db()
+        self.assertEqual(haken_info_1.work_location, 'Staff Work Location')
+
+        # --- シナリオ2: ClientContractHakenからStaffContractへ同期 ---
+        client_contract_2 = ClientContract.objects.create(
+            client=self.test_client_model, contract_name='Client for Work Location Sync 2',
+            start_date=datetime.date(2025, 1, 1), contract_pattern=self.client_pattern,
+            contract_status=Constants.CONTRACT_STATUS.DRAFT
+        )
+        haken_info_2 = ClientContractHaken.objects.create(
+            client_contract=client_contract_2,
+            work_location='Client Work Location' # Not empty
+        )
+        staff_contract_2 = StaffContract.objects.create(
+            staff=self.staff1, contract_name='Staff for Work Location Sync 2',
+            start_date=datetime.date(2025, 1, 1), contract_pattern=self.staff_pattern,
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            work_location='' # Empty
+        )
+
+        post_data_2 = {
+            'client_contract_id': client_contract_2.pk,
+            'staff_contract_id': staff_contract_2.pk,
+            'from': 'client',
+        }
+        response_2 = self.client.post(url, post_data_2, follow=True)
+        messages_2 = list(response_2.context['messages'])
+        self.assertEqual(len(messages_2), 1)
+        expected_message_2 = '契約の割当が完了しました。（スタッフ契約の就業場所をクライアント契約の派遣の就業場所で更新しました。）'
+        self.assertEqual(str(messages_2[0]), expected_message_2)
+
+        staff_contract_2.refresh_from_db()
+        self.assertEqual(staff_contract_2.work_location, 'Client Work Location')
+
 
 class ContractAssignmentDisplayTest(TestCase):
     """契約割当状況表示のテスト"""
