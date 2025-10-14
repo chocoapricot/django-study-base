@@ -14,7 +14,15 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 クライアント契約詳細
                 <div class="d-flex align-items-center">
-                    <a href="{% url 'contract:client_contract_create' %}?copy_from={{ contract.pk }}" class="btn btn-sm btn-secondary me-2">コピー作成</a>
+                    <div class="btn-group me-2" role="group">
+                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">作成</button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'contract:client_contract_create' %}?copy_from={{ contract.pk }}">コピー</a></li>
+                            {% if not contract.haken_info.ttp_info %}
+                            <li><a class="dropdown-item" href="{% url 'contract:client_contract_create' %}?extend_from={{ contract.pk }}">延長</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
                     {% if haken_info %}
                     <ul class="nav nav-pills me-2">
                         <li class="nav-item dropdown">

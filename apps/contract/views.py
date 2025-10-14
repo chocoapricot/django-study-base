@@ -259,10 +259,13 @@ def client_contract_detail(request, pk):
 def client_contract_create(request):
     """クライアント契約作成"""
     copy_from_id = request.GET.get('copy_from')
+    extend_from_id = request.GET.get('extend_from')
     selected_client_id = request.GET.get('selected_client_id')
     client_contract_type_code = request.GET.get('client_contract_type_code')
 
     original_contract = None
+    is_extend = False
+    
     if copy_from_id:
         try:
             original_contract = get_object_or_404(ClientContract, pk=copy_from_id)
@@ -270,6 +273,15 @@ def client_contract_create(request):
             client_contract_type_code = original_contract.client_contract_type_code
         except (ValueError, Http404):
             messages.error(request, "コピー元の契約が見つかりませんでした。")
+            return redirect('contract:client_contract_list')
+    elif extend_from_id:
+        try:
+            original_contract = get_object_or_404(ClientContract, pk=extend_from_id)
+            selected_client_id = original_contract.client_id
+            client_contract_type_code = original_contract.client_contract_type_code
+            is_extend = True
+        except (ValueError, Http404):
+            messages.error(request, "延長元の契約が見つかりませんでした。")
             return redirect('contract:client_contract_list')
 
     is_haken = client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH
@@ -323,7 +335,16 @@ def client_contract_create(request):
                 original_contract,
                 exclude=['id', 'pk', 'contract_number', 'contract_status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'approved_at', 'approved_by', 'issued_at', 'issued_by', 'confirmed_at']
             )
-            initial_data['contract_name'] = f"{initial_data.get('contract_name', '')}のコピー"
+            
+            if is_extend:
+                # 延長の場合：契約名はそのまま、開始日は元契約の終了日の翌日、終了日は空
+                if original_contract.end_date:
+                    from datetime import timedelta
+                    initial_data['start_date'] = original_contract.end_date + timedelta(days=1)
+                initial_data['end_date'] = None
+            else:
+                # コピーの場合：契約名に「のコピー」を追加
+                initial_data['contract_name'] = f"{initial_data.get('contract_name', '')}のコピー"
 
             if is_haken and hasattr(original_contract, 'haken_info'):
                 original_haken_info = original_contract.haken_info
@@ -665,6 +686,16 @@ def staff_contract_detail(request, pk):
                 minimum_wage = minimum_wage_record.hourly_wage
                 minimum_wage_pref_name = found_prefecture.name
 
+    # TTPアサインメントの有無を確認
+    has_ttp_assignment = False
+    for assignment in contract.assigned_assignments:
+        if (hasattr(assignment.client_contract, 'haken_info') and 
+            assignment.client_contract.haken_info and 
+            hasattr(assignment.client_contract.haken_info, 'ttp_info') and 
+            assignment.client_contract.haken_info.ttp_info):
+            has_ttp_assignment = True
+            break
+
     context = {
         'contract': contract,
         'issue_history': all_issue_history,
@@ -677,6 +708,7 @@ def staff_contract_detail(request, pk):
         'from_staff_detail_direct': from_staff_detail_direct,
         'minimum_wage': minimum_wage,
         'minimum_wage_pref_name': minimum_wage_pref_name,
+        'has_ttp_assignment': has_ttp_assignment,
         'CONTRACT_STATUS': Constants.CONTRACT_STATUS,
         'Constants': Constants,
     }
@@ -688,12 +720,22 @@ def staff_contract_detail(request, pk):
 def staff_contract_create(request):
     """スタッフ契約作成"""
     copy_from_id = request.GET.get('copy_from')
+    extend_from_id = request.GET.get('extend_from')
     original_contract = None
+    is_extend = False
+    
     if copy_from_id:
         try:
             original_contract = get_object_or_404(StaffContract, pk=copy_from_id)
         except (ValueError, Http404):
             messages.error(request, "コピー元の契約が見つかりませんでした。")
+            return redirect('contract:staff_contract_list')
+    elif extend_from_id:
+        try:
+            original_contract = get_object_or_404(StaffContract, pk=extend_from_id)
+            is_extend = True
+        except (ValueError, Http404):
+            messages.error(request, "延長元の契約が見つかりませんでした。")
             return redirect('contract:staff_contract_list')
 
     staff = None
@@ -732,7 +774,16 @@ def staff_contract_create(request):
                 original_contract,
                 exclude=['id', 'pk', 'contract_number', 'contract_status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'approved_at', 'approved_by', 'issued_at', 'issued_by', 'confirmed_at']
             )
-            initial_data['contract_name'] = f"{initial_data.get('contract_name', '')}のコピー"
+            
+            if is_extend:
+                # 延長の場合：契約名はそのまま、開始日は元契約の終了日の翌日、終了日は空
+                if original_contract.end_date:
+                    from datetime import timedelta
+                    initial_data['start_date'] = original_contract.end_date + timedelta(days=1)
+                initial_data['end_date'] = None
+            else:
+                # コピーの場合：契約名に「のコピー」を追加
+                initial_data['contract_name'] = f"{initial_data.get('contract_name', '')}のコピー"
         else:
             # コピーでない新規作成の場合、マスタからデフォルト値を取得
             try:
