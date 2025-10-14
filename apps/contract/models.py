@@ -621,3 +621,27 @@ class StaffContractTeishokubi(MyModel):
 
     def __str__(self):
         return f"{self.staff_email} - {self.organization_name}"
+
+
+class StaffContractTeishokubiDetail(MyModel):
+    """
+    スタッフの個人抵触日の算出詳細を管理するモデル。
+    """
+    teishokubi = models.ForeignKey(
+        StaffContractTeishokubi,
+        on_delete=models.CASCADE,
+        related_name='details',
+        verbose_name='個人抵触日'
+    )
+    assignment_start_date = models.DateField('割当開始日')
+    assignment_end_date = models.DateField('割当終了日')
+    is_calculated = models.BooleanField('算出対象', default=True)
+
+    class Meta:
+        db_table = 'apps_contract_staff_teishokubi_detail'
+        verbose_name = '個人抵触日算出詳細'
+        verbose_name_plural = '個人抵触日算出詳細'
+        ordering = ['assignment_start_date']
+
+    def __str__(self):
+        return f"{self.teishokubi} - {self.assignment_start_date}"

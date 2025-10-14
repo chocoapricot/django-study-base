@@ -194,6 +194,43 @@ class TeishokubiCalculatorTest(TestCase):
 
         self.assertFalse(StaffContractTeishokubi.objects.filter(staff_email=self.staff.email).exists())
 
+    def test_teishokubi_detail_creation(self):
+        """抵触日詳細レコードが正しく作成・更新されることをテスト"""
+        # Assignment A
+        self._create_contracts_and_assignment(
+            client_start=date(2020, 1, 1), client_end=date(2020, 12, 31),
+            staff_start=date(2020, 1, 1), staff_end=date(2020, 12, 31),
+            contract_name="A"
+        )
+        # Assignment B (gap resets start date)
+        self._create_contracts_and_assignment(
+            client_start=date(2021, 4, 1), client_end=date(2021, 12, 31),
+            staff_start=date(2021, 4, 1), staff_end=date(2021, 12, 31),
+            contract_name="B"
+        )
+
+        teishokubi = StaffContractTeishokubi.objects.get(staff_email=self.staff.email)
+        self.assertEqual(teishokubi.details.count(), 2)
+
+        # Check detail records
+        detail_a = teishokubi.details.get(assignment_start_date=date(2020, 1, 1))
+        self.assertEqual(detail_a.is_calculated, False)
+
+        detail_b = teishokubi.details.get(assignment_start_date=date(2021, 4, 1))
+        self.assertEqual(detail_b.is_calculated, True)
+
+        # Add Assignment C (no gap)
+        self._create_contracts_and_assignment(
+            client_start=date(2022, 1, 1), client_end=date(2022, 12, 31),
+            staff_start=date(2022, 1, 1), staff_end=date(2022, 12, 31),
+            contract_name="C"
+        )
+
+        teishokubi.refresh_from_db()
+        self.assertEqual(teishokubi.details.count(), 3)
+        detail_c = teishokubi.details.get(assignment_start_date=date(2022, 1, 1))
+        self.assertEqual(detail_c.is_calculated, True)
+
     def test_non_relevant_employment_type_is_ignored(self):
         """無期雇用の場合は抵触日が作成されないことをテスト"""
         client_contract = ClientContract.objects.create(
