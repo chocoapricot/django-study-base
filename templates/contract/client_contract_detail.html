@@ -230,7 +230,7 @@
                     <table class="table table-sm table-hover">
                         <thead>
                             <tr>
-                                <th>スタッフ名</th>
+                                <th>スタッフ</th>
                                 <th>契約期間</th>
                                 <th></th>
                             </tr>
@@ -240,6 +240,9 @@
                             <tr>
                                 <td>
                                     {{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }}
+                                    {% if assignment.staff_contract.employment_type %}
+                                        <span class="badge {{ assignment.staff_contract.employment_type.display_order|badge_class }} ms-2" style="font-size:11px">{{ assignment.staff_contract.employment_type.name }}</span>
+                                    {% endif %}
                                 </td>
                                 <td>
                                     <a href="{% url 'contract:staff_contract_detail' assignment.staff_contract.pk %}">
