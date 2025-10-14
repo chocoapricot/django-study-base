@@ -18,6 +18,8 @@ from .models import (
     HakenResponsibilityDegree,
     DefaultValue,
     EmploymentType,
+    StaffRegistStatus,
+    ClientRegistStatus,
 )
 from apps.system.settings.models import Dropdowns
 from apps.common.constants import Constants
@@ -581,3 +583,27 @@ class DefaultValueForm(forms.ModelForm):
                     'rows': '1',
                     'style': 'resize: none;'
                 })
+
+
+class StaffRegistStatusForm(forms.ModelForm):
+    """スタッフ登録状況フォーム"""
+    class Meta:
+        model = StaffRegistStatus
+        fields = ['name', 'display_order', 'is_active']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+
+class ClientRegistStatusForm(forms.ModelForm):
+    """クライアント登録状況フォーム"""
+    class Meta:
+        model = ClientRegistStatus
+        fields = ['name', 'display_order', 'is_active']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }

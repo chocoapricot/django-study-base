@@ -26,11 +26,15 @@ from .models import (
     HakenResponsibilityDegree,
     DefaultValue,
     EmploymentType,
+    StaffRegistStatus,
+    ClientRegistStatus,
 )
 from .forms import (
     BusinessContentForm,
     HakenResponsibilityDegreeForm,
     EmploymentTypeForm,
+    StaffRegistStatusForm,
+    ClientRegistStatusForm,
     QualificationForm,
     QualificationCategoryForm,
     SkillForm,
@@ -95,6 +99,22 @@ MASTER_CONFIGS = [
         "model": "master.EmploymentType",
         "url_name": "master:employment_type_list",
         "permission": "master.view_employmenttype",
+    },
+    {
+        "category": "スタッフ",
+        "name": "スタッフ登録状況管理",
+        "description": "スタッフの登録状況を管理",
+        "model": "master.StaffRegistStatus",
+        "url_name": "master:staff_regist_status_list",
+        "permission": "master.view_staffregiststatus",
+    },
+    {
+        "category": "クライアント",
+        "name": "クライアント登録状況管理",
+        "description": "クライアントの登録状況を管理",
+        "model": "master.ClientRegistStatus",
+        "url_name": "master:client_regist_status_list",
+        "permission": "master.view_clientregiststatus",
     },
     {
         "category": "契約",
@@ -2928,5 +2948,193 @@ def default_value_change_history_list(request):
             "page_title": "初期値マスタ変更履歴",
             "back_url_name": "master:default_value_list",
             "model_name": "DefaultValue",
+        },
+    )
+
+
+# スタッフ登録状況管理ビュー
+@login_required
+@permission_required("master.view_staffregiststatus", raise_exception=True)
+def staff_regist_status_list(request):
+    """スタッフ登録状況一覧"""
+    search_query = request.GET.get("search", "")
+    items = StaffRegistStatus.objects.all()
+    if search_query:
+        items = items.filter(name__icontains=search_query)
+    items = items.order_by("display_order")
+    paginator = Paginator(items, 20)
+    page = request.GET.get("page")
+    items_page = paginator.get_page(page)
+    from apps.system.logs.models import AppLog
+    change_logs = AppLog.objects.filter(model_name="StaffRegistStatus", action__in=["create", "update", "delete"]).order_by("-timestamp")[:5]
+    change_logs_count = AppLog.objects.filter(model_name="StaffRegistStatus", action__in=["create", "update", "delete"]).count()
+    context = {
+        "items": items_page,
+        "search_query": search_query,
+        "change_logs": change_logs,
+        "change_logs_count": change_logs_count,
+        "history_url_name": "master:staff_regist_status_change_history_list",
+    }
+    return render(request, "master/staff_regist_status_list.html", context)
+
+
+@login_required
+@permission_required("master.add_staffregiststatus", raise_exception=True)
+def staff_regist_status_create(request):
+    """スタッフ登録状況作成"""
+    if request.method == "POST":
+        form = StaffRegistStatusForm(request.POST)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"スタッフ登録状況「{item.name}」を作成しました。")
+            return redirect("master:staff_regist_status_list")
+    else:
+        form = StaffRegistStatusForm()
+    context = {"form": form, "title": "スタッフ登録状況作成"}
+    return render(request, "master/staff_regist_status_form.html", context)
+
+
+@login_required
+@permission_required("master.change_staffregiststatus", raise_exception=True)
+def staff_regist_status_update(request, pk):
+    """スタッフ登録状況編集"""
+    item = get_object_or_404(StaffRegistStatus, pk=pk)
+    if request.method == "POST":
+        form = StaffRegistStatusForm(request.POST, instance=item)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"スタッフ登録状況「{item.name}」を更新しました。")
+            return redirect("master:staff_regist_status_list")
+    else:
+        form = StaffRegistStatusForm(instance=item)
+    context = {"form": form, "item": item, "title": f"スタッフ登録状況編集"}
+    return render(request, "master/staff_regist_status_form.html", context)
+
+
+@login_required
+@permission_required("master.delete_staffregiststatus", raise_exception=True)
+def staff_regist_status_delete(request, pk):
+    """スタッフ登録状況削除"""
+    item = get_object_or_404(StaffRegistStatus, pk=pk)
+    if request.method == "POST":
+        item_name = item.name
+        item.delete()
+        messages.success(request, f"スタッフ登録状況「{item_name}」を削除しました。")
+        return redirect("master:staff_regist_status_list")
+    context = {"item": item, "title": f"スタッフ登録状況削除"}
+    return render(request, "master/staff_regist_status_delete.html", context)
+
+
+@login_required
+@permission_required("master.view_staffregiststatus", raise_exception=True)
+def staff_regist_status_change_history_list(request):
+    """スタッフ登録状況変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    logs = AppLog.objects.filter(model_name="StaffRegistStatus", action__in=["create", "update", "delete"]).order_by("-timestamp")
+    paginator = Paginator(logs, 20)
+    page = request.GET.get("page")
+    logs_page = paginator.get_page(page)
+    return render(
+        request,
+        "common/common_change_history_list.html",
+        {
+            "change_logs": logs_page,
+            "page_title": "スタッフ登録状況変更履歴",
+            "back_url_name": "master:staff_regist_status_list",
+            "model_name": "StaffRegistStatus",
+        },
+    )
+
+
+# クライアント登録状況管理ビュー
+@login_required
+@permission_required("master.view_clientregiststatus", raise_exception=True)
+def client_regist_status_list(request):
+    """クライアント登録状況一覧"""
+    search_query = request.GET.get("search", "")
+    items = ClientRegistStatus.objects.all()
+    if search_query:
+        items = items.filter(name__icontains=search_query)
+    items = items.order_by("display_order")
+    paginator = Paginator(items, 20)
+    page = request.GET.get("page")
+    items_page = paginator.get_page(page)
+    from apps.system.logs.models import AppLog
+    change_logs = AppLog.objects.filter(model_name="ClientRegistStatus", action__in=["create", "update", "delete"]).order_by("-timestamp")[:5]
+    change_logs_count = AppLog.objects.filter(model_name="ClientRegistStatus", action__in=["create", "update", "delete"]).count()
+    context = {
+        "items": items_page,
+        "search_query": search_query,
+        "change_logs": change_logs,
+        "change_logs_count": change_logs_count,
+        "history_url_name": "master:client_regist_status_change_history_list",
+    }
+    return render(request, "master/client_regist_status_list.html", context)
+
+
+@login_required
+@permission_required("master.add_clientregiststatus", raise_exception=True)
+def client_regist_status_create(request):
+    """クライアント登録状況作成"""
+    if request.method == "POST":
+        form = ClientRegistStatusForm(request.POST)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"クライアント登録状況「{item.name}」を作成しました。")
+            return redirect("master:client_regist_status_list")
+    else:
+        form = ClientRegistStatusForm()
+    context = {"form": form, "title": "クライアント登録状況作成"}
+    return render(request, "master/client_regist_status_form.html", context)
+
+
+@login_required
+@permission_required("master.change_clientregiststatus", raise_exception=True)
+def client_regist_status_update(request, pk):
+    """クライアント登録状況編集"""
+    item = get_object_or_404(ClientRegistStatus, pk=pk)
+    if request.method == "POST":
+        form = ClientRegistStatusForm(request.POST, instance=item)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"クライアント登録状況「{item.name}」を更新しました。")
+            return redirect("master:client_regist_status_list")
+    else:
+        form = ClientRegistStatusForm(instance=item)
+    context = {"form": form, "item": item, "title": f"クライアント登録状況編集"}
+    return render(request, "master/client_regist_status_form.html", context)
+
+
+@login_required
+@permission_required("master.delete_clientregiststatus", raise_exception=True)
+def client_regist_status_delete(request, pk):
+    """クライアント登録状況削除"""
+    item = get_object_or_404(ClientRegistStatus, pk=pk)
+    if request.method == "POST":
+        item_name = item.name
+        item.delete()
+        messages.success(request, f"クライアント登録状況「{item_name}」を削除しました。")
+        return redirect("master:client_regist_status_list")
+    context = {"item": item, "title": f"クライアント登録状況削除"}
+    return render(request, "master/client_regist_status_delete.html", context)
+
+
+@login_required
+@permission_required("master.view_clientregiststatus", raise_exception=True)
+def client_regist_status_change_history_list(request):
+    """クライアント登録状況変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    logs = AppLog.objects.filter(model_name="ClientRegistStatus", action__in=["create", "update", "delete"]).order_by("-timestamp")
+    paginator = Paginator(logs, 20)
+    page = request.GET.get("page")
+    logs_page = paginator.get_page(page)
+    return render(
+        request,
+        "common/common_change_history_list.html",
+        {
+            "change_logs": logs_page,
+            "page_title": "クライアント登録状況変更履歴",
+            "back_url_name": "master:client_regist_status_list",
+            "model_name": "ClientRegistStatus",
         },
     )

@@ -133,4 +133,18 @@ urlpatterns = [
     path('mail-template/<int:pk>/', views.mail_template_detail, name='mail_template_detail'),
     path('mail-template/<int:pk>/update/', views.mail_template_update, name='mail_template_update'),
     path('mail-template/history/', views.mail_template_change_history_list, name='mail_template_change_history_list'),
+
+    # スタッフ登録状況管理
+    path('staff-regist-status/', views.staff_regist_status_list, name='staff_regist_status_list'),
+    path('staff-regist-status/create/', views.staff_regist_status_create, name='staff_regist_status_create'),
+    path('staff-regist-status/<int:pk>/update/', views.staff_regist_status_update, name='staff_regist_status_update'),
+    path('staff-regist-status/<int:pk>/delete/', views.staff_regist_status_delete, name='staff_regist_status_delete'),
+    path('staff-regist-status/history/', views.staff_regist_status_change_history_list, name='staff_regist_status_change_history_list'),
+
+    # クライアント登録状況管理
+    path('client-regist-status/', views.client_regist_status_list, name='client_regist_status_list'),
+    path('client-regist-status/create/', views.client_regist_status_create, name='client_regist_status_create'),
+    path('client-regist-status/<int:pk>/update/', views.client_regist_status_update, name='client_regist_status_update'),
+    path('client-regist-status/<int:pk>/delete/', views.client_regist_status_delete, name='client_regist_status_delete'),
+    path('client-regist-status/history/', views.client_regist_status_change_history_list, name='client_regist_status_change_history_list'),
 ]
