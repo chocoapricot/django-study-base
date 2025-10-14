@@ -5,78 +5,85 @@
 
 {% include 'company/_company_info_card.html' %}
 
-<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header">{{ title }}</div>
-    <div class="card-body">
-        <form method="post">
-            {% csrf_token %}
-            {% if form.errors %}
-            <div class="alert alert-dismissible alert-warning">
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                {{ form.non_field_errors }}
-            </div>
-            {% endif %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header">{{ title }}</div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {% if form.errors %}
+                    <div class="alert alert-dismissible alert-warning">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
 
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.department_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.department_code.label }}</label>
-                <div class="col-sm-8">
-                    {{ form.department_code }}
-                    {% if form.department_code.errors %}<div class="text-danger">{{ form.department_code.errors }}</div>{% endif %}
-                </div>
-            </div>
+                    <div class="row mb-3 align-items-center">
+                        <label for="{{ form.department_code.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ form.department_code.label }}</label>
+                        <div class="col-sm-9">
+                            {{ form.department_code }}
+                            {% if form.department_code.errors %}<div class="text-danger">{{ form.department_code.errors }}</div>{% endif %}
+                        </div>
+                    </div>
 
-            <div class="row align-items-center">
-                <label for="{{ form.name_last.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.name_last.label }}</label>
-                <div class="col-sm-4">
-                    {{ form.name_last }}
-                    {% if form.name_last.errors %}<div class="text-danger">{{ form.name_last.errors }}</div>{% endif %}
-                </div>
-                <label for="{{ form.name_first.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.name_first.label }}</label>
-                <div class="col-sm-4">
-                    {{ form.name_first }}
-                    {% if form.name_first.errors %}<div class="text-danger">{{ form.name_first.errors }}</div>{% endif %}
-                </div>
-            </div>
+                    <div class="row align-items-center">
+                        <label for="{{ form.name_last.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ form.name_last.label }}</label>
+                        <div class="col-sm-4">
+                            {{ form.name_last }}
+                            {% if form.name_last.errors %}<div class="text-danger">{{ form.name_last.errors }}</div>{% endif %}
+                        </div>
+                        <div class="col-sm-1 text-center">
+                            <label for="{{ form.name_first.id_for_label }}" class="col-form-label">{{ form.name_first.label }}</label>
+                        </div>
+                        <div class="col-sm-4">
+                            {{ form.name_first }}
+                            {% if form.name_first.errors %}<div class="text-danger">{{ form.name_first.errors }}</div>{% endif %}
+                        </div>
+                    </div>
 
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.position.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.position.label }}</label>
-                <div class="col-sm-4">
-                    {{ form.position }}
-                    {% if form.position.errors %}<div class="text-danger">{{ form.position.errors }}</div>{% endif %}
-                </div>
-            </div>
+                    <div class="row mb-3 align-items-center">
+                        <label for="{{ form.position.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ form.position.label }}</label>
+                        <div class="col-sm-6">
+                            {{ form.position }}
+                            {% if form.position.errors %}<div class="text-danger">{{ form.position.errors }}</div>{% endif %}
+                        </div>
+                    </div>
 
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.phone_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.phone_number.label }} {% my_help_preset "phone_number" %}</label>
-                <div class="col-sm-4">
-                    {{ form.phone_number }}
-                    {% if form.phone_number.errors %}<div class="text-danger">{{ form.phone_number.errors }}</div>{% endif %}
-                </div>
-            </div>
+                    <div class="row mb-3 align-items-center">
+                        <label for="{{ form.phone_number.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ form.phone_number.label }} {% my_help_preset "phone_number" %}</label>
+                        <div class="col-sm-6">
+                            {{ form.phone_number }}
+                            {% if form.phone_number.errors %}<div class="text-danger">{{ form.phone_number.errors }}</div>{% endif %}
+                        </div>
+                    </div>
 
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.email.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.email.label }}</label>
-                <div class="col-sm-8">
-                    {{ form.email }}
-                    {% if form.email.errors %}<div class="text-danger">{{ form.email.errors }}</div>{% endif %}
-                </div>
-            </div>
+                    <div class="row mb-3 align-items-center">
+                        <label for="{{ form.email.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ form.email.label }}</label>
+                        <div class="col-sm-9">
+                            {{ form.email }}
+                            {% if form.email.errors %}<div class="text-danger">{{ form.email.errors }}</div>{% endif %}
+                        </div>
+                    </div>
 
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.display_order.label }}</label>
-                <div class="col-sm-2">
-                    {{ form.display_order }}
-                    {% if form.display_order.errors %}<div class="text-danger">{{ form.display_order.errors }}</div>{% endif %}
-                </div>
-            </div>
+                    <div class="row mb-3 align-items-center">
+                        <label for="{{ form.display_order.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ form.display_order.label }}</label>
+                        <div class="col-sm-3">
+                            {{ form.display_order }}
+                            {% if form.display_order.errors %}<div class="text-danger">{{ form.display_order.errors }}</div>{% endif %}
+                        </div>
+                    </div>
 
-            <div class="d-flex justify-content-start">
-                <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
-                <a href="{% url 'company:company_detail' %}" class="btn btn-sm btn-secondary">戻る</a>
+                    <div class="d-flex justify-content-start">
+                        <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
+                        <a href="{% url 'company:company_detail' %}" class="btn btn-sm btn-secondary">戻る</a>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
+    </div>
+    <div class="col-md-4">
+        {% include 'company/_user_list_table_simple.html' %}
     </div>
 </div>
-
-{% include 'company/_user_list_table.html' %}
 {% endblock %}

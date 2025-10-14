@@ -269,7 +269,38 @@ def company_user_create(request):
     else:
         form = CompanyUserForm(corporate_number=company.corporate_number)
 
+    # 担当者一覧を取得し、バッジ情報と部署情報を追加
     company_users = CompanyUser.objects.filter(corporate_number=company.corporate_number)
+    
+    # 本日以降有効なクライアント契約を取得
+    from django.utils import timezone
+    from apps.contract.models import ClientContract
+    today = timezone.now().date()
+    
+    # 全部署を取得し、コードをキーにした辞書を作成
+    all_departments = CompanyDepartment.objects.filter(corporate_number=company.corporate_number)
+    department_map = {d.department_code: d.name for d in all_departments}
+    
+    # 各担当者に部署名とバッジ情報を追加
+    for user in company_users:
+        user.department_name = department_map.get(user.department_code, '未設定')
+        
+        # 派遣元責任者として指定されているか確認
+        user.is_responsible = ClientContract.objects.filter(
+            haken_info__responsible_person_company=user,
+            start_date__lte=today,
+        ).filter(
+            Q(end_date__gte=today) | Q(end_date__isnull=True)
+        ).exists()
+        
+        # 派遣元苦情申出先として指定されているか確認
+        user.is_complaint_officer = ClientContract.objects.filter(
+            haken_info__complaint_officer_company=user,
+            start_date__lte=today,
+        ).filter(
+            Q(end_date__gte=today) | Q(end_date__isnull=True)
+        ).exists()
+    
     return render(request, 'company/company_user_form.html', {
         'form': form,
         'company': company,
@@ -293,7 +324,38 @@ def company_user_edit(request, pk):
     else:
         form = CompanyUserForm(instance=company_user, corporate_number=company.corporate_number)
 
+    # 担当者一覧を取得し、バッジ情報と部署情報を追加
     company_users = CompanyUser.objects.filter(corporate_number=company.corporate_number)
+    
+    # 本日以降有効なクライアント契約を取得
+    from django.utils import timezone
+    from apps.contract.models import ClientContract
+    today = timezone.now().date()
+    
+    # 全部署を取得し、コードをキーにした辞書を作成
+    all_departments = CompanyDepartment.objects.filter(corporate_number=company.corporate_number)
+    department_map = {d.department_code: d.name for d in all_departments}
+    
+    # 各担当者に部署名とバッジ情報を追加
+    for user in company_users:
+        user.department_name = department_map.get(user.department_code, '未設定')
+        
+        # 派遣元責任者として指定されているか確認
+        user.is_responsible = ClientContract.objects.filter(
+            haken_info__responsible_person_company=user,
+            start_date__lte=today,
+        ).filter(
+            Q(end_date__gte=today) | Q(end_date__isnull=True)
+        ).exists()
+        
+        # 派遣元苦情申出先として指定されているか確認
+        user.is_complaint_officer = ClientContract.objects.filter(
+            haken_info__complaint_officer_company=user,
+            start_date__lte=today,
+        ).filter(
+            Q(end_date__gte=today) | Q(end_date__isnull=True)
+        ).exists()
+    
     return render(request, 'company/company_user_form.html', {
         'form': form,
         'company': company,
@@ -313,9 +375,44 @@ def company_user_delete(request, pk):
         return redirect('company:company_detail')
 
     company = Company.objects.filter(corporate_number=company_user.corporate_number).first()
+    
+    # 担当者一覧を取得し、バッジ情報と部署情報を追加
+    company_users = CompanyUser.objects.filter(corporate_number=company_user.corporate_number)
+    
+    # 本日以降有効なクライアント契約を取得
+    from django.utils import timezone
+    from apps.contract.models import ClientContract
+    today = timezone.now().date()
+    
+    # 全部署を取得し、コードをキーにした辞書を作成
+    all_departments = CompanyDepartment.objects.filter(corporate_number=company.corporate_number)
+    department_map = {d.department_code: d.name for d in all_departments}
+    
+    # 各担当者に部署名とバッジ情報を追加
+    for user in company_users:
+        user.department_name = department_map.get(user.department_code, '未設定')
+        
+        # 派遣元責任者として指定されているか確認
+        user.is_responsible = ClientContract.objects.filter(
+            haken_info__responsible_person_company=user,
+            start_date__lte=today,
+        ).filter(
+            Q(end_date__gte=today) | Q(end_date__isnull=True)
+        ).exists()
+        
+        # 派遣元苦情申出先として指定されているか確認
+        user.is_complaint_officer = ClientContract.objects.filter(
+            haken_info__complaint_officer_company=user,
+            start_date__lte=today,
+        ).filter(
+            Q(end_date__gte=today) | Q(end_date__isnull=True)
+        ).exists()
+    
     return render(request, 'company/company_user_confirm_delete.html', {
         'company_user': company_user,
         'company': company,
+        'company_users': company_users,
+        'current_company_user': company_user,
     })
 
 
@@ -369,21 +466,19 @@ def company_user_detail(request, pk):
             # 部署が存在しない場合
             pass
     
-    # 派遣元責任者として指定されているクライアント契約
-    responsible_contracts = ClientContract.objects.filter(
-        haken_info__responsible_person_company=company_user,
+    # 派遣元責任者または派遣元苦情申出先として指定されているクライアント契約を統合取得
+    related_contracts = ClientContract.objects.filter(
+        Q(haken_info__responsible_person_company=company_user) |
+        Q(haken_info__complaint_officer_company=company_user),
         start_date__lte=today,
     ).filter(
         Q(end_date__gte=today) | Q(end_date__isnull=True)
-    ).select_related('client', 'haken_info').order_by('start_date')
+    ).select_related('client', 'haken_info').distinct().order_by('start_date')
 
-    # 派遣元苦情申出先として指定されているクライアント契約
-    complaint_contracts = ClientContract.objects.filter(
-        haken_info__complaint_officer_company=company_user,
-        start_date__lte=today,
-    ).filter(
-        Q(end_date__gte=today) | Q(end_date__isnull=True)
-    ).select_related('client', 'haken_info').order_by('start_date')
+    # 各契約に役割情報を追加
+    for contract in related_contracts:
+        contract.is_responsible_role = (contract.haken_info.responsible_person_company == company_user)
+        contract.is_complaint_role = (contract.haken_info.complaint_officer_company == company_user)
 
     return render(request, 'company/company_user_detail.html', {
         'object': company_user,
@@ -391,6 +486,5 @@ def company_user_detail(request, pk):
         'current_company_user': company_user,
         'company': company,
         'department': department, # 部署情報をテンプレートに渡す
-        'responsible_contracts': responsible_contracts,
-        'complaint_contracts': complaint_contracts,
+        'related_contracts': related_contracts,
     })

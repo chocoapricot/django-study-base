@@ -33,10 +33,19 @@
                     <td>
                         <a href="{% url 'client:client_user_detail' client_user.pk %}" class="text-decoration-none">
                             {{ client_user.name }}
+                            {% if client_user.is_client_responsible %}
+                                <span class="badge bg-primary ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="派遣先責任者">責任</span>
+                            {% endif %}
+                            {% if client_user.is_client_complaint_officer %}
+                                <span class="badge bg-warning ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="派遣先苦情申出先">苦情</span>
+                            {% endif %}
+                            {% if client_user.is_client_commander %}
+                                <span class="badge bg-success ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="派遣先指揮命令者">指揮</span>
+                            {% endif %}
                             {% if client_user.has_pending_connection_request %}
-                                <i class="bi bi-arrow-up-circle" style="color:#17a2b8;" title="接続申請中"></i>
+                                <i class="bi bi-arrow-up-circle ms-1" style="color:#17a2b8;" title="接続申請中"></i>
                             {% elif client_user.is_connected_approved %}
-                                <i class="bi bi-link" style="color:#17a2b8;" title="接続承認済み"></i>
+                                <i class="bi bi-link ms-1" style="color:#17a2b8;" title="接続承認済み"></i>
                             {% endif %}
                         </a>
                     </td>
