@@ -1,0 +1,95 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+{% load humanize %}
+{% load dropdowns %}
+
+{% block title %}個人抵触日詳細{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                個人抵触日詳細
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3">基本情報</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th>スタッフ</th>
+                                <td>
+                                    {% if staff %}
+                                        <a href="{% url 'staff:staff_detail' staff.pk %}" class="text-decoration-none">
+                                            {{ staff.name }}
+                                        </a>
+                                    {% else %}
+                                        {{ teishokubi.staff_email }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>クライアント</th>
+                                <td>
+                                    {% if client %}
+                                        <a href="{% url 'client:client_detail' client.pk %}" class="text-decoration-none">
+                                            {{ client.name }}
+                                        </a>
+                                    {% else %}
+                                        {{ teishokubi.client_corporate_number }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="w-25">組織名</th>
+                                <td>{{ teishokubi.organization_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>派遣開始日</th>
+                                <td>{{ teishokubi.dispatch_start_date|date:"Y年m月d日" }}</td>
+                            </tr>
+                            <tr>
+                                <th>抵触日</th>
+                                <td>{{ teishokubi.conflict_date|date:"Y年m月d日" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h6 class="text-muted mb-3">詳細情報</h6>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>開始日</th>
+                                    <th>終了日</th>
+                                    <th>契約番号</th>
+                                    <th>契約名</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for detail in teishokubi_details %}
+                                <tr>
+                                    <td>{{ detail.assignment_start_date|date:"Y/m/d" }}</td>
+                                    <td>{{ detail.assignment_end_date|date:"Y/m/d" }}</td>
+                                    <td>{{ detail.contract_number }}</td>
+                                    <td>{{ detail.contract_name }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col text-left">
+                        <a href="{% url 'contract:staff_contract_teishokubi_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

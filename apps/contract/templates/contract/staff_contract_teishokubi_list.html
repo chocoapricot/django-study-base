@@ -32,6 +32,7 @@
                     <th>組織名</th>
                     <th>派遣開始日</th>
                     <th>抵触日</th>
+                    <th>操作</th>
                 </tr>
             </thead>
             <tbody>
@@ -54,6 +55,11 @@
                     <td>{{ item.organization_name }}</td>
                     <td>{{ item.dispatch_start_date|date:"Y/m/d" }}</td>
                     <td>{{ item.conflict_date|date:"Y/m/d" }}</td>
+                    <td>
+                        <a href="{% url 'contract:staff_contract_teishokubi_detail' item.pk %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

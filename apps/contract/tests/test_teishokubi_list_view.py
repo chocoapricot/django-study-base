@@ -124,3 +124,12 @@ class StaffContractTeishokubiListViewTest(TestCase):
         response = self.client.get(url, {'q': '存在しない名前'})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'データがありません。')
+
+    def test_teishokubi_detail_view(self):
+        """詳細ビューが正しく表示されるかテスト"""
+        url = reverse('contract:staff_contract_teishokubi_detail', kwargs={'pk': self.teishokubi1.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.staff1.name)
+        self.assertContains(response, self.client1.name)
+        self.assertContains(response, self.teishokubi1.organization_name)
