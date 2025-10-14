@@ -296,6 +296,7 @@ body.no-transition #sidebar {
             <span id="window-breakpoint">-</span> (横幅：<span id="window-width">0</span> px)
             <i class="bi bi-search"></i> <!-- 検索アイコン -->
             <i class="bi bi-bell"></i> <!-- 通知アイコン -->
+            <i class="bi bi-cup" id="logic-info-btn" data-bs-toggle="modal" data-bs-target="#logicInfoModal" title="ページロジック情報"></i>
             <!--
             <i class="bi bi-gear"></i>
             -->
@@ -399,6 +400,29 @@ body.no-transition #sidebar {
     </main>
   </div>
     </div>
+
+<!-- ページロジック情報モーダル -->
+<div class="modal fade" id="logicInfoModal" tabindex="-1" aria-labelledby="logicInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="logicInfoModalLabel">
+                    <i class="bi bi-cup-hot me-2"></i>ページロジック情報
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="background-color: #f0f0f0;">
+                <div id="logic-info-content">
+                    <!-- ページ固有のロジック情報がここに表示される -->
+                    <p class="text-muted">このページのロジック情報はありません。</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
 
     <!-- Bootstrap JS -->
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
@@ -514,6 +538,37 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     window.addEventListener('resize', updateWindowInfo);
     window.addEventListener('DOMContentLoaded', updateWindowInfo);
+</script>
+<script>
+    // ページロジック情報の管理
+    document.addEventListener('DOMContentLoaded', function() {
+        const logicBtn = document.getElementById('logic-info-btn');
+        const logicContent = document.getElementById('logic-info-content');
+
+        // ページロジック情報があるかチェック
+        function checkLogicInfo() {
+            // カスタムイベントでページからロジック情報の有無を通知
+            const hasLogic = document.body.hasAttribute('data-has-logic');
+
+            if (hasLogic) {
+                logicBtn.className = 'bi bi-cup-hot';
+                logicBtn.title = 'ページロジック情報（あり）';
+            } else {
+                logicBtn.className = 'bi bi-cup';
+                logicBtn.title = 'ページロジック情報（なし）';
+                // デフォルトメッセージを設定
+                if (logicContent) {
+                    logicContent.innerHTML = '<p class="text-muted">このページのロジック情報はありません。</p>';
+                }
+            }
+        }
+
+        // 初期チェック
+        checkLogicInfo();
+
+        // ページロジック情報が設定されたときのイベントリスナー
+        document.addEventListener('logicInfoSet', checkLogicInfo);
+    });
 </script>
 <script>
   //ツールチップを上に出す

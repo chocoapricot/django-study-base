@@ -14,8 +14,16 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 スタッフ契約詳細
                 <div class="d-flex align-items-center">
-                    <a href="{% url 'contract:staff_contract_create' %}?copy_from={{ contract.pk }}" class="btn btn-sm btn-secondary me-2">コピー作成</a>
-                    {% if contract.contract_status == '1' or contract.contract_status == '5' %}
+                    <div class="btn-group me-2" role="group">
+                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">作成</button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'contract:staff_contract_create' %}?copy_from={{ contract.pk }}">コピー</a></li>
+                            {% if contract.end_date and not has_ttp_assignment %}
+                            <li><a class="dropdown-item" href="{% url 'contract:staff_contract_create' %}?extend_from={{ contract.pk }}">延長</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT or contract.contract_status == Constants.CONTRACT_STATUS.PENDING %}
                     <ul class="nav nav-pills mb-0">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">印刷</a>
@@ -82,14 +90,22 @@
                                 <td>
                                     {% if contract.contract_amount %}
                                         {% if contract.pay_unit %}{% my_name 'pay_unit' contract.pay_unit %}&nbsp;{% endif %}{{ contract.contract_amount|floatformat:0|intcomma }}円
+                                        {% if minimum_wage and minimum_wage_pref_name %}
+                                            <span class="text-muted small">（{{ minimum_wage_pref_name }} 最低時給 ¥{{ minimum_wage|intcomma }}）</span>
+                                        {% endif %}
                                     {% else %}
                                         -
                                     {% endif %}
                                 </td>
                             </tr>
                             <tr>
-                                <th>契約書パターン</th>
-                                <td>{{ contract.contract_pattern.name|default:"-" }}</td>
+                                <th>契約種別</th>
+                                <td>
+                                    {% if contract.employment_type %}
+                                        <span class="badge {{ contract.employment_type.display_order|badge_class }} me-2" style="font-size:13px">{{ contract.employment_type.name }}</span>
+                                    {% endif %}
+                                    {{ contract.contract_pattern.name|default:"-" }}
+                                </td>
                             </tr>
 
                         </table>
@@ -100,18 +116,18 @@
                     <div class="col-12">
                         <h6 class="text-muted mb-3">詳細情報</h6>
                         <table class="table table-sm">
-                            {% if contract.description %}
                             <tr>
-                                <th class="w-25 bg-light">契約内容</th>
-                                <td>{{ contract.description|linebreaksbr }}</td>
+                                <th class="w-25 bg-light">就業場所</th>
+                                <td>{{ contract.work_location|linebreaksbr }}</td>
                             </tr>
-                            {% endif %}
-                            {% if contract.notes %}
+                            <tr>
+                                <th class="w-25 bg-light">業務内容</th>
+                                <td>{{ contract.business_content|linebreaksbr }}</td>
+                            </tr>
                             <tr>
                                 <th class="w-25 bg-light">備考</th>
                                 <td>{{ contract.notes|linebreaksbr }}</td>
                             </tr>
-                            {% endif %}
                             {% if contract.memo %}
                             <tr>
                                 <th class="w-25 bg-light">メモ</th>
@@ -124,7 +140,7 @@
 
                 <div class="row mt-3">
                     <div class="col text-left">
-                        {% if contract.contract_status == '1' or contract.contract_status == '5' %}
+                        {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT or contract.contract_status == Constants.CONTRACT_STATUS.PENDING %}
                             <a href="{% url 'contract:staff_contract_update' contract.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
                             <a href="{% url 'contract:staff_contract_delete' contract.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
                         {% endif %}
@@ -142,6 +158,56 @@
     </div>
     <div class="col-md-4">
         {% include 'contract/_staff_contract_status_card.html' %}
+
+        <!-- 契約アサインカード -->
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                契約アサイン
+                {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT %}
+                <a href="{% url 'contract:staff_contract_assignment' contract.pk %}" class="btn btn-sm btn-primary">割当</a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if contract.assigned_assignments %}
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>クライアント</th>
+                                <th>契約期間</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for assignment in contract.assigned_assignments %}
+                            <tr>
+                                <td>
+                                    {{ assignment.client_contract.client.name }}
+                                    {% if assignment.client_contract.client_contract_type_code %}
+                                        <span class="badge bg-primary ms-2" style="font-size:11px">{% my_name 'client_contract_type' assignment.client_contract.client_contract_type_code %}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'contract:client_contract_detail' assignment.client_contract.pk %}">
+                                        {{ assignment.client_contract.start_date|date:"Y/m/d" }}～{% if assignment.client_contract.end_date %}{{ assignment.client_contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}
+                                    </a>
+                                </td>
+                                <td>
+                                    {% if assignment.client_contract.contract_status == Constants.CONTRACT_STATUS.DRAFT %}
+                                    <form action="{% url 'contract:delete_contract_assignment' assignment_pk=assignment.pk %}?from=staff" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-dark" onclick="return confirm('このアサインを解除しますか？')">解除</button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="card-text">アサインされているクライアントはありません。</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 
@@ -156,4 +222,63 @@
 {% with change_logs=change_logs change_logs_count=change_logs_count history_url=staff_contract_history_url show_full_content=False %}
     {% include 'common/_change_history_list.html' %}
 {% endwith %}
+
+<script>
+// ページロジック情報を設定
+document.addEventListener('DOMContentLoaded', function() {
+    // このページにロジック情報があることを通知
+    document.body.setAttribute('data-has-logic', 'true');
+
+    const logicContent = document.getElementById('logic-info-content');
+    if (logicContent) {
+        logicContent.innerHTML = `
+            <div class="alert alert-info mb-3">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>スタッフ契約詳細画面のロジック情報</h6>
+            </div>
+
+            <!-- 単項目チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-shield-check text-primary me-2"></i>単項目チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 契約状況: 「作成中」「申請中」のみ編集・削除可能</div>
+                    <div class="mb-0">• 印刷権限: 「作成中」「申請中」のみ印刷機能利用可能</div>
+                </div>
+            </div>
+
+            <!-- 相関チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-check-circle text-success me-2"></i>相関チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 契約アサイン: 「作成中」状態のクライアント契約のみアサイン可能</div>
+                    <div class="mb-0">• アサイン解除: 「作成中」状態のクライアント契約のみ解除可能</div>
+                </div>
+            </div>
+
+            <!-- 自動処理 -->
+            <div class="card" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-gear text-secondary me-2"></i>自動処理</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 最低賃金表示: 就業場所から都道府県を判定し、該当する最低時給を自動表示</div>
+                    <div class="mb-2">• 遷移元判定: リファラー情報から戻るボタンの遷移先を自動判定</div>
+                    <div class="mb-2">• 関連データ取得: 契約アサイン情報を自動取得・表示</div>
+                    <div class="mb-2">• 発行履歴管理: 契約書印刷履歴を自動記録・表示</div>
+                    <div class="mb-2">• 変更履歴表示: AppLogから契約の変更履歴を自動取得・表示</div>
+                    <div class="mb-2">• 業務内容コピー: 契約アサイン時に業務内容が空の場合、相手方から自動コピー（スタッフ契約⇔クライアント契約）</div>
+                    <div class="mb-0">• 就業場所コピー: 契約アサイン時に就業場所が空の場合、相手方から自動コピー（スタッフ契約⇔クライアント契約の派遣情報）</div>
+                </div>
+            </div>
+        `;
+    }
+
+    // ロジック情報設定完了を通知
+    document.dispatchEvent(new Event('logicInfoSet'));
+});
+</script>
+
 {% endblock %}

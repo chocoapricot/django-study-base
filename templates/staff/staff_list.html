@@ -54,7 +54,7 @@
                 <select name="employment_type" class="form-select form-select-sm">
                     <option value="">雇用形態（全て）</option>
                     {% for option in employment_type_options %}
-                        <option value="{{ option.value }}" {% if option.is_selected %}selected{% endif %}>{{ option.name }}</option>
+                        <option value="{{ option.pk }}" {% if option.is_selected %}selected{% endif %}>{{ option.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -211,7 +211,7 @@
                     </td>
                     <td>
                         {% if staff.employment_type %}
-                            <span class="badge {{ staff.employment_type|badge_class }}" style="font-size:13px">{% my_name 'employment_type' staff.employment_type %}</span>
+                            <span class="badge {{ staff.employment_type.display_order|badge_class }}" style="font-size:13px">{{ staff.employment_type.name }}</span>
                         {% endif %}
                     </td>
                     <td class="d-none d-md-table-cell">

@@ -1,0 +1,71 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}個人抵触日管理一覧{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        個人抵触日管理一覧
+    </div>
+    <div class="card-body">
+        <form method="get" class="form-inline d-flex flex-wrap mb-3">
+            <div class="input-group me-2 mb-2" style="width: 30em;">
+                <span class="input-group-text">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-sm" placeholder="スタッフ名、クライアント名、組織名などで検索">
+                <span class="input-group-text" style="cursor: pointer;" onclick="document.querySelector('input[name=q]').value = '';">
+                    <i class="bi bi-x"></i>
+                </span>
+            </div>
+            <button class="btn btn-primary btn-sm mb-2" type="submit">検索</button>
+        </form>
+
+        {% if teishokubi_list %}
+        <table class="table table-striped table-hover me-2 mt-2" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>スタッフ名</th>
+                    <th>クライアント名</th>
+                    <th>組織名</th>
+                    <th>派遣開始日</th>
+                    <th>抵触日</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in teishokubi_list %}
+                <tr>
+                    <td>
+                        {% if item.staff_id %}
+                            <a href="{% url 'staff:staff_detail' item.staff_id %}">{{ item.staff_name }}</a>
+                        {% else %}
+                            {{ item.staff_email }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item.client_id %}
+                            <a href="{% url 'client:client_detail' item.client_id %}">{{ item.client_name }}</a>
+                        {% else %}
+                            {{ item.client_corporate_number }}
+                        {% endif %}
+                    </td>
+                    <td>{{ item.organization_name }}</td>
+                    <td>{{ item.dispatch_start_date|date:"Y/m/d" }}</td>
+                    <td>{{ item.conflict_date|date:"Y/m/d" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div>
+            {% include 'common/_pagination.html' with page_obj=teishokubi_list %}
+        </div>
+
+        {% else %}
+        <p class="text-center">データがありません。</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

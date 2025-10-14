@@ -74,15 +74,7 @@ class StaffResource(resources.ModelResource):
     def dehydrate_employment_type_display(self, staff):
         """雇用形態の表示名を取得"""
         if staff.employment_type:
-            try:
-                dropdown = Dropdowns.objects.get(
-                    category='employment_type',
-                    value=staff.employment_type,
-                    active=True
-                )
-                return dropdown.name
-            except Dropdowns.DoesNotExist:
-                return str(staff.employment_type)
+            return staff.employment_type.name
         return ''
 
     def dehydrate_department_display(self, staff):

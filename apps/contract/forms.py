@@ -6,6 +6,7 @@ from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from apps.system.settings.models import Dropdowns
 from apps.company.models import Company, CompanyUser, CompanyDepartment
+from apps.common.constants import Constants
 
 
 class DynamicClientUserField(forms.CharField):
@@ -98,7 +99,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         fields = [
             'client', 'client_contract_type_code', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
             'start_date', 'end_date', 'contract_amount', 'bill_unit',
-            'description', 'notes', 'memo', 'payment_site'
+            'business_content', 'notes', 'memo', 'payment_site'
         ]
         widgets = {
             'client': forms.HiddenInput(),
@@ -111,7 +112,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
             'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'contract_amount': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
             'bill_unit': forms.Select(attrs={'class': 'form-select form-select-sm'}),
-            'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 4}),
+            'business_content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'payment_site': forms.Select(attrs={'class': 'form-select form-select-sm'}),
@@ -127,11 +128,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         self.fields['payment_site'].queryset = BillPayment.get_active_list()
 
         # 請求単位の選択肢を設定
-        # Dropdownsモデルからactiveな請求単位を取得して選択肢を組み立てる
-        bill_choices = [('', '---------')] + [
-            (d.value, d.name) for d in Dropdowns.objects.filter(category='bill_unit', active=True).order_by('disp_seq')
-        ]
-        self.fields['bill_unit'].choices = bill_choices
+        self.fields['bill_unit'].choices = Dropdowns.get_choices('bill_unit')
         # 要求により請求単位は保存時に必須
         self.fields['bill_unit'].required = True
 
@@ -148,7 +145,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
 
         if contract_type_code:
             self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(
-                is_active=True, domain='10', contract_type_code=contract_type_code
+                is_active=True, domain=Constants.DOMAIN.CLIENT, contract_type_code=contract_type_code
             )
             try:
                 dropdown = Dropdowns.objects.get(category='client_contract_type', value=contract_type_code)
@@ -159,14 +156,18 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
             self.fields['contract_pattern'].queryset = ContractPattern.objects.none()
 
         # 編集画面では「作成中」「申請中」のみ選択可能にする
-        choices = [
-            (ClientContract.ContractStatus.DRAFT.value, ClientContract.ContractStatus.DRAFT.label),
-            (ClientContract.ContractStatus.PENDING.value, ClientContract.ContractStatus.PENDING.label),
-        ]
+        editable_statuses = [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]
+        choices = []
+        for dropdown in Dropdowns.objects.filter(category='contract_status', active=True).order_by('disp_seq'):
+            if dropdown.value in editable_statuses:
+                choices.append((dropdown.value, dropdown.name))
+
+        # 現在の契約状況が編集可能範囲外の場合は追加
         if self.instance and self.instance.pk and self.instance.contract_status:
-            current_choice = (self.instance.contract_status, self.instance.get_contract_status_display())
-            if current_choice not in choices:
-                choices.append(current_choice)
+            if self.instance.contract_status not in editable_statuses:
+                display_name = Dropdowns.get_display_name('contract_status', self.instance.contract_status)
+                choices.append((self.instance.contract_status, display_name))
+
         self.fields['contract_status'].choices = choices
 
         # クライアントを取得
@@ -206,7 +207,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         # 契約状況に応じたフォームの制御
         if self.instance and self.instance.pk:
             # 「作成中」「申請中」以外は全フィールドを編集不可にする
-            if self.instance.contract_status not in [ClientContract.ContractStatus.DRAFT, ClientContract.ContractStatus.PENDING]:
+            if self.instance.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
                 for field_name, field in self.fields.items():
                     # payment_siteはクライアント設定でロックされている場合、そのスタイルを維持
                     if field_name == 'payment_site' and 'data-client-locked' in field.widget.attrs:
@@ -245,7 +246,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         # クライアントの基本契約締結日との関係チェック
         if client and start_date:
             contract_type_code = self.cleaned_data.get('client_contract_type_code')
-            if contract_type_code == '20':  # 派遣契約の場合
+            if contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:  # 派遣契約の場合
                 if client.basic_contract_date_haken and start_date < client.basic_contract_date_haken:
                     self.add_error('start_date', f'契約開始日は基本契約締結日（派遣）（{client.basic_contract_date_haken}）以降の日付を入力してください。')
             else:  # 業務委託などの場合
@@ -305,7 +306,6 @@ class ClientContractHakenForm(forms.ModelForm):
         exclude = ['client_contract', 'version', 'created_at', 'created_by', 'updated_at', 'updated_by']
         widgets = {
             'work_location': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
-            'business_content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'responsibility_degree': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'complaint_officer_company': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'responsible_person_company': forms.Select(attrs={'class': 'form-select form-select-sm'}),
@@ -320,8 +320,8 @@ class ClientContractHakenForm(forms.ModelForm):
 
         # 全てのフィールドを必須にする
         for field_name, field in self.fields.items():
-            # business_content, responsibility_degree, work_locationは任意入力
-            if field_name in ['business_content', 'responsibility_degree', 'work_location']:
+            # responsibility_degree, work_locationは任意入力
+            if field_name in ['responsibility_degree', 'work_location']:
                 field.required = False
                 continue
 
@@ -433,12 +433,13 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
     class Meta:
         model = StaffContract
         fields = [
-            'staff', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
+            'staff', 'employment_type', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
             'start_date', 'end_date', 'contract_amount', 'pay_unit',
-            'description', 'notes', 'memo'
+            'work_location', 'business_content', 'notes', 'memo'
         ]
         widgets = {
             'staff': forms.HiddenInput(),
+            'employment_type': forms.HiddenInput(),
             'contract_name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'job_category': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'contract_pattern': forms.Select(attrs={'class': 'form-select form-select-sm'}),
@@ -447,7 +448,8 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
             'end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'contract_amount': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
             'pay_unit': forms.Select(attrs={'class': 'form-select form-select-sm'}),
-            'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 4}),
+            'work_location': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'business_content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 4}),
             'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
@@ -456,35 +458,38 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         from apps.master.models import ContractPattern, JobCategory
         self.fields['job_category'].queryset = JobCategory.objects.filter(is_active=True)
-        self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, domain='1')
+        self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, domain=Constants.DOMAIN.STAFF)
         if self.instance and self.instance.pk and hasattr(self.instance, 'staff') and self.instance.staff:
             self.fields['staff_display'].initial = f"{self.instance.staff.name_last} {self.instance.staff.name_first}"
 
+
+
         # 支払単位の選択肢を設定
-        pay_unit_choices = [('', '単位を選択')] + [
-            (d.value, d.name) for d in Dropdowns.objects.filter(category='pay_unit', active=True).order_by('disp_seq')
-        ]
-        self.fields['pay_unit'].choices = pay_unit_choices
+        self.fields['pay_unit'].choices = Dropdowns.get_choices('pay_unit')
         self.fields['pay_unit'].required = True
 
         # 契約番号は自動採番のため非表示
         self.fields['contract_number'].required = False
 
         # 編集画面では「作成中」「申請中」のみ選択可能にする
-        choices = [
-            (StaffContract.ContractStatus.DRAFT.value, StaffContract.ContractStatus.DRAFT.label),
-            (StaffContract.ContractStatus.PENDING.value, StaffContract.ContractStatus.PENDING.label),
-        ]
+        editable_statuses = [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]
+        choices = []
+        for dropdown in Dropdowns.objects.filter(category='contract_status', active=True).order_by('disp_seq'):
+            if dropdown.value in editable_statuses:
+                choices.append((dropdown.value, dropdown.name))
+
+        # 現在の契約状況が編集可能範囲外の場合は追加
         if self.instance and self.instance.pk and self.instance.contract_status:
-            current_choice = (self.instance.contract_status, self.instance.get_contract_status_display())
-            if current_choice not in choices:
-                choices.append(current_choice)
+            if self.instance.contract_status not in editable_statuses:
+                display_name = Dropdowns.get_display_name('contract_status', self.instance.contract_status)
+                choices.append((self.instance.contract_status, display_name))
+
         self.fields['contract_status'].choices = choices
 
         # 契約状況に応じたフォームの制御
         if self.instance and self.instance.pk:
             # 「作成中」「申請中」以外は全フィールドを編集不可にする
-            if self.instance.contract_status not in [StaffContract.ContractStatus.DRAFT, StaffContract.ContractStatus.PENDING]:
+            if self.instance.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
                 for field_name, field in self.fields.items():
                     if hasattr(field.widget, 'attrs'):
                         if isinstance(field.widget, forms.Select):
@@ -503,21 +508,37 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         start_date = cleaned_data.get('start_date')
         end_date = cleaned_data.get('end_date')
         staff = cleaned_data.get('staff')
-        
+        pay_unit = cleaned_data.get('pay_unit')
+        contract_amount = cleaned_data.get('contract_amount')
+        work_location = cleaned_data.get('work_location')
+
         # 開始日と終了日の関係チェック
         if start_date and end_date and start_date > end_date:
             raise forms.ValidationError('契約開始日は終了日より前の日付を入力してください。')
-        
+
         # スタッフの入社日・退職日との関係チェック
         if staff and start_date:
             # 入社日より前の開始日はエラー
             if staff.hire_date and start_date < staff.hire_date:
                 self.add_error('start_date', f'契約開始日は入社日（{staff.hire_date}）以降の日付を入力してください。')
-            
+
             # 退職日より後の終了日はエラー
             if staff.resignation_date and end_date and end_date > staff.resignation_date:
                 self.add_error('end_date', f'契約終了日は退職日（{staff.resignation_date}）以前の日付を入力してください。')
-        
+
+        # 最低賃金チェック
+        try:
+            # self.instanceはフォームのインスタンス（モデルオブジェクト）
+            # cleaned_dataから取得した値でインスタンスを更新してバリデーション
+            instance = self.instance or StaffContract()
+            instance.start_date = start_date
+            instance.pay_unit = pay_unit
+            instance.contract_amount = contract_amount
+            instance.work_location = work_location
+            instance.validate_minimum_wage()
+        except forms.ValidationError as e:
+            self.add_error('contract_amount', e)
+
         return cleaned_data
 
 
@@ -534,9 +555,9 @@ class ClientContractTtpForm(forms.ModelForm):
             'work_location': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'working_hours': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
             'break_time': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
-            'overtime': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
-            'holidays': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
-            'vacations': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
+            'overtime': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'holidays': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'vacations': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'wages': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'insurances': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
             'employer_name': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),

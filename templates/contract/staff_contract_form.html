@@ -1,10 +1,21 @@
 {% extends 'common/_base.html' %}
 {% load static %}
 {% load help_tags %}
+{% load dropdowns %}
+{% load badge_tags %}
 
 {% block title %}{{ title }}{% endblock %}
 
+
+
 {% block content %}
+<style>
+    /* pay_unit のプルダウンを狭くする */
+    #id_pay_unit {
+        width: 110px !important;
+        max-width: 110px !important;
+    }
+</style>
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">{{ title }}</div>
     <div class="card-body">
@@ -23,7 +34,7 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.job_category.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">職種</label>
-                <div class="col-sm-4">
+                <div class="col-sm-3">
                     {{ form.job_category }}
                     {% if form.job_category.errors %}
                         <div class="text-danger small">{{ form.job_category.errors.0 }}</div>
@@ -32,18 +43,8 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約書パターン</label>
-                <div class="col-sm-4">
-                    {{ form.contract_pattern }}
-                    {% if form.contract_pattern.errors %}
-                        <div class="text-danger small">{{ form.contract_pattern.errors.0 }}</div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="row mb-3 align-items-center">
                 <label for="{{ form.contract_status.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約状況</label>
-                <div class="col-sm-4">
+                <div class="col-sm-3">
                     {{ form.contract_status }}
                     {% if form.contract_status.errors %}
                         <div class="text-danger small">{{ form.contract_status.errors.0 }}</div>
@@ -70,6 +71,21 @@
                             クリア
                         </button>
                     </div>
+                </div>
+            </div>
+
+            {{ form.employment_type }}
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.contract_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約種別</label>
+                <div class="col-sm-4">
+                    <div class="d-flex align-items-center">
+                        <span id="staff-employment-type-badge" style="margin-right: 40px; min-width: 80px;">-</span>
+                        {{ form.contract_pattern }}
+                    </div>
+                    {% if form.contract_pattern.errors %}
+                        <div class="text-danger small">{{ form.contract_pattern.errors.0 }}</div>
+                    {% endif %}
                 </div>
             </div>
 
@@ -102,8 +118,10 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_amount.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約金額</label>
-                <div class="col-sm-6">
+                <label for="{{ form.contract_amount.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                    契約金額
+                </label>
+                <div class="col-sm-3">
                     <div class="input-group input-group-sm">
                         {{ form.pay_unit }}
                         {{ form.contract_amount }}
@@ -120,13 +138,29 @@
 
 
 
-            <div class="row mb-1 align-items-center">
-                <label for="{{ form.description.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約内容</label>
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.work_location.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">就業場所</label>
                 <div class="col-sm-10">
-                    {{ form.description }}
-                    {% if form.description.errors %}
-                        <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                    {{ form.work_location }}
+                    {% if form.work_location.errors %}
+                        <div class="text-danger small">{{ form.work_location.errors.0 }}</div>
                     {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.business_content.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">業務内容</label>
+                <div class="col-sm-8">
+                    {{ form.business_content }}
+                    {% if form.business_content.errors %}
+                        <div class="text-danger small">{{ form.business_content.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-sm btn-secondary" type="button"
+                            data-master-type="business_content"
+                            data-target-id="{{ form.business_content.id_for_label }}"
+                            data-modal-title="業務内容を選択">参照</button>
                 </div>
             </div>
 
@@ -195,102 +229,111 @@
 
 
 
+<script src="{% static 'js/contract-modal.js' %}"></script>
 <script>
 // ページ読み込み時に選択されたスタッフ情報を処理
 document.addEventListener('DOMContentLoaded', function() {
-    // 「選択」ボタンもfetchで標準テストモーダルと同じ動きに
-    const staffSelectFetchButton = document.getElementById('staffSelectFetchButton');
-    if (staffSelectFetchButton) {
-        staffSelectFetchButton.addEventListener('click', function(e) {
+    // スタッフ選択ボタンのイベントリスナーを設定
+    const staffSelectButton = document.getElementById('staffSelectFetchButton');
+    if (staffSelectButton) {
+        staffSelectButton.addEventListener('click', function(e) {
             e.preventDefault();
-            fetch('{% url "contract:staff_select" %}?from_modal=1')
-                .then(response => response.text())
-                .then(html => {
-                    // モーダルbodyにHTMLを挿入
-                    const modalBody = document.querySelector('#selectModal .modal-body');
-                    if (modalBody) {
-                        modalBody.innerHTML = html;
-                    }
-                    // モーダルを開く
-                    const modalElement = document.getElementById('selectModal');
-                    if (modalElement) {
-                        let modal = bootstrap.Modal.getInstance(modalElement);
-                        if (!modal) {
-                            modal = new bootstrap.Modal(modalElement, {
-                                backdrop: true,
-                                keyboard: true,
-                                focus: true
-                            });
-                        }
-                        modal.show();
-                    }
-                })
-                .catch(error => {
-                    alert('取得失敗: ' + error);
-                });
+            loadStaffModal('{% url "contract:staff_select" %}');
         });
     }
-    // Bootstrap JSが読み込まれているかチェック
-    if (typeof bootstrap === 'undefined') {
-        console.error('Bootstrap JSが読み込まれていません');
-        return;
+
+    // ツールチップを初期化
+    if (typeof bootstrap !== 'undefined') {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
     }
-    // ツールチップを有効化
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
     
     // 編集時の既存データ表示
     const staffField = document.getElementById('{{ form.staff.id_for_label }}');
     const staffDisplayText = document.getElementById('staff-display-text');
     
-    if (staffField.value) {
+    if (staffField && staffField.value) {
         // 既存のスタッフが選択されている場合（編集時）
         {% if contract and contract.staff %}
             staffDisplayText.textContent = '{{ contract.staff.name_last|escapejs }} {{ contract.staff.name_first|escapejs }}';
+            {% if contract.staff.employment_type %}
+                updateEmploymentTypeBadge('{{ contract.staff.employment_type.pk|escapejs }}', '{{ contract.staff.employment_type.name|escapejs }}', '{{ contract.staff.employment_type.display_order|badge_class }}');
+            {% endif %}
         {% elif staff %}
             staffDisplayText.textContent = '{{ staff.name_last|escapejs }} {{ staff.name_first|escapejs }}';
+            {% if staff.employment_type %}
+                updateEmploymentTypeBadge('{{ staff.employment_type.pk|escapejs }}', '{{ staff.employment_type.name|escapejs }}', '{{ staff.employment_type.display_order|badge_class }}');
+            {% endif %}
         {% endif %}
     }
-
-    // Modal event listener
-    const staffSelectModal = document.getElementById('staffSelectModal');
-    if (staffSelectModal) {
-        staffSelectModal.addEventListener('show.bs.modal', function (event) {
-            loadModalContent(event, 1);
-        });
-    }
-
-
 });
 
+// 雇用形態バッジを更新する関数
+function updateEmploymentTypeBadge(employmentType, employmentTypeName, badgeClass = null) {
+    const badgeElement = document.getElementById('staff-employment-type-badge');
+    if (badgeElement && employmentType && employmentTypeName) {
+        const className = badgeClass || 'bg-primary';
+        badgeElement.innerHTML = `<span class="badge ${className}" style="font-size:13px">${employmentTypeName}</span>`;
 
-
-
-
-
-function selectStaff(staffId, staffName) {
-    document.getElementById('{{ form.staff.id_for_label }}').value = staffId;
-    document.getElementById('staff-display-text').textContent = staffName;
-
-    // どちらのモーダルからでも閉じる
-    const modalIds = [ 'selectModal'];
-    for (const id of modalIds) {
-        const modalElement = document.getElementById(id);
-        if (modalElement) {
-            const modal = bootstrap.Modal.getInstance(modalElement);
-            if (modal) {
-                modal.hide();
-            } else if (modalElement.classList.contains('debug-show')) {
-                const backdrop = document.querySelector('.modal-backdrop');
-                closeModalManually(modalElement, backdrop);
-            }
+        // 契約書パターンを更新（存在する場合）
+        if (typeof updateContractPatterns === 'function') {
+            updateContractPatterns(employmentType);
+        }
+    } else if (badgeElement) {
+        badgeElement.textContent = '-';
+        if (typeof updateContractPatterns === 'function') {
+            updateContractPatterns(null);
         }
     }
 }
+
+// 契約書パターンのプルダウンを更新する関数
+function updateContractPatterns(employmentType) {
+    const contractPatternSelect = document.getElementById('{{ form.contract_pattern.id_for_label }}');
+    const currentValue = contractPatternSelect.value;
+
+    let url = '{% url "contract:get_contract_patterns_by_employment_type" %}';
+    if (employmentType) {
+        url += `?employment_type=${employmentType}`;
+    }
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            // プルダウンをクリア
+            contractPatternSelect.innerHTML = '<option value="">---------</option>';
+
+            // 新しい選択肢を追加
+            data.patterns.forEach(pattern => {
+                const option = document.createElement('option');
+                option.value = pattern.id;
+                option.textContent = pattern.name;
+                contractPatternSelect.appendChild(option);
+            });
+
+            // 以前の選択値があれば復元を試みる
+            if (currentValue) {
+                contractPatternSelect.value = currentValue;
+            }
+        })
+        .catch(error => {
+            console.error('契約書パターンの取得に失敗しました:', error);
+        });
+}
+
+// スタッフクリア関数
+function clearStaff() {
+    document.getElementById('{{ form.staff.id_for_label }}').value = '';
+    document.getElementById('{{ form.employment_type.id_for_label }}').value = '';
+    document.getElementById('staff-display-text').textContent = '未選択';
+    updateEmploymentTypeBadge(null, null);
+}
+
 // グローバル公開
 window.selectStaff = selectStaff;
+window.clearStaff = clearStaff;
 
 
 
@@ -378,5 +421,137 @@ function setEndDate(months) {
     
     endDateInput.value = `${year}-${month}-${day}`;
 }
+</script>
+<!-- 業務内容/責任程度 選択モーダル -->
+<div class="modal fade" id="hakenMasterModal" tabindex="-1" aria-labelledby="hakenMasterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="hakenMasterModalLabel"></div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- fetchで内容が挿入されます -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+// Haken Master Modal - 簡素化版
+document.addEventListener('click', function(e) {
+    // 派遣マスター参照ボタンのクリック処理
+    if (e.target.hasAttribute('data-master-type')) {
+        e.preventDefault();
+        const masterType = e.target.getAttribute('data-master-type');
+        const targetId = e.target.getAttribute('data-target-id');
+        const modalTitle = e.target.getAttribute('data-modal-title');
+
+        const modal = document.getElementById('hakenMasterModal');
+        modal.querySelector('.modal-title').textContent = modalTitle;
+        modal.setAttribute('data-current-target-id', targetId);
+        modal.setAttribute('data-current-master-type', masterType);
+
+        loadHakenMasterModalContent(null, 1);
+        new bootstrap.Modal(modal).show();
+    }
+});
+
+function loadHakenMasterModalContent(event, page = 1, clearSearch = false) {
+    if (event) event.preventDefault();
+
+    const modal = document.getElementById('hakenMasterModal');
+    const modalBody = modal.querySelector('.modal-body');
+    const searchForm = document.getElementById('haken-search-form');
+
+    let searchQuery = '';
+    if (searchForm && !clearSearch) {
+        searchQuery = new FormData(searchForm).get('q') || '';
+    }
+
+    const masterType = modal.getAttribute('data-current-master-type') || '';
+    const url = `{% url 'contract:haken_master_select' %}?type=${masterType}&page=${page}&q=${encodeURIComponent(searchQuery)}`;
+
+    modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">読み込み中...</span></div></div>';
+
+    fetch(url)
+        .then(response => response.text())
+        .then(html => modalBody.innerHTML = html)
+        .catch(error => {
+            console.error('Error:', error);
+            modalBody.innerHTML = '<p class="text-center text-danger">データの取得に失敗しました。</p>';
+        });
+}
+
+// 派遣マスター選択関数
+function selectHakenMaster(content) {
+    const modal = document.getElementById('hakenMasterModal');
+    const targetId = modal.getAttribute('data-current-target-id');
+    if (targetId) {
+        document.getElementById(targetId).value = content;
+    }
+    const modalInstance = bootstrap.Modal.getInstance(modal);
+    modalInstance.hide();
+}
+
+// ページロジック情報を設定
+document.addEventListener('DOMContentLoaded', function() {
+    // このページにロジック情報があることを通知
+    document.body.setAttribute('data-has-logic', 'true');
+
+    const logicContent = document.getElementById('logic-info-content');
+    if (logicContent) {
+        logicContent.innerHTML = `
+            <div class="alert alert-info mb-3">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>スタッフ契約編集画面のバリデーションロジック</h6>
+            </div>
+
+            <!-- 単項目チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-shield-check text-primary me-2"></i>単項目チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 契約金額: 0以上の数値</div>
+                    <div class="mb-2">• 支払単位: 必須選択</div>
+                    <div class="mb-0">• 最低賃金: 契約金額が最低賃金を下回らないかチェック</div>
+                </div>
+            </div>
+
+            <!-- 相関チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-check-circle text-success me-2"></i>相関チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 契約開始日は終了日より前の日付でないとエラー</div>
+                    <div class="mb-2">• 契約開始日はスタッフの入社日以降でないとエラー</div>
+                    <div class="mb-0">• 契約終了日はスタッフの退職日以前でないとエラー</div>
+                </div>
+            </div>
+
+            <!-- 自動処理 -->
+            <div class="card" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-gear text-secondary me-2"></i>自動処理</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 契約番号: 自動採番</div>
+                    <div class="mb-2">• 法人番号: 自社の法人番号を自動設定</div>
+                    <div class="mb-2">• 契約終了日計算: 開始日から1ヶ月/3ヶ月/6ヶ月後を自動計算</div>
+                    <div class="mb-2">• 契約書パターン: スタッフの雇用形態に応じて選択肢を絞り込み</div>
+                    <div class="mb-0">• 業務内容参照: マスターデータから業務内容を選択・挿入</div>
+                </div>
+            </div>
+        `;
+    }
+
+    // ロジック情報設定完了を通知
+    document.dispatchEvent(new Event('logicInfoSet'));
+});
 </script>
 {% endblock %}

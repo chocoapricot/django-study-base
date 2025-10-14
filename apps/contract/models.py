@@ -1,5 +1,6 @@
 from django.db import models
 from apps.common.models import MyModel
+from apps.common.constants import Constants
 from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from django.contrib.auth import get_user_model
@@ -12,13 +13,13 @@ class ClientContract(MyModel):
     クライアント（取引先企業）との契約情報を管理するモデル。
     契約期間、金額、契約種別などを記録する。
     """
-    class ContractStatus(models.TextChoices):
-        DRAFT = '1', '作成中'
-        PENDING = '5', '申請中'
-        APPROVED = '10', '承認済'
-        ISSUED = '20', '発行済'
-        CONFIRMED = '30', '確認済'
 
+    staff_contracts = models.ManyToManyField(
+        'StaffContract',
+        through='ContractAssignment',
+        related_name='client_contracts',
+        verbose_name='関連スタッフ契約'
+    )
     client = models.ForeignKey(
         Client,
         on_delete=models.CASCADE,
@@ -44,14 +45,14 @@ class ClientContract(MyModel):
         'master.ContractPattern',
         on_delete=models.PROTECT,
         verbose_name='契約書パターン',
-        limit_choices_to={'domain': '10'},
+        limit_choices_to={'domain': Constants.DOMAIN.CLIENT},
     )
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
+
     contract_status = models.CharField(
         '契約状況',
         max_length=2,
-        choices=ContractStatus.choices,
-        default=ContractStatus.DRAFT,
+        default=Constants.CONTRACT_STATUS.DRAFT,
         blank=True,
         null=True
     )
@@ -59,7 +60,7 @@ class ClientContract(MyModel):
     end_date = models.DateField('契約終了日', blank=True, null=True)
     contract_amount = models.DecimalField('契約金額', max_digits=12, decimal_places=0, blank=True, null=True)
     bill_unit = models.CharField('請求単位', max_length=10, blank=True, null=True)
-    description = models.TextField('契約内容', blank=True, null=True)
+    business_content = models.TextField('業務内容', blank=True, null=True)
     notes = models.TextField('備考', blank=True, null=True)
     memo = models.TextField('メモ', blank=True, null=True)
     payment_site = models.ForeignKey(
@@ -133,16 +134,15 @@ class ClientContract(MyModel):
     def __str__(self):
         return f"{self.client.name} - {self.contract_name}"
     
-    
     @property
     def is_approved_or_later(self):
         """承認済、またはそれ以降のステータスかどうかを判定する"""
-        return int(self.contract_status) >= int(self.ContractStatus.APPROVED)
+        return int(self.contract_status) >= int(Constants.CONTRACT_STATUS.APPROVED)
 
     @property
     def is_issued_or_later(self):
         """発行済、またはそれ以降のステータスかどうかを判定する"""
-        return int(self.contract_status) >= int(self.ContractStatus.ISSUED)
+        return int(self.contract_status) >= int(Constants.CONTRACT_STATUS.ISSUED)
 
     def clean(self):
         """バリデーション"""
@@ -162,7 +162,7 @@ class ClientContract(MyModel):
         except Dropdowns.DoesNotExist:
             base_name = "不明"
 
-        if self.client_contract_type_code == '20':  # 派遣
+        if self.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:  # 派遣
             try:
                 # 関連オブジェクトが存在するかどうかを堅牢にチェック
                 if self.haken_info and self.haken_info.ttp_info:
@@ -224,18 +224,19 @@ class StaffContract(MyModel):
     スタッフ（従業員・フリーランス等）との契約情報を管理するモデル。
     雇用形態、契約期間、金額などを記録する。
     """
-    class ContractStatus(models.TextChoices):
-        DRAFT = '1', '作成中'
-        PENDING = '5', '申請中'
-        APPROVED = '10', '承認済'
-        ISSUED = '20', '発行済'
-        CONFIRMED = '30', '確認済'
-
     staff = models.ForeignKey(
         Staff,
         on_delete=models.CASCADE,
         related_name='contracts',
         verbose_name='スタッフ'
+    )
+    employment_type = models.ForeignKey(
+        'master.EmploymentType',
+        on_delete=models.SET_NULL,
+        verbose_name='雇用形態',
+        blank=True,
+        null=True,
+        help_text='契約作成時点のスタッフの雇用形態を保存'
     )
     corporate_number = models.CharField('法人番号', max_length=13, blank=True, null=True)
     contract_name = models.CharField('契約名', max_length=200)
@@ -252,14 +253,13 @@ class StaffContract(MyModel):
         verbose_name='契約書パターン',
         null=True,
         blank=True,
-        limit_choices_to={'domain': '1'},
+        limit_choices_to={'domain': Constants.DOMAIN.STAFF},
     )
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
     contract_status = models.CharField(
         '契約状況',
         max_length=2,
-        choices=ContractStatus.choices,
-        default=ContractStatus.DRAFT,
+        default=Constants.CONTRACT_STATUS.DRAFT,
         blank=True,
         null=True
     )
@@ -267,7 +267,8 @@ class StaffContract(MyModel):
     end_date = models.DateField('契約終了日', blank=True, null=True)
     contract_amount = models.DecimalField('契約金額', max_digits=10, decimal_places=0, blank=True, null=True)
     pay_unit = models.CharField('支払単位', max_length=10, blank=True, null=True)
-    description = models.TextField('契約内容', blank=True, null=True)
+    work_location = models.TextField('就業場所', blank=True, null=True)
+    business_content = models.TextField('業務内容', blank=True, null=True)
     notes = models.TextField('備考', blank=True, null=True)
     memo = models.TextField('メモ', blank=True, null=True)
     approved_at = models.DateTimeField('承認日時', blank=True, null=True)
@@ -306,13 +307,38 @@ class StaffContract(MyModel):
     def __str__(self):
         return f"{self.staff.name_last} {self.staff.name_first} - {self.contract_name}"
 
-
     def clean(self):
         """バリデーション"""
         from django.core.exceptions import ValidationError
 
         if self.start_date and self.end_date and self.start_date > self.end_date:
             raise ValidationError('契約開始日は終了日より前の日付を入力してください。')
+
+    def validate_minimum_wage(self):
+        """最低賃金バリデーション"""
+        from django.core.exceptions import ValidationError
+        if self.pay_unit == Constants.PAY_UNIT.HOURLY and self.contract_amount is not None and self.work_location:
+            from apps.master.models import MinimumPay
+            from apps.system.settings.models import Dropdowns
+
+            prefectures = Dropdowns.objects.filter(category='pref', active=True)
+            found_prefecture = None
+            for pref_dropdown in prefectures:
+                if pref_dropdown.name in self.work_location:
+                    found_prefecture = pref_dropdown
+                    break
+
+            if found_prefecture:
+                minimum_wage_record = MinimumPay.objects.filter(
+                    pref=found_prefecture.value,
+                    start_date__lte=self.start_date,
+                    is_active=True
+                ).order_by('-start_date').first()
+
+                if minimum_wage_record and self.contract_amount < minimum_wage_record.hourly_wage:
+                    raise ValidationError(
+                        f'{found_prefecture.name}の最低賃金（{minimum_wage_record.hourly_wage}円）を下回っています。'
+                    )
 
 
 class StaffContractPrint(MyModel):
@@ -452,17 +478,22 @@ class ClientContractHaken(MyModel):
     limit_by_agreement = models.CharField(
         '協定対象派遣労働者に限定するか否かの別',
         max_length=1,
-        choices=[('0', '限定しない'), ('1', '限定する')],
+        choices=[
+            (Constants.LIMIT_BY_AGREEMENT.NOT_LIMITED, '限定しない'),
+            (Constants.LIMIT_BY_AGREEMENT.LIMITED, '限定する')
+        ],
         null=True, blank=True,
     )
     limit_indefinite_or_senior = models.CharField(
         '無期雇用派遣労働者又は60歳以上の者に限定するか否かの別',
         max_length=1,
-        choices=[('0', '限定しない'), ('1', '限定する')],
+        choices=[
+            (Constants.LIMIT_BY_AGREEMENT.NOT_LIMITED, '限定しない'),
+            (Constants.LIMIT_BY_AGREEMENT.LIMITED, '限定する')
+        ],
         null=True, blank=True,
     )
     work_location = models.TextField('就業場所', blank=True, null=True)
-    business_content = models.TextField('業務内容', blank=True, null=True)
     responsibility_degree = models.CharField('責任の程度', max_length=255, blank=True, null=True)
 
     class Meta:
@@ -505,3 +536,88 @@ class ClientContractTtp(MyModel):
 
     def __str__(self):
         return f"{self.haken.client_contract}"
+
+
+class ContractAssignment(MyModel):
+    """
+    クライアント契約とスタッフ契約の関連付けを管理するモデル。
+    """
+    client_contract = models.ForeignKey(
+        ClientContract,
+        on_delete=models.CASCADE,
+        verbose_name='クライアント契約'
+    )
+    staff_contract = models.ForeignKey(
+        'StaffContract',
+        on_delete=models.CASCADE,
+        verbose_name='スタッフ契約'
+    )
+    assigned_at = models.DateTimeField('アサイン日時', auto_now_add=True)
+
+    class Meta:
+        db_table = 'apps_contract_assignment'
+        verbose_name = '契約アサイン'
+        verbose_name_plural = '契約アサイン'
+        unique_together = ('client_contract', 'staff_contract')
+
+    def __str__(self):
+        return f"{self.client_contract} - {self.staff_contract}"
+
+    def clean(self):
+        """
+        バリデーション：割当終了日が抵触日を超えていないかチェック
+        """
+        from django.core.exceptions import ValidationError
+        from datetime import date
+        from .teishokubi_calculator import TeishokubiCalculator
+
+        # 派遣契約かつ派遣社員(有期)の場合のみチェック
+        if (self.client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and
+                self.staff_contract.employment_type and self.staff_contract.employment_type.is_fixed_term):
+
+            staff_email = self.staff_contract.staff.email
+            client_corporate_number = self.client_contract.client.corporate_number
+
+            if hasattr(self.client_contract, 'haken_info') and self.client_contract.haken_info and self.client_contract.haken_info.haken_unit:
+                organization_name = self.client_contract.haken_info.haken_unit.name
+
+                calculator = TeishokubiCalculator(
+                    staff_email=staff_email,
+                    client_corporate_number=client_corporate_number,
+                    organization_name=organization_name
+                )
+
+                # この割当を追加した場合の抵触日を計算
+                conflict_date = calculator.calculate_conflict_date_without_update(new_assignment_instance=self)
+
+                if conflict_date:
+                    # 割当終了日を計算
+                    assignment_end_date = min(
+                        self.client_contract.end_date if self.client_contract.end_date else date.max,
+                        self.staff_contract.end_date if self.staff_contract.end_date else date.max
+                    )
+
+                    if assignment_end_date > conflict_date:
+                        raise ValidationError(
+                            f'割当終了日（{assignment_end_date}）が抵触日（{conflict_date}）を超えています。'
+                        )
+
+
+class StaffContractTeishokubi(MyModel):
+    """
+    スタッフの個人抵触日を管理するモデル。
+    """
+    staff_email = models.EmailField('スタッフメールアドレス', blank=True, null=True)
+    client_corporate_number = models.CharField('クライアント法人番号', max_length=13, blank=True, null=True)
+    organization_name = models.CharField('組織名', max_length=255)
+    dispatch_start_date = models.DateField('派遣開始日')
+    conflict_date = models.DateField('抵触日')
+
+    class Meta:
+        db_table = 'apps_contract_staff_teishokubi'
+        verbose_name = '個人抵触日'
+        verbose_name_plural = '個人抵触日'
+        ordering = ['-dispatch_start_date', 'staff_email']
+
+    def __str__(self):
+        return f"{self.staff_email} - {self.organization_name}"

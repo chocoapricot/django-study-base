@@ -100,12 +100,29 @@ class ContractModelTest(TestCase):
         self.assertEqual(contract.staff, self.staff)
         self.assertEqual(contract.contract_name, '雇用契約')
 
+    def test_staff_contract_with_work_location_and_business_content(self):
+        """スタッフ契約モデルに就業場所と業務内容が保存されることをテスト"""
+        work_location_text = "東京都千代田区"
+        business_content_text = "システム開発"
+        contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='雇用契約（就業場所・業務内容あり）',
+            start_date=timezone.now().date(),
+            work_location=work_location_text,
+            business_content=business_content_text,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        self.assertEqual(contract.work_location, work_location_text)
+        self.assertEqual(contract.business_content, business_content_text)
+
 
 from django.core.exceptions import ValidationError
 from datetime import date
 from apps.company.models import Company
 from ..models import ClientContract, ClientContractHaken, ClientContractTtp
 from apps.system.settings.models import Dropdowns
+from apps.client.models import ClientDepartment
 
 class ClientContractModelPropertyTests(TestCase):
     def setUp(self):
@@ -153,3 +170,105 @@ class ClientContractModelPropertyTests(TestCase):
             created_by=self.user,
         )
         self.assertEqual(contract_other.contract_type_display_name, '準委任')
+
+
+class ContractAssignmentValidationTest(TestCase):
+    """ContractAssignmentモデルのバリデーションテスト"""
+
+    def setUp(self):
+        """テストデータの準備"""
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.client = ClientModel.objects.create(
+            name='テストクライアント',
+            corporate_number='1234567890123',
+            created_by=self.user
+        )
+        self.staff = Staff.objects.create(
+            name_last='テスト',
+            name_first='スタッフ',
+            email='test@example.com',
+            created_by=self.user
+        )
+        self.haken_unit = ClientDepartment.objects.create(
+            client=self.client,
+            name='テスト派遣部署',
+            created_by=self.user
+        )
+        self.contract_pattern = ContractPattern.objects.create(
+            name='テスト契約パターン',
+            domain='10',  # Client
+            contract_type_code='20', # Haken
+            is_active=True
+        )
+        from apps.master.models import EmploymentType
+        self.employment_type_haken = EmploymentType.objects.create(name='派遣社員(有期)', is_fixed_term=True)
+
+
+    def test_conflict_date_validation(self):
+        """割当終了日が抵触日を超える場合にValidationErrorが発生することを確認"""
+        from ..models import ContractAssignment
+
+        # --- 抵触日を超えるケース ---
+        client_contract_ng = ClientContract.objects.create(
+            client=self.client,
+            contract_name='長期派遣契約',
+            client_contract_type_code='20',  # 派遣
+            start_date=date.today(),
+            end_date=date.today() + timedelta(days=365 * 4), # 4年後
+            created_by=self.user,
+            contract_pattern=self.contract_pattern
+        )
+        ClientContractHaken.objects.create(client_contract=client_contract_ng, haken_unit=self.haken_unit)
+
+        staff_contract_ng = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='長期スタッフ契約',
+            employment_type=self.employment_type_haken,  # 派遣社員(有期)
+            start_date=date.today(),
+            end_date=date.today() + timedelta(days=365 * 4), # 4年後
+            created_by=self.user
+        )
+
+        assignment_ng = ContractAssignment(
+            client_contract=client_contract_ng,
+            staff_contract=staff_contract_ng,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        with self.assertRaises(ValidationError):
+            assignment_ng.full_clean()
+
+        # --- 抵触日を超えないケース ---
+        client_contract_ok = ClientContract.objects.create(
+            client=self.client,
+            contract_name='短期派遣契約',
+            client_contract_type_code='20',  # 派遣
+            start_date=date.today(),
+            end_date=date.today() + timedelta(days=365), # 1年後
+            created_by=self.user,
+            contract_pattern=self.contract_pattern
+        )
+        ClientContractHaken.objects.create(client_contract=client_contract_ok, haken_unit=self.haken_unit)
+
+        staff_contract_ok = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name='短期スタッフ契約',
+            employment_type=self.employment_type_haken,  # 派遣社員(有期)
+            start_date=date.today(),
+            end_date=date.today() + timedelta(days=365), # 1年後
+            created_by=self.user
+        )
+
+        assignment_ok = ContractAssignment(
+            client_contract=client_contract_ok,
+            staff_contract=staff_contract_ok,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        try:
+            assignment_ok.full_clean()
+            assignment_ok.save()
+        except ValidationError:
+            self.fail("抵触日を超えない場合にValidationErrorが発生しました。")

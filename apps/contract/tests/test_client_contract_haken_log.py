@@ -11,6 +11,7 @@ from apps.company.models import Company, CompanyUser
 from apps.master.models import ContractPattern
 from apps.system.logs.models import AppLog
 from apps.system.settings.models import Dropdowns
+from apps.common.constants import Constants
 
 User = get_user_model()
 
@@ -23,6 +24,14 @@ class ClientContractHakenLogTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         """テスト全体の準備"""
+        # Dropdownsデータを作成
+        Dropdowns.objects.create(
+            category='contract_status',
+            value=Constants.CONTRACT_STATUS.DRAFT,
+            name='作成中',
+            active=True
+        )
+
         # ユーザーと権限の設定
         cls.user = User.objects.create_user(username='logtestuser', password='password')
         content_type = ContentType.objects.get_for_model(ClientContract)
@@ -61,7 +70,7 @@ class ClientContractHakenLogTest(TestCase):
             contract_pattern=self.pattern,
             client_contract_type_code='20', # 派遣
             start_date=datetime.date.today(),
-            contract_status=ClientContract.ContractStatus.DRAFT,
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
         )
         self.client.login(username='logtestuser', password='password')
         self.update_url = reverse('contract:client_contract_update', kwargs={'pk': self.contract.pk})

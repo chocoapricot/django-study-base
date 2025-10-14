@@ -45,7 +45,13 @@ class Staff(MyModel):
     phone = models.TextField('電話番号',blank=True, null=True)
     email = models.CharField('E-MAIL',max_length=255, unique=True, blank=True, null=True)
     staff_regist_status_code = models.IntegerField('登録区分', blank=True, null=True)
-    employment_type = models.CharField('雇用形態', max_length=10, blank=True, null=True, help_text='dropdowns employment_type')
+    employment_type = models.ForeignKey(
+        'master.EmploymentType',
+        on_delete=models.SET_NULL,
+        verbose_name='雇用形態',
+        blank=True,
+        null=True
+    )
     employee_no = models.CharField('社員番号', max_length=10, unique=True, blank=True, null=True, help_text='半角英数字10文字まで')
     # 入社・退職・所属情報
     hire_date = models.DateField('入社日', blank=True, null=True)
@@ -60,6 +66,9 @@ class Staff(MyModel):
     def save(self, *args, **kwargs):
         # 姓と名を結合して full_name に保存
         self.name = f"{self.name_last}{self.name_first}"
+        # emailを小文字に変換
+        if self.email:
+            self.email = self.email.lower()
         # 年齢を計算して保存
         if self.birth_date:
             today = date.today()
@@ -629,7 +638,13 @@ class StaffDisability(MyModel):
         blank=True,
         null=True
     )
-
+    disability_severity = models.CharField(
+        max_length=100,
+        verbose_name='重度',
+        help_text='障害の重度を入力してください',
+        blank=True,
+        null=True
+    )
     class Meta:
         verbose_name = 'スタッフ障害者情報'
         verbose_name_plural = 'スタッフ障害者情報'

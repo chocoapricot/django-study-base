@@ -17,6 +17,7 @@ from apps.system.settings.utils import my_parameter
 from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
 from apps.common.utils import fill_excel_from_template, fill_pdf_from_template
+from apps.common.constants import Constants
 from django.http import HttpResponse
 from .resources import StaffResource
 import datetime
@@ -281,12 +282,10 @@ def staff_list(request):
         option.is_selected = (staff_regist_status_filter == option.value)
 
     # 雇用形態の選択肢を取得
-    employment_type_options = Dropdowns.objects.filter(
-        category='employment_type',
-        active=True
-    ).order_by('disp_seq')
+    from apps.master.models import EmploymentType
+    employment_type_options = EmploymentType.objects.filter(is_active=True).order_by('display_order', 'name')
     for option in employment_type_options:
-        option.is_selected = (employment_type_filter == option.value)
+        option.is_selected = (employment_type_filter == str(option.pk))
     
     # 所属部署の選択肢を取得（現在有効な部署のみ）
     from apps.company.models import CompanyDepartment
@@ -677,9 +676,9 @@ def staff_face(request, pk):
     # 画像が存在しない場合、名前を使って画像を生成
     response = HttpResponse(content_type="image/jpeg")
     image = Image.new("RGB", (200, 200), (200, 200, 200))  # 背景色の指定
-    if staff.sex == 1:
+    if staff.sex == int(Constants.SEX.MALE):
         image = Image.new("RGB", (200, 200), (140, 140, 240))  # 背景色の指定
-    elif staff.sex == 2:
+    elif staff.sex == int(Constants.SEX.FEMALE):
         image = Image.new("RGB", (200, 200), (240, 140, 140))  # 背景色の指定
     
     
@@ -1342,7 +1341,6 @@ def staff_disability_request_detail(request, staff_pk, pk):
                     defaults={
                         'disability_type': profile_disability.disability_type,
                         'disability_grade': profile_disability.disability_grade,
-                        'notes': profile_disability.notes,
                     }
                 )
 

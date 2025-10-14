@@ -125,12 +125,12 @@
                                 <tr>
                                     <th>社員番号</th>
                                     <th>スタッフ</th>
-                                    <th>契約名</th>
-                                    <th>契約書パターン</th>
+                                    <th>雇用形態</th>
                                     <th>契約期間</th>
                                     <th class="text-end">契約金額</th>
                                     <th>契約状況</th>
                                     <th>契約番号</th>
+                                    <th>割当</th>
                                     <th>操作</th>
                                 </tr>
                             </thead>
@@ -156,16 +156,21 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <a href="{% url 'contract:staff_contract_detail' contract.pk %}{% if staff_filter %}?staff={{ staff_filter }}{% endif %}" class="text-decoration-none">
-                                            {{ contract.contract_name }}
-                                        </a>
-                                    </td>
-                                    <td>{{ contract.contract_pattern.name|default:"-" }}</td>
-                                    <td>
-                                        {{ contract.start_date|date:"Y/m/d" }}
-                                        {% if contract.end_date %}
-                                            ～ {{ contract.end_date|date:"Y/m/d" }}
+                                        {% if contract.employment_type %}
+                                            <span class="badge {{ contract.employment_type.display_order|badge_class }}">{{ contract.employment_type.name }}</span>
+                                        {% else %}
+                                            -
                                         {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'contract:staff_contract_detail' contract.pk %}{% if staff_filter %}?staff={{ staff_filter }}{% endif %}" class="text-decoration-none">
+                                            {{ contract.start_date|date:"Y/m/d" }}
+                                            {% if contract.end_date %}
+                                                ～ {{ contract.end_date|date:"Y/m/d" }}
+                                            {% else %}
+                                                ～ 無期限
+                                            {% endif %}
+                                        </a>
                                     </td>
                                     <td class="text-end">
                                         {% if contract.contract_amount %}
@@ -179,7 +184,16 @@
                                             {% my_name 'contract_status' contract.contract_status %}
                                         </span>
                                     </td>
-                                    <td>{{ contract.contract_number|default:"-" }}</td>
+                                    <td>
+                                        {{ contract.contract_number|default:"-" }}
+                                    </td>
+                                    <td>
+                                        {% if contract.client_contract_count > 0 %}
+                                            <span class="badge bg-success">割当済</span>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
                                     <td>
                                         {% if not staff_filter %}
                                         <a href="{% url 'contract:staff_contract_update' contract.pk %}" class="btn btn-dark btn-sm me-1" title="編集">

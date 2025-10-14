@@ -37,10 +37,11 @@ from apps.common.forms.fields import to_fullwidth_katakana, validate_kana
 
 
 class StaffForm(forms.ModelForm):
-    employment_type = forms.ChoiceField(
-        choices=[],
+    employment_type = forms.ModelChoiceField(
+        queryset=None,
         label='雇用形態',
         required=False,
+        empty_label='選択してください',
         widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
     )
     def clean_phone(self):
@@ -79,14 +80,21 @@ class StaffForm(forms.ModelForm):
         hire_date = cleaned_data.get('hire_date')
         resignation_date = cleaned_data.get('resignation_date')
         employee_no = cleaned_data.get('employee_no')
+        employment_type = cleaned_data.get('employment_type')
         
-        # 入社日と社員番号のセットバリデーション
+        # 入社日、社員番号、雇用形態のセットバリデーション
         if hire_date and not employee_no:
             raise forms.ValidationError('入社日を入力する場合は、社員番号も入力してください。')
         
+        if hire_date and not employment_type:
+            raise forms.ValidationError('入社日を入力する場合は、雇用形態も選択してください。')
+
         if employee_no and not hire_date:
             raise forms.ValidationError('社員番号を入力する場合は、入社日も入力してください。')
         
+        if employment_type and not hire_date:
+            raise forms.ValidationError('雇用形態を選択する場合は、入社日も入力してください。')
+
         # 入社日なしに退職日入力はNG
         if resignation_date and not hire_date:
             raise forms.ValidationError('退職日を入力する場合は、入社日も入力してください。')
@@ -155,12 +163,8 @@ class StaffForm(forms.ModelForm):
             for opt in Dropdowns.objects.filter(active=True, category='staff_regist_status').order_by('disp_seq')
         ]
 
-        self.fields['employment_type'].choices = [
-            ('', '選択してください')
-        ] + [
-            (opt.value, opt.name)
-            for opt in Dropdowns.objects.filter(active=True, category='employment_type').order_by('disp_seq')
-        ]
+        from apps.master.models import EmploymentType
+        self.fields['employment_type'].queryset = EmploymentType.objects.filter(is_active=True).order_by('display_order', 'name')
         
         # 現在有効な部署の選択肢を設定
         current_date = timezone.now().date()
@@ -588,9 +592,10 @@ class StaffDisabilityForm(forms.ModelForm):
 
     class Meta:
         model = StaffDisability
-        fields = ['disability_type', 'disability_grade']
+        fields = ['disability_type', 'disability_grade', 'disability_severity']
         widgets = {
             'disability_grade': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'disability_severity': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -601,3 +606,4 @@ class StaffDisabilityForm(forms.ModelForm):
             for opt in Dropdowns.objects.filter(active=True, category='disability_type').order_by('disp_seq')
         ]
         self.fields['disability_grade'].required = True
+        self.fields['disability_severity'].required = True

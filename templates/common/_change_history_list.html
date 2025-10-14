@@ -88,12 +88,18 @@
                             <span class="badge bg-primary">職種</span>
                         {% elif log.model_name == 'StaffAgreement' %}
                             <span class="badge bg-primary">同意文言</span>
-                        {% elif log.model_name == 'HakenBusinessContent' %}
-                            <span class="badge bg-primary">派遣業務内容</span>
+                        {% elif log.model_name == 'BusinessContent' %}
+                            <span class="badge bg-primary">業務内容</span>
                         {% elif log.model_name == 'HakenResponsibilityDegree' %}
                             <span class="badge bg-primary">派遣責任程度</span>
                         {% elif log.model_name == 'DefaultValue' %}
                             <span class="badge bg-primary">初期値</span>
+                        {% elif log.model_name == 'EmploymentType' %}
+                            <span class="badge bg-primary">雇用形態</span>
+                        {% elif log.model_name == 'StaffRegistStatus' %}
+                            <span class="badge bg-primary">登録状況</span>
+                        {% elif log.model_name == 'ClientRegistStatus' %}
+                            <span class="badge bg-primary">登録状況</span>
                         {% elif log.model_name %}
                             <span class="badge bg-primary">{{ log.model_name }}</span>
                         {% else %}

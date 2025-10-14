@@ -25,6 +25,28 @@ class Dropdowns(MyModel):
     def __str__(self):
         return self.name
 
+    @classmethod
+    def get_display_name(cls, category, value):
+        """指定されたカテゴリと値に対応する表示名を取得する"""
+        if not value:
+            return ''
+        try:
+            dropdown = cls.objects.get(category=category, value=value, active=True)
+            return dropdown.name
+        except cls.DoesNotExist:
+            return value  # 見つからない場合は値をそのまま返す
+
+    @classmethod
+    def get_choices(cls, category, include_empty=True):
+        """指定されたカテゴリの選択肢リストを取得する"""
+        choices = []
+        if include_empty:
+            choices.append(('', '---------'))
+
+        dropdowns = cls.objects.filter(category=category, active=True).order_by('disp_seq')
+        choices.extend([(d.value, d.name) for d in dropdowns])
+        return choices
+
 
 class Parameter(MyModel):
     """

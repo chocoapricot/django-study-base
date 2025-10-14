@@ -6,6 +6,7 @@ from django.db.models import Q, Count
 from django.urls import reverse
 from django.apps import apps
 from datetime import date
+from apps.common.constants import Constants
 from .models import (
     Qualification,
     Skill,
@@ -21,13 +22,19 @@ from .models import (
     ContractPattern,
     ContractTerms,
     MinimumPay,
-    HakenBusinessContent,
+    BusinessContent,
     HakenResponsibilityDegree,
     DefaultValue,
+    EmploymentType,
+    StaffRegistStatus,
+    ClientRegistStatus,
 )
 from .forms import (
-    HakenBusinessContentForm,
+    BusinessContentForm,
     HakenResponsibilityDegreeForm,
+    EmploymentTypeForm,
+    StaffRegistStatusForm,
+    ClientRegistStatusForm,
     QualificationForm,
     QualificationCategoryForm,
     SkillForm,
@@ -86,6 +93,30 @@ MASTER_CONFIGS = [
         "permission": "master.view_staffagreement",
     },
     {
+        "category": "スタッフ",
+        "name": "雇用形態管理",
+        "description": "雇用形態の管理",
+        "model": "master.EmploymentType",
+        "url_name": "master:employment_type_list",
+        "permission": "master.view_employmenttype",
+    },
+    {
+        "category": "スタッフ",
+        "name": "スタッフ登録状況管理",
+        "description": "スタッフの登録状況を管理",
+        "model": "master.StaffRegistStatus",
+        "url_name": "master:staff_regist_status_list",
+        "permission": "master.view_staffregiststatus",
+    },
+    {
+        "category": "クライアント",
+        "name": "クライアント登録状況管理",
+        "description": "クライアントの登録状況を管理",
+        "model": "master.ClientRegistStatus",
+        "url_name": "master:client_regist_status_list",
+        "permission": "master.view_clientregiststatus",
+    },
+    {
         "category": "契約",
         "name": "職種管理",
         "description": "職種情報の管理",
@@ -111,11 +142,11 @@ MASTER_CONFIGS = [
     },
     {
         "category": "契約",
-        "name": "派遣業務内容管理",
-        "description": "派遣業務内容の管理",
-        "model": "master.HakenBusinessContent",
-        "url_name": "master:haken_business_content_list",
-        "permission": "master.view_hakenbusinesscontent",
+        "name": "業務内容管理",
+        "description": "業務内容の管理",
+        "model": "master.BusinessContent",
+        "url_name": "master:business_content_list",
+        "permission": "master.view_businesscontent",
     },
     {
         "category": "契約",
@@ -975,6 +1006,100 @@ def mail_template_change_history_list(request):
             "page_title": "メールテンプレート変更履歴",
             "back_url_name": "master:mail_template_list",
             "model_name": "MailTemplate",
+        },
+    )
+
+
+# 雇用形態管理ビュー
+@login_required
+@permission_required("master.view_employmenttype", raise_exception=True)
+def employment_type_list(request):
+    """雇用形態一覧"""
+    search_query = request.GET.get("search", "")
+    items = EmploymentType.objects.all()
+    if search_query:
+        items = items.filter(name__icontains=search_query)
+    items = items.order_by("display_order")
+    paginator = Paginator(items, 20)
+    page = request.GET.get("page")
+    items_page = paginator.get_page(page)
+    from apps.system.logs.models import AppLog
+    change_logs = AppLog.objects.filter(model_name="EmploymentType", action__in=["create", "update", "delete"]).order_by("-timestamp")[:5]
+    change_logs_count = AppLog.objects.filter(model_name="EmploymentType", action__in=["create", "update", "delete"]).count()
+    context = {
+        "items": items_page,
+        "search_query": search_query,
+        "change_logs": change_logs,
+        "change_logs_count": change_logs_count,
+        "history_url_name": "master:employment_type_change_history_list",
+    }
+    return render(request, "master/employment_type_list.html", context)
+
+
+@login_required
+@permission_required("master.add_employmenttype", raise_exception=True)
+def employment_type_create(request):
+    """雇用形態作成"""
+    if request.method == "POST":
+        form = EmploymentTypeForm(request.POST)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"雇用形態「{item.name}」を作成しました。")
+            return redirect("master:employment_type_list")
+    else:
+        form = EmploymentTypeForm()
+    context = {"form": form, "title": "雇用形態作成"}
+    return render(request, "master/employment_type_form.html", context)
+
+
+@login_required
+@permission_required("master.change_employmenttype", raise_exception=True)
+def employment_type_update(request, pk):
+    """雇用形態編集"""
+    item = get_object_or_404(EmploymentType, pk=pk)
+    if request.method == "POST":
+        form = EmploymentTypeForm(request.POST, instance=item)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"雇用形態「{item.name}」を更新しました。")
+            return redirect("master:employment_type_list")
+    else:
+        form = EmploymentTypeForm(instance=item)
+    context = {"form": form, "item": item, "title": f"雇用形態編集"}
+    return render(request, "master/employment_type_form.html", context)
+
+
+@login_required
+@permission_required("master.delete_employmenttype", raise_exception=True)
+def employment_type_delete(request, pk):
+    """雇用形態削除"""
+    item = get_object_or_404(EmploymentType, pk=pk)
+    if request.method == "POST":
+        item_name = item.name
+        item.delete()
+        messages.success(request, f"雇用形態「{item_name}」を削除しました。")
+        return redirect("master:employment_type_list")
+    context = {"item": item, "title": f"雇用形態削除"}
+    return render(request, "master/employment_type_delete.html", context)
+
+
+@login_required
+@permission_required("master.view_employmenttype", raise_exception=True)
+def employment_type_change_history_list(request):
+    """雇用形態変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    logs = AppLog.objects.filter(model_name="EmploymentType", action__in=["create", "update", "delete"]).order_by("-timestamp")
+    paginator = Paginator(logs, 20)
+    page = request.GET.get("page")
+    logs_page = paginator.get_page(page)
+    return render(
+        request,
+        "common/common_change_history_list.html",
+        {
+            "change_logs": logs_page,
+            "page_title": "雇用形態変更履歴",
+            "back_url_name": "master:employment_type_list",
+            "model_name": "EmploymentType",
         },
     )
 
@@ -2118,6 +2243,7 @@ def contract_pattern_list(request):
         'title': '契約書パターン管理',
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
+        'Constants': Constants,
     }
     return render(request, 'master/contract_pattern_list.html', context)
 
@@ -2137,7 +2263,8 @@ def contract_pattern_create(request):
 
     context = {
         'form': form,
-        'title': '契約書パターン作成'
+        'title': '契約書パターン作成',
+        'Constants': Constants,
     }
     return render(request, 'master/contract_pattern_form.html', context)
 
@@ -2182,6 +2309,7 @@ def contract_pattern_copy(request, pk):
         'title': '契約書パターンコピー作成',
         'is_copy': True,
         'original_id': pk,
+        'Constants': Constants,
     }
     return render(request, 'master/contract_pattern_form.html', context)
 
@@ -2203,7 +2331,8 @@ def contract_pattern_update(request, pk):
     context = {
         'form': form,
         'pattern': pattern,
-        'title': f'契約書パターン編集 - {pattern.name}'
+        'title': f'契約書パターン編集 - {pattern.name}',
+        'Constants': Constants,
     }
     return render(request, 'master/contract_pattern_form.html', context)
 
@@ -2244,6 +2373,7 @@ def contract_pattern_detail(request, pk):
         'title': f'契約書パターン詳細 - {pattern.name}',
         'change_logs': change_logs[:20],  # ページネーションは一旦省略し、最新20件を表示
         'change_logs_count': len(change_logs),
+        'Constants': Constants,
     }
     return render(request, 'master/contract_pattern_detail.html', context)
 
@@ -2364,14 +2494,31 @@ def contract_term_delete(request, pk):
 @permission_required("master.view_minimumpay", raise_exception=True)
 def minimum_pay_list(request):
     """最低賃金一覧"""
+    from django.http import HttpResponseRedirect
+    from urllib.parse import urlencode
+
     search_query = request.GET.get("search", "")
     pref_filter = request.GET.get("pref", "")
     date_filter = request.GET.get("date_filter", "")
+    sort_by = request.GET.get("sort", "display_order")
+    order = request.GET.get("order", "asc")
 
-    # /master/ からの遷移の場合、デフォルトで「現在以降」を選択
+    # /master/ からの遷移の場合、デフォルトで「現在以降」を選択してリダイレクト
     referer = request.META.get('HTTP_REFERER')
-    if referer and referer.endswith('/master/') and not request.GET:
-        date_filter = 'future'
+    if referer and referer.endswith('/master/') and not any(key in request.GET for key in ['search', 'pref', 'date_filter']):
+        params = {
+            'sort': sort_by,
+            'order': order,
+            'search': '',
+            'pref': '',
+            'date_filter': 'future'
+        }
+        # pageパラメータがある場合は保持
+        if 'page' in request.GET:
+            params['page'] = request.GET.get('page')
+
+        query_string = urlencode(params)
+        return HttpResponseRedirect(f"{request.path}?{query_string}")
 
     minimum_pays_query = MinimumPay.objects.all()
 
@@ -2405,7 +2552,21 @@ def minimum_pay_list(request):
     else:
         minimum_pays = minimum_pays_query
 
-    minimum_pays = minimum_pays.order_by("display_order", "pref", "-start_date")
+    # ソート処理
+    valid_sort_fields = {
+        'pref': 'pref',
+        'start_date': 'start_date',
+        'hourly_wage': 'hourly_wage',
+        'display_order': 'display_order'
+    }
+
+    if sort_by in valid_sort_fields:
+        sort_field = valid_sort_fields[sort_by]
+        if order == 'desc':
+            sort_field = f'-{sort_field}'
+        minimum_pays = minimum_pays.order_by(sort_field, "pref", "-start_date")
+    else:
+        minimum_pays = minimum_pays.order_by("display_order", "pref", "-start_date")
 
     paginator = Paginator(minimum_pays, 20)
     page = request.GET.get("page")
@@ -2429,6 +2590,8 @@ def minimum_pay_list(request):
         "search_query": search_query,
         "pref_filter": pref_filter,
         "date_filter": date_filter,
+        "sort_by": sort_by,
+        "order": order,
         "pref_choices": pref_choices,
         "change_logs": change_logs,
         "change_logs_count": change_logs_count,
@@ -2528,13 +2691,13 @@ def minimum_pay_change_history_list(request):
     )
 
 
-# 派遣業務内容管理ビュー
+# 業務内容管理ビュー
 @login_required
-@permission_required("master.view_hakenbusinesscontent", raise_exception=True)
-def haken_business_content_list(request):
-    """派遣業務内容一覧"""
+@permission_required("master.view_businesscontent", raise_exception=True)
+def business_content_list(request):
+    """業務内容一覧"""
     search_query = request.GET.get("search", "")
-    items = HakenBusinessContent.objects.all()
+    items = BusinessContent.objects.all()
     if search_query:
         items = items.filter(content__icontains=search_query)
     items = items.order_by("display_order")
@@ -2542,71 +2705,71 @@ def haken_business_content_list(request):
     page = request.GET.get("page")
     items_page = paginator.get_page(page)
     from apps.system.logs.models import AppLog
-    change_logs = AppLog.objects.filter(model_name="HakenBusinessContent", action__in=["create", "update", "delete"]).order_by("-timestamp")[:5]
-    change_logs_count = AppLog.objects.filter(model_name="HakenBusinessContent", action__in=["create", "update", "delete"]).count()
+    change_logs = AppLog.objects.filter(model_name="BusinessContent", action__in=["create", "update", "delete"]).order_by("-timestamp")[:5]
+    change_logs_count = AppLog.objects.filter(model_name="BusinessContent", action__in=["create", "update", "delete"]).count()
     context = {
         "items": items_page,
         "search_query": search_query,
         "change_logs": change_logs,
         "change_logs_count": change_logs_count,
-        "history_url_name": "master:haken_business_content_change_history_list",
+        "history_url_name": "master:business_content_change_history_list",
     }
-    return render(request, "master/haken_business_content_list.html", context)
+    return render(request, "master/business_content_list.html", context)
 
 
 @login_required
-@permission_required("master.add_hakenbusinesscontent", raise_exception=True)
-def haken_business_content_create(request):
-    """派遣業務内容作成"""
+@permission_required("master.add_businesscontent", raise_exception=True)
+def business_content_create(request):
+    """業務内容作成"""
     if request.method == "POST":
-        form = HakenBusinessContentForm(request.POST)
+        form = BusinessContentForm(request.POST)
         if form.is_valid():
             item = form.save()
-            messages.success(request, f"派遣業務内容「{item.content}」を作成しました。")
-            return redirect("master:haken_business_content_list")
+            messages.success(request, f"業務内容「{item.content}」を作成しました。")
+            return redirect("master:business_content_list")
     else:
-        form = HakenBusinessContentForm()
-    context = {"form": form, "title": "派遣業務内容作成"}
-    return render(request, "master/haken_business_content_form.html", context)
+        form = BusinessContentForm()
+    context = {"form": form, "title": "業務内容作成"}
+    return render(request, "master/business_content_form.html", context)
 
 
 @login_required
-@permission_required("master.change_hakenbusinesscontent", raise_exception=True)
-def haken_business_content_update(request, pk):
-    """派遣業務内容編集"""
-    item = get_object_or_404(HakenBusinessContent, pk=pk)
+@permission_required("master.change_businesscontent", raise_exception=True)
+def business_content_update(request, pk):
+    """業務内容編集"""
+    item = get_object_or_404(BusinessContent, pk=pk)
     if request.method == "POST":
-        form = HakenBusinessContentForm(request.POST, instance=item)
+        form = BusinessContentForm(request.POST, instance=item)
         if form.is_valid():
             item = form.save()
-            messages.success(request, f"派遣業務内容「{item.content}」を更新しました。")
-            return redirect("master:haken_business_content_list")
+            messages.success(request, f"業務内容「{item.content}」を更新しました。")
+            return redirect("master:business_content_list")
     else:
-        form = HakenBusinessContentForm(instance=item)
-    context = {"form": form, "item": item, "title": f"派遣業務内容編集"}
-    return render(request, "master/haken_business_content_form.html", context)
+        form = BusinessContentForm(instance=item)
+    context = {"form": form, "item": item, "title": f"業務内容編集"}
+    return render(request, "master/business_content_form.html", context)
 
 
 @login_required
-@permission_required("master.delete_hakenbusinesscontent", raise_exception=True)
-def haken_business_content_delete(request, pk):
-    """派遣業務内容削除"""
-    item = get_object_or_404(HakenBusinessContent, pk=pk)
+@permission_required("master.delete_businesscontent", raise_exception=True)
+def business_content_delete(request, pk):
+    """業務内容削除"""
+    item = get_object_or_404(BusinessContent, pk=pk)
     if request.method == "POST":
         item_content = item.content
         item.delete()
-        messages.success(request, f"派遣業務内容「{item_content}」を削除しました。")
-        return redirect("master:haken_business_content_list")
-    context = {"item": item, "title": f"派遣業務内容削除"}
-    return render(request, "master/haken_business_content_delete.html", context)
+        messages.success(request, f"業務内容「{item_content}」を削除しました。")
+        return redirect("master:business_content_list")
+    context = {"item": item, "title": f"業務内容削除"}
+    return render(request, "master/business_content_delete.html", context)
 
 
 @login_required
-@permission_required("master.view_hakenbusinesscontent", raise_exception=True)
-def haken_business_content_change_history_list(request):
-    """派遣業務内容変更履歴一覧"""
+@permission_required("master.view_businesscontent", raise_exception=True)
+def business_content_change_history_list(request):
+    """業務内容変更履歴一覧"""
     from apps.system.logs.models import AppLog
-    logs = AppLog.objects.filter(model_name="HakenBusinessContent", action__in=["create", "update", "delete"]).order_by("-timestamp")
+    logs = AppLog.objects.filter(model_name="BusinessContent", action__in=["create", "update", "delete"]).order_by("-timestamp")
     paginator = Paginator(logs, 20)
     page = request.GET.get("page")
     logs_page = paginator.get_page(page)
@@ -2615,9 +2778,9 @@ def haken_business_content_change_history_list(request):
         "common/common_change_history_list.html",
         {
             "change_logs": logs_page,
-            "page_title": "派遣業務内容変更履歴",
-            "back_url_name": "master:haken_business_content_list",
-            "model_name": "HakenBusinessContent",
+            "page_title": "業務内容変更履歴",
+            "back_url_name": "master:business_content_list",
+            "model_name": "BusinessContent",
         },
     )
 
@@ -2726,7 +2889,6 @@ def default_value_list(request):
         items = items.filter(
             Q(target_item__icontains=search_query) | Q(value__icontains=search_query)
         )
-    items = items.order_by("target_item")
 
     paginator = Paginator(items, 20)
     page = request.GET.get("page")
@@ -2786,5 +2948,193 @@ def default_value_change_history_list(request):
             "page_title": "初期値マスタ変更履歴",
             "back_url_name": "master:default_value_list",
             "model_name": "DefaultValue",
+        },
+    )
+
+
+# スタッフ登録状況管理ビュー
+@login_required
+@permission_required("master.view_staffregiststatus", raise_exception=True)
+def staff_regist_status_list(request):
+    """スタッフ登録状況一覧"""
+    search_query = request.GET.get("search", "")
+    items = StaffRegistStatus.objects.all()
+    if search_query:
+        items = items.filter(name__icontains=search_query)
+    items = items.order_by("display_order")
+    paginator = Paginator(items, 20)
+    page = request.GET.get("page")
+    items_page = paginator.get_page(page)
+    from apps.system.logs.models import AppLog
+    change_logs = AppLog.objects.filter(model_name="StaffRegistStatus", action__in=["create", "update", "delete"]).order_by("-timestamp")[:5]
+    change_logs_count = AppLog.objects.filter(model_name="StaffRegistStatus", action__in=["create", "update", "delete"]).count()
+    context = {
+        "items": items_page,
+        "search_query": search_query,
+        "change_logs": change_logs,
+        "change_logs_count": change_logs_count,
+        "history_url_name": "master:staff_regist_status_change_history_list",
+    }
+    return render(request, "master/staff_regist_status_list.html", context)
+
+
+@login_required
+@permission_required("master.add_staffregiststatus", raise_exception=True)
+def staff_regist_status_create(request):
+    """スタッフ登録状況作成"""
+    if request.method == "POST":
+        form = StaffRegistStatusForm(request.POST)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"スタッフ登録状況「{item.name}」を作成しました。")
+            return redirect("master:staff_regist_status_list")
+    else:
+        form = StaffRegistStatusForm()
+    context = {"form": form, "title": "スタッフ登録状況作成"}
+    return render(request, "master/staff_regist_status_form.html", context)
+
+
+@login_required
+@permission_required("master.change_staffregiststatus", raise_exception=True)
+def staff_regist_status_update(request, pk):
+    """スタッフ登録状況編集"""
+    item = get_object_or_404(StaffRegistStatus, pk=pk)
+    if request.method == "POST":
+        form = StaffRegistStatusForm(request.POST, instance=item)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"スタッフ登録状況「{item.name}」を更新しました。")
+            return redirect("master:staff_regist_status_list")
+    else:
+        form = StaffRegistStatusForm(instance=item)
+    context = {"form": form, "item": item, "title": f"スタッフ登録状況編集"}
+    return render(request, "master/staff_regist_status_form.html", context)
+
+
+@login_required
+@permission_required("master.delete_staffregiststatus", raise_exception=True)
+def staff_regist_status_delete(request, pk):
+    """スタッフ登録状況削除"""
+    item = get_object_or_404(StaffRegistStatus, pk=pk)
+    if request.method == "POST":
+        item_name = item.name
+        item.delete()
+        messages.success(request, f"スタッフ登録状況「{item_name}」を削除しました。")
+        return redirect("master:staff_regist_status_list")
+    context = {"item": item, "title": f"スタッフ登録状況削除"}
+    return render(request, "master/staff_regist_status_delete.html", context)
+
+
+@login_required
+@permission_required("master.view_staffregiststatus", raise_exception=True)
+def staff_regist_status_change_history_list(request):
+    """スタッフ登録状況変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    logs = AppLog.objects.filter(model_name="StaffRegistStatus", action__in=["create", "update", "delete"]).order_by("-timestamp")
+    paginator = Paginator(logs, 20)
+    page = request.GET.get("page")
+    logs_page = paginator.get_page(page)
+    return render(
+        request,
+        "common/common_change_history_list.html",
+        {
+            "change_logs": logs_page,
+            "page_title": "スタッフ登録状況変更履歴",
+            "back_url_name": "master:staff_regist_status_list",
+            "model_name": "StaffRegistStatus",
+        },
+    )
+
+
+# クライアント登録状況管理ビュー
+@login_required
+@permission_required("master.view_clientregiststatus", raise_exception=True)
+def client_regist_status_list(request):
+    """クライアント登録状況一覧"""
+    search_query = request.GET.get("search", "")
+    items = ClientRegistStatus.objects.all()
+    if search_query:
+        items = items.filter(name__icontains=search_query)
+    items = items.order_by("display_order")
+    paginator = Paginator(items, 20)
+    page = request.GET.get("page")
+    items_page = paginator.get_page(page)
+    from apps.system.logs.models import AppLog
+    change_logs = AppLog.objects.filter(model_name="ClientRegistStatus", action__in=["create", "update", "delete"]).order_by("-timestamp")[:5]
+    change_logs_count = AppLog.objects.filter(model_name="ClientRegistStatus", action__in=["create", "update", "delete"]).count()
+    context = {
+        "items": items_page,
+        "search_query": search_query,
+        "change_logs": change_logs,
+        "change_logs_count": change_logs_count,
+        "history_url_name": "master:client_regist_status_change_history_list",
+    }
+    return render(request, "master/client_regist_status_list.html", context)
+
+
+@login_required
+@permission_required("master.add_clientregiststatus", raise_exception=True)
+def client_regist_status_create(request):
+    """クライアント登録状況作成"""
+    if request.method == "POST":
+        form = ClientRegistStatusForm(request.POST)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"クライアント登録状況「{item.name}」を作成しました。")
+            return redirect("master:client_regist_status_list")
+    else:
+        form = ClientRegistStatusForm()
+    context = {"form": form, "title": "クライアント登録状況作成"}
+    return render(request, "master/client_regist_status_form.html", context)
+
+
+@login_required
+@permission_required("master.change_clientregiststatus", raise_exception=True)
+def client_regist_status_update(request, pk):
+    """クライアント登録状況編集"""
+    item = get_object_or_404(ClientRegistStatus, pk=pk)
+    if request.method == "POST":
+        form = ClientRegistStatusForm(request.POST, instance=item)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"クライアント登録状況「{item.name}」を更新しました。")
+            return redirect("master:client_regist_status_list")
+    else:
+        form = ClientRegistStatusForm(instance=item)
+    context = {"form": form, "item": item, "title": f"クライアント登録状況編集"}
+    return render(request, "master/client_regist_status_form.html", context)
+
+
+@login_required
+@permission_required("master.delete_clientregiststatus", raise_exception=True)
+def client_regist_status_delete(request, pk):
+    """クライアント登録状況削除"""
+    item = get_object_or_404(ClientRegistStatus, pk=pk)
+    if request.method == "POST":
+        item_name = item.name
+        item.delete()
+        messages.success(request, f"クライアント登録状況「{item_name}」を削除しました。")
+        return redirect("master:client_regist_status_list")
+    context = {"item": item, "title": f"クライアント登録状況削除"}
+    return render(request, "master/client_regist_status_delete.html", context)
+
+
+@login_required
+@permission_required("master.view_clientregiststatus", raise_exception=True)
+def client_regist_status_change_history_list(request):
+    """クライアント登録状況変更履歴一覧"""
+    from apps.system.logs.models import AppLog
+    logs = AppLog.objects.filter(model_name="ClientRegistStatus", action__in=["create", "update", "delete"]).order_by("-timestamp")
+    paginator = Paginator(logs, 20)
+    page = request.GET.get("page")
+    logs_page = paginator.get_page(page)
+    return render(
+        request,
+        "common/common_change_history_list.html",
+        {
+            "change_logs": logs_page,
+            "page_title": "クライアント登録状況変更履歴",
+            "back_url_name": "master:client_regist_status_list",
+            "model_name": "ClientRegistStatus",
         },
     )

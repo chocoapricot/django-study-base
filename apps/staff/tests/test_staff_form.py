@@ -54,10 +54,17 @@ class StaffFormTest(TestCase):
             active=True
         )
         
+        # 雇用形態マスタを作成
+        from apps.master.models import EmploymentType
+        self.employment_type_1 = EmploymentType.objects.create(name='正社員', display_order=1, is_fixed_term=False, is_active=True)
+        self.employment_type_2 = EmploymentType.objects.create(name='契約社員', display_order=2, is_fixed_term=True, is_active=True)
+        self.employment_type_3 = EmploymentType.objects.create(name='派遣社員', display_order=3, is_fixed_term=True, is_active=True)
+
         # テスト用スタッフを作成
         self.staff = Staff.objects.create(
             staff_regist_status_code=1,  # 数値で指定
             employee_no='EMP001',
+            employment_type=self.employment_type_1,  # 雇用形態を追加
             name_last='田中',
             name_first='太郎',
             name_kana_last='タナカ',
@@ -91,6 +98,7 @@ class StaffFormTest(TestCase):
         form_data = {
             'staff_regist_status_code': '1',
             'employee_no': 'EMP001',
+            'employment_type': self.employment_type_1.pk,  # 雇用形態を追加
             'name_last': '田中',
             'name_first': '太郎',
             'name_kana_last': 'タナカ',
@@ -127,6 +135,7 @@ class StaffFormTest(TestCase):
         form_data = {
             'staff_regist_status_code': '1',
             'employee_no': 'EMP001',
+            'employment_type': self.employment_type_1.pk,  # 雇用形態を追加
             'name_last': '田中',
             'name_first': '太郎',
             'name_kana_last': 'タナカ',
@@ -162,6 +171,7 @@ class StaffFormTest(TestCase):
         form_data = {
             'staff_regist_status_code': '1',
             'employee_no': 'EMP001',
+            'employment_type': self.employment_type_1.pk,  # 雇用形態を追加
             'name_last': '田中',
             'name_first': '太郎',
             'name_kana_last': 'タナカ',
@@ -197,6 +207,7 @@ class StaffFormTest(TestCase):
         form_data = {
             'staff_regist_status_code': '1',
             'employee_no': 'EMP001',
+            'employment_type': self.employment_type_1.pk,  # 雇用形態を追加
             'name_last': '田中',
             'name_first': '太郎',
             'name_kana_last': 'タナカ',
@@ -220,6 +231,7 @@ class StaffFormTest(TestCase):
         form_data = {
             'staff_regist_status_code': '1',
             'employee_no': 'EMP002',
+            'employment_type': self.employment_type_2.pk,  # 雇用形態を追加
             'name_last': '佐藤',
             'name_first': '花子',
             'name_kana_last': 'サトウ',
@@ -333,6 +345,7 @@ class StaffFormTest(TestCase):
         form_data = {
             'staff_regist_status_code': '1',
             'employee_no': 'EMP002',  # 異なる社員番号
+            'employment_type': self.employment_type_1.pk,  # 雇用形態を追加
             'name_last': '鈴木',
             'name_first': '一郎',
             'name_kana_last': 'スズキ',
@@ -356,6 +369,7 @@ class StaffFormTest(TestCase):
         form_data = {
             'staff_regist_status_code': '1',
             'employee_no': 'EMP003',
+            'employment_type': self.employment_type_2.pk,  # 雇用形態を追加
             'name_last': '高橋',
             'name_first': '美咲',
             'name_kana_last': 'タカハシ',
@@ -380,6 +394,7 @@ class StaffFormTest(TestCase):
         form_data = {
             'staff_regist_status_code': '1',
             'employee_no': 'EMP004',
+            'employment_type': self.employment_type_1.pk,  # 雇用形態を追加
             'name_last': '山田',
             'name_first': '次郎',
             'name_kana_last': 'ヤマダ',
@@ -397,3 +412,73 @@ class StaffFormTest(TestCase):
         form = StaffForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn('入社日は退職日より前の日付を入力してください', str(form.errors))
+
+    def test_hire_date_without_employment_type_validation(self):
+        """入社日のみ入力、雇用形態なしのバリデーションテスト"""
+        form_data = {
+            'staff_regist_status_code': '1',
+            'employee_no': 'EMP005',
+            'employment_type': '',  # 雇用形態なし
+            'name_last': '田中',
+            'name_first': '太郎',
+            'name_kana_last': 'タナカ',
+            'name_kana_first': 'タロウ',
+            'birth_date': date(1990, 1, 1),
+            'sex': '1',
+            'hire_date': date(2020, 4, 1),  # 入社日あり
+            'postal_code': '1000001',
+            'address1': '東京都千代田区千代田',
+            'phone': '03-1234-5678',
+            'email': 'tanaka2@example.com'
+        }
+
+        form = StaffForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('入社日を入力する場合は、雇用形態も選択してください', str(form.errors))
+
+    def test_employment_type_without_hire_date_validation(self):
+        """雇用形態のみ選択、入社日なしのバリデーションテスト"""
+        form_data = {
+            'staff_regist_status_code': '1',
+            'employee_no': '',
+            'employment_type': self.employment_type_1.pk,  # 雇用形態あり
+            'name_last': '田中',
+            'name_first': '太郎',
+            'name_kana_last': 'タナカ',
+            'name_kana_first': 'タロウ',
+            'birth_date': date(1990, 1, 1),
+            'sex': '1',
+            'hire_date': '',  # 入社日なし
+            'postal_code': '1000001',
+            'address1': '東京都千代田区千代田',
+            'phone': '03-1234-5678',
+            'email': 'tanaka3@example.com'
+        }
+
+        form = StaffForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('雇用形態を選択する場合は、入社日も入力してください', str(form.errors))
+
+    def test_valid_all_three_fields_filled(self):
+        """入社日・社員番号・雇用形態すべて入力済みの場合は有効"""
+        form_data = {
+            'staff_regist_status_code': '1',
+            'employee_no': 'EMP006',
+            'employment_type': self.employment_type_3.pk,  # 派遣社員
+            'name_last': '佐藤',
+            'name_first': '花子',
+            'name_kana_last': 'サトウ',
+            'name_kana_first': 'ハナコ',
+            'birth_date': date(1992, 5, 15),
+            'sex': '2',
+            'hire_date': date(2023, 4, 1),
+            'postal_code': '1000002',
+            'address1': '東京都千代田区丸の内',
+            'phone': '03-9876-5432',
+            'email': 'sato2@example.com'
+        }
+
+        form = StaffForm(data=form_data)
+        if not form.is_valid():
+            print(f"Form errors: {form.errors}")
+        self.assertTrue(form.is_valid())

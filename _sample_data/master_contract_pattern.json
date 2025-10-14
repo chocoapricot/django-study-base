@@ -3,15 +3,16 @@
     "model": "master.contractpattern",
     "pk": 1,
     "fields": {
-        "version": 1758030461926832,
+        "version": 1760115982148588,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
-        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_at": "2025-10-10T17:22:08.800Z",
         "updated_by": 1,
         "name": "正社員",
         "domain": "1",
         "contract_type_code": null,
-        "memo": null,
+        "employment_type": 1,
+        "memo": "",
         "display_order": 10,
         "is_active": true
     }
@@ -20,15 +21,16 @@
     "model": "master.contractpattern",
     "pk": 2,
     "fields": {
-        "version": 1758030461931334,
+        "version": 1760115993809793,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
-        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_at": "2025-10-10T17:22:20.462Z",
         "updated_by": 1,
         "name": "契約社員",
         "domain": "1",
         "contract_type_code": null,
-        "memo": null,
+        "employment_type": 2,
+        "memo": "",
         "display_order": 20,
         "is_active": true
     }
@@ -37,15 +39,16 @@
     "model": "master.contractpattern",
     "pk": 3,
     "fields": {
-        "version": 1758030461933353,
+        "version": 1760116002448456,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
-        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_at": "2025-10-10T17:22:29.100Z",
         "updated_by": 1,
         "name": "派遣契約",
         "domain": "1",
         "contract_type_code": null,
-        "memo": null,
+        "employment_type": 4,
+        "memo": "",
         "display_order": 30,
         "is_active": true
     }
@@ -54,15 +57,16 @@
     "model": "master.contractpattern",
     "pk": 4,
     "fields": {
-        "version": 1758030461935227,
+        "version": 1760116009932233,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
-        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_at": "2025-10-10T17:22:36.584Z",
         "updated_by": 1,
         "name": "紹介予定派遣",
         "domain": "1",
         "contract_type_code": null,
-        "memo": null,
+        "employment_type": 4,
+        "memo": "",
         "display_order": 40,
         "is_active": true
     }
@@ -71,7 +75,7 @@
     "model": "master.contractpattern",
     "pk": 5,
     "fields": {
-        "version": 1758030551234655,
+        "version": 1760111636001285,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-16T14:04:57.887Z",
@@ -79,6 +83,7 @@
         "name": "請負契約",
         "domain": "10",
         "contract_type_code": "1",
+        "employment_type": null,
         "memo": "",
         "display_order": 10,
         "is_active": true
@@ -88,7 +93,7 @@
     "model": "master.contractpattern",
     "pk": 6,
     "fields": {
-        "version": 1758030559777546,
+        "version": 1760111636005055,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-16T14:05:06.429Z",
@@ -96,6 +101,7 @@
         "name": "準委任契約",
         "domain": "10",
         "contract_type_code": "10",
+        "employment_type": null,
         "memo": "",
         "display_order": 20,
         "is_active": true
@@ -105,7 +111,7 @@
     "model": "master.contractpattern",
     "pk": 7,
     "fields": {
-        "version": 1758030567182668,
+        "version": 1760111636007803,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-16T14:05:13.835Z",
@@ -113,8 +119,27 @@
         "name": "派遣契約",
         "domain": "10",
         "contract_type_code": "20",
+        "employment_type": null,
         "memo": "",
         "display_order": 30,
+        "is_active": true
+    }
+},
+{
+    "model": "master.contractpattern",
+    "pk": 8,
+    "fields": {
+        "version": 1760111636010479,
+        "created_at": "2025-10-09T16:56:23.395Z",
+        "created_by": 1,
+        "updated_at": "2025-10-09T16:56:23.395Z",
+        "updated_by": 1,
+        "name": "紹介予定派遣",
+        "domain": "10",
+        "contract_type_code": "20",
+        "employment_type": null,
+        "memo": "",
+        "display_order": 40,
         "is_active": true
     }
 }

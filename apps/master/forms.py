@@ -14,17 +14,21 @@ from .models import (
     ContractPattern,
     ContractTerms,
     MinimumPay,
-    HakenBusinessContent,
+    BusinessContent,
     HakenResponsibilityDegree,
     DefaultValue,
+    EmploymentType,
+    StaffRegistStatus,
+    ClientRegistStatus,
 )
 from apps.system.settings.models import Dropdowns
+from apps.common.constants import Constants
 
 
-class HakenBusinessContentForm(forms.ModelForm):
-    """派遣業務内容フォーム"""
+class BusinessContentForm(forms.ModelForm):
+    """業務内容フォーム"""
     class Meta:
-        model = HakenBusinessContent
+        model = BusinessContent
         fields = ['content', 'display_order', 'is_active']
         widgets = {
             'content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
@@ -41,6 +45,19 @@ class HakenResponsibilityDegreeForm(forms.ModelForm):
         widgets = {
             'content': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+
+class EmploymentTypeForm(forms.ModelForm):
+    """雇用形態フォーム"""
+    class Meta:
+        model = EmploymentType
+        fields = ['name', 'display_order', 'is_fixed_term', 'is_active']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_fixed_term': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
@@ -126,11 +143,12 @@ class ContractPatternForm(forms.ModelForm):
     """契約書パターンフォーム"""
     class Meta:
         model = ContractPattern
-        fields = ['name', 'domain', 'contract_type_code', 'memo', 'display_order', 'is_active']
+        fields = ['name', 'domain', 'contract_type_code', 'employment_type', 'memo', 'display_order', 'is_active']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'domain': forms.RadioSelect(),
             'contract_type_code': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'employment_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
@@ -138,9 +156,7 @@ class ContractPatternForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        choices = [('', '---------')] + [
-            (d.value, d.name) for d in Dropdowns.objects.filter(category='client_contract_type', active=True)
-        ]
+        # 契約種別の選択肢（クライアント用）
         self.fields['contract_type_code'] = forms.ChoiceField(
             label='契約種別',
             choices=[('', '---------')] + [
@@ -150,16 +166,24 @@ class ContractPatternForm(forms.ModelForm):
             widget=forms.Select(attrs={'class': 'form-control form-control-sm'})
         )
 
+        # 雇用形態の選択肢（スタッフ用）
+        from .models import EmploymentType
+        self.fields['employment_type'].queryset = EmploymentType.objects.filter(is_active=True).order_by('display_order', 'name')
+        self.fields['employment_type'].empty_label = '---------'
+
     def clean(self):
         cleaned_data = super().clean()
         domain = cleaned_data.get('domain')
         contract_type_code = cleaned_data.get('contract_type_code')
+        employment_type = cleaned_data.get('employment_type')
 
-        if domain == '10':
+        if domain == Constants.DOMAIN.CLIENT:  # クライアント
             if not contract_type_code:
                 self.add_error('contract_type_code', 'クライアントが対象の場合、契約種別は必須です。')
-        else:
-            # If domain is not client, clear the contract_type_code
+            # クライアントの場合は雇用形態をクリア
+            cleaned_data['employment_type'] = None
+        else:  # スタッフ
+            # スタッフの場合は契約種別をクリア
             cleaned_data['contract_type_code'] = None
 
         return cleaned_data
@@ -548,4 +572,38 @@ class DefaultValueForm(forms.ModelForm):
             'target_item': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'readonly': 'readonly'}),
             'format': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'value': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields['format'].widget.attrs['disabled'] = True
+            if self.instance.format == 'text':
+                self.fields['value'].widget.attrs.update({
+                    'rows': '1',
+                    'style': 'resize: none;'
+                })
+
+
+class StaffRegistStatusForm(forms.ModelForm):
+    """スタッフ登録状況フォーム"""
+    class Meta:
+        model = StaffRegistStatus
+        fields = ['name', 'display_order', 'is_active']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+
+class ClientRegistStatusForm(forms.ModelForm):
+    """クライアント登録状況フォーム"""
+    class Meta:
+        model = ClientRegistStatus
+        fields = ['name', 'display_order', 'is_active']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }

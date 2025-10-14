@@ -1,4 +1,5 @@
 {% extends 'common/_base.html' %}
+{% load static %}
 {% load dropdowns %}
 {% load help_tags %}
 {% block content %}
@@ -105,6 +106,51 @@
                 </div>
             </div>
         </div>
+
+        <!-- 関連するクライアント契約 -->
+        {% if related_contracts %}
+        {% load badge_tags %}
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header">関連するクライアント契約</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover table-sm" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>クライアント名</th>
+                                <th>契約名</th>
+                                <th>契約期間</th>
+                                <th>契約状況</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for contract in related_contracts %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'contract:client_contract_detail' contract.pk %}">{{ contract.client.name }}</a>
+                                    {% if contract.is_responsible_role %}
+                                        <span class="badge bg-primary ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="派遣先責任者">責任</span>
+                                    {% endif %}
+                                    {% if contract.is_complaint_role %}
+                                        <span class="badge bg-warning ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="派遣先苦情申出先">苦情</span>
+                                    {% endif %}
+                                    {% if contract.is_commander_role %}
+                                        <span class="badge bg-success ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="派遣先指揮命令者">指揮</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ contract.contract_name }}</td>
+                                <td>{{ contract.start_date|date:"Y/m/d" }}{% if contract.end_date %} ～ {{ contract.end_date|date:"Y/m/d" }}{% else %} ～ 無期限{% endif %}</td>
+                                <td>
+                                    <span class="badge {{ contract.contract_status|badge_class }}">{% my_name 'contract_status' contract.contract_status %}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
     <!-- 左上 -->
 
@@ -175,24 +221,61 @@
         margin-left: 5px;
     }
 </style>
-<script>
-    function copyToClipboard(button) {
-        // ボタンの前の .copy-target を探してテキストを取得
-        const targetText = button.previousElementSibling.innerText;
-        navigator.clipboard.writeText(targetText).then(() => {
-            // コピーが成功したらメッセージを表示
-            const copyMessage = button.nextElementSibling;
-            copyMessage.style.display = "inline";
-    
-            // 2秒後にメッセージを非表示にする
-            setTimeout(() => {
-                copyMessage.style.display = "none";
-            }, 1000);
-        }).catch(err => {
-            console.error("コピーに失敗しました: ", err);
-        });
-    }
-</script>
+<script src="{% static 'js/copy-to-clipboard.js' %}"></script>
 
+<script>
+// ページロジック情報を設定
+document.addEventListener('DOMContentLoaded', function() {
+    // このページにロジック情報があることを通知
+    document.body.setAttribute('data-has-logic', 'true');
+    
+    const logicContent = document.getElementById('logic-info-content');
+    if (logicContent) {
+        logicContent.innerHTML = `
+            <div class="alert alert-info mb-3">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>クライアント担当者詳細画面のロジック情報</h6>
+            </div>
+
+            <!-- 単項目チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-shield-check text-primary me-2"></i>単項目チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• メールアドレス: 接続機能を利用するには必須</div>
+                    <div class="mb-0">• 法人番号: 会社に法人番号が設定されていることが必須</div>
+                </div>
+            </div>
+
+            <!-- 相関チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-check-circle text-success me-2"></i>相関チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 接続依頼: 既存の接続依頼がある場合はスイッチOFFで削除</div>
+                    <div class="mb-0">• 接続承認: クライアント側での承認が必要（管理者は制御不可）</div>
+                </div>
+            </div>
+
+            <!-- 自動処理 -->
+            <div class="card" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-gear text-secondary me-2"></i>自動処理</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 接続依頼作成: 会社の法人番号とクライアント担当者のメールアドレスで接続レコード作成</div>
+                    <div class="mb-2">• 権限付与: 既存ユーザーがいる場合はクライアント接続権限を自動付与</div>
+                    <div class="mb-2">• 変更履歴記録: 接続依頼の作成・削除をAppLogに自動記録</div>
+                    <div class="mb-0">• 詳細画面アクセス記録: 画面アクセスをAppLogに自動記録</div>
+                </div>
+            </div>
+        `;
+    }
+
+    // ロジック情報設定完了を通知
+    document.dispatchEvent(new Event('logicInfoSet'));
+});
+</script>
 
 {% endblock %}

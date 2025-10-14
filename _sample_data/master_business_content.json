@@ -1,6 +1,6 @@
 [
 {
-    "model": "master.hakenbusinesscontent",
+    "model": "master.businesscontent",
     "pk": 3,
     "fields": {
         "version": 1759162968853793,
@@ -14,7 +14,7 @@
     }
 },
 {
-    "model": "master.hakenbusinesscontent",
+    "model": "master.businesscontent",
     "pk": 4,
     "fields": {
         "version": 1759163045676947,
@@ -28,7 +28,7 @@
     }
 },
 {
-    "model": "master.hakenbusinesscontent",
+    "model": "master.businesscontent",
     "pk": 5,
     "fields": {
         "version": 1759163054912349,
@@ -42,7 +42,7 @@
     }
 },
 {
-    "model": "master.hakenbusinesscontent",
+    "model": "master.businesscontent",
     "pk": 6,
     "fields": {
         "version": 1759163099539137,
@@ -56,7 +56,7 @@
     }
 },
 {
-    "model": "master.hakenbusinesscontent",
+    "model": "master.businesscontent",
     "pk": 7,
     "fields": {
         "version": 1759163115797285,

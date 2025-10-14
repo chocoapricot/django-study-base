@@ -102,12 +102,12 @@ urlpatterns = [
     path('minimum-pay/<int:pk>/delete/', views.minimum_pay_delete, name='minimum_pay_delete'),
     path('minimum-pay/history/', views.minimum_pay_change_history_list, name='minimum_pay_change_history_list'),
 
-    # 派遣業務内容管理
-    path('haken-business-content/', views.haken_business_content_list, name='haken_business_content_list'),
-    path('haken-business-content/create/', views.haken_business_content_create, name='haken_business_content_create'),
-    path('haken-business-content/<int:pk>/update/', views.haken_business_content_update, name='haken_business_content_update'),
-    path('haken-business-content/<int:pk>/delete/', views.haken_business_content_delete, name='haken_business_content_delete'),
-    path('haken-business-content/history/', views.haken_business_content_change_history_list, name='haken_business_content_change_history_list'),
+    # 業務内容管理
+    path('business-content/', views.business_content_list, name='business_content_list'),
+    path('business-content/create/', views.business_content_create, name='business_content_create'),
+    path('business-content/<int:pk>/update/', views.business_content_update, name='business_content_update'),
+    path('business-content/<int:pk>/delete/', views.business_content_delete, name='business_content_delete'),
+    path('business-content/history/', views.business_content_change_history_list, name='business_content_change_history_list'),
 
     # 派遣責任程度管理
     path('haken-responsibility-degree/', views.haken_responsibility_degree_list, name='haken_responsibility_degree_list'),
@@ -115,6 +115,13 @@ urlpatterns = [
     path('haken-responsibility-degree/<int:pk>/update/', views.haken_responsibility_degree_update, name='haken_responsibility_degree_update'),
     path('haken-responsibility-degree/<int:pk>/delete/', views.haken_responsibility_degree_delete, name='haken_responsibility_degree_delete'),
     path('haken-responsibility-degree/history/', views.haken_responsibility_degree_change_history_list, name='haken_responsibility_degree_change_history_list'),
+
+    # 雇用形態管理
+    path('employment-type/', views.employment_type_list, name='employment_type_list'),
+    path('employment-type/create/', views.employment_type_create, name='employment_type_create'),
+    path('employment-type/<int:pk>/update/', views.employment_type_update, name='employment_type_update'),
+    path('employment-type/<int:pk>/delete/', views.employment_type_delete, name='employment_type_delete'),
+    path('employment-type/history/', views.employment_type_change_history_list, name='employment_type_change_history_list'),
 
     # 初期値マスタ
     path('default-value/', views.default_value_list, name='default_value_list'),
@@ -126,4 +133,18 @@ urlpatterns = [
     path('mail-template/<int:pk>/', views.mail_template_detail, name='mail_template_detail'),
     path('mail-template/<int:pk>/update/', views.mail_template_update, name='mail_template_update'),
     path('mail-template/history/', views.mail_template_change_history_list, name='mail_template_change_history_list'),
+
+    # スタッフ登録状況管理
+    path('staff-regist-status/', views.staff_regist_status_list, name='staff_regist_status_list'),
+    path('staff-regist-status/create/', views.staff_regist_status_create, name='staff_regist_status_create'),
+    path('staff-regist-status/<int:pk>/update/', views.staff_regist_status_update, name='staff_regist_status_update'),
+    path('staff-regist-status/<int:pk>/delete/', views.staff_regist_status_delete, name='staff_regist_status_delete'),
+    path('staff-regist-status/history/', views.staff_regist_status_change_history_list, name='staff_regist_status_change_history_list'),
+
+    # クライアント登録状況管理
+    path('client-regist-status/', views.client_regist_status_list, name='client_regist_status_list'),
+    path('client-regist-status/create/', views.client_regist_status_create, name='client_regist_status_create'),
+    path('client-regist-status/<int:pk>/update/', views.client_regist_status_update, name='client_regist_status_update'),
+    path('client-regist-status/<int:pk>/delete/', views.client_regist_status_delete, name='client_regist_status_delete'),
+    path('client-regist-status/history/', views.client_regist_status_change_history_list, name='client_regist_status_change_history_list'),
 ]

@@ -17,6 +17,8 @@
     <div class="card-body mb-0">
         <!-- 検索・フィルタフォーム -->
         <form method="get" class="mb-3" id="searchForm">
+            <input type="hidden" name="sort" value="{{ sort_by }}">
+            <input type="hidden" name="order" value="{{ order }}">
             <div class="row">
                 <div class="col-md-2">
                     <input type="text" name="search" value="{{ search_query }}" class="form-control form-control-sm" placeholder="時給で検索">
@@ -47,11 +49,55 @@
             <table class="table table-sm table-hover">
                 <thead>
                     <tr>
-                        <th>都道府県</th>
-                        <th>開始日</th>
-                        <th>最低時給</th>
+                        <th>
+                            <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.pref %}pref={{ request.GET.pref }}&{% endif %}{% if request.GET.date_filter %}date_filter={{ request.GET.date_filter }}&{% endif %}sort=pref&order={% if sort_by == 'pref' and order == 'asc' %}desc{% else %}asc{% endif %}" class="text-decoration-none text-dark">
+                                都道府県
+                                {% if sort_by == 'pref' %}
+                                    {% if order == 'asc' %}
+                                        <i class="bi bi-arrow-up"></i>
+                                    {% else %}
+                                        <i class="bi bi-arrow-down"></i>
+                                    {% endif %}
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.pref %}pref={{ request.GET.pref }}&{% endif %}{% if request.GET.date_filter %}date_filter={{ request.GET.date_filter }}&{% endif %}sort=start_date&order={% if sort_by == 'start_date' and order == 'asc' %}desc{% else %}asc{% endif %}" class="text-decoration-none text-dark">
+                                開始日
+                                {% if sort_by == 'start_date' %}
+                                    {% if order == 'asc' %}
+                                        <i class="bi bi-arrow-up"></i>
+                                    {% else %}
+                                        <i class="bi bi-arrow-down"></i>
+                                    {% endif %}
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.pref %}pref={{ request.GET.pref }}&{% endif %}{% if request.GET.date_filter %}date_filter={{ request.GET.date_filter }}&{% endif %}sort=hourly_wage&order={% if sort_by == 'hourly_wage' and order == 'asc' %}desc{% else %}asc{% endif %}" class="text-decoration-none text-dark">
+                                最低時給
+                                {% if sort_by == 'hourly_wage' %}
+                                    {% if order == 'asc' %}
+                                        <i class="bi bi-arrow-up"></i>
+                                    {% else %}
+                                        <i class="bi bi-arrow-down"></i>
+                                    {% endif %}
+                                {% endif %}
+                            </a>
+                        </th>
                         <th>状態</th>
-                        <th>表示順</th>
+                        <th>
+                            <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.pref %}pref={{ request.GET.pref }}&{% endif %}{% if request.GET.date_filter %}date_filter={{ request.GET.date_filter }}&{% endif %}sort=display_order&order={% if sort_by == 'display_order' and order == 'asc' %}desc{% else %}asc{% endif %}" class="text-decoration-none text-dark">
+                                表示順
+                                {% if sort_by == 'display_order' %}
+                                    {% if order == 'asc' %}
+                                        <i class="bi bi-arrow-up"></i>
+                                    {% else %}
+                                        <i class="bi bi-arrow-down"></i>
+                                    {% endif %}
+                                {% endif %}
+                            </a>
+                        </th>
                         <th>操作</th>
                     </tr>
                 </thead>

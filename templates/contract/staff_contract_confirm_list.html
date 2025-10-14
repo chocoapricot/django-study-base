@@ -43,20 +43,20 @@
                         {% endif %}
                     </td>
                     <td>
-                        <span class="badge {{ item.contract.contract_status|badge_class }}">{{ item.contract.get_contract_status_display }}</span>
+                        <span class="badge {{ item.contract.contract_status|badge_class }}">{% my_name "contract_status" item.contract.contract_status %}</span>
                     </td>
                     <td>
                         {{ item.contract.confirmed_at|date:"Y/m/d H:i"|default:"-" }}
                     </td>
                     <td>
-                        {% if item.contract.contract_status == ContractStatus.ISSUED %}
+                        {% if item.contract.contract_status == CONTRACT_STATUS.ISSUED %}
                             <form method="post" action="{% url 'contract:staff_contract_confirm_list' %}" class="d-inline">
                                 {% csrf_token %}
                                 <input type="hidden" name="contract_id" value="{{ item.contract.pk }}">
                                 <input type="hidden" name="action" value="confirm">
                                 <button type="submit" class="btn btn-sm btn-primary">確認</button>
                             </form>
-                        {% elif item.contract.contract_status == ContractStatus.CONFIRMED %}
+                        {% elif item.contract.contract_status == CONTRACT_STATUS.CONFIRMED %}
                             <form method="post" action="{% url 'contract:staff_contract_confirm_list' %}" class="d-inline">
                                 {% csrf_token %}
                                 <input type="hidden" name="contract_id" value="{{ item.contract.pk }}">

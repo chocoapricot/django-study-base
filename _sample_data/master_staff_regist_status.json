@@ -1,0 +1,72 @@
+[
+{
+    "model": "master.staffregiststatus",
+    "pk": 1,
+    "fields": {
+        "version": 1760457351134679,
+        "created_at": "2025-10-14T16:11:37.787Z",
+        "created_by": 1,
+        "updated_at": "2025-10-14T16:11:37.787Z",
+        "updated_by": 1,
+        "name": "登録中",
+        "display_order": 1,
+        "is_active": true
+    }
+},
+{
+    "model": "master.staffregiststatus",
+    "pk": 2,
+    "fields": {
+        "version": 1760457362450076,
+        "created_at": "2025-10-14T16:11:49.102Z",
+        "created_by": 1,
+        "updated_at": "2025-10-14T16:11:49.102Z",
+        "updated_by": 1,
+        "name": "審査中",
+        "display_order": 2,
+        "is_active": true
+    }
+},
+{
+    "model": "master.staffregiststatus",
+    "pk": 3,
+    "fields": {
+        "version": 1760457373871320,
+        "created_at": "2025-10-14T16:12:00.523Z",
+        "created_by": 1,
+        "updated_at": "2025-10-14T16:12:00.523Z",
+        "updated_by": 1,
+        "name": "仮登録",
+        "display_order": 10,
+        "is_active": true
+    }
+},
+{
+    "model": "master.staffregiststatus",
+    "pk": 4,
+    "fields": {
+        "version": 1760457390148723,
+        "created_at": "2025-10-14T16:12:16.801Z",
+        "created_by": 1,
+        "updated_at": "2025-10-14T16:12:16.801Z",
+        "updated_by": 1,
+        "name": "登録済",
+        "display_order": 20,
+        "is_active": true
+    }
+},
+{
+    "model": "master.staffregiststatus",
+    "pk": 5,
+    "fields": {
+        "version": 1760457400375294,
+        "created_at": "2025-10-14T16:12:27.027Z",
+        "created_by": 1,
+        "updated_at": "2025-10-14T16:12:27.027Z",
+        "updated_by": 1,
+        "name": "登録不可",
+        "display_order": 90,
+        "is_active": true
+    }
+}
+]

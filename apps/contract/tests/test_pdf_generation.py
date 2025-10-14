@@ -209,6 +209,21 @@ class ContractPdfGenerationTest(TestCase):
         self.assertNotIn("派遣元責任者", items_dict)
         self.assertNotIn("協定対象派遣労働者に限定するか否かの別", items_dict)
 
+    def test_normal_contract_pdf_includes_business_content(self):
+        """Test that PDF for normal contract includes business_content."""
+        self.normal_contract.business_content = "This is a test for business content in a normal contract."
+        self.normal_contract.save()
+
+        pdf_content, _, _ = generate_contract_pdf_content(self.normal_contract)
+        self.assertIsNotNone(pdf_content)
+
+        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
+        text = "".join(page.get_text() for page in pdf_document)
+        pdf_document.close()
+
+        self.assertIn("業務内容", text)
+        self.assertIn("This is a test for business content in a normal contract.", text)
+
     @patch('apps.contract.utils.generate_table_based_contract_pdf')
     def test_responsible_person_title_changes_for_manufacturing_dispatch(self, mock_generate_pdf):
         """
@@ -449,6 +464,24 @@ class ContractPdfGenerationTest(TestCase):
         # 支払単位と金額が正しく印字されていることを確認
         self.assertIn("契約金額", text)
         self.assertIn("日給 30,000円", text)
+
+    @patch('apps.contract.utils.generate_table_based_contract_pdf')
+    def test_staff_contract_pdf_includes_new_fields(self, mock_generate_pdf):
+        """スタッフ契約書PDFに就業場所と業務内容が含まれることをテスト"""
+        self.staff_contract.work_location = "テスト用就業場所"
+        self.staff_contract.business_content = "テスト用業務内容"
+        self.staff_contract.save()
+
+        generate_contract_pdf_content(self.staff_contract)
+
+        self.assertTrue(mock_generate_pdf.called)
+        items = mock_generate_pdf.call_args[0][3]
+        items_dict = {item['title']: item['text'] for item in items}
+
+        self.assertIn("就業場所", items_dict)
+        self.assertEqual(items_dict["就業場所"], "テスト用就業場所")
+        self.assertIn("業務内容", items_dict)
+        self.assertEqual(items_dict["業務内容"], "テスト用業務内容")
 
     def test_dispatch_contract_pdf_includes_ttp_info(self):
         """紹介予定派遣の場合に、PDFにTTP情報が正しく印字されることをテストする"""

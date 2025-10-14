@@ -57,23 +57,27 @@ class ClientContractFilterTest(TestCase):
         )
 
     def test_filter_by_contract_type(self):
+        contract1_url = reverse('contract:client_contract_detail', args=[self.contract1.pk])
+        contract2_url = reverse('contract:client_contract_detail', args=[self.contract2.pk])
+        contract3_url = reverse('contract:client_contract_detail', args=[self.contract3.pk])
+
         response = self.client.get(reverse('contract:client_contract_list'), {'contract_type': '20'})
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.contract2.contract_name)
-        self.assertContains(response, self.contract3.contract_name)
-        self.assertNotContains(response, self.contract1.contract_name)
+        self.assertContains(response, contract2_url)
+        self.assertContains(response, contract3_url)
+        self.assertNotContains(response, contract1_url)
 
         response = self.client.get(reverse('contract:client_contract_list'), {'contract_type': '10'})
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.contract1.contract_name)
-        self.assertNotContains(response, self.contract2.contract_name)
-        self.assertNotContains(response, self.contract3.contract_name)
+        self.assertContains(response, contract1_url)
+        self.assertNotContains(response, contract2_url)
+        self.assertNotContains(response, contract3_url)
 
         response = self.client.get(reverse('contract:client_contract_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.contract1.contract_name)
-        self.assertContains(response, self.contract2.contract_name)
-        self.assertContains(response, self.contract3.contract_name)
+        self.assertContains(response, contract1_url)
+        self.assertContains(response, contract2_url)
+        self.assertContains(response, contract3_url)
 
     def test_pagination_with_filter(self):
         for i in range(25):
@@ -92,4 +96,5 @@ class ClientContractFilterTest(TestCase):
         response = self.client.get(reverse('contract:client_contract_list'), {'contract_type': '10', 'page': '2'})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '<li class="page-item active"><a class="page-link" href="#">2</a></li>')
-        self.assertNotContains(response, self.contract2.contract_name)
+        contract2_url = reverse('contract:client_contract_detail', args=[self.contract2.pk])
+        self.assertNotContains(response, contract2_url)

@@ -216,6 +216,61 @@
             birthInput.addEventListener("change", updateAge);
         }
     });
+
+    // ページロジック情報を設定
+    document.addEventListener('DOMContentLoaded', function() {
+        // このページにロジック情報があることを通知
+        document.body.setAttribute('data-has-logic', 'true');
+
+        const logicContent = document.getElementById('logic-info-content');
+        if (logicContent) {
+            logicContent.innerHTML = `
+                <div class="alert alert-info mb-3">
+                    <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>スタッフ編集画面のバリデーションロジック</h6>
+                </div>
+
+                <!-- 単項目チェック -->
+                <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                    <div class="card-header py-2">
+                        <h6 class="mb-0"><i class="bi bi-shield-check text-primary me-2"></i>単項目チェック</h6>
+                    </div>
+                    <div class="card-body py-2">
+                        <div class="mb-2">• 社員番号: 半角英数字10文字以内</div>
+                        <div class="mb-2">• 電話番号: 半角数字とハイフンのみ</div>
+                        <div class="mb-0">• 郵便番号: 半角数字7桁（ハイフンなし）</div>
+                    </div>
+                </div>
+
+                <!-- 相関チェック -->
+                <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                    <div class="card-header py-2">
+                        <h6 class="mb-0"><i class="bi bi-check-circle text-success me-2"></i>相関チェック</h6>
+                    </div>
+                    <div class="card-body py-2">
+                        <div class="mb-2">• 入社日、社員番号、雇用形態はセットで入力しないとエラー</div>
+                        <div class="mb-2">• 退職日を入力するときは入社日が無いとエラー</div>
+                        <div class="mb-2">• 入社日は退職日より前の日付でないとエラー</div>
+                        <div class="mb-0">• 退職日は既存のスタッフ契約終了日以降でないとエラー</div>
+                    </div>
+                </div>
+
+                <!-- 自動処理 -->
+                <div class="card" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                    <div class="card-header py-2">
+                        <h6 class="mb-0"><i class="bi bi-gear text-secondary me-2"></i>自動処理</h6>
+                    </div>
+                    <div class="card-body py-2">
+                        <div class="mb-2">• 年齢計算: 生年月日から年齢を自動計算・表示</div>
+                        <div class="mb-2">• 住所取得: 郵便番号から住所を自動取得（APIボタン）</div>
+                        <div class="mb-0">• カナ名: 全角カタカナに自動変換</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ロジック情報設定完了を通知
+        document.dispatchEvent(new Event('logicInfoSet'));
+    });
 </script>
 {% endblock %}
 

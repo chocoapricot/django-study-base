@@ -31,6 +31,7 @@ Django学習用のプロジェクトです。スタッフ管理とクライア�
 - **レスポンシブデザイン**: Bootstrap 5ベース
 - **日本語対応**: 完全な日本語ローカライゼーション
 - **直感的なインターフェース**: 使いやすいUI設計
+- **ロジック情報表示**: ページ固有のバリデーションロジックをモーダルで表示
 
 ## 🛠️ 技術スタック
 
@@ -90,9 +91,9 @@ django-study-base/
 └── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（84テーブル）
+## データベーステーブル一覧（85テーブル）
 
-### 本アプリケーション独自テーブル（67テーブル）
+### 本アプリケーション独自テーブル（74テーブル）
 
 | テーブル名 | モデル名 | 説明 |
 | --- | --- | --- |
@@ -114,6 +115,7 @@ django-study-base/
 | `apps_connect_profile_request` | `ProfileRequest` | プロフィール変更申請 |
 | `apps_connect_staff` | `ConnectStaff` | スタッフ接続申請 |
 | `apps_connect_staff_agree` | `ConnectStaffAgree` | スタッフ同意 |
+| `apps_contract_assignment` | `ContractAssignment` | 契約割り当て |
 | `apps_contract_client` | `ClientContract` | クライアント契約 |
 | `apps_contract_client_haken` | `ClientContractHaken` | クライアント契約派遣情報 |
 | `apps_contract_client_number` | `ClientContractNumber` | クライアント契約番号 |
@@ -122,6 +124,7 @@ django-study-base/
 | `apps_contract_staff` | `StaffContract` | スタッフ契約 |
 | `apps_contract_staff_number` | `StaffContractNumber` | スタッフ契約番号 |
 | `apps_contract_staff_print` | `StaffContractPrint` | スタッフ契約書発行履歴 |
+| `apps_contract_staff_teishokubi` | `StaffContractTeishokubi` | スタッフの個人抵触日 |
 | `apps_master_bank` | `Bank` | 銀行マスター |
 | `apps_master_bank_branch` | `BankBranch` | 銀行支店マスター |
 | `apps_master_bill_bank` | `BillBank` | 会社銀行マスター |
@@ -129,7 +132,9 @@ django-study-base/
 | `apps_master_contract_pattern` | `ContractPattern` | 契約書パターンマスター |
 | `apps_master_contract_terms` | `ContractTerms` | 契約文言マスター |
 | `apps_master_default_value` | `DefaultValue` | デフォルト値マスター |
-| `apps_master_haken_business_content` | `HakenBusinessContent` | 派遣業務内容マスター |
+| `apps_master_employment_type` | `EmploymentType` | 雇用形態マスター |
+| `apps_master_business_content` | `BusinessContent` | 業務内容マスター |
+| `apps_master_client_regist_status` | `ClientRegistStatus` | クライアント登録状況マスタ |
 | `apps_master_haken_responsibility_degree` | `HakenResponsibilityDegree` | 派遣責任程度マスター |
 | `apps_master_information` | `Information` | お知らせマスター |
 | `apps_master_information_file` | `InformationFile` | お知らせファイル |
@@ -139,6 +144,7 @@ django-study-base/
 | `apps_master_qualification` | `Qualification` | 資格マスター |
 | `apps_master_skill` | `Skill` | 技能マスター |
 | `apps_master_staff_agreement` | `StaffAgreement` | スタッフ同意書マスター |
+| `apps_master_staff_regist_status` | `StaffRegistStatus` | スタッフ登録状況マスタ |
 | `apps_profile_staff` | `StaffProfile` | スタッフプロフィール |
 | `apps_profile_staff_bank` | `StaffProfileBank` | プロフィール銀行口座 |
 | `apps_profile_staff_contacts` | `StaffProfileContact` | プロフィール連絡先 |
@@ -377,6 +383,17 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 - **カラーパレット**: Bootstrap 5準拠
 - **タイポグラフィ**: 日本語フォント最適化
 - **レスポンシブ**: モバイルファースト設計
+
+### ロジック情報表示システム
+- **コーヒーカップアイコン**: ヘッダーのアイコンでページロジック情報の有無を表示
+  - `bi-cup`: ロジック情報なし（空のカップ）
+  - `bi-cup-hot`: ロジック情報あり（湯気のあるカップ）
+- **モーダル表示**: クリックでページ固有のバリデーションロジックを表示
+- **カテゴリ分類**:
+  - **単項目チェック**: 個別フィールドのバリデーション
+  - **相関チェック**: 複数フィールド間の関連性チェック
+  - **自動処理**: システムによる自動変換・取得処理
+- **統一デザイン**: カード形式で整理され、影付きで視覚的に区別
 
 ### アクセシビリティ
 - WCAG 2.1準拠

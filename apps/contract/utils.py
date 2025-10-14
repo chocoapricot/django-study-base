@@ -8,6 +8,7 @@ from .models import ClientContract, StaffContract, ClientContractPrint, StaffCon
 from apps.common.pdf_utils import generate_table_based_contract_pdf, generate_article_based_contract_pdf
 from apps.system.logs.models import AppLog
 from apps.company.models import Company
+from apps.common.constants import Constants
 
 def generate_client_contract_number(contract: ClientContract) -> str:
     """
@@ -76,7 +77,7 @@ def get_contract_pdf_title(contract):
     契約書の種類に応じてPDFのタイトルを決定する。
     """
     if isinstance(contract, ClientContract):
-        if contract.contract_pattern and contract.contract_pattern.contract_type_code == '20':
+        if contract.contract_pattern and contract.contract_pattern.contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
             return "労働者派遣個別契約書"
         else:
             return "業務委託個別契約書"
@@ -97,7 +98,7 @@ def generate_contract_pdf_content(contract):
 
         # 派遣契約の場合、契約期間の名称を「派遣期間」とする
         contract_period_title = "契約期間"
-        if contract.contract_pattern and contract.contract_pattern.contract_type_code == '20':
+        if contract.contract_pattern and contract.contract_pattern.contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
             contract_period_title = "派遣期間"
 
         bill_unit_name = ""
@@ -123,12 +124,15 @@ def generate_contract_pdf_content(contract):
             {"title": contract_period_title, "text": contract_period},
             {"title": "契約金額", "text": contract_amount_text},
             {"title": "支払条件", "text": str(contract.payment_site.name if contract.payment_site else "N/A")},
-            {"title": "契約内容", "text": str(contract.description)},
-            {"title": "備考", "text": str(contract.notes)},
         ]
+        # 業務内容を備考の前に追加
+        if contract.business_content:
+            items.append({"title": "業務内容", "text": str(contract.business_content)})
+
+        items.append({"title": "備考", "text": str(contract.notes)})
 
         # 派遣契約の場合、追加情報を挿入
-        if contract.contract_pattern and contract.contract_pattern.contract_type_code == '20' and hasattr(contract, 'haken_info'):
+        if contract.contract_pattern and contract.contract_pattern.contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and hasattr(contract, 'haken_info'):
             from apps.company.models import Company, CompanyDepartment
             haken_info = contract.haken_info
             haken_items = []
@@ -167,7 +171,12 @@ def generate_contract_pdf_content(contract):
                     return f"{base_info} 電話番号：{user.phone_number}"
                 return base_info
 
-            haken_items.append({"title": "業務内容", "text": str(haken_info.business_content or "")})
+            # 業務内容を haken_items にも追加（派遣契約PDFのレイアウトを維持するため）
+            if contract.business_content:
+                 # 派遣の場合は、基本情報の業務内容を削除して、派遣情報セクションに含める
+                items = [item for item in items if item.get("title") != "業務内容"]
+                haken_items.append({"title": "業務内容", "text": str(contract.business_content or "")})
+
             haken_items.append({"title": "責任の程度", "text": str(haken_info.responsibility_degree or "")})
 
             # 派遣先事業所
@@ -231,10 +240,10 @@ def generate_contract_pdf_content(contract):
                     ttp_sub_items = []
                     # ClientContractTtpのフィールドをループして項目を作成
                     ttp_fields = [
-                        'contract_period', 'probation_period', 'business_content',
+                        'employer_name','contract_period', 'probation_period', 'business_content',
                         'work_location', 'working_hours', 'break_time', 'overtime',
                         'holidays', 'vacations', 'wages', 'insurances',
-                        'employer_name', 'other'
+                         'other'
                     ]
                     for field_name in ttp_fields:
                         field = ttp_info._meta.get_field(field_name)
@@ -293,7 +302,8 @@ def generate_contract_pdf_content(contract):
             {"title": "契約番号", "text": str(contract.contract_number or "")},
             {"title": "契約期間", "text": contract_period},
             {"title": "契約金額", "text": contract_amount_text},
-            {"title": "契約内容", "text": str(contract.description or "")},
+            {"title": "就業場所", "text": str(contract.work_location or "")},
+            {"title": "業務内容", "text": str(contract.business_content or "")},
             {"title": "備考", "text": str(contract.notes or "")},
         ]
     else:
@@ -358,7 +368,7 @@ def generate_contract_pdf_content(contract):
     pdf_filename = f"{contract_type}_contract_{contract.pk}_{timestamp}.pdf"
     
     watermark_text = None
-    if contract.contract_status in [contract.ContractStatus.DRAFT, contract.ContractStatus.PENDING]:
+    if contract.contract_status in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
         watermark_text = "DRAFT"
 
     buffer = io.BytesIO()

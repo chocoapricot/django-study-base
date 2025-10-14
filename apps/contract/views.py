@@ -3,14 +3,17 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Q, Prefetch
+from django.db.models import Q, Prefetch, Count
 from django.http import JsonResponse, HttpResponse, Http404
+from django.views.decorators.http import require_POST
 import re
 from datetime import datetime, date
 from django.core.files.base import ContentFile
+from datetime import date
 from django.forms.models import model_to_dict
-from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken, ClientContractTtp
+from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken, ClientContractTtp, StaffContractTeishokubi
 from .forms import ClientContractForm, StaffContractForm, ClientContractHakenForm, ClientContractTtpForm
+from apps.common.constants import Constants
 from django.conf import settings
 from django.utils import timezone
 import os
@@ -29,6 +32,8 @@ from reportlab.pdfbase.ttfonts import TTFont
 import io
 from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number, generate_clash_day_notification_pdf, generate_dispatch_notification_pdf, generate_dispatch_ledger_pdf
 from .resources import ClientContractResource, StaffContractResource
+from .models import ContractAssignment
+from django.urls import reverse
 
 # 契約管理トップページ
 @login_required
@@ -65,7 +70,9 @@ def client_contract_list(request):
     client_filter = request.GET.get('client', '')
     contract_type_filter = request.GET.get('contract_type', '')
 
-    contracts = ClientContract.objects.select_related('client', 'haken_info__ttp_info').all()
+    contracts = ClientContract.objects.select_related('client', 'haken_info__ttp_info').annotate(
+        staff_contract_count=Count('staff_contracts')
+    )
 
     if client_filter:
         contracts = contracts.filter(client_id=client_filter)
@@ -85,7 +92,7 @@ def client_contract_list(request):
 
     contracts = contracts.order_by('-start_date', 'client__name')
 
-    contract_status_list = [{'value': v, 'name': n} for v, n in ClientContract.ContractStatus.choices]
+    contract_status_list = [{'value': d.value, 'name': d.name} for d in Dropdowns.objects.filter(category='contract_status', active=True).order_by('disp_seq')]
     client_contract_type_list = [{'value': d.value, 'name': d.name} for d in Dropdowns.objects.filter(category='client_contract_type', active=True).order_by('disp_seq')]
 
 
@@ -179,7 +186,15 @@ def staff_contract_issue_history_list(request, pk):
 def client_contract_detail(request, pk):
     """クライアント契約詳細"""
     contract = get_object_or_404(
-        ClientContract.objects.select_related('client', 'job_category', 'contract_pattern', 'payment_site', 'haken_info__ttp_info'),
+        ClientContract.objects.select_related(
+            'client', 'job_category', 'contract_pattern', 'payment_site', 'haken_info__ttp_info'
+        ).prefetch_related(
+            Prefetch(
+                'contractassignment_set',
+                queryset=ContractAssignment.objects.select_related('staff_contract__staff'),
+                to_attr='assigned_assignments'
+            )
+        ),
         pk=pk
     )
     haken_info = getattr(contract, 'haken_info', None)
@@ -234,6 +249,7 @@ def client_contract_detail(request, pk):
         'client_filter': client_filter,
         'from_client_detail': from_client_detail,
         'from_client_detail_direct': from_client_detail_direct,
+        'Constants': Constants,
     }
     return render(request, 'contract/client_contract_detail.html', context)
 
@@ -243,10 +259,13 @@ def client_contract_detail(request, pk):
 def client_contract_create(request):
     """クライアント契約作成"""
     copy_from_id = request.GET.get('copy_from')
+    extend_from_id = request.GET.get('extend_from')
     selected_client_id = request.GET.get('selected_client_id')
     client_contract_type_code = request.GET.get('client_contract_type_code')
 
     original_contract = None
+    is_extend = False
+
     if copy_from_id:
         try:
             original_contract = get_object_or_404(ClientContract, pk=copy_from_id)
@@ -255,8 +274,17 @@ def client_contract_create(request):
         except (ValueError, Http404):
             messages.error(request, "コピー元の契約が見つかりませんでした。")
             return redirect('contract:client_contract_list')
+    elif extend_from_id:
+        try:
+            original_contract = get_object_or_404(ClientContract, pk=extend_from_id)
+            selected_client_id = original_contract.client_id
+            client_contract_type_code = original_contract.client_contract_type_code
+            is_extend = True
+        except (ValueError, Http404):
+            messages.error(request, "延長元の契約が見つかりませんでした。")
+            return redirect('contract:client_contract_list')
 
-    is_haken = client_contract_type_code == '20'
+    is_haken = client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH
     selected_client = None
     if selected_client_id:
         try:
@@ -266,7 +294,7 @@ def client_contract_create(request):
 
     if request.method == 'POST':
         form = ClientContractForm(request.POST)
-        post_is_haken = request.POST.get('client_contract_type_code') == '20'
+        post_is_haken = request.POST.get('client_contract_type_code') == Constants.CLIENT_CONTRACT_TYPE.DISPATCH
 
         client_id = request.POST.get('client')
         post_client = None
@@ -285,7 +313,7 @@ def client_contract_create(request):
                     contract.created_by = request.user
                     contract.updated_by = request.user
                     # コピー作成時はステータスを「作成中」に戻す
-                    contract.contract_status = ClientContract.ContractStatus.DRAFT
+                    contract.contract_status = Constants.CONTRACT_STATUS.DRAFT
                     contract.contract_number = None  # 契約番号はクリア
                     contract.save()
 
@@ -307,7 +335,16 @@ def client_contract_create(request):
                 original_contract,
                 exclude=['id', 'pk', 'contract_number', 'contract_status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'approved_at', 'approved_by', 'issued_at', 'issued_by', 'confirmed_at']
             )
-            initial_data['contract_name'] = f"{initial_data.get('contract_name', '')}のコピー"
+
+            if is_extend:
+                # 延長の場合：契約名はそのまま、開始日は元契約の終了日の翌日、終了日は空
+                if original_contract.end_date:
+                    from datetime import timedelta
+                    initial_data['start_date'] = original_contract.end_date + timedelta(days=1)
+                initial_data['end_date'] = None
+            else:
+                # コピーの場合：契約名に「のコピー」を追加
+                initial_data['contract_name'] = f"{initial_data.get('contract_name', '')}のコピー"
 
             if is_haken and hasattr(original_contract, 'haken_info'):
                 original_haken_info = original_contract.haken_info
@@ -330,6 +367,7 @@ def client_contract_create(request):
         'title': 'クライアント契約作成',
         'is_haken': is_haken,
         'selected_client': selected_client,
+        'Constants': Constants,
     }
     return render(request, 'contract/client_contract_form.html', context)
 
@@ -344,11 +382,11 @@ def client_contract_update(request, pk):
     )
     haken_info = getattr(contract, 'haken_info', None)
     
-    if contract.contract_status not in [ClientContract.ContractStatus.DRAFT, ClientContract.ContractStatus.PENDING]:
+    if contract.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
         messages.error(request, 'この契約は編集できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
-    post_is_haken = request.POST.get('client_contract_type_code') == '20'
+    post_is_haken = request.POST.get('client_contract_type_code') == Constants.CLIENT_CONTRACT_TYPE.DISPATCH
 
     if request.method == 'POST':
         form = ClientContractForm(request.POST, instance=contract)
@@ -417,11 +455,11 @@ def client_contract_update(request, pk):
                         messages.warning(request, f"{label}: {error}")
     else: # GET
         form = ClientContractForm(instance=contract)
-        is_haken = contract.client_contract_type_code == '20'
+        is_haken = contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH
         haken_form = ClientContractHakenForm(instance=haken_info, client=contract.client) if is_haken else None
 
     # is_hakenをコンテキストに渡す
-    context_is_haken = contract.client_contract_type_code == '20'
+    context_is_haken = contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH
     if request.method == 'POST':
         context_is_haken = post_is_haken
 
@@ -431,6 +469,7 @@ def client_contract_update(request, pk):
         'contract': contract,
         'title': 'クライアント契約編集',
         'is_haken': context_is_haken,
+        'Constants': Constants,
     }
     return render(request, 'contract/client_contract_form.html', context)
 
@@ -441,7 +480,7 @@ def client_contract_delete(request, pk):
     """クライアント契約削除"""
     contract = get_object_or_404(ClientContract, pk=pk)
     
-    if contract.contract_status not in [ClientContract.ContractStatus.DRAFT, ClientContract.ContractStatus.PENDING]:
+    if contract.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
         messages.error(request, 'この契約は削除できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
@@ -467,7 +506,9 @@ def staff_contract_list(request):
     staff_filter = request.GET.get('staff', '')  # スタッフフィルタを追加
     contract_pattern_filter = request.GET.get('contract_pattern', '')
     
-    contracts = StaffContract.objects.select_related('staff', 'contract_pattern').all()
+    contracts = StaffContract.objects.select_related('staff', 'contract_pattern').annotate(
+        client_contract_count=Count('client_contracts')
+    )
     
     # スタッフフィルタを適用
     if staff_filter:
@@ -493,8 +534,8 @@ def staff_contract_list(request):
     contracts = contracts.order_by('-start_date', 'staff__name_last', 'staff__name_first')
 
     # 契約状況のドロップダウンリストを取得
-    contract_status_list = [{'value': v, 'name': n} for v, n in StaffContract.ContractStatus.choices]
-    contract_pattern_list = ContractPattern.objects.filter(domain='1')
+    contract_status_list = [{'value': d.value, 'name': d.name} for d in Dropdowns.objects.filter(category='contract_status', active=True).order_by('disp_seq')]
+    contract_pattern_list = ContractPattern.objects.filter(domain=Constants.DOMAIN.STAFF)
     
     # ページネーション
     paginator = Paginator(contracts, 20)
@@ -583,7 +624,16 @@ def staff_contract_list(request):
 @permission_required('contract.view_staffcontract', raise_exception=True)
 def staff_contract_detail(request, pk):
     """スタッフ契約詳細"""
-    contract = get_object_or_404(StaffContract, pk=pk)
+    contract = get_object_or_404(
+        StaffContract.objects.prefetch_related(
+            Prefetch(
+                'contractassignment_set',
+                queryset=ContractAssignment.objects.select_related('client_contract__client'),
+                to_attr='assigned_assignments'
+            )
+        ),
+        pk=pk
+    )
     
     # スタッフフィルタ情報を取得
     staff_filter = request.GET.get('staff', '')
@@ -611,6 +661,41 @@ def staff_contract_detail(request, pk):
     issue_history_count = all_issue_history.count()
     issue_history_for_display = all_issue_history[:10]
 
+    # 最低時給を取得（表示用なので時給単位に関係なく取得）
+    minimum_wage = None
+    minimum_wage_pref_name = None
+    if contract.work_location:
+        from apps.master.models import MinimumPay
+        from apps.system.settings.models import Dropdowns
+
+        prefectures = Dropdowns.objects.filter(category='pref', active=True)
+        found_prefecture = None
+        for pref_dropdown in prefectures:
+            if pref_dropdown.name in contract.work_location:
+                found_prefecture = pref_dropdown
+                break
+
+        if found_prefecture:
+            minimum_wage_record = MinimumPay.objects.filter(
+                is_active=True,
+                pref=found_prefecture.value,
+                start_date__lte=contract.start_date,
+            ).order_by('-start_date').first()
+
+            if minimum_wage_record:
+                minimum_wage = minimum_wage_record.hourly_wage
+                minimum_wage_pref_name = found_prefecture.name
+
+    # TTPアサインメントの有無を確認
+    has_ttp_assignment = False
+    for assignment in contract.assigned_assignments:
+        if (hasattr(assignment.client_contract, 'haken_info') and
+            assignment.client_contract.haken_info and
+            hasattr(assignment.client_contract.haken_info, 'ttp_info') and
+            assignment.client_contract.haken_info.ttp_info):
+            has_ttp_assignment = True
+            break
+
     context = {
         'contract': contract,
         'issue_history': all_issue_history,
@@ -621,7 +706,11 @@ def staff_contract_detail(request, pk):
         'staff_filter': staff_filter,
         'from_staff_detail': from_staff_detail,
         'from_staff_detail_direct': from_staff_detail_direct,
-        'ContractStatus': StaffContract.ContractStatus,
+        'minimum_wage': minimum_wage,
+        'minimum_wage_pref_name': minimum_wage_pref_name,
+        'has_ttp_assignment': has_ttp_assignment,
+        'CONTRACT_STATUS': Constants.CONTRACT_STATUS,
+        'Constants': Constants,
     }
     return render(request, 'contract/staff_contract_detail.html', context)
 
@@ -631,12 +720,22 @@ def staff_contract_detail(request, pk):
 def staff_contract_create(request):
     """スタッフ契約作成"""
     copy_from_id = request.GET.get('copy_from')
+    extend_from_id = request.GET.get('extend_from')
     original_contract = None
+    is_extend = False
+
     if copy_from_id:
         try:
             original_contract = get_object_or_404(StaffContract, pk=copy_from_id)
         except (ValueError, Http404):
             messages.error(request, "コピー元の契約が見つかりませんでした。")
+            return redirect('contract:staff_contract_list')
+    elif extend_from_id:
+        try:
+            original_contract = get_object_or_404(StaffContract, pk=extend_from_id)
+            is_extend = True
+        except (ValueError, Http404):
+            messages.error(request, "延長元の契約が見つかりませんでした。")
             return redirect('contract:staff_contract_list')
 
     staff = None
@@ -650,8 +749,13 @@ def staff_contract_create(request):
             contract.created_by = request.user
             contract.updated_by = request.user
             # 新規作成・コピー作成時はステータスを「作成中」に戻す
-            contract.contract_status = StaffContract.ContractStatus.DRAFT
+            contract.contract_status = Constants.CONTRACT_STATUS.DRAFT
             contract.contract_number = None  # 契約番号はクリア
+
+            # 雇用形態が設定されていない場合、スタッフの現在の雇用形態を設定
+            if not contract.employment_type and contract.staff and contract.staff.employment_type:
+                contract.employment_type = contract.staff.employment_type
+
             contract.save()
             messages.success(request, f'スタッフ契約「{contract.contract_name}」を作成しました。')
             return redirect('contract:staff_contract_detail', pk=contract.pk)
@@ -670,7 +774,23 @@ def staff_contract_create(request):
                 original_contract,
                 exclude=['id', 'pk', 'contract_number', 'contract_status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'approved_at', 'approved_by', 'issued_at', 'issued_by', 'confirmed_at']
             )
-            initial_data['contract_name'] = f"{initial_data.get('contract_name', '')}のコピー"
+
+            if is_extend:
+                # 延長の場合：契約名はそのまま、開始日は元契約の終了日の翌日、終了日は空
+                if original_contract.end_date:
+                    from datetime import timedelta
+                    initial_data['start_date'] = original_contract.end_date + timedelta(days=1)
+                initial_data['end_date'] = None
+            else:
+                # コピーの場合：契約名に「のコピー」を追加
+                initial_data['contract_name'] = f"{initial_data.get('contract_name', '')}のコピー"
+        else:
+            # コピーでない新規作成の場合、マスタからデフォルト値を取得
+            try:
+                default_value = DefaultValue.objects.get(pk='StaffContract.contract_name')
+                initial_data['contract_name'] = default_value.value
+            except DefaultValue.DoesNotExist:
+                pass  # マスタにキーが存在しない場合は何もしない
 
         form = StaffContractForm(initial=initial_data)
 
@@ -688,7 +808,7 @@ def staff_contract_update(request, pk):
     """スタッフ契約更新"""
     contract = get_object_or_404(StaffContract, pk=pk)
     
-    if contract.contract_status not in [StaffContract.ContractStatus.DRAFT, StaffContract.ContractStatus.PENDING]:
+    if contract.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
         messages.error(request, 'この契約は編集できません。')
         return redirect('contract:staff_contract_detail', pk=pk)
 
@@ -717,7 +837,7 @@ def staff_contract_delete(request, pk):
     """スタッフ契約削除"""
     contract = get_object_or_404(StaffContract, pk=pk)
 
-    if contract.contract_status not in [StaffContract.ContractStatus.DRAFT, StaffContract.ContractStatus.PENDING]:
+    if contract.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
         messages.error(request, 'この契約は削除できません。')
         return redirect('contract:staff_contract_detail', pk=pk)
     
@@ -744,7 +864,7 @@ def client_select(request):
     client_contract_type_code = request.GET.get('client_contract_type_code')
 
     # 契約種別に応じて、適切な基本契約締結日でフィルタリング
-    if client_contract_type_code == '20':  # 派遣の場合
+    if client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:  # 派遣の場合
         clients = Client.objects.filter(basic_contract_date_haken__isnull=False)
     else:  # それ以外（業務委託など）の場合
         clients = Client.objects.filter(basic_contract_date__isnull=False)
@@ -770,6 +890,7 @@ def client_select(request):
         'search_query': search_query,
         'return_url': return_url,
         'client_contract_type_code': client_contract_type_code,
+        'Constants': Constants,
     }
 
     if from_modal:
@@ -786,8 +907,8 @@ def haken_master_select(request):
     
     # マスタータイプに応じてデータを取得（有効なもののみ）
     if master_type == 'business_content':
-        from apps.master.models import HakenBusinessContent
-        items = HakenBusinessContent.objects.filter(is_active=True)
+        from apps.master.models import BusinessContent
+        items = BusinessContent.objects.filter(is_active=True)
         modal_title = '業務内容を選択'
     elif master_type == 'responsibility_degree':
         from apps.master.models import HakenResponsibilityDegree
@@ -982,8 +1103,8 @@ def client_contract_pdf(request, pk):
     contract = get_object_or_404(ClientContract, pk=pk)
 
     # 承認済みの場合は発行済みに更新
-    if contract.contract_status == ClientContract.ContractStatus.APPROVED:
-        contract.contract_status = ClientContract.ContractStatus.ISSUED
+    if contract.contract_status == Constants.CONTRACT_STATUS.APPROVED:
+        contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
         contract.issued_at = timezone.now()
         contract.issued_by = request.user
         contract.save()
@@ -1026,7 +1147,7 @@ def client_contract_approve(request, pk):
         is_approved = request.POST.get('is_approved')
         if is_approved:
             # 「承認する」アクションは「申請中」からのみ可能
-            if contract.contract_status == ClientContract.ContractStatus.PENDING:
+            if contract.contract_status == Constants.CONTRACT_STATUS.PENDING:
                 try:
                     # TTPを想定する場合、クライアント契約の start_date/end_date を使って期間が6か月超でないかチェック
                     if contract.start_date and contract.end_date:
@@ -1041,7 +1162,7 @@ def client_contract_approve(request, pk):
 
                     # 契約番号を採番
                     contract.contract_number = generate_client_contract_number(contract)
-                    contract.contract_status = ClientContract.ContractStatus.APPROVED
+                    contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
                     contract.approved_at = timezone.now()
                     contract.approved_by = request.user
                     contract.save()
@@ -1052,10 +1173,10 @@ def client_contract_approve(request, pk):
                 messages.error(request, 'このステータスからは承認できません。')
         else:
             # 「承認解除」アクションは「承認済」以降からのみ可能
-            if int(contract.contract_status) >= int(ClientContract.ContractStatus.APPROVED):
+            if int(contract.contract_status) >= int(Constants.CONTRACT_STATUS.APPROVED):
                 # 承認解除: 発行履歴そのものは過去の発行記録として保持する。
                 # 契約のステータスと承認/発行関連の日時・ユーザーはクリアする。
-                contract.contract_status = ClientContract.ContractStatus.DRAFT
+                contract.contract_status = Constants.CONTRACT_STATUS.DRAFT
                 contract.contract_number = None  # 契約番号をクリア
                 contract.approved_at = None
                 contract.approved_by = None
@@ -1086,7 +1207,7 @@ def client_contract_issue(request, pk):
     """クライアント契約を発行済にする"""
     contract = get_object_or_404(ClientContract, pk=pk)
     if request.method == 'POST':
-        if contract.contract_status == ClientContract.ContractStatus.APPROVED:
+        if contract.contract_status == Constants.CONTRACT_STATUS.APPROVED:
             try:
                 with transaction.atomic():
                     # 1. 個別契約書の発行
@@ -1112,7 +1233,7 @@ def client_contract_issue(request, pk):
                     )
 
                     # 2. 派遣契約の場合、派遣通知書も発行
-                    if contract.client_contract_type_code == '20':
+                    if contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
                         issued_at = timezone.now()
                         pdf_content_dispatch, pdf_filename_dispatch, document_title_dispatch = generate_dispatch_notification_pdf(contract, request.user, issued_at)
                         if not pdf_content_dispatch:
@@ -1138,7 +1259,7 @@ def client_contract_issue(request, pk):
                         messages.success(request, f'派遣通知書を同時に発行しました。')
 
                     # 3. 契約ステータスを更新
-                    contract.contract_status = ClientContract.ContractStatus.ISSUED
+                    contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
                     contract.issued_at = timezone.now()
                     contract.issued_by = request.user
                     contract.save()
@@ -1158,7 +1279,7 @@ def issue_quotation(request, pk):
     """クライアント契約の見積書を発行する"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
-    if int(contract.contract_status) < int(ClientContract.ContractStatus.APPROVED):
+    if int(contract.contract_status) < int(Constants.CONTRACT_STATUS.APPROVED):
         messages.error(request, 'この契約の見積書は発行できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
@@ -1208,14 +1329,14 @@ def client_contract_confirm(request, pk):
     if request.method == 'POST':
         is_confirmed = 'is_confirmed' in request.POST
         if is_confirmed:
-            if contract.contract_status == ClientContract.ContractStatus.ISSUED:
-                contract.contract_status = ClientContract.ContractStatus.CONFIRMED
+            if contract.contract_status == Constants.CONTRACT_STATUS.ISSUED:
+                contract.contract_status = Constants.CONTRACT_STATUS.CONFIRMED
                 contract.confirmed_at = timezone.now()
                 contract.save()
                 messages.success(request, f'契約「{contract.contract_name}」を確認済にしました。')
         else:
-            if contract.contract_status == ClientContract.ContractStatus.CONFIRMED:
-                contract.contract_status = ClientContract.ContractStatus.ISSUED
+            if contract.contract_status == Constants.CONTRACT_STATUS.CONFIRMED:
+                contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
                 contract.confirmed_at = None
                 contract.save()
                 messages.success(request, f'契約「{contract.contract_name}」を未確認に戻しました。')
@@ -1230,22 +1351,29 @@ def staff_contract_approve(request, pk):
     if request.method == 'POST':
         is_approved = request.POST.get('is_approved')
         if is_approved:
-            if contract.contract_status == StaffContract.ContractStatus.PENDING:
+            if contract.contract_status == Constants.CONTRACT_STATUS.PENDING:
+                from django.core.exceptions import ValidationError
                 try:
+                    # 最低賃金チェック
+                    contract.validate_minimum_wage()
+
                     contract.contract_number = generate_staff_contract_number(contract)
-                    contract.contract_status = StaffContract.ContractStatus.APPROVED
+                    contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
                     contract.approved_at = timezone.now()
                     contract.approved_by = request.user
                     contract.save()
                     messages.success(request, f'契約「{contract.contract_name}」を承認済にしました。契約番号: {contract.contract_number}')
                 except ValueError as e:
                     messages.error(request, f'契約番号の採番に失敗しました。理由: {e}')
+                except ValidationError as e:
+                    messages.error(request, f'承認できませんでした。{e.message}')
+                    return redirect('contract:staff_contract_detail', pk=contract.pk)
             else:
                 messages.error(request, 'このステータスからは承認できません。')
         else:
-            if int(contract.contract_status) >= int(StaffContract.ContractStatus.APPROVED):
+            if int(contract.contract_status) >= int(Constants.CONTRACT_STATUS.APPROVED):
                 # 承認解除時も過去の発行履歴は削除しない
-                contract.contract_status = StaffContract.ContractStatus.DRAFT
+                contract.contract_status = Constants.CONTRACT_STATUS.DRAFT
                 contract.contract_number = None
                 contract.approved_at = None
                 contract.approved_by = None
@@ -1274,7 +1402,7 @@ def staff_contract_issue(request, pk):
     if request.method == 'POST':
         is_issued = 'is_issued' in request.POST
         if is_issued:
-            if contract.contract_status == StaffContract.ContractStatus.APPROVED:
+            if contract.contract_status == Constants.CONTRACT_STATUS.APPROVED:
                 pdf_content, pdf_filename, document_title = generate_contract_pdf_content(contract)
                 if pdf_content:
                     new_print = StaffContractPrint(
@@ -1292,7 +1420,7 @@ def staff_contract_issue(request, pk):
                         object_id=str(contract.pk),
                         object_repr=f'契約書PDF出力: {contract.contract_name}'
                     )
-                    contract.contract_status = StaffContract.ContractStatus.ISSUED
+                    contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
                     contract.issued_at = timezone.now()
                     contract.issued_by = request.user
                     contract.save()
@@ -1300,8 +1428,8 @@ def staff_contract_issue(request, pk):
                 else:
                     messages.error(request, "契約書の発行に失敗しました。")
         else:
-            if contract.contract_status == StaffContract.ContractStatus.ISSUED:
-                contract.contract_status = StaffContract.ContractStatus.APPROVED
+            if contract.contract_status == Constants.CONTRACT_STATUS.ISSUED:
+                contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
                 contract.issued_at = None
                 contract.issued_by = None
                 contract.save()
@@ -1360,7 +1488,7 @@ def staff_contract_confirm_list(request):
                     staff_agreement=staff_agreement,
                     defaults={'is_agreed': True}
                 )
-                contract.contract_status = StaffContract.ContractStatus.CONFIRMED
+                contract.contract_status = Constants.CONTRACT_STATUS.CONFIRMED
                 contract.confirmed_at = timezone.now()
                 contract.save()
                 messages.success(request, f'契約「{contract.contract_name}」を確認しました。')
@@ -1368,7 +1496,7 @@ def staff_contract_confirm_list(request):
                 messages.error(request, '確認可能な同意文言が見つかりませんでした。')
 
         elif action == 'unconfirm':
-            contract.contract_status = StaffContract.ContractStatus.ISSUED
+            contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
             contract.confirmed_at = None
             contract.save()
             messages.success(request, f'契約「{contract.contract_name}」を未確認に戻しました。')
@@ -1397,7 +1525,7 @@ def staff_contract_confirm_list(request):
     contracts_query = StaffContract.objects.filter(
         staff=staff,
         corporate_number__in=approved_corporate_numbers,
-        contract_status__in=[StaffContract.ContractStatus.ISSUED, StaffContract.ContractStatus.CONFIRMED]
+        contract_status__in=[Constants.CONTRACT_STATUS.ISSUED, Constants.CONTRACT_STATUS.CONFIRMED]
     ).select_related('staff').order_by('-start_date')
 
     # ページネーション
@@ -1436,7 +1564,7 @@ def staff_contract_confirm_list(request):
         'contracts_with_status': contracts_with_status,
         'page_obj': page_obj,
         'title': 'スタッフ契約確認',
-        'ContractStatus': StaffContract.ContractStatus,
+        'CONTRACT_STATUS': Constants.CONTRACT_STATUS,
     }
     return render(request, 'contract/staff_contract_confirm_list.html', context)
 
@@ -1459,14 +1587,14 @@ def client_contract_confirm_list(request):
         contract = get_object_or_404(ClientContract, pk=contract_id)
 
         if action == 'confirm':
-            contract.contract_status = ClientContract.ContractStatus.CONFIRMED
+            contract.contract_status = Constants.CONTRACT_STATUS.CONFIRMED
             contract.confirmed_at = timezone.now()
             contract.confirmed_by = client_user
             contract.save()
             messages.success(request, f'契約「{contract.contract_name}」を確認しました。')
 
         elif action == 'unconfirm':
-            contract.contract_status = ClientContract.ContractStatus.ISSUED
+            contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
             contract.confirmed_at = None
             contract.confirmed_by = None
             contract.save()
@@ -1478,6 +1606,7 @@ def client_contract_confirm_list(request):
         context = {
             'contracts_with_status': [],
             'title': 'クライアント契約確認',
+            'Constants': Constants,
         }
         return render(request, 'contract/client_contract_confirm_list.html', context)
 
@@ -1497,9 +1626,9 @@ def client_contract_confirm_list(request):
         client=client,
         corporate_number__in=approved_corporate_numbers,
         contract_status__in=[
-            ClientContract.ContractStatus.APPROVED,
-            ClientContract.ContractStatus.ISSUED,
-            ClientContract.ContractStatus.CONFIRMED
+            Constants.CONTRACT_STATUS.APPROVED,
+            Constants.CONTRACT_STATUS.ISSUED,
+            Constants.CONTRACT_STATUS.CONFIRMED
         ]
     ).select_related('client', 'confirmed_by').prefetch_related(prefetch_prints).order_by('-start_date')
 
@@ -1532,6 +1661,7 @@ def client_contract_confirm_list(request):
         'contracts_with_status': contracts_with_status,
         'page_obj': page_obj,
         'title': 'クライアント契約確認',
+        'Constants': Constants,
     }
     return render(request, 'contract/client_contract_confirm_list.html', context)
 
@@ -1543,8 +1673,8 @@ def staff_contract_pdf(request, pk):
     contract = get_object_or_404(StaffContract, pk=pk)
 
     # 承認済みの場合は発行済みに更新
-    if contract.contract_status == StaffContract.ContractStatus.APPROVED:
-        contract.contract_status = StaffContract.ContractStatus.ISSUED
+    if contract.contract_status == Constants.CONTRACT_STATUS.APPROVED:
+        contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
         contract.issued_at = timezone.now()
         contract.issued_by = request.user
         contract.save()
@@ -1627,7 +1757,7 @@ def client_dispatch_ledger_pdf(request, pk):
     """クライアント契約の派遣元管理台帳PDFを生成して返す"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
-    if contract.client_contract_type_code != '20':
+    if contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
         messages.error(request, 'この契約の派遣元管理台帳は発行できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
@@ -1703,7 +1833,7 @@ def issue_clash_day_notification(request, pk):
     """クライアント契約の抵触日通知書を発行する"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
-    if int(contract.contract_status) < int(ClientContract.ContractStatus.APPROVED) or contract.client_contract_type_code != '20':
+    if int(contract.contract_status) < int(Constants.CONTRACT_STATUS.APPROVED) or contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
         messages.error(request, 'この契約の抵触日通知書は共有できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
@@ -1752,7 +1882,7 @@ def client_clash_day_notification_pdf(request, pk):
     """クライアント契約の抵触日通知書のPDFを生成して返す"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
-    if contract.client_contract_type_code != '20':
+    if contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
         messages.error(request, 'この契約の抵触日通知書は発行できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
@@ -1782,7 +1912,7 @@ def client_contract_draft_dispatch_notification(request, pk):
     """クライアント契約の派遣通知書のドラフトPDFを生成して返す"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
-    if contract.client_contract_type_code != '20':
+    if contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
         messages.error(request, 'この契約の派遣通知書は発行できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
@@ -1900,6 +2030,12 @@ def client_contract_ttp_create(request, haken_pk):
             'probation_period': 'ClientContractTtp.probation_period',
             'working_hours': 'ClientContractTtp.working_hours',
             'break_time': 'ClientContractTtp.break_time',
+            'overtime': 'ClientContractTtp.overtime',
+            'holidays': 'ClientContractTtp.holidays',
+            'vacations': 'ClientContractTtp.vacations',
+            'wages': 'ClientContractTtp.wages',
+            'insurances': 'ClientContractTtp.insurances',
+            'other': 'ClientContractTtp.other',
         }
         for field, key in default_keys.items():
             try:
@@ -1907,6 +2043,15 @@ def client_contract_ttp_create(request, haken_pk):
                 initial_data[field] = default_value.value
             except DefaultValue.DoesNotExist:
                 pass  # マスタにキーが存在しない場合は何もしない
+
+        # 派遣情報から初期値を設定
+        if haken.client_contract and haken.client_contract.client:
+            initial_data['employer_name'] = haken.client_contract.client.name
+        if haken.client_contract.business_content:
+            initial_data['business_content'] = haken.client_contract.business_content
+        if haken.work_location:
+            initial_data['work_location'] = haken.work_location
+
         form = ClientContractTtpForm(initial=initial_data)
 
     context = {
@@ -1927,6 +2072,7 @@ def client_contract_ttp_detail(request, pk):
         'ttp_info': ttp_info,
         'haken': ttp_info.haken,
         'contract': ttp_info.haken.client_contract,
+        'Constants': Constants,
     }
     return render(request, 'contract/client_contract_ttp_detail.html', context)
 
@@ -1937,7 +2083,7 @@ def client_contract_ttp_update(request, pk):
     """紹介予定派遣情報 更新"""
     ttp_info = get_object_or_404(ClientContractTtp, pk=pk)
     contract = ttp_info.haken.client_contract
-    if contract.contract_status != ClientContract.ContractStatus.DRAFT:
+    if contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
         messages.error(request, 'この契約ステータスでは紹介予定派遣情報は編集できません。')
         return redirect('contract:client_contract_ttp_detail', pk=pk)
 
@@ -1968,7 +2114,7 @@ def client_contract_ttp_delete(request, pk):
     """紹介予定派遣情報 削除"""
     ttp_info = get_object_or_404(ClientContractTtp, pk=pk)
     contract = ttp_info.haken.client_contract
-    if contract.contract_status != ClientContract.ContractStatus.DRAFT:
+    if contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
         messages.error(request, 'この契約ステータスでは紹介予定派遣情報は削除できません。')
         return redirect('contract:client_contract_ttp_detail', pk=pk)
 
@@ -1983,3 +2129,263 @@ def client_contract_ttp_delete(request, pk):
         'contract': ttp_info.haken.client_contract,
     }
     return render(request, 'contract/client_contract_ttp_delete.html', context)
+
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def client_contract_assignment_view(request, pk):
+    """クライアント契約へのスタッフ契約割当画面"""
+    client_contract = get_object_or_404(ClientContract, pk=pk)
+
+    if client_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
+        messages.error(request, 'この契約は作成中でないため、割当できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
+    # 既に割り当て済みのスタッフ契約IDを取得
+    assigned_staff_contract_ids = client_contract.staff_contracts.values_list('id', flat=True)
+
+    # 期間が重複し、まだ割り当てられていないスタッフ契約を検索
+    staff_contracts = StaffContract.objects.filter(
+        Q(end_date__gte=client_contract.start_date) | Q(end_date__isnull=True),
+        start_date__lte=client_contract.end_date if client_contract.end_date else date.max
+    ).exclude(id__in=assigned_staff_contract_ids)
+
+    context = {
+        'client_contract': client_contract,
+        'assignable_contracts': staff_contracts,
+    }
+    return render(request, 'contract/staff_assignment_list.html', context)
+
+
+@login_required
+@permission_required('contract.change_staffcontract', raise_exception=True)
+def staff_contract_assignment_view(request, pk):
+    """スタッフ契約へのクライアント契約割当画面"""
+    staff_contract = get_object_or_404(StaffContract, pk=pk)
+
+    if staff_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
+        messages.error(request, 'この契約は作成中でないため、割当できません。')
+        return redirect('contract:staff_contract_detail', pk=pk)
+
+    # 既に割り当て済みのクライアント契約IDを取得
+    assigned_client_contract_ids = staff_contract.client_contracts.values_list('id', flat=True)
+
+    # 期間が重複し、まだ割り当てられていないクライアント契約を検索
+    client_contracts = ClientContract.objects.filter(
+        Q(end_date__gte=staff_contract.start_date) | Q(end_date__isnull=True),
+        start_date__lte=staff_contract.end_date if staff_contract.end_date else date.max
+    ).exclude(id__in=assigned_client_contract_ids)
+
+    context = {
+        'staff_contract': staff_contract,
+        'assignable_contracts': client_contracts,
+    }
+    return render(request, 'contract/client_assignment_list.html', context)
+
+
+@login_required
+def create_contract_assignment_view(request):
+    """契約アサインを作成するビュー"""
+    if request.method == 'POST':
+        client_contract_id = request.POST.get('client_contract_id')
+        staff_contract_id = request.POST.get('staff_contract_id')
+        from_view = request.POST.get('from')
+
+        client_contract = get_object_or_404(ClientContract, pk=client_contract_id)
+        staff_contract = get_object_or_404(StaffContract, pk=staff_contract_id)
+
+        # ステータスチェック
+        if client_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT or \
+           staff_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
+            messages.error(request, '作成中の契約間でのみ割当が可能です。')
+            if from_view == 'client':
+                return redirect('contract:client_contract_detail', pk=client_contract_id)
+            else:
+                return redirect('contract:staff_contract_detail', pk=staff_contract_id)
+
+        from django.core.exceptions import ValidationError
+        try:
+            # 既に存在するかチェック
+            if ContractAssignment.objects.filter(client_contract=client_contract, staff_contract=staff_contract).exists():
+                messages.info(request, 'この割当は既に存在します。')
+            else:
+                with transaction.atomic():
+                    assignment = ContractAssignment(
+                        client_contract=client_contract,
+                        staff_contract=staff_contract,
+                        created_by=request.user,
+                        updated_by=request.user
+                    )
+                    # バリデーションを実行
+                    assignment.full_clean()
+                    assignment.save()
+                    success_message = '契約の割当が完了しました。'
+                    sync_messages = []
+                    # 業務内容の同期処理
+                    # Note: HTMLのロジック情報にもこの旨を追記しておくこと
+                    if not client_contract.business_content and staff_contract.business_content:
+                        client_contract.business_content = staff_contract.business_content
+                        client_contract.save()
+                        sync_messages.append('クライアント契約の業務内容をスタッフ契約の業務内容で更新しました。')
+                    elif client_contract.business_content and not staff_contract.business_content:
+                        staff_contract.business_content = client_contract.business_content
+                        staff_contract.save()
+                        sync_messages.append('スタッフ契約の業務内容をクライアント契約の業務内容で更新しました。')
+
+                    # 就業場所の同期処理
+                    client_haken_info = getattr(client_contract, 'haken_info', None)
+                    if client_haken_info:
+                        if not client_haken_info.work_location and staff_contract.work_location:
+                            client_haken_info.work_location = staff_contract.work_location
+                            client_haken_info.save()
+                            sync_messages.append('クライアント契約の派遣の就業場所をスタッフ契約の就業場所で更新しました。')
+                        elif client_haken_info.work_location and not staff_contract.work_location:
+                            staff_contract.work_location = client_haken_info.work_location
+                            staff_contract.save()
+                            sync_messages.append('スタッフ契約の就業場所をクライアント契約の派遣の就業場所で更新しました。')
+
+                    if sync_messages:
+                        success_message = f'{success_message}（{" ".join(sync_messages)}）'
+                    messages.success(request, success_message)
+
+        except ValidationError as e:
+            # messages.error(request, f'割当に失敗しました。理由：{e.message_dict}')
+            # ToDo: a better way to flatten the error messages
+            error_messages = []
+            for field, errors in e.message_dict.items():
+                error_messages.extend(errors)
+            messages.error(request, f'割当に失敗しました。理由：{" ".join(error_messages)}')
+
+        except Exception as e:
+            messages.error(request, f'割当処理中に予期せぬエラーが発生しました: {e}')
+
+        # 元の画面にリダイレクト
+        if from_view == 'client':
+            return redirect('contract:client_contract_detail', pk=client_contract_id)
+        elif from_view == 'staff':
+            return redirect('contract:staff_contract_detail', pk=staff_contract_id)
+
+    return redirect('contract:contract_index')
+
+
+@login_required
+@require_POST
+def delete_contract_assignment(request, assignment_pk):
+    """契約アサインを削除するビュー"""
+    assignment = get_object_or_404(
+        ContractAssignment.objects.select_related('client_contract', 'staff_contract'),
+        pk=assignment_pk
+    )
+    client_contract = assignment.client_contract
+    staff_contract = assignment.staff_contract
+
+    # どの詳細画面に戻るかを判断するためのクエリパラメータ
+    redirect_to = request.GET.get('from', 'client')
+
+    # クライアント契約が「作成中」でない場合は削除させない
+    if client_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
+        messages.error(request, 'このアサインは解除できません。クライアント契約が「作成中」ではありません。')
+        if redirect_to == 'staff':
+            return redirect('contract:staff_contract_detail', pk=staff_contract.pk)
+        return redirect('contract:client_contract_detail', pk=client_contract.pk)
+
+    try:
+        assignment.delete()
+        messages.success(request, '契約アサインを解除しました。')
+    except Exception as e:
+        messages.error(request, f'解除処理中にエラーが発生しました: {e}')
+
+    # 元の画面にリダイレクト
+    if redirect_to == 'staff':
+        return redirect('contract:staff_contract_detail', pk=staff_contract.pk)
+
+    return redirect('contract:client_contract_detail', pk=client_contract.pk)
+
+@login_required
+def get_contract_patterns_by_employment_type(request):
+    """雇用形態に応じた契約書パターンを取得するAPI"""
+    employment_type_id = request.GET.get('employment_type')
+
+    if not employment_type_id:
+        return JsonResponse({'patterns': []})
+
+    from apps.master.models import ContractPattern, EmploymentType
+
+    try:
+        employment_type = EmploymentType.objects.get(pk=employment_type_id)
+    except EmploymentType.DoesNotExist:
+        return JsonResponse({'patterns': []})
+
+    # スタッフ用で、指定された雇用形態の契約書パターンを取得
+    patterns = ContractPattern.objects.filter(
+        is_active=True,
+        domain=Constants.DOMAIN.STAFF,  # スタッフ
+        employment_type=employment_type
+    ).values('id', 'name').order_by('display_order')
+
+    # 雇用形態が指定されていない契約書パターンも含める
+    patterns_without_employment = ContractPattern.objects.filter(
+        is_active=True,
+        domain=Constants.DOMAIN.STAFF,  # スタッフ
+        employment_type__isnull=True
+    ).values('id', 'name').order_by('display_order')
+
+    # 両方を結合
+    all_patterns = list(patterns) + list(patterns_without_employment)
+
+    return JsonResponse({'patterns': all_patterns})
+
+
+@login_required
+def staff_contract_teishokubi_list(request):
+    """個人抵触日管理一覧"""
+    search_query = request.GET.get('q', '')
+
+    teishokubi_list = StaffContractTeishokubi.objects.all()
+
+    if search_query:
+        staff_emails_from_name_search = list(Staff.objects.filter(name__icontains=search_query).values_list('email', flat=True))
+        client_corp_numbers_from_name_search = list(Client.objects.filter(name__icontains=search_query).values_list('corporate_number', flat=True))
+
+        teishokubi_list = teishokubi_list.filter(
+            Q(staff_email__icontains=search_query) |
+            Q(organization_name__icontains=search_query) |
+            Q(client_corporate_number__icontains=search_query) |
+            Q(staff_email__in=staff_emails_from_name_search) |
+            Q(client_corporate_number__in=client_corp_numbers_from_name_search)
+        )
+
+    teishokubi_list = teishokubi_list.order_by('-dispatch_start_date', 'staff_email')
+
+    paginator = Paginator(teishokubi_list, 20)
+    page = request.GET.get('page')
+    teishokubi_page = paginator.get_page(page)
+
+    staff_emails = [item.staff_email for item in teishokubi_page if item.staff_email]
+    client_corporate_numbers = [item.client_corporate_number for item in teishokubi_page if item.client_corporate_number]
+
+    staff_map = {staff.email: {'id': staff.id, 'name': staff.name} for staff in Staff.objects.filter(email__in=staff_emails)}
+    client_map = {client.corporate_number: {'id': client.id, 'name': client.name} for client in Client.objects.filter(corporate_number__in=client_corporate_numbers)}
+
+    for item in teishokubi_page:
+        staff_info = staff_map.get(item.staff_email)
+        if staff_info:
+            item.staff_id = staff_info['id']
+            item.staff_name = staff_info['name']
+        else:
+            item.staff_id = None
+            item.staff_name = None
+
+        client_info = client_map.get(item.client_corporate_number)
+        if client_info:
+            item.client_id = client_info['id']
+            item.client_name = client_info['name']
+        else:
+            item.client_id = None
+            item.client_name = None
+
+    context = {
+        'teishokubi_list': teishokubi_page,
+        'search_query': search_query,
+    }
+    return render(request, 'contract/staff_contract_teishokubi_list.html', context)

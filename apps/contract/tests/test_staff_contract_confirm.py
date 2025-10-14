@@ -6,9 +6,19 @@ from apps.company.models import Company
 from apps.connect.models import ConnectStaff, ConnectStaffAgree
 from apps.master.models import StaffAgreement
 from apps.contract.models import StaffContract
+from apps.common.constants import Constants
+from apps.system.settings.models import Dropdowns
 
 class StaffContractConfirmTest(TestCase):
     def setUp(self):
+        # Dropdownsデータを作成
+        Dropdowns.objects.create(
+            category='contract_status',
+            value=Constants.CONTRACT_STATUS.ISSUED,
+            name='発行済',
+            active=True
+        )
+
         self.user = get_user_model().objects.create_user(
             username='testuser@example.com',
             email='testuser@example.com',
@@ -39,7 +49,7 @@ class StaffContractConfirmTest(TestCase):
             staff=self.staff,
             corporate_number=self.company.corporate_number,
             contract_name='Test Contract',
-            contract_status=StaffContract.ContractStatus.ISSUED,
+            contract_status=Constants.CONTRACT_STATUS.ISSUED,
             start_date='2025-01-01',
         )
 
@@ -72,14 +82,14 @@ class StaffContractConfirmTest(TestCase):
             ).exists()
         )
         self.contract.refresh_from_db()
-        self.assertEqual(self.contract.contract_status, StaffContract.ContractStatus.CONFIRMED)
+        self.assertEqual(self.contract.contract_status, Constants.CONTRACT_STATUS.CONFIRMED)
 
     def test_staff_contract_unconfirm(self):
         """
         Test POST request to staff_contract_confirm_list view to un-confirm a contract.
         """
         # First, confirm the contract
-        self.contract.contract_status = StaffContract.ContractStatus.CONFIRMED
+        self.contract.contract_status = Constants.CONTRACT_STATUS.CONFIRMED
         self.contract.save()
 
         self.client.login(email='testuser@example.com', password='password')
@@ -87,4 +97,4 @@ class StaffContractConfirmTest(TestCase):
         self.assertEqual(response.status_code, 302) # Should redirect
 
         self.contract.refresh_from_db()
-        self.assertEqual(self.contract.contract_status, StaffContract.ContractStatus.ISSUED)
+        self.assertEqual(self.contract.contract_status, Constants.CONTRACT_STATUS.ISSUED)

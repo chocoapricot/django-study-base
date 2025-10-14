@@ -19,7 +19,6 @@
         "limit_by_agreement": "0",
         "limit_indefinite_or_senior": "0",
         "work_location": "東京都渋谷区恵比寿4-20-3 商品開発センター",
-        "business_content": "ＯＡ機器の操作によるプレゼンテーション用資料、業績管理資料、会議資料等の作成業務",
         "responsibility_degree": "役職無し、付与される権限無し"
     }
 },
@@ -43,7 +42,6 @@
         "limit_by_agreement": "1",
         "limit_indefinite_or_senior": "0",
         "work_location": "東京都渋谷区恵比寿4-20-3 商品開発センター",
-        "business_content": "ＯＡ機器の操作によるプレゼンテーション用資料、業績管理資料、会議資料等の作成業務",
         "responsibility_degree": "副リーダー（部下２名、リーダー不在の間における緊急対応が週１回程度有）"
     }
 },
@@ -67,7 +65,6 @@
         "limit_by_agreement": "0",
         "limit_indefinite_or_senior": "0",
         "work_location": "大阪府門真市門真",
-        "business_content": "部品の組立。",
         "responsibility_degree": "役職無し、付与される権限無し"
     }
 }

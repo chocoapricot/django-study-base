@@ -14,32 +14,40 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 クライアント契約詳細
                 <div class="d-flex align-items-center">
-                    <a href="{% url 'contract:client_contract_create' %}?copy_from={{ contract.pk }}" class="btn btn-sm btn-secondary me-2">コピー作成</a>
+                    <div class="btn-group me-2" role="group">
+                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">作成</button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'contract:client_contract_create' %}?copy_from={{ contract.pk }}">コピー</a></li>
+                            {% if not contract.haken_info.ttp_info %}
+                            <li><a class="dropdown-item" href="{% url 'contract:client_contract_create' %}?extend_from={{ contract.pk }}">延長</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
                     {% if haken_info %}
                     <ul class="nav nav-pills me-2">
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">TTP</a>
+                            <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">その他情報</a>
                             <div class="dropdown-menu">
                                 <a href="{% url 'contract:client_contract_ttp_view' haken_pk=haken_info.pk %}" class="dropdown-item">紹介予定派遣</a>
                             </div>
                         </li>
                     </ul>
                     {% endif %}
-                    {% if contract.contract_status == '1' or contract.contract_status == '5' or contract.client_contract_type_code == '20' %}
+                    {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT or contract.contract_status == Constants.CONTRACT_STATUS.PENDING or contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH %}
                     <ul class="nav nav-pills">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">印刷</a>
                             <div class="dropdown-menu">
-                                {% if contract.contract_status == '1' or contract.contract_status == '5' %}
+                                {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT or contract.contract_status == Constants.CONTRACT_STATUS.PENDING %}
                                 <a href="{% url 'contract:client_contract_draft_pdf' contract.pk %}" class="dropdown-item" target="_blank"><i class="bi bi-filetype-pdf"></i>　個別契約書(ドラフト)</a>
                                 <a href="{% url 'contract:client_contract_draft_quotation' contract.pk %}" class="dropdown-item" target="_blank"><i class="bi bi-file-earmark-text"></i>　見積書(ドラフト)</a>
-                                {% if contract.client_contract_type_code == '20' %}
+                                {% if contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH %}
                                 <a href="{% url 'contract:client_contract_draft_dispatch_notification' contract.pk %}" class="dropdown-item" target="_blank"><i class="bi bi-file-earmark-check"></i>　派遣通知書(ドラフト)</a>
                                 {% endif %}
                                 {% endif %}
 
-                                {% if contract.client_contract_type_code == '20' %}
-                                {% if contract.contract_status == '1' or contract.contract_status == '5' %}
+                                {% if contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH %}
+                                {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT or contract.contract_status == Constants.CONTRACT_STATUS.PENDING %}
                                 <hr class="dropdown-divider">
                                 {% endif %}
                                 <a href="{% url 'contract:client_clash_day_notification_pdf' contract.pk %}" class="dropdown-item" target="_blank"><i class="bi bi-file-earmark-check"></i>　抵触日通知書</a>
@@ -54,7 +62,7 @@
             <div class="card-body">
                 {% include 'contract/_client_contract_header.html' %}
 
-                {% if contract.client_contract_type_code == '20' and haken_info %}
+                {% if contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and haken_info %}
                 <div class="row mt-4">
                     <div class="col-12">
                         <h6 class="text-muted mb-3">派遣情報</h6>
@@ -99,10 +107,6 @@
                                 <td >{{ haken_info.get_limit_indefinite_or_senior_display|default:"-" }}</td>
                             </tr>
                             <tr>
-                                <th class="bg-light">業務内容</th>
-                                <td colspan="3">{{ haken_info.business_content|default:"-" }}</td>
-                            </tr>
-                            <tr>
                                 <th class="bg-light">責任の程度</th>
                                 <td colspan="3">{{ haken_info.responsibility_degree|default:"-" }}</td>
                             </tr>
@@ -118,6 +122,10 @@
                             <h6 class="text-muted mb-0">紹介予定派遣情報</h6>
                         </div>
                         <table class="table table-sm">
+                            <tr>
+                                <th class="w-25 bg-light">雇用しようとする者の名称</th>
+                                <td>{{ contract.haken_info.ttp_info.employer_name|linebreaksbr|default:"-" }}</td>
+                            </tr>
                             <tr>
                                 <th class="w-25 bg-light">契約期間</th>
                                 <td>{{ contract.haken_info.ttp_info.contract_period|linebreaksbr|default:"-" }}</td>
@@ -163,10 +171,6 @@
                                 <td>{{ contract.haken_info.ttp_info.insurances|linebreaksbr|default:"-" }}</td>
                             </tr>
                             <tr>
-                                <th class="w-25 bg-light">雇用しようとする者の名称</th>
-                                <td>{{ contract.haken_info.ttp_info.employer_name|linebreaksbr|default:"-" }}</td>
-                            </tr>
-                            <tr>
                                 <th class="w-25 bg-light">その他</th>
                                 <td>{{ contract.haken_info.ttp_info.other|linebreaksbr|default:"-" }}</td>
                             </tr>
@@ -179,18 +183,14 @@
                     <div class="col-12">
                         <h6 class="text-muted mb-3">詳細情報</h6>
                         <table class="table table-sm">
-                            {% if contract.description %}
                             <tr>
-                                <th class="w-25 bg-light">契約内容</th>
-                                <td>{{ contract.description|linebreaksbr }}</td>
+                                <th class="w-25 bg-light">業務内容</th>
+                                <td>{{ contract.business_content|linebreaksbr }}</td>
                             </tr>
-                            {% endif %}
-                            {% if contract.notes %}
                             <tr>
                                 <th class="w-25 bg-light">備考</th>
                                 <td>{{ contract.notes|linebreaksbr }}</td>
                             </tr>
-                            {% endif %}
                             {% if contract.memo %}
                             <tr>
                                 <th class="w-25 bg-light">メモ</th>
@@ -204,7 +204,7 @@
                 <div class="row mt-3">
                     <div class="col text-left">
                         {% if not from_client_detail %}
-                            {% if contract.contract_status == '1' or contract.contract_status == '5' %}
+                            {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT or contract.contract_status == Constants.CONTRACT_STATUS.PENDING %}
                                 <a href="{% url 'contract:client_contract_update' contract.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
                                 <a href="{% url 'contract:client_contract_delete' contract.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
                             {% endif %}
@@ -224,6 +224,56 @@
     <div class="col-md-4">
         <!-- 状況カード -->
         {% include 'contract/_client_contract_status_card.html' %}
+
+        <!-- 契約アサインカード -->
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                契約アサイン
+                {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT %}
+                <a href="{% url 'contract:client_contract_assignment' contract.pk %}" class="btn btn-sm btn-primary">割当</a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if contract.assigned_assignments %}
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>スタッフ</th>
+                                <th>契約期間</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for assignment in contract.assigned_assignments %}
+                            <tr>
+                                <td>
+                                    {{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }}
+                                    {% if assignment.staff_contract.employment_type %}
+                                        <span class="badge {{ assignment.staff_contract.employment_type.display_order|badge_class }} ms-2" style="font-size:11px">{{ assignment.staff_contract.employment_type.name }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'contract:staff_contract_detail' assignment.staff_contract.pk %}">
+                                        {{ assignment.staff_contract.start_date|date:"Y/m/d" }}～{% if assignment.staff_contract.end_date %}{{ assignment.staff_contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}
+                                    </a>
+                                </td>
+                                <td>
+                                    {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT %}
+                                    <form action="{% url 'contract:delete_contract_assignment' assignment_pk=assignment.pk %}?from=client" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-dark" onclick="return confirm('このアサインを解除しますか？')">解除</button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="card-text">アサインされているスタッフはいません。</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 
@@ -240,4 +290,65 @@
 {% with change_logs=change_logs change_logs_count=change_logs_count history_url=client_contract_history_url show_full_content=False %}
     {% include 'common/_change_history_list.html' %}
 {% endwith %}
+
+<script>
+// ページロジック情報を設定
+document.addEventListener('DOMContentLoaded', function() {
+    // このページにロジック情報があることを通知
+    document.body.setAttribute('data-has-logic', 'true');
+
+    const logicContent = document.getElementById('logic-info-content');
+    if (logicContent) {
+        logicContent.innerHTML = `
+            <div class="alert alert-info mb-3">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>クライアント契約詳細画面のロジック情報</h6>
+            </div>
+
+            <!-- 単項目チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-shield-check text-primary me-2"></i>単項目チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 契約状況: 「作成中」「申請中」のみ編集・削除可能</div>
+                    <div class="mb-2">• 印刷権限: 契約状況と契約種別に応じて印刷機能の利用可否を制御</div>
+                    <div class="mb-0">• 派遣契約: 派遣契約の場合のみ派遣関連印刷機能を表示</div>
+                </div>
+            </div>
+
+            <!-- 相関チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-check-circle text-success me-2"></i>相関チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 契約アサイン: 「作成中」状態のスタッフ契約のみアサイン可能</div>
+                    <div class="mb-2">• アサイン解除: 「作成中」状態の契約のみ解除可能</div>
+                    <div class="mb-0">● 派遣情報表示: 派遣契約の場合のみ派遣情報{% if contract.haken_info and contract.haken_info.ttp_info %}・紹介予定派遣情報{% endif %}を表示</div>
+                </div>
+            </div>
+
+            <!-- 自動処理 -->
+            <div class="card" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-gear text-secondary me-2"></i>自動処理</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 遷移元判定: リファラー情報から戻るボタンの遷移先を自動判定</div>
+                    <div class="mb-2">● 関連データ取得: 契約アサイン情報、派遣情報{% if contract.haken_info and contract.haken_info.ttp_info %}、紹介予定派遣情報{% endif %}を自動取得・表示</div>
+                    <div class="mb-2">• 発行履歴管理: 契約書印刷履歴を自動記録・表示</div>
+                    <div class="mb-2">• 変更履歴統合: 契約本体と派遣情報の変更履歴を統合して表示</div>
+                    <div class="mb-2">• 抵触日表示: 派遣先事業所の抵触日を自動表示</div>
+                    <div class="mb-2">• 業務内容コピー: 契約アサイン時に業務内容が空の場合、相手方から自動コピー（クライアント契約⇔スタッフ契約）</div>
+                    <div class="mb-0">• 就業場所コピー: 契約アサイン時に就業場所が空の場合、相手方から自動コピー（クライアント契約の派遣情報⇔スタッフ契約）</div>
+                </div>
+            </div>
+        `;
+    }
+
+    // ロジック情報設定完了を通知
+    document.dispatchEvent(new Event('logicInfoSet'));
+});
+</script>
+
 {% endblock %}

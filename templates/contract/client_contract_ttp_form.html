@@ -18,7 +18,16 @@
             <div class="card-body">
                 <form method="post" novalidate>
                     {% csrf_token %}
-                    <div class="row mb-3 align-items-center">
+                    <div class="row mb-1 align-items-center">
+                        <label for="{{ form.employer_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.employer_name.label }}</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="{{ form.employer_name.name }}" id="{{ form.employer_name.id_for_label }}" class="form-control form-control-sm" value="{{ form.employer_name.value|default_if_none:"" }}">
+                            {% for error in form.employer_name.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="row mb-1 align-items-center">
                         <label for="{{ form.contract_period.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.contract_period.label }}</label>
                         <div class="col-sm-6">
                             <input type="text" name="{{ form.contract_period.name }}" id="{{ form.contract_period.id_for_label }}" class="form-control form-control-sm" value="{{ form.contract_period.value|default_if_none:"" }}">
@@ -36,7 +45,7 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="row mb-3 align-items-center">
+                    <div class="row mb-1 align-items-center">
                         <label for="{{ form.business_content.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.business_content.label }}</label>
                         <div class="col-sm-6">
                             {{ form.business_content }}
@@ -54,7 +63,7 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="row mb-3 align-items-center">
+                    <div class="row mb-1 align-items-center">
                         <label for="{{ form.working_hours.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.working_hours.label }}</label>
                         <div class="col-sm-6">
                             <input type="text" name="{{ form.working_hours.name }}" id="{{ form.working_hours.id_for_label }}" class="form-control form-control-sm" value="{{ form.working_hours.value|default_if_none:"" }}">
@@ -72,7 +81,7 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="row mb-3 align-items-center">
+                    <div class="row mb-1 align-items-center">
                         <label for="{{ form.overtime.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.overtime.label }}</label>
                         <div class="col-sm-6">
                             {{ form.overtime }}
@@ -81,7 +90,7 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="row mb-3 align-items-center">
+                    <div class="row mb-1 align-items-center">
                         <label for="{{ form.holidays.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.holidays.label }}</label>
                         <div class="col-sm-6">
                             {{ form.holidays }}
@@ -99,7 +108,7 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="row mb-3 align-items-center">
+                    <div class="row mb-1 align-items-center">
                         <label for="{{ form.wages.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.wages.label }}</label>
                         <div class="col-sm-6">
                             {{ form.wages }}
@@ -118,17 +127,8 @@
                         </div>
                     </div>
                     <div class="row mb-3 align-items-center">
-                        <label for="{{ form.employer_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.employer_name.label }}</label>
-                        <div class="col-sm-6">
-                            <input type="text" name="{{ form.employer_name.name }}" id="{{ form.employer_name.id_for_label }}" class="form-control form-control-sm" value="{{ form.employer_name.value|default_if_none:"" }}">
-                            {% for error in form.employer_name.errors %}
-                                <div class="text-danger small">{{ error }}</div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <div class="row mb-3 align-items-center">
                         <label for="{{ form.other.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.other.label }}</label>
-                        <div class="col-sm-8">
+                        <div class="col-sm-6">
                             {{ form.other }}
                             {% for error in form.other.errors %}
                                 <div class="text-danger small">{{ error }}</div>

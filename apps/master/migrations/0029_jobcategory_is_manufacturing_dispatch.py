@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("master", "0028_hakenbusinesscontent_hakenresponsibilitydegree"),
+        ("master", "0028_businesscontent_hakenresponsibilitydegree"),
     ]
 
     operations = [

@@ -1,0 +1,40 @@
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        担当者一覧
+        <a href="{% url 'company:company_user_create' %}" class="btn btn-sm btn-primary">担当者追加</a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover table-sm" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>氏名</th>
+                        <th>部署</th>
+                        <th>役職</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for company_user in company_users %}
+                    <tr{% if current_company_user and company_user.pk == current_company_user.pk %} class="table-warning"{% endif %}>
+                        <td>
+                            <a href="{% url 'company:company_user_detail' company_user.pk %}">{{ company_user.name }}</a>
+                            {% if company_user.is_responsible %}
+                                <span class="badge bg-primary ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="派遣元責任者">責任</span>
+                            {% endif %}
+                            {% if company_user.is_complaint_officer %}
+                                <span class="badge bg-warning ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="派遣元苦情申出先">苦情</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ company_user.department_name }}</td>
+                        <td>{{ company_user.position|default:"" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3">担当者が登録されていません。</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

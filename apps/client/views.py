@@ -191,8 +191,13 @@ def client_detail(request, pk):
     # 各担当者が接続承認済みか、未承認の接続申請があるかを付与
     from apps.connect.models import ConnectClient
     from apps.company.models import Company
+    from django.utils import timezone
+    from django.db.models import Q
+
     company = Company.objects.first()
     corporate_number = company.corporate_number if company else None
+    today = timezone.now().date()
+
     if corporate_number:
         for user in client_users:
             user.is_connected_approved = False
@@ -208,10 +213,40 @@ def client_detail(request, pk):
                     email=user.email,
                     status='pending'
                 ).exists()
+
+            # 派遣先責任者として指定されているか確認
+            user.is_client_responsible = ClientContract.objects.filter(
+                client=client,
+                haken_info__responsible_person_client=user,
+                start_date__lte=today,
+            ).filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True)
+            ).exists()
+
+            # 派遣先苦情申出先として指定されているか確認
+            user.is_client_complaint_officer = ClientContract.objects.filter(
+                client=client,
+                haken_info__complaint_officer_client=user,
+                start_date__lte=today,
+            ).filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True)
+            ).exists()
+
+            # 派遣先指揮命令者として指定されているか確認
+            user.is_client_commander = ClientContract.objects.filter(
+                client=client,
+                haken_info__commander=user,
+                start_date__lte=today,
+            ).filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True)
+            ).exists()
     else:
         for user in client_users:
             user.is_connected_approved = False
             user.has_pending_connection_request = False
+            user.is_client_responsible = False
+            user.is_client_complaint_officer = False
+            user.is_client_commander = False
     users_count = client.users.count()
     # ファイル情報（最新5件）
     files = client.files.order_by('-uploaded_at')[:5]
@@ -444,6 +479,41 @@ def client_department_detail(request, pk):
     users_in_department = department.users.all()
     users_count = users_in_department.count()
 
+    # 各担当者にバッジ情報を追加
+    from django.utils import timezone
+    from django.db.models import Q
+    from apps.contract.models import ClientContract
+
+    today = timezone.now().date()
+
+    for user in users_in_department:
+        # 派遣先責任者として指定されているか確認
+        user.is_client_responsible = ClientContract.objects.filter(
+            client=client,
+            haken_info__responsible_person_client=user,
+            start_date__lte=today,
+        ).filter(
+            Q(end_date__gte=today) | Q(end_date__isnull=True)
+        ).exists()
+
+        # 派遣先苦情申出先として指定されているか確認
+        user.is_client_complaint_officer = ClientContract.objects.filter(
+            client=client,
+            haken_info__complaint_officer_client=user,
+            start_date__lte=today,
+        ).filter(
+            Q(end_date__gte=today) | Q(end_date__isnull=True)
+        ).exists()
+
+        # 派遣先指揮命令者として指定されているか確認
+        user.is_client_commander = ClientContract.objects.filter(
+            client=client,
+            haken_info__commander=user,
+            start_date__lte=today,
+        ).filter(
+            Q(end_date__gte=today) | Q(end_date__isnull=True)
+        ).exists()
+
     # 変更履歴（AppLogから取得）
     change_logs_query = AppLog.objects.filter(
         model_name='ClientDepartment',
@@ -520,8 +590,14 @@ def client_user_list(request, client_pk):
     # 各担当者が接続承認済みか、未承認の接続申請があるかを付与
     from apps.connect.models import ConnectClient
     from apps.company.models import Company
+    from django.utils import timezone
+    from django.db.models import Q
+    from apps.contract.models import ClientContract
+
     company = Company.objects.first()
     corporate_number = company.corporate_number if company else None
+    today = timezone.now().date()
+
     if corporate_number:
         for user in client_users:
             user.is_connected_approved = False
@@ -537,10 +613,40 @@ def client_user_list(request, client_pk):
                     email=user.email,
                     status='pending'
                 ).exists()
+
+            # 派遣先責任者として指定されているか確認
+            user.is_client_responsible = ClientContract.objects.filter(
+                client=client,
+                haken_info__responsible_person_client=user,
+                start_date__lte=today,
+            ).filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True)
+            ).exists()
+
+            # 派遣先苦情申出先として指定されているか確認
+            user.is_client_complaint_officer = ClientContract.objects.filter(
+                client=client,
+                haken_info__complaint_officer_client=user,
+                start_date__lte=today,
+            ).filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True)
+            ).exists()
+
+            # 派遣先指揮命令者として指定されているか確認
+            user.is_client_commander = ClientContract.objects.filter(
+                client=client,
+                haken_info__commander=user,
+                start_date__lte=today,
+            ).filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True)
+            ).exists()
     else:
         for user in client_users:
             user.is_connected_approved = False
             user.has_pending_connection_request = False
+            user.is_client_responsible = False
+            user.is_client_complaint_officer = False
+            user.is_client_commander = False
     return render(request, 'client/client_user_list.html', {'client': client, 'client_users': client_users, 'show_client_info': True})
 
 @login_required
@@ -641,11 +747,36 @@ def client_user_detail(request, pk):
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')[:5]
     
+    # 関連するクライアント契約を取得
+    from django.utils import timezone
+    from django.db.models import Q
+    from apps.contract.models import ClientContract
+
+    today = timezone.now().date()
+
+    # 派遣先責任者、苦情申出先、指揮命令者として指定されているクライアント契約を統合取得
+    related_contracts = ClientContract.objects.filter(
+        Q(haken_info__responsible_person_client=client_user) |
+        Q(haken_info__complaint_officer_client=client_user) |
+        Q(haken_info__commander=client_user),
+        client=client,
+        start_date__lte=today,
+    ).filter(
+        Q(end_date__gte=today) | Q(end_date__isnull=True)
+    ).select_related('client', 'haken_info').distinct().order_by('start_date')
+
+    # 各契約に役割情報を追加
+    for contract in related_contracts:
+        contract.is_responsible_role = (contract.haken_info.responsible_person_client == client_user)
+        contract.is_complaint_role = (contract.haken_info.complaint_officer_client == client_user)
+        contract.is_commander_role = (contract.haken_info.commander == client_user)
+
     return render(request, 'client/client_user_detail.html', {
         'client_user': client_user,
         'client': client,
         'connect_request': connect_request,
         'change_logs': change_logs,
+        'related_contracts': related_contracts,
     })
 
 # クライアント担当者メール送信

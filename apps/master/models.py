@@ -553,6 +553,13 @@ class ContractPattern(MyModel):
         default='1',
     )
     contract_type_code = models.CharField('契約種別', max_length=2, blank=True, null=True)
+    employment_type = models.ForeignKey(
+        'EmploymentType',
+        on_delete=models.SET_NULL,
+        verbose_name='雇用形態',
+        blank=True,
+        null=True
+    )
     memo = models.TextField('メモ', blank=True, null=True)
     display_order = models.IntegerField('表示順', default=0)
     is_active = models.BooleanField('有効', default=True)
@@ -714,18 +721,18 @@ class JobCategory(MyModel):
         return self.name
 
 
-class HakenBusinessContent(MyModel):
+class BusinessContent(MyModel):
     """
-    派遣業務内容マスタ
+    業務内容マスタ
     """
     content = models.TextField('内容')
     display_order = models.IntegerField('表示順', default=0)
     is_active = models.BooleanField('有効', default=True)
 
     class Meta:
-        db_table = 'apps_master_haken_business_content'
-        verbose_name = '派遣業務内容'
-        verbose_name_plural = '派遣業務内容'
+        db_table = 'apps_master_business_content'
+        verbose_name = '業務内容'
+        verbose_name_plural = '業務内容'
         ordering = ['display_order']
 
     def __str__(self):
@@ -748,6 +755,29 @@ class HakenResponsibilityDegree(MyModel):
 
     def __str__(self):
         return self.content
+
+
+class EmploymentType(MyModel):
+    """
+    雇用形態マスタ
+    """
+    name = models.CharField('名称', max_length=100)
+    display_order = models.IntegerField('表示順', default=0)
+    is_fixed_term = models.BooleanField('有期', default=True)
+    is_active = models.BooleanField('有効', default=True)
+
+    class Meta:
+        db_table = 'apps_master_employment_type'
+        verbose_name = '雇用形態'
+        verbose_name_plural = '雇用形態'
+        ordering = ['display_order', 'name']
+        indexes = [
+            models.Index(fields=['is_active']),
+            models.Index(fields=['display_order']),
+        ]
+
+    def __str__(self):
+        return self.name
 
 
 class Information(MyModel):
@@ -893,12 +923,57 @@ class DefaultValue(MyModel):
     target_item = models.CharField('対象項目', max_length=255)
     format = models.CharField('形式', max_length=10, choices=FORMAT_CHOICES, default='text')
     value = models.TextField('値', blank=True)
+    display_order = models.IntegerField('表示順', default=0)
 
     class Meta:
         db_table = 'apps_master_default_value'
         verbose_name = '初期値マスタ'
         verbose_name_plural = '初期値マスタ'
-        ordering = ['target_item']
+        ordering = ['display_order', 'target_item']
 
     def __str__(self):
         return self.target_item
+
+
+class StaffRegistStatus(MyModel):
+    """
+    スタッフ登録状況マスタ
+    """
+    name = models.CharField('名称', max_length=100)
+    display_order = models.IntegerField('表示順', default=0)
+    is_active = models.BooleanField('有効', default=True)
+
+    class Meta:
+        db_table = 'apps_master_staff_regist_status'
+        verbose_name = 'スタッフ登録状況'
+        verbose_name_plural = 'スタッフ登録状況'
+        ordering = ['display_order', 'name']
+        indexes = [
+            models.Index(fields=['is_active']),
+            models.Index(fields=['display_order']),
+        ]
+
+    def __str__(self):
+        return self.name
+
+
+class ClientRegistStatus(MyModel):
+    """
+    クライアント登録状況マスタ
+    """
+    name = models.CharField('名称', max_length=100)
+    display_order = models.IntegerField('表示順', default=0)
+    is_active = models.BooleanField('有効', default=True)
+
+    class Meta:
+        db_table = 'apps_master_client_regist_status'
+        verbose_name = 'クライアント登録状況'
+        verbose_name_plural = 'クライアント登録状況'
+        ordering = ['display_order', 'name']
+        indexes = [
+            models.Index(fields=['is_active']),
+            models.Index(fields=['display_order']),
+        ]
+
+    def __str__(self):
+        return self.name
