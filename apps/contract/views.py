@@ -1706,7 +1706,7 @@ def client_dispatch_ledger_pdf(request, pk):
     """クライアント契約の派遣元管理台帳PDFを生成して返す"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
-    if contract.client_contract_type_code != '20':
+    if contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
         messages.error(request, 'この契約の派遣元管理台帳は発行できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
@@ -1782,7 +1782,7 @@ def issue_clash_day_notification(request, pk):
     """クライアント契約の抵触日通知書を発行する"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
-    if int(contract.contract_status) < int(Constants.CONTRACT_STATUS.APPROVED) or contract.client_contract_type_code != '20':
+    if int(contract.contract_status) < int(Constants.CONTRACT_STATUS.APPROVED) or contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
         messages.error(request, 'この契約の抵触日通知書は共有できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
@@ -1831,7 +1831,7 @@ def client_clash_day_notification_pdf(request, pk):
     """クライアント契約の抵触日通知書のPDFを生成して返す"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
-    if contract.client_contract_type_code != '20':
+    if contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
         messages.error(request, 'この契約の抵触日通知書は発行できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
@@ -1861,7 +1861,7 @@ def client_contract_draft_dispatch_notification(request, pk):
     """クライアント契約の派遣通知書のドラフトPDFを生成して返す"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
-    if contract.client_contract_type_code != '20':
+    if contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
         messages.error(request, 'この契約の派遣通知書は発行できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
