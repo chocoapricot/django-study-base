@@ -50,6 +50,8 @@ def main():
         "_sample_data/master_business_content.json",
         "_sample_data/master_haken_responsibility_degree.json",
         "_sample_data/master_default_value.json",
+        "_sample_data/master_client_regist_status.json",
+        "_sample_data/master_staff_regist_status.json",
         "_sample_data/company.json",
         "_sample_data/company_department.json",
         "_sample_data/company_user.json",
@@ -103,6 +105,8 @@ def main():
         ("python manage.py loaddata _sample_data/master_business_content.json", "業務内容マスタデータ"),
         ("python manage.py loaddata _sample_data/master_haken_responsibility_degree.json", "派遣責任の程度マスタデータ"),
         ("python manage.py loaddata _sample_data/master_default_value.json", "初期値マスタデータ"),
+        ("python manage.py loaddata _sample_data/master_client_regist_status.json", "クライアント登録ステータスマスタデータ"),
+        ("python manage.py loaddata _sample_data/master_staff_regist_status.json", "スタッフ登録ステータスマスタデータ"),
         ("python manage.py loaddata _sample_data/staff.json", "スタッフデータ"),
         ("python manage.py loaddata _sample_data/staff_international.json", "スタッフ外国籍情報データ"),
         ("python manage.py loaddata _sample_data/staff_contacted.json", "スタッフ連絡履歴データ"),
@@ -149,6 +153,8 @@ def main():
     print("- 業務内容マスタ")
     print("- 派遣責任の程度マスタ")
     print("- 初期値マスタ")
+    print("- クライアント登録ステータスマスタ")
+    print("- スタッフ登録ステータスマスタ")
     print("- 会社データ")
     print("- 部署データ")
     print("- 自社担当者データ")
