@@ -239,12 +239,12 @@
                             {% for assignment in contract.assigned_assignments %}
                             <tr>
                                 <td>
-                                    <a href="{% url 'contract:staff_contract_detail' assignment.staff_contract.pk %}">
-                                        {{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }}
-                                    </a>
+                                    {{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }}
                                 </td>
                                 <td>
-                                    {{ assignment.staff_contract.start_date|date:"Y/m/d" }}～{% if assignment.staff_contract.end_date %}{{ assignment.staff_contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}
+                                    <a href="{% url 'contract:staff_contract_detail' assignment.staff_contract.pk %}">
+                                        {{ assignment.staff_contract.start_date|date:"Y/m/d" }}～{% if assignment.staff_contract.end_date %}{{ assignment.staff_contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}
+                                    </a>
                                 </td>
                                 <td>
                                     {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT %}
