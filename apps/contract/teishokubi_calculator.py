@@ -2,7 +2,7 @@
 
 from datetime import date
 from dateutil.relativedelta import relativedelta
-from apps.contract.models import ContractAssignment, StaffContractTeishokubi
+from apps.contract.models import ContractAssignment, StaffContractTeishokubi, StaffContractTeishokubiDetail
 
 
 class TeishokubiCalculator:
@@ -19,11 +19,22 @@ class TeishokubiCalculator:
         """
         派遣開始日と抵触日を計算し、StaffContractTeishokubi モデルを更新または作成する
         """
-        haken_start_date = self._calculate_haken_start_date()
+        haken_start_date, assignment_periods = self._calculate_haken_start_date()
 
         if haken_start_date:
             conflict_date = self._calculate_conflict_date(haken_start_date)
-            self._update_or_create_teishokubi(haken_start_date, conflict_date)
+            teishokubi = self._update_or_create_teishokubi(haken_start_date, conflict_date)
+
+            # 既存の詳細レコードを一旦削除
+            teishokubi.details.all().delete()
+            # 新しい詳細レコードを作成
+            for period in assignment_periods:
+                StaffContractTeishokubiDetail.objects.create(
+                    teishokubi=teishokubi,
+                    assignment_start_date=period['start_date'],
+                    assignment_end_date=period['end_date'],
+                    is_calculated=period['is_calculated']
+                )
         else:
             # 該当する割当がない場合は、既存の抵触日レコードを削除
             self._delete_teishokubi()
@@ -32,14 +43,14 @@ class TeishokubiCalculator:
         """
         抵触日を計算して返す（DB更新は行わない）
         """
-        haken_start_date = self._calculate_haken_start_date(new_assignment_instance=new_assignment_instance)
+        haken_start_date, _ = self._calculate_haken_start_date(new_assignment_instance=new_assignment_instance)
         if haken_start_date:
             return self._calculate_conflict_date(haken_start_date)
         return None
 
     def _calculate_haken_start_date(self, new_assignment_instance=None):
         """
-        派遣開始日を計算する
+        派遣開始日を計算し、計算に使用した期間の情報を返す
         """
         assignments = self._get_relevant_assignments()
         assignment_periods = self._get_assignment_periods(assignments)
@@ -50,14 +61,22 @@ class TeishokubiCalculator:
                 new_assignment_instance.client_contract.end_date if new_assignment_instance.client_contract.end_date else date.max,
                 new_assignment_instance.staff_contract.end_date if new_assignment_instance.staff_contract.end_date else date.max
             )
-            assignment_periods.append({'start_date': start_date, 'end_date': end_date})
+            assignment_periods.append({
+                'start_date': start_date,
+                'end_date': end_date,
+            })
 
         if not assignment_periods:
-            return None
+            return None, []
+
+        # is_calculated フラグを初期化
+        for period in assignment_periods:
+            period['is_calculated'] = False
 
         sorted_periods = sorted(assignment_periods, key=lambda p: p['start_date'])
 
         haken_start_date = sorted_periods[0]['start_date']
+        start_index = 0
         for i in range(1, len(sorted_periods)):
             prev_period = sorted_periods[i-1]
             current_period = sorted_periods[i]
@@ -65,8 +84,13 @@ class TeishokubiCalculator:
             # 前の割当終了日から3ヶ月と1日以上あいているかチェック
             if current_period['start_date'] >= prev_period['end_date'] + relativedelta(months=3, days=1):
                 haken_start_date = current_period['start_date']
+                start_index = i
 
-        return haken_start_date
+        # 算出対象の期間にフラグを立てる
+        for i in range(start_index, len(sorted_periods)):
+            sorted_periods[i]['is_calculated'] = True
+
+        return haken_start_date, sorted_periods
 
     def _get_relevant_assignments(self):
         """
@@ -113,7 +137,7 @@ class TeishokubiCalculator:
                 'conflict_date': conflict_date,
             }
         )
-        # return obj, created
+        return obj
 
     def _delete_teishokubi(self):
         """
