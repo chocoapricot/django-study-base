@@ -11,9 +11,6 @@
                         <th>氏名</th>
                         <th>部署</th>
                         <th>役職</th>
-                        <th>電話番号</th>
-                        <th>メールアドレス</th>
-                        <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -30,20 +27,10 @@
                         </td>
                         <td>{{ company_user.department_name }}</td>
                         <td>{{ company_user.position|default:"" }}</td>
-                        <td>{{ company_user.phone_number|default:"" }}</td>
-                        <td>{{ company_user.email|default:"" }}</td>
-                        <td>
-                            <a href="{% url 'company:company_user_edit' company_user.pk %}" class="btn btn-sm btn-dark" data-bs-toggle="tooltip" data-bs-placement="top" title="編集">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <a href="{% url 'company:company_user_delete' company_user.pk %}" class="btn btn-sm btn-dark" data-bs-toggle="tooltip" data-bs-placement="top" title="削除">
-                                <i class="bi bi-x"></i>
-                            </a>
-                        </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6">担当者が登録されていません。</td>
+                        <td colspan="3">担当者が登録されていません。</td>
                     </tr>
                     {% endfor %}
                 </tbody>
