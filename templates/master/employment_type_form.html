@@ -37,7 +37,7 @@
                     <div class="form-check">
                         {{ form.is_fixed_term }}
                         <label class="form-check-label" for="{{ form.is_fixed_term.id_for_label }}">
-                            有期
+                            有期 {% my_help_icon "有期雇用の場合には派遣契約の場合の個人抵触日の対象となります" %}
                         </label>
                         {% if form.is_fixed_term.errors %}
                             <div class="text-danger small">{{ form.is_fixed_term.errors.0 }}</div>
