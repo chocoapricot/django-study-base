@@ -138,7 +138,7 @@ class StaffViewsTest(TestCase):
     def test_staff_list_staff_regist_status_filter(self):
         """登録区分での絞り込み機能をテスト"""
         # 1. 正社員のみを絞り込み
-        response = self.client.get(reverse('staff:staff_list'), {'staff_regist_status': '1'})
+        response = self.client.get(reverse('staff:staff_list'), {'regist_status': self.regist_status_1.pk})
         self.assertEqual(response.status_code, 200)
         
         # 正社員のスタッフが表示されることを確認
@@ -147,7 +147,7 @@ class StaffViewsTest(TestCase):
         self.assertNotContains(response, '鈴木')  # staff3 (派遣社員)
         
         # 2. 契約社員のみを絞り込み
-        response = self.client.get(reverse('staff:staff_list'), {'staff_regist_status': '2'})
+        response = self.client.get(reverse('staff:staff_list'), {'regist_status': self.regist_status_2.pk})
         self.assertEqual(response.status_code, 200)
         
         # 契約社員のスタッフが表示されることを確認
@@ -156,7 +156,7 @@ class StaffViewsTest(TestCase):
         self.assertNotContains(response, '鈴木')  # staff3 (派遣社員)
         
         # 3. 派遣社員のみを絞り込み
-        response = self.client.get(reverse('staff:staff_list'), {'staff_regist_status': '10'})
+        response = self.client.get(reverse('staff:staff_list'), {'regist_status': self.regist_status_10.pk})
         self.assertEqual(response.status_code, 200)
         
         # 派遣社員のスタッフが表示されることを確認
@@ -178,7 +178,7 @@ class StaffViewsTest(TestCase):
         # 1. 「田中」で検索 + 正社員フィルター
         response = self.client.get(reverse('staff:staff_list'), {
             'q': '田中',
-            'staff_regist_status': '1'
+            'regist_status': self.regist_status_1.pk
         })
         self.assertEqual(response.status_code, 200)
         
@@ -190,7 +190,7 @@ class StaffViewsTest(TestCase):
         # 2. 「田中」で検索 + 契約社員フィルター（該当なし）
         response = self.client.get(reverse('staff:staff_list'), {
             'q': '田中',
-            'staff_regist_status': '2'
+            'regist_status': self.regist_status_2.pk
         })
         self.assertEqual(response.status_code, 200)
         
@@ -221,7 +221,7 @@ class StaffViewsTest(TestCase):
         self.assertContains(response, '派遣社員')
         
         # selectタグが存在することを確認
-        self.assertContains(response, '<select name="staff_regist_status"')
+        self.assertContains(response, '<select name="regist_status"')
         self.assertContains(response, 'スタッフ')
 
     def test_staff_regist_status_filter_ui_elements(self):

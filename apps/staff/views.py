@@ -32,7 +32,7 @@ def staff_export(request):
     """スタッフデータのエクスポート（CSV/Excel）"""
     # フィルタリングロジックをstaff_listからコピー
     query = request.GET.get('q', '').strip()
-    staff_regist_status_filter = request.GET.get('staff_regist_status', '').strip()
+    staff_regist_status_filter = request.GET.get('regist_status', '').strip()
     department_filter = request.GET.get('department', '').strip()
     employment_type_filter = request.GET.get('employment_type', '').strip()
     has_request_filter = request.GET.get('has_request', '')
@@ -180,7 +180,7 @@ def staff_contacted_delete(request, pk):
 def staff_list(request):
     sort = request.GET.get('sort', 'pk')  # デフォルトソートをpkに設定
     query = request.GET.get('q', '').strip()
-    staff_regist_status_filter = request.GET.get('staff_regist_status', '').strip()  # 登録区分フィルター
+    staff_regist_status_filter = request.GET.get('regist_status', '').strip()  # 登録区分フィルター
     department_filter = request.GET.get('department', '').strip()  # 所属部署フィルター
     employment_type_filter = request.GET.get('employment_type', '').strip()  # 雇用形態フィルター
     has_request_filter = request.GET.get('has_request', '')
@@ -362,7 +362,7 @@ def staff_list(request):
         'staffs': staffs_pages, 
         'query': query, 
         'sort': sort,
-        'staff_regist_status_filter': staff_regist_status_filter,
+        'regist_status_filter': staff_regist_status_filter,
         'staff_regist_status_options': staff_regist_status_options,
         'department_filter': department_filter,
         'department_options': department_options,
