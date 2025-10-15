@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 from apps.client.models import Client, ClientFile
-from apps.system.settings.models import Dropdowns
+
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 import tempfile
@@ -68,7 +68,13 @@ class ClientFileTestCase(TestCase):
         # アップロードされたファイルを削除
         for client_file in self.created_files:
             if client_file.file:
-                client_file.file.delete(save=False)
+                try:
+                    # ファイルを閉じてから削除
+                    client_file.file.close()
+                    client_file.file.delete(save=False)
+                except (OSError, PermissionError):
+                    # Windowsでファイルが使用中の場合は無視
+                    pass
     
     def test_client_file_model(self):
         """ClientFileモデルのテスト"""
