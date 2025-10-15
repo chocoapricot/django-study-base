@@ -1,0 +1,117 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+{% load humanize %}
+{% load dropdowns %}
+{% load badge_tags %}
+
+{% block title %}クライアント割当確認{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header">
+        クライアント割当確認
+    </div>
+    <div class="card-body">
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle"></i>
+            以下の内容で契約を割り当てます。内容を確認してください。
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="text-muted mb-3">スタッフ契約</h6>
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">{{ staff_contract.contract_name }}</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th class="w-25">スタッフ</th>
+                                <td>{{ staff_contract.staff.name_last }} {{ staff_contract.staff.name_first }}</td>
+                            </tr>
+                            <tr>
+                                <th>雇用形態</th>
+                                <td>
+                                    {% if staff_contract.employment_type %}
+                                        <span class="badge {{ staff_contract.employment_type.display_order|badge_class }}">{{ staff_contract.employment_type.name }}</span>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>契約期間</th>
+                                <td>{{ staff_contract.start_date|date:"Y/m/d" }}～{% if staff_contract.end_date %}{{ staff_contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <th>契約金額</th>
+                                <td>
+                                    {% if staff_contract.contract_amount %}
+                                        {% if staff_contract.pay_unit %}{% my_name 'pay_unit' staff_contract.pay_unit %}&nbsp;{% endif %}{{ staff_contract.contract_amount|floatformat:0|intcomma }}円
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-muted mb-3">クライアント契約</h6>
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">{{ client_contract.contract_name }}</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th class="w-25">クライアント</th>
+                                <td>{{ client_contract.client.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>契約種別</th>
+                                <td>
+                                    {% if client_contract.contract_type_display_name %}
+                                        <span class="badge {{ client_contract.client_contract_type_code|badge_class }}">{{ client_contract.contract_type_display_name }}</span>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>契約期間</th>
+                                <td>{{ client_contract.start_date|date:"Y/m/d" }}～{% if client_contract.end_date %}{{ client_contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <th>契約金額</th>
+                                <td>
+                                    {% if client_contract.contract_amount %}
+                                        {% if client_contract.bill_unit %}{{ client_contract.bill_unit }}&nbsp;{% endif %}{{ client_contract.contract_amount|floatformat:0|intcomma }}円
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'contract:staff_contract_assignment' staff_contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                    <div>
+                        <form action="{% url 'contract:create_contract_assignment' %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="client_contract_id" value="{{ client_contract.pk }}">
+                            <input type="hidden" name="staff_contract_id" value="{{ staff_contract.pk }}">
+                            <input type="hidden" name="from" value="{{ from_view }}">
+                            <button type="submit" class="btn btn-sm btn-primary">割当実行</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

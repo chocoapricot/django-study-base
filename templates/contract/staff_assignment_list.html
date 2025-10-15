@@ -46,11 +46,10 @@
                             </td>
                             <td>{{ contract.start_date|date:"Y/m/d" }}～{% if contract.end_date %}{{ contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}</td>
                             <td>
-                                <form action="{% url 'contract:create_contract_assignment' %}" method="post" class="d-inline">
+                                <form action="{% url 'contract:staff_assignment_confirm' %}" method="post" class="d-inline">
                                     {% csrf_token %}
                                     <input type="hidden" name="client_contract_id" value="{{ client_contract.pk }}">
                                     <input type="hidden" name="staff_contract_id" value="{{ contract.pk }}">
-                                    <input type="hidden" name="from" value="client">
                                     <button type="submit" class="btn btn-sm btn-primary">割当</button>
                                 </form>
                             </td>

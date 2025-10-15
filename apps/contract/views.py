@@ -2186,8 +2186,64 @@ def staff_contract_assignment_view(request, pk):
 
 
 @login_required
+def client_assignment_confirm(request):
+    """クライアント割当の確認画面を表示するビュー（スタッフ契約からクライアント契約を割り当てる場合）"""
+    if request.method == 'POST':
+        client_contract_id = request.POST.get('client_contract_id')
+        staff_contract_id = request.POST.get('staff_contract_id')
+
+        client_contract = get_object_or_404(ClientContract, pk=client_contract_id)
+        staff_contract = get_object_or_404(StaffContract, pk=staff_contract_id)
+
+        # ステータスチェック
+        if client_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT or \
+           staff_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
+            messages.error(request, '作成中の契約間でのみ割当が可能です。')
+            return redirect('contract:staff_contract_detail', pk=staff_contract_id)
+
+        context = {
+            'client_contract': client_contract,
+            'staff_contract': staff_contract,
+            'from_view': 'staff',
+        }
+
+        return render(request, 'contract/client_assignment_confirm.html', context)
+
+    # POST以外はトップページにリダイレクト
+    return redirect('contract:contract_index')
+
+
+@login_required
+def staff_assignment_confirm(request):
+    """スタッフ割当の確認画面を表示するビュー（クライアント契約からスタッフ契約を割り当てる場合）"""
+    if request.method == 'POST':
+        client_contract_id = request.POST.get('client_contract_id')
+        staff_contract_id = request.POST.get('staff_contract_id')
+
+        client_contract = get_object_or_404(ClientContract, pk=client_contract_id)
+        staff_contract = get_object_or_404(StaffContract, pk=staff_contract_id)
+
+        # ステータスチェック
+        if client_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT or \
+           staff_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
+            messages.error(request, '作成中の契約間でのみ割当が可能です。')
+            return redirect('contract:client_contract_detail', pk=client_contract_id)
+
+        context = {
+            'client_contract': client_contract,
+            'staff_contract': staff_contract,
+            'from_view': 'client',
+        }
+
+        return render(request, 'contract/staff_assignment_confirm.html', context)
+
+    # POST以外はトップページにリダイレクト
+    return redirect('contract:contract_index')
+
+
+@login_required
 def confirm_contract_assignment(request):
-    """契約アサインの確認画面を表示するビュー"""
+    """契約アサインの確認画面を表示するビュー（旧版・互換性のため残す）"""
     if request.method == 'POST':
         client_contract_id = request.POST.get('client_contract_id')
         staff_contract_id = request.POST.get('staff_contract_id')
