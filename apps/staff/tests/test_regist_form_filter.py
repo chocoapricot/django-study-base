@@ -46,19 +46,19 @@ class RegistFormFilterTest(TestCase):
         )
         self.regist_status_haken = StaffRegistStatus.objects.create(
             name='派遣社員',
-            display_order=3,
+            display_order=10,
             created_by=self.user,
             updated_by=self.user
         )
         self.regist_status_baito = StaffRegistStatus.objects.create(
             name='アルバイト',
-            display_order=4,
+            display_order=20,
             created_by=self.user,
             updated_by=self.user
         )
         self.regist_status_taishoku = StaffRegistStatus.objects.create(
             name='退職者',
-            display_order=5,
+            display_order=90,
             created_by=self.user,
             updated_by=self.user
         )
