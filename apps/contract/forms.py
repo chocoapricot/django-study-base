@@ -574,15 +574,13 @@ class StaffContractTeishokubiDetailForm(forms.ModelForm):
     
     class Meta:
         model = StaffContractTeishokubiDetail
-        fields = ['assignment_start_date', 'assignment_end_date', 'is_calculated']
+        fields = ['assignment_start_date', 'assignment_end_date']
         widgets = {
             'assignment_start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'assignment_end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
-            'is_calculated': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['assignment_start_date'].label = '割当開始日'
         self.fields['assignment_end_date'].label = '割当終了日'
-        self.fields['is_calculated'].label = '算出対象'

@@ -2527,6 +2527,7 @@ def staff_contract_teishokubi_detail_create(request, pk):
             detail = form.save(commit=False)
             detail.teishokubi = teishokubi
             detail.is_manual = True  # 手動作成フラグを設定
+            detail.is_calculated = False  # デフォルト値（再計算で正しい値に更新される）
             detail.save()
             
             # 手動登録後に抵触日を再計算

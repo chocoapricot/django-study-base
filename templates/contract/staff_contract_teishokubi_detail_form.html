@@ -67,21 +67,6 @@
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.is_calculated.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.is_calculated.label }}</label>
-                <div class="col-sm-4">
-                    <div class="form-check">
-                        {{ form.is_calculated }}
-                        <label class="form-check-label" for="{{ form.is_calculated.id_for_label }}">
-                            算出対象に含める
-                        </label>
-                    </div>
-                    {% if form.is_calculated.errors %}
-                        <div class="text-danger small">{{ form.is_calculated.errors.0 }}</div>
-                    {% endif %}
-                </div>
-            </div>
-
             <div class="row mt-4">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-10">

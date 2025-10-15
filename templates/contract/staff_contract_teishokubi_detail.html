@@ -81,10 +81,14 @@
                     <td>{{ detail.assignment_start_date|date:"Y/m/d" }}</td>
                     <td>{{ detail.assignment_end_date|date:"Y/m/d" }}</td>
                     <td>
-                        {% if detail.is_calculated %}
-                            <span class="badge bg-success">対象</span>
+                        {% if detail.is_manual %}
+                            <span class="text-muted">-</span>
                         {% else %}
-                            <span class="badge bg-secondary">対象外</span>
+                            {% if detail.is_calculated %}
+                                <span class="badge bg-success">対象</span>
+                            {% else %}
+                                <span class="badge bg-secondary">対象外</span>
+                            {% endif %}
                         {% endif %}
                     </td>
                     <td>
@@ -110,6 +114,12 @@
         {% else %}
         <p class="text-center">詳細情報がありません。</p>
         {% endif %}
+        
+        <div class="row mt-3">
+            <div class="col text-left">
+                <a href="{% url 'contract:staff_contract_teishokubi_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -121,6 +131,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // 削除ボタンの処理
     document.querySelectorAll('.delete-btn').forEach(function(button) {
         button.addEventListener('click', function() {
             const detailId = this.getAttribute('data-detail-id');
@@ -132,12 +143,72 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // ページロジック情報を設定
+    document.body.setAttribute('data-has-logic', 'true');
+    
+    const logicContent = document.getElementById('logic-info-content');
+    if (logicContent) {
+        logicContent.innerHTML = `
+            <div class="alert alert-info mb-3">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>個人抵触日詳細画面のロジック情報</h6>
+            </div>
+            
+            <!-- 算出条件 -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-funnel text-primary me-2"></i>算出条件</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 契約種別: 派遣契約のみ対象</div>
+                    <div class="mb-2">• 雇用形態: 有期雇用のスタッフのみ対象</div>
+                    <div class="mb-0">• 組織単位: 同一の派遣先組織単位での期間を統合</div>
+                </div>
+            </div>
+
+            <!-- 3ヶ月ルール -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-calendar-check text-warning me-2"></i>3ヶ月ルール</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 中断期間: 前の期間終了日から3ヶ月と1日以上空いた場合</div>
+                    <div class="mb-2">• 派遣開始日リセット: 中断後の期間から新たな派遣開始日として扱う</div>
+                    <div class="mb-0">• 算出対象: 派遣開始日以降の期間のみが抵触日計算に含まれる</div>
+                </div>
+            </div>
+
+            <!-- 手動作成分の扱い -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-pencil-square text-info me-2"></i>手動作成分の扱い</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 算出対象表示: 手動作成分は「-」で表示（3ヶ月ルールで自動決定）</div>
+                    <div class="mb-2">• 保持: 再計算時も手動作成分は削除されない</div>
+                    <div class="mb-0">• 統合計算: 自動作成分と手動作成分を統合して抵触日を計算</div>
+                </div>
+            </div>
+
+            <!-- 自動処理 -->
+            <div class="card" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-gear text-secondary me-2"></i>自動処理</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 契約アサイン作成・削除時: 自動で抵触日を再計算</div>
+                    <div class="mb-2">• 手動詳細作成・削除時: 抵触日を再計算して更新</div>
+                    <div class="mb-2">• 抵触日計算: 派遣開始日の3年後を自動計算</div>
+                    <div class="mb-2">• 期間統合: 重複・連続する期間を自動で統合処理</div>
+                    <div class="mb-0">• バリデーション: 契約アサイン時に抵触日超過をチェック</div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // ロジック情報設定完了を通知
+    document.dispatchEvent(new Event('logicInfoSet'));
 });
 </script>
 
-<div class="row mt-3">
-    <div class="col text-left">
-        <a href="{% url 'contract:staff_contract_teishokubi_list' %}" class="btn btn-sm btn-secondary">戻る</a>
-    </div>
-</div>
 {% endblock %}
