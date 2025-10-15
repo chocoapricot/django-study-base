@@ -42,7 +42,7 @@ Screen Logic:
                             <td>{{ contract.contract_name }}</td>
                             <td>{{ contract.start_date|date:"Y/m/d" }} - {{ contract.end_date|date:"Y/m/d"|default:"未定" }}</td>
                             <td>
-                                <form action="{% url 'contract:create_contract_assignment' %}" method="post">
+                                <form action="{% url 'contract:confirm_contract_assignment' %}" method="post">
                                     {% csrf_token %}
                                     <input type="hidden" name="client_contract_id" value="{{ contract.pk }}">
                                     <input type="hidden" name="staff_contract_id" value="{{ staff_contract.pk }}">

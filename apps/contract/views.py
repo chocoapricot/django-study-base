@@ -2186,6 +2186,34 @@ def staff_contract_assignment_view(request, pk):
 
 
 @login_required
+def confirm_contract_assignment(request):
+    """契約アサインの確認画面を表示するビュー"""
+    if request.method == 'POST':
+        client_contract_id = request.POST.get('client_contract_id')
+        staff_contract_id = request.POST.get('staff_contract_id')
+        from_view = request.POST.get('from')
+
+        client_contract = get_object_or_404(ClientContract, pk=client_contract_id)
+        staff_contract = get_object_or_404(StaffContract, pk=staff_contract_id)
+
+        context = {
+            'client_contract': client_contract,
+            'staff_contract': staff_contract,
+            'from_view': from_view,
+        }
+
+        if from_view == 'client':
+            # クライアント契約詳細からスタッフを割り当てる場合
+            return render(request, 'contract/staff_assignment_confirm.html', context)
+        else: # from_view == 'staff'
+            # スタッフ契約詳細からクライアントを割り当てる場合
+            return render(request, 'contract/client_assignment_confirm.html', context)
+
+    # POST以外はトップページにリダイレクト
+    return redirect('contract:contract_index')
+
+
+@login_required
 def create_contract_assignment_view(request):
     """契約アサインを作成するビュー"""
     if request.method == 'POST':

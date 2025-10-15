@@ -151,7 +151,6 @@ class ContractViewTest(TestCase):
         self.pay_unit_daily = Dropdowns.objects.create(category='pay_unit', value='20', name='日給', active=True)
         self.bill_unit_monthly = Dropdowns.objects.create(category='bill_unit', value='10', name='月額', active=True)
 
-        self.client = Client()
         self.client.login(username='testuser', password='testpass123')
 
     def test_issue_clash_day_notification_updates_contract(self):
@@ -766,9 +765,6 @@ class ClientContractConfirmListViewTest(TestCase):
             corporate_number=self.company.corporate_number,
         )
 
-        # テスト用のクライアント（ブラウザ）を準備
-        self.client = Client()
-
     def test_list_contracts_and_button_visibility(self):
         """承認済・発行済契約が表示され、ボタンの可視性が正しいことをテスト"""
         # クライアントユーザーとしてログイン
@@ -817,7 +813,6 @@ class ClientContractIssueHistoryViewTest(TestCase):
         permissions = Permission.objects.filter(content_type=content_type)
         self.user.user_permissions.set(permissions)
 
-        self.client = Client()
         self.client.login(username='testuser', password='testpass123')
 
         self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
@@ -940,7 +935,6 @@ class StaffContractIssueHistoryViewTest(TestCase):
         permissions = Permission.objects.filter(content_type=content_type)
         self.user.user_permissions.set(permissions)
 
-        self.client = Client()
         self.client.login(username='testuser', password='testpass123')
 
         self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
@@ -1056,7 +1050,6 @@ class ClientContractTtpViewTest(TestCase):
         from apps.company.models import Company
 
         self.user = User.objects.create_user(username='testuser', password='testpassword')
-        self.client = Client()
         self.client.login(username='testuser', password='testpassword')
 
         # 必要な権限を付与
@@ -1572,6 +1565,37 @@ class ContractAssignmentViewTest(TestCase):
         self.assertEqual(client_contract_4.business_content, '')
         self.assertEqual(staff_contract_4.business_content, '')
 
+    def test_assignment_confirmation_flow(self):
+        """契約アサインの確認フローをテストする"""
+        from ..models import ContractAssignment
+        initial_assignment_count = ContractAssignment.objects.count()
+
+        # 1. 割当ページから確認ページへのPOST
+        confirm_url = reverse('contract:confirm_contract_assignment')
+        post_data = {
+            'client_contract_id': self.client_contract_draft.pk,
+            'staff_contract_id': self.assignable_staff_contract.pk,
+            'from': 'client',
+        }
+        response = self.client.post(confirm_url, post_data)
+
+        # 2. 確認ページのレスポンスを検証
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'contract/staff_assignment_confirm.html')
+        self.assertEqual(response.context['client_contract'], self.client_contract_draft)
+        self.assertEqual(response.context['staff_contract'], self.assignable_staff_contract)
+
+        # 3. 確認ページから作成ビューへのPOST
+        create_url = reverse('contract:create_contract_assignment')
+        response_create = self.client.post(create_url, post_data, follow=True)
+
+        # 4. 作成後のレスポンスを検証
+        self.assertRedirects(response_create, reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract_draft.pk}))
+        messages = list(response_create.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), '契約の割当が完了しました。')
+        self.assertEqual(ContractAssignment.objects.count(), initial_assignment_count + 1)
+
     def test_create_assignment_work_location_synchronization(self):
         """契約アサイン時に就業場所が同期されるかテスト"""
         # --- シナリオ1: StaffContractからClientContractHakenへ同期 ---
@@ -1744,7 +1768,6 @@ class StaffContractApproveViewTest(TestCase):
         permissions = Permission.objects.filter(content_type=content_type)
         self.user.user_permissions.set(permissions)
 
-        self.client = Client()
         self.client.login(username='testuser', password='testpass123')
 
         self.staff = Staff.objects.create(name_last='Test', name_first='Staff', employee_no='S001', hire_date=datetime.date(2023, 1, 1))
