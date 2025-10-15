@@ -2540,6 +2540,36 @@ def staff_contract_teishokubi_list(request):
             item.client_id = None
             item.client_name = None
 
+        # 抵触日までの残り日数を計算
+        if item.conflict_date:
+            from datetime import date
+            today = date.today()
+            if item.conflict_date >= today:
+                delta = item.conflict_date - today
+                item.days_remaining = delta.days
+                item.is_expired = False
+            else:
+                delta = today - item.conflict_date
+                item.days_overdue = delta.days
+                item.is_expired = True
+
+        # 現在派遣中かどうかを確認
+        current_assignments = ContractAssignment.objects.filter(
+            staff_contract__staff__email=item.staff_email,
+            client_contract__client__corporate_number=item.client_corporate_number,
+            client_contract__haken_info__haken_unit__name=item.organization_name,
+            client_contract__client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
+            client_contract__start_date__lte=date.today(),
+            client_contract__end_date__gte=date.today()
+        ).select_related('client_contract').first()
+        
+        if current_assignments:
+            item.is_currently_dispatched = True
+            item.current_contract_end = current_assignments.client_contract.end_date
+        else:
+            item.is_currently_dispatched = False
+            item.current_contract_end = None
+
     context = {
         'teishokubi_list': teishokubi_page,
         'search_query': search_query,

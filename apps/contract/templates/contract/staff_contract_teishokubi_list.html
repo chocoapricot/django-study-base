@@ -32,6 +32,8 @@
                     <th>組織名</th>
                     <th>派遣開始日</th>
                     <th>抵触日</th>
+                    <th>残り日数</th>
+                    <th>現在派遣中</th>
                     <th>操作</th>
                 </tr>
             </thead>
@@ -39,22 +41,48 @@
                 {% for item in teishokubi_list %}
                 <tr>
                     <td>
-                        {% if item.staff_id %}
-                            <a href="{% url 'staff:staff_detail' item.staff_id %}">{{ item.staff_name }}</a>
+                        {% if item.staff_name %}
+                            {{ item.staff_name }}
                         {% else %}
                             {{ item.staff_email }}
                         {% endif %}
                     </td>
                     <td>
-                        {% if item.client_id %}
-                            <a href="{% url 'client:client_detail' item.client_id %}">{{ item.client_name }}</a>
+                        {% if item.client_name %}
+                            {{ item.client_name }}
                         {% else %}
                             {{ item.client_corporate_number }}
                         {% endif %}
                     </td>
                     <td>{{ item.organization_name }}</td>
                     <td>{{ item.dispatch_start_date|date:"Y/m/d" }}</td>
-                    <td>{{ item.conflict_date|date:"Y/m/d" }}</td>
+                    <td>
+                        <a href="{% url 'contract:staff_contract_teishokubi_detail' item.pk %}" class="text-decoration-none">
+                            {{ item.conflict_date|date:"Y/m/d" }}
+                        </a>
+                        {% if item.is_expired %}
+                            <span class="badge bg-danger ms-1">期限切れ</span>
+                        {% elif item.days_remaining <= 30 %}
+                            <span class="badge bg-warning ms-1">要注意</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item.is_expired %}
+                            <span class="text-danger">{{ item.days_overdue }}日経過</span>
+                        {% else %}
+                            <span class="text-success">{{ item.days_remaining }}日</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if item.is_currently_dispatched %}
+                            <span class="badge bg-success">派遣中</span>
+                            {% if item.current_contract_end %}
+                                <small class="d-block text-muted">～{{ item.current_contract_end|date:"m/d" }}</small>
+                            {% endif %}
+                        {% else %}
+                            <span class="badge bg-secondary">未派遣</span>
+                        {% endif %}
+                    </td>
                     <td>
                         <a href="{% url 'contract:staff_contract_teishokubi_detail' item.pk %}" class="btn btn-dark btn-sm" title="詳細">
                             <i class="bi bi-eye"></i>

@@ -533,7 +533,7 @@
         "created_by": 1,
         "updated_at": "2025-10-16T00:00:00Z",
         "updated_by": 1,
-        "name": "事業所抵触日",
+        "name": "事業所抵触日管理",
         "url": "/contract/client/teishokubi/",
         "icon": "bi-calendar-x",
         "icon_style": "color:#dc3545;",

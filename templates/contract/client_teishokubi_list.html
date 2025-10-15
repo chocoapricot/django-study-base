@@ -38,9 +38,7 @@
                         {% for department in departments %}
                         <tr>
                             <td>
-                                <a href="{% url 'client:client_detail' department.client.id %}" class="text-decoration-none">
-                                    {{ department.client.name }}
-                                </a>
+                                {{ department.client.name }}
                             </td>
                             <td>
                                 <a href="{% url 'client:client_department_detail' department.id %}" class="text-decoration-none">
@@ -48,7 +46,9 @@
                                 </a>
                             </td>
                             <td>
-                                {{ department.haken_jigyosho_teishokubi|date:"Y/m/d" }}
+                                <a href="{% url 'client:client_department_detail' department.id %}" class="text-decoration-none">
+                                    {{ department.haken_jigyosho_teishokubi|date:"Y/m/d" }}
+                                </a>
                                 {% if department.is_expired %}
                                     <span class="badge bg-danger ms-1">期限切れ</span>
                                 {% elif department.days_remaining <= 30 %}
