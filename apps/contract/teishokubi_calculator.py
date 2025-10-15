@@ -3,6 +3,7 @@
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from apps.contract.models import ContractAssignment, StaffContractTeishokubi, StaffContractTeishokubiDetail
+from apps.common.constants import Constants
 
 
 class TeishokubiCalculator:
@@ -145,7 +146,7 @@ class TeishokubiCalculator:
             staff_contract__staff__email=self.staff_email,
             client_contract__client__corporate_number=self.client_corporate_number,
             client_contract__haken_info__haken_unit__name=self.organization_name,
-            client_contract__client_contract_type_code='20',  # 派遣
+            client_contract__client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,  # 派遣
             staff_contract__employment_type__is_fixed_term=True  # 有期雇用
         ).select_related('client_contract', 'staff_contract')
 
