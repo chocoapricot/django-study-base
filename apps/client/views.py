@@ -48,7 +48,7 @@ def client_list(request):
     
     # 登録区分での絞り込み
     if client_regist_status:
-        clients = clients.filter(client_regist_status=client_regist_status)
+        clients = clients.filter(regist_status_id=client_regist_status)
     
     # ソート可能なフィールドを追加
     sortable_fields = [
@@ -60,11 +60,8 @@ def client_list(request):
         clients = clients.order_by(sort)
     
     # 登録区分のドロップダウンデータを取得
-    from apps.system.settings.models import Dropdowns
-    regist_status_options = Dropdowns.objects.filter(
-        category='client_regist_status', 
-        active=True
-    ).order_by('disp_seq')
+    from apps.master.models import ClientRegistStatus
+    regist_status_options = ClientRegistStatus.objects.filter(is_active=True).order_by('display_order')
     
     paginator = Paginator(clients, 10)
     page_number = request.GET.get('page')
@@ -131,7 +128,7 @@ def client_export(request):
     if client_regist_status:
         try:
             client_regist_status_int = int(client_regist_status)
-            clients = clients.filter(client_regist_status=client_regist_status_int)
+            clients = clients.filter(regist_status_id=client_regist_status_int)
         except ValueError:
             pass  # 無効な値の場合はフィルタリングしない
     

@@ -13,7 +13,9 @@
                         {{ client.name }}<rt>{{ client.name_furigana }}</rt>
                     </ruby>
                 </h4>
-                <span class="badge {{ client.client_regist_status|badge_class }}" style="font-size:15px">{% my_name 'client_regist_status' client.client_regist_status %}</span>
+                {% if client.regist_status %}
+                    <span class="badge bg-primary" style="font-size:15px">{{ client.regist_status.name }}</span>
+                {% endif %}
             </div>
         </div>
     </div>

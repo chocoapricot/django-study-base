@@ -26,7 +26,13 @@ class Client(MyModel):
     # email = models.CharField('E-MAIL',max_length=255, blank=True, null=True)
     
     memo = models.TextField('メモ',blank=True, null=True)
-    client_regist_status = models.IntegerField('登録区分',blank=True, null=True)
+    regist_status = models.ForeignKey(
+        'master.ClientRegistStatus',
+        on_delete=models.SET_NULL,
+        verbose_name='登録区分',
+        blank=True,
+        null=True
+    )
     basic_contract_date = models.DateField('基本契約締結日(業務委託)', blank=True, null=True)
     basic_contract_date_haken = models.DateField('基本契約締結日(人材派遣)', blank=True, null=True)
     payment_site = models.ForeignKey(
