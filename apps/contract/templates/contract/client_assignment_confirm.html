@@ -1,0 +1,65 @@
+{% extends "common/_base.html" %}
+
+{% block title %}クライアント契約割当確認{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">クライアント契約割当確認</h1>
+    <p class="mb-4">以下の内容で契約を割り当てます。よろしいですか？</p>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">割当情報</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>スタッフ契約</h5>
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>契約名</th>
+                            <td>{{ staff_contract.contract_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>スタッフ</th>
+                            <td>{{ staff_contract.staff.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>契約期間</th>
+                            <td>{{ staff_contract.start_date|date:"Y/m/d" }} - {{ staff_contract.end_date|date:"Y/m/d"|default:"未定" }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h5>クライアント契約</h5>
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>契約名</th>
+                            <td>{{ client_contract.contract_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>クライアント</th>
+                            <td>{{ client_contract.client.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>契約期間</th>
+                            <td>{{ client_contract.start_date|date:"Y/m/d" }} - {{ client_contract.end_date|date:"Y/m/d"|default:"未定" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <form action="{% url 'contract:create_contract_assignment' %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="client_contract_id" value="{{ client_contract.pk }}">
+                    <input type="hidden" name="staff_contract_id" value="{{ staff_contract.pk }}">
+                    <input type="hidden" name="from" value="{{ from_view }}">
+                    <button type="submit" class="btn btn-primary">割り当て確定</button>
+                </form>
+                <a href="{% url 'contract:staff_contract_assignment' pk=staff_contract.pk %}" class="btn btn-secondary">キャンセル</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -67,6 +67,7 @@ urlpatterns = [
     # 契約アサイン
     path('client/<int:pk>/assign/', views.client_contract_assignment_view, name='client_contract_assignment'),
     path('staff/<int:pk>/assign/', views.staff_contract_assignment_view, name='staff_contract_assignment'),
+    path('assign/confirm/', views.confirm_contract_assignment, name='confirm_contract_assignment'),
     path('assign/create/', views.create_contract_assignment_view, name='create_contract_assignment'),
     path('assign/<int:assignment_pk>/delete/', views.delete_contract_assignment, name='delete_contract_assignment'),
 ]
