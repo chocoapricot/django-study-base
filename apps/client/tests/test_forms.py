@@ -7,25 +7,24 @@ from apps.client.forms import ClientForm, ClientDepartmentForm, ClientContactedF
 from apps.client.forms_mail import ClientUserMailForm
 from apps.client.models import Client, ClientDepartment, ClientUser, ClientContacted
 from apps.system.settings.models import Dropdowns
+from apps.master.models import ClientRegistStatus
 from django.utils import timezone
 
 class ClientContactedFormTest(TestCase):
     def setUp(self):
         """テストに必要なデータを作成"""
-        # テスト用ドロップダウン作成
-        Dropdowns.objects.create(
-            category='client_regist_status',
-            value='1',
+        # テスト用登録区分作成
+        self.regist_status = ClientRegistStatus.objects.create(
             name='テスト登録区分',
-            active=True,
-            disp_seq=1
+            display_order=1,
+            is_active=True
         )
         
         self.client = Client.objects.create(
             name='テストクライアント',
             name_furigana='テストクライアント',
             corporate_number='1112223334445',
-            regist_status=1
+            regist_status=self.regist_status
         )
         self.department1 = ClientDepartment.objects.create(
             client=self.client,
@@ -151,13 +150,11 @@ class ClientFormTest(TestCase):
 class ClientUserMailFormTest(TestCase):
     def setUp(self):
         """テストに必要なデータを作成"""
-        # テスト用ドロップダウン作成
-        Dropdowns.objects.create(
-            category='client_regist_status',
-            value='1',
+        # テスト用登録区分作成
+        self.regist_status = ClientRegistStatus.objects.create(
             name='テスト登録区分',
-            active=True,
-            disp_seq=1
+            display_order=1,
+            is_active=True
         )
         
         self.sender_user = MyUser.objects.create_user(
@@ -169,7 +166,7 @@ class ClientUserMailFormTest(TestCase):
             name='テストクライアント',
             name_furigana='テストクライアント',
             corporate_number='1234567890123',
-            regist_status=1
+            regist_status=self.regist_status
         )
         self.department = ClientDepartment.objects.create(
             client=self.client,
@@ -224,20 +221,18 @@ class ClientUserMailFormTest(TestCase):
 
 class ClientDepartmentFormTest(TestCase):
     def setUp(self):
-        # テスト用ドロップダウン作成
-        Dropdowns.objects.create(
-            category='client_regist_status',
-            value='1',
+        # テスト用登録区分作成
+        self.regist_status = ClientRegistStatus.objects.create(
             name='テスト登録区分',
-            active=True,
-            disp_seq=1
+            display_order=1,
+            is_active=True
         )
         
         self.client = Client.objects.create(
             name='テストクライアント',
             name_furigana='テストクライアント',
             corporate_number='9876543210123',
-            regist_status=1
+            regist_status=self.regist_status
         )
         self.base_data = {
             'client': self.client.pk,

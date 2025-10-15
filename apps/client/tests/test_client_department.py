@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from apps.client.models import Client, ClientDepartment
 from apps.client.forms import ClientDepartmentForm
+from apps.master.models import ClientRegistStatus
 
 User = get_user_model()
 
@@ -14,10 +15,16 @@ class ClientDepartmentModelTest(TestCase):
             username='testuser',
             password='testpass123'
         )
+        # テスト用登録区分作成
+        self.regist_status = ClientRegistStatus.objects.create(
+            name='正社員',
+            display_order=1,
+            is_active=True
+        )
         self.client_obj = Client.objects.create(
             name='テスト会社',
             name_furigana='テストガイシャ',
-            client_regist_status=10
+            regist_status=self.regist_status
         )
 
     def test_client_department_creation(self):
@@ -57,10 +64,16 @@ class ClientDepartmentModelTest(TestCase):
 
 class ClientDepartmentFormTest(TestCase):
     def setUp(self):
+        # テスト用登録区分作成
+        self.regist_status = ClientRegistStatus.objects.create(
+            name='正社員',
+            display_order=1,
+            is_active=True
+        )
         self.client_obj = Client.objects.create(
             name='テスト会社',
             name_furigana='テストガイシャ',
-            client_regist_status=10
+            regist_status=self.regist_status
         )
 
     def test_valid_form(self):
@@ -150,10 +163,16 @@ class ClientDepartmentViewTest(TestCase):
         )
         self.user.user_permissions.set(permissions)
         
+        # テスト用登録区分作成
+        self.regist_status = ClientRegistStatus.objects.create(
+            name='正社員',
+            display_order=1,
+            is_active=True
+        )
         self.client_obj = Client.objects.create(
             name='テスト会社',
             name_furigana='テストガイシャ',
-            client_regist_status=10
+            regist_status=self.regist_status
         )
         self.department = ClientDepartment.objects.create(
             client=self.client_obj,

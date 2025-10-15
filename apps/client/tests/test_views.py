@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.contrib.auth.models import Permission
 from apps.client.models import Client, ClientContacted, ClientUser
 from apps.system.settings.models import Menu
+from apps.master.models import ClientRegistStatus
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from datetime import date, datetime 
@@ -201,12 +202,12 @@ class ClientViewsTest(TestCase):
         self.assertIn('商談中クライアント', all_content)
         
         # 2. 登録区分「1」（登録中）で絞り込み
-        response = self.client.get(reverse('client:client_list'), {'client_regist_status': '1'})
+        response = self.client.get(reverse('client:client_list'), {'regist_status': regist_status_1.pk})
         self.assertEqual(response.status_code, 200)
         content = response.content.decode()
         # ページネーションがある場合は全ページをチェック
         if '登録中クライアント' not in content:
-            response_page2 = self.client.get(reverse('client:client_list'), {'client_regist_status': '1', 'page': 2})
+            response_page2 = self.client.get(reverse('client:client_list'), {'regist_status': regist_status_1.pk, 'page': 2})
             content += response_page2.content.decode()
         
         self.assertIn('登録中クライアント', content)
@@ -214,7 +215,7 @@ class ClientViewsTest(TestCase):
         self.assertNotIn('商談中クライアント', content)
         
         # 3. 登録区分「10」（登録済）で絞り込み
-        response = self.client.get(reverse('client:client_list'), {'client_regist_status': '10'})
+        response = self.client.get(reverse('client:client_list'), {'regist_status': regist_status_10.pk})
         self.assertEqual(response.status_code, 200)
         content = response.content.decode()
         self.assertNotIn('登録中クライアント', content)
@@ -222,7 +223,7 @@ class ClientViewsTest(TestCase):
         self.assertNotIn('商談中クライアント', content)
         
         # 4. 登録区分「20」（商談中）で絞り込み
-        response = self.client.get(reverse('client:client_list'), {'client_regist_status': '20'})
+        response = self.client.get(reverse('client:client_list'), {'regist_status': regist_status_20.pk})
         self.assertEqual(response.status_code, 200)
         content = response.content.decode()
         self.assertNotIn('登録中クライアント', content)

@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from apps.client.models import Client
+from apps.master.models import ClientRegistStatus
 
 class ClientExportTest(TestCase):
     def setUp(self):
@@ -17,6 +18,13 @@ class ClientExportTest(TestCase):
         self.user.user_permissions.add(permission)
         self.test_client.login(username='testuser', password='password')
 
+        # テスト用登録区分作成
+        self.regist_status = ClientRegistStatus.objects.create(
+            name='正社員',
+            display_order=1,
+            is_active=True
+        )
+        
         # Create some client data
         self.client1 = Client.objects.create(
             corporate_number='1234567890123',
@@ -29,7 +37,7 @@ class ClientExportTest(TestCase):
             name='サンプル商事',
             name_furigana='サンプルショウジ',
             address='大阪府サンプル市',
-            client_regist_status=1 # Example filter value
+            regist_status=self.regist_status # Example filter value
         )
 
     def test_client_export_csv(self):
@@ -65,8 +73,8 @@ class ClientExportTest(TestCase):
         self.assertNotIn('サンプル商事', content)
 
     def test_client_export_with_regist_status_filter(self):
-        """Test exporting with client_regist_status filter."""
-        url = reverse('client:client_export') + '?format=csv&client_regist_status=1'
+        """Test exporting with regist_status filter."""
+        url = reverse('client:client_export') + f'?format=csv&regist_status={self.regist_status.pk}'
         response = self.test_client.get(url)
 
         self.assertEqual(response.status_code, 200)

@@ -5,6 +5,7 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from apps.staff.models import Staff, StaffContacted
 from apps.system.settings.models import Dropdowns
+from apps.master.models import StaffRegistStatus
 from datetime import date, datetime 
 from django.utils import timezone
 from apps.connect.models import ConnectStaff, ProfileRequest
@@ -46,13 +47,16 @@ class StaffViewsTest(TestCase):
         # Create necessary Dropdowns for StaffForm
         Dropdowns.objects.create(category='sex', value='1', name='男性', active=True, disp_seq=1)
         Dropdowns.objects.create(category='sex', value='2', name='女性', active=True, disp_seq=2)
-        Dropdowns.objects.create(category='staff_regist_status', value='1', name='正社員', active=True, disp_seq=1)
-        Dropdowns.objects.create(category='staff_regist_status', value='2', name='契約社員', active=True, disp_seq=2)
+        
+        # スタッフ登録区分マスタを作成
+        self.regist_status_1 = StaffRegistStatus.objects.create(name='正社員', display_order=1, is_active=True)
+        self.regist_status_2 = StaffRegistStatus.objects.create(name='契約社員', display_order=2, is_active=True)
+        self.regist_status_10 = StaffRegistStatus.objects.create(name='派遣社員', display_order=3, is_active=True)
+        
         # 雇用形態マスタを作成
         from apps.master.models import EmploymentType
         EmploymentType.objects.create(name='正社員', display_order=1, is_fixed_term=False, is_active=True)
         EmploymentType.objects.create(name='契約社員', display_order=2, is_fixed_term=True, is_active=True)
-        Dropdowns.objects.create(category='staff_regist_status', value='10', name='派遣社員', active=True, disp_seq=3)
         # Create necessary Dropdowns for StaffContactedForm
         Dropdowns.objects.create(category='contact_type', value='1', name='電話', active=True, disp_seq=1)
         Dropdowns.objects.create(category='contact_type', value='2', name='メール', active=True, disp_seq=2)
@@ -65,7 +69,7 @@ class StaffViewsTest(TestCase):
             name_kana_first='タロウ',
             birth_date=date(1990, 1, 1),
             sex=1,
-            staff_regist_status_code=1,  # 正社員
+            regist_status=self.regist_status_1,  # 正社員
             employee_no='EMP001',
             hire_date=date(2020, 4, 1)  # 入社日を追加
         )
@@ -77,7 +81,7 @@ class StaffViewsTest(TestCase):
             name_kana_first='ハナコ',
             birth_date=date(1985, 5, 15),
             sex=2,
-            staff_regist_status_code=2,  # 契約社員
+            regist_status=self.regist_status_2,  # 契約社員
             employee_no='EMP002',
             hire_date=date(2021, 4, 1)  # 入社日を追加
         )
@@ -89,7 +93,7 @@ class StaffViewsTest(TestCase):
             name_kana_first='ジロウ',
             birth_date=date(1992, 8, 20),
             sex=1,
-            staff_regist_status_code=10,  # 派遣社員
+            regist_status=self.regist_status_10,  # 派遣社員
             employee_no='EMP003',
             hire_date=date(2022, 4, 1)  # 入社日を追加
         )
@@ -101,7 +105,7 @@ class StaffViewsTest(TestCase):
             name_kana_first='スタッフ',
             birth_date=date(1990, 1, 1),
             sex=1,
-            staff_regist_status_code=1,
+            regist_status=self.regist_status_1,
             employee_no='ZEMP000', # ソート順で最後にくるように変更
             hire_date=date(2019, 4, 1),  # 入社日を追加
             email='test@example.com',
@@ -117,7 +121,7 @@ class StaffViewsTest(TestCase):
                 name_kana_first='テスト',
                 birth_date=date(1990, 1, 1),
                 sex=1,
-                staff_regist_status_code=1,
+                regist_status=self.regist_status_1,
                 employee_no=f'EMP{i:03d}',
                 hire_date=date(2020, 4, i),  # 入社日を追加（日付を変える）
                 email=f'staff{i:02d}@example.com',
@@ -260,7 +264,7 @@ class StaffViewsTest(TestCase):
             'name_kana_first': 'スタッフ',
             'birth_date': '1995-05-05',
             'sex': 2,
-            'staff_regist_status_code': 2,
+            'regist_status': self.regist_status_2.pk,
             'employee_no': 'EMP999',
             'employment_type': 2,  # 雇用形態を追加
             'hire_date': '2024-04-01',  # 社員番号と入社日をセットで設定
@@ -292,7 +296,7 @@ class StaffViewsTest(TestCase):
             'name_kana_first': 'スタッフ',
             'birth_date': '1990-01-01',
             'sex': 1,
-            'staff_regist_status_code': 1,
+            'regist_status': self.regist_status_1.pk,
             'employee_no': 'EMP998',
             'employment_type': 1,  # 雇用形態を追加
             'hire_date': '2020-04-01',  # 社員番号と入社日をセットで設定

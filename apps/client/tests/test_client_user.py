@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from apps.client.models import Client, ClientDepartment, ClientUser
 from apps.client.forms import ClientUserForm
+from apps.master.models import ClientRegistStatus
 
 User = get_user_model()
 
@@ -13,10 +14,16 @@ class ClientUserModelTest(TestCase):
             username='testuser',
             password='testpass123'
         )
+        # テスト用登録区分作成
+        self.regist_status = ClientRegistStatus.objects.create(
+            name='正社員',
+            display_order=1,
+            is_active=True
+        )
         self.client_obj = Client.objects.create(
             name='テスト会社',
             name_furigana='テストガイシャ',
-            client_regist_status=10
+            regist_status=self.regist_status
         )
         self.department = ClientDepartment.objects.create(
             client=self.client_obj,
@@ -102,10 +109,16 @@ class ClientUserFormTest(TestCase):
         self.assertIn('phone_number', form.errors)
         self.assertIn('電話番号は半角数字とハイフンのみ入力してください。', form.errors['phone_number'])
     def setUp(self):
+        # テスト用登録区分作成
+        self.regist_status = ClientRegistStatus.objects.create(
+            name='正社員',
+            display_order=1,
+            is_active=True
+        )
         self.client_obj = Client.objects.create(
             name='テスト会社',
             name_furigana='テストガイシャ',
-            client_regist_status=10
+            regist_status=self.regist_status
         )
         self.department = ClientDepartment.objects.create(
             client=self.client_obj,
@@ -174,7 +187,7 @@ class ClientUserFormTest(TestCase):
         other_client = Client.objects.create(
             name='他の会社',
             name_furigana='ホカノガイシャ',
-            client_regist_status=10
+            regist_status=self.regist_status
         )
         other_department = ClientDepartment.objects.create(
             client=other_client,
@@ -227,10 +240,16 @@ class ClientUserViewTest(TestCase):
         )
         self.user.user_permissions.set(permissions)
         
+        # テスト用登録区分作成
+        self.regist_status = ClientRegistStatus.objects.create(
+            name='正社員',
+            display_order=1,
+            is_active=True
+        )
         self.client_obj = Client.objects.create(
             name='テスト会社',
             name_furigana='テストガイシャ',
-            client_regist_status=10
+            regist_status=self.regist_status
         )
         self.department = ClientDepartment.objects.create(
             client=self.client_obj,
