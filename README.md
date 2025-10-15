@@ -125,10 +125,12 @@ django-study-base/
 | `apps_contract_staff_number` | `StaffContractNumber` | スタッフ契約番号 |
 | `apps_contract_staff_print` | `StaffContractPrint` | スタッフ契約書発行履歴 |
 | `apps_contract_staff_teishokubi` | `StaffContractTeishokubi` | スタッフの個人抵触日 |
+| `apps_contract_staff_teishokubi_detail` | `StaffContractTeishokubiDetail` | 個人抵触日算出詳細 |
 | `apps_master_bank` | `Bank` | 銀行マスター |
 | `apps_master_bank_branch` | `BankBranch` | 銀行支店マスター |
 | `apps_master_bill_bank` | `BillBank` | 会社銀行マスター |
 | `apps_master_bill_payment` | `BillPayment` | 支払条件マスター |
+| `apps_master_client_regist_status` | `ClientRegistStatus` | クライアント登録状況 |
 | `apps_master_contract_pattern` | `ContractPattern` | 契約書パターンマスター |
 | `apps_master_contract_terms` | `ContractTerms` | 契約文言マスター |
 | `apps_master_default_value` | `DefaultValue` | デフォルト値マスター |
@@ -143,6 +145,7 @@ django-study-base/
 | `apps_master_qualification` | `Qualification` | 資格マスター |
 | `apps_master_skill` | `Skill` | 技能マスター |
 | `apps_master_staff_agreement` | `StaffAgreement` | スタッフ同意書マスター |
+| `apps_master_staff_regist_status` | `StaffRegistStatus` | スタッフ登録状況 |
 | `apps_profile_staff` | `StaffProfile` | スタッフプロフィール |
 | `apps_profile_staff_bank` | `StaffProfileBank` | プロフィール銀行口座 |
 | `apps_profile_staff_contacts` | `StaffProfileContact` | プロフィール連絡先 |
@@ -167,9 +170,6 @@ django-study-base/
 | `apps_system_mail_log` | `MailLog` | メール送信ログ |
 | `apps_system_menu` | `Menu` | メニュー設定 |
 | `apps_system_parameter` | `Parameter` | パラメータ設定 |
-| `apps_contract_staff_teishokubi_detail` | `StaffContractTeishokubiDetail` | 個人抵触日算出詳細 |
-| `apps_master_client_regist_status` | `ClientRegistStatus` | クライアント登録状況 |
-| `apps_master_staff_regist_status` | `StaffRegistStatus` | スタッフ登録状況 |
 
 ### django-allauth関連テーブル（6テーブル）
 
