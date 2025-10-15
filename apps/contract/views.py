@@ -11,7 +11,7 @@ from datetime import datetime, date
 from django.core.files.base import ContentFile
 from datetime import date
 from django.forms.models import model_to_dict
-from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken, ClientContractTtp, StaffContractTeishokubi
+from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken, ClientContractTtp, StaffContractTeishokubi, StaffContractTeishokubiDetail
 from .forms import ClientContractForm, StaffContractForm, ClientContractHakenForm, ClientContractTtpForm
 from apps.common.constants import Constants
 from django.conf import settings
@@ -23,6 +23,8 @@ from apps.client.models import Client, ClientUser
 from apps.staff.models import Staff
 from apps.master.models import ContractPattern, StaffAgreement, DefaultValue
 from apps.connect.models import ConnectStaff, ConnectStaffAgree, ConnectClient, MynumberRequest, ProfileRequest, BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
+from apps.staff.models import Staff
+from apps.client.models import Client
 from apps.company.models import Company, CompanyDepartment
 from apps.system.settings.models import Dropdowns
 from reportlab.pdfgen import canvas
@@ -2389,3 +2391,21 @@ def staff_contract_teishokubi_list(request):
         'search_query': search_query,
     }
     return render(request, 'contract/staff_contract_teishokubi_list.html', context)
+
+
+@login_required
+def staff_contract_teishokubi_detail(request, pk):
+    """個人抵触日詳細"""
+    teishokubi = get_object_or_404(StaffContractTeishokubi, pk=pk)
+    teishokubi_details = StaffContractTeishokubiDetail.objects.filter(teishokubi=teishokubi).order_by('assignment_start_date')
+
+    staff = Staff.objects.filter(email=teishokubi.staff_email).first()
+    client = Client.objects.filter(corporate_number=teishokubi.client_corporate_number).first()
+
+    context = {
+        'teishokubi': teishokubi,
+        'teishokubi_details': teishokubi_details,
+        'staff': staff,
+        'client': client,
+    }
+    return render(request, 'contract/staff_contract_teishokubi_detail.html', context)
