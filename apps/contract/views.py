@@ -2147,7 +2147,7 @@ def client_contract_assignment_view(request, pk):
     assigned_staff_contract_ids = client_contract.staff_contracts.values_list('id', flat=True)
 
     # 期間が重複し、まだ割り当てられていないスタッフ契約を検索
-    staff_contracts = StaffContract.objects.filter(
+    staff_contracts = StaffContract.objects.select_related('staff', 'employment_type').filter(
         Q(end_date__gte=client_contract.start_date) | Q(end_date__isnull=True),
         start_date__lte=client_contract.end_date if client_contract.end_date else date.max
     ).exclude(id__in=assigned_staff_contract_ids)
@@ -2173,7 +2173,7 @@ def staff_contract_assignment_view(request, pk):
     assigned_client_contract_ids = staff_contract.client_contracts.values_list('id', flat=True)
 
     # 期間が重複し、まだ割り当てられていないクライアント契約を検索
-    client_contracts = ClientContract.objects.filter(
+    client_contracts = ClientContract.objects.select_related('client', 'haken_info__ttp_info').filter(
         Q(end_date__gte=staff_contract.start_date) | Q(end_date__isnull=True),
         start_date__lte=staff_contract.end_date if staff_contract.end_date else date.max
     ).exclude(id__in=assigned_client_contract_ids)

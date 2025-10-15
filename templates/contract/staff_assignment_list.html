@@ -2,6 +2,7 @@
 {% load static %}
 {% load humanize %}
 {% load dropdowns %}
+{% load badge_tags %}
 
 {% block title %}スタッフ割当一覧{% endblock %}
 
@@ -22,6 +23,7 @@
                     <tr>
                         <th>スタッフ名</th>
                         <th>契約名</th>
+                        <th>雇用形態</th>
                         <th>契約期間</th>
                         <th></th>
                     </tr>
@@ -35,6 +37,13 @@
                                 </a>
                             </td>
                             <td>{{ contract.contract_name }}</td>
+                            <td>
+                                {% if contract.employment_type %}
+                                    <span class="badge {{ contract.employment_type.display_order|badge_class }}">{{ contract.employment_type.name }}</span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
                             <td>{{ contract.start_date|date:"Y/m/d" }}～{% if contract.end_date %}{{ contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}</td>
                             <td>
                                 <form action="{% url 'contract:create_contract_assignment' %}" method="post" class="d-inline">

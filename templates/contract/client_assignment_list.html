@@ -2,6 +2,7 @@
 {% load static %}
 {% load humanize %}
 {% load dropdowns %}
+{% load badge_tags %}
 
 {% block title %}クライアント割当一覧{% endblock %}
 
@@ -22,6 +23,7 @@
                     <tr>
                         <th>クライアント名</th>
                         <th>契約名</th>
+                        <th>契約種別</th>
                         <th>契約期間</th>
                         <th></th>
                     </tr>
@@ -35,6 +37,13 @@
                                 </a>
                             </td>
                             <td>{{ contract.contract_name }}</td>
+                            <td>
+                                {% if contract.contract_type_display_name %}
+                                    <span class="badge {{ contract.client_contract_type_code|badge_class }}">{{ contract.contract_type_display_name }}</span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
                             <td>{{ contract.start_date|date:"Y/m/d" }}～{% if contract.end_date %}{{ contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}</td>
                             <td>
                                 <form action="{% url 'contract:create_contract_assignment' %}" method="post" class="d-inline">
