@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from apps.staff.models import Staff, StaffBank, StaffContact, StaffDisability, StaffMynumber, StaffInternational, StaffQualification, StaffSkill, StaffFile
-from apps.master.models import Qualification, Skill
+from apps.master.models import Qualification, Skill, StaffRegistStatus, EmploymentType
 from apps.system.logs.models import AppLog
 from apps.system.settings.models import Dropdowns
 
@@ -48,6 +48,20 @@ class StaffLogsTestCase(TestCase):
             disp_seq=1
         )
         
+        # マスターデータを作成
+        self.regist_status = StaffRegistStatus.objects.create(
+            name='正社員',
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        self.employment_type = EmploymentType.objects.create(
+            name='正社員',
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
         # テスト用スタッフ作成
         self.staff = Staff.objects.create(
             name_last='テスト',
@@ -55,8 +69,11 @@ class StaffLogsTestCase(TestCase):
             name_kana_last='テスト',
             name_kana_first='タロウ',
             sex=1,
-            staff_regist_status_code=1,
-            email='staff@example.com'
+            regist_status=self.regist_status,
+            employment_type=self.employment_type,
+            email='staff@example.com',
+            created_by=self.user,
+            updated_by=self.user
         )
         
         # テスト用資格・技能作成
@@ -64,7 +81,9 @@ class StaffLogsTestCase(TestCase):
             name='IT資格',
             level=1,
             is_active=True,
-            display_order=1
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
         )
         
         self.qualification = Qualification.objects.create(
@@ -72,14 +91,18 @@ class StaffLogsTestCase(TestCase):
             level=2,
             parent=self.qualification_category,
             is_active=True,
-            display_order=1
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
         )
         
         self.skill_category = Skill.objects.create(
             name='プログラミング',
             level=1,
             is_active=True,
-            display_order=1
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
         )
         
         self.skill = Skill.objects.create(
@@ -87,7 +110,9 @@ class StaffLogsTestCase(TestCase):
             level=2,
             parent=self.skill_category,
             is_active=True,
-            display_order=1
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
         )
         
         self.client = Client()

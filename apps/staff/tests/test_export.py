@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from apps.staff.models import Staff
+from apps.master.models import StaffRegistStatus, EmploymentType
 
 class StaffExportTest(TestCase):
     def setUp(self):
@@ -17,6 +18,20 @@ class StaffExportTest(TestCase):
         self.user.user_permissions.add(permission)
         self.client.login(username='testuser', password='password')
 
+        # マスターデータを作成
+        self.regist_status = StaffRegistStatus.objects.create(
+            name='正社員',
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        self.employment_type = EmploymentType.objects.create(
+            name='正社員',
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
         # Create some staff data
         self.staff1 = Staff.objects.create(
             employee_no='001',
@@ -24,7 +39,9 @@ class StaffExportTest(TestCase):
             name_first='太郎',
             name_kana_last='ヤマダ',
             name_kana_first='タロウ',
-            email='taro@example.com'
+            email='taro@example.com',
+            created_by=self.user,
+            updated_by=self.user
         )
         self.staff2 = Staff.objects.create(
             employee_no='002',
@@ -33,7 +50,10 @@ class StaffExportTest(TestCase):
             name_kana_last='スズキ',
             name_kana_first='ハナコ',
             email='hanako@example.com',
-            staff_regist_status_code=1 # Example filter value
+            regist_status=self.regist_status,  # Example filter value
+            employment_type=self.employment_type,
+            created_by=self.user,
+            updated_by=self.user
         )
 
     def test_staff_export_csv(self):

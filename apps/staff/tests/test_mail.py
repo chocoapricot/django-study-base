@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core import mail
 from ..models import Staff, StaffContacted
+from ...master.models import StaffRegistStatus, EmploymentType
 from ...system.logs.models import MailLog
 from ..forms_mail import StaffMailForm
 
@@ -24,13 +25,28 @@ class StaffMailTest(TestCase):
         permission = Permission.objects.get(codename='view_staff')
         self.user.user_permissions.add(permission)
         
+        # マスターデータを作成
+        self.regist_status = StaffRegistStatus.objects.create(
+            name='正社員',
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        self.employment_type = EmploymentType.objects.create(
+            name='正社員',
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
         self.staff = Staff.objects.create(
             name_last='田中',
             name_first='太郎',
             name_kana_last='タナカ',
             name_kana_first='タロウ',
             email='tanaka@example.com',
-            staff_regist_status_code=1,
+            regist_status=self.regist_status,
+            employment_type=self.employment_type,
             created_by=self.user,
             updated_by=self.user
         )
@@ -40,7 +56,8 @@ class StaffMailTest(TestCase):
             name_first='花子',
             name_kana_last='サトウ',
             name_kana_first='ハナコ',
-            staff_regist_status_code=1,
+            regist_status=self.regist_status,
+            employment_type=self.employment_type,
             created_by=self.user,
             updated_by=self.user
         )

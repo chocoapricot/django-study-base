@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from apps.staff.models import Staff, StaffContacted
+from apps.master.models import StaffRegistStatus, EmploymentType
 from apps.system.settings.models import Dropdowns
 from datetime import date
 
@@ -31,6 +32,20 @@ class StaffSortingTest(TestCase):
         Dropdowns.objects.create(category='contact_type', value='1', name='電話', active=True, disp_seq=1)
         Dropdowns.objects.create(category='contact_type', value='2', name='メール', active=True, disp_seq=2)
 
+        # マスターデータを作成
+        self.regist_status = StaffRegistStatus.objects.create(
+            name='正社員',
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        self.employment_type = EmploymentType.objects.create(
+            name='正社員',
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
         self.staff_obj = Staff.objects.create(
             name_last='テスト',
             name_first='スタッフ',
@@ -38,11 +53,14 @@ class StaffSortingTest(TestCase):
             name_kana_first='スタッフ',
             birth_date=date(2015, 7, 30), # ageを10にするためにbirth_dateを設定
             sex=1,
-            staff_regist_status_code=1,
+            regist_status=self.regist_status,
+            employment_type=self.employment_type,
             employee_no='ZEMP000', # ソート順で最後にくるように変更
             hire_date=date(2019, 4, 1),  # 入社日を追加
             email='test@example.com',
-            address1='テスト住所' # address1を追加
+            address1='テスト住所', # address1を追加
+            created_by=self.user,
+            updated_by=self.user
         )
         # ソートテスト用のスタッフデータを作成 (12件)
         for i in range(1, 13):
@@ -53,11 +71,14 @@ class StaffSortingTest(TestCase):
                 name_kana_first='テスト',
                 birth_date=date(2005 - i, 7, 30), # ageを20+iにするためにbirth_dateを設定
                 sex=1,
-                staff_regist_status_code=1,
+                regist_status=self.regist_status,
+                employment_type=self.employment_type,
                 employee_no=f'EMP{i:03d}',
                 hire_date=date(2020, 4, i),  # 入社日を追加（日付を変える）
                 email=f'staff{i:02d}@example.com',
-                address1=f'住所{i:02d}'
+                address1=f'住所{i:02d}',
+                created_by=self.user,
+                updated_by=self.user
             )
 
     def test_staff_list_sort_pagination(self):

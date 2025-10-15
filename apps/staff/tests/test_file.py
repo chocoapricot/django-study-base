@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 from apps.staff.models import Staff, StaffFile
+from apps.master.models import StaffRegistStatus, EmploymentType
 from apps.system.settings.models import Dropdowns
 import tempfile
 import shutil
@@ -56,6 +57,20 @@ class StaffFileTestCase(TestCase):
             disp_seq=1
         )
         
+        # マスターデータを作成
+        self.regist_status = StaffRegistStatus.objects.create(
+            name='正社員',
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        self.employment_type = EmploymentType.objects.create(
+            name='正社員',
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
         # テスト用スタッフ作成
         self.staff = Staff.objects.create(
             name_last='テスト',
@@ -63,8 +78,11 @@ class StaffFileTestCase(TestCase):
             name_kana_last='テスト',
             name_kana_first='タロウ',
             sex=1,
-            staff_regist_status_code=1,
-            email='staff@example.com'
+            regist_status=self.regist_status,
+            employment_type=self.employment_type,
+            email='staff@example.com',
+            created_by=self.user,
+            updated_by=self.user
         )
         
         self.client = Client()

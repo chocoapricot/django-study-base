@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from apps.staff.models import Staff
+from apps.master.models import StaffRegistStatus, EmploymentType
 from apps.system.settings.models import Dropdowns
 from datetime import date
 
@@ -30,6 +31,44 @@ class RegistFormFilterTest(TestCase):
         Dropdowns.objects.create(category='staff_regist_status', value='20', name='アルバイト', active=True, disp_seq=4)
         Dropdowns.objects.create(category='staff_regist_status', value='90', name='退職者', active=True, disp_seq=5)
 
+        # マスターデータを作成
+        self.regist_status_seishain = StaffRegistStatus.objects.create(
+            name='正社員',
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        self.regist_status_keiyaku = StaffRegistStatus.objects.create(
+            name='契約社員',
+            display_order=2,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        self.regist_status_haken = StaffRegistStatus.objects.create(
+            name='派遣社員',
+            display_order=3,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        self.regist_status_baito = StaffRegistStatus.objects.create(
+            name='アルバイト',
+            display_order=4,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        self.regist_status_taishoku = StaffRegistStatus.objects.create(
+            name='退職者',
+            display_order=5,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        self.employment_type = EmploymentType.objects.create(
+            name='正社員',
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
         # テスト用スタッフデータを作成
         self.staff_seishain = Staff.objects.create(
             name_last='田中',
@@ -38,9 +77,12 @@ class RegistFormFilterTest(TestCase):
             name_kana_first='タロウ',
             birth_date=date(1990, 1, 1),
             sex=1,
-            staff_regist_status_code=1,  # 正社員
+            regist_status=self.regist_status_seishain,  # 正社員
+            employment_type=self.employment_type,
             employee_no='EMP001',
-            hire_date=date(2020, 4, 1)  # 入社日を追加
+            hire_date=date(2020, 4, 1),  # 入社日を追加
+            created_by=self.user,
+            updated_by=self.user
         )
         
         self.staff_keiyaku = Staff.objects.create(
@@ -50,9 +92,12 @@ class RegistFormFilterTest(TestCase):
             name_kana_first='ハナコ',
             birth_date=date(1985, 5, 15),
             sex=2,
-            staff_regist_status_code=2,  # 契約社員
+            regist_status=self.regist_status_keiyaku,  # 契約社員
+            employment_type=self.employment_type,
             employee_no='EMP002',
-            hire_date=date(2021, 4, 1)  # 入社日を追加
+            hire_date=date(2021, 4, 1),  # 入社日を追加
+            created_by=self.user,
+            updated_by=self.user
         )
         
         self.staff_haken = Staff.objects.create(
@@ -62,9 +107,12 @@ class RegistFormFilterTest(TestCase):
             name_kana_first='ジロウ',
             birth_date=date(1992, 8, 20),
             sex=1,
-            staff_regist_status_code=10,  # 派遣社員
+            regist_status=self.regist_status_haken,  # 派遣社員
+            employment_type=self.employment_type,
             employee_no='EMP003',
-            hire_date=date(2022, 4, 1)  # 入社日を追加
+            hire_date=date(2022, 4, 1),  # 入社日を追加
+            created_by=self.user,
+            updated_by=self.user
         )
         
         self.staff_baito = Staff.objects.create(
@@ -74,9 +122,12 @@ class RegistFormFilterTest(TestCase):
             name_kana_first='サブロウ',
             birth_date=date(1995, 3, 10),
             sex=1,
-            staff_regist_status_code=20,  # アルバイト
+            regist_status=self.regist_status_baito,  # アルバイト
+            employment_type=self.employment_type,
             employee_no='EMP004',
-            hire_date=date(2023, 4, 1)  # 入社日を追加
+            hire_date=date(2023, 4, 1),  # 入社日を追加
+            created_by=self.user,
+            updated_by=self.user
         )
         
         self.staff_taishoku = Staff.objects.create(
@@ -86,10 +137,13 @@ class RegistFormFilterTest(TestCase):
             name_kana_first='シロウ',
             birth_date=date(1980, 12, 25),
             sex=1,
-            staff_regist_status_code=90,  # 退職者
+            regist_status=self.regist_status_taishoku,  # 退職者
+            employment_type=self.employment_type,
             employee_no='EMP005',
             hire_date=date(2018, 4, 1),  # 入社日を追加
-            resignation_date=date(2024, 3, 31)  # 退職日も追加
+            resignation_date=date(2024, 3, 31),  # 退職日も追加
+            created_by=self.user,
+            updated_by=self.user
         )
 
     def test_staff_regist_status_filter_seishain(self):
@@ -268,9 +322,12 @@ class RegistFormFilterTest(TestCase):
                 name_kana_first='スタッフ',
                 birth_date=date(1990, 1, 1),
                 sex=1,
-                staff_regist_status_code=1,  # 正社員
+                regist_status=self.regist_status_seishain,  # 正社員
+                employment_type=self.employment_type,
                 employee_no=f'TEST{i:03d}',
-                hire_date=date(2020, 4, (i % 28) + 1)  # 入社日を追加（月内の日付でループ）
+                hire_date=date(2020, 4, (i % 28) + 1),  # 入社日を追加（月内の日付でループ）
+                created_by=self.user,
+                updated_by=self.user
             )
         
         response = self.client.get(reverse('staff:staff_list'), {'staff_regist_status': '1', 'q': '', 'sort': ''})

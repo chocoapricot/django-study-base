@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from datetime import date, timedelta
 from apps.staff.models import Staff, StaffQualification
-from apps.master.models import Qualification
+from apps.master.models import Qualification, StaffRegistStatus, EmploymentType
 from apps.staff.forms_qualification import StaffQualificationForm
 
 User = get_user_model()
@@ -15,12 +15,26 @@ class StaffQualificationModelTest(TestCase):
             username='testuser',
             password='testpass123'
         )
+        # マスターデータを作成
+        self.regist_status = StaffRegistStatus.objects.create(
+            name='登録済み',
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        self.employment_type = EmploymentType.objects.create(
+            name='正社員',
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
         self.staff = Staff.objects.create(
             name_last='田中',
             name_first='太郎',
             birth_date=date(1990, 1, 1),
             sex=1,
-            staff_regist_status_code=20,
+            regist_status=self.regist_status,
+            employment_type=self.employment_type,
             created_by=self.user,
             updated_by=self.user
         )
@@ -141,12 +155,26 @@ class StaffQualificationFormTest(TestCase):
             username='testuser',
             password='testpass123'
         )
+        # マスターデータを作成
+        self.regist_status = StaffRegistStatus.objects.create(
+            name='登録済み',
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        self.employment_type = EmploymentType.objects.create(
+            name='正社員',
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
         self.staff = Staff.objects.create(
             name_last='田中',
             name_first='太郎',
             birth_date=date(1990, 1, 1),
             sex=1,
-            staff_regist_status_code=20,
+            regist_status=self.regist_status,
+            employment_type=self.employment_type,
             created_by=self.user,
             updated_by=self.user
         )
@@ -264,12 +292,26 @@ class StaffQualificationViewTest(TestCase):
         )
         self.user.user_permissions.set(permissions)
         
+        # マスターデータを作成
+        self.regist_status = StaffRegistStatus.objects.create(
+            name='登録済み',
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        self.employment_type = EmploymentType.objects.create(
+            name='正社員',
+            display_order=1,
+            created_by=self.user,
+            updated_by=self.user
+        )
         self.staff = Staff.objects.create(
             name_last='田中',
             name_first='太郎',
             birth_date=date(1990, 1, 1),
             sex=1,
-            staff_regist_status_code=20,
+            regist_status=self.regist_status,
+            employment_type=self.employment_type,
             created_by=self.user,
             updated_by=self.user
         )
