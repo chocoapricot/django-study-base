@@ -91,9 +91,9 @@ django-study-base/
 └── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（87テーブル）
+## データベーステーブル一覧（90テーブル）
 
-### 本アプリケーション独自テーブル（70テーブル）
+### 本アプリケーション独自テーブル（73テーブル）
 
 | テーブル名 | モデル名 | 説明 |
 | --- | --- | --- |
@@ -167,6 +167,9 @@ django-study-base/
 | `apps_system_mail_log` | `MailLog` | メール送信ログ |
 | `apps_system_menu` | `Menu` | メニュー設定 |
 | `apps_system_parameter` | `Parameter` | パラメータ設定 |
+| `apps_contract_staff_teishokubi_detail` | `StaffContractTeishokubiDetail` | 個人抵触日算出詳細 |
+| `apps_master_client_regist_status` | `ClientRegistStatus` | クライアント登録状況 |
+| `apps_master_staff_regist_status` | `StaffRegistStatus` | スタッフ登録状況 |
 
 ### django-allauth関連テーブル（6テーブル）
 
