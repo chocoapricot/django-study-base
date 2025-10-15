@@ -67,8 +67,9 @@ class ClientViewsTest(TestCase):
         self.user.user_permissions.add(self.delete_clientdepartment_permission)
 
         from apps.system.settings.models import Dropdowns
-        # Create necessary Dropdowns for ClientForm
-        Dropdowns.objects.create(category='client_regist_status', value='1', name='Test Regist Form', active=True, disp_seq=1)
+        # Create necessary ClientRegistStatus for ClientForm
+        from apps.master.models import ClientRegistStatus
+        ClientRegistStatus.objects.create(name='Test Regist Form', display_order=1, is_active=True)
         # Create necessary Dropdowns for ClientContactedForm
         Dropdowns.objects.create(category='contact_type', value='1', name='Test Contact Type 1', active=True, disp_seq=1)
         Dropdowns.objects.create(category='contact_type', value='2', name='Test Contact Type 2', active=True, disp_seq=2)
@@ -82,18 +83,19 @@ class ClientViewsTest(TestCase):
         #     client_regist_status=1
         # )
         # ソートテスト用のクライアントデータを作成 (12件)
+        regist_status_1 = ClientRegistStatus.objects.get(name='Test Regist Form')
         for i in range(1, 13):
             Client.objects.create(
                 corporate_number=f'10000000000{i:02d}', # 衝突しないように調整
                 name=f'Client {i:02d}',
                 name_furigana=f'クライアント{i:02d}',
-                client_regist_status=1
+                regist_status=regist_status_1
             )
         self.client_obj = Client.objects.create(
             corporate_number='9999999999999', # より大きな値に設定
             name='Z_Test Client', # ソート順で最後にくるように変更
             name_furigana='ゼットテストクライアント',
-            client_regist_status=1
+            regist_status=regist_status_1
         )
 
         self.client_user_obj = ClientUser.objects.create(
@@ -159,27 +161,28 @@ class ClientViewsTest(TestCase):
         from apps.system.settings.models import Dropdowns
         
         # 追加の登録区分データを作成
-        Dropdowns.objects.create(category='client_regist_status', value='10', name='登録済', active=True, disp_seq=2)
-        Dropdowns.objects.create(category='client_regist_status', value='20', name='商談中', active=True, disp_seq=3)
+        regist_status_10 = ClientRegistStatus.objects.create(name='登録済', display_order=2, is_active=True)
+        regist_status_20 = ClientRegistStatus.objects.create(name='商談中', display_order=3, is_active=True)
         
         # 異なる登録区分のクライアントを作成
+        regist_status_1 = ClientRegistStatus.objects.get(name='Test Regist Form')
         client1 = Client.objects.create(
             corporate_number='1111111111111',
             name='登録中クライアント',
             name_furigana='トウロクチュウクライアント',
-            client_regist_status=1
+            regist_status=regist_status_1
         )
         client2 = Client.objects.create(
             corporate_number='2222222222222',
             name='登録済クライアント',
             name_furigana='トウロクズミクライアント',
-            client_regist_status=10
+            regist_status=regist_status_10
         )
         client3 = Client.objects.create(
             corporate_number='3333333333333',
             name='商談中クライアント',
             name_furigana='ショウダンチュウクライアント',
-            client_regist_status=20
+            regist_status=regist_status_20
         )
         
         # 1. 全件表示（フィルタなし）
@@ -288,11 +291,12 @@ class ClientViewsTest(TestCase):
         self.assertTemplateUsed(response, 'client/client_form.html')
 
     def test_client_create_view_post(self):
+        regist_status_1 = ClientRegistStatus.objects.get(name='Test Regist Form')
         data = {
             'corporate_number': '5835678256246', # stdnumが有効と判断する法人番号
             'name': 'New Client',
             'name_furigana': 'ニュークライアントカキクケコ',
-            'client_regist_status': 1,
+            'regist_status': regist_status_1.pk,
             'basic_contract_date': '2024-01-15'
         }
         response = self.client.post(reverse('client:client_create'), data)
@@ -309,11 +313,12 @@ class ClientViewsTest(TestCase):
 
     def test_client_detail_view_with_client_code(self):
         """クライアント詳細画面でクライアントコードが正しく表示されることをテスト"""
+        regist_status_1 = ClientRegistStatus.objects.get(name='Test Regist Form')
         client_with_code = Client.objects.create(
             corporate_number='1123456789012',
             name='Client With Code',
             name_furigana='コードクライアント',
-            client_regist_status=1
+            regist_status=regist_status_1
         )
         response = self.client.get(reverse('client:client_detail', args=[client_with_code.pk]))
         self.assertEqual(response.status_code, 200)
@@ -323,11 +328,12 @@ class ClientViewsTest(TestCase):
 
     def test_client_detail_view_with_invalid_corporate_number(self):
         """不正な法人番号の場合にクライアントコードが空文字になることをテスト"""
+        regist_status_1 = ClientRegistStatus.objects.get(name='Test Regist Form')
         client_invalid_code = Client.objects.create(
             corporate_number='12345', # Invalid
             name='Client Invalid Code',
             name_furigana='フセイクライアント',
-            client_regist_status=1
+            regist_status=regist_status_1
         )
         response = self.client.get(reverse('client:client_detail', args=[client_invalid_code.pk]))
         self.assertEqual(response.status_code, 200)
@@ -342,11 +348,12 @@ class ClientViewsTest(TestCase):
         self.assertContains(response, 'Test Client')
 
     def test_client_update_view_post(self):
+        regist_status_1 = ClientRegistStatus.objects.get(name='Test Regist Form')
         data = {
             'corporate_number': self.client_obj.corporate_number, # corporate_numberはuniqueなので既存のものを利用
             'name': 'Updated Client',
             'name_furigana': 'アップデートクライアントサシスセソ',
-            'client_regist_status': 1,
+            'regist_status': regist_status_1.pk,
             'basic_contract_date': '2024-02-20'
         }
         response = self.client.post(reverse('client:client_update', args=[self.client_obj.pk]), data)

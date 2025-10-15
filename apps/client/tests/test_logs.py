@@ -28,13 +28,12 @@ class ClientLogsTestCase(TestCase):
         )
         self.user.user_permissions.set(permissions)
         
-        # テスト用ドロップダウン作成
-        Dropdowns.objects.create(
-            category='client_regist_status',
-            value='1',
+        # テスト用登録区分作成
+        from apps.master.models import ClientRegistStatus
+        regist_status = ClientRegistStatus.objects.create(
             name='優良企業',
-            active=True,
-            disp_seq=1
+            display_order=1,
+            is_active=True
         )
         
         # テスト用クライアント作成
@@ -42,7 +41,7 @@ class ClientLogsTestCase(TestCase):
             name='テスト株式会社',
             name_furigana='テストカブシキガイシャ',
             corporate_number='1234567890123',
-            client_regist_status=1
+            regist_status=regist_status
         )
         
         self.client = Client()

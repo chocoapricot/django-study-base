@@ -12,10 +12,20 @@ from django.utils import timezone
 class ClientContactedFormTest(TestCase):
     def setUp(self):
         """テストに必要なデータを作成"""
+        # テスト用ドロップダウン作成
+        Dropdowns.objects.create(
+            category='client_regist_status',
+            value='1',
+            name='テスト登録区分',
+            active=True,
+            disp_seq=1
+        )
+        
         self.client = Client.objects.create(
             name='テストクライアント',
             name_furigana='テストクライアント',
-            corporate_number='1112223334445'
+            corporate_number='1112223334445',
+            regist_status=1
         )
         self.department1 = ClientDepartment.objects.create(
             client=self.client,
@@ -64,41 +74,40 @@ class ClientContactedFormTest(TestCase):
 
 class ClientFormTest(TestCase):
     def setUp(self):
-        # テストに必要なDropdownsのデータを作成
-        Dropdowns.objects.create(
-            category='client_regist_status',
+        # テスト用登録区分作成
+        from apps.master.models import ClientRegistStatus
+        self.regist_status = ClientRegistStatus.objects.create(
             name='テスト登録区分',
-            value='1',
-            disp_seq=1,
-            active=True
+            display_order=1,
+            is_active=True
         )
 
     def test_corporate_number_validation(self):
         # 正しい法人番号 (stdnumが有効と判断する番号)
-        form_data = {'corporate_number': '5835678256246', 'name': 'テスト株式会社', 'name_furigana': 'テストカブシキガイシャ', 'client_regist_status': '1'}
+        form_data = {'corporate_number': '5835678256246', 'name': 'テスト株式会社', 'name_furigana': 'テストカブシキガイシャ', 'regist_status': self.regist_status.pk}
         form = ClientForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
 
         # 誤ったチェックディジット (stdnumがInvalidChecksumを返す番号)
-        form_data = {'corporate_number': '2835678256246', 'name': 'テスト株式会社', 'name_furigana': 'テストカブシキガイシャ', 'client_regist_status': '1'}
+        form_data = {'corporate_number': '2835678256246', 'name': 'テスト株式会社', 'name_furigana': 'テストカブシキガイシャ', 'regist_status': self.regist_status.pk}
         form = ClientForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn('corporate_number', form.errors)
 
         # 桁数が違う
-        form_data = {'corporate_number': '12345', 'name': 'テスト株式会社', 'name_furigana': 'テストカブシキガイシャ', 'client_regist_status': '1'}
+        form_data = {'corporate_number': '12345', 'name': 'テスト株式会社', 'name_furigana': 'テストカブシキガイシャ', 'regist_status': self.regist_status.pk}
         form = ClientForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn('corporate_number', form.errors)
 
         # 数字以外が含まれる
-        form_data = {'corporate_number': 'abcdefg123456', 'name': 'テスト株式会社', 'name_furigana': 'テストカブシキガイシャ', 'client_regist_status': '1'}
+        form_data = {'corporate_number': 'abcdefg123456', 'name': 'テスト株式会社', 'name_furigana': 'テストカブシキガイシャ', 'regist_status': self.regist_status.pk}
         form = ClientForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn('corporate_number', form.errors)
 
         # 空の場合は許容
-        form_data = {'corporate_number': '', 'name': 'テスト株式会社', 'name_furigana': 'テストカブシキガイシャ', 'client_regist_status': '1'}
+        form_data = {'corporate_number': '', 'name': 'テスト株式会社', 'name_furigana': 'テストカブシキガイシャ', 'regist_status': self.regist_status.pk}
         form = ClientForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
     
@@ -109,7 +118,7 @@ class ClientFormTest(TestCase):
             'corporate_number': '5835678256246',
             'name': 'テスト株式会社',
             'name_furigana': 'テストカブシキガイシャ',
-            'client_regist_status': '1',
+            'regist_status': self.regist_status.pk,
             'basic_contract_date': '2024-01-15'
         }
         form = ClientForm(data=form_data)
@@ -120,7 +129,7 @@ class ClientFormTest(TestCase):
             'corporate_number': '5835678256246',
             'name': 'テスト株式会社',
             'name_furigana': 'テストカブシキガイシャ',
-            'client_regist_status': '1',
+            'regist_status': self.regist_status.pk,
             'basic_contract_date': ''
         }
         form = ClientForm(data=form_data)
@@ -131,7 +140,7 @@ class ClientFormTest(TestCase):
             'corporate_number': '5835678256246',
             'name': 'テスト株式会社',
             'name_furigana': 'テストカブシキガイシャ',
-            'client_regist_status': '1',
+            'regist_status': self.regist_status.pk,
             'basic_contract_date': '2024/01/15'  # スラッシュ区切りは不正
         }
         form = ClientForm(data=form_data)
@@ -142,6 +151,15 @@ class ClientFormTest(TestCase):
 class ClientUserMailFormTest(TestCase):
     def setUp(self):
         """テストに必要なデータを作成"""
+        # テスト用ドロップダウン作成
+        Dropdowns.objects.create(
+            category='client_regist_status',
+            value='1',
+            name='テスト登録区分',
+            active=True,
+            disp_seq=1
+        )
+        
         self.sender_user = MyUser.objects.create_user(
             username='testsender',
             email='sender@example.com',
@@ -150,7 +168,8 @@ class ClientUserMailFormTest(TestCase):
         self.client = Client.objects.create(
             name='テストクライアント',
             name_furigana='テストクライアント',
-            corporate_number='1234567890123'
+            corporate_number='1234567890123',
+            regist_status=1
         )
         self.department = ClientDepartment.objects.create(
             client=self.client,
@@ -205,10 +224,20 @@ class ClientUserMailFormTest(TestCase):
 
 class ClientDepartmentFormTest(TestCase):
     def setUp(self):
+        # テスト用ドロップダウン作成
+        Dropdowns.objects.create(
+            category='client_regist_status',
+            value='1',
+            name='テスト登録区分',
+            active=True,
+            disp_seq=1
+        )
+        
         self.client = Client.objects.create(
             name='テストクライアント',
             name_furigana='テストクライアント',
-            corporate_number='9876543210123'
+            corporate_number='9876543210123',
+            regist_status=1
         )
         self.base_data = {
             'client': self.client.pk,
