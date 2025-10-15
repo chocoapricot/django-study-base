@@ -1,6 +1,7 @@
 {% extends 'common/_base.html' %}
 {% load static %}
 {% load help_tags %}
+{% load badge_tags %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -23,11 +24,24 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">表示順</label>
-                <div class="col-sm-3">
+                <div class="col-sm-10">
                     {{ form.display_order }}
                     {% if form.display_order.errors %}
                         <div class="text-danger small">{{ form.display_order.errors.0 }}</div>
                     {% endif %}
+                    <div class="mt-2">
+                        <small class="form-text text-muted">表示順に応じてバッジの色が変化します。</small>
+                        <div class="d-flex flex-wrap">
+                            <div class="me-3">例:</div>
+                            <div class="me-3"><span class="badge {{ 1|badge_class }}">表示順 ～9</span></div>
+                            <div class="me-3"><span class="badge {{ 10|badge_class }}">表示順 10～19</span></div>
+                            <div class="me-3"><span class="badge {{ 20|badge_class }}">表示順 20～29</span></div>
+                            <div class="me-3"><span class="badge {{ 30|badge_class }}">表示順 30～39</span></div>
+                            <div class="me-3"><span class="badge {{ 40|badge_class }}">表示順 40～49</span></div>
+                            <div class="me-3"><span class="badge {{ 50|badge_class }}">表示順 50～89</span></div>
+                            <div class="me-3"><span class="badge {{ 99|badge_class }}">表示順 90～</span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
