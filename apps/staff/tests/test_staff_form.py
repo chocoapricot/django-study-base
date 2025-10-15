@@ -381,7 +381,7 @@ class StaffFormTest(TestCase):
     def test_hire_date_after_resignation_date_validation(self):
         """入社日が退職日より後の場合のバリデーションテスト（既存テスト）"""
         form_data = {
-            'staff_regist_status_code': '1',
+            'regist_status': self.regist_status_1.pk,
             'employee_no': 'EMP004',
             'employment_type': self.employment_type_1.pk,  # 雇用形態を追加
             'name_last': '山田',
@@ -405,7 +405,7 @@ class StaffFormTest(TestCase):
     def test_hire_date_without_employment_type_validation(self):
         """入社日のみ入力、雇用形態なしのバリデーションテスト"""
         form_data = {
-            'staff_regist_status_code': '1',
+            'regist_status': self.regist_status_1.pk,
             'employee_no': 'EMP005',
             'employment_type': '',  # 雇用形態なし
             'name_last': '田中',
@@ -428,7 +428,7 @@ class StaffFormTest(TestCase):
     def test_employment_type_without_hire_date_validation(self):
         """雇用形態のみ選択、入社日なしのバリデーションテスト"""
         form_data = {
-            'staff_regist_status_code': '1',
+            'regist_status': self.regist_status_1.pk,
             'employee_no': '',
             'employment_type': self.employment_type_1.pk,  # 雇用形態あり
             'name_last': '田中',
@@ -451,7 +451,7 @@ class StaffFormTest(TestCase):
     def test_valid_all_three_fields_filled(self):
         """入社日・社員番号・雇用形態すべて入力済みの場合は有効"""
         form_data = {
-            'staff_regist_status_code': '1',
+            'regist_status': self.regist_status_1.pk,
             'employee_no': 'EMP006',
             'employment_type': self.employment_type_3.pk,  # 派遣社員
             'name_last': '佐藤',

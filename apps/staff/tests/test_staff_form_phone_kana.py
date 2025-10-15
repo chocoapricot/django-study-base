@@ -1,13 +1,13 @@
 from django.test import TestCase
 from apps.staff.forms import StaffForm
-
 from apps.system.settings.models import Dropdowns
+from apps.master.models import StaffRegistStatus
 
 class StaffFormPhoneKanaTest(TestCase):
     def test_phone_rejects_zenkaku(self):
         # 電話番号に全角数字が含まれる場合はバリデーションエラー
         form = StaffForm(data={
-            'staff_regist_status_code': '1',
+            'regist_status': self.regist_status.pk,
             'employee_no': 'EMP008',
             'employment_type': '1',  # 雇用形態を追加
             'name_last': '山田',
@@ -25,7 +25,8 @@ class StaffFormPhoneKanaTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('phone', form.errors)
     def setUp(self):
-        Dropdowns.objects.create(category='staff_regist_status', value='1', name='正社員', disp_seq=1, active=True)
+        # スタッフ登録区分マスタを作成
+        self.regist_status = StaffRegistStatus.objects.create(name='正社員', display_order=1, is_active=True)
         Dropdowns.objects.create(category='sex', value='1', name='男性', disp_seq=1, active=True)
         # 雇用形態マスタを作成
         from apps.master.models import EmploymentType
@@ -33,7 +34,7 @@ class StaffFormPhoneKanaTest(TestCase):
     def test_phone_rejects_alpha(self):
         # 電話番号に英字が含まれる場合はバリデーションエラー
         form = StaffForm(data={
-            'staff_regist_status_code': '1',
+            'regist_status': self.regist_status.pk,
             'employee_no': 'EMP005',
             'employment_type': '1',  # 雇用形態を追加
             'name_last': '山田',
@@ -54,7 +55,7 @@ class StaffFormPhoneKanaTest(TestCase):
     def test_kana_validation_and_conversion(self):
         # ひらがな・半角カナ→全角カナに変換される（エラーにならない）
         form = StaffForm(data={
-            'staff_regist_status_code': '1',
+            'regist_status': self.regist_status.pk,
             'employee_no': 'EMP006',
             'employment_type': '1',  # 雇用形態を追加
             'name_last': '山田',
@@ -78,7 +79,7 @@ class StaffFormPhoneKanaTest(TestCase):
         ひらがな入力時にカタカナへ変換される
         """
         form_data = {
-            'staff_regist_status_code': '1',
+            'regist_status': self.regist_status.pk,
             'employee_no': 'EMP007',
             'employment_type': '1',  # 雇用形態を追加
             'name_last': '山田',
