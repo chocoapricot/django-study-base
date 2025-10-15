@@ -29,7 +29,7 @@
         </div>
 
                 <h6 class="text-muted mb-3">割当対象スタッフ契約</h6>
-                <div class="card">
+                <div class="card mb-3">
                     <div class="card-body">
                         <h6 class="card-title">{{ staff_contract.contract_name }}</h6>
                         <table class="table table-sm">
@@ -68,21 +68,17 @@
                         </table>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="d-flex justify-content-between">
-                    <a href="{% url 'contract:client_contract_assignment' client_contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
-                    <div>
+                <div class="row mt-3">
+                    <div class="col text-left">
                         <form action="{% url 'contract:create_contract_assignment' %}" method="post" class="d-inline">
                             {% csrf_token %}
                             <input type="hidden" name="client_contract_id" value="{{ client_contract.pk }}">
                             <input type="hidden" name="staff_contract_id" value="{{ staff_contract.pk }}">
                             <input type="hidden" name="from" value="{{ from_view }}">
-                            <button type="submit" class="btn btn-sm btn-primary">割当実行</button>
+                            <button type="submit" class="btn btn-sm btn-primary">割当</button>
                         </form>
+                        <a href="{% url 'contract:client_contract_assignment' client_contract.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
                     </div>
                 </div>
             </div>
