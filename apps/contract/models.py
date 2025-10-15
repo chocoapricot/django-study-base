@@ -636,6 +636,7 @@ class StaffContractTeishokubiDetail(MyModel):
     assignment_start_date = models.DateField('割当開始日')
     assignment_end_date = models.DateField('割当終了日')
     is_calculated = models.BooleanField('算出対象', default=True)
+    is_manual = models.BooleanField('手動作成', default=False)
 
     class Meta:
         db_table = 'apps_contract_staff_teishokubi_detail'

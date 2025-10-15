@@ -56,7 +56,7 @@
                     <td>{{ item.dispatch_start_date|date:"Y/m/d" }}</td>
                     <td>{{ item.conflict_date|date:"Y/m/d" }}</td>
                     <td>
-                        <a href="{% url 'contract:staff_contract_teishokubi_detail' item.pk %}" class="btn btn-outline-primary btn-sm">
+                        <a href="{% url 'contract:staff_contract_teishokubi_detail' item.pk %}" class="btn btn-dark btn-sm" title="詳細">
                             <i class="bi bi-eye"></i>
                         </a>
                     </td>

@@ -12,7 +12,7 @@ from django.core.files.base import ContentFile
 from datetime import date
 from django.forms.models import model_to_dict
 from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken, ClientContractTtp, StaffContractTeishokubi, StaffContractTeishokubiDetail
-from .forms import ClientContractForm, StaffContractForm, ClientContractHakenForm, ClientContractTtpForm
+from .forms import ClientContractForm, StaffContractForm, ClientContractHakenForm, ClientContractTtpForm, StaffContractTeishokubiDetailForm
 from apps.common.constants import Constants
 from django.conf import settings
 from django.utils import timezone
@@ -2481,6 +2481,18 @@ def staff_contract_teishokubi_list(request):
 def staff_contract_teishokubi_detail(request, pk):
     """個人抵触日詳細"""
     teishokubi = get_object_or_404(StaffContractTeishokubi, pk=pk)
+    
+    # 削除処理
+    if request.method == 'POST' and 'delete_detail_id' in request.POST:
+        detail_id = request.POST.get('delete_detail_id')
+        detail = get_object_or_404(StaffContractTeishokubiDetail, pk=detail_id, teishokubi=teishokubi)
+        if detail.is_manual:  # 手動作成のもののみ削除可能
+            detail.delete()
+            messages.success(request, '詳細情報を削除しました。')
+        else:
+            messages.error(request, '自動作成された詳細情報は削除できません。')
+        return redirect('contract:staff_contract_teishokubi_detail', pk=pk)
+    
     teishokubi_details = StaffContractTeishokubiDetail.objects.filter(teishokubi=teishokubi).order_by('assignment_start_date')
 
     staff = Staff.objects.filter(email=teishokubi.staff_email).first()
@@ -2493,3 +2505,31 @@ def staff_contract_teishokubi_detail(request, pk):
         'client': client,
     }
     return render(request, 'contract/staff_contract_teishokubi_detail.html', context)
+    
+@login_required
+def staff_contract_teishokubi_detail_create(request, pk):
+    """個人抵触日詳細新規作成"""
+    teishokubi = get_object_or_404(StaffContractTeishokubi, pk=pk)
+    
+    if request.method == 'POST':
+        form = StaffContractTeishokubiDetailForm(request.POST)
+        if form.is_valid():
+            detail = form.save(commit=False)
+            detail.teishokubi = teishokubi
+            detail.is_manual = True  # 手動作成フラグを設定
+            detail.save()
+            messages.success(request, '詳細情報を作成しました。')
+            return redirect('contract:staff_contract_teishokubi_detail', pk=pk)
+    else:
+        form = StaffContractTeishokubiDetailForm()
+    
+    staff = Staff.objects.filter(email=teishokubi.staff_email).first()
+    client = Client.objects.filter(corporate_number=teishokubi.client_corporate_number).first()
+    
+    context = {
+        'form': form,
+        'teishokubi': teishokubi,
+        'staff': staff,
+        'client': client,
+    }
+    return render(request, 'contract/staff_contract_teishokubi_detail_form.html', context)

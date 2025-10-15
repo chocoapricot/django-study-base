@@ -1,7 +1,7 @@
 from django import forms
 from django.db.models import Subquery, OuterRef
 from django.utils import timezone
-from .models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp
+from .models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp, StaffContractTeishokubiDetail
 from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from apps.system.settings.models import Dropdowns
@@ -568,3 +568,21 @@ class ClientContractTtpForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.required = False
+
+class StaffContractTeishokubiDetailForm(forms.ModelForm):
+    """個人抵触日詳細フォーム"""
+    
+    class Meta:
+        model = StaffContractTeishokubiDetail
+        fields = ['assignment_start_date', 'assignment_end_date', 'is_calculated']
+        widgets = {
+            'assignment_start_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'assignment_end_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'is_calculated': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['assignment_start_date'].label = '割当開始日'
+        self.fields['assignment_end_date'].label = '割当終了日'
+        self.fields['is_calculated'].label = '算出対象'

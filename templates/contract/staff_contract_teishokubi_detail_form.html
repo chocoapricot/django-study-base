@@ -1,0 +1,95 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block title %}個人抵触日詳細新規作成{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        個人抵触日詳細新規作成
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h6 class="text-muted mb-3">対象情報</h6>
+                <table class="table table-sm">
+                    <tr>
+                        <th>スタッフ</th>
+                        <td>
+                            {% if staff %}
+                                <a href="{% url 'staff:staff_detail' staff.pk %}" class="text-decoration-none">
+                                    {{ staff.name }}
+                                </a>
+                            {% else %}
+                                {{ teishokubi.staff_email }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>クライアント</th>
+                        <td>
+                            {% if client %}
+                                <a href="{% url 'client:client_detail' client.pk %}" class="text-decoration-none">
+                                    {{ client.name }}
+                                </a>
+                            {% else %}
+                                {{ teishokubi.client_corporate_number }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>組織名</th>
+                        <td>{{ teishokubi.organization_name }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.assignment_start_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.assignment_start_date.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.assignment_start_date }}
+                    {% if form.assignment_start_date.errors %}
+                        <div class="text-danger small">{{ form.assignment_start_date.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.assignment_end_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.assignment_end_date.label }}</label>
+                <div class="col-sm-4">
+                    {{ form.assignment_end_date }}
+                    {% if form.assignment_end_date.errors %}
+                        <div class="text-danger small">{{ form.assignment_end_date.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.is_calculated.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.is_calculated.label }}</label>
+                <div class="col-sm-4">
+                    <div class="form-check">
+                        {{ form.is_calculated }}
+                        <label class="form-check-label" for="{{ form.is_calculated.id_for_label }}">
+                            算出対象に含める
+                        </label>
+                    </div>
+                    {% if form.is_calculated.errors %}
+                        <div class="text-danger small">{{ form.is_calculated.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    <button type="submit" class="btn btn-sm btn-primary me-2">作成</button>
+                    <a href="{% url 'contract:staff_contract_teishokubi_detail' teishokubi.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

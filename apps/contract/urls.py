@@ -40,6 +40,7 @@ urlpatterns = [
     path('staff/export/', views.staff_contract_export, name='staff_contract_export'),
     path('staff/teishokubi/', views.staff_contract_teishokubi_list, name='staff_contract_teishokubi_list'),
     path('staff/teishokubi/<int:pk>/', views.staff_contract_teishokubi_detail, name='staff_contract_teishokubi_detail'),
+    path('staff/teishokubi/<int:pk>/detail/create/', views.staff_contract_teishokubi_detail_create, name='staff_contract_teishokubi_detail_create'),
 
     # 履歴
     path('client/<int:pk>/issue_history/', views.client_contract_issue_history_list, name='client_contract_issue_history_list'),
