@@ -2488,7 +2488,17 @@ def staff_contract_teishokubi_detail(request, pk):
         detail = get_object_or_404(StaffContractTeishokubiDetail, pk=detail_id, teishokubi=teishokubi)
         if detail.is_manual:  # 手動作成のもののみ削除可能
             detail.delete()
-            messages.success(request, '詳細情報を削除しました。')
+            
+            # 削除後に抵触日を再計算
+            from .teishokubi_calculator import TeishokubiCalculator
+            calculator = TeishokubiCalculator(
+                staff_email=teishokubi.staff_email,
+                client_corporate_number=teishokubi.client_corporate_number,
+                organization_name=teishokubi.organization_name
+            )
+            calculator.calculate_and_update()
+            
+            messages.success(request, '詳細情報を削除し、抵触日を再計算しました。')
         else:
             messages.error(request, '自動作成された詳細情報は削除できません。')
         return redirect('contract:staff_contract_teishokubi_detail', pk=pk)
@@ -2518,7 +2528,17 @@ def staff_contract_teishokubi_detail_create(request, pk):
             detail.teishokubi = teishokubi
             detail.is_manual = True  # 手動作成フラグを設定
             detail.save()
-            messages.success(request, '詳細情報を作成しました。')
+            
+            # 手動登録後に抵触日を再計算
+            from .teishokubi_calculator import TeishokubiCalculator
+            calculator = TeishokubiCalculator(
+                staff_email=teishokubi.staff_email,
+                client_corporate_number=teishokubi.client_corporate_number,
+                organization_name=teishokubi.organization_name
+            )
+            calculator.calculate_and_update()
+            
+            messages.success(request, '詳細情報を作成し、抵触日を再計算しました。')
             return redirect('contract:staff_contract_teishokubi_detail', pk=pk)
     else:
         form = StaffContractTeishokubiDetailForm()

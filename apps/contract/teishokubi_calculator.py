@@ -18,26 +18,30 @@ class TeishokubiCalculator:
     def calculate_and_update(self):
         """
         派遣開始日と抵触日を計算し、StaffContractTeishokubi モデルを更新または作成する
+        手動作成された詳細レコードは保持する
         """
-        haken_start_date, assignment_periods = self._calculate_haken_start_date()
+        haken_start_date, assignment_periods = self._calculate_haken_start_date_with_manual()
 
         if haken_start_date:
             conflict_date = self._calculate_conflict_date(haken_start_date)
             teishokubi = self._update_or_create_teishokubi(haken_start_date, conflict_date)
 
-            # 既存の詳細レコードを一旦削除
-            teishokubi.details.all().delete()
-            # 新しい詳細レコードを作成
+            # 自動作成された詳細レコードのみ削除（手動作成は保持）
+            teishokubi.details.filter(is_manual=False).delete()
+            
+            # 新しい自動作成の詳細レコードを作成
             for period in assignment_periods:
-                StaffContractTeishokubiDetail.objects.create(
-                    teishokubi=teishokubi,
-                    assignment_start_date=period['start_date'],
-                    assignment_end_date=period['end_date'],
-                    is_calculated=period['is_calculated']
-                )
+                if not period.get('is_manual', False):  # 自動作成のもののみ
+                    StaffContractTeishokubiDetail.objects.create(
+                        teishokubi=teishokubi,
+                        assignment_start_date=period['start_date'],
+                        assignment_end_date=period['end_date'],
+                        is_calculated=period['is_calculated'],
+                        is_manual=False
+                    )
         else:
-            # 該当する割当がない場合は、既存の抵触日レコードを削除
-            self._delete_teishokubi()
+            # 該当する割当がない場合は、自動作成された抵触日レコードのみ削除
+            self._delete_teishokubi_auto_only()
 
     def calculate_conflict_date_without_update(self, new_assignment_instance=None):
         """
@@ -50,7 +54,7 @@ class TeishokubiCalculator:
 
     def _calculate_haken_start_date(self, new_assignment_instance=None):
         """
-        派遣開始日を計算し、計算に使用した期間の情報を返す
+        派遣開始日を計算し、計算に使用した期間の情報を返す（手動作成分は含まない）
         """
         assignments = self._get_relevant_assignments()
         assignment_periods = self._get_assignment_periods(assignments)
@@ -74,6 +78,47 @@ class TeishokubiCalculator:
             period['is_calculated'] = False
 
         sorted_periods = sorted(assignment_periods, key=lambda p: p['start_date'])
+
+        haken_start_date = sorted_periods[0]['start_date']
+        start_index = 0
+        for i in range(1, len(sorted_periods)):
+            prev_period = sorted_periods[i-1]
+            current_period = sorted_periods[i]
+
+            # 前の割当終了日から3ヶ月と1日以上あいているかチェック
+            if current_period['start_date'] >= prev_period['end_date'] + relativedelta(months=3, days=1):
+                haken_start_date = current_period['start_date']
+                start_index = i
+
+        # 算出対象の期間にフラグを立てる
+        for i in range(start_index, len(sorted_periods)):
+            sorted_periods[i]['is_calculated'] = True
+
+        return haken_start_date, sorted_periods
+
+    def _calculate_haken_start_date_with_manual(self):
+        """
+        派遣開始日を計算し、手動作成分も含めて期間の情報を返す
+        """
+        # 自動作成分の期間を取得
+        assignments = self._get_relevant_assignments()
+        assignment_periods = self._get_assignment_periods(assignments)
+
+        # 手動作成分の期間を取得
+        manual_periods = self._get_manual_periods()
+
+        # 全ての期間をマージ
+        all_periods = assignment_periods + manual_periods
+
+        if not all_periods:
+            return None, []
+
+        # is_calculated フラグを初期化
+        for period in all_periods:
+            if 'is_calculated' not in period:
+                period['is_calculated'] = False
+
+        sorted_periods = sorted(all_periods, key=lambda p: p['start_date'])
 
         haken_start_date = sorted_periods[0]['start_date']
         start_index = 0
@@ -139,6 +184,29 @@ class TeishokubiCalculator:
         )
         return obj
 
+    def _get_manual_periods(self):
+        """
+        手動作成された期間を取得する
+        """
+        try:
+            teishokubi = StaffContractTeishokubi.objects.get(
+                staff_email=self.staff_email,
+                client_corporate_number=self.client_corporate_number,
+                organization_name=self.organization_name
+            )
+            manual_details = teishokubi.details.filter(is_manual=True)
+            periods = []
+            for detail in manual_details:
+                periods.append({
+                    'start_date': detail.assignment_start_date,
+                    'end_date': detail.assignment_end_date,
+                    'is_calculated': detail.is_calculated,
+                    'is_manual': True
+                })
+            return periods
+        except StaffContractTeishokubi.DoesNotExist:
+            return []
+
     def _delete_teishokubi(self):
         """
         StaffContractTeishokubi モデルを削除する
@@ -148,3 +216,23 @@ class TeishokubiCalculator:
             client_corporate_number=self.client_corporate_number,
             organization_name=self.organization_name
         ).delete()
+
+    def _delete_teishokubi_auto_only(self):
+        """
+        自動作成された抵触日レコードのみ削除する（手動作成分は保持）
+        """
+        try:
+            teishokubi = StaffContractTeishokubi.objects.get(
+                staff_email=self.staff_email,
+                client_corporate_number=self.client_corporate_number,
+                organization_name=self.organization_name
+            )
+            # 手動作成分が残っているかチェック
+            if teishokubi.details.filter(is_manual=True).exists():
+                # 手動作成分があるので、自動作成分のみ削除
+                teishokubi.details.filter(is_manual=False).delete()
+            else:
+                # 手動作成分がないので、抵触日レコード全体を削除
+                teishokubi.delete()
+        except StaffContractTeishokubi.DoesNotExist:
+            pass
