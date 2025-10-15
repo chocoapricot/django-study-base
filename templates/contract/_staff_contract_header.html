@@ -1,0 +1,75 @@
+{% load humanize %}
+{% load dropdowns %}
+{% load badge_tags %}
+
+<div class="row">
+    <div class="col-md-6">
+        <h6 class="text-muted mb-3">基本情報</h6>
+        <table class="table table-sm">
+            <tr>
+                <th>契約番号</th>
+                <td>{{ contract.contract_number|default:"-" }}</td>
+            </tr>
+            <tr>
+                <th>スタッフ</th>
+                <td>
+                    <a href="{% url 'staff:staff_detail' contract.staff.pk %}" class="text-decoration-none">
+                        {{ contract.staff.name_last }} {{ contract.staff.name_first }}
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th class="w-25">契約名</th>
+                <td>{{ contract.contract_name }}</td>
+            </tr>
+            <tr>
+                <th>職種</th>
+                <td>{{ contract.job_category.name|default:"-" }}</td>
+            </tr>
+            <tr>
+                <th>契約状況</th>
+                <td>
+                    <span class="badge {{ contract.contract_status|badge_class }}">
+                        {% my_name 'contract_status' contract.contract_status %}
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h6 class="text-muted mb-3">契約条件</h6>
+        <table class="table table-sm">
+            <tr>
+                <th class="w-25">契約期間</th>
+                <td>
+                    {{ contract.start_date|date:"Y年m月d日" }}
+                    　～　
+                    {% if contract.end_date %}
+                        {{ contract.end_date|date:"Y年m月d日" }}
+                    {% else %}
+                        無期限
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>契約金額</th>
+                <td>
+                    {% if contract.contract_amount %}
+                        {% if contract.pay_unit %}{% my_name 'pay_unit' contract.pay_unit %}&nbsp;{% endif %}{{ contract.contract_amount|floatformat:0|intcomma }}円
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>契約種別</th>
+                <td>
+                    {% if contract.employment_type %}
+                        <span class="badge {{ contract.employment_type.display_order|badge_class }} me-2" style="font-size:13px">{{ contract.employment_type.name }}</span>
+                    {% endif %}
+                    {{ contract.contract_pattern.name|default:"-" }}
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

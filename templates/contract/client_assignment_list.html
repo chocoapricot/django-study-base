@@ -7,15 +7,22 @@
 {% block title %}クライアント割当一覧{% endblock %}
 
 {% block content %}
+<!-- スタッフ契約詳細カード -->
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>スタッフ契約詳細</span>
+    </div>
+    <div class="card-body">
+        {% include 'contract/_staff_contract_header.html' with contract=staff_contract %}
+    </div>
+</div>
+
+<!-- クライアント割当一覧 -->
 <div class="content-box card bg-light mt-2 mb-4">
     <div class="card-header">
         クライアント割当一覧
     </div>
     <div class="card-body">
-        <h5 class="mb-3">スタッフ契約: <a href="{% url 'contract:staff_contract_detail' staff_contract.pk %}">{{ staff_contract.contract_name }}</a></h5>
-        <p>期間: {{ staff_contract.start_date|date:"Y/m/d" }} ~ {% if staff_contract.end_date %}{{ staff_contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}</p>
-
-        <hr>
 
         {% if assignable_contracts %}
             <table class="table table-sm table-hover">
