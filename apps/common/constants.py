@@ -20,14 +20,6 @@ class Constants:
         ISSUED = '20'    # 発行済
         CONFIRMED = '30' # 契約済
     
-    # スタッフ登録区分（staff_regist_status）
-    class STAFF_REGIST_STATUS:
-        REGISTERING = '1'   # 登録中
-        REVIEWING = '2'     # 審査中
-        TEMPORARY = '10'    # 仮登録
-        REGISTERED = '20'   # 登録済
-        REJECTED = '90'     # 登録不可
-    
     # 性別（sex）
     class SEX:
         MALE = '1'    # 男性
