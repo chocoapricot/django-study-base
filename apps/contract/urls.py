@@ -65,6 +65,9 @@ urlpatterns = [
     path('client/ttp/<int:pk>/update/', views.client_contract_ttp_update, name='client_contract_ttp_update'),
     path('client/ttp/<int:pk>/delete/', views.client_contract_ttp_delete, name='client_contract_ttp_delete'),
 
+    # 事業所抵触日
+    path('client/teishokubi/', views.client_teishokubi_list, name='client_teishokubi_list'),
+
     # 契約アサイン
     path('client/<int:pk>/assign/', views.client_contract_assignment_view, name='client_contract_assignment'),
     path('staff/<int:pk>/assign/', views.staff_contract_assignment_view, name='staff_contract_assignment'),

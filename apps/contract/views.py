@@ -2423,6 +2423,76 @@ def get_contract_patterns_by_employment_type(request):
 
 
 @login_required
+def client_teishokubi_list(request):
+    """事業所抵触日一覧"""
+    from apps.client.models import ClientDepartment
+    
+    search_query = request.GET.get('q', '')
+
+    # 派遣事業所該当の組織で抵触日が設定されているものを取得
+    departments = ClientDepartment.objects.filter(
+        is_haken_office=True,
+        haken_jigyosho_teishokubi__isnull=False
+    ).select_related('client')
+
+    if search_query:
+        departments = departments.filter(
+            Q(name__icontains=search_query) |
+            Q(client__name__icontains=search_query) |
+            Q(client__corporate_number__icontains=search_query)
+        )
+
+    departments = departments.order_by('haken_jigyosho_teishokubi', 'client__name', 'name')
+
+    paginator = Paginator(departments, 20)
+    page = request.GET.get('page')
+    departments_page = paginator.get_page(page)
+
+    # 各事業所で現在派遣中のスタッフ数を取得
+    for department in departments_page:
+        # この事業所で現在派遣中のスタッフ数を計算
+        from datetime import date
+        current_assignments = ContractAssignment.objects.filter(
+            client_contract__haken_info__haken_office=department,
+            client_contract__client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
+            client_contract__start_date__lte=date.today(),
+            client_contract__end_date__gte=date.today()
+        ).select_related('staff_contract__staff').distinct()
+        
+        department.current_staff_count = current_assignments.count()
+        
+        # 抵触日までの残り日数を計算
+        if department.haken_jigyosho_teishokubi:
+            today = date.today()
+            if department.haken_jigyosho_teishokubi >= today:
+                delta = department.haken_jigyosho_teishokubi - today
+                department.days_remaining = delta.days
+                department.is_expired = False
+            else:
+                delta = today - department.haken_jigyosho_teishokubi
+                department.days_overdue = delta.days
+                department.is_expired = True
+        
+        # 現在派遣中のスタッフ一覧（最大5名まで表示）
+        staff_assignments = current_assignments[:5]
+        department.current_staff_list = []
+        for assignment in staff_assignments:
+            staff = assignment.staff_contract.staff
+            department.current_staff_list.append({
+                'staff_id': staff.id,
+                'staff_name': staff.name,
+                'contract_start': assignment.client_contract.start_date,
+                'contract_end': assignment.client_contract.end_date,
+            })
+
+    context = {
+        'departments': departments_page,
+        'search_query': search_query,
+    }
+    return render(request, 'contract/client_teishokubi_list.html', context)
+
+
+@login_required
 def staff_contract_teishokubi_list(request):
     """個人抵触日管理一覧"""
     search_query = request.GET.get('q', '')
