@@ -33,7 +33,7 @@ def client_contacted_detail(request, pk):
 def client_list(request):
     sort = request.GET.get('sort', 'corporate_number')
     query = request.GET.get('q', '').strip()
-    client_regist_status = request.GET.get('client_regist_status', '').strip()
+    client_regist_status = request.GET.get('regist_status', '').strip()
     
     clients = Client.objects.all()
     
@@ -95,7 +95,7 @@ def client_list(request):
     return render(request, 'client/client_list.html', {
         'clients': clients_pages, 
         'query': query,
-        'client_regist_status': client_regist_status,
+        'regist_status_filter': client_regist_status,
         'regist_status_options': regist_status_options
     })
 
@@ -110,7 +110,7 @@ def client_export(request):
     
     # 検索条件を取得（client_listと同じロジック）
     query = request.GET.get('q', '').strip()
-    client_regist_status = request.GET.get('client_regist_status', '').strip()
+    client_regist_status = request.GET.get('regist_status', '').strip()
     format_type = request.GET.get('format', 'csv')
     
     clients = Client.objects.all()

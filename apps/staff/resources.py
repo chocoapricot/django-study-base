@@ -2,14 +2,15 @@ from import_export import resources, fields
 from .models import Staff
 from apps.system.settings.models import Dropdowns
 from apps.company.models import CompanyDepartment
+from apps.master.models import StaffRegistStatus
 from django.utils import timezone
 
 class StaffResource(resources.ModelResource):
     """スタッフデータのエクスポート用リソース"""
 
-    staff_regist_status_display = fields.Field(
+    regist_status_display = fields.Field(
         column_name='登録区分',
-        attribute='staff_regist_status_code',
+        attribute='regist_status__name',
         readonly=True
     )
     employment_type_display = fields.Field(
@@ -48,7 +49,7 @@ class StaffResource(resources.ModelResource):
             'email',
             'hire_date',
             'resignation_date',
-            'staff_regist_status_display',
+            'regist_status_display',
             'employment_type_display',
             'department_display',
             'memo',
@@ -57,18 +58,10 @@ class StaffResource(resources.ModelResource):
         )
         export_order = fields
 
-    def dehydrate_staff_regist_status_display(self, staff):
+    def dehydrate_regist_status_display(self, staff):
         """登録区分の表示名を取得"""
-        if staff.staff_regist_status_code:
-            try:
-                dropdown = Dropdowns.objects.get(
-                    category='staff_regist_status',
-                    value=staff.staff_regist_status_code,
-                    active=True
-                )
-                return dropdown.name
-            except Dropdowns.DoesNotExist:
-                return str(staff.staff_regist_status_code)
+        if staff.regist_status:
+            return staff.regist_status.name
         return ''
 
     def dehydrate_employment_type_display(self, staff):
