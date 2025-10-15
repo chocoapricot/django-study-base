@@ -76,7 +76,7 @@ def staff_export(request):
         )
 
     if staff_regist_status_filter:
-        staffs = staffs.filter(staff_regist_status_code=staff_regist_status_filter)
+        staffs = staffs.filter(regist_status_id=staff_regist_status_filter)
     if department_filter:
         staffs = staffs.filter(department_code=department_filter)
     if employment_type_filter:
@@ -240,7 +240,7 @@ def staff_list(request):
     
     # 登録区分での絞り込み
     if staff_regist_status_filter:
-        staffs = staffs.filter(staff_regist_status_code=staff_regist_status_filter)
+        staffs = staffs.filter(regist_status_id=staff_regist_status_filter)
     # 所属部署での絞り込み
     if department_filter:
         staffs = staffs.filter(department_code=department_filter)
@@ -273,13 +273,11 @@ def staff_list(request):
         staffs = staffs.order_by('pk') # 不正なソート指定の場合はpkでソート
 
     # 登録区分の選択肢を取得
-    staff_regist_status_options = Dropdowns.objects.filter(
-        category='staff_regist_status', 
-        active=True
-    ).order_by('disp_seq')
+    from apps.master.models import StaffRegistStatus
+    staff_regist_status_options = StaffRegistStatus.objects.filter(is_active=True).order_by('display_order')
     # 各オプションに選択状態を追加
     for option in staff_regist_status_options:
-        option.is_selected = (staff_regist_status_filter == option.value)
+        option.is_selected = (staff_regist_status_filter == str(option.pk))
 
     # 雇用形態の選択肢を取得
     from apps.master.models import EmploymentType

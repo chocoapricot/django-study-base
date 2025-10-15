@@ -132,10 +132,10 @@ class StaffForm(forms.ModelForm):
         widget=forms.RadioSelect  # ここでラジオボタンを指定(⇒立て並びにしかできない！)
     )
 
-    staff_regist_status_code = forms.ChoiceField(
-        choices=[],
-        label='登録区分',  # 日本語ラベル
-        widget=forms.Select(attrs={'class':'form-select form-select-sm'}) ,
+    regist_status = forms.ModelChoiceField(
+        queryset=None,
+        label='登録区分',
+        widget=forms.Select(attrs={'class':'form-select form-select-sm'}),
         required=True,
     )
     
@@ -158,10 +158,8 @@ class StaffForm(forms.ModelForm):
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='sex').order_by('disp_seq')
         ]
-        self.fields['staff_regist_status_code'].choices = [
-            (opt.value, opt.name)
-            for opt in Dropdowns.objects.filter(active=True, category='staff_regist_status').order_by('disp_seq')
-        ]
+        from apps.master.models import StaffRegistStatus
+        self.fields['regist_status'].queryset = StaffRegistStatus.objects.filter(is_active=True).order_by('display_order')
 
         from apps.master.models import EmploymentType
         self.fields['employment_type'].queryset = EmploymentType.objects.filter(is_active=True).order_by('display_order', 'name')
@@ -200,7 +198,7 @@ class StaffForm(forms.ModelForm):
     class Meta:
         model = Staff
         fields = [
-            'staff_regist_status_code',
+            'regist_status',
             'employment_type',
             'employee_no',
             'name_last','name_first','name_kana_last','name_kana_first',
@@ -236,7 +234,7 @@ class StaffForm(forms.ModelForm):
             }),
             'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
             'memo': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            # 'staff_regist_status_code': forms.Select(attrs={'class': 'form-control form-control-sm form-select-sm'}),
+            # 'regist_status': forms.Select(attrs={'class': 'form-control form-control-sm form-select-sm'}),
         }
 
 

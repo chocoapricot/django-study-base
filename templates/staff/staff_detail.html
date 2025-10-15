@@ -52,7 +52,9 @@
                         
                         <div class="col-sm">
                             <div class="col-sm mb-2 d-flex align-items-center">
-                                <span class="badge {{ staff.staff_regist_status_code|badge_class }}" style="font-size:12px">{% my_name 'staff_regist_status' staff.staff_regist_status_code %}</span>
+                                {% if staff.regist_status %}
+                                    <span class="badge bg-primary" style="font-size:12px">{{ staff.regist_status.name }}</span>
+                                {% endif %}
                                 {% if staff.employment_type %}
                                     <span class="badge {{ staff.employment_type.display_order|badge_class }} ms-2" style="font-size:15px">{{ staff.employment_type.name }}</span>
                                 {% endif %}

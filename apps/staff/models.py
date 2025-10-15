@@ -44,7 +44,13 @@ class Staff(MyModel):
     address3 = models.TextField('住所３',blank=True, null=True)
     phone = models.TextField('電話番号',blank=True, null=True)
     email = models.CharField('E-MAIL',max_length=255, unique=True, blank=True, null=True)
-    staff_regist_status_code = models.IntegerField('登録区分', blank=True, null=True)
+    regist_status = models.ForeignKey(
+        'master.StaffRegistStatus',
+        on_delete=models.SET_NULL,
+        verbose_name='登録区分',
+        blank=True,
+        null=True
+    )
     employment_type = models.ForeignKey(
         'master.EmploymentType',
         on_delete=models.SET_NULL,
