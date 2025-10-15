@@ -26,8 +26,6 @@ class StaffSortingTest(TestCase):
         # Create necessary Dropdowns for StaffForm
         Dropdowns.objects.create(category='sex', value='1', name='男性', active=True, disp_seq=1)
         Dropdowns.objects.create(category='sex', value='2', name='女性', active=True, disp_seq=2)
-        Dropdowns.objects.create(category='staff_regist_status', value='1', name='正社員', active=True, disp_seq=1)
-        Dropdowns.objects.create(category='staff_regist_status', value='2', name='契約社員', active=True, disp_seq=2)
         # Create necessary Dropdowns for StaffContactedForm
         Dropdowns.objects.create(category='contact_type', value='1', name='電話', active=True, disp_seq=1)
         Dropdowns.objects.create(category='contact_type', value='2', name='メール', active=True, disp_seq=2)

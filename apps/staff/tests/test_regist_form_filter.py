@@ -148,7 +148,7 @@ class RegistFormFilterTest(TestCase):
 
     def test_staff_regist_status_filter_seishain(self):
         """正社員での絞り込みテスト"""
-        response = self.client.get(reverse('staff:staff_list'), {'staff_regist_status': '1'})
+        response = self.client.get(reverse('staff:staff_list'), {'regist_status': str(self.regist_status_seishain.pk)})
         self.assertEqual(response.status_code, 200)
         
         # 正社員のスタッフのみが表示されることを確認
@@ -159,11 +159,11 @@ class RegistFormFilterTest(TestCase):
         self.assertNotContains(response, '山田')  # 退職者
         
         # フィルター選択状態の確認
-        self.assertContains(response, 'value="1" selected')
+        self.assertContains(response, f'value="{self.regist_status_seishain.pk}" selected')
 
     def test_staff_regist_status_filter_keiyaku(self):
         """契約社員での絞り込みテスト"""
-        response = self.client.get(reverse('staff:staff_list'), {'staff_regist_status': '2'})
+        response = self.client.get(reverse('staff:staff_list'), {'regist_status': str(self.regist_status_keiyaku.pk)})
         self.assertEqual(response.status_code, 200)
         
         # 契約社員のスタッフのみが表示されることを確認
@@ -174,11 +174,11 @@ class RegistFormFilterTest(TestCase):
         self.assertNotContains(response, '山田')  # 退職者
         
         # フィルター選択状態の確認
-        self.assertContains(response, 'value="2" selected')
+        self.assertContains(response, f'value="{self.regist_status_keiyaku.pk}" selected')
 
     def test_staff_regist_status_filter_haken(self):
         """派遣社員での絞り込みテスト"""
-        response = self.client.get(reverse('staff:staff_list'), {'staff_regist_status': '10'})
+        response = self.client.get(reverse('staff:staff_list'), {'regist_status': str(self.regist_status_haken.pk)})
         self.assertEqual(response.status_code, 200)
         
         # 派遣社員のスタッフのみが表示されることを確認
@@ -189,11 +189,11 @@ class RegistFormFilterTest(TestCase):
         self.assertNotContains(response, '山田')  # 退職者
         
         # フィルター選択状態の確認
-        self.assertContains(response, 'value="10" selected')
+        self.assertContains(response, f'value="{self.regist_status_haken.pk}" selected')
 
     def test_staff_regist_status_filter_baito(self):
         """アルバイトでの絞り込みテスト"""
-        response = self.client.get(reverse('staff:staff_list'), {'staff_regist_status': '20'})
+        response = self.client.get(reverse('staff:staff_list'), {'regist_status': str(self.regist_status_baito.pk)})
         self.assertEqual(response.status_code, 200)
         
         # アルバイトのスタッフのみが表示されることを確認
@@ -204,11 +204,11 @@ class RegistFormFilterTest(TestCase):
         self.assertNotContains(response, '山田')  # 退職者
         
         # フィルター選択状態の確認
-        self.assertContains(response, 'value="20" selected')
+        self.assertContains(response, f'value="{self.regist_status_baito.pk}" selected')
 
     def test_staff_regist_status_filter_taishoku(self):
         """退職者での絞り込みテスト"""
-        response = self.client.get(reverse('staff:staff_list'), {'staff_regist_status': '90'})
+        response = self.client.get(reverse('staff:staff_list'), {'regist_status': str(self.regist_status_taishoku.pk)})
         self.assertEqual(response.status_code, 200)
         
         # 退職者のスタッフのみが表示されることを確認
@@ -219,7 +219,7 @@ class RegistFormFilterTest(TestCase):
         self.assertContains(response, '山田')  # 退職者
         
         # フィルター選択状態の確認
-        self.assertContains(response, 'value="90" selected')
+        self.assertContains(response, f'value="{self.regist_status_taishoku.pk}" selected')
 
     def test_staff_regist_status_filter_all(self):
         """全ての登録区分表示テスト（フィルターなし）"""
@@ -241,7 +241,7 @@ class RegistFormFilterTest(TestCase):
         # 「田中」で検索 + 正社員フィルター
         response = self.client.get(reverse('staff:staff_list'), {
             'q': '田中',
-            'staff_regist_status': '1'
+            'regist_status': str(self.regist_status_seishain.pk)
         })
         self.assertEqual(response.status_code, 200)
         
@@ -255,7 +255,7 @@ class RegistFormFilterTest(TestCase):
         # 「田中」で検索 + 契約社員フィルター（該当なし）
         response = self.client.get(reverse('staff:staff_list'), {
             'q': '田中',
-            'staff_regist_status': '2'
+            'regist_status': str(self.regist_status_keiyaku.pk)
         })
         self.assertEqual(response.status_code, 200)
         
@@ -276,7 +276,7 @@ class RegistFormFilterTest(TestCase):
         """ソートと登録区分フィルターの組み合わせテスト"""
         # 正社員フィルター + 社員番号昇順ソート
         response = self.client.get(reverse('staff:staff_list'), {
-            'staff_regist_status': '1',
+            'regist_status': str(self.regist_status_seishain.pk),
             'sort': 'employee_no'
         })
         self.assertEqual(response.status_code, 200)
@@ -286,7 +286,7 @@ class RegistFormFilterTest(TestCase):
         self.assertNotContains(response, '佐藤')
         
         # ソートリンクにフィルターパラメータが含まれていることを確認
-        self.assertContains(response, 'staff_regist_status=1')
+        self.assertContains(response, f'regist_status={self.regist_status_seishain.pk}')
 
     def test_staff_regist_status_filter_ui_elements(self):
         """登録区分フィルターのUI要素が正しく表示されることをテスト"""
@@ -294,7 +294,7 @@ class RegistFormFilterTest(TestCase):
         self.assertEqual(response.status_code, 200)
         
         # セレクトボックスが存在することを確認
-        self.assertContains(response, '<select name="staff_regist_status"')
+        self.assertContains(response, '<select name="regist_status"')
         self.assertContains(response, 'form-select-sm')
         
         # 選択肢が正しく表示されることを確認
@@ -330,15 +330,15 @@ class RegistFormFilterTest(TestCase):
                 updated_by=self.user
             )
         
-        response = self.client.get(reverse('staff:staff_list'), {'staff_regist_status': '1', 'q': '', 'sort': ''})
+        response = self.client.get(reverse('staff:staff_list'), {'regist_status': str(self.regist_status_seishain.pk), 'q': '', 'sort': ''})
         self.assertEqual(response.status_code, 200)
         
-        # ページネーションリンクにstaff_regist_statusパラメータが含まれていることを確認
-        self.assertContains(response, 'staff_regist_status=1')
+        # ページネーションリンクにregist_statusパラメータが含まれていることを確認
+        self.assertContains(response, f'regist_status={self.regist_status_seishain.pk}')
         
         # 次のページリンクを確認
         if response.context['staffs'].has_next:
-            self.assertContains(response, f'href="?staff_regist_status=1&amp;q=&amp;sort=&amp;page={response.context["staffs"].next_page_number()}"')
+            self.assertContains(response, f'href="?regist_status={self.regist_status_seishain.pk}&amp;q=&amp;sort=&amp;page={response.context["staffs"].next_page_number()}"')
 
     def test_staff_regist_status_badge_display(self):
         """登録区分バッジの表示テスト"""
@@ -363,7 +363,7 @@ class RegistFormFilterTest(TestCase):
 
     def test_invalid_staff_regist_status_filter(self):
         """無効な登録区分フィルター値のテスト"""
-        response = self.client.get(reverse('staff:staff_list'), {'staff_regist_status': '999'})
+        response = self.client.get(reverse('staff:staff_list'), {'regist_status': '999'})
         self.assertEqual(response.status_code, 200)
         
         # 無効な値の場合、結果が0件になることを確認
@@ -381,7 +381,7 @@ class RegistFormFilterTest(TestCase):
 
     def test_empty_staff_regist_status_filter(self):
         """空の登録区分フィルター値のテスト"""
-        response = self.client.get(reverse('staff:staff_list'), {'staff_regist_status': ''})
+        response = self.client.get(reverse('staff:staff_list'), {'regist_status': ''})
         self.assertEqual(response.status_code, 200)
         
         # 空の値の場合、全てのスタッフが表示されることを確認

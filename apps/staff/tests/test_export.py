@@ -89,12 +89,13 @@ class StaffExportTest(TestCase):
         self.assertNotIn('鈴木', content)
 
     def test_staff_export_with_staff_regist_status_filter(self):
-        """Test exporting with staff_regist_status filter."""
-        url = reverse('staff:staff_export') + '?format=csv&staff_regist_status=1'
+        """Test exporting with regist_status filter."""
+        # regist_statusのIDを使用してフィルタリング
+        url = reverse('staff:staff_export') + f'?format=csv&regist_status={self.regist_status.pk}'
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
         content = response.content.decode('utf-8')
 
-        self.assertNotIn('山田', content)
-        self.assertIn('鈴木', content)
+        self.assertNotIn('山田', content)  # 山田は登録区分が設定されていない
+        self.assertIn('鈴木', content)    # 鈴木は登録区分が設定されている

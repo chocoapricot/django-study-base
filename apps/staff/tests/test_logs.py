@@ -40,13 +40,6 @@ class StaffLogsTestCase(TestCase):
             disp_seq=1
         )
         
-        Dropdowns.objects.create(
-            category='staff_regist_status',
-            value='1',
-            name='正社員',
-            active=True,
-            disp_seq=1
-        )
         
         # マスターデータを作成
         self.regist_status = StaffRegistStatus.objects.create(
