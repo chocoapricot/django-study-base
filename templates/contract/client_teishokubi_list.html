@@ -18,7 +18,14 @@
                     <i class="bi bi-x"></i>
                 </span>
             </div>
-            <button class="btn btn-primary btn-sm mb-2" type="submit">検索</button>
+            <div class="input-group me-2 mb-2" style="width: 12em;">
+                <select name="dispatch_filter" class="form-select form-select-sm">
+                    <option value="all" {% if dispatch_filter == 'all' %}selected{% endif %}>すべて</option>
+                    <option value="with_contract" {% if dispatch_filter == 'with_contract' %}selected{% endif %}>派遣契約あり</option>
+                </select>
+            </div>
+            <button class="btn btn-primary btn-sm mb-2 me-2" type="submit">検索</button>
+            <button class="btn btn-secondary btn-sm mb-2" type="button" onclick="resetForm()">リセット</button>
         </form>
 
         <!-- 事業所一覧 -->
@@ -103,6 +110,11 @@
 </div>
 
 <script>
+function resetForm() {
+    // 「すべて」フィルタを明示的に指定してリダイレクト
+    window.location.href = "{% url 'contract:client_teishokubi_list' %}?dispatch_filter=all";
+}
+
 document.body.setAttribute('data-has-logic', 'true');
 
 document.addEventListener('DOMContentLoaded', function() {

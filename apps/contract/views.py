@@ -2428,12 +2428,30 @@ def client_teishokubi_list(request):
     from apps.client.models import ClientDepartment
     
     search_query = request.GET.get('q', '')
+    # デフォルトで「派遣契約あり」を設定（リセット時は'all'）
+    dispatch_filter = request.GET.get('dispatch_filter', 'with_contract')  # 'all' または 'with_contract'
 
     # 派遣事業所該当の組織で抵触日が設定されているものを取得
     departments = ClientDepartment.objects.filter(
         is_haken_office=True,
         haken_jigyosho_teishokubi__isnull=False
     ).select_related('client')
+
+    # 派遣契約ありフィルタ
+    if dispatch_filter == 'with_contract':
+        from datetime import date
+        today = date.today()
+        # 事業所抵触日が今日以降のもののみ
+        departments = departments.filter(haken_jigyosho_teishokubi__gte=today)
+        
+        # 派遣契約があるもののみに絞り込み
+        # ContractAssignmentを通じて派遣契約がある事業所のIDを取得
+        valid_department_ids = ContractAssignment.objects.filter(
+            client_contract__client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
+            client_contract__end_date__gte=today  # 終了日が今日以降
+        ).values_list('client_contract__haken_info__haken_office_id', flat=True).distinct()
+        
+        departments = departments.filter(id__in=valid_department_ids)
 
     if search_query:
         departments = departments.filter(
@@ -2487,6 +2505,7 @@ def client_teishokubi_list(request):
     context = {
         'departments': departments_page,
         'search_query': search_query,
+        'dispatch_filter': dispatch_filter,
     }
     return render(request, 'contract/client_teishokubi_list.html', context)
 
@@ -2495,8 +2514,43 @@ def client_teishokubi_list(request):
 def staff_contract_teishokubi_list(request):
     """個人抵触日管理一覧"""
     search_query = request.GET.get('q', '')
+    # デフォルトで「派遣契約あり」を設定（リセット時は'all'）
+    dispatch_filter = request.GET.get('dispatch_filter', 'with_contract')  # 'all' または 'with_contract'
 
     teishokubi_list = StaffContractTeishokubi.objects.all()
+
+    # 派遣契約ありフィルタ
+    if dispatch_filter == 'with_contract':
+        from datetime import date
+        today = date.today()
+        # 個人抵触日が今日以降のもののみ
+        teishokubi_list = teishokubi_list.filter(conflict_date__gte=today)
+        
+        # 派遣契約があるもののみに絞り込み
+        # ContractAssignmentを通じて派遣契約があるスタッフ・クライアント・組織の組み合わせを取得
+        valid_combinations = ContractAssignment.objects.filter(
+            client_contract__client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
+            client_contract__end_date__gte=today  # 終了日が今日以降
+        ).values_list(
+            'staff_contract__staff__email',
+            'client_contract__client__corporate_number',
+            'client_contract__haken_info__haken_unit__name'
+        ).distinct()
+        
+        # 有効な組み合わせでフィルタリング
+        if valid_combinations:
+            filter_conditions = Q()
+            for staff_email, corp_number, org_name in valid_combinations:
+                if staff_email and corp_number and org_name:
+                    filter_conditions |= Q(
+                        staff_email=staff_email,
+                        client_corporate_number=corp_number,
+                        organization_name=org_name
+                    )
+            teishokubi_list = teishokubi_list.filter(filter_conditions)
+        else:
+            # 派遣契約がない場合は空のクエリセットを返す
+            teishokubi_list = teishokubi_list.none()
 
     if search_query:
         staff_emails_from_name_search = list(Staff.objects.filter(name__icontains=search_query).values_list('email', flat=True))
@@ -2571,8 +2625,9 @@ def staff_contract_teishokubi_list(request):
     context = {
         'teishokubi_list': teishokubi_page,
         'search_query': search_query,
+        'dispatch_filter': dispatch_filter,
     }
-    return render(request, 'contract/staff_contract_teishokubi_list.html', context)
+    return render(request, 'contract/staff_teishokubi_list.html', context)
 
 
 @login_required
@@ -2621,7 +2676,7 @@ def staff_contract_teishokubi_detail(request, pk):
         'client': client,
         'change_logs': change_logs,
     }
-    return render(request, 'contract/staff_contract_teishokubi_detail.html', context)
+    return render(request, 'contract/staff_teishokubi_detail.html', context)
     
 @login_required
 def staff_contract_teishokubi_detail_create(request, pk):
@@ -2660,4 +2715,4 @@ def staff_contract_teishokubi_detail_create(request, pk):
         'staff': staff,
         'client': client,
     }
-    return render(request, 'contract/staff_contract_teishokubi_detail_form.html', context)
+    return render(request, 'contract/staff_teishokubi_detail_form.html', context)
