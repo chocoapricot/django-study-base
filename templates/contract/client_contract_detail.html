@@ -230,7 +230,13 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 契約アサイン
                 {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT %}
-                <a href="{% url 'contract:client_contract_assignment' contract.pk %}" class="btn btn-sm btn-primary">割当</a>
+                <div class="btn-group" role="group">
+                    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">割当</button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'contract:client_contract_assignment' contract.pk %}">既存契約割当</a></li>
+                        <li><a class="dropdown-item" href="{% url 'contract:staff_contract_create' %}?client_contract={{ contract.pk }}">新規スタッフ契約</a></li>
+                    </ul>
+                </div>
                 {% endif %}
             </div>
             <div class="card-body">

@@ -369,6 +369,7 @@ def client_contract_create(request):
         'title': 'クライアント契約作成',
         'is_haken': is_haken,
         'selected_client': selected_client,
+        'original_contract': original_contract,
         'Constants': Constants,
     }
     return render(request, 'contract/client_contract_form.html', context)
@@ -724,7 +725,9 @@ def staff_contract_create(request):
     """スタッフ契約作成"""
     copy_from_id = request.GET.get('copy_from')
     extend_from_id = request.GET.get('extend_from')
+    client_contract_id = request.GET.get('client_contract')  # クライアント契約からの作成
     original_contract = None
+    client_contract = None
     is_extend = False
     
     if copy_from_id:
@@ -740,6 +743,12 @@ def staff_contract_create(request):
         except (ValueError, Http404):
             messages.error(request, "延長元の契約が見つかりませんでした。")
             return redirect('contract:staff_contract_list')
+    elif client_contract_id:
+        try:
+            client_contract = get_object_or_404(ClientContract, pk=client_contract_id)
+        except (ValueError, Http404):
+            messages.error(request, "クライアント契約が見つかりませんでした。")
+            return redirect('contract:client_contract_list')
 
     staff = None
     if original_contract:
@@ -748,20 +757,40 @@ def staff_contract_create(request):
     if request.method == 'POST':
         form = StaffContractForm(request.POST)
         if form.is_valid():
-            contract = form.save(commit=False)
-            contract.created_by = request.user
-            contract.updated_by = request.user
-            # 新規作成・コピー作成時はステータスを「作成中」に戻す
-            contract.contract_status = Constants.CONTRACT_STATUS.DRAFT
-            contract.contract_number = None  # 契約番号はクリア
-            
-            # 雇用形態が設定されていない場合、スタッフの現在の雇用形態を設定
-            if not contract.employment_type and contract.staff and contract.staff.employment_type:
-                contract.employment_type = contract.staff.employment_type
-            
-            contract.save()
-            messages.success(request, f'スタッフ契約「{contract.contract_name}」を作成しました。')
-            return redirect('contract:staff_contract_detail', pk=contract.pk)
+            try:
+                with transaction.atomic():
+                    contract = form.save(commit=False)
+                    contract.created_by = request.user
+                    contract.updated_by = request.user
+                    # 新規作成・コピー作成時はステータスを「作成中」に戻す
+                    contract.contract_status = Constants.CONTRACT_STATUS.DRAFT
+                    contract.contract_number = None  # 契約番号はクリア
+                    
+                    # 雇用形態が設定されていない場合、スタッフの現在の雇用形態を設定
+                    if not contract.employment_type and contract.staff and contract.staff.employment_type:
+                        contract.employment_type = contract.staff.employment_type
+                    
+                    contract.save()
+                    
+                    # クライアント契約からの作成の場合、自動的に割当を作成
+                    if client_contract_id:
+                        try:
+                            client_contract_for_assignment = ClientContract.objects.get(pk=client_contract_id)
+                            ContractAssignment.objects.create(
+                                client_contract=client_contract_for_assignment,
+                                staff_contract=contract,
+                                created_by=request.user,
+                                updated_by=request.user
+                            )
+                            messages.success(request, f'スタッフ契約「{contract.contract_name}」を作成し、クライアント契約「{client_contract_for_assignment.contract_name}」に割り当てました。')
+                        except ClientContract.DoesNotExist:
+                            messages.success(request, f'スタッフ契約「{contract.contract_name}」を作成しました。')
+                    else:
+                        messages.success(request, f'スタッフ契約「{contract.contract_name}」を作成しました。')
+                    
+                    return redirect('contract:staff_contract_detail', pk=contract.pk)
+            except Exception as e:
+                messages.error(request, f"保存中にエラーが発生しました: {e}")
         else:
             # フォームが無効な場合、選択されたスタッフ情報を取得
             staff_id = request.POST.get('staff')
@@ -787,6 +816,24 @@ def staff_contract_create(request):
             else:
                 # コピーの場合：契約名に「のコピー」を追加
                 initial_data['contract_name'] = f"{initial_data.get('contract_name', '')}のコピー"
+        elif client_contract:
+            # クライアント契約からの作成の場合、情報をコピー
+            initial_data['start_date'] = client_contract.start_date
+            initial_data['end_date'] = client_contract.end_date
+            initial_data['business_content'] = client_contract.business_content
+            if client_contract.job_category:
+                initial_data['job_category'] = client_contract.job_category.pk
+            
+            # 派遣契約の場合は就業場所もコピー
+            if hasattr(client_contract, 'haken_info') and client_contract.haken_info:
+                initial_data['work_location'] = client_contract.haken_info.work_location
+            
+            # 契約名はデフォルト値を使用
+            try:
+                default_value = DefaultValue.objects.get(pk='StaffContract.contract_name')
+                initial_data['contract_name'] = default_value.value
+            except DefaultValue.DoesNotExist:
+                initial_data['contract_name'] = f"{client_contract.contract_name} - スタッフ契約"
         else:
             # コピーでない新規作成の場合、マスタからデフォルト値を取得
             try:
@@ -801,6 +848,8 @@ def staff_contract_create(request):
         'form': form,
         'title': 'スタッフ契約作成',
         'staff': staff,
+        'client_contract': client_contract,
+        'original_contract': original_contract,
     }
     return render(request, 'contract/staff_contract_form.html', context)
 

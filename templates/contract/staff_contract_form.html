@@ -22,6 +22,14 @@
         <form method="post">
             {% csrf_token %}
             
+            {% if client_contract %}
+            <div class="alert alert-info mb-4" role="alert">
+                <i class="bi bi-info-circle me-2"></i>
+                このスタッフ契約は、クライアント契約「<strong>{{ client_contract.contract_name }}</strong>」と紐づいて作成されます。
+                保存時に自動的に契約アサインが作成されます。
+            </div>
+            {% endif %}
+            
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.contract_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約名</label>
                 <div class="col-sm-6">
@@ -189,7 +197,13 @@
             <div class="row mt-3">
                 <div class="col text-left">
                     <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
-                    <a href="{% if contract %}{% url 'contract:staff_contract_detail' contract.pk %}{% else %}{% url 'contract:staff_contract_list' %}{% endif %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% if client_contract %}
+                        <a href="{% url 'contract:client_contract_detail' client_contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% elif original_contract %}
+                        <a href="{% url 'contract:staff_contract_detail' original_contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% else %}
+                        <a href="{% if contract %}{% url 'contract:staff_contract_detail' contract.pk %}{% else %}{% url 'contract:staff_contract_list' %}{% endif %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% endif %}
                 </div>
             </div>
         </form>

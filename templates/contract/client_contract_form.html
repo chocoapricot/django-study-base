@@ -343,7 +343,11 @@
             <div class="row mt-3">
                 <div class="col text-left">
                     <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
-                    <a href="{% if contract %}{% url 'contract:client_contract_detail' contract.pk %}{% else %}{% url 'contract:client_contract_list' %}{% endif %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% if original_contract %}
+                        <a href="{% url 'contract:client_contract_detail' original_contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% else %}
+                        <a href="{% if contract %}{% url 'contract:client_contract_detail' contract.pk %}{% else %}{% url 'contract:client_contract_list' %}{% endif %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% endif %}
                 </div>
             </div>
         </form>
