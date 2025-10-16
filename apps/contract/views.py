@@ -2450,13 +2450,12 @@ def client_teishokubi_list(request):
 
     # 各事業所で現在派遣中のスタッフ数を取得
     for department in departments_page:
-        # この事業所で現在派遣中のスタッフ数を計算
+        # この事業所で現在派遣中のスタッフ数を計算（未来分も含む）
         from datetime import date
         current_assignments = ContractAssignment.objects.filter(
             client_contract__haken_info__haken_office=department,
             client_contract__client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
-            client_contract__start_date__lte=date.today(),
-            client_contract__end_date__gte=date.today()
+            client_contract__end_date__gte=date.today()  # 終了日が今日以降（未来分も含む）
         ).select_related('staff_contract__staff').distinct()
         
         department.current_staff_count = current_assignments.count()
@@ -2553,14 +2552,13 @@ def staff_contract_teishokubi_list(request):
                 item.days_overdue = delta.days
                 item.is_expired = True
 
-        # 現在派遣中かどうかを確認
+        # 現在派遣中かどうかを確認（未来分も含む）
         current_assignments = ContractAssignment.objects.filter(
             staff_contract__staff__email=item.staff_email,
             client_contract__client__corporate_number=item.client_corporate_number,
             client_contract__haken_info__haken_unit__name=item.organization_name,
             client_contract__client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
-            client_contract__start_date__lte=date.today(),
-            client_contract__end_date__gte=date.today()
+            client_contract__end_date__gte=date.today()  # 終了日が今日以降（未来分も含む）
         ).select_related('client_contract').first()
         
         if current_assignments:
