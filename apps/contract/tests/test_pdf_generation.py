@@ -298,6 +298,104 @@ class ContractPdfGenerationTest(TestCase):
         self.assertIn("１．労働者派遣の役務の提供を受ける事業所", text)
         self.assertIn(haken_office.name, text)
         self.assertIn(haken_office.address, text)
+
+    def test_generate_clash_day_notification_pdf_with_notice_date(self):
+        """抵触日通知日が設定されている場合、PDFに通知日が印字されることをテストする"""
+        # 派遣先事業所と抵触日、通知日を設定
+        notice_date = datetime.date(2025, 9, 15)
+        haken_office = ClientDepartment.objects.create(
+            client=self.client,
+            name="名古屋支社",
+            postal_code="450-0002",
+            address="名古屋市中村区名駅４丁目２７−１",
+            is_haken_office=True,
+            haken_jigyosho_teishokubi=datetime.date(2025, 10, 1),
+            haken_jigyosho_teishokubi_notice_date=notice_date
+        )
+        self.haken_info.haken_office = haken_office
+        self.haken_info.save()
+
+        issued_at = datetime.datetime.now(datetime.timezone.utc)
+        pdf_content, _, pdf_title = generate_clash_day_notification_pdf(self.dispatch_contract, self.test_user, issued_at)
+
+        self.assertIsNotNone(pdf_content)
+        self.assertEqual(pdf_title, "抵触日通知書")
+
+        # PDFからテキストを抽出
+        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
+        text = ""
+        for page in pdf_document:
+            text += page.get_text()
+        pdf_document.close()
+
+        # 通知日が印字されていることを確認（年月日のみ）
+        expected_notice_date = "2025年09月15日"
+        self.assertIn(expected_notice_date, text)
+
+    def test_generate_clash_day_notification_pdf_without_notice_date(self):
+        """抵触日通知日が設定されていない場合、PDFに通知日が印字されないことをテストする"""
+        # 派遣先事業所と抵触日を設定（通知日は設定しない）
+        haken_office = ClientDepartment.objects.create(
+            client=self.client,
+            name="名古屋支社",
+            postal_code="450-0002",
+            address="名古屋市中村区名駅４丁目２７−１",
+            is_haken_office=True,
+            haken_jigyosho_teishokubi=datetime.date(2025, 10, 1)
+            # haken_jigyosho_teishokubi_notice_date は設定しない
+        )
+        self.haken_info.haken_office = haken_office
+        self.haken_info.save()
+
+        issued_at = datetime.datetime.now(datetime.timezone.utc)
+        pdf_content, _, pdf_title = generate_clash_day_notification_pdf(self.dispatch_contract, self.test_user, issued_at)
+
+        self.assertIsNotNone(pdf_content)
+        self.assertEqual(pdf_title, "抵触日通知書")
+
+        # PDFからテキストを抽出
+        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
+        text = ""
+        for page in pdf_document:
+            text += page.get_text()
+        pdf_document.close()
+
+        # 通知日が印字されていないことを確認
+        # 特定の通知日フォーマットが含まれていないことを確認
+        self.assertNotIn("2025年09月15日", text)
+
+    def test_generate_clash_day_notification_pdf_from_department_with_notice_date(self):
+        """クライアント組織から直接生成する場合も通知日が印字されることをテストする"""
+        # 通知日を設定したクライアント組織を作成
+        notice_date = datetime.date(2025, 9, 20)
+        department = ClientDepartment.objects.create(
+            client=self.client,
+            name="大阪支社",
+            postal_code="530-0001",
+            address="大阪市北区梅田１丁目１−３",
+            is_haken_office=True,
+            haken_jigyosho_teishokubi=datetime.date(2025, 11, 1),
+            haken_jigyosho_teishokubi_notice_date=notice_date
+        )
+
+        issued_at = datetime.datetime.now(datetime.timezone.utc)
+        pdf_content, _, pdf_title = generate_clash_day_notification_pdf(department, self.test_user, issued_at)
+
+        self.assertIsNotNone(pdf_content)
+        self.assertEqual(pdf_title, "抵触日通知書")
+
+        # PDFからテキストを抽出
+        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
+        text = ""
+        for page in pdf_document:
+            text += page.get_text()
+        pdf_document.close()
+
+        # 通知日が印字されていることを確認（年月日のみ）
+        expected_notice_date = "2025年09月20日"
+        self.assertIn(expected_notice_date, text)
+        # 組織名も確認
+        self.assertIn("大阪支社", text)
         self.assertIn("２．上記事業所の抵触日", text)
         self.assertIn("2025年10月01日", text)
         self.assertIn("３．その他", text)

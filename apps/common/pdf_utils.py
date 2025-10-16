@@ -163,7 +163,8 @@ def generate_article_based_contract_pdf(
     summary_lines,
     body_title_text=None,
     body_items=None,
-    watermark_text=None
+    watermark_text=None,
+    notice_date=None
 ):
     """
     条文ベースの契約書PDFを生成する共通関数。
@@ -179,6 +180,7 @@ def generate_article_based_contract_pdf(
     :param body_title_text: 本文セクションのタイトル（例：「記」）。オプショナル。
     :param body_items: 本文セクションに表示する箇条書きアイテムのリスト。オプショナル。
     :param watermark_text: 透かしとして表示する文字列（オプショナル）
+    :param notice_date: 右上に印字する通知日（オプショナル）
     """
     # --- フォントとスタイルの設定 ---
     font_path = 'statics/fonts/ipagp.ttf'
@@ -196,7 +198,23 @@ def generate_article_based_contract_pdf(
     def build_story():
         story = []
 
-        # --- ヘッダー: 宛先と送付元 ---
+        # --- ヘッダー: 通知日（一番右上）と宛先・送付元 ---
+        if notice_date:
+            # 通知日を一番右上に配置
+            notice_date_table = Table(
+                [['', '', Paragraph(notice_date, styles['StructAddress'])]],
+                colWidths=['40%', '40%', '20%']
+            )
+            notice_date_table.setStyle(TableStyle([
+                ('ALIGN', (2, 0), (2, 0), 'RIGHT'),
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+            ]))
+            story.append(notice_date_table)
+            story.append(Spacer(1, 0.5 * cm))
+
+        # 宛先と送付元
         if to_address_lines and from_address_lines:
             to_address_flowables = [Paragraph(line.replace('\n', '<br/>'), styles['StructAddress']) for line in to_address_lines]
             from_address_flowables = [Paragraph(line.replace('\n', '<br/>'), styles['StructAddress']) for line in from_address_lines]

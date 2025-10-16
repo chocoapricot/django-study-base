@@ -431,6 +431,9 @@ def generate_clash_day_notification_pdf(source_obj, user, issued_at, watermark_t
     # --- データ取得 ---
     company = Company.objects.first()
 
+    # 通知日の取得
+    notice_date = None
+    
     if isinstance(source_obj, ClientContract):
         contract = source_obj
         client = contract.client
@@ -438,6 +441,8 @@ def generate_clash_day_notification_pdf(source_obj, user, issued_at, watermark_t
         responsible_person = haken_info.responsible_person_client
         haken_office = haken_info.haken_office
         clash_date = haken_office.haken_jigyosho_teishokubi if haken_office else None
+        # 通知日を取得（クライアント組織に設定されている場合）
+        notice_date = haken_office.haken_jigyosho_teishokubi_notice_date if haken_office else None
         # 送付元 (右) - 契約書から
         client_name_text = f"{client.name}"
         person_text = ""
@@ -455,6 +460,8 @@ def generate_clash_day_notification_pdf(source_obj, user, issued_at, watermark_t
         client = department.client
         haken_office = department
         clash_date = department.haken_jigyosho_teishokubi
+        # 通知日を取得（クライアント組織に設定されている場合）
+        notice_date = department.haken_jigyosho_teishokubi_notice_date
         # 送付元 (右) - 組織情報から
         from_address_lines = [
             "（派遣先）",
@@ -505,6 +512,11 @@ def generate_clash_day_notification_pdf(source_obj, user, issued_at, watermark_t
     body_items.append(item3_text)
 
     # --- PDF生成 ---
+    # 通知日を日本語形式でフォーマット
+    notice_date_str = None
+    if notice_date:
+        notice_date_str = notice_date.strftime('%Y年%m月%d日')
+    
     generate_article_based_contract_pdf(
         buffer,
         meta_title=pdf_title,
@@ -514,7 +526,8 @@ def generate_clash_day_notification_pdf(source_obj, user, issued_at, watermark_t
         summary_lines=summary_lines,
         body_title_text=body_title,
         body_items=body_items,
-        watermark_text=watermark_text
+        watermark_text=watermark_text,
+        notice_date=notice_date_str
     )
 
     pdf_content = buffer.getvalue()
