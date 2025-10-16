@@ -54,10 +54,10 @@
                 </select>
             </div>
             <div class="input-group me-2 mb-2" style="width: 12em;">
-                <select name="contract_pattern" class="form-select form-select-sm">
-                    <option value="">契約書パターン（全て）</option>
-                    {% for pattern in contract_pattern_list %}
-                    <option value="{{ pattern.pk }}" {% if contract_pattern_filter == pattern.pk|stringformat:"s" %}selected{% endif %}>{{ pattern.name }}</option>
+                <select name="employment_type" class="form-select form-select-sm">
+                    <option value="">雇用形態（全て）</option>
+                    {% for employment_type in employment_type_list %}
+                    <option value="{{ employment_type.pk }}" {% if employment_type_filter == employment_type.pk|stringformat:"s" %}selected{% endif %}>{{ employment_type.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -78,7 +78,7 @@
             function resetForm() {
                 document.querySelector('input[name=q]').value = '';
                 document.querySelector('select[name=status]').value = '';
-                document.querySelector('select[name=contract_pattern]').value = '';
+                document.querySelector('select[name=employment_type]').value = '';
                 {% if staff_filter %}
                     window.location.href = '{% url "contract:staff_contract_list" %}?staff={{ staff_filter }}';
                 {% else %}
@@ -101,9 +101,9 @@
                         params.append('status', statusSelect.value);
                     }
 
-                    const patternSelect = document.querySelector('select[name="contract_pattern"]');
-                    if (patternSelect && patternSelect.value) {
-                        params.append('contract_pattern', patternSelect.value);
+                    const employmentTypeSelect = document.querySelector('select[name="employment_type"]');
+                    if (employmentTypeSelect && employmentTypeSelect.value) {
+                        params.append('employment_type', employmentTypeSelect.value);
                     }
 
                     if ('{{ staff_filter }}') {

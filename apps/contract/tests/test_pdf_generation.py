@@ -397,7 +397,7 @@ class ContractPdfGenerationTest(TestCase):
         # 組織名も確認
         self.assertIn("大阪支社", text)
         self.assertIn("２．上記事業所の抵触日", text)
-        self.assertIn("2025年10月01日", text)
+        self.assertIn("2025年11月01日", text)  # 実際に設定した抵触日に修正
         self.assertIn("３．その他", text)
         self.assertIn("事業所単位の派遣可能期間を延長した場合は", text)
 

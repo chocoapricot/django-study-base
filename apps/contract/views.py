@@ -506,9 +506,9 @@ def staff_contract_list(request):
     search_query = request.GET.get('q', '')
     status_filter = request.GET.get('status', '')
     staff_filter = request.GET.get('staff', '')  # スタッフフィルタを追加
-    contract_pattern_filter = request.GET.get('contract_pattern', '')
+    employment_type_filter = request.GET.get('employment_type', '')
     
-    contracts = StaffContract.objects.select_related('staff', 'contract_pattern').annotate(
+    contracts = StaffContract.objects.select_related('staff', 'employment_type').annotate(
         client_contract_count=Count('client_contracts')
     )
     
@@ -529,15 +529,16 @@ def staff_contract_list(request):
     if status_filter:
         contracts = contracts.filter(contract_status=status_filter)
 
-    # 契約書パターンフィルタを適用
-    if contract_pattern_filter:
-        contracts = contracts.filter(contract_pattern_id=contract_pattern_filter)
+    # 雇用形態フィルタを適用
+    if employment_type_filter:
+        contracts = contracts.filter(employment_type_id=employment_type_filter)
 
     contracts = contracts.order_by('-start_date', 'staff__name_last', 'staff__name_first')
 
     # 契約状況のドロップダウンリストを取得
     contract_status_list = [{'value': d.value, 'name': d.name} for d in Dropdowns.objects.filter(category='contract_status', active=True).order_by('disp_seq')]
-    contract_pattern_list = ContractPattern.objects.filter(domain=Constants.DOMAIN.STAFF)
+    from apps.master.models import EmploymentType
+    employment_type_list = EmploymentType.objects.filter(is_active=True).order_by('display_order')
     
     # ページネーション
     paginator = Paginator(contracts, 20)
@@ -616,8 +617,8 @@ def staff_contract_list(request):
         'staff_filter': staff_filter,
         'filtered_staff': filtered_staff,
         'contract_status_list': contract_status_list,
-        'contract_pattern_filter': contract_pattern_filter,
-        'contract_pattern_list': contract_pattern_list,
+        'employment_type_filter': employment_type_filter,
+        'employment_type_list': employment_type_list,
     }
     return render(request, 'contract/staff_contract_list.html', context)
 
@@ -1939,10 +1940,10 @@ def staff_contract_export(request):
     search_query = request.GET.get('q', '')
     status_filter = request.GET.get('status', '')
     staff_filter = request.GET.get('staff', '')
-    contract_pattern_filter = request.GET.get('contract_pattern', '')
+    employment_type_filter = request.GET.get('employment_type', '')
     format_type = request.GET.get('format', 'csv')
 
-    contracts = StaffContract.objects.select_related('staff', 'contract_pattern').all()
+    contracts = StaffContract.objects.select_related('staff', 'employment_type').all()
 
     if staff_filter:
         contracts = contracts.filter(staff_id=staff_filter)
@@ -1955,8 +1956,8 @@ def staff_contract_export(request):
         )
     if status_filter:
         contracts = contracts.filter(contract_status=status_filter)
-    if contract_pattern_filter:
-        contracts = contracts.filter(contract_pattern_id=contract_pattern_filter)
+    if employment_type_filter:
+        contracts = contracts.filter(employment_type_id=employment_type_filter)
 
     contracts = contracts.order_by('-start_date', 'staff__name_last', 'staff__name_first')
 
