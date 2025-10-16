@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load static %}
+{% load humanize %}
 {% load dropdowns %}
 {% load badge_tags %}
 {% block content %}
@@ -602,8 +603,9 @@ document.addEventListener('DOMContentLoaded', function() {
             <thead>
                 <tr>
                     <th>契約名</th>
-                    <th>契約書パターン</th>
+                    <th>契約種別</th>
                     <th>契約期間</th>
+                    <th>単価</th>
                     <th>状況</th>
                     <th>作成者</th>
                 </tr>
@@ -617,7 +619,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         </a>
                     </td>
                     <td>
-                        {{ contract.contract_pattern.name|default:"-" }}
+                        {% if contract.employment_type %}
+                            <span class="badge {{ contract.employment_type.display_order|badge_class }}">{{ contract.employment_type.name }}</span>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
                     </td>
                     <td>
                         {{ contract.start_date|date:'Y/m/d' }}
@@ -625,6 +631,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             ～ {{ contract.end_date|date:'Y/m/d' }}
                         {% else %}
                             ～ 無期限
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if contract.contract_amount %}
+                            {% if contract.pay_unit %}{% my_name 'pay_unit' contract.pay_unit %}&nbsp;{% endif %}{{ contract.contract_amount|floatformat:0|intcomma }}円
+                        {% else %}
+                            <span class="text-muted">-</span>
                         {% endif %}
                     </td>
                     <td>
