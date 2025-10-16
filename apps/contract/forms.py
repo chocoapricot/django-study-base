@@ -459,6 +459,8 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         from apps.master.models import ContractPattern, JobCategory
         self.fields['job_category'].queryset = JobCategory.objects.filter(is_active=True)
         self.fields['contract_pattern'].queryset = ContractPattern.objects.filter(is_active=True, domain=Constants.DOMAIN.STAFF)
+        self.fields['contract_pattern'].required = True
+        self.fields['contract_pattern'].empty_label = '契約書パターンを選択してください'
         if self.instance and self.instance.pk and hasattr(self.instance, 'staff') and self.instance.staff:
             self.fields['staff_display'].initial = f"{self.instance.staff.name_last} {self.instance.staff.name_first}"
 
