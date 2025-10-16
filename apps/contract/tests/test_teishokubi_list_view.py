@@ -65,26 +65,24 @@ class StaffContractTeishokubiListViewTest(TestCase):
         self.client.login(username='testuser', password='testpass123')
 
     def test_teishokubi_list_view_displays_names_and_links(self):
-        """一覧にスタッフ名とクライアント名が表示され、リンクが正しいかテスト"""
+        """一覧にスタッフ名とクライアント名が表示され、詳細リンクが正しいかテスト"""
         url = reverse('contract:staff_contract_teishokubi_list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        # Staff 1
-        staff1_url = reverse('staff:staff_detail', kwargs={'pk': self.staff1.pk})
-        self.assertContains(response, f'<a href="{staff1_url}">{self.staff1.name}</a>')
+        # スタッフ名が表示されることを確認
+        self.assertContains(response, self.staff1.name)
+        self.assertContains(response, self.staff2.name)
 
-        # Client 1
-        client1_url = reverse('client:client_detail', kwargs={'pk': self.client1.pk})
-        self.assertContains(response, f'<a href="{client1_url}">{self.client1.name}</a>')
+        # クライアント名が表示されることを確認
+        self.assertContains(response, self.client1.name)
+        self.assertContains(response, self.client2.name)
 
-        # Staff 2
-        staff2_url = reverse('staff:staff_detail', kwargs={'pk': self.staff2.pk})
-        self.assertContains(response, f'<a href="{staff2_url}">{self.staff2.name}</a>')
-
-        # Client 2
-        client2_url = reverse('client:client_detail', kwargs={'pk': self.client2.pk})
-        self.assertContains(response, f'<a href="{client2_url}">{self.client2.name}</a>')
+        # 詳細ページへのリンクが存在することを確認
+        teishokubi1_detail_url = reverse('contract:staff_contract_teishokubi_detail', kwargs={'pk': self.teishokubi1.pk})
+        teishokubi2_detail_url = reverse('contract:staff_contract_teishokubi_detail', kwargs={'pk': self.teishokubi2.pk})
+        self.assertContains(response, f'href="{teishokubi1_detail_url}"')
+        self.assertContains(response, f'href="{teishokubi2_detail_url}"')
 
     def test_search_by_staff_name(self):
         """スタッフ名で検索できるかテスト"""
