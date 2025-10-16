@@ -68,6 +68,13 @@
                     {% endfor %}
                 </select>
             </div>
+            <div class="input-group me-2 mb-2" style="width: 12em;">
+                <select name="date_filter" class="form-select form-select-sm">
+                    <option value="">すべて</option>
+                    <option value="today" {% if date_filter == 'today' %}selected{% endif %}>本日</option>
+                    <option value="future" {% if date_filter == 'future' %}selected{% endif %}>本日以降</option>
+                </select>
+            </div>
             <div class="btn-group me-2 mb-2" role="group">
                 <button class="btn btn-primary btn-sm" type="submit">検索</button>
                 <button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
@@ -88,6 +95,7 @@
                 if (document.querySelector("select[name='contract_type']")) {
                     document.querySelector("select[name='contract_type']").value = '';
                 }
+                document.querySelector('select[name=date_filter]').value = '';
                 {% if client_filter %}
                     window.location.href = '{% url "contract:client_contract_list" %}?client={{ client_filter }}';
                 {% else %}
@@ -110,9 +118,14 @@
                         params.append('status', statusSelect.value);
                     }
 
-                    const patternSelect = document.querySelector('select[name="contract_pattern"]');
-                    if (patternSelect && patternSelect.value) {
-                        params.append('contract_pattern', patternSelect.value);
+                    const contractTypeSelect = document.querySelector('select[name="contract_type"]');
+                    if (contractTypeSelect && contractTypeSelect.value) {
+                        params.append('contract_type', contractTypeSelect.value);
+                    }
+
+                    const dateFilterSelect = document.querySelector('select[name="date_filter"]');
+                    if (dateFilterSelect && dateFilterSelect.value) {
+                        params.append('date_filter', dateFilterSelect.value);
                     }
 
                     if ('{{ client_filter }}') {

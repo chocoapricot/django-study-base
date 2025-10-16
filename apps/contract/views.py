@@ -71,6 +71,7 @@ def client_contract_list(request):
     status_filter = request.GET.get('status', '')
     client_filter = request.GET.get('client', '')
     contract_type_filter = request.GET.get('contract_type', '')
+    date_filter = request.GET.get('date_filter', '')  # 日付フィルタを追加
 
     contracts = ClientContract.objects.select_related('client', 'haken_info__ttp_info').annotate(
         staff_contract_count=Count('staff_contracts')
@@ -91,6 +92,22 @@ def client_contract_list(request):
 
     if contract_type_filter:
         contracts = contracts.filter(client_contract_type_code=contract_type_filter)
+
+    # 日付フィルタを適用
+    if date_filter:
+        today = date.today()
+        if date_filter == 'today':
+            # 本日が契約期間に含まれているもの
+            contracts = contracts.filter(
+                start_date__lte=today
+            ).filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True)
+            )
+        elif date_filter == 'future':
+            # 本日以降に契約終了があるもの（無期限契約も含む）
+            contracts = contracts.filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True)
+            )
 
     contracts = contracts.order_by('-start_date', 'client__name')
 
@@ -160,6 +177,7 @@ def client_contract_list(request):
         'contract_status_list': contract_status_list,
         'contract_type_filter': contract_type_filter,
         'client_contract_type_list': client_contract_type_list,
+        'date_filter': date_filter,
     }
     return render(request, 'contract/client_contract_list.html', context)
 
@@ -508,6 +526,7 @@ def staff_contract_list(request):
     status_filter = request.GET.get('status', '')
     staff_filter = request.GET.get('staff', '')  # スタッフフィルタを追加
     employment_type_filter = request.GET.get('employment_type', '')
+    date_filter = request.GET.get('date_filter', '')  # 日付フィルタを追加
     
     contracts = StaffContract.objects.select_related('staff', 'employment_type').annotate(
         client_contract_count=Count('client_contracts')
@@ -533,6 +552,22 @@ def staff_contract_list(request):
     # 雇用形態フィルタを適用
     if employment_type_filter:
         contracts = contracts.filter(employment_type_id=employment_type_filter)
+
+    # 日付フィルタを適用
+    if date_filter:
+        today = date.today()
+        if date_filter == 'today':
+            # 本日が契約期間に含まれているもの
+            contracts = contracts.filter(
+                start_date__lte=today
+            ).filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True)
+            )
+        elif date_filter == 'future':
+            # 本日以降に契約終了があるもの（無期限契約も含む）
+            contracts = contracts.filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True)
+            )
 
     contracts = contracts.order_by('-start_date', 'staff__name_last', 'staff__name_first')
 
@@ -620,6 +655,7 @@ def staff_contract_list(request):
         'contract_status_list': contract_status_list,
         'employment_type_filter': employment_type_filter,
         'employment_type_list': employment_type_list,
+        'date_filter': date_filter,
     }
     return render(request, 'contract/staff_contract_list.html', context)
 
@@ -1765,10 +1801,11 @@ def client_contract_export(request):
     search_query = request.GET.get('q', '')
     status_filter = request.GET.get('status', '')
     client_filter = request.GET.get('client', '')
-    contract_pattern_filter = request.GET.get('contract_pattern', '')
+    contract_type_filter = request.GET.get('contract_type', '')
+    date_filter = request.GET.get('date_filter', '')
     format_type = request.GET.get('format', 'csv')
 
-    contracts = ClientContract.objects.select_related('client', 'contract_pattern').all()
+    contracts = ClientContract.objects.select_related('client', 'haken_info__ttp_info').all()
 
     if client_filter:
         contracts = contracts.filter(client_id=client_filter)
@@ -1780,8 +1817,24 @@ def client_contract_export(request):
         )
     if status_filter:
         contracts = contracts.filter(contract_status=status_filter)
-    if contract_pattern_filter:
-        contracts = contracts.filter(contract_pattern_id=contract_pattern_filter)
+    if contract_type_filter:
+        contracts = contracts.filter(client_contract_type_code=contract_type_filter)
+    
+    # 日付フィルタを適用
+    if date_filter:
+        today = date.today()
+        if date_filter == 'today':
+            # 本日が契約期間に含まれているもの
+            contracts = contracts.filter(
+                start_date__lte=today
+            ).filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True)
+            )
+        elif date_filter == 'future':
+            # 本日以降に契約終了があるもの（無期限契約も含む）
+            contracts = contracts.filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True)
+            )
 
     contracts = contracts.order_by('-start_date', 'client__name')
 
@@ -1990,6 +2043,7 @@ def staff_contract_export(request):
     status_filter = request.GET.get('status', '')
     staff_filter = request.GET.get('staff', '')
     employment_type_filter = request.GET.get('employment_type', '')
+    date_filter = request.GET.get('date_filter', '')
     format_type = request.GET.get('format', 'csv')
 
     contracts = StaffContract.objects.select_related('staff', 'employment_type').all()
@@ -2007,6 +2061,22 @@ def staff_contract_export(request):
         contracts = contracts.filter(contract_status=status_filter)
     if employment_type_filter:
         contracts = contracts.filter(employment_type_id=employment_type_filter)
+    
+    # 日付フィルタを適用
+    if date_filter:
+        today = date.today()
+        if date_filter == 'today':
+            # 本日が契約期間に含まれているもの
+            contracts = contracts.filter(
+                start_date__lte=today
+            ).filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True)
+            )
+        elif date_filter == 'future':
+            # 本日以降に契約終了があるもの（無期限契約も含む）
+            contracts = contracts.filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True)
+            )
 
     contracts = contracts.order_by('-start_date', 'staff__name_last', 'staff__name_first')
 
