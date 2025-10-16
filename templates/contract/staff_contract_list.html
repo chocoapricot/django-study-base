@@ -88,9 +88,9 @@
                 document.querySelector('select[name=employment_type]').value = '';
                 document.querySelector('select[name=date_filter]').value = '';
                 {% if staff_filter %}
-                    window.location.href = '{% url "contract:staff_contract_list" %}?staff={{ staff_filter }}';
+                    window.location.href = '{% url "contract:staff_contract_list" %}?staff={{ staff_filter }}&reset_filter=1';
                 {% else %}
-                    window.location.href = '{% url "contract:staff_contract_list" %}';
+                    window.location.href = '{% url "contract:staff_contract_list" %}?reset_filter=1';
                 {% endif %}
             }
 

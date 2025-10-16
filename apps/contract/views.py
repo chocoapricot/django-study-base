@@ -71,7 +71,13 @@ def client_contract_list(request):
     status_filter = request.GET.get('status', '')
     client_filter = request.GET.get('client', '')
     contract_type_filter = request.GET.get('contract_type', '')
-    date_filter = request.GET.get('date_filter', '')  # 日付フィルタを追加
+    
+    # 日付フィルタの初期値設定：リセットボタンが押された場合は空、それ以外は「本日以降」
+    reset_filter = request.GET.get('reset_filter', '')
+    if reset_filter:
+        date_filter = ''  # リセット時は「すべて」
+    else:
+        date_filter = request.GET.get('date_filter', 'future')  # 初期値は「本日以降」
 
     contracts = ClientContract.objects.select_related('client', 'haken_info__ttp_info').annotate(
         staff_contract_count=Count('staff_contracts')
@@ -650,7 +656,13 @@ def staff_contract_list(request):
     status_filter = request.GET.get('status', '')
     staff_filter = request.GET.get('staff', '')  # スタッフフィルタを追加
     employment_type_filter = request.GET.get('employment_type', '')
-    date_filter = request.GET.get('date_filter', '')  # 日付フィルタを追加
+    
+    # 日付フィルタの初期値設定：リセットボタンが押された場合は空、それ以外は「本日以降」
+    reset_filter = request.GET.get('reset_filter', '')
+    if reset_filter:
+        date_filter = ''  # リセット時は「すべて」
+    else:
+        date_filter = request.GET.get('date_filter', 'future')  # 初期値は「本日以降」
     
     contracts = StaffContract.objects.select_related('staff', 'employment_type').annotate(
         client_contract_count=Count('client_contracts')
@@ -943,6 +955,8 @@ def staff_contract_create(request):
                                 updated_by=request.user
                             )
                             messages.success(request, f'スタッフ契約「{contract.contract_name}」を作成し、クライアント契約「{client_contract_for_assignment.contract_name}」に割り当てました。')
+                            # クライアント契約詳細に遷移
+                            return redirect('contract:client_contract_detail', pk=client_contract_id)
                         except ClientContract.DoesNotExist:
                             messages.success(request, f'スタッフ契約「{contract.contract_name}」を作成しました。')
                     else:
