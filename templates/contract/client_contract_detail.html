@@ -20,6 +20,7 @@
                             <li><a class="dropdown-item" href="{% url 'contract:client_contract_create' %}?copy_from={{ contract.pk }}">コピー</a></li>
                             {% if not contract.haken_info.ttp_info %}
                             <li><a class="dropdown-item" href="{% url 'contract:client_contract_create' %}?extend_from={{ contract.pk }}">延長</a></li>
+                            <li><a class="dropdown-item" href="{% url 'contract:client_contract_extend' contract.pk %}">期間延長</a></li>
                             {% endif %}
                         </ul>
                     </div>

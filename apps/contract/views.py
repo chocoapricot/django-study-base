@@ -517,6 +517,130 @@ def client_contract_delete(request, pk):
     return render(request, 'contract/client_contract_delete.html', context)
 
 
+@login_required
+@permission_required('contract.add_clientcontract', raise_exception=True)
+def client_contract_extend(request, pk):
+    """クライアント契約期間延長"""
+    original_contract = get_object_or_404(ClientContract, pk=pk)
+    
+    if request.method == 'POST':
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        inherit_staff_contracts = request.POST.get('inherit_staff_contracts') == 'on'
+        
+        if not start_date or not end_date:
+            messages.error(request, '契約開始日と契約終了日を入力してください。')
+        else:
+            try:
+                with transaction.atomic():
+                    # 元の契約をコピーして新しい契約を作成
+                    new_contract = ClientContract()
+                    
+                    # 元の契約の情報をコピー（IDと日付関連フィールドを除く）
+                    exclude_fields = ['id', 'pk', 'contract_number', 'contract_status', 
+                                    'created_at', 'created_by', 'updated_at', 'updated_by', 
+                                    'approved_at', 'approved_by', 'issued_at', 'issued_by', 
+                                    'confirmed_at', 'start_date', 'end_date']
+                    
+                    for field in original_contract._meta.fields:
+                        if field.name not in exclude_fields:
+                            setattr(new_contract, field.name, getattr(original_contract, field.name))
+                    
+                    # 期間延長用の設定
+                    new_contract.start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+                    new_contract.end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+                    new_contract.contract_status = Constants.CONTRACT_STATUS.DRAFT
+                    new_contract.contract_number = None
+                    new_contract.created_by = request.user
+                    new_contract.updated_by = request.user
+                    
+                    new_contract.save()
+                    
+                    # 派遣情報がある場合はコピー
+                    if hasattr(original_contract, 'haken_info') and original_contract.haken_info:
+                        from .models import ClientContractHaken
+                        new_haken_info = ClientContractHaken()
+                        
+                        haken_exclude_fields = ['id', 'pk', 'client_contract', 'created_at', 'created_by', 'updated_at', 'updated_by']
+                        for field in original_contract.haken_info._meta.fields:
+                            if field.name not in haken_exclude_fields:
+                                setattr(new_haken_info, field.name, getattr(original_contract.haken_info, field.name))
+                        
+                        new_haken_info.client_contract = new_contract
+                        new_haken_info.created_by = request.user
+                        new_haken_info.updated_by = request.user
+                        new_haken_info.save()
+                    
+                    # 割当済みのスタッフ契約を引き継ぐ場合
+                    if inherit_staff_contracts:
+                        # 元契約の終了日と同じ終了日を持つスタッフ契約を取得
+                        target_staff_contracts = StaffContract.objects.filter(
+                            client_contracts=original_contract,
+                            end_date=original_contract.end_date
+                        )
+                        
+                        for staff_contract in target_staff_contracts:
+                            # スタッフ契約をコピー
+                            new_staff_contract = StaffContract()
+                            
+                            staff_exclude_fields = ['id', 'pk', 'contract_number', 'contract_status', 
+                                                  'created_at', 'created_by', 'updated_at', 'updated_by', 
+                                                  'approved_at', 'approved_by', 'issued_at', 'issued_by', 
+                                                  'confirmed_at', 'start_date', 'end_date']
+                            
+                            for field in staff_contract._meta.fields:
+                                if field.name not in staff_exclude_fields:
+                                    setattr(new_staff_contract, field.name, getattr(staff_contract, field.name))
+                            
+                            # 期間を新しいクライアント契約と同じに設定
+                            new_staff_contract.start_date = new_contract.start_date
+                            new_staff_contract.end_date = new_contract.end_date
+                            new_staff_contract.contract_status = Constants.CONTRACT_STATUS.DRAFT
+                            new_staff_contract.contract_number = None
+                            new_staff_contract.created_by = request.user
+                            new_staff_contract.updated_by = request.user
+                            
+                            new_staff_contract.save()
+                            
+                            # 新しいクライアント契約と新しいスタッフ契約をアサイン
+                            ContractAssignment.objects.create(
+                                client_contract=new_contract,
+                                staff_contract=new_staff_contract,
+                                created_by=request.user,
+                                updated_by=request.user
+                            )
+                    
+                    if inherit_staff_contracts and target_staff_contracts.exists():
+                        messages.success(request, f'クライアント契約「{new_contract.contract_name}」の期間延長契約を作成し、{target_staff_contracts.count()}件のスタッフ契約も延長しました。')
+                    else:
+                        messages.success(request, f'クライアント契約「{new_contract.contract_name}」の期間延長契約を作成しました。')
+                    
+                    return redirect('contract:client_contract_detail', pk=new_contract.pk)
+                    
+            except ValueError:
+                messages.error(request, '日付の形式が正しくありません。')
+            except Exception as e:
+                messages.error(request, f'保存中にエラーが発生しました: {e}')
+    
+    # 契約開始日のデフォルト値（元契約の終了日の翌日）
+    from datetime import timedelta
+    default_start_date = original_contract.end_date + timedelta(days=1)
+    
+    # 割当済みのスタッフ契約で、元契約の終了日と同じ終了日を持つものを取得
+    extendable_staff_contracts = StaffContract.objects.filter(
+        client_contracts=original_contract,
+        end_date=original_contract.end_date
+    ).select_related('staff')
+    
+    context = {
+        'original_contract': original_contract,
+        'default_start_date': default_start_date,
+        'extendable_staff_contracts': extendable_staff_contracts,
+        'title': 'クライアント契約期間延長',
+    }
+    return render(request, 'contract/client_contract_extend.html', context)
+
+
 # スタッフ契約管理
 @login_required
 @permission_required('contract.view_staffcontract', raise_exception=True)
@@ -939,6 +1063,73 @@ def staff_contract_delete(request, pk):
         'contract': contract,
     }
     return render(request, 'contract/staff_contract_delete.html', context)
+
+
+@login_required
+@permission_required('contract.add_staffcontract', raise_exception=True)
+def staff_contract_extend(request, pk):
+    """スタッフ契約期間延長"""
+    original_contract = get_object_or_404(StaffContract, pk=pk)
+    
+    # 終了日が設定されていない契約は延長できない
+    if not original_contract.end_date:
+        messages.error(request, '終了日が設定されていない契約は期間延長できません。')
+        return redirect('contract:staff_contract_detail', pk=pk)
+    
+    if request.method == 'POST':
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        
+        if not start_date:
+            messages.error(request, '契約開始日を入力してください。')
+        else:
+            try:
+                with transaction.atomic():
+                    # 元の契約をコピーして新しい契約を作成
+                    new_contract = StaffContract()
+                    
+                    # 元の契約の情報をコピー（IDと日付関連フィールドを除く）
+                    exclude_fields = ['id', 'pk', 'contract_number', 'contract_status', 
+                                    'created_at', 'created_by', 'updated_at', 'updated_by', 
+                                    'approved_at', 'approved_by', 'issued_at', 'issued_by', 
+                                    'confirmed_at', 'start_date', 'end_date']
+                    
+                    for field in original_contract._meta.fields:
+                        if field.name not in exclude_fields:
+                            setattr(new_contract, field.name, getattr(original_contract, field.name))
+                    
+                    # 期間延長用の設定
+                    new_contract.start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+                    if end_date:
+                        new_contract.end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+                    else:
+                        new_contract.end_date = None
+                    
+                    new_contract.contract_status = Constants.CONTRACT_STATUS.DRAFT
+                    new_contract.contract_number = None
+                    new_contract.created_by = request.user
+                    new_contract.updated_by = request.user
+                    
+                    new_contract.save()
+                    
+                    messages.success(request, f'スタッフ契約「{new_contract.contract_name}」の期間延長契約を作成しました。')
+                    return redirect('contract:staff_contract_detail', pk=new_contract.pk)
+                    
+            except ValueError:
+                messages.error(request, '日付の形式が正しくありません。')
+            except Exception as e:
+                messages.error(request, f'保存中にエラーが発生しました: {e}')
+    
+    # 契約開始日のデフォルト値（元契約の終了日の翌日）
+    from datetime import timedelta
+    default_start_date = original_contract.end_date + timedelta(days=1)
+    
+    context = {
+        'original_contract': original_contract,
+        'default_start_date': default_start_date,
+        'title': 'スタッフ契約期間延長',
+    }
+    return render(request, 'contract/staff_contract_extend.html', context)
 
 
 # 選択用ビュー

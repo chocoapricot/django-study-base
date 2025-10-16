@@ -1,0 +1,98 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+{% load help_tags %}
+{% load humanize %}
+{% load dropdowns %}
+{% load badge_tags %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <!-- 元契約の基本情報カード -->
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header">
+                延長元契約の基本情報
+            </div>
+            <div class="card-body">
+                {% with contract=original_contract %}
+                    {% include 'contract/_staff_contract_header.html' %}
+                {% endwith %}
+            </div>
+        </div>
+
+        <!-- 期間延長フォーム -->
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header">
+                {{ title }}
+            </div>
+            <div class="card-body">
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- 契約開始日 -->
+                    <div class="row mb-3 align-items-center">
+                        <label for="start_date" class="col-sm-2 col-form-label" style="text-align:right">契約開始日 <span class="text-danger">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="date" class="form-control form-control-sm" id="start_date" name="start_date" value="{{ default_start_date|date:'Y-m-d' }}" required>
+                        </div>
+                        <div class="col-sm-6">
+                            <small class="text-muted">元契約の終了日の翌日が設定されています</small>
+                        </div>
+                    </div>
+
+                    <!-- 契約終了日 -->
+                    <div class="row mb-3 align-items-center">
+                        <label for="end_date" class="col-sm-2 col-form-label" style="text-align:right">契約終了日</label>
+                        <div class="col-sm-4">
+                            <input type="date" class="form-control form-control-sm" id="end_date" name="end_date">
+                        </div>
+                        <div class="col-sm-6">
+                            <button type="button" class="btn btn-sm btn-secondary me-2" onclick="setEndDate(1)">1ヶ月</button>
+                            <button type="button" class="btn btn-sm btn-secondary me-2" onclick="setEndDate(3)">3ヶ月</button>
+                            <button type="button" class="btn btn-sm btn-secondary" onclick="setEndDate(6)">6ヶ月</button>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col text-left">
+                            <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
+                            <a href="{% url 'contract:staff_contract_detail' original_contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function setEndDate(months) {
+    const startDateInput = document.getElementById('start_date');
+    const endDateInput = document.getElementById('end_date');
+    
+    if (startDateInput.value) {
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(startDate);
+        endDate.setMonth(endDate.getMonth() + months);
+        endDate.setDate(endDate.getDate() - 1); // 1日前にして期間を正確にする
+        
+        const year = endDate.getFullYear();
+        const month = String(endDate.getMonth() + 1).padStart(2, '0');
+        const day = String(endDate.getDate()).padStart(2, '0');
+        
+        endDateInput.value = `${year}-${month}-${day}`;
+    } else {
+        alert('契約開始日を先に入力してください。');
+    }
+}
+
+// 契約開始日が変更された時に終了日をクリア
+document.getElementById('start_date').addEventListener('change', function() {
+    document.getElementById('end_date').value = '';
+});
+</script>
+
+{% endblock %}
