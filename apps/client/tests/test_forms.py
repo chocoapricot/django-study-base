@@ -309,6 +309,16 @@ class ClientDepartmentFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('haken_jigyosho_teishokubi', form.errors)
 
+        # ケース2: is_haken_officeがFalseなのに、事業所抵触日通知日が入力されている
+        data = self.base_data.copy()
+        data.update({
+            'is_haken_office': False,
+            'haken_jigyosho_teishokubi_notice_date': datetime.date.today(),
+        })
+        form = ClientDepartmentForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('haken_jigyosho_teishokubi_notice_date', form.errors)
+
 
         # ケース3: is_haken_unitがFalseなのに、役職が入力されている
         data = self.base_data.copy()
@@ -329,3 +339,40 @@ class ClientDepartmentFormTest(TestCase):
         form = ClientDepartmentForm(data=data)
         self.assertFalse(form.is_valid())
         self.assertIn('haken_unit_manager_title', form.errors)
+
+    def test_haken_jigyosho_teishokubi_notice_date_validation(self):
+        """事業所抵触日通知日のバリデーションテスト"""
+        # 正常系: 事業所抵触日と通知日の両方が入力されている
+        data = self.base_data.copy()
+        data.update({
+            'is_haken_office': True,
+            'haken_jigyosho_teishokubi': datetime.date.today(),
+            'haken_jigyosho_teishokubi_notice_date': datetime.date.today(),
+        })
+        form = ClientDepartmentForm(data=data)
+        self.assertTrue(form.is_valid(), f"Valid case failed: {form.errors.as_json()}")
+
+        # 正常系: 事業所抵触日のみ入力（通知日は空）
+        data = self.base_data.copy()
+        data.update({
+            'is_haken_office': True,
+            'haken_jigyosho_teishokubi': datetime.date.today(),
+            'haken_jigyosho_teishokubi_notice_date': '',
+        })
+        form = ClientDepartmentForm(data=data)
+        self.assertTrue(form.is_valid(), f"Valid case failed: {form.errors.as_json()}")
+
+        # 異常系: 通知日のみ入力（事業所抵触日が空）
+        data = self.base_data.copy()
+        data.update({
+            'is_haken_office': True,
+            'haken_jigyosho_teishokubi': '',
+            'haken_jigyosho_teishokubi_notice_date': datetime.date.today(),
+        })
+        form = ClientDepartmentForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('haken_jigyosho_teishokubi_notice_date', form.errors)
+        self.assertEqual(
+            form.errors['haken_jigyosho_teishokubi_notice_date'][0],
+            '事業所抵触日通知日を入力する場合は、事業所抵触日も入力してください。'
+        )

@@ -104,12 +104,20 @@ class ClientDepartmentForm(forms.ModelForm):
         cleaned_data = super().clean()
         is_haken_office = cleaned_data.get('is_haken_office')
         haken_jigyosho_teishokubi = cleaned_data.get('haken_jigyosho_teishokubi')
+        haken_jigyosho_teishokubi_notice_date = cleaned_data.get('haken_jigyosho_teishokubi_notice_date')
         is_haken_unit = cleaned_data.get('is_haken_unit')
         haken_unit_manager_title = cleaned_data.get('haken_unit_manager_title')
 
         # 派遣事業所関連のバリデーション
         if not is_haken_office and haken_jigyosho_teishokubi:
             self.add_error('haken_jigyosho_teishokubi', '派遣事業所該当でない場合、派遣事業所抵触日は入力できません。')
+        
+        if not is_haken_office and haken_jigyosho_teishokubi_notice_date:
+            self.add_error('haken_jigyosho_teishokubi_notice_date', '派遣事業所該当でない場合、事業所抵触日通知日は入力できません。')
+
+        # 事業所抵触日通知日のバリデーション
+        if haken_jigyosho_teishokubi_notice_date and not haken_jigyosho_teishokubi:
+            self.add_error('haken_jigyosho_teishokubi_notice_date', '事業所抵触日通知日を入力する場合は、事業所抵触日も入力してください。')
 
         # 派遣組織単位関連のバリデーション
         if is_haken_unit:
@@ -126,7 +134,7 @@ class ClientDepartmentForm(forms.ModelForm):
         fields = [
             'name', 'department_code', 'postal_code', 'address', 'phone_number',
             'is_haken_office', 'is_haken_unit', 'haken_unit_manager_title', 'haken_jigyosho_teishokubi',
-            'display_order', 'valid_from', 'valid_to'
+            'haken_jigyosho_teishokubi_notice_date', 'display_order', 'valid_from', 'valid_to'
         ]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
@@ -144,6 +152,7 @@ class ClientDepartmentForm(forms.ModelForm):
             'is_haken_unit': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'haken_unit_manager_title': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'haken_jigyosho_teishokubi': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'haken_jigyosho_teishokubi_notice_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
             'valid_from': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'valid_to': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),

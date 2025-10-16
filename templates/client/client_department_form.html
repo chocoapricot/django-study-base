@@ -76,7 +76,7 @@
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center">
+            <div class="row mb-1 align-items-center">
                 <label for="{{ form.is_haken_office.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.is_haken_office.label }}</label>
                 <div class="col-sm-1">
                     <div class="form-check">
@@ -95,6 +95,18 @@
                     {{ form.haken_jigyosho_teishokubi }}
                     {% if form.haken_jigyosho_teishokubi.errors %}
                         <div class="text-danger">{{ form.haken_jigyosho_teishokubi.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-3">
+                </div>
+                <label for="{{ form.haken_jigyosho_teishokubi_notice_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.haken_jigyosho_teishokubi_notice_date.label }}</label>
+                <div class="col-sm-2">
+                    {{ form.haken_jigyosho_teishokubi_notice_date }}
+                    {% if form.haken_jigyosho_teishokubi_notice_date.errors %}
+                        <div class="text-danger">{{ form.haken_jigyosho_teishokubi_notice_date.errors }}</div>
                     {% endif %}
                 </div>
             </div>
@@ -213,6 +225,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="card-body py-2">
                     <div class="mb-2">• 派遣事業所該当でない場合、派遣事業所抵触日は入力不可</div>
+                    <div class="mb-2">• 派遣事業所該当でない場合、事業所抵触日通知日は入力不可</div>
+                    <div class="mb-2">• 事業所抵触日通知日を入力する場合は、事業所抵触日も入力必須</div>
                     <div class="mb-2">• 派遣組織単位該当の場合、派遣組織単位長役職は必須</div>
                     <div class="mb-0">• 派遣組織単位該当でない場合、派遣組織単位長役職は入力不可</div>
                 </div>

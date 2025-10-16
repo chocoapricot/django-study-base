@@ -89,6 +89,7 @@ class ClientDepartment(MyModel):
     is_haken_unit = models.BooleanField('派遣組織単位該当', default=False)
     haken_unit_manager_title = models.CharField('派遣組織単位長役職', max_length=100, blank=True, null=True)
     haken_jigyosho_teishokubi = models.DateField('派遣事業所抵触日', blank=True, null=True)
+    haken_jigyosho_teishokubi_notice_date = models.DateField('事業所抵触日通知日', blank=True, null=True)
     display_order = models.PositiveIntegerField('表示順', default=0)
     # 有効期間フィールドを追加
     valid_from = models.DateField('有効期限開始日', blank=True, null=True, help_text='未入力の場合は無期限')
@@ -101,13 +102,17 @@ class ClientDepartment(MyModel):
         ordering = ['display_order', 'name']
 
     def clean(self):
-        """有効期間の妥当性チェック"""
+        """有効期間と事業所抵触日の妥当性チェック"""
         super().clean()
         from django.core.exceptions import ValidationError
         
         # 開始日と終了日の妥当性チェック
         if self.valid_from and self.valid_to and self.valid_from > self.valid_to:
             raise ValidationError('有効期限開始日は終了日より前の日付を入力してください。')
+        
+        # 事業所抵触日通知日のバリデーション
+        if self.haken_jigyosho_teishokubi_notice_date and not self.haken_jigyosho_teishokubi:
+            raise ValidationError('事業所抵触日通知日を入力する場合は、事業所抵触日も入力してください。')
 
     def is_valid_on_date(self, date=None):
         """指定日時点で有効かどうかを判定"""
