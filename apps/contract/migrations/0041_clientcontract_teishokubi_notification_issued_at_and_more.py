@@ -15,19 +15,19 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name="clientcontract",
-            name="clash_day_notification_issued_at",
+            name="teishokubi_notification_issued_at",
             field=models.DateTimeField(
                 blank=True, null=True, verbose_name="抵触日通知書共有日時"
             ),
         ),
         migrations.AddField(
             model_name="clientcontract",
-            name="clash_day_notification_issued_by",
+            name="teishokubi_notification_issued_by",
             field=models.ForeignKey(
                 blank=True,
                 null=True,
                 on_delete=django.db.models.deletion.SET_NULL,
-                related_name="issued_clash_day_notifications",
+                related_name="issued_teishokubi_notifications",
                 to=settings.AUTH_USER_MODEL,
                 verbose_name="抵触日通知書共有者",
             ),

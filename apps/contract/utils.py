@@ -422,7 +422,7 @@ def generate_dispatch_notification_pdf(contract, user, issued_at, watermark_text
     return pdf_content, pdf_filename, pdf_title
 
 
-def generate_clash_day_notification_pdf(source_obj, user, issued_at, watermark_text=None):
+def generate_teishokubi_notification_pdf(source_obj, user, issued_at, watermark_text=None):
     """抵触日通知書PDFを生成する"""
     from apps.client.models import ClientDepartment
     pdf_title = "抵触日通知書"

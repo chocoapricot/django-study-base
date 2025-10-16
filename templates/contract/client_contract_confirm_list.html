@@ -51,13 +51,13 @@
                             {% if item.quotation_pdf %}
                                 <a href="{% url 'contract:download_client_contract_pdf' item.quotation_pdf.pk %}" target="_blank" class="btn btn-sm btn-secondary mb-1 text-start">見積書</a>
                             {% endif %}
-                            {% if item.clash_day_notification_pdf %}
-                                <a href="{% url 'contract:download_client_contract_pdf' item.clash_day_notification_pdf.pk %}" target="_blank" class="btn btn-sm btn-secondary mb-1 text-start">抵触日通知書</a>
+                            {% if item.teishokubi_notification_pdf %}
+                                <a href="{% url 'contract:download_client_contract_pdf' item.teishokubi_notification_pdf.pk %}" target="_blank" class="btn btn-sm btn-secondary mb-1 text-start">抵触日通知書</a>
                             {% endif %}
                             {% if item.dispatch_notification_pdf %}
                                 <a href="{% url 'contract:download_client_contract_pdf' item.dispatch_notification_pdf.pk %}" target="_blank" class="btn btn-sm btn-secondary mb-1 text-start">派遣通知書</a>
                             {% endif %}
-                            {% if not item.latest_contract_pdf and not item.quotation_pdf and not item.clash_day_notification_pdf and not item.dispatch_notification_pdf %}
+                            {% if not item.latest_contract_pdf and not item.quotation_pdf and not item.teishokubi_notification_pdf and not item.dispatch_notification_pdf %}
                                 -
                             {% endif %}
                         </div>

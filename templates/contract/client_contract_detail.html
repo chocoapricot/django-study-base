@@ -50,7 +50,7 @@
                                 {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT or contract.contract_status == Constants.CONTRACT_STATUS.PENDING %}
                                 <hr class="dropdown-divider">
                                 {% endif %}
-                                <a href="{% url 'contract:client_clash_day_notification_pdf' contract.pk %}" class="dropdown-item" target="_blank"><i class="bi bi-file-earmark-check"></i>　抵触日通知書</a>
+                                <a href="{% url 'contract:client_teishokubi_notification_pdf' contract.pk %}" class="dropdown-item" target="_blank"><i class="bi bi-file-earmark-check"></i>　抵触日通知書</a>
                                 <a href="{% url 'contract:client_dispatch_ledger_pdf' contract.pk %}" class="dropdown-item" target="_blank"><i class="bi bi-journal-text"></i>　派遣元管理台帳</a>
                                 {% endif %}
                             </div>

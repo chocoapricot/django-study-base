@@ -99,13 +99,13 @@ class ClientContract(MyModel):
         verbose_name='見積発行者'
     )
     # 抵触日通知書の共有日時・共有者
-    clash_day_notification_issued_at = models.DateTimeField('抵触日通知書共有日時', blank=True, null=True)
-    clash_day_notification_issued_by = models.ForeignKey(
+    teishokubi_notification_issued_at = models.DateTimeField('抵触日通知書共有日時', blank=True, null=True)
+    teishokubi_notification_issued_by = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='issued_clash_day_notifications',
+        related_name='issued_teishokubi_notifications',
         verbose_name='抵触日通知書共有者'
     )
     confirmed_at = models.DateTimeField('確認日時', blank=True, null=True)
@@ -180,7 +180,7 @@ class ClientContractPrint(MyModel):
     class PrintType(models.TextChoices):
         CONTRACT = '10', '契約書'
         QUOTATION = '20', '見積書'
-        CLASH_DAY_NOTIFICATION = '30', '抵触日通知書'
+        TEISHOKUBI_NOTIFICATION = '30', '抵触日通知書'
         DISPATCH_NOTIFICATION = '40', '派遣通知書'
 
     client_contract = models.ForeignKey(

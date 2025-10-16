@@ -3,7 +3,7 @@ from .views import (
     client_list, client_create, client_detail, client_update, client_delete, client_export,
     client_contacted_create, client_contacted_list, client_contacted_update, client_contacted_delete, client_contacted_detail,
     client_change_history_list,
-    client_department_create, client_department_list, client_department_update, client_department_delete, client_department_detail, client_department_change_history_list, issue_clash_day_notification_from_department,
+    client_department_create, client_department_list, client_department_update, client_department_delete, client_department_detail, client_department_change_history_list, issue_teishokubi_notification_from_department,
     client_user_create, client_user_list, client_user_detail, client_user_update, client_user_delete, client_user_mail_send,
     client_file_list, client_file_create, 
     client_file_delete, client_file_download
@@ -30,7 +30,7 @@ urlpatterns = [
     path('client/<int:client_pk>/department/create/', client_department_create, name='client_department_create'),
     path('client/<int:client_pk>/department/list/', client_department_list, name='client_department_list'),
     path('client/department/<int:pk>/detail/', client_department_detail, name='client_department_detail'),
-    path('client/department/<int:pk>/issue_clash_day_notification/', issue_clash_day_notification_from_department, name='issue_clash_day_notification_from_department'),
+    path('client/department/<int:pk>/issue_teishokubi_notification/', issue_teishokubi_notification_from_department, name='issue_teishokubi_notification_from_department'),
     path('client/department/<int:pk>/update/', client_department_update, name='client_department_update'),
     path('client/department/<int:pk>/delete/', client_department_delete, name='client_department_delete'),
     path('client/department/<int:pk>/change_history/', client_department_change_history_list, name='client_department_change_history_list'),

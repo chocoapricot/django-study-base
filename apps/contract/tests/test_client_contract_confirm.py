@@ -92,9 +92,9 @@ class ClientContractConfirmTest(TestCase):
             print_type=ClientContractPrint.PrintType.QUOTATION,
             document_title='Test Quotation'
         )
-        self.clash_day_notification = ClientContractPrint.objects.create(
+        self.teishokubi_notification = ClientContractPrint.objects.create(
             client_contract=self.contract,
-            print_type=ClientContractPrint.PrintType.CLASH_DAY_NOTIFICATION,
+            print_type=ClientContractPrint.PrintType.TEISHOKUBI_NOTIFICATION,
             document_title='Test Clash Day Notification'
         )
         self.dispatch_notification = ClientContractPrint.objects.create(
@@ -180,7 +180,7 @@ class ClientContractConfirmTest(TestCase):
 
         # 抵触日通知書
         self.assertContains(response, "抵触日通知書")
-        self.assertContains(response, reverse('contract:download_client_contract_pdf', args=[self.clash_day_notification.pk]))
+        self.assertContains(response, reverse('contract:download_client_contract_pdf', args=[self.teishokubi_notification.pk]))
 
         # 派遣通知書
         self.assertContains(response, "派遣通知書")

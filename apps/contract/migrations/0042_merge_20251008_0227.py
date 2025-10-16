@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('contract', '0041_clientcontract_clash_day_notification_issued_at_and_more'),
+        ('contract', '0041_clientcontract_teishokubi_notification_issued_at_and_more'),
         ('contract', '0041_clientcontractttp'),
     ]
 

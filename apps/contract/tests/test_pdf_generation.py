@@ -10,7 +10,7 @@ from apps.company.models import Company, CompanyDepartment as CompanyDept, Compa
 from apps.contract.models import ClientContract, ClientContractHaken, StaffContract
 from apps.master.models import ContractPattern, BillPayment, ContractTerms, JobCategory
 from apps.staff.models import Staff
-from apps.contract.utils import generate_contract_pdf_content, generate_clash_day_notification_pdf
+from apps.contract.utils import generate_contract_pdf_content, generate_teishokubi_notification_pdf
 
 class ContractPdfGenerationTest(TestCase):
 
@@ -258,7 +258,7 @@ class ContractPdfGenerationTest(TestCase):
         self.assertNotIn("製造業務専門派遣先責任者", items_dict)
         self.assertNotIn("製造業務専門派遣元責任者", items_dict)
 
-    def test_generate_clash_day_notification_pdf_content(self):
+    def test_generate_teishokubi_notification_pdf_content(self):
         """抵触日通知書PDFが正しい内容で生成されることをテストする"""
         # 派遣先事業所と抵触日を設定
         haken_office = ClientDepartment.objects.create(
@@ -273,7 +273,7 @@ class ContractPdfGenerationTest(TestCase):
         self.haken_info.save()
 
         issued_at = datetime.datetime.now(datetime.timezone.utc)
-        pdf_content, _, pdf_title = generate_clash_day_notification_pdf(self.dispatch_contract, self.test_user, issued_at)
+        pdf_content, _, pdf_title = generate_teishokubi_notification_pdf(self.dispatch_contract, self.test_user, issued_at)
 
         self.assertIsNotNone(pdf_content)
         self.assertEqual(pdf_title, "抵触日通知書")
@@ -299,7 +299,7 @@ class ContractPdfGenerationTest(TestCase):
         self.assertIn(haken_office.name, text)
         self.assertIn(haken_office.address, text)
 
-    def test_generate_clash_day_notification_pdf_with_notice_date(self):
+    def test_generate_teishokubi_notification_pdf_with_notice_date(self):
         """抵触日通知日が設定されている場合、PDFに通知日が印字されることをテストする"""
         # 派遣先事業所と抵触日、通知日を設定
         notice_date = datetime.date(2025, 9, 15)
@@ -316,7 +316,7 @@ class ContractPdfGenerationTest(TestCase):
         self.haken_info.save()
 
         issued_at = datetime.datetime.now(datetime.timezone.utc)
-        pdf_content, _, pdf_title = generate_clash_day_notification_pdf(self.dispatch_contract, self.test_user, issued_at)
+        pdf_content, _, pdf_title = generate_teishokubi_notification_pdf(self.dispatch_contract, self.test_user, issued_at)
 
         self.assertIsNotNone(pdf_content)
         self.assertEqual(pdf_title, "抵触日通知書")
@@ -332,7 +332,7 @@ class ContractPdfGenerationTest(TestCase):
         expected_notice_date = "2025年09月15日"
         self.assertIn(expected_notice_date, text)
 
-    def test_generate_clash_day_notification_pdf_without_notice_date(self):
+    def test_generate_teishokubi_notification_pdf_without_notice_date(self):
         """抵触日通知日が設定されていない場合、PDFに通知日が印字されないことをテストする"""
         # 派遣先事業所と抵触日を設定（通知日は設定しない）
         haken_office = ClientDepartment.objects.create(
@@ -348,7 +348,7 @@ class ContractPdfGenerationTest(TestCase):
         self.haken_info.save()
 
         issued_at = datetime.datetime.now(datetime.timezone.utc)
-        pdf_content, _, pdf_title = generate_clash_day_notification_pdf(self.dispatch_contract, self.test_user, issued_at)
+        pdf_content, _, pdf_title = generate_teishokubi_notification_pdf(self.dispatch_contract, self.test_user, issued_at)
 
         self.assertIsNotNone(pdf_content)
         self.assertEqual(pdf_title, "抵触日通知書")
@@ -364,7 +364,7 @@ class ContractPdfGenerationTest(TestCase):
         # 特定の通知日フォーマットが含まれていないことを確認
         self.assertNotIn("2025年09月15日", text)
 
-    def test_generate_clash_day_notification_pdf_from_department_with_notice_date(self):
+    def test_generate_teishokubi_notification_pdf_from_department_with_notice_date(self):
         """クライアント組織から直接生成する場合も通知日が印字されることをテストする"""
         # 通知日を設定したクライアント組織を作成
         notice_date = datetime.date(2025, 9, 20)
@@ -379,7 +379,7 @@ class ContractPdfGenerationTest(TestCase):
         )
 
         issued_at = datetime.datetime.now(datetime.timezone.utc)
-        pdf_content, _, pdf_title = generate_clash_day_notification_pdf(department, self.test_user, issued_at)
+        pdf_content, _, pdf_title = generate_teishokubi_notification_pdf(department, self.test_user, issued_at)
 
         self.assertIsNotNone(pdf_content)
         self.assertEqual(pdf_title, "抵触日通知書")

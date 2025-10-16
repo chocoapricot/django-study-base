@@ -11,7 +11,7 @@ from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
 from django.core.files.base import ContentFile
 from apps.system.logs.utils import log_model_action
-from apps.contract.utils import generate_clash_day_notification_pdf
+from apps.contract.utils import generate_teishokubi_notification_pdf
 # クライアント連絡履歴用インポート
 from .models import Client, ClientContacted, ClientDepartment, ClientUser, ClientFile
 from .forms import ClientForm, ClientContactedForm, ClientDepartmentForm, ClientUserForm, ClientFileForm
@@ -913,7 +913,7 @@ def client_file_download(request, pk):
 
 @login_required
 @permission_required('contract.change_clientcontract', raise_exception=True)
-def issue_clash_day_notification_from_department(request, pk):
+def issue_teishokubi_notification_from_department(request, pk):
     """クライアント組織から抵触日通知書を発行する"""
     department = get_object_or_404(ClientDepartment, pk=pk)
 
@@ -929,7 +929,7 @@ def issue_clash_day_notification_from_department(request, pk):
 
     issued_at = timezone.now()
     # 組織オブジェクトを渡して、透かしなしで生成
-    pdf_content, pdf_filename, document_title = generate_clash_day_notification_pdf(department, request.user, issued_at)
+    pdf_content, pdf_filename, document_title = generate_teishokubi_notification_pdf(department, request.user, issued_at)
 
     if pdf_content:
         # 発行履歴は保存しない

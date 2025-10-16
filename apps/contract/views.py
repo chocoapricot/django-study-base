@@ -32,7 +32,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import io
-from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number, generate_clash_day_notification_pdf, generate_dispatch_notification_pdf, generate_dispatch_ledger_pdf
+from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number, generate_teishokubi_notification_pdf, generate_dispatch_notification_pdf, generate_dispatch_ledger_pdf
 from .resources import ClientContractResource, StaffContractResource
 from .models import ContractAssignment
 from django.urls import reverse
@@ -1189,8 +1189,8 @@ def client_contract_approve(request, pk):
                 contract.quotation_issued_at = None
                 contract.quotation_issued_by = None
                 # 抵触日通知書の共有フラグもクリア
-                contract.clash_day_notification_issued_at = None
-                contract.clash_day_notification_issued_by = None
+                contract.teishokubi_notification_issued_at = None
+                contract.teishokubi_notification_issued_by = None
                 contract.confirmed_at = None
                 contract.save()
                 # 承認解除時は見積書をUI上無効化する必要はない。
@@ -1648,14 +1648,14 @@ def client_contract_confirm_list(request):
         # 各種の最新PDFを取得
         latest_contract_pdf = next((p for p in all_prints_for_contract if p.print_type == ClientContractPrint.PrintType.CONTRACT), None)
         quotation_pdf = next((p for p in all_prints_for_contract if p.print_type == ClientContractPrint.PrintType.QUOTATION), None)
-        clash_day_notification_pdf = next((p for p in all_prints_for_contract if p.print_type == ClientContractPrint.PrintType.CLASH_DAY_NOTIFICATION), None)
+        teishokubi_notification_pdf = next((p for p in all_prints_for_contract if p.print_type == ClientContractPrint.PrintType.TEISHOKUBI_NOTIFICATION), None)
         dispatch_notification_pdf = next((p for p in all_prints_for_contract if p.print_type == ClientContractPrint.PrintType.DISPATCH_NOTIFICATION), None)
 
         contracts_with_status.append({
             'contract': contract,
             'latest_contract_pdf': latest_contract_pdf,
             'quotation_pdf': quotation_pdf,
-            'clash_day_notification_pdf': clash_day_notification_pdf,
+            'teishokubi_notification_pdf': teishokubi_notification_pdf,
             'dispatch_notification_pdf': dispatch_notification_pdf,
         })
 
@@ -1831,7 +1831,7 @@ def client_contract_draft_quotation(request, pk):
 
 @login_required
 @permission_required('contract.change_clientcontract', raise_exception=True)
-def issue_clash_day_notification(request, pk):
+def issue_teishokubi_notification(request, pk):
     """クライアント契約の抵触日通知書を発行する"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
@@ -1846,27 +1846,27 @@ def issue_clash_day_notification(request, pk):
         return redirect('contract:client_contract_detail', pk=pk)
 
     issued_at = timezone.now()
-    pdf_content, pdf_filename, document_title = generate_clash_day_notification_pdf(contract, request.user, issued_at)
+    pdf_content, pdf_filename, document_title = generate_teishokubi_notification_pdf(contract, request.user, issued_at)
 
     if pdf_content:
         new_print = ClientContractPrint(
             client_contract=contract,
             printed_by=request.user,
             printed_at=issued_at,
-            print_type=ClientContractPrint.PrintType.CLASH_DAY_NOTIFICATION,
+            print_type=ClientContractPrint.PrintType.TEISHOKUBI_NOTIFICATION,
             document_title=document_title,
             contract_number=contract.contract_number
         )
         new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
 
         # 抵触日通知書の共有日時/共有者を契約に記録
-        contract.clash_day_notification_issued_at = issued_at
-        contract.clash_day_notification_issued_by = request.user
+        contract.teishokubi_notification_issued_at = issued_at
+        contract.teishokubi_notification_issued_by = request.user
         contract.save()
 
         AppLog.objects.create(
             user=request.user,
-            action='clash_day_notification_issue',
+            action='teishokubi_notification_issue',
             model_name='ClientContract',
             object_id=str(contract.pk),
             object_repr=f'抵触日通知書PDF出力: {contract.contract_name}'
@@ -1880,7 +1880,7 @@ def issue_clash_day_notification(request, pk):
 
 @login_required
 @permission_required('contract.view_clientcontract', raise_exception=True)
-def client_clash_day_notification_pdf(request, pk):
+def client_teishokubi_notification_pdf(request, pk):
     """クライアント契約の抵触日通知書のPDFを生成して返す"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
@@ -1895,7 +1895,7 @@ def client_clash_day_notification_pdf(request, pk):
         return redirect('contract:client_contract_detail', pk=pk)
 
     issued_at = timezone.now()
-    pdf_content, pdf_filename, document_title = generate_clash_day_notification_pdf(
+    pdf_content, pdf_filename, document_title = generate_teishokubi_notification_pdf(
         contract, request.user, issued_at
     )
 

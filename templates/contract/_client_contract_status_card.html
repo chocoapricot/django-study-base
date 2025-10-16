@@ -43,18 +43,18 @@
 
         {# 抵触日通知書発行スイッチ #}
         {% if contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH %}
-        <form method="post" id="issue-clash-day-notification-form" action="{% url 'contract:issue_clash_day_notification' contract.pk %}" class="mb-3">
+        <form method="post" id="issue-clash-day-notification-form" action="{% url 'contract:issue_teishokubi_notification' contract.pk %}" class="mb-3">
             {% csrf_token %}
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="issueClashDayNotificationSwitch" name="is_issued"
                        onchange="if(confirm('抵触日通知書を共有します。よろしいですか？')) { this.form.submit(); }"
-                       {% if contract.clash_day_notification_issued_at %}checked{% endif %}
+                       {% if contract.teishokubi_notification_issued_at %}checked{% endif %}
                        {% if not contract.is_approved_or_later %}disabled{% endif %}>
                 <label class="form-check-label" for="issueClashDayNotificationSwitch">
                     <i class="bi bi-file-earmark-check" style="font-size: 20px; color: #17a2b8;"></i>
                     抵触日通知書共有
-                    {% if contract.clash_day_notification_issued_at %}
-                        <span class="text-muted small">（{{ contract.clash_day_notification_issued_at|date:"Y/m/d H:i:s" }}　{{ contract.clash_day_notification_issued_by.get_full_name_japanese|default:'' }}）</span>
+                    {% if contract.teishokubi_notification_issued_at %}
+                        <span class="text-muted small">（{{ contract.teishokubi_notification_issued_at|date:"Y/m/d H:i:s" }}　{{ contract.teishokubi_notification_issued_by.get_full_name_japanese|default:'' }}）</span>
                     {% endif %}
                 </label>
             </div>

@@ -91,18 +91,18 @@ class ContractViewTest(TestCase):
         )
 
         # 抵触日ありの派遣先事業所と契約
-        self.haken_office_with_clash_day = ClientDepartment.objects.create(
+        self.haken_office_with_teishokubi = ClientDepartment.objects.create(
             client=self.test_client,
             name='本社',
             haken_jigyosho_teishokubi=datetime.date(2025, 12, 31)
         )
         ClientContractHaken.objects.create(
             client_contract=self.client_contract,
-            haken_office=self.haken_office_with_clash_day
+            haken_office=self.haken_office_with_teishokubi
         )
 
         # 抵触日なしの派遣先事業所と契約
-        self.contract_without_clash_day = ClientContract.objects.create(
+        self.contract_without_teishokubi = ClientContract.objects.create(
             client=self.test_client,
             contract_name='No Clash Day Contract',
             start_date=datetime.date.today(),
@@ -110,13 +110,13 @@ class ContractViewTest(TestCase):
             client_contract_type_code='20',
             corporate_number=self.company.corporate_number
         )
-        self.haken_office_without_clash_day = ClientDepartment.objects.create(
+        self.haken_office_without_teishokubi = ClientDepartment.objects.create(
             client=self.test_client,
             name='支社'
         )
         ClientContractHaken.objects.create(
-            client_contract=self.contract_without_clash_day,
-            haken_office=self.haken_office_without_clash_day
+            client_contract=self.contract_without_teishokubi,
+            haken_office=self.haken_office_without_teishokubi
         )
 
         # 紹介予定派遣情報を作成
@@ -153,18 +153,18 @@ class ContractViewTest(TestCase):
 
         self.client.login(username='testuser', password='testpass123')
 
-    def test_issue_clash_day_notification_updates_contract(self):
+    def test_issue_teishokubi_notification_updates_contract(self):
         """抵触日通知書を共有した際に、契約の共有日時と共有者が更新されるかテスト"""
         # 契約を承認済みにする
         self.client_contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
         self.client_contract.save()
 
         # 初期状態では共有日時はNone
-        self.assertIsNone(self.client_contract.clash_day_notification_issued_at)
-        self.assertIsNone(self.client_contract.clash_day_notification_issued_by)
+        self.assertIsNone(self.client_contract.teishokubi_notification_issued_at)
+        self.assertIsNone(self.client_contract.teishokubi_notification_issued_by)
 
         # 抵触日通知書を共有
-        url = reverse('contract:issue_clash_day_notification', kwargs={'pk': self.client_contract.pk})
+        url = reverse('contract:issue_teishokubi_notification', kwargs={'pk': self.client_contract.pk})
         response = self.client.post(url, {})
 
         # リダイレクトされることを確認
@@ -174,17 +174,17 @@ class ContractViewTest(TestCase):
         self.client_contract.refresh_from_db()
 
         # 共有日時と共有者が記録されていることを確認
-        self.assertIsNotNone(self.client_contract.clash_day_notification_issued_at)
-        self.assertEqual(self.client_contract.clash_day_notification_issued_by, self.user)
+        self.assertIsNotNone(self.client_contract.teishokubi_notification_issued_at)
+        self.assertEqual(self.client_contract.teishokubi_notification_issued_by, self.user)
 
-    def test_unapprove_resets_clash_day_notification(self):
+    def test_unapprove_resets_teishokubi_notification(self):
         """承認解除時に抵触日通知書の共有日時と共有者がリセットされるかテスト"""
         from django.utils import timezone
 
         # 契約を承認済みにし、抵触日通知書を共有済みの状態にする
         self.client_contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
-        self.client_contract.clash_day_notification_issued_at = timezone.now()
-        self.client_contract.clash_day_notification_issued_by = self.user
+        self.client_contract.teishokubi_notification_issued_at = timezone.now()
+        self.client_contract.teishokubi_notification_issued_by = self.user
         self.client_contract.save()
 
         # 承認解除（is_approvedを送らない）
@@ -198,8 +198,8 @@ class ContractViewTest(TestCase):
         self.client_contract.refresh_from_db()
 
         # 共有日時と共有者がNoneにリセットされていることを確認
-        self.assertIsNone(self.client_contract.clash_day_notification_issued_at)
-        self.assertIsNone(self.client_contract.clash_day_notification_issued_by)
+        self.assertIsNone(self.client_contract.teishokubi_notification_issued_at)
+        self.assertIsNone(self.client_contract.teishokubi_notification_issued_by)
 
     def test_staff_contract_create_post_invalid_retains_staff_display(self):
         """POSTリクエストでフォームが無効な場合に、スタッフの表示が維持されるかテスト"""
@@ -361,8 +361,8 @@ class ContractViewTest(TestCase):
 
         # 2. 契約を承認済みにし、通知書も共有済みの状態にする
         self.client_contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
-        self.client_contract.clash_day_notification_issued_at = timezone.now()
-        self.client_contract.clash_day_notification_issued_by = self.user
+        self.client_contract.teishokubi_notification_issued_at = timezone.now()
+        self.client_contract.teishokubi_notification_issued_by = self.user
         self.client_contract.save()
 
         # 3. 詳細ページでスイッチがチェックされ、発行者情報が表示されていることを確認
@@ -481,7 +481,7 @@ class ContractViewTest(TestCase):
     def test_ttp_info_not_displayed_for_haken_without_ttp(self):
         """紹介予定派遣情報を持たない派遣契約詳細ページで、TTP情報が表示されないかテスト"""
         # この契約は派遣だがTTP情報はない
-        url = reverse('contract:client_contract_detail', kwargs={'pk': self.contract_without_clash_day.pk})
+        url = reverse('contract:client_contract_detail', kwargs={'pk': self.contract_without_teishokubi.pk})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         # TTP情報のセクションが表示されないことを確認（より具体的なチェック）
