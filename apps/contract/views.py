@@ -2614,7 +2614,7 @@ def staff_contract_teishokubi_detail(request, pk):
         model_name__in=['StaffContractTeishokubi', 'StaffContractTeishokubiDetail'],
         object_id=str(teishokubi.pk),
         action__in=['create', 'update', 'delete']
-    ).order_by('-created_at')[:5]
+    ).order_by('-timestamp')[:5]
 
     context = {
         'teishokubi': teishokubi,

@@ -100,6 +100,10 @@
                             <span class="badge bg-primary">登録状況</span>
                         {% elif log.model_name == 'ClientRegistStatus' %}
                             <span class="badge bg-primary">登録状況</span>
+                        {% elif log.model_name == 'StaffContractTeishokubi' %}
+                            <span class="badge bg-primary">個人抵触日</span>
+                        {% elif log.model_name == 'StaffContractTeishokubiDetail' %}
+                            <span class="badge bg-info">個人抵触日詳細</span>
                         {% elif log.model_name %}
                             <span class="badge bg-primary">{{ log.model_name }}</span>
                         {% else %}
