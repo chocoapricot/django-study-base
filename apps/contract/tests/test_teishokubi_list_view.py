@@ -67,7 +67,7 @@ class StaffContractTeishokubiListViewTest(TestCase):
     def test_teishokubi_list_view_displays_names_and_links(self):
         """一覧にスタッフ名とクライアント名が表示され、詳細リンクが正しいかテスト"""
         url = reverse('contract:staff_contract_teishokubi_list')
-        response = self.client.get(url)
+        response = self.client.get(url, {'dispatch_filter': 'all'})
         self.assertEqual(response.status_code, 200)
 
         # スタッフ名が表示されることを確認
@@ -92,7 +92,7 @@ class StaffContractTeishokubiListViewTest(TestCase):
     def test_search_by_staff_name(self):
         """スタッフ名で検索できるかテスト"""
         url = reverse('contract:staff_contract_teishokubi_list')
-        response = self.client.get(url, {'q': '山田'})
+        response = self.client.get(url, {'q': '山田', 'dispatch_filter': 'all'})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.staff1.name)
         self.assertNotContains(response, self.staff2.name)
@@ -100,7 +100,7 @@ class StaffContractTeishokubiListViewTest(TestCase):
     def test_search_by_client_name(self):
         """クライアント名で検索できるかテスト"""
         url = reverse('contract:staff_contract_teishokubi_list')
-        response = self.client.get(url, {'q': '鈴木商事'})
+        response = self.client.get(url, {'q': '鈴木商事', 'dispatch_filter': 'all'})
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, self.staff1.name)
         self.assertContains(response, self.staff2.name)
@@ -108,7 +108,7 @@ class StaffContractTeishokubiListViewTest(TestCase):
     def test_search_by_email(self):
         """メールアドレスで検索できるかテスト"""
         url = reverse('contract:staff_contract_teishokubi_list')
-        response = self.client.get(url, {'q': 'taro.yamada'})
+        response = self.client.get(url, {'q': 'taro.yamada', 'dispatch_filter': 'all'})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.staff1.name)
         self.assertNotContains(response, self.staff2.name)
@@ -116,7 +116,7 @@ class StaffContractTeishokubiListViewTest(TestCase):
     def test_search_by_corporate_number(self):
         """法人番号で検索できるかテスト"""
         url = reverse('contract:staff_contract_teishokubi_list')
-        response = self.client.get(url, {'q': '9876543210987'})
+        response = self.client.get(url, {'q': '9876543210987', 'dispatch_filter': 'all'})
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, self.client1.name)
         self.assertContains(response, self.client2.name)
@@ -124,7 +124,7 @@ class StaffContractTeishokubiListViewTest(TestCase):
     def test_no_results_found(self):
         """検索結果がない場合にメッセージが表示されるかテスト"""
         url = reverse('contract:staff_contract_teishokubi_list')
-        response = self.client.get(url, {'q': '存在しない名前'})
+        response = self.client.get(url, {'q': '存在しない名前', 'dispatch_filter': 'all'})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'データがありません。')
 
