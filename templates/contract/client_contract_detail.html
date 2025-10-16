@@ -234,7 +234,7 @@
                 <div class="btn-group" role="group">
                     <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">割当</button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'contract:client_contract_assignment' contract.pk %}">既存契約割当</a></li>
+                        <li><a class="dropdown-item" href="{% url 'contract:client_contract_assignment' contract.pk %}">登録済み契約</a></li>
                         <li><a class="dropdown-item" href="{% url 'contract:staff_contract_create' %}?client_contract={{ contract.pk }}">新規スタッフ契約</a></li>
                     </ul>
                 </div>
