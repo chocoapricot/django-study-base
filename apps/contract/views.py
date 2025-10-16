@@ -2608,11 +2608,20 @@ def staff_contract_teishokubi_detail(request, pk):
     staff = Staff.objects.filter(email=teishokubi.staff_email).first()
     client = Client.objects.filter(corporate_number=teishokubi.client_corporate_number).first()
 
+    # 変更履歴を取得
+    from apps.system.logs.models import AppLog
+    change_logs = AppLog.objects.filter(
+        model_name__in=['StaffContractTeishokubi', 'StaffContractTeishokubiDetail'],
+        object_id=str(teishokubi.pk),
+        action__in=['create', 'update', 'delete']
+    ).order_by('-created_at')[:5]
+
     context = {
         'teishokubi': teishokubi,
         'teishokubi_details': teishokubi_details,
         'staff': staff,
         'client': client,
+        'change_logs': change_logs,
     }
     return render(request, 'contract/staff_contract_teishokubi_detail.html', context)
     

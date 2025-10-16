@@ -78,11 +78,16 @@ class StaffContractTeishokubiListViewTest(TestCase):
         self.assertContains(response, self.client1.name)
         self.assertContains(response, self.client2.name)
 
-        # 詳細ページへのリンクが存在することを確認
+        # 組織名が表示されることを確認
+        self.assertContains(response, self.teishokubi1.organization_name)
+        self.assertContains(response, self.teishokubi2.organization_name)
+
+        # 詳細ページへのリンクが存在することを確認（組織名と抵触日の両方にリンク）
         teishokubi1_detail_url = reverse('contract:staff_contract_teishokubi_detail', kwargs={'pk': self.teishokubi1.pk})
         teishokubi2_detail_url = reverse('contract:staff_contract_teishokubi_detail', kwargs={'pk': self.teishokubi2.pk})
-        self.assertContains(response, f'href="{teishokubi1_detail_url}"')
-        self.assertContains(response, f'href="{teishokubi2_detail_url}"')
+        # 各レコードに対して2つのリンクがあることを確認（組織名と抵触日）
+        self.assertContains(response, f'href="{teishokubi1_detail_url}"', count=2)  # 組織名、抵触日
+        self.assertContains(response, f'href="{teishokubi2_detail_url}"', count=2)  # 組織名、抵触日
 
     def test_search_by_staff_name(self):
         """スタッフ名で検索できるかテスト"""

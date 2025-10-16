@@ -2,12 +2,12 @@
 {% load static %}
 {% load humanize %}
 
-{% block title %}個人抵触日管理一覧{% endblock %}
+{% block title %}個人抵触日一覧{% endblock %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        個人抵触日管理一覧
+        個人抵触日一覧
     </div>
     <div class="card-body">
         <form method="get" class="form-inline d-flex flex-wrap mb-3">
@@ -30,11 +30,9 @@
                     <th>スタッフ名</th>
                     <th>クライアント名</th>
                     <th>組織名</th>
-                    <th>派遣開始日</th>
-                    <th>抵触日</th>
+                    <th>個人抵触日</th>
                     <th>残り日数</th>
                     <th>現在派遣中</th>
-                    <th>操作</th>
                 </tr>
             </thead>
             <tbody>
@@ -54,8 +52,11 @@
                             {{ item.client_corporate_number }}
                         {% endif %}
                     </td>
-                    <td>{{ item.organization_name }}</td>
-                    <td>{{ item.dispatch_start_date|date:"Y/m/d" }}</td>
+                    <td>
+                        <a href="{% url 'contract:staff_contract_teishokubi_detail' item.pk %}" class="text-decoration-none">
+                            {{ item.organization_name }}
+                        </a>
+                    </td>
                     <td>
                         <a href="{% url 'contract:staff_contract_teishokubi_detail' item.pk %}" class="text-decoration-none">
                             {{ item.conflict_date|date:"Y/m/d" }}
@@ -75,18 +76,13 @@
                     </td>
                     <td>
                         {% if item.is_currently_dispatched %}
-                            <span class="badge bg-success">派遣中</span>
+                            <span class="badge bg-info">派遣中</span>
                             {% if item.current_contract_end %}
                                 <small class="d-block text-muted">～{{ item.current_contract_end|date:"m/d" }}</small>
                             {% endif %}
                         {% else %}
-                            <span class="badge bg-secondary">未派遣</span>
+                            -
                         {% endif %}
-                    </td>
-                    <td>
-                        <a href="{% url 'contract:staff_contract_teishokubi_detail' item.pk %}" class="btn btn-dark btn-sm" title="詳細">
-                            <i class="bi bi-eye"></i>
-                        </a>
                     </td>
                 </tr>
                 {% endfor %}
