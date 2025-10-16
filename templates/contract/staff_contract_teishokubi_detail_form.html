@@ -47,7 +47,7 @@
 
         <form method="post">
             {% csrf_token %}
-            <div class="row mb-3 align-items-center">
+            <div class="row mb-1 align-items-center">
                 <label for="{{ form.assignment_start_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.assignment_start_date.label }}</label>
                 <div class="col-sm-4">
                     {{ form.assignment_start_date }}
@@ -65,16 +65,48 @@
                         <div class="text-danger small">{{ form.assignment_end_date.errors.0 }}</div>
                     {% endif %}
                 </div>
+                <div class="col-sm">
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="setThreeYearsLater()">3年後</button>
+                </div>
             </div>
 
-            <div class="row mt-4">
-                <div class="col-sm-2"></div>
-                <div class="col-sm-10">
+            <div class="row mt-3">
+                <div class="col text-left">
                     <button type="submit" class="btn btn-sm btn-primary me-2">作成</button>
-                    <a href="{% url 'contract:staff_contract_teishokubi_detail' teishokubi.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
+                    <a href="{% url 'contract:staff_contract_teishokubi_detail' teishokubi.pk %}" class="btn btn-sm btn-secondary">戻る</a>
                 </div>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+function setThreeYearsLater() {
+    const startDateInput = document.getElementById('{{ form.assignment_start_date.id_for_label }}');
+    const endDateInput = document.getElementById('{{ form.assignment_end_date.id_for_label }}');
+    
+    if (!startDateInput.value) {
+        alert('開始日を先に入力してください。');
+        return;
+    }
+    
+    const startDate = new Date(startDateInput.value);
+    if (isNaN(startDate.getTime())) {
+        alert('開始日が正しい形式で入力されていません。');
+        return;
+    }
+    
+    // 3年後の日付を計算
+    const endDate = new Date(startDate);
+    endDate.setFullYear(startDate.getFullYear() + 3);
+    
+    // YYYY-MM-DD形式で設定
+    const year = endDate.getFullYear();
+    const month = String(endDate.getMonth() + 1).padStart(2, '0');
+    const day = String(endDate.getDate()).padStart(2, '0');
+    
+    endDateInput.value = `${year}-${month}-${day}`;
+}
+</script>
+
 {% endblock %}

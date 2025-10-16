@@ -32,7 +32,7 @@
                     <th>組織名</th>
                     <th>個人抵触日</th>
                     <th>残り日数</th>
-                    <th>現在派遣中</th>
+                    <th>派遣契約</th>
                 </tr>
             </thead>
             <tbody>
@@ -76,9 +76,8 @@
                     </td>
                     <td>
                         {% if item.is_currently_dispatched %}
-                            <span class="badge bg-info">派遣中</span>
                             {% if item.current_contract_end %}
-                                <small class="d-block text-muted">～{{ item.current_contract_end|date:"m/d" }}</small>
+                                <small class="d-block text-muted"> ～ {{ item.current_contract_end|date:"Y/m/d" }}</small>
                             {% endif %}
                         {% else %}
                             -
