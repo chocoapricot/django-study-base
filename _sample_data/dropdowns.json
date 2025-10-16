@@ -2969,7 +2969,7 @@
         "updated_at": "2025-09-07T00:00:00Z",
         "updated_by": 1,
         "category": "contract_status",
-        "name": "申請中",
+        "name": "申請",
         "value": "5",
         "disp_seq": 5,
         "active": true
