@@ -521,7 +521,7 @@ def generate_clash_day_notification_pdf(source_obj, user, issued_at, watermark_t
     buffer.close()
 
     timestamp = issued_at.strftime('%Y%m%d%H%M%S')
-    pdf_filename = f"clash_day_notification_{source_obj.pk}_{timestamp}.pdf"
+    pdf_filename = f"client_teishokubi_notification_{source_obj.pk}_{timestamp}.pdf"
 
     return pdf_content, pdf_filename, pdf_title
 
