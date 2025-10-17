@@ -528,6 +528,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         pay_unit = cleaned_data.get('pay_unit')
         contract_amount = cleaned_data.get('contract_amount')
         work_location = cleaned_data.get('work_location')
+        job_category = cleaned_data.get('job_category')
 
         # 開始日と終了日の関係チェック
         if start_date and end_date and start_date > end_date:
@@ -543,6 +544,10 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
             if staff.resignation_date and end_date and end_date > staff.resignation_date:
                 self.add_error('end_date', f'契約終了日は退職日（{staff.resignation_date}）以前の日付を入力してください。')
 
+        # 外国籍情報チェック
+        if staff:
+            self._validate_foreign_staff_contract(staff, job_category, end_date)
+
         # 最低賃金チェック
         try:
             # self.instanceはフォームのインスタンス（モデルオブジェクト）
@@ -557,6 +562,29 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
             self.add_error('contract_amount', e)
 
         return cleaned_data
+
+    def _validate_foreign_staff_contract(self, staff, job_category, end_date):
+        """外国籍スタッフの契約バリデーション"""
+        # 外国籍情報が登録されているかチェック
+        try:
+            international_info = staff.international
+        except:
+            # 外国籍情報が登録されていない場合は何もしない
+            return
+
+        # 外国籍情報が登録されている場合のチェック
+        if international_info:
+            # 1. 職種が特定技能外国人受入該当になっていなければエラー
+            if job_category and not job_category.is_specified_skilled_worker:
+                self.add_error('job_category', 
+                    f'外国籍スタッフ「{staff.name_last} {staff.name_first}」の契約では、'
+                    f'特定技能外国人受入該当の職種を選択してください。')
+
+            # 2. 契約終了日より前に在留期限がある場合にはエラー
+            if end_date and international_info.residence_period_to and end_date > international_info.residence_period_to:
+                self.add_error('end_date', 
+                    f'契約終了日（{end_date}）が在留期限（{international_info.residence_period_to}）を超えています。'
+                    f'在留期限内の日付を設定してください。')
 
 
 class ClientContractTtpForm(forms.ModelForm):

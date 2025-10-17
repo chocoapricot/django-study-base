@@ -569,6 +569,9 @@ class ContractAssignment(MyModel):
         from datetime import date
         from .teishokubi_calculator import TeishokubiCalculator
 
+        # 外国籍情報チェック
+        self._validate_foreign_staff_assignment()
+
         # 派遣契約かつ派遣社員(有期)かつ60歳未満の場合のみチェック
         if (self.client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and
                 self.staff_contract.employment_type and self.staff_contract.employment_type.is_fixed_term):
@@ -633,6 +636,54 @@ class ContractAssignment(MyModel):
             if not (is_indefinite_employment or is_over_60):
                 raise ValidationError(
                     f'この契約は無期雇用派遣労働者又は60歳以上の者に限定されています。スタッフ「{staff.name}」は条件を満たしていません。'
+                )
+
+    def _validate_foreign_staff_assignment(self):
+        """外国籍スタッフの契約アサインバリデーション"""
+        from django.core.exceptions import ValidationError
+        from datetime import date
+
+        staff = self.staff_contract.staff
+        
+        # 外国籍情報が登録されているかチェック
+        try:
+            international_info = staff.international
+        except:
+            # 外国籍情報が登録されていない場合は何もしない
+            return
+
+        # 外国籍情報が登録されている場合のチェック
+        if international_info:
+            # 1. 割当終了日より前に在留期限がある場合にはエラー
+            assignment_end_date = min(
+                self.client_contract.end_date if self.client_contract.end_date else date.max,
+                self.staff_contract.end_date if self.staff_contract.end_date else date.max
+            )
+            
+            if assignment_end_date != date.max and international_info.residence_period_to and assignment_end_date > international_info.residence_period_to:
+                raise ValidationError(
+                    f'割当終了日（{assignment_end_date}）が在留期限（{international_info.residence_period_to}）を超えています。'
+                    f'在留期限内の日付を設定してください。'
+                )
+
+            # 2. 職種が特定技能外国人受入該当になっていなければエラー
+            if not self.staff_contract.job_category:
+                raise ValidationError(
+                    f'外国籍スタッフ「{staff.name_last} {staff.name_first}」の契約では、'
+                    f'特定技能外国人受入該当の職種を選択してください。'
+                )
+            elif not self.staff_contract.job_category.is_specified_skilled_worker:
+                raise ValidationError(
+                    f'外国籍スタッフ「{staff.name_last} {staff.name_first}」の契約では、'
+                    f'特定技能外国人受入該当の職種を選択してください。'
+                )
+
+            # 3. クライアント契約が派遣の場合、職種が農業漁業派遣該当になっていなければエラー
+            if (self.client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and
+                self.staff_contract.job_category and not self.staff_contract.job_category.is_agriculture_fishery_dispatch):
+                raise ValidationError(
+                    f'外国籍スタッフ「{staff.name_last} {staff.name_first}」の派遣契約では、'
+                    f'農業漁業派遣該当の職種を選択してください。'
                 )
 
 
