@@ -1012,12 +1012,12 @@
             "address3": "フロイス館",
             "phone": "090-2345-6789",
             "email": "frois-luis@staff.jp",
-            "regist_status": 2,
-            "employee_no": null,
-            "hire_date": null,
+            "regist_status": 4,
+            "employment_type": 4,
+            "employee_no": "EMP017",
+            "hire_date": "2020-08-01",
             "resignation_date": null,
             "department_code": null,
-            "employment_type": null,
             "memo": "優れた観察眼を持つ記録者。客観的な分析と報告が得意。"
         }
     },
