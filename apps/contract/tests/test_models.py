@@ -206,11 +206,21 @@ class ContractAssignmentValidationTest(TestCase):
         """割当終了日が抵触日を超える場合にValidationErrorが発生することを確認"""
         from ..models import ContractAssignment
 
-        staff = Staff.objects.create(
-            name_last='テスト', name_first='スタッフ', email='test@example.com', created_by=self.user
+        # 60歳未満のスタッフ（抵触日チェック対象）
+        staff_under_60 = Staff.objects.create(
+            name_last='テスト', name_first='スタッフ', email='test@example.com', 
+            birth_date=date.today() - timedelta(days=30*365),  # 30歳
+            created_by=self.user
         )
 
-        # --- 抵触日を超えるケース ---
+        # 60歳以上のスタッフ（抵触日チェック対象外）
+        staff_over_60 = Staff.objects.create(
+            name_last='ベテラン', name_first='スタッフ', email='veteran@example.com',
+            birth_date=date.today() - timedelta(days=65*365),  # 65歳
+            created_by=self.user
+        )
+
+        # --- 抵触日を超えるケース（60歳未満の有期雇用スタッフ） ---
         client_contract_ng = ClientContract.objects.create(
             client=self.client,
             contract_name='長期派遣契約',
@@ -223,7 +233,7 @@ class ContractAssignmentValidationTest(TestCase):
         ClientContractHaken.objects.create(client_contract=client_contract_ng, haken_unit=self.haken_unit)
 
         staff_contract_ng = StaffContract.objects.create(
-            staff=staff,
+            staff=staff_under_60,
             contract_name='長期スタッフ契約',
             employment_type=self.employment_type_fixed,
             start_date=date.today(),
@@ -242,6 +252,30 @@ class ContractAssignmentValidationTest(TestCase):
         with self.assertRaises(ValidationError):
             assignment_ng.full_clean()
 
+        # --- 60歳以上のスタッフは抵触日チェック対象外 ---
+        staff_contract_over_60 = StaffContract.objects.create(
+            staff=staff_over_60,
+            contract_name='長期スタッフ契約（60歳以上）',
+            employment_type=self.employment_type_fixed,
+            start_date=date.today(),
+            end_date=date.today() + timedelta(days=365 * 4), # 4年後
+            created_by=self.user,
+            contract_pattern=self.staff_pattern
+        )
+
+        assignment_over_60 = ContractAssignment(
+            client_contract=client_contract_ng,
+            staff_contract=staff_contract_over_60,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        try:
+            assignment_over_60.full_clean()
+            assignment_over_60.save()
+        except ValidationError:
+            self.fail("60歳以上のスタッフで抵触日チェックが実行されました。")
+
         # --- 抵触日を超えないケース ---
         client_contract_ok = ClientContract.objects.create(
             client=self.client,
@@ -255,7 +289,7 @@ class ContractAssignmentValidationTest(TestCase):
         ClientContractHaken.objects.create(client_contract=client_contract_ok, haken_unit=self.haken_unit)
 
         staff_contract_ok = StaffContract.objects.create(
-            staff=staff,
+            staff=staff_under_60,
             contract_name='短期スタッフ契約',
             employment_type=self.employment_type_fixed,
             start_date=date.today(),
@@ -276,6 +310,86 @@ class ContractAssignmentValidationTest(TestCase):
             assignment_ok.save()
         except ValidationError:
             self.fail("抵触日を超えない場合にValidationErrorが発生しました。")
+
+    def test_age_boundary_for_conflict_date_validation(self):
+        """60歳の境界値での抵触日チェックをテスト"""
+        from ..models import ContractAssignment
+
+        # 60歳ちょうどのスタッフ（抵触日チェック対象外）
+        # より正確な60歳の計算（うるう年を考慮）
+        from dateutil.relativedelta import relativedelta
+        today = date.today()
+        birth_date_60 = today - relativedelta(years=60)
+        staff_exactly_60 = Staff.objects.create(
+            name_last='境界', name_first='スタッフ', email='boundary@example.com',
+            birth_date=birth_date_60,
+            created_by=self.user
+        )
+
+        # 59歳のスタッフ（抵触日チェック対象）
+        birth_date_59 = today - relativedelta(years=59)
+        staff_59 = Staff.objects.create(
+            name_last='若手', name_first='スタッフ', email='young@example.com',
+            birth_date=birth_date_59,
+            created_by=self.user
+        )
+
+        # 長期契約（4年）
+        client_contract_long = ClientContract.objects.create(
+            client=self.client,
+            contract_name='長期派遣契約',
+            client_contract_type_code='20',  # 派遣
+            start_date=date.today(),
+            end_date=date.today() + timedelta(days=365 * 4), # 4年後
+            created_by=self.user,
+            contract_pattern=self.client_pattern
+        )
+        ClientContractHaken.objects.create(client_contract=client_contract_long, haken_unit=self.haken_unit)
+
+        # 60歳ちょうどのスタッフは抵触日チェック対象外
+        staff_contract_60 = StaffContract.objects.create(
+            staff=staff_exactly_60,
+            contract_name='60歳スタッフ契約',
+            employment_type=self.employment_type_fixed,
+            start_date=date.today(),
+            end_date=date.today() + timedelta(days=365 * 4), # 4年後
+            created_by=self.user,
+            contract_pattern=self.staff_pattern
+        )
+
+        assignment_60 = ContractAssignment(
+            client_contract=client_contract_long,
+            staff_contract=staff_contract_60,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        try:
+            assignment_60.full_clean()
+            assignment_60.save()
+        except ValidationError:
+            self.fail("60歳ちょうどのスタッフで抵触日チェックが実行されました。")
+
+        # 59歳のスタッフは抵触日チェック対象
+        staff_contract_59 = StaffContract.objects.create(
+            staff=staff_59,
+            contract_name='59歳スタッフ契約',
+            employment_type=self.employment_type_fixed,
+            start_date=date.today(),
+            end_date=date.today() + timedelta(days=365 * 4), # 4年後
+            created_by=self.user,
+            contract_pattern=self.staff_pattern
+        )
+
+        assignment_59 = ContractAssignment(
+            client_contract=client_contract_long,
+            staff_contract=staff_contract_59,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
+        with self.assertRaises(ValidationError):
+            assignment_59.full_clean()
 
     def test_senior_limited_contract_validation(self):
         """無期雇用又は60歳以上限定契約のバリデーションをテスト"""

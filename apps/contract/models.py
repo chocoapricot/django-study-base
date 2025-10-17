@@ -569,36 +569,48 @@ class ContractAssignment(MyModel):
         from datetime import date
         from .teishokubi_calculator import TeishokubiCalculator
 
-        # 派遣契約かつ派遣社員(有期)の場合のみチェック
+        # 派遣契約かつ派遣社員(有期)かつ60歳未満の場合のみチェック
         if (self.client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and
                 self.staff_contract.employment_type and self.staff_contract.employment_type.is_fixed_term):
 
-            staff_email = self.staff_contract.staff.email
-            client_corporate_number = self.client_contract.client.corporate_number
+            # 割当開始日時点で60歳未満かチェック
+            staff = self.staff_contract.staff
+            assignment_start_date = max(self.client_contract.start_date, self.staff_contract.start_date)
+            
+            is_under_60 = True  # デフォルトは60歳未満として扱う
+            if staff.birth_date:
+                age_at_assignment_start = assignment_start_date.year - staff.birth_date.year - \
+                    ((assignment_start_date.month, assignment_start_date.day) < (staff.birth_date.month, staff.birth_date.day))
+                if age_at_assignment_start >= 60:
+                    is_under_60 = False
 
-            if hasattr(self.client_contract, 'haken_info') and self.client_contract.haken_info and self.client_contract.haken_info.haken_unit:
-                organization_name = self.client_contract.haken_info.haken_unit.name
+            if is_under_60:
+                staff_email = staff.email
+                client_corporate_number = self.client_contract.client.corporate_number
 
-                calculator = TeishokubiCalculator(
-                    staff_email=staff_email,
-                    client_corporate_number=client_corporate_number,
-                    organization_name=organization_name
-                )
+                if hasattr(self.client_contract, 'haken_info') and self.client_contract.haken_info and self.client_contract.haken_info.haken_unit:
+                    organization_name = self.client_contract.haken_info.haken_unit.name
 
-                # この割当を追加した場合の抵触日を計算
-                conflict_date = calculator.calculate_conflict_date_without_update(new_assignment_instance=self)
-
-                if conflict_date:
-                    # 割当終了日を計算
-                    assignment_end_date = min(
-                        self.client_contract.end_date if self.client_contract.end_date else date.max,
-                        self.staff_contract.end_date if self.staff_contract.end_date else date.max
+                    calculator = TeishokubiCalculator(
+                        staff_email=staff_email,
+                        client_corporate_number=client_corporate_number,
+                        organization_name=organization_name
                     )
 
-                    if assignment_end_date > conflict_date:
-                        raise ValidationError(
-                            f'割当終了日（{assignment_end_date}）が抵触日（{conflict_date}）を超えています。'
+                    # この割当を追加した場合の抵触日を計算
+                    conflict_date = calculator.calculate_conflict_date_without_update(new_assignment_instance=self)
+
+                    if conflict_date:
+                        # 割当終了日を計算
+                        assignment_end_date = min(
+                            self.client_contract.end_date if self.client_contract.end_date else date.max,
+                            self.staff_contract.end_date if self.staff_contract.end_date else date.max
                         )
+
+                        if assignment_end_date > conflict_date:
+                            raise ValidationError(
+                                f'割当終了日（{assignment_end_date}）が抵触日（{conflict_date}）を超えています。'
+                            )
 
         # 無期雇用派遣労働者又は60歳以上の者に限定する場合のチェック
         if (hasattr(self.client_contract, 'haken_info') and self.client_contract.haken_info and

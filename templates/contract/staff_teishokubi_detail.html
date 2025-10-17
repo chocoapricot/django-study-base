@@ -165,6 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="card-body py-2">
                     <div class="mb-2">• 契約種別: 派遣契約のみ対象</div>
                     <div class="mb-2">• 雇用形態: 有期雇用のスタッフのみ対象</div>
+                    <div class="mb-2">• 年齢条件: 割当開始日時点で60歳未満のスタッフのみ対象</div>
                     <div class="mb-0">• 組織単位: 同一の派遣先組織単位での期間を統合</div>
                 </div>
             </div>
@@ -193,6 +194,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
 
+            <!-- バリデーション -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-shield-check text-danger me-2"></i>バリデーション</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 実行タイミング: 契約アサイン作成時（スタッフ契約とクライアント契約の紐づけ時）</div>
+                    <div class="mb-2">• 対象条件: 派遣契約かつ有期雇用かつ割当開始日時点で60歳未満のスタッフ</div>
+                    <div class="mb-2">• 年齢計算: 割当開始日（クライアント契約開始日とスタッフ契約開始日の遅い方）時点での年齢で判定</div>
+                    <div class="mb-2">• チェック内容: 割当終了日が算出された個人抵触日を超えていないかを確認</div>
+                    <div class="mb-0">• エラーメッセージ: 「割当終了日（日付）が抵触日（日付）を超えています」</div>
+                </div>
+            </div>
+
             <!-- 自動処理 -->
             <div class="card" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
                 <div class="card-header py-2">
@@ -203,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="mb-2">• 手動詳細作成・削除時: 抵触日を再計算して更新</div>
                     <div class="mb-2">• 抵触日計算: 派遣開始日の3年後を自動計算</div>
                     <div class="mb-2">• 期間統合: 重複・連続する期間を自動で統合処理</div>
-                    <div class="mb-0">• バリデーション: 契約アサイン時に抵触日超過をチェック</div>
+                    <div class="mb-0">• 60歳以上除外: 60歳以上のスタッフは抵触日チェック対象外</div>
                 </div>
             </div>
         `;
