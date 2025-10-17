@@ -1118,11 +1118,11 @@ class ClientContractTtpViewTest(TestCase):
     def test_ttp_update_get_denied_for_approved_contract(self):
         """「作成中」以外の契約では、TTP編集ページへのアクセスが拒否される"""
         url = reverse('contract:client_contract_ttp_update', kwargs={'pk': self.approved_ttp.pk})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('contract:client_contract_ttp_detail', kwargs={'pk': self.approved_ttp.pk}))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(any('この契約ステータスでは紹介予定派遣情報は編集できません。' in str(m) for m in messages))
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.approved_contract.pk}), status_code=302, target_status_code=200)
+        messages = list(response.context['messages'])
+        self.assertTrue(any('契約が作成中でないため、紹介予定派遣情報は編集できません。' in str(m) for m in messages))
 
     def test_ttp_delete_get_allowed_for_draft_contract(self):
         """「作成中」の契約では、TTP削除ページにアクセスできる"""
@@ -1133,11 +1133,11 @@ class ClientContractTtpViewTest(TestCase):
     def test_ttp_delete_get_denied_for_approved_contract(self):
         """「作成中」以外の契約では、TTP削除ページへのアクセスが拒否される"""
         url = reverse('contract:client_contract_ttp_delete', kwargs={'pk': self.approved_ttp.pk})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('contract:client_contract_ttp_detail', kwargs={'pk': self.approved_ttp.pk}))
-        messages = list(get_messages(response.wsgi_request))
-        self.assertTrue(any('この契約ステータスでは紹介予定派遣情報は削除できません。' in str(m) for m in messages))
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, reverse('contract:client_contract_detail', kwargs={'pk': self.approved_contract.pk}), status_code=302, target_status_code=200)
+        messages = list(response.context['messages'])
+        self.assertTrue(any('契約が作成中でないため、紹介予定派遣情報は削除できません。' in str(m) for m in messages))
 
     def test_ttp_create_form_initial_values_from_master(self):
         """TTP作成画面で、DefaultValueマスタから初期値が設定されるかテスト"""
