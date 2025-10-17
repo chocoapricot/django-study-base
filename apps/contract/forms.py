@@ -318,6 +318,21 @@ class ClientContractHakenForm(forms.ModelForm):
         client = kwargs.pop('client', None)
         super().__init__(*args, **kwargs)
 
+        # 新規作成時に初期値マスタから値を設定
+        if not self.instance.pk:  # 新規作成の場合
+            from apps.master.models import DefaultValue
+            try:
+                # 協定対象派遣労働者に限定するか否かの別の初期値を取得
+                default_limit_by_agreement = DefaultValue.objects.get(key='ClientContractHaken.limit_by_agreement')
+                # 'true'文字列を定数値に変換
+                if default_limit_by_agreement.value.lower() == 'true':
+                    self.fields['limit_by_agreement'].initial = Constants.LIMIT_BY_AGREEMENT.LIMITED
+                else:
+                    self.fields['limit_by_agreement'].initial = Constants.LIMIT_BY_AGREEMENT.NOT_LIMITED
+            except DefaultValue.DoesNotExist:
+                # マスタに設定がない場合はデフォルトで「限定しない」
+                self.fields['limit_by_agreement'].initial = Constants.LIMIT_BY_AGREEMENT.NOT_LIMITED
+
         # 全てのフィールドを必須にする
         for field_name, field in self.fields.items():
             # responsibility_degree, work_locationは任意入力

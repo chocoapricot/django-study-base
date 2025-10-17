@@ -44,7 +44,15 @@
                             {{ item.get_format_display }}
                         </td>
                         <td>
-                            {{ item.value|linebreaksbr }}
+                            {% if item.format == 'boolean' %}
+                                {% if item.value|lower == 'true' %}
+                                    <span class="badge bg-success">True</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">False</span>
+                                {% endif %}
+                            {% else %}
+                                {{ item.value|linebreaksbr }}
+                            {% endif %}
                         </td>
                         <td>
                             <a href="{% url 'master:default_value_update' item.pk %}" class="btn btn-dark btn-sm" title="編集">

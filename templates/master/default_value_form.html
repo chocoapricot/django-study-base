@@ -34,7 +34,20 @@
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.value.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">初期値</label>
                 <div class="col-sm-6">
-                    {{ form.value }}
+                    {% if form.value.field.widget.input_type == 'radio' %}
+                        <div class="d-flex gap-3">
+                            {% for choice in form.value %}
+                                <div class="form-check">
+                                    {{ choice.tag }}
+                                    <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                        {{ choice.choice_label }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.value }}
+                    {% endif %}
                     {% if form.value.errors %}
                         <div class="text-danger small">{{ form.value.errors.0 }}</div>
                     {% endif %}

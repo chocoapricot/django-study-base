@@ -917,6 +917,7 @@ class DefaultValue(MyModel):
     FORMAT_CHOICES = [
         ('text', 'テキスト'),
         ('textarea', 'テキストエリア'),
+        ('boolean', '真偽値'),
     ]
 
     key = models.CharField('キー', max_length=255, primary_key=True)
@@ -933,6 +934,22 @@ class DefaultValue(MyModel):
 
     def __str__(self):
         return self.target_item
+
+    def get_boolean_value(self):
+        """
+        boolean形式の値をPythonのbool型で取得
+        """
+        if self.format == 'boolean':
+            return self.value.lower() == 'true'
+        return None
+
+    def get_formatted_value(self):
+        """
+        形式に応じて適切にフォーマットされた値を取得
+        """
+        if self.format == 'boolean':
+            return self.get_boolean_value()
+        return self.value
 
 
 class StaffRegistStatus(MyModel):
