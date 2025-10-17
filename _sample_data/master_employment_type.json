@@ -3,7 +3,7 @@
     "model": "master.employmenttype",
     "pk": 1,
     "fields": {
-        "version": 1760370896474883,
+        "version": 1760695206255052,
         "created_at": "2025-10-13T15:24:09.558Z",
         "created_by": 1,
         "updated_at": "2025-10-13T15:24:09.558Z",
@@ -18,13 +18,13 @@
     "model": "master.employmenttype",
     "pk": 2,
     "fields": {
-        "version": 1760370896487797,
+        "version": 1760710413314622,
         "created_at": "2025-10-13T15:24:30.056Z",
         "created_by": 1,
-        "updated_at": "2025-10-13T15:24:30.056Z",
+        "updated_at": "2025-10-17T14:29:19.967Z",
         "updated_by": 1,
         "name": "契約社員(有期)",
-        "display_order": 20,
+        "display_order": 30,
         "is_fixed_term": true,
         "is_active": true
     }
@@ -33,13 +33,13 @@
     "model": "master.employmenttype",
     "pk": 3,
     "fields": {
-        "version": 1760371055918670,
+        "version": 1760710397463898,
         "created_at": "2025-10-13T15:25:05.407Z",
         "created_by": 1,
-        "updated_at": "2025-10-13T16:13:22.571Z",
+        "updated_at": "2025-10-17T14:29:04.116Z",
         "updated_by": 1,
         "name": "契約社員(無期)",
-        "display_order": 25,
+        "display_order": 35,
         "is_fixed_term": false,
         "is_active": false
     }
@@ -48,13 +48,13 @@
     "model": "master.employmenttype",
     "pk": 4,
     "fields": {
-        "version": 1760370896494783,
+        "version": 1760710419994835,
         "created_at": "2025-10-13T15:25:31.991Z",
         "created_by": 1,
-        "updated_at": "2025-10-13T15:25:31.991Z",
+        "updated_at": "2025-10-17T14:29:26.647Z",
         "updated_by": 1,
         "name": "派遣社員(有期)",
-        "display_order": 30,
+        "display_order": 20,
         "is_fixed_term": true,
         "is_active": true
     }
@@ -63,13 +63,13 @@
     "model": "master.employmenttype",
     "pk": 5,
     "fields": {
-        "version": 1760371051016490,
+        "version": 1760710426556129,
         "created_at": "2025-10-13T15:25:53.130Z",
         "created_by": 1,
-        "updated_at": "2025-10-13T16:13:17.668Z",
+        "updated_at": "2025-10-17T14:29:33.208Z",
         "updated_by": 1,
         "name": "派遣社員(無期)",
-        "display_order": 35,
+        "display_order": 25,
         "is_fixed_term": false,
         "is_active": false
     }
