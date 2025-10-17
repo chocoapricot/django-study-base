@@ -1052,5 +1052,37 @@
             "employment_type": 1,
             "memo": "外交顧問として幕府に仕え、航海術や造船技術を伝えた。日英間の架け橋となった。"
         }
+    },
+    {
+        "model": "staff.staff",
+        "pk": 34,
+        "fields": {
+            "created_at": "2024-10-30T12:09:18.158Z",
+            "created_by": 1,
+            "updated_at": "2024-10-31T04:14:34.286Z",
+            "updated_by": 1,
+            "name_last": "大谷",
+            "name_first": "吉継",
+            "name_kana_last": "オオタニ",
+            "name_kana_first": "ヨシツグ",
+            "name": "大谷吉継",
+            "birth_date": "1972-08-15",
+            "sex": 1,
+            "age": 52,
+            "postal_code": "9140054",
+            "address_kana": null,
+            "address1": "福井県敦賀市",
+            "address2": "白銀町１丁目３－５",
+            "address3": "大谷邸２０１",
+            "phone": "080-9012-3456",
+            "email": "otani-yoshitsugu@staff.jp",
+            "regist_status": 4,
+            "employee_no": "EMP034",
+            "hire_date": "2020-09-01",
+            "resignation_date": null,
+            "department_code": "EIGYO",
+            "employment_type": 2,
+            "memo": "「白頭巾」で知られる智将。病気を患いながらも義理を重んじ、最後まで石田三成を支えた忠義の人。"
+        }
     }
 ]

@@ -656,6 +656,8 @@ def staff_contract_list(request):
     status_filter = request.GET.get('status', '')
     staff_filter = request.GET.get('staff', '')  # スタッフフィルタを追加
     employment_type_filter = request.GET.get('employment_type', '')
+    has_international_filter = request.GET.get('has_international', '')
+    has_disability_filter = request.GET.get('has_disability', '')
     
     # 日付フィルタの初期値設定：リセットボタンが押された場合は空、それ以外は「本日以降」
     reset_filter = request.GET.get('reset_filter', '')
@@ -688,6 +690,14 @@ def staff_contract_list(request):
     # 雇用形態フィルタを適用
     if employment_type_filter:
         contracts = contracts.filter(employment_type_id=employment_type_filter)
+
+    # 外国籍での絞り込み
+    if has_international_filter:
+        contracts = contracts.filter(staff__international__isnull=False)
+
+    # 障害者での絞り込み
+    if has_disability_filter:
+        contracts = contracts.filter(staff__disability__isnull=False)
 
     # 日付フィルタを適用
     if date_filter:
@@ -781,6 +791,8 @@ def staff_contract_list(request):
 
         # has_internationalはモデルのプロパティで処理
         staff.has_international_info = hasattr(staff, 'international')
+        # 障害者情報登録状況を判定
+        staff.has_disability_info = hasattr(staff, 'disability')
     
     context = {
         'contracts': contracts_page,
@@ -792,6 +804,8 @@ def staff_contract_list(request):
         'employment_type_filter': employment_type_filter,
         'employment_type_list': employment_type_list,
         'date_filter': date_filter,
+        'has_international_filter': has_international_filter,
+        'has_disability_filter': has_disability_filter,
     }
     return render(request, 'contract/staff_contract_list.html', context)
 
@@ -2249,6 +2263,8 @@ def staff_contract_export(request):
     staff_filter = request.GET.get('staff', '')
     employment_type_filter = request.GET.get('employment_type', '')
     date_filter = request.GET.get('date_filter', '')
+    has_international_filter = request.GET.get('has_international', '')
+    has_disability_filter = request.GET.get('has_disability', '')
     format_type = request.GET.get('format', 'csv')
 
     contracts = StaffContract.objects.select_related('staff', 'employment_type').all()
@@ -2266,6 +2282,10 @@ def staff_contract_export(request):
         contracts = contracts.filter(contract_status=status_filter)
     if employment_type_filter:
         contracts = contracts.filter(employment_type_id=employment_type_filter)
+    if has_international_filter:
+        contracts = contracts.filter(staff__international__isnull=False)
+    if has_disability_filter:
+        contracts = contracts.filter(staff__disability__isnull=False)
     
     # 日付フィルタを適用
     if date_filter:

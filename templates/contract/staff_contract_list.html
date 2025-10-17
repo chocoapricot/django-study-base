@@ -14,9 +14,26 @@
         {% else %}
             スタッフ契約一覧
         {% endif %}
-        {% if not staff_filter %}
-            <a href="{% url 'contract:staff_contract_create' %}" class="btn btn-sm btn-primary me-2">新規作成</a>
-        {% endif %}
+        <div class="d-flex">
+            {% if not staff_filter %}
+                <ul class="nav nav-pills me-2">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">その他検索</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{% url 'contract:staff_contract_list' %}?has_international=true">
+                                <i class="bi bi-send"></i>
+                                外国籍一覧
+                            </a>
+                            <a class="dropdown-item" href="{% url 'contract:staff_contract_list' %}?has_disability=true">
+                                <i class="bi bi-heart"></i>
+                                障害者一覧
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+                <a href="{% url 'contract:staff_contract_create' %}" class="btn btn-sm btn-primary">新規作成</a>
+            {% endif %}
+        </div>
     </div>
     <div class="card-body">
         <!-- スタッフフィルタ時のパンくずリスト -->
@@ -123,6 +140,15 @@
                         params.append('staff', '{{ staff_filter }}');
                     }
 
+                    // Add other filters from the page if they exist
+                    const currentParams = new URLSearchParams(window.location.search);
+                    if (currentParams.has('has_international')) {
+                        params.append('has_international', currentParams.get('has_international'));
+                    }
+                    if (currentParams.has('has_disability')) {
+                        params.append('has_disability', currentParams.get('has_disability'));
+                    }
+
                     params.append('format', format);
 
                     const exportUrl = "{% url 'contract:staff_contract_export' %}" + '?' + params.toString();
@@ -164,8 +190,11 @@
                                     </td>
                                     <td>
                                         {{ contract.staff.name_last }} {{ contract.staff.name_first }}
-                                        {% if contract.staff.has_international %}
+                                        {% if contract.staff.has_international_info %}
                                             <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
+                                        {% endif %}
+                                        {% if contract.staff.has_disability_info %}
+                                            <i class="bi bi-heart" style="color:#17a2b8;" title="障害者"></i>
                                         {% endif %}
                                     </td>
                                     <td>
