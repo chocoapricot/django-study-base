@@ -36,9 +36,13 @@
                             <tr>
                                 <th class="w-25">スタッフ</th>
                                 <td>
-                                    <a href="{% url 'contract:staff_contract_detail' staff_contract.pk %}" class="text-decoration-none">
+                                    {% if staff_contract.pk %}
+                                        <a href="{% url 'contract:staff_contract_detail' staff_contract.pk %}" class="text-decoration-none">
+                                            {{ staff_contract.staff.name_last }} {{ staff_contract.staff.name_first }}
+                                        </a>
+                                    {% else %}
                                         {{ staff_contract.staff.name_last }} {{ staff_contract.staff.name_first }}
-                                    </a>
+                                    {% endif %}
                                     {% if staff_contract.staff.has_international %}
                                         <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
                                     {% endif %}
@@ -82,11 +86,22 @@
                             <input type="hidden" name="client_contract_id" value="{{ client_contract.pk }}">
                             <input type="hidden" name="staff_contract_id" value="{{ staff_contract.pk }}">
                             <input type="hidden" name="from" value="{{ from_view }}">
+                            {% if from_create %}
+                                <input type="hidden" name="from_create" value="true">
+                            {% endif %}
                             <button type="submit" class="btn btn-sm btn-primary">割当</button>
                         </form>
-                        <a href="{% url 'contract:client_contract_assignment' client_contract.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+                        {% if from_create %}
+                            <form action="{% url 'contract:clear_assignment_session' %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="redirect_to" value="{% url 'contract:client_contract_assignment' client_contract.pk %}">
+                                <button type="submit" class="btn btn-sm btn-secondary me-2">戻る</button>
+                            </form>
+                        {% else %}
+                            <a href="{% url 'contract:client_contract_assignment' client_contract.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+                        {% endif %}
                     </div>
-                </div>
+                </div
             </div>
         </div>
     </div>

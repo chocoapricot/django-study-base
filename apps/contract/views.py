@@ -944,36 +944,41 @@ def staff_contract_create(request):
         form = StaffContractForm(request.POST)
         if form.is_valid():
             try:
-                with transaction.atomic():
-                    contract = form.save(commit=False)
-                    contract.created_by = request.user
-                    contract.updated_by = request.user
-                    # 新規作成・コピー作成時はステータスを「作成中」に戻す
-                    contract.contract_status = Constants.CONTRACT_STATUS.DRAFT
-                    contract.contract_number = None  # 契約番号はクリア
+                # クライアント契約からの作成の場合、確認画面に遷移（まだ保存しない）
+                if client_contract_id:
+                    # フォームデータをセッション用に変換（モデルインスタンスをIDに変換）
+                    session_data = {}
+                    for key, value in form.cleaned_data.items():
+                        if hasattr(value, 'pk'):  # モデルインスタンスの場合
+                            session_data[key] = value.pk
+                        elif isinstance(value, (date, datetime)):  # 日付の場合
+                            session_data[key] = value.isoformat()
+                        elif hasattr(value, '__str__'):  # Decimal型などを文字列に変換
+                            session_data[key] = str(value)
+                        else:
+                            session_data[key] = value
                     
-                    # 雇用形態が設定されていない場合、スタッフの現在の雇用形態を設定
-                    if not contract.employment_type and contract.staff and contract.staff.employment_type:
-                        contract.employment_type = contract.staff.employment_type
-                    
-                    contract.save()
-                    
-                    # クライアント契約からの作成の場合、自動的に割当を作成
-                    if client_contract_id:
-                        try:
-                            client_contract_for_assignment = ClientContract.objects.get(pk=client_contract_id)
-                            ContractAssignment.objects.create(
-                                client_contract=client_contract_for_assignment,
-                                staff_contract=contract,
-                                created_by=request.user,
-                                updated_by=request.user
-                            )
-                            messages.success(request, f'スタッフ契約「{contract.contract_name}」を作成し、クライアント契約「{client_contract_for_assignment.contract_name}」に割り当てました。')
-                            # クライアント契約詳細に遷移
-                            return redirect('contract:client_contract_detail', pk=client_contract_id)
-                        except ClientContract.DoesNotExist:
-                            messages.success(request, f'スタッフ契約「{contract.contract_name}」を作成しました。')
-                    else:
+                    request.session['pending_staff_contract'] = {
+                        'client_contract_id': client_contract_id,
+                        'form_data': session_data,
+                        'from_view': 'client'
+                    }
+                    return redirect('contract:staff_assignment_confirm_from_create')
+                else:
+                    # 通常の新規作成の場合は従来通り保存
+                    with transaction.atomic():
+                        contract = form.save(commit=False)
+                        contract.created_by = request.user
+                        contract.updated_by = request.user
+                        # 新規作成・コピー作成時はステータスを「作成中」に戻す
+                        contract.contract_status = Constants.CONTRACT_STATUS.DRAFT
+                        contract.contract_number = None  # 契約番号はクリア
+                        
+                        # 雇用形態が設定されていない場合、スタッフの現在の雇用形態を設定
+                        if not contract.employment_type and contract.staff and contract.staff.employment_type:
+                            contract.employment_type = contract.staff.employment_type
+                        
+                        contract.save()
                         messages.success(request, f'スタッフ契約「{contract.contract_name}」を作成しました。')
                     
                     return redirect('contract:staff_contract_detail', pk=contract.pk)
@@ -2592,6 +2597,104 @@ def staff_assignment_confirm(request):
 
 
 @login_required
+def staff_assignment_confirm_from_create(request):
+    """新規スタッフ契約作成後のアサイン確認画面"""
+    # セッションから保留中のスタッフ契約情報を取得
+    pending_staff_contract = request.session.get('pending_staff_contract')
+    if not pending_staff_contract:
+        messages.error(request, 'スタッフ契約情報が見つかりません。')
+        return redirect('contract:contract_index')
+
+    client_contract_id = pending_staff_contract.get('client_contract_id')
+    form_data = pending_staff_contract.get('form_data')
+    from_view = pending_staff_contract.get('from_view', 'client')
+
+    try:
+        client_contract = get_object_or_404(ClientContract, pk=client_contract_id)
+    except:
+        messages.error(request, 'クライアント契約が見つかりません。')
+        # セッションをクリア
+        if 'pending_staff_contract' in request.session:
+            del request.session['pending_staff_contract']
+        return redirect('contract:contract_index')
+
+    # ステータスチェック
+    if client_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
+        messages.error(request, '作成中のクライアント契約でのみ割当が可能です。')
+        # セッションをクリア
+        if 'pending_staff_contract' in request.session:
+            del request.session['pending_staff_contract']
+        return redirect('contract:client_contract_detail', pk=client_contract_id)
+
+    # セッションデータからフォームデータを復元
+    restored_form_data = {}
+    for key, value in form_data.items():
+        if key == 'staff' and value:
+            try:
+                restored_form_data[key] = Staff.objects.get(pk=value)
+            except Staff.DoesNotExist:
+                messages.error(request, 'スタッフが見つかりません。')
+                if 'pending_staff_contract' in request.session:
+                    del request.session['pending_staff_contract']
+                return redirect('contract:contract_index')
+        elif key == 'employment_type' and value and value != 'None':
+            try:
+                from apps.master.models import EmploymentType
+                restored_form_data[key] = EmploymentType.objects.get(pk=value)
+            except EmploymentType.DoesNotExist:
+                restored_form_data[key] = None
+        elif key == 'job_category' and value and value != 'None':
+            try:
+                from apps.master.models import JobCategory
+                restored_form_data[key] = JobCategory.objects.get(pk=value)
+            except JobCategory.DoesNotExist:
+                restored_form_data[key] = None
+        elif key == 'contract_pattern' and value and value != 'None':
+            try:
+                from apps.master.models import ContractPattern
+                restored_form_data[key] = ContractPattern.objects.get(pk=value)
+            except ContractPattern.DoesNotExist:
+                restored_form_data[key] = None
+        elif key in ['start_date', 'end_date'] and value:
+            from datetime import datetime
+            if isinstance(value, str):
+                restored_form_data[key] = datetime.fromisoformat(value).date()
+            else:
+                restored_form_data[key] = value
+        else:
+            restored_form_data[key] = value
+
+    # フォームデータから仮のスタッフ契約オブジェクトを作成（保存はしない）
+    from .forms import StaffContractForm
+    form = StaffContractForm(restored_form_data)
+    if form.is_valid():
+        staff_contract = form.save(commit=False)
+        # 必要な追加設定
+        staff_contract.created_by = request.user
+        staff_contract.updated_by = request.user
+        staff_contract.contract_status = Constants.CONTRACT_STATUS.DRAFT
+        staff_contract.contract_number = None
+        
+        # 雇用形態が設定されていない場合、スタッフの現在の雇用形態を設定
+        if not staff_contract.employment_type and staff_contract.staff and staff_contract.staff.employment_type:
+            staff_contract.employment_type = staff_contract.staff.employment_type
+    else:
+        messages.error(request, 'スタッフ契約データに問題があります。')
+        if 'pending_staff_contract' in request.session:
+            del request.session['pending_staff_contract']
+        return redirect('contract:contract_index')
+
+    context = {
+        'client_contract': client_contract,
+        'staff_contract': staff_contract,
+        'from_view': from_view,
+        'from_create': True,  # 新規作成からの遷移であることを示すフラグ
+    }
+
+    return render(request, 'contract/staff_assignment_confirm.html', context)
+
+
+@login_required
 def confirm_contract_assignment(request):
     """契約アサインの確認画面を表示するビュー（旧版・互換性のため残す）"""
     if request.method == 'POST':
@@ -2626,9 +2729,85 @@ def create_contract_assignment_view(request):
         client_contract_id = request.POST.get('client_contract_id')
         staff_contract_id = request.POST.get('staff_contract_id')
         from_view = request.POST.get('from')
+        from_create = request.POST.get('from_create') == 'true'  # 新規作成からの遷移かどうか
 
         client_contract = get_object_or_404(ClientContract, pk=client_contract_id)
-        staff_contract = get_object_or_404(StaffContract, pk=staff_contract_id)
+        
+        # 新規作成の場合はスタッフ契約をまだ取得しない
+        if not from_create:
+            staff_contract = get_object_or_404(StaffContract, pk=staff_contract_id)
+
+        # 新規作成からの場合の処理
+        if from_create:
+            # セッションから保留中のスタッフ契約情報を取得
+            pending_staff_contract = request.session.get('pending_staff_contract')
+            if not pending_staff_contract:
+                messages.error(request, 'スタッフ契約情報が見つかりません。')
+                return redirect('contract:contract_index')
+            
+            form_data = pending_staff_contract.get('form_data')
+            
+            # セッションデータからフォームデータを復元
+            restored_form_data = {}
+            for key, value in form_data.items():
+                if key == 'staff' and value:
+                    try:
+                        restored_form_data[key] = Staff.objects.get(pk=value)
+                    except Staff.DoesNotExist:
+                        messages.error(request, 'スタッフが見つかりません。')
+                        return redirect('contract:contract_index')
+                elif key == 'employment_type' and value and value != 'None':
+                    try:
+                        from apps.master.models import EmploymentType
+                        restored_form_data[key] = EmploymentType.objects.get(pk=value)
+                    except EmploymentType.DoesNotExist:
+                        restored_form_data[key] = None
+                elif key == 'job_category' and value and value != 'None':
+                    try:
+                        from apps.master.models import JobCategory
+                        restored_form_data[key] = JobCategory.objects.get(pk=value)
+                    except JobCategory.DoesNotExist:
+                        restored_form_data[key] = None
+                elif key == 'contract_pattern' and value and value != 'None':
+                    try:
+                        from apps.master.models import ContractPattern
+                        restored_form_data[key] = ContractPattern.objects.get(pk=value)
+                    except ContractPattern.DoesNotExist:
+                        restored_form_data[key] = None
+                elif key in ['start_date', 'end_date'] and value:
+                    from datetime import datetime
+                    if isinstance(value, str):
+                        restored_form_data[key] = datetime.fromisoformat(value).date()
+                    else:
+                        restored_form_data[key] = value
+                else:
+                    restored_form_data[key] = value
+
+            # スタッフ契約を作成
+            from .forms import StaffContractForm
+            form = StaffContractForm(restored_form_data)
+            if form.is_valid():
+                staff_contract = form.save(commit=False)
+                staff_contract.created_by = request.user
+                staff_contract.updated_by = request.user
+                staff_contract.contract_status = Constants.CONTRACT_STATUS.DRAFT
+                staff_contract.contract_number = None
+                
+                # 雇用形態が設定されていない場合、スタッフの現在の雇用形態を設定
+                if not staff_contract.employment_type and staff_contract.staff and staff_contract.staff.employment_type:
+                    staff_contract.employment_type = staff_contract.staff.employment_type
+                
+                staff_contract.save()
+                
+                # 作成されたスタッフ契約のIDを更新
+                staff_contract_id = staff_contract.pk
+                staff_contract = get_object_or_404(StaffContract, pk=staff_contract_id)
+            else:
+                messages.error(request, 'スタッフ契約の作成に失敗しました。')
+                return redirect('contract:contract_index')
+            
+            # セッションをクリア
+            del request.session['pending_staff_contract']
 
         # ステータスチェック
         if client_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT or \
@@ -2702,6 +2881,25 @@ def create_contract_assignment_view(request):
             return redirect('contract:staff_contract_detail', pk=staff_contract_id)
 
     return redirect('contract:contract_index')
+
+
+@login_required
+@require_POST
+def clear_assignment_session(request):
+    """アサインセッションをクリアしてリダイレクト"""
+    # セッションから保留中のスタッフ契約情報をクリア
+    if 'pending_staff_contract' in request.session:
+        del request.session['pending_staff_contract']
+    
+    # リダイレクト先を取得
+    redirect_to = request.POST.get('redirect_to')
+    if redirect_to:
+        return redirect(redirect_to)
+    
+    return redirect('contract:contract_index')
+
+
+
 
 
 @login_required
