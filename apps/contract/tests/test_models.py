@@ -94,7 +94,8 @@ class ContractModelTest(TestCase):
             end_date=timezone.now().date() + timedelta(days=365),
             contract_amount=300000,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            contract_pattern=self.staff_pattern
         )
 
         self.assertEqual(contract.staff, self.staff)
@@ -111,7 +112,8 @@ class ContractModelTest(TestCase):
             work_location=work_location_text,
             business_content=business_content_text,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            contract_pattern=self.staff_pattern
         )
         self.assertEqual(contract.work_location, work_location_text)
         self.assertEqual(contract.business_content, business_content_text)
@@ -183,30 +185,30 @@ class ContractAssignmentValidationTest(TestCase):
             corporate_number='1234567890123',
             created_by=self.user
         )
-        self.staff = Staff.objects.create(
-            name_last='テスト',
-            name_first='スタッフ',
-            email='test@example.com',
-            created_by=self.user
-        )
         self.haken_unit = ClientDepartment.objects.create(
             client=self.client,
             name='テスト派遣部署',
             created_by=self.user
         )
-        self.contract_pattern = ContractPattern.objects.create(
+        self.client_pattern = ContractPattern.objects.create(
             name='テスト契約パターン',
             domain='10',  # Client
             contract_type_code='20', # Haken
             is_active=True
         )
+        self.staff_pattern = ContractPattern.objects.create(name='スタッフ向け基本契約', domain='1', is_active=True)
         from apps.master.models import EmploymentType
-        self.employment_type_haken = EmploymentType.objects.create(name='派遣社員(有期)', is_fixed_term=True)
+        self.employment_type_fixed = EmploymentType.objects.create(name='派遣社員(有期)', is_fixed_term=True)
+        self.employment_type_indefinite = EmploymentType.objects.create(name='派遣社員(無期)', is_fixed_term=False)
 
 
     def test_conflict_date_validation(self):
         """割当終了日が抵触日を超える場合にValidationErrorが発生することを確認"""
         from ..models import ContractAssignment
+
+        staff = Staff.objects.create(
+            name_last='テスト', name_first='スタッフ', email='test@example.com', created_by=self.user
+        )
 
         # --- 抵触日を超えるケース ---
         client_contract_ng = ClientContract.objects.create(
@@ -216,17 +218,18 @@ class ContractAssignmentValidationTest(TestCase):
             start_date=date.today(),
             end_date=date.today() + timedelta(days=365 * 4), # 4年後
             created_by=self.user,
-            contract_pattern=self.contract_pattern
+            contract_pattern=self.client_pattern
         )
         ClientContractHaken.objects.create(client_contract=client_contract_ng, haken_unit=self.haken_unit)
 
         staff_contract_ng = StaffContract.objects.create(
-            staff=self.staff,
+            staff=staff,
             contract_name='長期スタッフ契約',
-            employment_type=self.employment_type_haken,  # 派遣社員(有期)
+            employment_type=self.employment_type_fixed,
             start_date=date.today(),
             end_date=date.today() + timedelta(days=365 * 4), # 4年後
-            created_by=self.user
+            created_by=self.user,
+            contract_pattern=self.staff_pattern
         )
 
         assignment_ng = ContractAssignment(
@@ -247,17 +250,18 @@ class ContractAssignmentValidationTest(TestCase):
             start_date=date.today(),
             end_date=date.today() + timedelta(days=365), # 1年後
             created_by=self.user,
-            contract_pattern=self.contract_pattern
+            contract_pattern=self.client_pattern
         )
         ClientContractHaken.objects.create(client_contract=client_contract_ok, haken_unit=self.haken_unit)
 
         staff_contract_ok = StaffContract.objects.create(
-            staff=self.staff,
+            staff=staff,
             contract_name='短期スタッフ契約',
-            employment_type=self.employment_type_haken,  # 派遣社員(有期)
+            employment_type=self.employment_type_fixed,
             start_date=date.today(),
             end_date=date.today() + timedelta(days=365), # 1年後
-            created_by=self.user
+            created_by=self.user,
+            contract_pattern=self.staff_pattern
         )
 
         assignment_ok = ContractAssignment(
@@ -272,3 +276,65 @@ class ContractAssignmentValidationTest(TestCase):
             assignment_ok.save()
         except ValidationError:
             self.fail("抵触日を超えない場合にValidationErrorが発生しました。")
+
+    def test_senior_limited_contract_validation(self):
+        """無期雇用又は60歳以上限定契約のバリデーションをテスト"""
+        from ..models import ContractAssignment, ClientContractHaken, Constants
+
+        # --- テストデータ準備 ---
+        staff_under_60_fixed = Staff.objects.create(
+            name_last='若手', name_first='有期', email='s1@test.com',
+            birth_date=date.today() - timedelta(days=30*365) # 30歳
+        )
+        staff_under_60_indefinite = Staff.objects.create(
+            name_last='若手', name_first='無期', email='s2@test.com',
+            birth_date=date.today() - timedelta(days=30*365) # 30歳
+        )
+        staff_over_60_fixed = Staff.objects.create(
+            name_last='ベテラン', name_first='有期', email='s3@test.com',
+            birth_date=date.today() - timedelta(days=65*365) # 65歳
+        )
+        staff_over_60_indefinite = Staff.objects.create(
+            name_last='ベテラン', name_first='無期', email='s4@test.com',
+            birth_date=date.today() - timedelta(days=65*365) # 65歳
+        )
+
+        client_contract_limited = ClientContract.objects.create(
+            client=self.client, contract_name='限定契約', client_contract_type_code='20',
+            start_date=date.today(), contract_pattern=self.client_pattern, created_by=self.user
+        )
+        ClientContractHaken.objects.create(
+            client_contract=client_contract_limited, haken_unit=self.haken_unit,
+            limit_indefinite_or_senior=Constants.LIMIT_BY_AGREEMENT.LIMITED
+        )
+
+        # --- テスト実行 ---
+        test_cases = [
+            # staff, employment_type, expected_pass, message
+            (staff_under_60_fixed, self.employment_type_fixed, False, "NG: 60歳未満・有期"),
+            (staff_under_60_indefinite, self.employment_type_indefinite, True, "OK: 60歳未満・無期"),
+            (staff_over_60_fixed, self.employment_type_fixed, True, "OK: 60歳以上・有期"),
+            (staff_over_60_indefinite, self.employment_type_indefinite, True, "OK: 60歳以上・無期"),
+        ]
+
+        for staff, emp_type, expected_pass, message in test_cases:
+            with self.subTest(message):
+                staff_contract = StaffContract.objects.create(
+                    staff=staff, contract_name=f'契約_{staff.email}', start_date=date.today(),
+                    end_date=date.today() + timedelta(days=365),
+                    employment_type=emp_type, contract_pattern=self.staff_pattern, created_by=self.user
+                )
+                assignment = ContractAssignment(
+                    client_contract=client_contract_limited,
+                    staff_contract=staff_contract,
+                    created_by=self.user,
+                    updated_by=self.user
+                )
+                if expected_pass:
+                    try:
+                        assignment.full_clean()
+                    except ValidationError:
+                        self.fail(f"{message} でValidationErrorが発生しました。")
+                else:
+                    with self.assertRaises(ValidationError, msg=f"{message} でValidationErrorが発生しませんでした。"):
+                        assignment.full_clean()

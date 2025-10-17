@@ -36,6 +36,7 @@ class TeishokubiCalculatorTest(TestCase):
             name='Test Pattern',
             domain='10' # クライアント
         )
+        cls.staff_pattern = ContractPattern.objects.create(name='スタッフ向け基本契約', domain='1', is_active=True)
 
         # Common objects
         cls.staff = Staff.objects.create(
@@ -72,7 +73,8 @@ class TeishokubiCalculatorTest(TestCase):
             contract_name=f'Staff Contract {contract_name}',
             start_date=staff_start,
             end_date=staff_end,
-            employment_type=self.employment_type_fixed  # 派遣社員(有期)
+            employment_type=self.employment_type_fixed,  # 派遣社員(有期)
+            contract_pattern=self.staff_pattern
         )
         ContractAssignment.objects.create(
             client_contract=client_contract,
@@ -185,7 +187,8 @@ class TeishokubiCalculatorTest(TestCase):
             contract_name='Test Staff Contract',
             start_date=date(2020, 1, 1),
             end_date=date(2020, 12, 31),
-            employment_type=self.employment_type_fixed
+            employment_type=self.employment_type_fixed,
+            contract_pattern=self.staff_pattern
         )
         ContractAssignment.objects.create(
             client_contract=client_contract,
@@ -250,7 +253,8 @@ class TeishokubiCalculatorTest(TestCase):
             contract_name='Non-Yuki Haken Contract',
             start_date=date(2020, 1, 1),
             end_date=date(2020, 12, 31),
-            employment_type=self.employment_type_indefinite  # 派遣社員(無期)
+            employment_type=self.employment_type_indefinite,  # 派遣社員(無期)
+            contract_pattern=self.staff_pattern
         )
         ContractAssignment.objects.create(
             client_contract=client_contract,
