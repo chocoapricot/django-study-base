@@ -3,7 +3,7 @@
     "model": "master.jobcategory",
     "pk": 1,
     "fields": {
-        "version": 1759499182625172,
+        "version": 1760695237437242,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -12,6 +12,8 @@
         "display_order": 10,
         "is_active": true,
         "is_manufacturing_dispatch": false,
+        "is_agriculture_fishery_dispatch": false,
+        "is_specified_skilled_worker": false,
         "jobs_kourou": 240,
         "jobs_soumu": 44
     }
@@ -20,7 +22,7 @@
     "model": "master.jobcategory",
     "pk": 2,
     "fields": {
-        "version": 1759499182639820,
+        "version": 1760695237451733,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -29,6 +31,8 @@
         "display_order": 20,
         "is_active": true,
         "is_manufacturing_dispatch": false,
+        "is_agriculture_fishery_dispatch": false,
+        "is_specified_skilled_worker": false,
         "jobs_kourou": 234,
         "jobs_soumu": 41
     }
@@ -37,7 +41,7 @@
     "model": "master.jobcategory",
     "pk": 3,
     "fields": {
-        "version": 1759499182644704,
+        "version": 1760695237458271,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -46,6 +50,8 @@
         "display_order": 30,
         "is_active": true,
         "is_manufacturing_dispatch": false,
+        "is_agriculture_fishery_dispatch": false,
+        "is_specified_skilled_worker": false,
         "jobs_kourou": 209,
         "jobs_soumu": 26
     }
@@ -54,7 +60,7 @@
     "model": "master.jobcategory",
     "pk": 4,
     "fields": {
-        "version": 1759499182647663,
+        "version": 1760695237461549,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -63,6 +69,8 @@
         "display_order": 40,
         "is_active": true,
         "is_manufacturing_dispatch": false,
+        "is_agriculture_fishery_dispatch": false,
+        "is_specified_skilled_worker": false,
         "jobs_kourou": 223,
         "jobs_soumu": 29
     }
@@ -71,17 +79,38 @@
     "model": "master.jobcategory",
     "pk": 5,
     "fields": {
-        "version": 1759674450006043,
+        "version": 1760716402490826,
         "created_at": "2025-10-05T14:42:50.183Z",
         "created_by": 1,
-        "updated_at": "2025-10-05T14:43:16.658Z",
+        "updated_at": "2025-10-17T16:09:09.143Z",
         "updated_by": 1,
         "name": "機械組立",
         "display_order": 50,
         "is_active": true,
         "is_manufacturing_dispatch": true,
+        "is_agriculture_fishery_dispatch": false,
+        "is_specified_skilled_worker": true,
         "jobs_kourou": 274,
         "jobs_soumu": 70
+    }
+},
+{
+    "model": "master.jobcategory",
+    "pk": 6,
+    "fields": {
+        "version": 1760716407435420,
+        "created_at": "2025-10-17T15:42:15.390Z",
+        "created_by": null,
+        "updated_at": "2025-10-17T16:09:14.087Z",
+        "updated_by": null,
+        "name": "農業",
+        "display_order": 60,
+        "is_active": true,
+        "is_manufacturing_dispatch": false,
+        "is_agriculture_fishery_dispatch": true,
+        "is_specified_skilled_worker": true,
+        "jobs_kourou": 264,
+        "jobs_soumu": 62
     }
 }
 ]

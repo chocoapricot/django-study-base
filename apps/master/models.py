@@ -688,6 +688,8 @@ class JobCategory(MyModel):
     display_order = models.IntegerField('表示順', default=0)
     is_active = models.BooleanField('有効', default=True)
     is_manufacturing_dispatch = models.BooleanField('製造派遣該当', default=False, help_text='この職種が製造業務への労働者派遣に該当する場合にチェックします。')
+    is_agriculture_fishery_dispatch = models.BooleanField('農業漁業派遣該当', default=False, help_text='この職種が農業・漁業への労働者派遣に該当する場合にチェックします。')
+    is_specified_skilled_worker = models.BooleanField('特定技能外国人受入該当', default=False, help_text='この職種が特定技能外国人の受入れに該当する場合にチェックします。')
     jobs_kourou = models.ForeignKey(
         'settings.Dropdowns',
         on_delete=models.SET_NULL,

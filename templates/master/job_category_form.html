@@ -21,7 +21,7 @@
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center">
+            <div class="row mb-1 align-items-center">
                 <label for="{{ form.jobs_kourou.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">職業分類(厚労省)</label>
                 <div class="col-sm-6">
                     {{ form.jobs_kourou }}
@@ -41,7 +41,7 @@
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center">
+            <div class="row mb-1 align-items-center">
                 <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
                     製造派遣該当
                     {% my_help_icon "製造派遣に該当する場合、派遣元/派遣先責任者の契約書への印字がかわります" %}
@@ -53,6 +53,38 @@
                         </label>
                         {% if form.is_manufacturing_dispatch.errors %}
                             <div class="text-danger small">{{ form.is_manufacturing_dispatch.errors.0 }}</div>
+                        {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-1 align-items-center">
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                    農業漁業派遣該当
+                    {% my_help_icon "農業・漁業派遣に該当する場合は特定技能外国人を派遣で受入れ可能です" %}
+                </label>
+                <div class="col-sm-6">
+                        {{ form.is_agriculture_fishery_dispatch }}
+                        <label class="form-check-label" for="{{ form.is_agriculture_fishery_dispatch.id_for_label }}">
+                            農業漁業派遣に該当する
+                        </label>
+                        {% if form.is_agriculture_fishery_dispatch.errors %}
+                            <div class="text-danger small">{{ form.is_agriculture_fishery_dispatch.errors.0 }}</div>
+                        {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                    特定技能外国人受入該当
+                    {% my_help_icon "特定技能外国人の受入れに該当する職種の場合にチェックします" %}
+                </label>
+                <div class="col-sm-6">
+                        {{ form.is_specified_skilled_worker }}
+                        <label class="form-check-label" for="{{ form.is_specified_skilled_worker.id_for_label }}">
+                            特定技能外国人受入に該当する
+                        </label>
+                        {% if form.is_specified_skilled_worker.errors %}
+                            <div class="text-danger small">{{ form.is_specified_skilled_worker.errors.0 }}</div>
                         {% endif %}
                 </div>
             </div>
