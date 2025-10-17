@@ -9,7 +9,7 @@
             "updated_by": 1,
             "version": 1,
             "staff": 34,
-            "disability_type": "身体障害",
+            "disability_type": 1,
             "disability_grade": "3級",
             "disability_severity": "中度"
         }
