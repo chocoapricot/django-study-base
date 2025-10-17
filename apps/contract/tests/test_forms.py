@@ -164,7 +164,8 @@ class ContractFormTest(TestCase):
             end_date=date(2024, 12, 31),
             contract_amount=300000,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            contract_pattern=self.staff_pattern
         )
         
         # 編集用フォームを作成
@@ -406,6 +407,7 @@ class ContractFormDisplayTest(TestCase):
     def test_staff_contract_form_edit_display_initialization(self):
         """スタッフ契約フォーム編集時の表示初期化テスト"""
         # 既存の契約を作成
+        self.staff_pattern = ContractPattern.objects.create(name='スタッフ向け雇用契約', domain='1', is_active=True)
         contract = StaffContract.objects.create(
             staff=self.staff,
             contract_name='表示テスト雇用契約',
@@ -413,7 +415,8 @@ class ContractFormDisplayTest(TestCase):
             end_date=date(2024, 12, 31),
             contract_amount=280000,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            contract_pattern=self.staff_pattern
         )
         
         # 編集用フォームを作成
@@ -469,6 +472,7 @@ class ContractFormDisplayTest(TestCase):
             updated_by=self.user
         )
         
+        self.staff_pattern = ContractPattern.objects.create(name='スタッフ向け雇用契約', domain='1', is_active=True)
         contract = StaffContract.objects.create(
             staff=special_staff,
             contract_name='特殊文字テスト雇用契約',
@@ -476,7 +480,8 @@ class ContractFormDisplayTest(TestCase):
             end_date=date(2024, 12, 31),
             contract_amount=200000,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            contract_pattern=self.staff_pattern
         )
         
         form = StaffContractForm(instance=contract)
@@ -521,11 +526,13 @@ class StaffContractFormStatusTest(TestCase):
 
     def test_form_draft_status_fields_enabled(self):
         """ステータスが作成中の場合にフィールドが有効かテスト"""
+        self.staff_pattern = ContractPattern.objects.create(name='スタッフ向け雇用契約', domain='1', is_active=True)
         contract = StaffContract.objects.create(
             staff=self.staff,
             contract_name='Draft Contract',
             start_date=date(2024, 1, 1),
-            contract_status=Constants.CONTRACT_STATUS.DRAFT
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            contract_pattern=self.staff_pattern
         )
         form = StaffContractForm(instance=contract)
         for field_name, field in form.fields.items():

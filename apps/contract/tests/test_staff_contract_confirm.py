@@ -45,12 +45,15 @@ class StaffContractConfirmTest(TestCase):
             agreement_text='This is a test agreement.',
             corporation_number=self.company.corporate_number,
         )
+        from apps.master.models import ContractPattern
+        self.staff_pattern = ContractPattern.objects.create(name='スタッフ向け雇用契約', domain='1', is_active=True)
         self.contract = StaffContract.objects.create(
             staff=self.staff,
             corporate_number=self.company.corporate_number,
             contract_name='Test Contract',
             contract_status=Constants.CONTRACT_STATUS.ISSUED,
             start_date='2025-01-01',
+            contract_pattern=self.staff_pattern
         )
 
     def test_staff_contract_confirm_list_get(self):
