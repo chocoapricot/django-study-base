@@ -156,3 +156,97 @@ class ClientContractTtpViewsTest(TestCase):
         self.haken.delete()
         response = self.client.get(reverse('contract:client_contract_detail', kwargs={'pk': self.contract.pk}))
         self.assertNotContains(response, 'TTP')
+
+
+class ClientContractTtpRestrictionViewsTest(TestCase):
+    def setUp(self):
+        # 会社情報
+        self.company = Company.objects.create(
+            name='テスト会社',
+            corporate_number='1234567890123',
+        )
+        # ログインユーザー
+        self.user = MyUser.objects.create_user(
+            username='testuser',
+            email='testuser@example.com',
+            password='password'
+        )
+        # 必要な権限をユーザーに付与
+        content_type = ContentType.objects.get_for_model(ClientContract)
+        permissions = Permission.objects.filter(
+            content_type=content_type,
+            codename__in=['view_clientcontract', 'add_clientcontract', 'change_clientcontract', 'delete_clientcontract']
+        )
+        self.user.user_permissions.set(permissions)
+
+        self.client.login(email='testuser@example.com', password='password')
+        # クライアント
+        self.client_obj = Client.objects.create(
+            name='テストクライアント',
+            corporate_number='9876543210987',
+            created_by=self.user,
+        )
+        # 契約種別マスタ
+        Dropdowns.objects.create(category='client_contract_type', value='20', name='派遣')
+        # 契約書パターン
+        self.pattern = ContractPattern.objects.create(
+            name='テスト派遣パターン',
+            domain='10',  # クライアント契約
+            contract_type_code='20',  # 派遣
+        )
+        # クライアント契約
+        self.contract = ClientContract.objects.create(
+            client=self.client_obj,
+            contract_name='テスト派遣契約',
+            client_contract_type_code='20',
+            contract_pattern=self.pattern,
+            start_date=timezone.now().date(),
+            created_by=self.user,
+            contract_status='30',  # 発行済み
+        )
+        # 派遣情報
+        self.haken = ClientContractHaken.objects.create(
+            client_contract=self.contract,
+            created_by=self.user,
+        )
+        # TTP情報
+        self.ttp_info = ClientContractTtp.objects.create(haken=self.haken, created_by=self.user)
+
+    def test_ttp_menu_not_in_contract_detail_if_not_draft(self):
+        """契約が作成中でない場合、契約詳細画面にTTPメニューが表示されないことをテスト"""
+        response = self.client.get(reverse('contract:client_contract_detail', kwargs={'pk': self.contract.pk}))
+        self.assertNotContains(response, 'その他情報')
+
+    def test_client_contract_ttp_create_view_fails_if_not_draft(self):
+        """契約が作成中でない場合、TTP情報作成ビューがエラーになることをテスト"""
+        self.ttp_info.delete()
+        url = reverse('contract:client_contract_ttp_create', kwargs={'haken_pk': self.haken.pk})
+        response = self.client.get(url, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.resolver_match.view_name, 'contract:client_contract_detail')
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), '契約が作成中でないため、紹介予定派遣情報は作成できません。')
+
+    def test_client_contract_ttp_update_view_fails_if_not_draft(self):
+        """契約が作成中でない場合、TTP情報更新ビューがエラーになることをテスト"""
+        url = reverse('contract:client_contract_ttp_update', kwargs={'pk': self.ttp_info.pk})
+        response = self.client.get(url, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.resolver_match.view_name, 'contract:client_contract_detail')
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), '契約が作成中でないため、紹介予定派遣情報は編集できません。')
+
+    def test_client_contract_ttp_delete_view_fails_if_not_draft(self):
+        """契約が作成中でない場合、TTP情報削除ビューがエラーになることをテスト"""
+        url = reverse('contract:client_contract_ttp_delete', kwargs={'pk': self.ttp_info.pk})
+        response = self.client.get(url, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.resolver_match.view_name, 'contract:client_contract_detail')
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), '契約が作成中でないため、紹介予定派遣情報は削除できません。')

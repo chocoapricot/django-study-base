@@ -2339,6 +2339,11 @@ def client_contract_ttp_create(request, haken_pk):
         messages.info(request, '既にご紹介予定派遣情報が存在します。')
         return redirect('contract:client_contract_ttp_detail', pk=haken.ttp_info.pk)
 
+    # 親契約が「作成中」でない場合はエラー
+    if haken.client_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
+        messages.error(request, '契約が作成中でないため、紹介予定派遣情報は作成できません。')
+        return redirect('contract:client_contract_detail', pk=haken.client_contract.pk)
+
     if request.method == 'POST':
         form = ClientContractTtpForm(request.POST)
         if form.is_valid():
@@ -2411,8 +2416,8 @@ def client_contract_ttp_update(request, pk):
     ttp_info = get_object_or_404(ClientContractTtp, pk=pk)
     contract = ttp_info.haken.client_contract
     if contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
-        messages.error(request, 'この契約ステータスでは紹介予定派遣情報は編集できません。')
-        return redirect('contract:client_contract_ttp_detail', pk=pk)
+        messages.error(request, '契約が作成中でないため、紹介予定派遣情報は編集できません。')
+        return redirect('contract:client_contract_detail', pk=contract.pk)
 
     if request.method == 'POST':
         form = ClientContractTtpForm(request.POST, instance=ttp_info)
@@ -2442,8 +2447,8 @@ def client_contract_ttp_delete(request, pk):
     ttp_info = get_object_or_404(ClientContractTtp, pk=pk)
     contract = ttp_info.haken.client_contract
     if contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
-        messages.error(request, 'この契約ステータスでは紹介予定派遣情報は削除できません。')
-        return redirect('contract:client_contract_ttp_detail', pk=pk)
+        messages.error(request, '契約が作成中でないため、紹介予定派遣情報は削除できません。')
+        return redirect('contract:client_contract_detail', pk=contract.pk)
 
     contract_pk = ttp_info.haken.client_contract.pk
     if request.method == 'POST':
