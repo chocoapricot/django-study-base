@@ -15,7 +15,8 @@
         "address": "東京都千代田区千代田1-1-1 サンプルビル10F",
         "phone_number": "03-1234-5678",
         "haken_permit_number": "派13-123456",
-        "shokai_permit_number": "13-ユ-123456"
+        "shokai_permit_number": "13-ユ-123456",
+        "foreign_regist_number": "20登-123456"
     }
 }
 ]

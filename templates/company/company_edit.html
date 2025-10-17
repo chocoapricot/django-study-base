@@ -94,7 +94,7 @@
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center">
+            <div class="row align-items-center">
                 <label for="{{ form.shokai_permit_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
                     {{ form.shokai_permit_number.label }}
                     {% my_help_icon "有料職業紹介事業許可証 許可番号" %}
@@ -103,6 +103,19 @@
                     {{ form.shokai_permit_number }}
                     {% if form.shokai_permit_number.errors %}
                         <div class="text-danger">{{ form.shokai_permit_number.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.foreign_regist_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                    {{ form.foreign_regist_number.label }}
+                    {% my_help_icon "特定技能外国人受入れに関する登録支援機関 登録番号" %}
+                </label>
+                <div class="col-sm-2">
+                    {{ form.foreign_regist_number }}
+                    {% if form.foreign_regist_number.errors %}
+                        <div class="text-danger">{{ form.foreign_regist_number.errors }}</div>
                     {% endif %}
                 </div>
             </div>
