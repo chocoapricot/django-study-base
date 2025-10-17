@@ -600,6 +600,29 @@ class ContractAssignment(MyModel):
                             f'割当終了日（{assignment_end_date}）が抵触日（{conflict_date}）を超えています。'
                         )
 
+        # 無期雇用派遣労働者又は60歳以上の者に限定する場合のチェック
+        if (hasattr(self.client_contract, 'haken_info') and self.client_contract.haken_info and
+                self.client_contract.haken_info.limit_indefinite_or_senior == Constants.LIMIT_BY_AGREEMENT.LIMITED):
+
+            staff = self.staff_contract.staff
+            contract_start_date = self.client_contract.start_date
+
+            # 条件1: 無期雇用か
+            is_indefinite_employment = not self.staff_contract.employment_type.is_fixed_term
+
+            # 条件2: 契約開始日時点で60歳以上か
+            is_over_60 = False
+            if staff.birth_date:
+                age_at_start = contract_start_date.year - staff.birth_date.year - \
+                    ((contract_start_date.month, contract_start_date.day) < (staff.birth_date.month, staff.birth_date.day))
+                if age_at_start >= 60:
+                    is_over_60 = True
+
+            if not (is_indefinite_employment or is_over_60):
+                raise ValidationError(
+                    f'この契約は無期雇用派遣労働者又は60歳以上の者に限定されています。スタッフ「{staff.name}」は条件を満たしていません。'
+                )
+
 
 class StaffContractTeishokubi(MyModel):
     """

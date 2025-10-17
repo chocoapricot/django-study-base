@@ -14,7 +14,17 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 スタッフ契約詳細
                 <div class="d-flex align-items-center">
-                    <div class="btn-group me-2" role="group">
+                    {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT or contract.contract_status == Constants.CONTRACT_STATUS.PENDING %}
+                    <ul class="nav nav-pills mb-0 me-2">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">印刷</a>
+                            <div class="dropdown-menu">
+                                <a href="{% url 'contract:staff_contract_draft_pdf' contract.pk %}" class="dropdown-item"><i class="bi bi-filetype-pdf"></i>　雇用契約書(ドラフト)</a>
+                            </div>
+                        </li>
+                    </ul>
+                    {% endif %}
+                    <div class="btn-group" role="group">
                         <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">作成</button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'contract:staff_contract_create' %}?copy_from={{ contract.pk }}">コピー</a></li>
@@ -24,16 +34,6 @@
                             {% endif %}
                         </ul>
                     </div>
-                    {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT or contract.contract_status == Constants.CONTRACT_STATUS.PENDING %}
-                    <ul class="nav nav-pills mb-0">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">印刷</a>
-                            <div class="dropdown-menu">
-                                <a href="{% url 'contract:staff_contract_draft_pdf' contract.pk %}" class="dropdown-item"><i class="bi bi-filetype-pdf"></i>　雇用契約書(ドラフト)</a>
-                            </div>
-                        </li>
-                    </ul>
-                    {% endif %}
                 </div>
             </div>
             <div class="card-body">
