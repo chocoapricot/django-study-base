@@ -82,7 +82,10 @@
             </div>
 
             <div class="row align-items-center">
-                <label for="{{ form.haken_permit_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.haken_permit_number.label }}</label>
+                <label for="{{ form.haken_permit_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                    {{ form.haken_permit_number.label }}
+                    {% my_help_icon "労働者派遣事業 厚生労働大臣許可番号" %}
+                </label>
                 <div class="col-sm-2">
                     {{ form.haken_permit_number }}
                     {% if form.haken_permit_number.errors %}
@@ -92,7 +95,10 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.shokai_permit_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.shokai_permit_number.label }}</label>
+                <label for="{{ form.shokai_permit_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                    {{ form.shokai_permit_number.label }}
+                    {% my_help_icon "有料職業紹介事業許可証 許可番号" %}
+                </label>
                 <div class="col-sm-2">
                     {{ form.shokai_permit_number }}
                     {% if form.shokai_permit_number.errors %}

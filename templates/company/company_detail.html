@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load static %}
+{% load help_tags %}
 {% block content %}
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
@@ -23,28 +24,6 @@
             </div>
         </div>
         {% endif %}
-
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end">
-                <strong>許可番号(人材派遣)</strong>
-            </div>
-            <div class="col-sm-4">
-                <span class="copy-target">{{ company.haken_permit_number }}</span>
-                <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
-                <span class="copy-message">コピーしました!</span>
-            </div>
-        </div>
-
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end">
-                <strong>許可番号(職業紹介)</strong>
-            </div>
-            <div class="col-sm-4">
-                <span class="copy-target">{{ company.shokai_permit_number }}</span>
-                <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
-                <span class="copy-message">コピーしました!</span>
-            </div>
-        </div>
 
         <div class="row mb-3 align-items-center">
             <div class="col-sm-2 text-start text-md-end">
@@ -84,6 +63,31 @@
             </div>
         </div>
         {% endif %}
+
+        <div class="row mb-1 align-items-center">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>許可番号(人材派遣)</strong>
+                {% my_help_icon "労働者派遣事業 厚生労働大臣許可番号" %}
+            </div>
+            <div class="col-sm-4">
+                <span class="copy-target">{{ company.haken_permit_number }}</span>
+                <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
+                <span class="copy-message">コピーしました!</span>
+            </div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>許可番号(職業紹介)</strong>
+                {% my_help_icon "有料職業紹介事業許可証 許可番号" %}
+            </div>
+            <div class="col-sm-4">
+                <span class="copy-target">{{ company.shokai_permit_number }}</span>
+                <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
+                <span class="copy-message">コピーしました!</span>
+            </div>
+        </div>
+
 
         
 
