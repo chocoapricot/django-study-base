@@ -255,6 +255,12 @@
                             <tr>
                                 <td>
                                     {{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }}
+                                    {% if assignment.staff_contract.staff.has_international %}
+                                        <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
+                                    {% endif %}
+                                    {% if assignment.staff_contract.staff.has_disability %}
+                                        <i class="bi bi-heart" style="color:#17a2b8;" title="障害者"></i>
+                                    {% endif %}
                                     {% if assignment.staff_contract.employment_type %}
                                         <span class="badge {{ assignment.staff_contract.employment_type.display_order|badge_class }} ms-2" style="font-size:11px">{{ assignment.staff_contract.employment_type.name }}</span>
                                     {% endif %}

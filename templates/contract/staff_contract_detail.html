@@ -51,6 +51,12 @@
                                     <a href="{% url 'staff:staff_detail' contract.staff.pk %}" class="text-decoration-none">
                                         {{ contract.staff.name_last }} {{ contract.staff.name_first }}
                                     </a>
+                                    {% if contract.staff.has_international %}
+                                        <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
+                                    {% endif %}
+                                    {% if contract.staff.has_disability %}
+                                        <i class="bi bi-heart" style="color:#17a2b8;" title="障害者"></i>
+                                    {% endif %}
                                 </td>
                             </tr>
                             <tr>
