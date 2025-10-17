@@ -22,6 +22,12 @@
                                 <a href="{% url 'staff:staff_detail' staff.pk %}" class="text-decoration-none">
                                     {{ staff.name }}
                                 </a>
+                                {% if staff.has_international %}
+                                    <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
+                                {% endif %}
+                                {% if staff.has_disability %}
+                                    <i class="bi bi-heart" style="color:#17a2b8;" title="障害者"></i>
+                                {% endif %}
                             {% else %}
                                 {{ teishokubi.staff_email }}
                             {% endif %}

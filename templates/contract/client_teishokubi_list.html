@@ -79,6 +79,12 @@
                                                     <a href="{% url 'staff:staff_detail' staff.staff_id %}" class="text-decoration-none">
                                                         {{ staff.staff_name }}
                                                     </a>
+                                                    {% if staff.has_international %}
+                                                        <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
+                                                    {% endif %}
+                                                    {% if staff.has_disability %}
+                                                        <i class="bi bi-heart" style="color:#17a2b8;" title="障害者"></i>
+                                                    {% endif %}
                                                     ({{ staff.contract_start|date:"Y/m/d" }} ～ {{ staff.contract_end|date:"Y/m/d" }})
                                                 </small>
                                             {% endfor %}

@@ -2804,7 +2804,7 @@ def client_teishokubi_list(request):
             client_contract__haken_info__haken_office=department,
             client_contract__client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
             client_contract__end_date__gte=date.today()  # 終了日が今日以降（未来分も含む）
-        ).select_related('staff_contract__staff').distinct()
+        ).select_related('staff_contract__staff__international', 'staff_contract__staff__disability').distinct()
         
         department.current_staff_count = current_assignments.count()
         
@@ -2830,6 +2830,8 @@ def client_teishokubi_list(request):
                 'staff_name': staff.name,
                 'contract_start': assignment.client_contract.start_date,
                 'contract_end': assignment.client_contract.end_date,
+                'has_international': hasattr(staff, 'international'),
+                'has_disability': hasattr(staff, 'disability'),
             })
 
     context = {
@@ -2903,7 +2905,17 @@ def staff_contract_teishokubi_list(request):
     staff_emails = [item.staff_email for item in teishokubi_page if item.staff_email]
     client_corporate_numbers = [item.client_corporate_number for item in teishokubi_page if item.client_corporate_number]
 
-    staff_map = {staff.email: {'id': staff.id, 'name': staff.name} for staff in Staff.objects.filter(email__in=staff_emails)}
+    # スタッフ情報を外国人・障害者情報と一緒に取得
+    staff_queryset = Staff.objects.filter(email__in=staff_emails).select_related('international', 'disability')
+    staff_map = {}
+    for staff in staff_queryset:
+        staff_map[staff.email] = {
+            'id': staff.id,
+            'name': staff.name,
+            'has_international': hasattr(staff, 'international'),
+            'has_disability': hasattr(staff, 'disability')
+        }
+    
     client_map = {client.corporate_number: {'id': client.id, 'name': client.name} for client in Client.objects.filter(corporate_number__in=client_corporate_numbers)}
 
     for item in teishokubi_page:
@@ -2911,9 +2923,13 @@ def staff_contract_teishokubi_list(request):
         if staff_info:
             item.staff_id = staff_info['id']
             item.staff_name = staff_info['name']
+            item.staff_has_international = staff_info['has_international']
+            item.staff_has_disability = staff_info['has_disability']
         else:
             item.staff_id = None
             item.staff_name = None
+            item.staff_has_international = False
+            item.staff_has_disability = False
 
         client_info = client_map.get(item.client_corporate_number)
         if client_info:
@@ -2988,7 +3004,7 @@ def staff_contract_teishokubi_detail(request, pk):
     
     teishokubi_details = StaffContractTeishokubiDetail.objects.filter(teishokubi=teishokubi).order_by('assignment_start_date')
 
-    staff = Staff.objects.filter(email=teishokubi.staff_email).first()
+    staff = Staff.objects.filter(email=teishokubi.staff_email).select_related('international', 'disability').first()
     client = Client.objects.filter(corporate_number=teishokubi.client_corporate_number).first()
 
     # 変更履歴を取得

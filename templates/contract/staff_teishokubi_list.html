@@ -48,6 +48,12 @@
                     <td>
                         {% if item.staff_name %}
                             {{ item.staff_name }}
+                            {% if item.staff_has_international %}
+                                <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
+                            {% endif %}
+                            {% if item.staff_has_disability %}
+                                <i class="bi bi-heart" style="color:#17a2b8;" title="障害者"></i>
+                            {% endif %}
                         {% else %}
                             {{ item.staff_email }}
                         {% endif %}
