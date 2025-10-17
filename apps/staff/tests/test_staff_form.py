@@ -4,7 +4,7 @@ from datetime import date, timedelta
 from apps.staff.models import Staff
 from apps.staff.forms import StaffForm
 from apps.contract.models import StaffContract
-from apps.master.models import StaffRegistStatus
+from apps.master.models import StaffRegistStatus, ContractPattern
 
 User = get_user_model()
 
@@ -49,6 +49,9 @@ class StaffFormTest(TestCase):
         self.employment_type_2 = EmploymentType.objects.create(name='契約社員', display_order=2, is_fixed_term=True, is_active=True)
         self.employment_type_3 = EmploymentType.objects.create(name='派遣社員', display_order=3, is_fixed_term=True, is_active=True)
         
+        # 契約書パターンマスタを作成
+        self.contract_pattern_1 = ContractPattern.objects.create(name='テスト', domain='1', is_active=True)
+
         # テスト用スタッフを作成
         self.staff = Staff.objects.create(
             regist_status=self.regist_status_1,  # StaffRegistStatusインスタンスで指定
@@ -75,6 +78,7 @@ class StaffFormTest(TestCase):
         contract_end_date = date(2024, 12, 31)
         StaffContract.objects.create(
             staff=self.staff,
+            contract_pattern=self.contract_pattern_1,
             contract_name='テスト契約',
             start_date=date(2024, 1, 1),
             end_date=contract_end_date,
@@ -112,6 +116,7 @@ class StaffFormTest(TestCase):
         contract_end_date = date(2024, 12, 31)
         StaffContract.objects.create(
             staff=self.staff,
+            contract_pattern=self.contract_pattern_1,
             contract_name='テスト契約',
             start_date=date(2024, 1, 1),
             end_date=contract_end_date,
@@ -148,6 +153,7 @@ class StaffFormTest(TestCase):
         contract_end_date = date(2024, 10, 31)
         StaffContract.objects.create(
             staff=self.staff,
+            contract_pattern=self.contract_pattern_1,
             contract_name='テスト契約',
             start_date=date(2024, 1, 1),
             end_date=contract_end_date,
@@ -184,6 +190,7 @@ class StaffFormTest(TestCase):
         # 契約終了日がないスタッフ契約を作成
         StaffContract.objects.create(
             staff=self.staff,
+            contract_pattern=self.contract_pattern_1,
             contract_name='テスト契約',
             start_date=date(2024, 1, 1),
             end_date=None,  # 契約終了日なし
