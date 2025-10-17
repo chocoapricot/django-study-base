@@ -85,4 +85,57 @@
         </div>
     </div>
 </div>
+
+<script>
+// ページロジック情報を設定
+document.addEventListener('DOMContentLoaded', function() {
+    // このページにロジック情報があることを通知
+    document.body.setAttribute('data-has-logic', 'true');
+    
+    const logicContent = document.getElementById('logic-info-content');
+    if (logicContent) {
+        logicContent.innerHTML = `
+            <div class="alert alert-info mb-3">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>契約アサインのバリデーションロジック</h6>
+            </div>
+            
+            <!-- 派遣契約の年齢・雇用形態チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-shield-check text-warning me-2"></i>派遣契約の年齢・雇用形態チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• <strong>60歳限定契約の場合</strong>: クライアント契約が派遣で「無期雇用派遣労働者又は60歳以上の者に限定」されている場合</div>
+                    <div class="mb-2">• <strong>エラー条件</strong>: スタッフが契約開始日時点で60歳未満 <strong>または</strong> 有期雇用の場合</div>
+                    <div class="mb-0">• <strong>適用条件</strong>: 無期雇用 <strong>または</strong> 60歳以上のスタッフのみ割当可能</div>
+                </div>
+            </div>
+            
+            <!-- 抵触日チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-calendar-check text-danger me-2"></i>抵触日チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• <strong>対象</strong>: 派遣契約かつ派遣社員（有期雇用）の場合</div>
+                    <div class="mb-2">• <strong>チェック内容</strong>: 割当終了日が抵触日を超えていないかを確認</div>
+                    <div class="mb-2">• <strong>割当終了日</strong>: クライアント契約終了日とスタッフ契約終了日の早い方</div>
+                    <div class="mb-0">• <strong>必要条件</strong>: 派遣先事業所の組織単位が設定されていること</div>
+                </div>
+            </div>
+            
+            <!-- 基本的な前提条件 -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-check-circle text-success me-2"></i>基本的な前提条件</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• <strong>重複チェック</strong>: 同じクライアント契約とスタッフ契約の組み合わせは1つまで</div>
+                    <div class="mb-0">• <strong>契約状態</strong>: 両方の契約が有効な状態であること</div>
+                </div>
+            </div>
+        `;
+    }
+});
+</script>
 {% endblock %}
