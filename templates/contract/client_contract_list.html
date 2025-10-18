@@ -181,6 +181,9 @@
                                             {% if contract.end_date %}
                                                 ～ {{ contract.end_date|date:"Y/m/d" }}
                                             {% endif %}
+                                            {% if contract.client_contract_type_code == '20' and contract.duration <= 30 %}
+                                                <span class="badge bg-info">日雇派遣</span>
+                                            {% endif %}
                                         </a>
                                     </td>
                                     <td class="text-end">
