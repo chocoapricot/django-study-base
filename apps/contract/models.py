@@ -172,6 +172,13 @@ class ClientContract(MyModel):
                 pass
         return base_name
 
+    @property
+    def duration(self):
+        """契約期間（日数）を計算する"""
+        if self.start_date and self.end_date:
+            return (self.end_date - self.start_date).days + 1
+        return None
+
 
 class ClientContractPrint(MyModel):
     """
