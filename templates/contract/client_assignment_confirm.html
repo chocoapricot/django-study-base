@@ -28,6 +28,13 @@
             以下の内容で契約を割り当てます。内容を確認してください。
         </div>
 
+        {% if show_daily_dispatch_warning %}
+        <div class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            日雇派遣（30日以内または週20時間未満の派遣）となり、就業するスタッフの条件に制約があります。
+        </div>
+        {% endif %}
+
                 <h6 class="text-muted mb-3">割当対象クライアント契約</h6>
                 <div class="card mb-3">
                     <div class="card-body">

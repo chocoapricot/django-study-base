@@ -2548,10 +2548,40 @@ def client_assignment_confirm(request):
             messages.error(request, '作成中の契約間でのみ割当が可能です。')
             return redirect('contract:staff_contract_detail', pk=staff_contract_id)
 
+        # 日雇派遣の警告メッセージ判定
+        show_daily_dispatch_warning = False
+        if (client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and
+            client_contract.duration and client_contract.duration <= 30 and
+            hasattr(client_contract, 'haken_info') and client_contract.haken_info and 
+            client_contract.haken_info.limit_indefinite_or_senior == Constants.LIMIT_BY_AGREEMENT.NOT_LIMITED):
+            
+            # 職種が「派遣政令業務」未設定の場合
+            job_category_not_specified = (not client_contract.job_category or 
+                                        not client_contract.job_category.jobs_seirei)
+            
+            # スタッフが60歳未満かつ有期雇用の場合
+            staff_under_60_and_fixed_term = False
+            if staff_contract.staff and staff_contract.staff.birth_date:
+                # 割当開始日時点での年齢を計算
+                assignment_start_date = max(client_contract.start_date, staff_contract.start_date)
+                age_at_assignment = assignment_start_date.year - staff_contract.staff.birth_date.year - \
+                    ((assignment_start_date.month, assignment_start_date.day) < 
+                     (staff_contract.staff.birth_date.month, staff_contract.staff.birth_date.day))
+                staff_under_60_and_fixed_term = (age_at_assignment < 60 and 
+                                                (staff_contract.employment_type and staff_contract.employment_type.is_fixed_term))
+            else:
+                # 生年月日が不明な場合は60歳未満として扱う
+                staff_under_60_and_fixed_term = (staff_contract.employment_type and staff_contract.employment_type.is_fixed_term)
+            
+            # すべての条件が満たされた場合に警告を表示
+            if job_category_not_specified and staff_under_60_and_fixed_term:
+                show_daily_dispatch_warning = True
+
         context = {
             'client_contract': client_contract,
             'staff_contract': staff_contract,
             'from_view': 'staff',
+            'show_daily_dispatch_warning': show_daily_dispatch_warning,
         }
 
         return render(request, 'contract/client_assignment_confirm.html', context)
@@ -2579,26 +2609,30 @@ def staff_assignment_confirm(request):
         # 日雇派遣の警告メッセージ判定
         show_daily_dispatch_warning = False
         if (client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and
-            client_contract.duration and client_contract.duration <= 30):
+            client_contract.duration and client_contract.duration <= 30 and
+            hasattr(client_contract, 'haken_info') and client_contract.haken_info and 
+            client_contract.haken_info.limit_indefinite_or_senior == Constants.LIMIT_BY_AGREEMENT.NOT_LIMITED):
             
-            # 職種が「派遣政令業務」未設定かつスタッフが60歳未満または有期雇用の場合
+            # 職種が「派遣政令業務」未設定の場合
             job_category_not_specified = (not client_contract.job_category or 
                                         not client_contract.job_category.jobs_seirei)
             
-            staff_under_60_or_fixed_term = False
+            # スタッフが60歳未満かつ有期雇用の場合
+            staff_under_60_and_fixed_term = False
             if staff_contract.staff and staff_contract.staff.birth_date:
                 # 割当開始日時点での年齢を計算
                 assignment_start_date = max(client_contract.start_date, staff_contract.start_date)
                 age_at_assignment = assignment_start_date.year - staff_contract.staff.birth_date.year - \
                     ((assignment_start_date.month, assignment_start_date.day) < 
                      (staff_contract.staff.birth_date.month, staff_contract.staff.birth_date.day))
-                staff_under_60_or_fixed_term = (age_at_assignment < 60 and 
-                                               (staff_contract.employment_type and staff_contract.employment_type.is_fixed_term))
+                staff_under_60_and_fixed_term = (age_at_assignment < 60 and 
+                                                (staff_contract.employment_type and staff_contract.employment_type.is_fixed_term))
             else:
                 # 生年月日が不明な場合は60歳未満として扱う
-                staff_under_60_or_fixed_term = True
+                staff_under_60_and_fixed_term = (staff_contract.employment_type and staff_contract.employment_type.is_fixed_term)
             
-            if job_category_not_specified and staff_under_60_or_fixed_term:
+            # すべての条件が満たされた場合に警告を表示
+            if job_category_not_specified and staff_under_60_and_fixed_term:
                 show_daily_dispatch_warning = True
 
         context = {
@@ -2705,26 +2739,30 @@ def staff_assignment_confirm_from_create(request):
     # 日雇派遣の警告メッセージ判定
     show_daily_dispatch_warning = False
     if (client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and
-        client_contract.duration and client_contract.duration <= 30):
+        client_contract.duration and client_contract.duration <= 30 and
+        hasattr(client_contract, 'haken_info') and client_contract.haken_info and 
+        client_contract.haken_info.limit_indefinite_or_senior == Constants.LIMIT_BY_AGREEMENT.NOT_LIMITED):
         
-        # 職種が「派遣政令業務」未設定かつスタッフが60歳未満または有期雇用の場合
+        # 職種が「派遣政令業務」未設定の場合
         job_category_not_specified = (not client_contract.job_category or 
                                     not client_contract.job_category.jobs_seirei)
         
-        staff_under_60_or_fixed_term = False
+        # スタッフが60歳未満かつ有期雇用の場合
+        staff_under_60_and_fixed_term = False
         if staff_contract.staff and staff_contract.staff.birth_date:
             # 割当開始日時点での年齢を計算
             assignment_start_date = max(client_contract.start_date, staff_contract.start_date)
             age_at_assignment = assignment_start_date.year - staff_contract.staff.birth_date.year - \
                 ((assignment_start_date.month, assignment_start_date.day) < 
                  (staff_contract.staff.birth_date.month, staff_contract.staff.birth_date.day))
-            staff_under_60_or_fixed_term = (age_at_assignment < 60 and 
-                                           (staff_contract.employment_type and staff_contract.employment_type.is_fixed_term))
+            staff_under_60_and_fixed_term = (age_at_assignment < 60 and 
+                                            (staff_contract.employment_type and staff_contract.employment_type.is_fixed_term))
         else:
             # 生年月日が不明な場合は60歳未満として扱う
-            staff_under_60_or_fixed_term = True
+            staff_under_60_and_fixed_term = (staff_contract.employment_type and staff_contract.employment_type.is_fixed_term)
         
-        if job_category_not_specified and staff_under_60_or_fixed_term:
+        # すべての条件が満たされた場合に警告を表示
+        if job_category_not_specified and staff_under_60_and_fixed_term:
             show_daily_dispatch_warning = True
 
     context = {
