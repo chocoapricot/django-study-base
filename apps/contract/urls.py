@@ -73,7 +73,7 @@ urlpatterns = [
     # 契約アサイン
     path('client/<int:pk>/assign/', views.client_contract_assignment_view, name='client_contract_assignment'),
     path('staff/<int:pk>/assign/', views.staff_contract_assignment_view, name='staff_contract_assignment'),
-    path('assign/confirm/', views.confirm_contract_assignment, name='confirm_contract_assignment'),
+
     path('assign/confirm/client/', views.client_assignment_confirm, name='client_assignment_confirm'),
     path('assign/confirm/staff/', views.staff_assignment_confirm, name='staff_assignment_confirm'),
     path('assign/confirm/staff/from-create/', views.staff_assignment_confirm_from_create, name='staff_assignment_confirm_from_create'),

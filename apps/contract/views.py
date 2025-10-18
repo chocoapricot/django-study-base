@@ -2576,10 +2576,36 @@ def staff_assignment_confirm(request):
             messages.error(request, '作成中の契約間でのみ割当が可能です。')
             return redirect('contract:client_contract_detail', pk=client_contract_id)
 
+        # 日雇派遣の警告メッセージ判定
+        show_daily_dispatch_warning = False
+        if (client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and
+            client_contract.duration and client_contract.duration <= 30):
+            
+            # 職種が「派遣政令業務」未設定かつスタッフが60歳未満または有期雇用の場合
+            job_category_not_specified = (not client_contract.job_category or 
+                                        not client_contract.job_category.jobs_seirei)
+            
+            staff_under_60_or_fixed_term = False
+            if staff_contract.staff and staff_contract.staff.birth_date:
+                # 割当開始日時点での年齢を計算
+                assignment_start_date = max(client_contract.start_date, staff_contract.start_date)
+                age_at_assignment = assignment_start_date.year - staff_contract.staff.birth_date.year - \
+                    ((assignment_start_date.month, assignment_start_date.day) < 
+                     (staff_contract.staff.birth_date.month, staff_contract.staff.birth_date.day))
+                staff_under_60_or_fixed_term = (age_at_assignment < 60 and 
+                                               (staff_contract.employment_type and staff_contract.employment_type.is_fixed_term))
+            else:
+                # 生年月日が不明な場合は60歳未満として扱う
+                staff_under_60_or_fixed_term = True
+            
+            if job_category_not_specified and staff_under_60_or_fixed_term:
+                show_daily_dispatch_warning = True
+
         context = {
             'client_contract': client_contract,
             'staff_contract': staff_contract,
             'from_view': 'client',
+            'show_daily_dispatch_warning': show_daily_dispatch_warning,
         }
 
         return render(request, 'contract/staff_assignment_confirm.html', context)
@@ -2676,42 +2702,41 @@ def staff_assignment_confirm_from_create(request):
             del request.session['pending_staff_contract']
         return redirect('contract:contract_index')
 
+    # 日雇派遣の警告メッセージ判定
+    show_daily_dispatch_warning = False
+    if (client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and
+        client_contract.duration and client_contract.duration <= 30):
+        
+        # 職種が「派遣政令業務」未設定かつスタッフが60歳未満または有期雇用の場合
+        job_category_not_specified = (not client_contract.job_category or 
+                                    not client_contract.job_category.jobs_seirei)
+        
+        staff_under_60_or_fixed_term = False
+        if staff_contract.staff and staff_contract.staff.birth_date:
+            # 割当開始日時点での年齢を計算
+            assignment_start_date = max(client_contract.start_date, staff_contract.start_date)
+            age_at_assignment = assignment_start_date.year - staff_contract.staff.birth_date.year - \
+                ((assignment_start_date.month, assignment_start_date.day) < 
+                 (staff_contract.staff.birth_date.month, staff_contract.staff.birth_date.day))
+            staff_under_60_or_fixed_term = (age_at_assignment < 60 and 
+                                           (staff_contract.employment_type and staff_contract.employment_type.is_fixed_term))
+        else:
+            # 生年月日が不明な場合は60歳未満として扱う
+            staff_under_60_or_fixed_term = True
+        
+        if job_category_not_specified and staff_under_60_or_fixed_term:
+            show_daily_dispatch_warning = True
+
     context = {
         'client_contract': client_contract,
         'staff_contract': staff_contract,
         'from_view': from_view,
         'from_create': True,  # 新規作成からの遷移であることを示すフラグ
+        'show_daily_dispatch_warning': show_daily_dispatch_warning,
     }
 
     return render(request, 'contract/staff_assignment_confirm.html', context)
 
-
-@login_required
-def confirm_contract_assignment(request):
-    """契約アサインの確認画面を表示するビュー（旧版・互換性のため残す）"""
-    if request.method == 'POST':
-        client_contract_id = request.POST.get('client_contract_id')
-        staff_contract_id = request.POST.get('staff_contract_id')
-        from_view = request.POST.get('from')
-
-        client_contract = get_object_or_404(ClientContract, pk=client_contract_id)
-        staff_contract = get_object_or_404(StaffContract, pk=staff_contract_id)
-
-        context = {
-            'client_contract': client_contract,
-            'staff_contract': staff_contract,
-            'from_view': from_view,
-        }
-
-        if from_view == 'client':
-            # クライアント契約詳細からスタッフを割り当てる場合
-            return render(request, 'contract/staff_assignment_confirm.html', context)
-        else: # from_view == 'staff'
-            # スタッフ契約詳細からクライアントを割り当てる場合
-            return render(request, 'contract/client_assignment_confirm.html', context)
-
-    # POST以外はトップページにリダイレクト
-    return redirect('contract:contract_index')
 
 
 @login_required
