@@ -937,7 +937,7 @@ def staff_contract_create(request):
         staff = original_contract.staff
 
     if request.method == 'POST':
-        form = StaffContractForm(request.POST)
+        form = StaffContractForm(request.POST, client_contract=client_contract)
         if form.is_valid():
             try:
                 # クライアント契約からの作成の場合、確認画面に遷移（まだ保存しない）
@@ -1031,7 +1031,7 @@ def staff_contract_create(request):
             except DefaultValue.DoesNotExist:
                 pass  # マスタにキーが存在しない場合は何もしない
 
-        form = StaffContractForm(initial=initial_data)
+        form = StaffContractForm(initial=initial_data, client_contract=client_contract)
 
     context = {
         'form': form,

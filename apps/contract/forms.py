@@ -470,6 +470,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        self.client_contract = kwargs.pop('client_contract', None)
         super().__init__(*args, **kwargs)
         from apps.master.models import ContractPattern, JobCategory
         self.fields['job_category'].queryset = JobCategory.objects.filter(is_active=True)
@@ -529,6 +530,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         contract_amount = cleaned_data.get('contract_amount')
         work_location = cleaned_data.get('work_location')
         job_category = cleaned_data.get('job_category')
+        employment_type = cleaned_data.get('employment_type')
 
         # 開始日と終了日の関係チェック
         if start_date and end_date and start_date > end_date:
@@ -547,6 +549,13 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         # 外国籍情報チェック
         if staff:
             self._validate_foreign_staff_contract(staff, job_category, end_date)
+
+        # クライアント契約からの作成時の制限チェック
+        if staff and employment_type:
+            self._validate_client_contract_limitations(staff, employment_type, start_date)
+        
+        # クライアント契約との契約期間整合性チェック
+        self._validate_contract_period_compatibility(start_date, end_date)
 
         # 最低賃金チェック
         try:
@@ -585,6 +594,58 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
                 self.add_error('end_date', 
                     f'契約終了日（{end_date}）が在留期限（{international_info.residence_period_to}）を超えています。'
                     f'在留期限内の日付を設定してください。')
+
+            # 3. クライアント契約が派遣の場合、職種が農業漁業派遣該当になっていなければエラー
+            if (self.client_contract and 
+                self.client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and
+                job_category and not job_category.is_agriculture_fishery_dispatch):
+                self.add_error('job_category', 
+                    f'外国籍スタッフ「{staff.name_last} {staff.name_first}」の派遣契約では、'
+                    f'農業漁業派遣該当の職種を選択してください。')
+
+    def _validate_client_contract_limitations(self, staff, employment_type, start_date):
+        """クライアント契約からの作成時の制限チェック"""
+        # フォーム初期化時にクライアント契約が渡されていない場合は何もしない
+        if not self.client_contract:
+            return
+            
+        # 無期雇用派遣労働者又は60歳以上の者に限定する場合のチェック
+        if (hasattr(self.client_contract, 'haken_info') and self.client_contract.haken_info and
+                self.client_contract.haken_info.limit_indefinite_or_senior == Constants.LIMIT_BY_AGREEMENT.LIMITED):
+            
+            # 条件1: 無期雇用か
+            is_indefinite_employment = not employment_type.is_fixed_term
+            
+            # 条件2: 契約開始日時点で60歳以上か
+            is_over_60 = False
+            if staff.birth_date and start_date:
+                age_at_start = start_date.year - staff.birth_date.year - \
+                    ((start_date.month, start_date.day) < (staff.birth_date.month, staff.birth_date.day))
+                if age_at_start >= 60:
+                    is_over_60 = True
+            
+            if not (is_indefinite_employment or is_over_60):
+                self.add_error('employment_type', 
+                    f'このクライアント契約は無期雇用派遣労働者又は60歳以上の者に限定されています。'
+                    f'スタッフ「{staff.name}」は条件を満たしていません。')
+
+    def _validate_contract_period_compatibility(self, start_date, end_date):
+        """クライアント契約との契約期間整合性チェック"""
+        # フォーム初期化時にクライアント契約が渡されていない場合は何もしない
+        if not self.client_contract:
+            return
+            
+        # スタッフ契約の開始日がクライアント契約の終了日より後の場合はエラー
+        if (start_date and self.client_contract.end_date and 
+            start_date > self.client_contract.end_date):
+            self.add_error('start_date', 
+                f'スタッフ契約開始日（{start_date}）がクライアント契約終了日（{self.client_contract.end_date}）より後になっています。')
+        
+        # スタッフ契約の終了日がクライアント契約の開始日より前の場合はエラー
+        if (end_date and self.client_contract.start_date and 
+            end_date < self.client_contract.start_date):
+            self.add_error('end_date', 
+                f'スタッフ契約終了日（{end_date}）がクライアント契約開始日（{self.client_contract.start_date}）より前になっています。')
 
 
 class ClientContractTtpForm(forms.ModelForm):
