@@ -42,7 +42,10 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.jobs_seirei.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">派遣政令業務</label>
+                <label for="{{ form.jobs_seirei.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                    派遣政令業務
+                    {% my_help_icon "日雇い派遣（30日以内または週20時間未満の派遣）の例外となる令第４条第１項に該当する業務" %}
+                </label>
                 <div class="col-sm-6">
                     {{ form.jobs_seirei }}
                     {% if form.jobs_seirei.errors %}
