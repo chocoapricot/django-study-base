@@ -183,6 +183,7 @@
                                             {% endif %}
                                             {% if contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and contract.duration <= 30 %}
                                                 {% if contract.job_category.jobs_seirei %}
+                                                {% elif contract.haken_info and contract.haken_info.limit_indefinite_or_senior == Constants.LIMIT_BY_AGREEMENT.LIMITED %}
                                                 {% else %}
                                                     <span class="badge bg-danger">日雇派遣</span>
                                                 {% endif %}

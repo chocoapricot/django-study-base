@@ -66,6 +66,9 @@
                         {% if contract.job_category.jobs_seirei %}
                             <span class="badge bg-light">日雇派遣例外</span>
                             {% my_help_icon "日雇派遣（30日以内または週20時間未満の派遣）ですが、令第４条第１項に該当する業務のため例外となります" %}
+                        {% elif contract.haken_info and contract.haken_info.limit_indefinite_or_senior == Constants.LIMIT_BY_AGREEMENT.LIMITED %}
+                            <span class="badge bg-light">日雇派遣例外</span>
+                            {% my_help_icon "日雇派遣（30日以内または週20時間未満の派遣）ですが、無期雇用派遣労働者又は60歳以上の者に限定されているため例外となります" %}
                         {% else %}
                             <span class="badge bg-danger">日雇派遣</span>
                             {% my_help_icon "日雇派遣（30日以内または週20時間未満の派遣）となり、就業するスタッフの条件に制約があります" %}

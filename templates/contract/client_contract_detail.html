@@ -4,6 +4,7 @@
 {% load dropdowns %}
 {% load badge_tags %}
 {% load query_tags %}
+{% load help_tags %}
 
 {% block title %}クライアント契約詳細 - {{ contract.contract_name }}{% endblock %}
 
@@ -105,7 +106,15 @@
                                 <th class="bg-light">協定対象派遣労働者に限定するか否かの別</th>
                                 <td>{{ haken_info.get_limit_by_agreement_display|default:"-" }}</td>
                                 <th class="bg-light">無期雇用派遣労働者又は60歳以上の者に限定するか否かの別</th>
-                                <td >{{ haken_info.get_limit_indefinite_or_senior_display|default:"-" }}</td>
+                                <td >
+                                    {{ haken_info.get_limit_indefinite_or_senior_display|default:"-" }}
+                                    {% if contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and contract.duration <= 30 %}
+                                        {% if contract.haken_info and contract.haken_info.limit_indefinite_or_senior == Constants.LIMIT_BY_AGREEMENT.LIMITED %}
+                                            <span class="badge bg-light">日雇派遣例外</span>
+                                            {% my_help_icon "無期雇用派遣労働者又は60歳以上の者に限定されているため、日雇派遣の制約を受けません" %}
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
                             </tr>
                             <tr>
                                 <th class="bg-light">責任の程度</th>
