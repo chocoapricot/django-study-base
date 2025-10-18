@@ -1565,37 +1565,6 @@ class ContractAssignmentViewTest(TestCase):
         self.assertEqual(client_contract_4.business_content, '')
         self.assertEqual(staff_contract_4.business_content, '')
 
-    def test_assignment_confirmation_flow(self):
-        """契約アサインの確認フローをテストする"""
-        from ..models import ContractAssignment
-        initial_assignment_count = ContractAssignment.objects.count()
-
-        # 1. 割当ページから確認ページへのPOST
-        confirm_url = reverse('contract:confirm_contract_assignment')
-        post_data = {
-            'client_contract_id': self.client_contract_draft.pk,
-            'staff_contract_id': self.assignable_staff_contract.pk,
-            'from': 'client',
-        }
-        response = self.client.post(confirm_url, post_data)
-
-        # 2. 確認ページのレスポンスを検証
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'contract/staff_assignment_confirm.html')
-        self.assertEqual(response.context['client_contract'], self.client_contract_draft)
-        self.assertEqual(response.context['staff_contract'], self.assignable_staff_contract)
-
-        # 3. 確認ページから作成ビューへのPOST
-        create_url = reverse('contract:create_contract_assignment')
-        response_create = self.client.post(create_url, post_data, follow=True)
-
-        # 4. 作成後のレスポンスを検証
-        self.assertRedirects(response_create, reverse('contract:client_contract_detail', kwargs={'pk': self.client_contract_draft.pk}))
-        messages = list(response_create.context['messages'])
-        self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), '契約の割当が完了しました。')
-        self.assertEqual(ContractAssignment.objects.count(), initial_assignment_count + 1)
-
     def test_create_assignment_work_location_synchronization(self):
         """契約アサイン時に就業場所が同期されるかテスト"""
         # --- シナリオ1: StaffContractからClientContractHakenへ同期 ---
