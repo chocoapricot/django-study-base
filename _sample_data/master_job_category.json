@@ -3,7 +3,7 @@
     "model": "master.jobcategory",
     "pk": 1,
     "fields": {
-        "version": 1760695237437242,
+        "version": 1760755072202527,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -15,14 +15,15 @@
         "is_agriculture_fishery_dispatch": false,
         "is_specified_skilled_worker": false,
         "jobs_kourou": 240,
-        "jobs_soumu": 44
+        "jobs_soumu": 44,
+        "jobs_seirei": null
     }
 },
 {
     "model": "master.jobcategory",
     "pk": 2,
     "fields": {
-        "version": 1760695237451733,
+        "version": 1760755072210778,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-07T00:00:00Z",
@@ -34,17 +35,18 @@
         "is_agriculture_fishery_dispatch": false,
         "is_specified_skilled_worker": false,
         "jobs_kourou": 234,
-        "jobs_soumu": 41
+        "jobs_soumu": 41,
+        "jobs_seirei": null
     }
 },
 {
     "model": "master.jobcategory",
     "pk": 3,
     "fields": {
-        "version": 1760695237458271,
+        "version": 1760796598879784,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
-        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_at": "2025-10-18T14:25:45.531Z",
         "updated_by": 1,
         "name": "ソフトウェア開発",
         "display_order": 30,
@@ -53,17 +55,18 @@
         "is_agriculture_fishery_dispatch": false,
         "is_specified_skilled_worker": false,
         "jobs_kourou": 209,
-        "jobs_soumu": 26
+        "jobs_soumu": 26,
+        "jobs_seirei": 371
     }
 },
 {
     "model": "master.jobcategory",
     "pk": 4,
     "fields": {
-        "version": 1760695237461549,
+        "version": 1760796611810903,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
-        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_at": "2025-10-18T14:25:58.463Z",
         "updated_by": 1,
         "name": "看護",
         "display_order": 40,
@@ -72,17 +75,18 @@
         "is_agriculture_fishery_dispatch": false,
         "is_specified_skilled_worker": false,
         "jobs_kourou": 223,
-        "jobs_soumu": 29
+        "jobs_soumu": 29,
+        "jobs_seirei": 389
     }
 },
 {
     "model": "master.jobcategory",
     "pk": 5,
     "fields": {
-        "version": 1760716402490826,
+        "version": 1760797430414464,
         "created_at": "2025-10-05T14:42:50.183Z",
         "created_by": 1,
-        "updated_at": "2025-10-17T16:09:09.143Z",
+        "updated_at": "2025-10-18T14:39:37.066Z",
         "updated_by": 1,
         "name": "機械組立",
         "display_order": 50,
@@ -91,17 +95,18 @@
         "is_agriculture_fishery_dispatch": false,
         "is_specified_skilled_worker": true,
         "jobs_kourou": 274,
-        "jobs_soumu": 70
+        "jobs_soumu": 70,
+        "jobs_seirei": 373
     }
 },
 {
     "model": "master.jobcategory",
     "pk": 6,
     "fields": {
-        "version": 1760716407435420,
+        "version": 1760797393582245,
         "created_at": "2025-10-17T15:42:15.390Z",
         "created_by": null,
-        "updated_at": "2025-10-17T16:09:14.087Z",
+        "updated_at": "2025-10-18T14:39:00.234Z",
         "updated_by": null,
         "name": "農業",
         "display_order": 60,
@@ -110,7 +115,8 @@
         "is_agriculture_fishery_dispatch": true,
         "is_specified_skilled_worker": true,
         "jobs_kourou": 264,
-        "jobs_soumu": 62
+        "jobs_soumu": 62,
+        "jobs_seirei": null
     }
 }
 ]
