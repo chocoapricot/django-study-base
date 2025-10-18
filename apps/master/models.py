@@ -708,6 +708,15 @@ class JobCategory(MyModel):
         related_name='job_category_soumu',
         limit_choices_to={'category': 'jobs_soumu', 'active': True}
     )
+    jobs_seirei = models.ForeignKey(
+        'settings.Dropdowns',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='派遣政令業務',
+        related_name='job_category_seirei',
+        limit_choices_to={'category': 'jobs_seirei', 'active': True}
+    )
 
     class Meta:
         db_table = 'apps_master_job_category'

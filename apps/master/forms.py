@@ -100,10 +100,17 @@ class JobCategoryForm(forms.ModelForm):
         empty_label='選択してください',
         widget=forms.Select(attrs={'class': 'form-control form-control-sm'})
     )
+    jobs_seirei = forms.ModelChoiceField(
+        queryset=Dropdowns.objects.filter(category='jobs_seirei', active=True),
+        required=False,
+        label='派遣政令業務',
+        empty_label='派遣政令業務に該当する場合には選択してください',
+        widget=forms.Select(attrs={'class': 'form-control form-control-sm'})
+    )
 
     class Meta:
         model = JobCategory
-        fields = ['name', 'is_manufacturing_dispatch', 'is_agriculture_fishery_dispatch', 'is_specified_skilled_worker', 'jobs_kourou', 'jobs_soumu', 'display_order', 'is_active']
+        fields = ['name', 'is_manufacturing_dispatch', 'is_agriculture_fishery_dispatch', 'is_specified_skilled_worker', 'jobs_kourou', 'jobs_soumu', 'jobs_seirei', 'display_order', 'is_active']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'is_manufacturing_dispatch': forms.CheckboxInput(attrs={'class': 'form-check-input'}),

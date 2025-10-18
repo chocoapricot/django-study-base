@@ -31,12 +31,22 @@
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center">
+            <div class="row mb-1 align-items-center">
                 <label for="{{ form.jobs_soumu.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">職業分類(総務省)</label>
                 <div class="col-sm-6">
                     {{ form.jobs_soumu }}
                     {% if form.jobs_soumu.errors %}
                         <div class="text-danger small">{{ form.jobs_soumu.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.jobs_seirei.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">派遣政令業務</label>
+                <div class="col-sm-6">
+                    {{ form.jobs_seirei }}
+                    {% if form.jobs_seirei.errors %}
+                        <div class="text-danger small">{{ form.jobs_seirei.errors.0 }}</div>
                     {% endif %}
                 </div>
             </div>
