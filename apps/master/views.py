@@ -2243,7 +2243,6 @@ def contract_pattern_list(request):
         'title': '契約書パターン管理',
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
-        'Constants': Constants,
     }
     return render(request, 'master/contract_pattern_list.html', context)
 
@@ -2264,7 +2263,6 @@ def contract_pattern_create(request):
     context = {
         'form': form,
         'title': '契約書パターン作成',
-        'Constants': Constants,
     }
     return render(request, 'master/contract_pattern_form.html', context)
 
@@ -2309,7 +2307,6 @@ def contract_pattern_copy(request, pk):
         'title': '契約書パターンコピー作成',
         'is_copy': True,
         'original_id': pk,
-        'Constants': Constants,
     }
     return render(request, 'master/contract_pattern_form.html', context)
 
@@ -2332,7 +2329,6 @@ def contract_pattern_update(request, pk):
         'form': form,
         'pattern': pattern,
         'title': f'契約書パターン編集 - {pattern.name}',
-        'Constants': Constants,
     }
     return render(request, 'master/contract_pattern_form.html', context)
 
@@ -2373,7 +2369,6 @@ def contract_pattern_detail(request, pk):
         'title': f'契約書パターン詳細 - {pattern.name}',
         'change_logs': change_logs[:20],  # ページネーションは一旦省略し、最新20件を表示
         'change_logs_count': len(change_logs),
-        'Constants': Constants,
     }
     return render(request, 'master/contract_pattern_detail.html', context)
 

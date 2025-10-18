@@ -275,7 +275,6 @@ def client_contract_detail(request, pk):
         'client_filter': client_filter,
         'from_client_detail': from_client_detail,
         'from_client_detail_direct': from_client_detail_direct,
-        'Constants': Constants,
     }
     return render(request, 'contract/client_contract_detail.html', context)
 
@@ -394,7 +393,6 @@ def client_contract_create(request):
         'is_haken': is_haken,
         'selected_client': selected_client,
         'original_contract': original_contract,
-        'Constants': Constants,
     }
     return render(request, 'contract/client_contract_form.html', context)
 
@@ -496,7 +494,6 @@ def client_contract_update(request, pk):
         'contract': contract,
         'title': 'クライアント契約編集',
         'is_haken': context_is_haken,
-        'Constants': Constants,
     }
     return render(request, 'contract/client_contract_form.html', context)
 
@@ -900,7 +897,6 @@ def staff_contract_detail(request, pk):
         'minimum_wage_pref_name': minimum_wage_pref_name,
         'has_ttp_assignment': has_ttp_assignment,
         'CONTRACT_STATUS': Constants.CONTRACT_STATUS,
-        'Constants': Constants,
     }
     return render(request, 'contract/staff_contract_detail.html', context)
 
@@ -1202,7 +1198,6 @@ def client_select(request):
         'search_query': search_query,
         'return_url': return_url,
         'client_contract_type_code': client_contract_type_code,
-        'Constants': Constants,
     }
 
     if from_modal:
@@ -1918,7 +1913,6 @@ def client_contract_confirm_list(request):
         context = {
             'contracts_with_status': [],
             'title': 'クライアント契約確認',
-            'Constants': Constants,
         }
         return render(request, 'contract/client_contract_confirm_list.html', context)
 
@@ -1973,7 +1967,6 @@ def client_contract_confirm_list(request):
         'contracts_with_status': contracts_with_status,
         'page_obj': page_obj,
         'title': 'クライアント契約確認',
-        'Constants': Constants,
     }
     return render(request, 'contract/client_contract_confirm_list.html', context)
 
@@ -2429,7 +2422,6 @@ def client_contract_ttp_detail(request, pk):
         'ttp_info': ttp_info,
         'haken': ttp_info.haken,
         'contract': ttp_info.haken.client_contract,
-        'Constants': Constants,
     }
     return render(request, 'contract/client_contract_ttp_detail.html', context)
 

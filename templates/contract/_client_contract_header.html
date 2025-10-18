@@ -1,4 +1,5 @@
 {% load humanize %}
+{% load help_tags %}
 {% load dropdowns %}
 {% load badge_tags %}
 
@@ -24,7 +25,13 @@
             </tr>
             <tr>
                 <th>職種</th>
-                <td>{{ contract.job_category.name|default:"-" }}</td>
+                <td>
+                    {{ contract.job_category.name|default:"-" }}
+                    {% if contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and contract.duration <= 30 and contract.job_category.jobs_seirei %}
+                        <span class="badge bg-light">日雇派遣例外業務</span>
+                        {% my_help_icon "日雇派遣（30日以内または週20時間未満の派遣）ですが、令第４条第１項に該当する業務のため例外となります" %}
+                    {% endif %}
+                </td>
             </tr>
             <tr>
                 <th>契約状況</th>
@@ -56,7 +63,13 @@
                         無期限
                     {% endif %}
                     {% if contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and contract.duration <= 30 %}
-                        <span class="badge bg-danger">日雇派遣</span>
+                        {% if contract.job_category.jobs_seirei %}
+                            <span class="badge bg-light">日雇派遣例外</span>
+                            {% my_help_icon "日雇派遣（30日以内または週20時間未満の派遣）ですが、令第４条第１項に該当する業務のため例外となります" %}
+                        {% else %}
+                            <span class="badge bg-danger">日雇派遣</span>
+                            {% my_help_icon "日雇派遣（30日以内または週20時間未満の派遣）となり、就業するスタッフの条件に制約があります" %}
+                        {% endif %}
                     {% endif %}
                 </td>
             </tr>
