@@ -1,0 +1,39 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+{% load help_tags %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        クライアント契約詳細
+    </div>
+    <div class="card-body">
+        {% include 'contract/_client_contract_header.html' %}
+    </div>
+</div>
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        {{ title }}
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.period_exempt_detail.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">期間制限外詳細</label>
+                <div class="col-sm-8">
+                    {{ form.period_exempt_detail }}
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
+                    <a href="{% url 'contract:client_contract_detail' pk=contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+{% load dropdowns %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        クライアント契約詳細
+    </div>
+    <div class="card-body">
+        {% include 'contract/_client_contract_header.html' %}
+    </div>
+</div>
+
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                派遣制限外情報
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <th class="bg-light" style="width: 25%;">期間制限外詳細</th>
+                                <td style="white-space: pre-wrap; word-wrap: break-word;">{{ haken_exempt_info.period_exempt_detail|default_if_none:"" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col text-left">
+                        {% if haken_exempt_info.haken.client_contract.contract_status == Constants.CONTRACT_STATUS.DRAFT %}
+                            <a href="{% url 'contract:client_contract_haken_exempt_update' pk=haken_exempt_info.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
+                            <a href="{% url 'contract:client_contract_haken_exempt_delete' pk=haken_exempt_info.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+                        {% endif %}
+                        <a href="{% url 'contract:client_contract_detail' pk=contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}

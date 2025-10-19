@@ -543,6 +543,27 @@ class ClientContractTtp(MyModel):
         return f"{self.haken.client_contract}"
 
 
+class ClientContractHakenExempt(MyModel):
+    """
+    クライアント契約派遣制限外情報
+    """
+    haken = models.OneToOneField(
+        ClientContractHaken,
+        on_delete=models.CASCADE,
+        related_name='haken_exempt_info',
+        verbose_name='クライアント契約派遣情報'
+    )
+    period_exempt_detail = models.TextField('期間制限外詳細')
+
+    class Meta:
+        db_table = 'apps_contract_client_haken_exempt'
+        verbose_name = 'クライアント契約派遣制限外情報'
+        verbose_name_plural = 'クライアント契約派遣制限外情報'
+
+    def __str__(self):
+        return f"{self.haken.client_contract}"
+
+
 class ContractAssignment(MyModel):
     """
     クライアント契約とスタッフ契約の関連付けを管理するモデル。
