@@ -37,7 +37,6 @@ from .resources import ClientContractResource, StaffContractResource
 from .models import ContractAssignment
 from django.urls import reverse
 
-
 @login_required
 @permission_required('contract.view_clientcontract', raise_exception=True)
 def client_contract_pdf(request, pk):
@@ -78,6 +77,67 @@ def client_contract_pdf(request, pk):
     else:
         messages.error(request, "PDFの生成に失敗しました。")
         return redirect('contract:client_contract_detail', pk=pk)
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def client_contract_export(request):
+    """クライアント契約データのエクスポート（CSV/Excel）"""
+    search_query = request.GET.get('q', '')
+    status_filter = request.GET.get('status', '')
+    client_filter = request.GET.get('client', '')
+    contract_type_filter = request.GET.get('contract_type', '')
+    date_filter = request.GET.get('date_filter', '')
+    format_type = request.GET.get('format', 'csv')
+
+    contracts = ClientContract.objects.select_related('client', 'haken_info__ttp_info').all()
+
+    if client_filter:
+        contracts = contracts.filter(client_id=client_filter)
+    if search_query:
+        contracts = contracts.filter(
+            Q(contract_name__icontains=search_query) |
+            Q(client__name__icontains=search_query) |
+            Q(contract_number__icontains=search_query)
+        )
+    if status_filter:
+        contracts = contracts.filter(contract_status=status_filter)
+    if contract_type_filter:
+        contracts = contracts.filter(client_contract_type_code=contract_type_filter)
+
+    # 日付フィルタを適用
+    if date_filter:
+        today = date.today()
+        if date_filter == 'today':
+            # 本日が契約期間に含まれているもの
+            contracts = contracts.filter(
+                start_date__lte=today
+            ).filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True)
+            )
+        elif date_filter == 'future':
+            # 本日以降に契約終了があるもの（無期限契約も含む）
+            contracts = contracts.filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True)
+            )
+
+    contracts = contracts.order_by('-start_date', 'client__name')
+
+    resource = ClientContractResource()
+    dataset = resource.export(contracts)
+
+    timestamp = timezone.now().strftime('%Y%m%d_%H%M%S')
+    if format_type == 'excel':
+        response = HttpResponse(
+            dataset.xlsx,
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename="client_contracts_{timestamp}.xlsx"'
+    else:
+        csv_data = '\ufeff' + dataset.csv
+        response = HttpResponse(csv_data, content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="client_contracts_{timestamp}.csv"'
+
+    return response
 
 
 @login_required
@@ -160,7 +220,6 @@ def client_contract_draft_dispatch_notification(request, pk):
     else:
         messages.error(request, "派遣通知書のPDFの生成に失敗しました。")
         return redirect('contract:client_contract_detail', pk=pk)
-
 
 @login_required
 @permission_required('contract.view_clientcontract', raise_exception=True)
