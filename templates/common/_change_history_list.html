@@ -62,6 +62,10 @@
                             <span class="badge bg-primary">契約情報</span>
                         {% elif log.model_name == 'ClientContractHaken' %}
                             <span class="badge bg-info">派遣情報</span>
+                        {% elif log.model_name == 'ClientContractTtp' %}
+                            <span class="badge bg-warning">紹介予定派遣</span>
+                        {% elif log.model_name == 'ClientContractHakenExempt' %}
+                            <span class="badge bg-danger">派遣期間制限外</span>
                         {% elif log.model_name == 'ContractPattern' %}
                             <span class="badge bg-primary">契約書パターン</span>
                         {% elif log.model_name == 'ContractTerms' %}
