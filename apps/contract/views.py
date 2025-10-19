@@ -227,15 +227,34 @@ def client_contract_detail(request, pk):
     )
 
     haken_logs = AppLog.objects.none()
+    ttp_logs = AppLog.objects.none()
+    haken_exempt_logs = AppLog.objects.none()
+    
     if haken_info:
         haken_logs = AppLog.objects.filter(
             model_name='ClientContractHaken',
             object_id=str(haken_info.pk),
             action__in=['create', 'update', 'delete']
         )
+        
+        # TTP情報の変更履歴
+        if hasattr(haken_info, 'ttp_info') and haken_info.ttp_info:
+            ttp_logs = AppLog.objects.filter(
+                model_name='ClientContractTtp',
+                object_id=str(haken_info.ttp_info.pk),
+                action__in=['create', 'update', 'delete']
+            )
+        
+        # 派遣期間制限外情報の変更履歴
+        if hasattr(haken_info, 'haken_exempt_info') and haken_info.haken_exempt_info:
+            haken_exempt_logs = AppLog.objects.filter(
+                model_name='ClientContractHakenExempt',
+                object_id=str(haken_info.haken_exempt_info.pk),
+                action__in=['create', 'update', 'delete']
+            )
 
     all_change_logs = sorted(
-        chain(contract_logs, haken_logs),
+        chain(contract_logs, haken_logs, ttp_logs, haken_exempt_logs),
         key=lambda log: log.timestamp,
         reverse=True
     )
@@ -749,15 +768,34 @@ def client_contract_change_history_list(request, pk):
     )
 
     haken_logs = AppLog.objects.none()
+    ttp_logs = AppLog.objects.none()
+    haken_exempt_logs = AppLog.objects.none()
+    
     if haken_info:
         haken_logs = AppLog.objects.filter(
             model_name='ClientContractHaken',
             object_id=str(haken_info.pk),
             action__in=['create', 'update', 'delete']
         )
+        
+        # TTP情報の変更履歴
+        if hasattr(haken_info, 'ttp_info') and haken_info.ttp_info:
+            ttp_logs = AppLog.objects.filter(
+                model_name='ClientContractTtp',
+                object_id=str(haken_info.ttp_info.pk),
+                action__in=['create', 'update', 'delete']
+            )
+        
+        # 派遣期間制限外情報の変更履歴
+        if hasattr(haken_info, 'haken_exempt_info') and haken_info.haken_exempt_info:
+            haken_exempt_logs = AppLog.objects.filter(
+                model_name='ClientContractHakenExempt',
+                object_id=str(haken_info.haken_exempt_info.pk),
+                action__in=['create', 'update', 'delete']
+            )
 
     all_logs = sorted(
-        chain(contract_logs, haken_logs),
+        chain(contract_logs, haken_logs, ttp_logs, haken_exempt_logs),
         key=lambda log: log.timestamp,
         reverse=True
     )
