@@ -14,9 +14,9 @@ from apps.master.models import DefaultValue
 from apps.staff.models import Staff
 from apps.system.logs.models import AppLog
 
-from .forms import ClientContractTtpForm, StaffContractTeishokubiDetailForm
+from .forms import ClientContractTtpForm, ClientContractHakenExemptForm, StaffContractTeishokubiDetailForm
 from .models import (ClientContract, ClientContractHaken, ClientContractPrint,
-                     ClientContractTtp, ContractAssignment,
+                     ClientContractTtp, ClientContractHakenExempt, ContractAssignment,
                      StaffContractTeishokubi, StaffContractTeishokubiDetail)
 from .utils import generate_teishokubi_notification_pdf
 
@@ -178,6 +178,133 @@ def client_contract_ttp_delete(request, pk):
         'contract': ttp_info.haken.client_contract,
     }
     return render(request, 'contract/client_contract_ttp_delete.html', context)
+
+
+# 派遣制限外
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def client_contract_haken_exempt_view(request, haken_pk):
+    """派遣制限外情報の有無に応じて、詳細画面か作成画面にリダイレクトする"""
+    haken = get_object_or_404(ClientContractHaken, pk=haken_pk)
+    if hasattr(haken, 'haken_exempt_info'):
+        return redirect('contract:client_contract_haken_exempt_detail', pk=haken.haken_exempt_info.pk)
+    else:
+        return redirect('contract:client_contract_haken_exempt_create', haken_pk=haken.pk)
+
+
+@login_required
+@permission_required('contract.add_clientcontract', raise_exception=True)
+def client_contract_haken_exempt_create(request, haken_pk):
+    """派遣制限外情報 作成"""
+    haken = get_object_or_404(ClientContractHaken, pk=haken_pk)
+    if hasattr(haken, 'haken_exempt_info'):
+        messages.info(request, '既に派遣制限外情報が存在します。')
+        return redirect('contract:client_contract_haken_exempt_detail', pk=haken.haken_exempt_info.pk)
+
+    # 親契約が「作成中」でない場合はエラー
+    if haken.client_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
+        messages.error(request, '契約が作成中でないため、派遣制限外情報は作成できません。')
+        return redirect('contract:client_contract_detail', pk=haken.client_contract.pk)
+
+    if request.method == 'POST':
+        form = ClientContractHakenExemptForm(request.POST)
+        if form.is_valid():
+            haken_exempt_info = form.save(commit=False)
+            haken_exempt_info.haken = haken
+            haken_exempt_info.created_by = request.user
+            haken_exempt_info.updated_by = request.user
+            haken_exempt_info.save()
+            messages.success(request, '派遣制限外情報を作成しました。')
+            return redirect('contract:client_contract_haken_exempt_detail', pk=haken_exempt_info.pk)
+    else:
+        # GETリクエストの場合、初期値をマスタから設定
+        initial_data = {}
+        default_keys = {
+            'period_exempt_detail': 'ClientContractHakenExempt.period_exempt_detail',
+        }
+        for field, key in default_keys.items():
+            try:
+                default_value = DefaultValue.objects.get(pk=key)
+                initial_data[field] = default_value.value
+            except DefaultValue.DoesNotExist:
+                pass  # マスタにキーが存在しない場合は何もしない
+
+        form = ClientContractHakenExemptForm(initial=initial_data)
+
+    context = {
+        'form': form,
+        'haken': haken,
+        'contract': haken.client_contract,
+        'title': '派遣制限外情報 作成',
+    }
+    return render(request, 'contract/client_contract_haken_exempt_form.html', context)
+
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def client_contract_haken_exempt_detail(request, pk):
+    """派遣制限外情報 詳細"""
+    haken_exempt_info = get_object_or_404(ClientContractHakenExempt, pk=pk)
+    context = {
+        'haken_exempt_info': haken_exempt_info,
+        'haken': haken_exempt_info.haken,
+        'contract': haken_exempt_info.haken.client_contract,
+    }
+    return render(request, 'contract/client_contract_haken_exempt_detail.html', context)
+
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def client_contract_haken_exempt_update(request, pk):
+    """派遣制限外情報 更新"""
+    haken_exempt_info = get_object_or_404(ClientContractHakenExempt, pk=pk)
+    contract = haken_exempt_info.haken.client_contract
+    if contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
+        messages.error(request, '契約が作成中でないため、派遣制限外情報は編集できません。')
+        return redirect('contract:client_contract_detail', pk=contract.pk)
+
+    if request.method == 'POST':
+        form = ClientContractHakenExemptForm(request.POST, instance=haken_exempt_info)
+        if form.is_valid():
+            haken_exempt_info = form.save(commit=False)
+            haken_exempt_info.updated_by = request.user
+            haken_exempt_info.save()
+            messages.success(request, '派遣制限外情報を更新しました。')
+            return redirect('contract:client_contract_haken_exempt_detail', pk=haken_exempt_info.pk)
+    else:
+        form = ClientContractHakenExemptForm(instance=haken_exempt_info)
+
+    context = {
+        'form': form,
+        'haken_exempt_info': haken_exempt_info,
+        'haken': haken_exempt_info.haken,
+        'contract': haken_exempt_info.haken.client_contract,
+        'title': '派遣制限外情報 編集',
+    }
+    return render(request, 'contract/client_contract_haken_exempt_form.html', context)
+
+
+@login_required
+@permission_required('contract.delete_clientcontract', raise_exception=True)
+def client_contract_haken_exempt_delete(request, pk):
+    """派遣制限外情報 削除"""
+    haken_exempt_info = get_object_or_404(ClientContractHakenExempt, pk=pk)
+    contract = haken_exempt_info.haken.client_contract
+    if contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
+        messages.error(request, '契約が作成中でないため、派遣制限外情報は削除できません。')
+        return redirect('contract:client_contract_detail', pk=contract.pk)
+
+    contract_pk = haken_exempt_info.haken.client_contract.pk
+    if request.method == 'POST':
+        haken_exempt_info.delete()
+        messages.success(request, '派遣制限外情報を削除しました。')
+        return redirect('contract:client_contract_detail', pk=contract_pk)
+
+    context = {
+        'haken_exempt_info': haken_exempt_info,
+        'contract': haken_exempt_info.haken.client_contract,
+    }
+    return render(request, 'contract/client_contract_haken_exempt_delete.html', context)
 
 
 @login_required

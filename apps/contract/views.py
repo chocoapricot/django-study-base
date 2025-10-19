@@ -14,8 +14,8 @@ from datetime import datetime, date
 from django.core.files.base import ContentFile
 from datetime import date
 from django.forms.models import model_to_dict
-from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken, ClientContractTtp, StaffContractTeishokubi, StaffContractTeishokubiDetail
-from .forms import ClientContractForm, StaffContractForm, ClientContractHakenForm, ClientContractTtpForm, StaffContractTeishokubiDetailForm
+from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken, ClientContractTtp, ClientContractHakenExempt, StaffContractTeishokubi, StaffContractTeishokubiDetail
+from .forms import ClientContractForm, StaffContractForm, ClientContractHakenForm, ClientContractTtpForm, ClientContractHakenExemptForm, StaffContractTeishokubiDetailForm
 from apps.common.constants import Constants
 from django.conf import settings
 from django.utils import timezone

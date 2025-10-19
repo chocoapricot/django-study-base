@@ -1,7 +1,7 @@
 from django import forms
 from django.db.models import Subquery, OuterRef
 from django.utils import timezone
-from .models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp, StaffContractTeishokubiDetail
+from .models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp, ClientContractHakenExempt, StaffContractTeishokubiDetail
 from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from apps.system.settings.models import Dropdowns
@@ -674,6 +674,22 @@ class ClientContractTtpForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.required = False
+
+class ClientContractHakenExemptForm(forms.ModelForm):
+    """クライアント契約派遣制限外情報フォーム"""
+
+    class Meta:
+        model = ClientContractHakenExempt
+        exclude = ['haken', 'version', 'created_at', 'created_by', 'updated_at', 'updated_by']
+        widgets = {
+            'period_exempt_detail': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.required = False
+
 
 class StaffContractTeishokubiDetailForm(forms.ModelForm):
     """個人抵触日詳細フォーム"""

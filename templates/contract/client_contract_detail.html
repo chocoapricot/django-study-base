@@ -21,6 +21,7 @@
                             <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">その他情報</a>
                             <div class="dropdown-menu">
                                 <a href="{% url 'contract:client_contract_ttp_view' haken_pk=haken_info.pk %}" class="dropdown-item">紹介予定派遣</a>
+                                <a href="{% url 'contract:client_contract_haken_exempt_view' haken_pk=haken_info.pk %}" class="dropdown-item">派遣期間制限外</a>
                             </div>
                         </li>
                     </ul>
@@ -189,6 +190,22 @@
                 </div>
                 {% endif %}
 
+                {% if contract.haken_info.haken_exempt_info %}
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="text-muted mb-0">派遣制限外情報</h6>
+                        </div>
+                        <table class="table table-sm">
+                            <tr>
+                                <th class="w-25 bg-light">期間制限外詳細</th>
+                                <td>{{ contract.haken_info.haken_exempt_info.period_exempt_detail|linebreaksbr|default:"-" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
                 <div class="row mt-4">
                     <div class="col-12">
                         <h6 class="text-muted mb-3">詳細情報</h6>
@@ -346,7 +363,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="card-body py-2">
                     <div class="mb-2">• 契約アサイン: 「作成中」状態のスタッフ契約のみアサイン可能</div>
                     <div class="mb-2">• アサイン解除: 「作成中」状態の契約のみ解除可能</div>
-                    <div class="mb-0">• 派遣情報表示: 派遣契約の場合のみ派遣情報{% if contract.haken_info and contract.haken_info.ttp_info %}・紹介予定派遣情報{% endif %}を表示</div>
+                    <div class="mb-0">• 派遣情報表示: 派遣契約の場合のみ派遣情報{% if contract.haken_info and contract.haken_info.ttp_info %}・紹介予定派遣情報{% endif %}{% if contract.haken_info and contract.haken_info.haken_exempt_info %}・派遣制限外情報{% endif %}を表示</div>
                 </div>
             </div>
 
@@ -357,7 +374,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="card-body py-2">
                     <div class="mb-2">• 遷移元判定: リファラー情報から戻るボタンの遷移先を自動判定</div>
-                    <div class="mb-2">• 関連データ取得: 契約アサイン情報、派遣情報{% if contract.haken_info and contract.haken_info.ttp_info %}、紹介予定派遣情報{% endif %}を自動取得・表示</div>
+                    <div class="mb-2">• 関連データ取得: 契約アサイン情報、派遣情報{% if contract.haken_info and contract.haken_info.ttp_info %}、紹介予定派遣情報{% endif %}{% if contract.haken_info and contract.haken_info.haken_exempt_info %}、派遣制限外情報{% endif %}を自動取得・表示</div>
                     <div class="mb-2">• 発行履歴管理: 契約書印刷履歴を自動記録・表示</div>
                     <div class="mb-2">• 変更履歴統合: 契約本体と派遣情報の変更履歴を統合して表示</div>
                     <div class="mb-2">• 抵触日表示: 派遣先事業所の抵触日を自動表示</div>
