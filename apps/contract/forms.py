@@ -687,8 +687,8 @@ class ClientContractHakenExemptForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            field.required = False
+        # 期間制限外詳細は必須
+        self.fields['period_exempt_detail'].required = True
 
 
 class StaffContractTeishokubiDetailForm(forms.ModelForm):

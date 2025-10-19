@@ -553,7 +553,7 @@ class ClientContractHakenExempt(MyModel):
         related_name='haken_exempt_info',
         verbose_name='クライアント契約派遣情報'
     )
-    period_exempt_detail = models.TextField('期間制限外詳細', blank=True, null=True)
+    period_exempt_detail = models.TextField('期間制限外詳細')
 
     class Meta:
         db_table = 'apps_contract_client_haken_exempt'
