@@ -1,6 +1,3 @@
-from .views_assignment import *
-from .views_haken import *
-from .views_staff import *
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
@@ -24,7 +21,7 @@ from apps.system.logs.models import AppLog
 from apps.common.utils import fill_pdf_from_template
 from apps.client.models import Client, ClientUser
 from apps.staff.models import Staff
-from apps.master.models import ContractPattern, StaffAgreement, DefaultValue
+from apps.master.models import ContractPattern, StaffAgreement, DefaultValue, BusinessContent, HakenResponsibilityDegree
 from apps.connect.models import ConnectStaff, ConnectStaffAgree, ConnectClient, MynumberRequest, ProfileRequest, BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
 from apps.staff.models import Staff
 from apps.client.models import Client
@@ -48,12 +45,12 @@ def contract_index(request):
     client_contract_count = ClientContract.objects.count()
     current_client_contracts = ClientContract.objects.count()
     recent_client_contracts = ClientContract.objects.select_related('client').order_by('-created_at')[:5]
-    
+
     # スタッフ契約の統計
     staff_contract_count = StaffContract.objects.count()
     current_staff_contracts = StaffContract.objects.count()
     recent_staff_contracts = StaffContract.objects.select_related('staff').order_by('-created_at')[:5]
-    
+
     context = {
         'client_contract_count': client_contract_count,
         'current_client_contracts': current_client_contracts,
@@ -74,7 +71,7 @@ def client_contract_list(request):
     status_filter = request.GET.get('status', '')
     client_filter = request.GET.get('client', '')
     contract_type_filter = request.GET.get('contract_type', '')
-    
+
     # 日付フィルタの初期値設定：リセットボタンが押された場合は空、それ以外は「本日以降」
     reset_filter = request.GET.get('reset_filter', '')
     if reset_filter:
@@ -211,13 +208,13 @@ def client_contract_detail(request, pk):
     # クライアントフィルタ情報を取得
     client_filter = request.GET.get('client', '')
     from_client_detail = bool(client_filter)
-    
+
     # 遷移元を判定（リファラーから）
     referer = request.META.get('HTTP_REFERER', '')
     from_client_detail_direct = False
     if client_filter and referer and f'/client/client/detail/{client_filter}/' in referer:
         from_client_detail_direct = True
-    
+
     # AppLogから履歴を取得
     from itertools import chain
     contract_logs = AppLog.objects.filter(
@@ -227,40 +224,21 @@ def client_contract_detail(request, pk):
     )
 
     haken_logs = AppLog.objects.none()
-    ttp_logs = AppLog.objects.none()
-    haken_exempt_logs = AppLog.objects.none()
-    
     if haken_info:
         haken_logs = AppLog.objects.filter(
             model_name='ClientContractHaken',
             object_id=str(haken_info.pk),
             action__in=['create', 'update', 'delete']
         )
-        
-        # TTP情報の変更履歴
-        if hasattr(haken_info, 'ttp_info') and haken_info.ttp_info:
-            ttp_logs = AppLog.objects.filter(
-                model_name='ClientContractTtp',
-                object_id=str(haken_info.ttp_info.pk),
-                action__in=['create', 'update', 'delete']
-            )
-        
-        # 派遣期間制限外情報の変更履歴
-        if hasattr(haken_info, 'haken_exempt_info') and haken_info.haken_exempt_info:
-            haken_exempt_logs = AppLog.objects.filter(
-                model_name='ClientContractHakenExempt',
-                object_id=str(haken_info.haken_exempt_info.pk),
-                action__in=['create', 'update', 'delete']
-            )
 
     all_change_logs = sorted(
-        chain(contract_logs, haken_logs, ttp_logs, haken_exempt_logs),
+        chain(contract_logs, haken_logs),
         key=lambda log: log.timestamp,
         reverse=True
     )
     change_logs_count = len(all_change_logs)
     change_logs = all_change_logs[:5]
-    
+
     # 発行履歴を取得
     all_issue_history = ClientContractPrint.objects.filter(client_contract=contract).order_by('-printed_at', '-pk')
     issue_history_count = all_issue_history.count()
@@ -292,7 +270,7 @@ def client_contract_create(request):
 
     original_contract = None
     is_extend = False
-    
+
     if copy_from_id:
         try:
             original_contract = get_object_or_404(ClientContract, pk=copy_from_id)
@@ -362,7 +340,7 @@ def client_contract_create(request):
                 original_contract,
                 exclude=['id', 'pk', 'contract_number', 'contract_status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'approved_at', 'approved_by', 'issued_at', 'issued_by', 'confirmed_at']
             )
-            
+
             if is_extend:
                 # 延長の場合：契約名はそのまま、開始日は元契約の終了日の翌日、終了日は空
                 if original_contract.end_date:
@@ -408,7 +386,7 @@ def client_contract_update(request, pk):
         pk=pk
     )
     haken_info = getattr(contract, 'haken_info', None)
-    
+
     if contract.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
         messages.error(request, 'この契約は編集できません。')
         return redirect('contract:client_contract_detail', pk=pk)
@@ -505,7 +483,7 @@ def client_contract_update(request, pk):
 def client_contract_delete(request, pk):
     """クライアント契約削除"""
     contract = get_object_or_404(ClientContract, pk=pk)
-    
+
     if contract.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
         messages.error(request, 'この契約は削除できません。')
         return redirect('contract:client_contract_detail', pk=pk)
@@ -515,7 +493,7 @@ def client_contract_delete(request, pk):
         contract.delete()
         messages.success(request, f'クライアント契約「{contract_name}」を削除しました。')
         return redirect('contract:client_contract_list')
-    
+
     context = {
         'contract': contract,
     }
@@ -527,12 +505,12 @@ def client_contract_delete(request, pk):
 def client_contract_extend(request, pk):
     """クライアント契約期間延長"""
     original_contract = get_object_or_404(ClientContract, pk=pk)
-    
+
     if request.method == 'POST':
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
         inherit_staff_contracts = request.POST.get('inherit_staff_contracts') == 'on'
-        
+
         if not start_date or not end_date:
             messages.error(request, '契約開始日と契約終了日を入力してください。')
         else:
@@ -540,17 +518,17 @@ def client_contract_extend(request, pk):
                 with transaction.atomic():
                     # 元の契約をコピーして新しい契約を作成
                     new_contract = ClientContract()
-                    
+
                     # 元の契約の情報をコピー（IDと日付関連フィールドを除く）
-                    exclude_fields = ['id', 'pk', 'contract_number', 'contract_status', 
-                                    'created_at', 'created_by', 'updated_at', 'updated_by', 
-                                    'approved_at', 'approved_by', 'issued_at', 'issued_by', 
+                    exclude_fields = ['id', 'pk', 'contract_number', 'contract_status',
+                                    'created_at', 'created_by', 'updated_at', 'updated_by',
+                                    'approved_at', 'approved_by', 'issued_at', 'issued_by',
                                     'confirmed_at', 'start_date', 'end_date']
-                    
+
                     for field in original_contract._meta.fields:
                         if field.name not in exclude_fields:
                             setattr(new_contract, field.name, getattr(original_contract, field.name))
-                    
+
                     # 期間延長用の設定
                     new_contract.start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
                     new_contract.end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
@@ -558,24 +536,24 @@ def client_contract_extend(request, pk):
                     new_contract.contract_number = None
                     new_contract.created_by = request.user
                     new_contract.updated_by = request.user
-                    
+
                     new_contract.save()
-                    
+
                     # 派遣情報がある場合はコピー
                     if hasattr(original_contract, 'haken_info') and original_contract.haken_info:
                         from .models import ClientContractHaken
                         new_haken_info = ClientContractHaken()
-                        
+
                         haken_exclude_fields = ['id', 'pk', 'client_contract', 'created_at', 'created_by', 'updated_at', 'updated_by']
                         for field in original_contract.haken_info._meta.fields:
                             if field.name not in haken_exclude_fields:
                                 setattr(new_haken_info, field.name, getattr(original_contract.haken_info, field.name))
-                        
+
                         new_haken_info.client_contract = new_contract
                         new_haken_info.created_by = request.user
                         new_haken_info.updated_by = request.user
                         new_haken_info.save()
-                    
+
                     # 割当済みのスタッフ契約を引き継ぐ場合
                     if inherit_staff_contracts:
                         # 元契約の終了日と同じ終了日を持つスタッフ契約を取得
@@ -583,20 +561,20 @@ def client_contract_extend(request, pk):
                             client_contracts=original_contract,
                             end_date=original_contract.end_date
                         )
-                        
+
                         for staff_contract in target_staff_contracts:
                             # スタッフ契約をコピー
                             new_staff_contract = StaffContract()
-                            
-                            staff_exclude_fields = ['id', 'pk', 'contract_number', 'contract_status', 
-                                                  'created_at', 'created_by', 'updated_at', 'updated_by', 
-                                                  'approved_at', 'approved_by', 'issued_at', 'issued_by', 
+
+                            staff_exclude_fields = ['id', 'pk', 'contract_number', 'contract_status',
+                                                  'created_at', 'created_by', 'updated_at', 'updated_by',
+                                                  'approved_at', 'approved_by', 'issued_at', 'issued_by',
                                                   'confirmed_at', 'start_date', 'end_date']
-                            
+
                             for field in staff_contract._meta.fields:
                                 if field.name not in staff_exclude_fields:
                                     setattr(new_staff_contract, field.name, getattr(staff_contract, field.name))
-                            
+
                             # 期間を新しいクライアント契約と同じに設定
                             new_staff_contract.start_date = new_contract.start_date
                             new_staff_contract.end_date = new_contract.end_date
@@ -604,9 +582,9 @@ def client_contract_extend(request, pk):
                             new_staff_contract.contract_number = None
                             new_staff_contract.created_by = request.user
                             new_staff_contract.updated_by = request.user
-                            
+
                             new_staff_contract.save()
-                            
+
                             # 新しいクライアント契約と新しいスタッフ契約をアサイン
                             ContractAssignment.objects.create(
                                 client_contract=new_contract,
@@ -614,29 +592,29 @@ def client_contract_extend(request, pk):
                                 created_by=request.user,
                                 updated_by=request.user
                             )
-                    
+
                     if inherit_staff_contracts and target_staff_contracts.exists():
                         messages.success(request, f'クライアント契約「{new_contract.contract_name}」の期間延長契約を作成し、{target_staff_contracts.count()}件のスタッフ契約も延長しました。')
                     else:
                         messages.success(request, f'クライアント契約「{new_contract.contract_name}」の期間延長契約を作成しました。')
-                    
+
                     return redirect('contract:client_contract_detail', pk=new_contract.pk)
-                    
+
             except ValueError:
                 messages.error(request, '日付の形式が正しくありません。')
             except Exception as e:
                 messages.error(request, f'保存中にエラーが発生しました: {e}')
-    
+
     # 契約開始日のデフォルト値（元契約の終了日の翌日）
     from datetime import timedelta
     default_start_date = original_contract.end_date + timedelta(days=1)
-    
+
     # 割当済みのスタッフ契約で、元契約の終了日と同じ終了日を持つものを取得
     extendable_staff_contracts = StaffContract.objects.filter(
         client_contracts=original_contract,
         end_date=original_contract.end_date
     ).select_related('staff')
-    
+
     context = {
         'original_contract': original_contract,
         'default_start_date': default_start_date,
@@ -652,7 +630,7 @@ def client_select(request):
     search_query = request.GET.get('q', '')
     return_url = request.GET.get('return_url', '')
     from_modal = request.GET.get('from_modal')
-    
+
     client_contract_type_code = request.GET.get('client_contract_type_code')
 
     # 契約種別に応じて、適切な基本契約締結日でフィルタリング
@@ -663,20 +641,20 @@ def client_select(request):
 
     # 法人番号が設定されているクライアントのみを対象とする
     clients = clients.exclude(corporate_number__isnull=True).exclude(corporate_number__exact='')
-    
+
     if search_query:
         clients = clients.filter(
             Q(name__icontains=search_query) |
             Q(corporate_number__icontains=search_query)
         )
-    
+
     clients = clients.order_by('name')
-    
+
     # ページネーション
     paginator = Paginator(clients, 20)
     page = request.GET.get('page')
     clients_page = paginator.get_page(page)
-    
+
     context = {
         'page_obj': clients_page,
         'search_query': search_query,
@@ -695,7 +673,7 @@ def haken_master_select(request):
     """派遣マスター選択画面"""
     search_query = request.GET.get('q', '')
     master_type = request.GET.get('type', '')  # 'business_content' or 'responsibility_degree'
-    
+
     # マスタータイプに応じてデータを取得（有効なもののみ）
     if master_type == 'business_content':
         from apps.master.models import BusinessContent
@@ -708,18 +686,18 @@ def haken_master_select(request):
     else:
         items = []
         modal_title = 'マスター選択'
-    
+
     if search_query:
         items = items.filter(content__icontains=search_query)
-    
+
     # 表示順で並び替え（モデルのMeta.orderingを使用）
     items = items.order_by('display_order')
-    
+
     # ページネーション
     paginator = Paginator(items, 20)
     page = request.GET.get('page')
     items_page = paginator.get_page(page)
-    
+
     context = {
         'page_obj': items_page,
         'search_query': search_query,
@@ -768,34 +746,15 @@ def client_contract_change_history_list(request, pk):
     )
 
     haken_logs = AppLog.objects.none()
-    ttp_logs = AppLog.objects.none()
-    haken_exempt_logs = AppLog.objects.none()
-    
     if haken_info:
         haken_logs = AppLog.objects.filter(
             model_name='ClientContractHaken',
             object_id=str(haken_info.pk),
             action__in=['create', 'update', 'delete']
         )
-        
-        # TTP情報の変更履歴
-        if hasattr(haken_info, 'ttp_info') and haken_info.ttp_info:
-            ttp_logs = AppLog.objects.filter(
-                model_name='ClientContractTtp',
-                object_id=str(haken_info.ttp_info.pk),
-                action__in=['create', 'update', 'delete']
-            )
-        
-        # 派遣期間制限外情報の変更履歴
-        if hasattr(haken_info, 'haken_exempt_info') and haken_info.haken_exempt_info:
-            haken_exempt_logs = AppLog.objects.filter(
-                model_name='ClientContractHakenExempt',
-                object_id=str(haken_info.haken_exempt_info.pk),
-                action__in=['create', 'update', 'delete']
-            )
 
     all_logs = sorted(
-        chain(contract_logs, haken_logs, ttp_logs, haken_exempt_logs),
+        chain(contract_logs, haken_logs),
         key=lambda log: log.timestamp,
         reverse=True
     )
@@ -813,48 +772,6 @@ def client_contract_change_history_list(request, pk):
         'back_url_name': 'contract:client_contract_detail',
     }
     return render(request, 'common/common_change_history_list.html', context)
-
-@login_required
-@permission_required('contract.view_clientcontract', raise_exception=True)
-def client_contract_pdf(request, pk):
-    """クライアント契約書のPDFを生成して返す"""
-    contract = get_object_or_404(ClientContract, pk=pk)
-
-    # 承認済みの場合は発行済みに更新
-    if contract.contract_status == Constants.CONTRACT_STATUS.APPROVED:
-        contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
-        contract.issued_at = timezone.now()
-        contract.issued_by = request.user
-        contract.save()
-        messages.success(request, f'契約「{contract.contract_name}」の契約書を発行しました。')
-
-    pdf_content, pdf_filename, document_title = generate_contract_pdf_content(contract)
-
-    if pdf_content:
-        new_print = ClientContractPrint(
-            client_contract=contract,
-            printed_by=request.user,
-            print_type=ClientContractPrint.PrintType.CONTRACT,
-            document_title=document_title,
-            contract_number=contract.contract_number
-        )
-        new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
-
-        AppLog.objects.create(
-            user=request.user,
-            action='print',
-            model_name='ClientContract',
-            object_id=str(contract.pk),
-            object_repr=f'契約書PDF出力: {contract.contract_name}'
-        )
-
-        response = HttpResponse(pdf_content, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
-        return response
-    else:
-        messages.error(request, "PDFの生成に失敗しました。")
-        return redirect('contract:client_contract_detail', pk=pk)
-
 
 @login_required
 @permission_required('contract.change_clientcontract', raise_exception=True)
@@ -1155,180 +1072,37 @@ def client_contract_confirm_list(request):
     return render(request, 'contract/client_contract_confirm_list.html', context)
 
 @login_required
-@permission_required('contract.view_clientcontract', raise_exception=True)
-def client_contract_export(request):
-    """クライアント契約データのエクスポート（CSV/Excel）"""
-    search_query = request.GET.get('q', '')
-    status_filter = request.GET.get('status', '')
-    client_filter = request.GET.get('client', '')
-    contract_type_filter = request.GET.get('contract_type', '')
-    date_filter = request.GET.get('date_filter', '')
-    format_type = request.GET.get('format', 'csv')
-
-    contracts = ClientContract.objects.select_related('client', 'haken_info__ttp_info').all()
-
-    if client_filter:
-        contracts = contracts.filter(client_id=client_filter)
-    if search_query:
-        contracts = contracts.filter(
-            Q(contract_name__icontains=search_query) |
-            Q(client__name__icontains=search_query) |
-            Q(contract_number__icontains=search_query)
-        )
-    if status_filter:
-        contracts = contracts.filter(contract_status=status_filter)
-    if contract_type_filter:
-        contracts = contracts.filter(client_contract_type_code=contract_type_filter)
-    
-    # 日付フィルタを適用
-    if date_filter:
-        today = date.today()
-        if date_filter == 'today':
-            # 本日が契約期間に含まれているもの
-            contracts = contracts.filter(
-                start_date__lte=today
-            ).filter(
-                Q(end_date__gte=today) | Q(end_date__isnull=True)
-            )
-        elif date_filter == 'future':
-            # 本日以降に契約終了があるもの（無期限契約も含む）
-            contracts = contracts.filter(
-                Q(end_date__gte=today) | Q(end_date__isnull=True)
-            )
-
-    contracts = contracts.order_by('-start_date', 'client__name')
-
-    resource = ClientContractResource()
-    dataset = resource.export(contracts)
-
-    timestamp = timezone.now().strftime('%Y%m%d_%H%M%S')
-    if format_type == 'excel':
-        response = HttpResponse(
-            dataset.xlsx,
-            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        )
-        response['Content-Disposition'] = f'attachment; filename="client_contracts_{timestamp}.xlsx"'
-    else:
-        csv_data = '\ufeff' + dataset.csv
-        response = HttpResponse(csv_data, content_type='text/csv; charset=utf-8')
-        response['Content-Disposition'] = f'attachment; filename="client_contracts_{timestamp}.csv"'
-
-    return response
-
-
-@login_required
-@permission_required('contract.view_clientcontract', raise_exception=True)
-def client_dispatch_ledger_pdf(request, pk):
-    """クライアント契約の派遣元管理台帳PDFを生成して返す"""
-    contract = get_object_or_404(ClientContract, pk=pk)
-
-    if contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
-        messages.error(request, 'この契約の派遣元管理台帳は発行できません。')
-        return redirect('contract:client_contract_detail', pk=pk)
-
-    issued_at = timezone.now()
-    pdf_content, pdf_filename, document_title = generate_dispatch_ledger_pdf(
-        contract, request.user, issued_at
-    )
-
-    if pdf_content:
-        response = HttpResponse(pdf_content, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
-        return response
-    else:
-        messages.error(request, "派遣元管理台帳のPDFの生成に失敗しました。")
-        return redirect('contract:client_contract_detail', pk=pk)
-
-
-@login_required
-@permission_required('contract.view_clientcontract', raise_exception=True)
-def client_contract_draft_pdf(request, pk):
-    """クライアント契約書のドラフトPDFを生成して返す"""
-    contract = get_object_or_404(ClientContract, pk=pk)
-    pdf_content, pdf_filename, document_title = generate_contract_pdf_content(contract)
-
-    if pdf_content:
-        response = HttpResponse(pdf_content, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
-        return response
-    else:
-        messages.error(request, "PDFの生成に失敗しました。")
-        return redirect('contract:client_contract_detail', pk=pk)
-
-@login_required
-@permission_required('contract.view_clientcontract', raise_exception=True)
-def client_contract_draft_quotation(request, pk):
-    """クライアント契約の見積書のドラフトPDFを生成して返す"""
-    contract = get_object_or_404(ClientContract, pk=pk)
-
-    issued_at = timezone.now()
-    pdf_content, pdf_filename, document_title = generate_quotation_pdf(
-        contract, request.user, issued_at, watermark_text="DRAFT"
-    )
-
-    if pdf_content:
-        response = HttpResponse(pdf_content, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
-        return response
-    else:
-        messages.error(request, "見積書のPDFの生成に失敗しました。")
-        return redirect('contract:client_contract_detail', pk=pk)
-
-@login_required
-@permission_required('contract.view_clientcontract', raise_exception=True)
-def client_contract_draft_dispatch_notification(request, pk):
-    """クライアント契約の派遣通知書のドラフトPDFを生成して返す"""
-    contract = get_object_or_404(ClientContract, pk=pk)
-
-    if contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
-        messages.error(request, 'この契約の派遣通知書は発行できません。')
-        return redirect('contract:client_contract_detail', pk=pk)
-
-    issued_at = timezone.now()
-    pdf_content, pdf_filename, document_title = generate_dispatch_notification_pdf(
-        contract, request.user, issued_at, watermark_text="DRAFT"
-    )
-
-    if pdf_content:
-        response = HttpResponse(pdf_content, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
-        return response
-    else:
-        messages.error(request, "派遣通知書のPDFの生成に失敗しました。")
-        return redirect('contract:client_contract_detail', pk=pk)
-
-@login_required
 def get_contract_patterns_by_employment_type(request):
     """雇用形態に応じた契約書パターンを取得するAPI"""
     employment_type_id = request.GET.get('employment_type')
-    
+
     if not employment_type_id:
         return JsonResponse({'patterns': []})
-    
+
     from apps.master.models import ContractPattern, EmploymentType
-    
+
     try:
         employment_type = EmploymentType.objects.get(pk=employment_type_id)
     except EmploymentType.DoesNotExist:
         return JsonResponse({'patterns': []})
-    
+
     # スタッフ用で、指定された雇用形態の契約書パターンを取得
     patterns = ContractPattern.objects.filter(
         is_active=True,
         domain=Constants.DOMAIN.STAFF,  # スタッフ
         employment_type=employment_type
     ).values('id', 'name').order_by('display_order')
-    
+
     # 雇用形態が指定されていない契約書パターンも含める
     patterns_without_employment = ContractPattern.objects.filter(
         is_active=True,
         domain=Constants.DOMAIN.STAFF,  # スタッフ
         employment_type__isnull=True
     ).values('id', 'name').order_by('display_order')
-    
+
     # 両方を結合
     all_patterns = list(patterns) + list(patterns_without_employment)
-    
+
     return JsonResponse({'patterns': all_patterns})
 
 
@@ -1336,7 +1110,7 @@ def get_contract_patterns_by_employment_type(request):
 def client_teishokubi_list(request):
     """事業所抵触日一覧"""
     from apps.client.models import ClientDepartment
-    
+
     search_query = request.GET.get('q', '')
     # デフォルトで「派遣契約あり」を設定（リセット時は'all'）
     dispatch_filter = request.GET.get('dispatch_filter', 'with_contract')  # 'all' または 'with_contract'
@@ -1353,14 +1127,14 @@ def client_teishokubi_list(request):
         today = date.today()
         # 事業所抵触日が今日以降のもののみ
         departments = departments.filter(haken_jigyosho_teishokubi__gte=today)
-        
+
         # 派遣契約があるもののみに絞り込み
         # ContractAssignmentを通じて派遣契約がある事業所のIDを取得
         valid_department_ids = ContractAssignment.objects.filter(
             client_contract__client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
             client_contract__end_date__gte=today  # 終了日が今日以降
         ).values_list('client_contract__haken_info__haken_office_id', flat=True).distinct()
-        
+
         departments = departments.filter(id__in=valid_department_ids)
 
     if search_query:
@@ -1385,9 +1159,9 @@ def client_teishokubi_list(request):
             client_contract__client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
             client_contract__end_date__gte=date.today()  # 終了日が今日以降（未来分も含む）
         ).select_related('staff_contract__staff__international', 'staff_contract__staff__disability').distinct()
-        
+
         department.current_staff_count = current_assignments.count()
-        
+
         # 抵触日までの残り日数を計算
         if department.haken_jigyosho_teishokubi:
             today = date.today()
@@ -1399,7 +1173,7 @@ def client_teishokubi_list(request):
                 delta = today - department.haken_jigyosho_teishokubi
                 department.days_overdue = delta.days
                 department.is_expired = True
-        
+
         # 現在派遣中のスタッフ一覧（最大5名まで表示）
         staff_assignments = current_assignments[:5]
         department.current_staff_list = []
@@ -1420,16 +1194,3 @@ def client_teishokubi_list(request):
         'dispatch_filter': dispatch_filter,
     }
     return render(request, 'contract/client_teishokubi_list.html', context)
-
-@login_required
-@permission_required('contract.view_clientcontract', raise_exception=True)
-def download_client_contract_pdf(request, pk):
-    """Downloads a previously generated client contract PDF."""
-    print_history = get_object_or_404(ClientContractPrint, pk=pk)
-
-    if print_history.pdf_file:
-        response = HttpResponse(print_history.pdf_file.read(), content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{os.path.basename(print_history.pdf_file.name)}"'
-        return response
-
-    raise Http404
