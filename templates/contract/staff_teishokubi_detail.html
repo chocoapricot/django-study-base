@@ -2,6 +2,7 @@
 {% load static %}
 {% load humanize %}
 {% load dropdowns %}
+{% load help_tags %}
 
 {% block title %}個人抵触日詳細{% endblock %}
 
@@ -13,7 +14,7 @@
     </div>
     <div class="card-body">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-8">
                 <table class="table table-sm">
                     <tr>
                         <th>スタッフ</th>
@@ -54,7 +55,10 @@
                         <td>{{ teishokubi.dispatch_start_date|date:"Y年m月d日" }}</td>
                     </tr>
                     <tr>
-                        <th>抵触日</th>
+                        <th>
+                            個人抵触日
+                            {% my_help_icon "スタッフが組織単位に対して派遣可能なのは、派遣開始日より3年間" %}
+                        </th>
                         <td>{{ teishokubi.conflict_date|date:"Y年m月d日" }}</td>
                     </tr>
                 </table>
@@ -221,10 +225,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h6 class="mb-0"><i class="bi bi-shield-x text-success me-2"></i>派遣抵触日制限外</h6>
                 </div>
                 <div class="card-body py-2">
-                    <div class="mb-2">• 制限外業務: 労働者派遣法第40条の2第1項第1号に該当する業務（いわゆる26業務）など</div>
+                    <div class="mb-2">• 無期雇用者: 派遣元に無期雇用されているスタッフ</div>
                     <div class="mb-2">• 60歳以上: 60歳以上の労働者の場合</div>
-                    <div class="mb-2">• 有期プロジェクト: 事業の開始、転換、拡大、縮小又は廃止のための業務</div>
-                    <div class="mb-2">• チェックスキップ: 制限外情報が登録されている契約は抵触日チェックの対象外</div>
+                    <div class="mb-2">• チェックスキップ: 有期プロジェクトなど制限外情報が登録されている契約は抵触日チェックの対象外</div>
                     <div class="mb-0">• 設定場所: クライアント契約の派遣抵触日制限外情報で設定</div>
                 </div>
             </div>
