@@ -16,6 +16,68 @@ from .forms import StaffContractForm
 from .models import ClientContract, ContractAssignment, StaffContract
 
 
+def _calculate_profit_margin(client_contract, staff_contract):
+    """
+    粗利率を計算する関数
+    
+    Args:
+        client_contract: クライアント契約
+        staff_contract: スタッフ契約
+        
+    Returns:
+        dict: 粗利率情報（can_calculate, profit_margin, show_warning）
+    """
+    # 単位の対応関係を定義（bill_unit -> pay_unit）
+    unit_mapping = {
+        Constants.BILL_UNIT.HOURLY_RATE: Constants.PAY_UNIT.HOURLY,    # 時間単価 -> 時給
+        Constants.BILL_UNIT.DAILY_RATE: Constants.PAY_UNIT.DAILY,      # 日額 -> 日給
+        Constants.BILL_UNIT.MONTHLY_RATE: Constants.PAY_UNIT.MONTHLY,  # 月額 -> 月給
+    }
+    
+    # 計算可能かチェック
+    can_calculate = (
+        client_contract.bill_unit and 
+        staff_contract.pay_unit and
+        client_contract.contract_amount is not None and
+        staff_contract.contract_amount is not None and
+        client_contract.bill_unit in unit_mapping and
+        unit_mapping[client_contract.bill_unit] == staff_contract.pay_unit
+    )
+    
+    if not can_calculate:
+        return {
+            'can_calculate': False,
+            'profit_margin': None,
+            'show_warning': False,
+            'client_amount': client_contract.contract_amount,
+            'staff_amount': staff_contract.contract_amount,
+            'client_unit': client_contract.bill_unit,
+            'staff_unit': staff_contract.pay_unit,
+        }
+    
+    # 粗利率計算: (クライアント金額 - スタッフ金額) / クライアント金額 * 100
+    client_amount = float(client_contract.contract_amount)
+    staff_amount = float(staff_contract.contract_amount)
+    
+    if client_amount == 0:
+        profit_margin = 0
+    else:
+        profit_margin = ((client_amount - staff_amount) / client_amount) * 100
+    
+    # 警告表示判定（0%以下の場合）
+    show_warning = profit_margin <= 0
+    
+    return {
+        'can_calculate': True,
+        'profit_margin': round(profit_margin, 2),
+        'show_warning': show_warning,
+        'client_amount': client_amount,
+        'staff_amount': staff_amount,
+        'client_unit': client_contract.bill_unit,
+        'staff_unit': staff_contract.pay_unit,
+    }
+
+
 @login_required
 @permission_required('contract.change_clientcontract', raise_exception=True)
 def client_contract_assignment_view(request, pk):
@@ -113,11 +175,15 @@ def client_assignment_confirm(request):
             if job_category_not_specified and staff_under_60_and_fixed_term:
                 show_daily_dispatch_warning = True
 
+        # 粗利率計算
+        profit_margin_info = _calculate_profit_margin(client_contract, staff_contract)
+
         context = {
             'client_contract': client_contract,
             'staff_contract': staff_contract,
             'from_view': 'staff',
             'show_daily_dispatch_warning': show_daily_dispatch_warning,
+            'profit_margin_info': profit_margin_info,
         }
 
         return render(request, 'contract/client_assignment_confirm.html', context)
@@ -171,11 +237,15 @@ def staff_assignment_confirm(request):
             if job_category_not_specified and staff_under_60_and_fixed_term:
                 show_daily_dispatch_warning = True
 
+        # 粗利率計算
+        profit_margin_info = _calculate_profit_margin(client_contract, staff_contract)
+
         context = {
             'client_contract': client_contract,
             'staff_contract': staff_contract,
             'from_view': 'client',
             'show_daily_dispatch_warning': show_daily_dispatch_warning,
+            'profit_margin_info': profit_margin_info,
         }
 
         return render(request, 'contract/staff_assignment_confirm.html', context)
@@ -301,12 +371,16 @@ def staff_assignment_confirm_from_create(request):
         if job_category_not_specified and staff_under_60_and_fixed_term:
             show_daily_dispatch_warning = True
 
+    # 粗利率計算
+    profit_margin_info = _calculate_profit_margin(client_contract, staff_contract)
+
     context = {
         'client_contract': client_contract,
         'staff_contract': staff_contract,
         'from_view': from_view,
         'from_create': True,  # 新規作成からの遷移であることを示すフラグ
         'show_daily_dispatch_warning': show_daily_dispatch_warning,
+        'profit_margin_info': profit_margin_info,
     }
 
     return render(request, 'contract/staff_assignment_confirm.html', context)

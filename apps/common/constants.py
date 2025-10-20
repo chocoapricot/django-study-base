@@ -37,6 +37,14 @@ class Constants:
     # 支払単位 (pay_unit)
     class PAY_UNIT:
         HOURLY = '10' # 時間給
+        DAILY = '20'  # 日給
+        MONTHLY = '30' # 月給
+
+    # 請求単位 (bill_unit)
+    class BILL_UNIT:
+        HOURLY_RATE = '10' # 時間単価
+        DAILY_RATE = '20'  # 日額
+        MONTHLY_RATE = '30' # 月額
 
     # 限定の別 (limit_by_agreement)
     class LIMIT_BY_AGREEMENT:

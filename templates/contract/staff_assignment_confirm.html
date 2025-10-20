@@ -35,6 +35,21 @@
         </div>
         {% endif %}
 
+        <!-- 粗利率表示 -->
+        {% if profit_margin_info.can_calculate %}
+        <div class="alert {% if profit_margin_info.show_warning %}alert-warning{% else %}alert-success{% endif %}" role="alert">
+            <i class="bi {% if profit_margin_info.show_warning %}bi-exclamation-triangle-fill{% else %}bi-calculator{% endif %}"></i>
+            <strong>粗利率: {{ profit_margin_info.profit_margin }}%</strong>
+            {% if profit_margin_info.show_warning %}
+                <br><small>粗利率が0%以下です。契約金額を確認してください。</small>
+            {% endif %}
+            <br><small>
+                クライアント: {{ profit_margin_info.client_amount|floatformat:0|intcomma }}円 / 
+                スタッフ: {{ profit_margin_info.staff_amount|floatformat:0|intcomma }}円
+            </small>
+        </div>
+        {% endif %}
+
                 <h6 class="text-muted mb-3">割当対象スタッフ契約</h6>
                 <div class="card mb-3">
                     <div class="card-body">
