@@ -1194,3 +1194,296 @@ def client_teishokubi_list(request):
         'dispatch_filter': dispatch_filter,
     }
     return render(request, 'contract/client_teishokubi_list.html', context)
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def client_staff_assignment_detail_list(request, pk):
+    """クライアント契約のスタッフアサイン詳細一覧"""
+    contract = get_object_or_404(
+        ClientContract.objects.select_related(
+            'client', 'job_category', 'contract_pattern', 'payment_site'
+        ).prefetch_related(
+            Prefetch(
+                'contractassignment_set',
+                queryset=ContractAssignment.objects.select_related(
+                    'staff_contract__staff',
+                    'staff_contract__employment_type'
+                ).order_by('staff_contract__start_date'),
+                to_attr='assigned_assignments'
+            )
+        ),
+        pk=pk
+    )
+
+    # 期間の重なりを計算するための処理
+    assignments_with_overlap = []
+    staff_periods = []  # 統合表示用のスタッフ期間データ
+    
+    for assignment in contract.assigned_assignments:
+        staff_contract = assignment.staff_contract
+        
+        # クライアント契約とスタッフ契約の期間重なりを計算
+        client_start = contract.start_date
+        client_end = contract.end_date
+        staff_start = staff_contract.start_date
+        staff_end = staff_contract.end_date
+        
+        # 重なり期間の開始日と終了日を計算
+        overlap_start = max(client_start, staff_start) if client_start and staff_start else None
+        
+        if client_end and staff_end:
+            overlap_end = min(client_end, staff_end)
+        elif client_end:
+            overlap_end = client_end
+        elif staff_end:
+            overlap_end = staff_end
+        else:
+            overlap_end = None
+        
+        # 重なりが有効かチェック
+        has_overlap = overlap_start and (not overlap_end or overlap_start <= overlap_end)
+        
+        assignments_with_overlap.append({
+            'assignment': assignment,
+            'staff_contract': staff_contract,
+            'overlap_start': overlap_start,
+            'overlap_end': overlap_end,
+            'has_overlap': has_overlap,
+        })
+        
+        # 統合表示用のスタッフ期間データを追加
+        staff_periods.append({
+            'staff_name': f"{staff_contract.staff.name_last} {staff_contract.staff.name_first}",
+            'staff_id': staff_contract.staff.id,
+            'start_date': staff_start,
+            'end_date': staff_end,
+            'has_overlap': has_overlap,
+            'overlap_start': overlap_start,
+            'overlap_end': overlap_end,
+            'employment_type': staff_contract.employment_type,
+            'has_international': staff_contract.staff.has_international,
+            'has_disability': staff_contract.staff.has_disability,
+        })
+    
+    # 統合期間表示用のデータを計算
+    period_visual_data = calculate_integrated_period_visual_data(contract, staff_periods)
+
+    context = {
+        'contract': contract,
+        'assignments_with_overlap': assignments_with_overlap,
+        'staff_periods': staff_periods,
+        'period_visual_data': period_visual_data,
+    }
+    return render(request, 'contract/client_staff_assignment_detail_list.html', context)
+
+
+def calculate_integrated_period_visual_data(contract, staff_periods):
+    """統合期間表示用のデータを計算（クライアント契約期間を基準とし、前後の延長部分も表示）"""
+    from datetime import date, timedelta
+    
+    client_start = contract.start_date
+    client_end = contract.end_date
+    
+    if not client_start:
+        return {}
+    
+    # 表示期間はクライアント契約期間を基準とする
+    display_start = client_start
+    if client_end:
+        display_end = client_end
+        total_days = (display_end - display_start).days + 1
+    else:
+        # 無期限の場合は開始日から1年後を表示終了とする
+        display_end = client_start + timedelta(days=365)
+        total_days = 365
+    
+    if total_days <= 0:
+        total_days = 1  # ゼロ除算を防ぐ
+    
+    # クライアント契約は15%～85%の範囲に表示（前後に余白を作る）
+    client_data = {
+        'start_pos': 15,
+        'width': 70,
+        'start_date': client_start,
+        'end_date': client_end,
+    }
+    
+    # 各スタッフの期間データを計算
+    staff_data = []
+    for i, staff_period in enumerate(staff_periods):
+        staff_start = staff_period['start_date']
+        staff_end = staff_period['end_date']
+        
+        if not staff_start:
+            continue
+        
+        # スタッフ契約の前後延長を判定
+        extends_before = staff_start < display_start
+        extends_after = staff_end and client_end and staff_end > display_end
+        extends_after_infinite = not staff_end and client_end  # スタッフが無期限でクライアントに期限がある場合
+        
+        # 基本的な位置計算（クライアント契約期間内の部分）
+        # クライアント契約期間内でのスタッフ契約の開始位置
+        if extends_before:
+            # 前に延びている場合、クライアント契約開始から計算
+            inner_start_pos = 15  # クライアント契約の開始位置
+        else:
+            # 通常の場合
+            days_from_client_start = (staff_start - display_start).days
+            inner_start_pos = 15 + (days_from_client_start / total_days * 70)
+        
+        # クライアント契約期間内でのスタッフ契約の終了位置
+        if staff_end:
+            if extends_after:
+                # 後ろに延びている場合、クライアント契約終了まで
+                inner_end_pos = 85  # クライアント契約の終了位置
+            else:
+                # 通常の場合
+                if staff_end <= display_end:
+                    days_from_client_start = (staff_end - display_start).days
+                    inner_end_pos = 15 + (days_from_client_start / total_days * 70)
+                else:
+                    inner_end_pos = 85
+        else:
+            # スタッフ契約が無期限
+            inner_end_pos = 85
+        
+        # 実際の表示位置を計算
+        if extends_before:
+            visual_start_pos = 5  # 前方延長表示
+            visual_width = inner_end_pos - visual_start_pos
+            if extends_after or extends_after_infinite:
+                visual_width = 90  # 後方にも延長
+        else:
+            visual_start_pos = inner_start_pos
+            if extends_after or extends_after_infinite:
+                visual_width = 90 - visual_start_pos  # 後方延長
+            else:
+                visual_width = inner_end_pos - inner_start_pos
+        
+        # 境界値チェック
+        visual_start_pos = max(0, min(95, visual_start_pos))
+        visual_width = max(2, min(100 - visual_start_pos, visual_width))
+        
+        # 表示用の期間を計算
+        display_start_date = staff_start if extends_before else max(staff_start, display_start)
+        if staff_end:
+            display_end_date = staff_end if (extends_after or extends_after_infinite) else min(staff_end, display_end)
+        else:
+            display_end_date = None
+        
+        staff_data.append({
+            'staff_name': staff_period['staff_name'],
+            'staff_id': staff_period['staff_id'],
+            'start_pos': visual_start_pos,
+            'width': visual_width,
+            'start_date': display_start_date,
+            'end_date': display_end_date,
+            'original_start': staff_start,
+            'original_end': staff_end,
+            'extends_before': extends_before,
+            'extends_after': extends_after or extends_after_infinite,
+            'has_overlap': staff_period['has_overlap'],
+            'employment_type': staff_period['employment_type'],
+            'has_international': staff_period['has_international'],
+            'has_disability': staff_period['has_disability'],
+            'row_index': i,
+        })
+    
+    return {
+        'client_data': client_data,
+        'staff_data': staff_data,
+        'display_start': display_start,
+        'display_end': display_end,
+        'total_days': total_days,
+    }
+
+
+def calculate_period_visual_data(client_start, client_end, staff_start, staff_end):
+    """期間の視覚的表示用データを計算"""
+    from datetime import date, timedelta
+    
+    # 表示期間の範囲を決定（最も早い開始日から最も遅い終了日まで）
+    all_dates = [d for d in [client_start, client_end, staff_start, staff_end] if d]
+    if not all_dates:
+        return {
+            'client_start_pos': 0, 'client_width': 0,
+            'staff_start_pos': 0, 'staff_width': 0,
+            'overlap_start_pos': 0, 'overlap_width': 0,
+        }
+    
+    min_date = min(all_dates)
+    max_date = max(all_dates)
+    
+    # 表示期間を少し拡張（最低でも6ヶ月の表示幅を確保）
+    display_start = min_date - timedelta(days=30)
+    if max_date:
+        display_end = max_date + timedelta(days=30)
+    else:
+        # 無期限契約がある場合は、開始日から1年後を表示終了とする
+        display_end = min_date + timedelta(days=365)
+    
+    # 最低表示期間を確保
+    if (display_end - display_start).days < 180:  # 6ヶ月未満の場合
+        display_end = display_start + timedelta(days=180)
+    
+    # 全体の期間（日数）
+    total_days = (display_end - display_start).days
+    if total_days <= 0:
+        total_days = 1  # ゼロ除算を防ぐ
+    
+    # クライアント契約の位置とサイズ
+    client_start_pos = 0
+    client_width = 0
+    if client_start:
+        client_start_pos = ((client_start - display_start).days / total_days * 100)
+        if client_end:
+            client_width = ((client_end - client_start).days / total_days * 100)
+        else:
+            # 無期限の場合は表示終了まで
+            client_width = ((display_end - client_start).days / total_days * 100)
+    
+    # スタッフ契約の位置とサイズ
+    staff_start_pos = 0
+    staff_width = 0
+    if staff_start:
+        staff_start_pos = ((staff_start - display_start).days / total_days * 100)
+        if staff_end:
+            staff_width = ((staff_end - staff_start).days / total_days * 100)
+        else:
+            # 無期限の場合は表示終了まで
+            staff_width = ((display_end - staff_start).days / total_days * 100)
+    
+    # 重なり部分の計算
+    overlap_start_pos = 0
+    overlap_width = 0
+    if client_start and staff_start:
+        overlap_start = max(client_start, staff_start)
+        
+        if client_end and staff_end:
+            overlap_end = min(client_end, staff_end)
+        elif client_end:
+            overlap_end = client_end
+        elif staff_end:
+            overlap_end = staff_end
+        else:
+            overlap_end = None  # 両方とも無期限
+        
+        if not overlap_end or overlap_start <= overlap_end:
+            overlap_start_pos = ((overlap_start - display_start).days / total_days * 100)
+            if overlap_end:
+                overlap_width = ((overlap_end - overlap_start).days / total_days * 100)
+            else:
+                # 重なり部分が無期限の場合
+                overlap_width = ((display_end - overlap_start).days / total_days * 100)
+    
+    return {
+        'client_start_pos': max(0, min(100, client_start_pos)),
+        'client_width': max(0, min(100, client_width)),
+        'staff_start_pos': max(0, min(100, staff_start_pos)),
+        'staff_width': max(0, min(100, staff_width)),
+        'overlap_start_pos': max(0, min(100, overlap_start_pos)),
+        'overlap_width': max(0, min(100, overlap_width)),
+        'display_start': display_start,
+        'display_end': display_end,
+    }

@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views_client import client_staff_assignment_detail_list
 
 app_name = 'contract'
 
@@ -79,6 +80,7 @@ urlpatterns = [
 
     # 契約アサイン
     path('client/<int:pk>/assign/', views.client_contract_assignment_view, name='client_contract_assignment'),
+    path('client/<int:pk>/staff-assignment-detail/', client_staff_assignment_detail_list, name='client_staff_assignment_detail_list'),
     path('staff/<int:pk>/assign/', views.staff_contract_assignment_view, name='staff_contract_assignment'),
 
     path('assign/confirm/client/', views.client_assignment_confirm, name='client_assignment_confirm'),

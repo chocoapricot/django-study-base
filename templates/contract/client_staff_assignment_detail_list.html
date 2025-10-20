@@ -1,0 +1,366 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+{% load humanize %}
+{% load dropdowns %}
+{% load badge_tags %}
+
+{% block title %}スタッフアサイン詳細一覧 - {{ contract.contract_name }}{% endblock %}
+
+{% block content %}
+<!-- クライアント契約詳細カード -->
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>クライアント契約詳細</span>
+    </div>
+    <div class="card-body">
+        {% include 'contract/_client_contract_header.html' %}
+    </div>
+</div>
+
+<!-- 期間の重なり表示（vis.js Timeline） -->
+{% if assignments_with_overlap %}
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header">
+        <i class="bi bi-calendar-range"></i> 契約期間の重なり
+    </div>
+    <div class="card-body">
+        <!-- ガントチャート コンテナ -->
+        <div id="timeline" class="gantt-chart" style="min-height: 200px;"></div>
+        
+        <!-- 凡例 -->
+        <div class="mt-3 p-3 bg-light border rounded">
+            <h6 class="mb-2"><i class="bi bi-info-circle"></i> 期間表示の見方</h6>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center mb-1">
+                        <div style="width: 20px; height: 12px; background: linear-gradient(135deg, #007bff, #0056b3); border-radius: 2px; margin-right: 6px;"></div>
+                        <small>クライアント契約</small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center mb-1">
+                        <div style="width: 20px; height: 12px; background: linear-gradient(135deg, #28a745, #1e7e34); border-radius: 2px; margin-right: 6px;"></div>
+                        <small>スタッフ契約</small>
+                    </div>
+                </div>
+            </div>
+            <small class="text-muted">
+                <i class="bi bi-lightbulb"></i>
+                ガントチャートでは各契約期間が正確な比例で表示されます。無期限契約には∞マークが表示されます。
+            </small>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- スタッフアサイン詳細一覧 -->
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header">
+        スタッフアサイン詳細一覧
+    </div>
+    <div class="card-body">
+        {% if assignments_with_overlap %}
+            <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">スタッフ名</th>
+                            <th style="width: 25%;">契約名</th>
+                            <th style="width: 15%;">雇用形態</th>
+                            <th style="width: 20%;">スタッフ契約期間</th>
+                            <th style="width: 20%;">重なり状況</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in assignments_with_overlap %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'contract:staff_contract_detail' item.staff_contract.pk %}">
+                                    {{ item.staff_contract.staff.name_last }} {{ item.staff_contract.staff.name_first }}
+                                </a>
+                                {% if item.staff_contract.staff.has_international %}
+                                    <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
+                                {% endif %}
+                                {% if item.staff_contract.staff.has_disability %}
+                                    <i class="bi bi-heart" style="color:#17a2b8;" title="障害者"></i>
+                                {% endif %}
+                            </td>
+                            <td>{{ item.staff_contract.contract_name }}</td>
+                            <td>
+                                {% if item.staff_contract.employment_type %}
+                                    <span class="badge {{ item.staff_contract.employment_type.display_order|badge_class }}">{{ item.staff_contract.employment_type.name }}</span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ item.staff_contract.start_date|date:"Y/m/d" }}～{% if item.staff_contract.end_date %}{{ item.staff_contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}
+                            </td>
+                            <td>
+                                {% if item.has_overlap %}
+                                    <div class="text-success">
+                                        <i class="bi bi-check-circle"></i>
+                                        <small>{{ item.overlap_start|date:"Y/m/d" }}～{% if item.overlap_end %}{{ item.overlap_end|date:"Y/m/d" }}{% else %}無期限{% endif %}</small>
+                                    </div>
+                                {% else %}
+                                    <div class="text-warning">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        <small>重なりなし</small>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>アサインされているスタッフはいません。</p>
+        {% endif %}
+
+        <div class="row mt-3">
+            <div class="col text-left">
+                <a href="{% url 'contract:client_contract_detail' contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.gantt-chart {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+}
+.gantt-row {
+    margin-bottom: 8px;
+    padding: 5px;
+    background-color: white;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+}
+.gantt-label {
+    font-size: 11px;
+    font-weight: 500;
+    margin-bottom: 3px;
+    color: #495057;
+}
+.gantt-bar-container {
+    position: relative;
+    height: 20px;
+    background-color: #f1f3f4;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.gantt-bar {
+    position: absolute;
+    height: 100%;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 500;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+.gantt-bar.client {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: 1px solid #004085;
+}
+.gantt-bar.staff {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    border: 1px solid #155724;
+}
+.gantt-bar.infinite::after {
+    content: '∞';
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+.gantt-timeline {
+    position: relative;
+    height: 20px;
+    margin-bottom: 8px;
+    padding: 0 5px;
+    font-size: 10px;
+    color: #6c757d;
+    border-bottom: 1px solid #ddd;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{% if assignments_with_overlap %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 期間データの準備
+    var clientStart = new Date('{{ contract.start_date|date:"Y-m-d" }}');
+    {% if contract.end_date %}
+    var clientEnd = new Date('{{ contract.end_date|date:"Y-m-d" }}');
+    var clientHasEndDate = true;
+    {% else %}
+    var clientEnd = null;
+    var clientHasEndDate = false;
+    {% endif %}
+    
+    // 表示期間の決定（クライアント契約基準：開始前5日～終了後5日）
+    var displayStart = new Date(clientStart.getTime() - 5 * 24 * 60 * 60 * 1000); // 開始前5日
+    var displayEnd;
+    
+    if (clientHasEndDate) {
+        // クライアント契約に終了日がある場合：終了後5日まで
+        displayEnd = new Date(clientEnd.getTime() + 5 * 24 * 60 * 60 * 1000);
+    } else {
+        // クライアント契約が無期限の場合：開始から1年後まで表示
+        displayEnd = new Date(clientStart.getTime() + 365 * 24 * 60 * 60 * 1000);
+    }
+    
+    var displayRange = displayEnd - displayStart;
+    
+    console.log('表示期間:', displayStart.toLocaleDateString(), '～', displayEnd.toLocaleDateString());
+    
+    // ガントチャートの作成
+    function createGanttChart() {
+        console.log('ガントチャート作成開始');
+        var container = document.getElementById('timeline');
+        if (!container) {
+            console.error('timelineコンテナが見つかりません');
+            return;
+        }
+        container.innerHTML = '';
+        
+        // タイムライン軸の作成
+        createTimeline();
+        
+        // クライアント契約の行
+        createGanttRow(
+            'クライアント契約',
+            '{{ contract.contract_name|escapejs }}',
+            clientStart,
+            clientHasEndDate ? clientEnd : null,
+            'client'
+        );
+        
+        // スタッフ契約の行
+        {% for item in assignments_with_overlap %}
+        var staffStart = new Date('{{ item.staff_contract.start_date|date:"Y-m-d" }}');
+        {% if item.staff_contract.end_date %}
+        var staffEnd = new Date('{{ item.staff_contract.end_date|date:"Y-m-d" }}');
+        {% else %}
+        var staffEnd = null;
+        {% endif %}
+        
+        createGanttRow(
+            '{{ item.staff_contract.staff.name_last|escapejs }} {{ item.staff_contract.staff.name_first|escapejs }}',
+            '{{ item.staff_contract.contract_name|escapejs }}',
+            staffStart,
+            staffEnd,
+            'staff'
+        );
+        {% endfor %}
+        
+        console.log('ガントチャート作成完了');
+    }
+    
+    function createTimeline() {
+        var container = document.getElementById('timeline');
+        var timelineDiv = document.createElement('div');
+        timelineDiv.className = 'gantt-timeline';
+        
+        // 月の境界を計算
+        var current = new Date(displayStart.getFullYear(), displayStart.getMonth(), 1);
+        var monthPositions = [];
+        
+        while (current <= displayEnd) {
+            var position = ((current - displayStart) / displayRange) * 100;
+            if (position >= 0 && position <= 100) {
+                monthPositions.push({
+                    position: position,
+                    label: current.toLocaleDateString('ja-JP', { year: 'numeric', month: 'short' })
+                });
+            }
+            current.setMonth(current.getMonth() + 1);
+        }
+        
+        // タイムラインラベルを配置
+        monthPositions.forEach(function(month) {
+            var span = document.createElement('span');
+            span.textContent = month.label;
+            span.style.position = 'absolute';
+            span.style.left = month.position + '%';
+            span.style.transform = 'translateX(-50%)';
+            timelineDiv.appendChild(span);
+        });
+        
+        timelineDiv.style.position = 'relative';
+        timelineDiv.style.height = '25px';
+        timelineDiv.style.borderBottom = '1px solid #ddd';
+        timelineDiv.style.marginBottom = '10px';
+        
+        container.appendChild(timelineDiv);
+    }
+    
+    function createGanttRow(label, content, start, end, type) {
+        console.log('createGanttRow呼び出し:', label, type);
+        var container = document.getElementById('timeline');
+        
+        var rowDiv = document.createElement('div');
+        rowDiv.className = 'gantt-row';
+        
+        var labelDiv = document.createElement('div');
+        labelDiv.className = 'gantt-label';
+        labelDiv.innerHTML = label;
+        rowDiv.appendChild(labelDiv);
+        
+        var barContainer = document.createElement('div');
+        barContainer.className = 'gantt-bar-container';
+        
+        // バーの位置とサイズを計算
+        var startPos = ((start - displayStart) / displayRange) * 100;
+        var width;
+        
+        if (end) {
+            // 終了日がある場合
+            var endPos = ((end - displayStart) / displayRange) * 100;
+            width = endPos - startPos;
+        } else {
+            // 無期限の場合（表示終了まで延長）
+            width = 100 - startPos;
+        }
+        
+        // 表示範囲内に調整
+        startPos = Math.max(0, startPos);
+        width = Math.min(100 - startPos, Math.max(1, width));
+        
+        console.log(label + ':', 'startPos=' + startPos.toFixed(2) + '%, width=' + width.toFixed(2) + '%');
+        
+        // バー要素を作成
+        var bar = document.createElement('div');
+        bar.className = 'gantt-bar ' + type + (!end ? ' infinite' : '');
+        bar.style.left = startPos + '%';
+        bar.style.width = width + '%';
+        bar.textContent = content;
+        bar.title = content + ' (' + start.toLocaleDateString('ja-JP') + '～' + (end ? end.toLocaleDateString('ja-JP') : '無期限') + ')';
+        
+        barContainer.appendChild(bar);
+        rowDiv.appendChild(barContainer);
+        container.appendChild(rowDiv);
+    }
+    
+    createGanttChart();
+});
+</script>
+{% endif %}
+{% endblock %}

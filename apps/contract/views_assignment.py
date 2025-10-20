@@ -101,7 +101,7 @@ def client_contract_assignment_view(request, pk):
         'client_contract': client_contract,
         'assignable_contracts': staff_contracts,
     }
-    return render(request, 'contract/staff_assignment_list.html', context)
+    return render(request, 'contract/client_staff_assignment_list.html', context)
 
 
 @login_required
@@ -127,7 +127,7 @@ def staff_contract_assignment_view(request, pk):
         'staff_contract': staff_contract,
         'assignable_contracts': client_contracts,
     }
-    return render(request, 'contract/client_assignment_list.html', context)
+    return render(request, 'contract/staff_client_assignment_list.html', context)
 
 
 @login_required
