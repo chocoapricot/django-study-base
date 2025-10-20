@@ -133,6 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <li><strong>派遣事業所</strong>: 「派遣事業所該当」フラグがONで、事業所抵触日が設定されている事業所のみ表示</li>
                     <li><strong>アラート表示</strong>: 抵触日まで30日以内は「要注意」、期限切れは「期限切れ」バッジを表示</li>
                     <li><strong>現在派遣中スタッフ</strong>: 各事業所で現在派遣契約中のスタッフ数と詳細を表示</li>
+                    <li><strong>派遣抵触日制限外</strong>: 制限外情報が登録されている契約は事業所抵触日チェックの対象外</li>
                 </ul>
             </div>
             <div class="mb-3">
@@ -141,6 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <li>ClientDepartmentモデルの「派遣事業所該当」かつ「事業所抵触日」が設定されているもの</li>
                     <li>現在派遣中のスタッフは派遣契約で契約期間内のもの</li>
                     <li>事業所抵触日の昇順で表示</li>
+                    <li>派遣抵触日制限外情報が登録されている契約は抵触日チェックをスキップ</li>
                 </ul>
             </div>
         `;

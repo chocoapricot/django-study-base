@@ -209,8 +209,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="mb-2">• 実行タイミング: 契約アサイン作成時（スタッフ契約とクライアント契約の紐づけ時）</div>
                     <div class="mb-2">• 対象条件: 派遣契約かつ有期雇用かつ割当開始日時点で60歳未満のスタッフ</div>
                     <div class="mb-2">• 年齢計算: 割当開始日（クライアント契約開始日とスタッフ契約開始日の遅い方）時点での年齢で判定</div>
-                    <div class="mb-2">• チェック内容: 割当終了日が算出された個人抵触日を超えていないかを確認</div>
-                    <div class="mb-0">• エラーメッセージ: 「割当終了日（日付）が抵触日（日付）を超えています」</div>
+                    <div class="mb-2">• スキップ条件: 派遣抵触日制限外情報が登録されており、詳細が入力されている場合はチェックをスキップ</div>
+                    <div class="mb-2">• チェック内容: 事業所抵触日と組織単位抵触日の両方をチェック</div>
+                    <div class="mb-0">• エラーメッセージ: 「割当終了日（日付）が事業所抵触日/組織単位抵触日（日付）を超えています」</div>
+                </div>
+            </div>
+
+            <!-- 派遣抵触日制限外 -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-shield-x text-success me-2"></i>派遣抵触日制限外</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 制限外業務: 労働者派遣法第40条の2第1項第1号に該当する業務（いわゆる26業務）など</div>
+                    <div class="mb-2">• 60歳以上: 60歳以上の労働者の場合</div>
+                    <div class="mb-2">• 有期プロジェクト: 事業の開始、転換、拡大、縮小又は廃止のための業務</div>
+                    <div class="mb-2">• チェックスキップ: 制限外情報が登録されている契約は抵触日チェックの対象外</div>
+                    <div class="mb-0">• 設定場所: クライアント契約の派遣抵触日制限外情報で設定</div>
                 </div>
             </div>
 
@@ -224,7 +239,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="mb-2">• 手動詳細作成・削除時: 抵触日を再計算して更新</div>
                     <div class="mb-2">• 抵触日計算: 派遣開始日の3年後を自動計算</div>
                     <div class="mb-2">• 期間統合: 重複・連続する期間を自動で統合処理</div>
-                    <div class="mb-0">• 60歳以上除外: 60歳以上のスタッフは抵触日チェック対象外</div>
+                    <div class="mb-2">• 60歳以上除外: 60歳以上のスタッフは抵触日チェック対象外</div>
+                    <div class="mb-0">• 制限外除外: 派遣抵触日制限外情報が登録されている契約は抵触日チェック対象外</div>
                 </div>
             </div>
         `;

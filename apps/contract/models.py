@@ -616,32 +616,65 @@ class ContractAssignment(MyModel):
                     is_under_60 = False
 
             if is_under_60:
-                staff_email = staff.email
-                client_corporate_number = self.client_contract.client.corporate_number
-
-                if hasattr(self.client_contract, 'haken_info') and self.client_contract.haken_info and self.client_contract.haken_info.haken_unit:
-                    organization_name = self.client_contract.haken_info.haken_unit.name
-
-                    calculator = TeishokubiCalculator(
-                        staff_email=staff_email,
-                        client_corporate_number=client_corporate_number,
-                        organization_name=organization_name
-                    )
-
-                    # この割当を追加した場合の抵触日を計算
-                    conflict_date = calculator.calculate_conflict_date_without_update(new_assignment_instance=self)
-
-                    if conflict_date:
-                        # 割当終了日を計算
+                # 派遣抵触日制限外情報が登録されている場合はチェックをスキップ
+                haken_exempt_info = None
+                if hasattr(self.client_contract, 'haken_info') and self.client_contract.haken_info:
+                    try:
+                        haken_exempt_info = self.client_contract.haken_info.haken_exempt_info
+                    except:
+                        pass
+                
+                # 派遣抵触日制限外情報が登録されており、詳細が入力されている場合はチェックをスキップ
+                if haken_exempt_info and haken_exempt_info.period_exempt_detail:
+                    # 抵触日チェックをスキップ
+                    pass
+                else:
+                    # 通常の抵触日チェックを実行
+                    
+                    # 1. 事業所抵触日チェック
+                    if (hasattr(self.client_contract, 'haken_info') and 
+                        self.client_contract.haken_info and 
+                        self.client_contract.haken_info.haken_office and
+                        self.client_contract.haken_info.haken_office.haken_jigyosho_teishokubi):
+                        
+                        jigyosho_teishokubi = self.client_contract.haken_info.haken_office.haken_jigyosho_teishokubi
                         assignment_end_date = min(
                             self.client_contract.end_date if self.client_contract.end_date else date.max,
                             self.staff_contract.end_date if self.staff_contract.end_date else date.max
                         )
-
-                        if assignment_end_date > conflict_date:
+                        
+                        if assignment_end_date > jigyosho_teishokubi:
                             raise ValidationError(
-                                f'割当終了日（{assignment_end_date}）が抵触日（{conflict_date}）を超えています。'
+                                f'割当終了日（{assignment_end_date}）が事業所抵触日（{jigyosho_teishokubi}）を超えています。'
                             )
+                    
+                    # 2. 組織単位抵触日チェック
+                    staff_email = staff.email
+                    client_corporate_number = self.client_contract.client.corporate_number
+
+                    if hasattr(self.client_contract, 'haken_info') and self.client_contract.haken_info and self.client_contract.haken_info.haken_unit:
+                        organization_name = self.client_contract.haken_info.haken_unit.name
+
+                        calculator = TeishokubiCalculator(
+                            staff_email=staff_email,
+                            client_corporate_number=client_corporate_number,
+                            organization_name=organization_name
+                        )
+
+                        # この割当を追加した場合の抵触日を計算
+                        conflict_date = calculator.calculate_conflict_date_without_update(new_assignment_instance=self)
+
+                        if conflict_date:
+                            # 割当終了日を計算
+                            assignment_end_date = min(
+                                self.client_contract.end_date if self.client_contract.end_date else date.max,
+                                self.staff_contract.end_date if self.staff_contract.end_date else date.max
+                            )
+
+                            if assignment_end_date > conflict_date:
+                                raise ValidationError(
+                                    f'割当終了日（{assignment_end_date}）が組織単位抵触日（{conflict_date}）を超えています。'
+                                )
 
         # 無期雇用派遣労働者又は60歳以上の者に限定する場合のチェック
         if (hasattr(self.client_contract, 'haken_info') and self.client_contract.haken_info and

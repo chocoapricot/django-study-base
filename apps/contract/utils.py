@@ -233,6 +233,14 @@ def generate_contract_pdf_content(contract):
             if company and company.haken_permit_number:
                 haken_items.append({"title": "許可番号", "text": company.haken_permit_number})
 
+            # 派遣抵触日制限外情報
+            try:
+                haken_exempt_info = haken_info.haken_exempt_info
+                if haken_exempt_info and haken_exempt_info.period_exempt_detail:
+                    haken_items.append({"title": "抵触日制限外詳細", "text": str(haken_exempt_info.period_exempt_detail)})
+            except haken_info.__class__.haken_exempt_info.RelatedObjectDoesNotExist:
+                pass  # haken_exempt_infoが存在しない場合は何もしない
+
             # 紹介予定派遣(TTP)の場合、追加情報を挿入
             try:
                 ttp_info = haken_info.ttp_info

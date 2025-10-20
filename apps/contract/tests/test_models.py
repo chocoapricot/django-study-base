@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from apps.master.models import JobCategory, ContractPattern
 from django.utils import timezone
 from datetime import timedelta
@@ -452,3 +453,137 @@ class ContractAssignmentValidationTest(TestCase):
                 else:
                     with self.assertRaises(ValidationError, msg=f"{message} でValidationErrorが発生しませんでした。"):
                         assignment.full_clean()
+
+    def test_haken_exempt_info_skips_conflict_date_validation(self):
+        """派遣抵触日制限外情報が登録されている場合に抵触日チェックがスキップされることをテスト"""
+        from ..models import ContractAssignment, ClientContractHaken, ClientContractHakenExempt
+        from apps.client.models import ClientDepartment
+        from datetime import date, timedelta
+        
+        # テスト用のクライアント部署（派遣事業所）を作成
+        # 事業所抵触日を短期間で抵触するように設定
+        teishokubi_date = date.today() + timedelta(days=30)  # 30日後に抵触
+        haken_office = ClientDepartment.objects.create(
+            client=self.client,
+            name='テスト派遣事業所',
+            is_haken_office=True,
+            haken_jigyosho_teishokubi=teishokubi_date,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        # テスト用のクライアント部署（派遣組織単位）を作成
+        haken_unit = ClientDepartment.objects.create(
+            client=self.client,
+            name='テスト派遣組織単位',
+            is_haken_unit=True,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        # 派遣契約を作成（抵触日を超える期間）
+        client_contract = ClientContract.objects.create(
+            client=self.client,
+            contract_name='派遣抵触日制限外テスト契約',
+            contract_pattern=self.client_pattern,
+            client_contract_type_code='20',  # 派遣
+            start_date=date.today(),
+            end_date=date.today() + timedelta(days=90),  # 90日後まで（抵触日を超える）
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        # 派遣情報を作成
+        haken_info = ClientContractHaken.objects.create(
+            client_contract=client_contract,
+            haken_office=haken_office,
+            haken_unit=haken_unit,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        # 59歳のスタッフを作成（抵触日チェック対象）
+        from dateutil.relativedelta import relativedelta
+        today = date.today()
+        birth_date_59 = today - relativedelta(years=59)
+        staff_59 = Staff.objects.create(
+            name_last='テスト', name_first='スタッフ59',
+            email='test59@example.com',
+            birth_date=birth_date_59,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        # 有期雇用形態を作成
+        from apps.master.models import EmploymentType
+        employment_type_fixed = EmploymentType.objects.create(
+            name='有期雇用',
+            is_fixed_term=True,
+            is_active=True
+        )
+        
+        # スタッフ契約を作成
+        staff_contract = StaffContract.objects.create(
+            staff=staff_59,
+            contract_name='テストスタッフ契約',
+            contract_pattern=self.staff_pattern,
+            employment_type=employment_type_fixed,
+            start_date=date.today(),
+            end_date=date.today() + timedelta(days=90),
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        # --- 派遣抵触日制限外情報なしの場合：事業所抵触日チェックが実行される ---
+        assignment_without_exempt = ContractAssignment(
+            client_contract=client_contract,
+            staff_contract=staff_contract,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        # 事業所抵触日チェックでValidationErrorが発生することを確認
+        with self.assertRaises(ValidationError) as context:
+            assignment_without_exempt.full_clean()
+        
+        self.assertIn('事業所抵触日', str(context.exception))
+        
+        # --- 派遣抵触日制限外情報ありの場合：抵触日チェックがスキップされる ---
+        # 派遣抵触日制限外情報を作成
+        haken_exempt_info = ClientContractHakenExempt.objects.create(
+            haken=haken_info,
+            period_exempt_detail='労働者派遣法第40条の2第1項第1号に該当する業務（いわゆる26業務）に従事する場合',
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        assignment_with_exempt = ContractAssignment(
+            client_contract=client_contract,
+            staff_contract=staff_contract,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        # 抵触日チェックがスキップされ、ValidationErrorが発生しないことを確認
+        try:
+            assignment_with_exempt.full_clean()
+            assignment_with_exempt.save()
+        except ValidationError:
+            self.fail("派遣抵触日制限外情報が登録されているにも関わらず、抵触日チェックが実行されました。")
+        
+        # --- 派遣抵触日制限外情報の詳細が空の場合：事業所抵触日チェックが実行される ---
+        haken_exempt_info.period_exempt_detail = ''  # 詳細を空にする
+        haken_exempt_info.save()
+        
+        assignment_empty_exempt = ContractAssignment(
+            client_contract=client_contract,
+            staff_contract=staff_contract,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        # 事業所抵触日チェックでValidationErrorが発生することを確認
+        with self.assertRaises(ValidationError) as context:
+            assignment_empty_exempt.full_clean()
+        
+        self.assertIn('事業所抵触日', str(context.exception))

@@ -135,10 +135,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h6 class="mb-0"><i class="bi bi-calendar-check text-danger me-2"></i>抵触日チェック</h6>
                 </div>
                 <div class="card-body py-2">
-                    <div class="mb-2">• <strong>対象</strong>: 派遣契約かつ派遣社員（有期雇用）の場合</div>
-                    <div class="mb-2">• <strong>チェック内容</strong>: 割当終了日が抵触日を超えていないかを確認</div>
+                    <div class="mb-2">• <strong>対象</strong>: 派遣契約かつ派遣社員（有期雇用）かつ60歳未満の場合</div>
+                    <div class="mb-2">• <strong>スキップ条件</strong>: 派遣抵触日制限外情報が登録されており、詳細が入力されている場合はチェックをスキップ</div>
+                    <div class="mb-2">• <strong>事業所抵触日チェック</strong>: 割当終了日が事業所抵触日を超えていないかを確認</div>
+                    <div class="mb-2">• <strong>組織単位抵触日チェック</strong>: 割当終了日が組織単位抵触日（3年ルール）を超えていないかを確認</div>
                     <div class="mb-2">• <strong>割当終了日</strong>: クライアント契約終了日とスタッフ契約終了日の早い方</div>
-                    <div class="mb-0">• <strong>必要条件</strong>: 派遣先事業所の組織単位が設定されていること</div>
+                    <div class="mb-0">• <strong>必要条件</strong>: 派遣先事業所と組織単位が設定されていること</div>
                 </div>
             </div>
             

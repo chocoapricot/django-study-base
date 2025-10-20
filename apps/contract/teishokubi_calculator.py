@@ -141,14 +141,31 @@ class TeishokubiCalculator:
     def _get_relevant_assignments(self):
         """
         関連する契約割当を取得する
+        派遣抵触日制限外情報が登録されている契約は除外する
         """
-        return ContractAssignment.objects.filter(
+        from django.db.models import Q
+        
+        assignments = ContractAssignment.objects.filter(
             staff_contract__staff__email=self.staff_email,
             client_contract__client__corporate_number=self.client_corporate_number,
             client_contract__haken_info__haken_unit__name=self.organization_name,
             client_contract__client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,  # 派遣
             staff_contract__employment_type__is_fixed_term=True  # 有期雇用
         ).select_related('client_contract', 'staff_contract')
+        
+        # 派遣抵触日制限外情報が登録されている契約を除外
+        filtered_assignments = []
+        for assignment in assignments:
+            try:
+                haken_exempt_info = assignment.client_contract.haken_info.haken_exempt_info
+                # 派遣抵触日制限外情報が登録されており、詳細が入力されている場合は除外
+                if haken_exempt_info and haken_exempt_info.period_exempt_detail:
+                    continue
+            except:
+                pass
+            filtered_assignments.append(assignment)
+        
+        return filtered_assignments
 
     def _get_assignment_periods(self, assignments):
         """
