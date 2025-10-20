@@ -13,19 +13,19 @@
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        派遣制限外情報 削除
+        派遣抵触日制限外情報 削除
     </div>
     <div class="card-body">
         <div class="alert alert-warning" role="alert">
             <i class="bi bi-exclamation-triangle-fill"></i>
-            派遣制限外情報を削除しますか？この操作は取り消せません。
+            派遣抵触日制限外情報を削除しますか？この操作は取り消せません。
         </div>
 
         <div class="table-responsive">
             <table class="table table-sm">
                 <tbody>
                     <tr>
-                        <th class="bg-light" style="width: 25%;">期間制限外詳細</th>
+                        <th class="bg-light" style="width: 25%;">抵触日制限外詳細</th>
                         <td style="white-space: pre-wrap; word-wrap: break-word;">{{ haken_exempt_info.period_exempt_detail|default_if_none:"" }}</td>
                     </tr>
                 </tbody>

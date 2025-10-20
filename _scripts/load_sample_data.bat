@@ -46,6 +46,10 @@ echo 銀行支店マスタデータをインポート中...
 python manage.py loaddata _sample_data/master_bank_branch.json
 if errorlevel 1 goto error
 
+echo 派遣抵触日制限外マスタデータをインポート中...
+python manage.py loaddata _sample_data/master_haken_teishokubi_exempt.json
+if errorlevel 1 goto error
+
 echo 会社データをインポート中...
 python manage.py loaddata _sample_data/company.json
 if errorlevel 1 goto error
@@ -103,6 +107,7 @@ echo - 支払いサイトマスタ
 echo - 会社銀行マスタ
 echo - 銀行マスタ
 echo - 銀行支店マスタ
+echo - 派遣抵触日制限外マスタ
 echo - 会社データ
 echo - 部署データ
 echo - スタッフデータ

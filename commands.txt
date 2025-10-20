@@ -71,6 +71,7 @@ python manage.py dumpdata master.contractterms         --format=json --indent=4 
 python manage.py dumpdata master.jobcategory　         --format=json --indent=4 > _sample_data/master_job_category.json
 python manage.py dumpdata master.businesscontent      --format=json --indent=4 > _sample_data/master_business_content.json
 python manage.py dumpdata master.hakenresponsibilitydegree --format=json --indent=4 > _sample_data/master_haken_responsibility_degree.json
+python manage.py dumpdata master.hakenteishokubiexempt     --format=json --indent=4 > _sample_data/master_haken_teishokubi_exempt.json
 python manage.py dumpdata master.defaultvalue              --format=json --indent=4 > _sample_data/master_default_value.json
 python manage.py dumpdata master.employmenttype            --format=json --indent=4 > _sample_data/master_employment_type.json
 python manage.py dumpdata master.staffregiststatus         --format=json --indent=4 > _sample_data/master_staff_regist_status.json

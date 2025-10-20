@@ -118,7 +118,7 @@ django-study-base/
 | `apps_contract_assignment` | `ContractAssignment` | 契約割り当て |
 | `apps_contract_client` | `ClientContract` | クライアント契約 |
 | `apps_contract_client_haken` | `ClientContractHaken` | クライアント契約派遣情報 |
-| `apps_contract_client_haken_exempt` | `ClientContractHakenExempt` | クライアント契約派遣制限外情報 |
+| `apps_contract_client_haken_exempt` | `ClientContractHakenExempt` | クライアント契約派遣抵触日制限外情報 |
 | `apps_contract_client_number` | `ClientContractNumber` | クライアント契約番号 |
 | `apps_contract_client_print` | `ClientContractPrint` | クライアント契約書発行履歴 |
 | `apps_contract_client_ttp` | `ClientContractTtp` | クライアント契約紹介予定派遣情報 |

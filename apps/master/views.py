@@ -8,6 +8,7 @@ from .views_client import *
 from .views_contract import *
 from .views_billing import *
 from .views_other import *
+from .views_haken_teishokubi_exempt import *
 
 # マスタ設定データ
 MASTER_CONFIGS = [
@@ -98,6 +99,14 @@ MASTER_CONFIGS = [
         "model": "master.HakenResponsibilityDegree",
         "url_name": "master:haken_responsibility_degree_list",
         "permission": "master.view_hakenresponsibilitydegree",
+    },
+    {
+        "category": "契約",
+        "name": "派遣抵触日制限外管理",
+        "description": "派遣抵触日制限外の管理",
+        "model": "master.HakenTeishokubiExempt",
+        "url_name": "master:haken_teishokubi_exempt_list",
+        "permission": "master.view_hakenteishokubiexempt",
     },
     {
         "category": "請求",

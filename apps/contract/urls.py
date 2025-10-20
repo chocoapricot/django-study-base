@@ -67,7 +67,7 @@ urlpatterns = [
     path('client/ttp/<int:pk>/update/', views.client_contract_ttp_update, name='client_contract_ttp_update'),
     path('client/ttp/<int:pk>/delete/', views.client_contract_ttp_delete, name='client_contract_ttp_delete'),
 
-    # 派遣制限外
+    # 派遣抵触日制限外
     path('client/haken-exempt/view/<int:haken_pk>/', views.client_contract_haken_exempt_view, name='client_contract_haken_exempt_view'),
     path('client/haken-exempt/create/<int:haken_pk>/', views.client_contract_haken_exempt_create, name='client_contract_haken_exempt_create'),
     path('client/haken-exempt/<int:pk>/detail/', views.client_contract_haken_exempt_detail, name='client_contract_haken_exempt_detail'),

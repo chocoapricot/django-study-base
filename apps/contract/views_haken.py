@@ -180,11 +180,11 @@ def client_contract_ttp_delete(request, pk):
     return render(request, 'contract/client_contract_ttp_delete.html', context)
 
 
-# 派遣制限外
+# 派遣抵触日制限外
 @login_required
 @permission_required('contract.view_clientcontract', raise_exception=True)
 def client_contract_haken_exempt_view(request, haken_pk):
-    """派遣制限外情報の有無に応じて、詳細画面か作成画面にリダイレクトする"""
+    """派遣抵触日制限外情報の有無に応じて、詳細画面か作成画面にリダイレクトする"""
     haken = get_object_or_404(ClientContractHaken, pk=haken_pk)
     if hasattr(haken, 'haken_exempt_info'):
         return redirect('contract:client_contract_haken_exempt_detail', pk=haken.haken_exempt_info.pk)
@@ -195,15 +195,15 @@ def client_contract_haken_exempt_view(request, haken_pk):
 @login_required
 @permission_required('contract.add_clientcontract', raise_exception=True)
 def client_contract_haken_exempt_create(request, haken_pk):
-    """派遣制限外情報 作成"""
+    """派遣抵触日制限外情報 作成"""
     haken = get_object_or_404(ClientContractHaken, pk=haken_pk)
     if hasattr(haken, 'haken_exempt_info'):
-        messages.info(request, '既に派遣制限外情報が存在します。')
+        messages.info(request, '既に派遣抵触日制限外情報が存在します。')
         return redirect('contract:client_contract_haken_exempt_detail', pk=haken.haken_exempt_info.pk)
 
     # 親契約が「作成中」でない場合はエラー
     if haken.client_contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
-        messages.error(request, '契約が作成中でないため、派遣制限外情報は作成できません。')
+        messages.error(request, '契約が作成中でないため、派遣抵触日制限外情報は作成できません。')
         return redirect('contract:client_contract_detail', pk=haken.client_contract.pk)
 
     if request.method == 'POST':
@@ -214,7 +214,7 @@ def client_contract_haken_exempt_create(request, haken_pk):
             haken_exempt_info.created_by = request.user
             haken_exempt_info.updated_by = request.user
             haken_exempt_info.save()
-            messages.success(request, '派遣制限外情報を作成しました。')
+            messages.success(request, '派遣抵触日制限外情報を作成しました。')
             return redirect('contract:client_contract_haken_exempt_detail', pk=haken_exempt_info.pk)
     else:
         # GETリクエストの場合、初期値をマスタから設定
@@ -235,7 +235,7 @@ def client_contract_haken_exempt_create(request, haken_pk):
         'form': form,
         'haken': haken,
         'contract': haken.client_contract,
-        'title': '派遣制限外情報 作成',
+        'title': '派遣抵触日制限外情報 作成',
     }
     return render(request, 'contract/client_contract_haken_exempt_form.html', context)
 
@@ -243,7 +243,7 @@ def client_contract_haken_exempt_create(request, haken_pk):
 @login_required
 @permission_required('contract.view_clientcontract', raise_exception=True)
 def client_contract_haken_exempt_detail(request, pk):
-    """派遣制限外情報 詳細"""
+    """派遣抵触日制限外情報 詳細"""
     haken_exempt_info = get_object_or_404(ClientContractHakenExempt, pk=pk)
     context = {
         'haken_exempt_info': haken_exempt_info,
@@ -256,11 +256,11 @@ def client_contract_haken_exempt_detail(request, pk):
 @login_required
 @permission_required('contract.change_clientcontract', raise_exception=True)
 def client_contract_haken_exempt_update(request, pk):
-    """派遣制限外情報 更新"""
+    """派遣抵触日制限外情報 更新"""
     haken_exempt_info = get_object_or_404(ClientContractHakenExempt, pk=pk)
     contract = haken_exempt_info.haken.client_contract
     if contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
-        messages.error(request, '契約が作成中でないため、派遣制限外情報は編集できません。')
+        messages.error(request, '契約が作成中でないため、派遣抵触日制限外情報は編集できません。')
         return redirect('contract:client_contract_detail', pk=contract.pk)
 
     if request.method == 'POST':
@@ -269,7 +269,7 @@ def client_contract_haken_exempt_update(request, pk):
             haken_exempt_info = form.save(commit=False)
             haken_exempt_info.updated_by = request.user
             haken_exempt_info.save()
-            messages.success(request, '派遣制限外情報を更新しました。')
+            messages.success(request, '派遣抵触日制限外情報を更新しました。')
             return redirect('contract:client_contract_haken_exempt_detail', pk=haken_exempt_info.pk)
     else:
         form = ClientContractHakenExemptForm(instance=haken_exempt_info)
@@ -279,7 +279,7 @@ def client_contract_haken_exempt_update(request, pk):
         'haken_exempt_info': haken_exempt_info,
         'haken': haken_exempt_info.haken,
         'contract': haken_exempt_info.haken.client_contract,
-        'title': '派遣制限外情報 編集',
+        'title': '派遣抵触日制限外情報 編集',
     }
     return render(request, 'contract/client_contract_haken_exempt_form.html', context)
 
@@ -287,17 +287,17 @@ def client_contract_haken_exempt_update(request, pk):
 @login_required
 @permission_required('contract.delete_clientcontract', raise_exception=True)
 def client_contract_haken_exempt_delete(request, pk):
-    """派遣制限外情報 削除"""
+    """派遣抵触日制限外情報 削除"""
     haken_exempt_info = get_object_or_404(ClientContractHakenExempt, pk=pk)
     contract = haken_exempt_info.haken.client_contract
     if contract.contract_status != Constants.CONTRACT_STATUS.DRAFT:
-        messages.error(request, '契約が作成中でないため、派遣制限外情報は削除できません。')
+        messages.error(request, '契約が作成中でないため、派遣抵触日制限外情報は削除できません。')
         return redirect('contract:client_contract_detail', pk=contract.pk)
 
     contract_pk = haken_exempt_info.haken.client_contract.pk
     if request.method == 'POST':
         haken_exempt_info.delete()
-        messages.success(request, '派遣制限外情報を削除しました。')
+        messages.success(request, '派遣抵触日制限外情報を削除しました。')
         return redirect('contract:client_contract_detail', pk=contract_pk)
 
     context = {

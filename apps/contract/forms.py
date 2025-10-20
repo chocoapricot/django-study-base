@@ -676,7 +676,7 @@ class ClientContractTtpForm(forms.ModelForm):
             field.required = False
 
 class ClientContractHakenExemptForm(forms.ModelForm):
-    """クライアント契約派遣制限外情報フォーム"""
+    """クライアント契約派遣抵触日制限外情報フォーム"""
 
     class Meta:
         model = ClientContractHakenExempt
@@ -687,7 +687,7 @@ class ClientContractHakenExemptForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # 期間制限外詳細は必須
+        # 抵触日制限外詳細は必須
         self.fields['period_exempt_detail'].required = True
 
 

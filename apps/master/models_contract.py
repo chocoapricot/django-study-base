@@ -188,3 +188,31 @@ class EmploymentType(MyModel):
 
     def __str__(self):
         return self.name
+
+
+class HakenTeishokubiExempt(MyModel):
+    """派遣抵触日制限外マスター"""
+    
+    content = models.TextField(
+        verbose_name="内容",
+        help_text="派遣抵触日制限外の詳細内容"
+    )
+    display_order = models.IntegerField(
+        verbose_name="表示順",
+        default=0,
+        help_text="表示順序（昇順）"
+    )
+    is_active = models.BooleanField(
+        verbose_name="有効/無効",
+        default=True,
+        help_text="有効な場合はチェック"
+    )
+
+    class Meta:
+        db_table = 'apps_master_haken_teishokubi_exempt'
+        verbose_name = '派遣抵触日制限外'
+        verbose_name_plural = '派遣抵触日制限外'
+        ordering = ['display_order', 'id']
+
+    def __str__(self):
+        return f"{self.content[:50]}{'...' if len(self.content) > 50 else ''}"

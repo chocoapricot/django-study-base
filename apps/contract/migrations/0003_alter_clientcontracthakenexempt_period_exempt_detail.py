@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='clientcontracthakenexempt',
             name='period_exempt_detail',
-            field=models.TextField(verbose_name='期間制限外詳細'),
+            field=models.TextField(verbose_name='抵触日制限外詳細'),
         ),
     ]

@@ -49,6 +49,7 @@ def main():
         "_sample_data/master_contract_terms.json",
         "_sample_data/master_business_content.json",
         "_sample_data/master_haken_responsibility_degree.json",
+        "_sample_data/master_haken_teishokubi_exempt.json",
         "_sample_data/master_default_value.json",
         "_sample_data/master_client_regist_status.json",
         "_sample_data/master_staff_regist_status.json",
@@ -105,6 +106,7 @@ def main():
         ("python manage.py loaddata _sample_data/master_contract_terms.json", "契約文言マスタデータ"),
         ("python manage.py loaddata _sample_data/master_business_content.json", "業務内容マスタデータ"),
         ("python manage.py loaddata _sample_data/master_haken_responsibility_degree.json", "派遣責任の程度マスタデータ"),
+        ("python manage.py loaddata _sample_data/master_haken_teishokubi_exempt.json", "派遣抵触日制限外マスタデータ"),
         ("python manage.py loaddata _sample_data/master_default_value.json", "初期値マスタデータ"),
         ("python manage.py loaddata _sample_data/master_client_regist_status.json", "クライアント登録ステータスマスタデータ"),
         ("python manage.py loaddata _sample_data/master_staff_regist_status.json", "スタッフ登録ステータスマスタデータ"),
@@ -154,6 +156,7 @@ def main():
     print("- 契約文言マスタ")
     print("- 業務内容マスタ")
     print("- 派遣責任の程度マスタ")
+    print("- 派遣抵触日制限外マスタ")
     print("- 初期値マスタ")
     print("- クライアント登録ステータスマスタ")
     print("- スタッフ登録ステータスマスタ")

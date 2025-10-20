@@ -545,7 +545,7 @@ class ClientContractTtp(MyModel):
 
 class ClientContractHakenExempt(MyModel):
     """
-    クライアント契約派遣制限外情報
+    クライアント契約派遣抵触日制限外情報
     """
     haken = models.OneToOneField(
         ClientContractHaken,
@@ -553,12 +553,12 @@ class ClientContractHakenExempt(MyModel):
         related_name='haken_exempt_info',
         verbose_name='クライアント契約派遣情報'
     )
-    period_exempt_detail = models.TextField('期間制限外詳細')
+    period_exempt_detail = models.TextField('抵触日制限外詳細')
 
     class Meta:
         db_table = 'apps_contract_client_haken_exempt'
-        verbose_name = 'クライアント契約派遣制限外情報'
-        verbose_name_plural = 'クライアント契約派遣制限外情報'
+        verbose_name = 'クライアント契約派遣抵触日制限外情報'
+        verbose_name_plural = 'クライアント契約派遣抵触日制限外情報'
 
     def __str__(self):
         return f"{self.haken.client_contract}"

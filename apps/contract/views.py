@@ -245,7 +245,7 @@ def client_contract_detail(request, pk):
                 action__in=['create', 'update', 'delete']
             )
         
-        # 派遣期間制限外情報の変更履歴
+        # 派遣抵触日制限外情報の変更履歴
         if hasattr(haken_info, 'haken_exempt_info') and haken_info.haken_exempt_info:
             haken_exempt_logs = AppLog.objects.filter(
                 model_name='ClientContractHakenExempt',
@@ -705,6 +705,10 @@ def haken_master_select(request):
         from apps.master.models import HakenResponsibilityDegree
         items = HakenResponsibilityDegree.objects.filter(is_active=True)
         modal_title = '責任の程度を選択'
+    elif master_type == 'haken_teishokubi_exempt':
+        from apps.master.models import HakenTeishokubiExempt
+        items = HakenTeishokubiExempt.objects.filter(is_active=True)
+        modal_title = '派遣抵触日制限外を選択'
     else:
         items = []
         modal_title = 'マスター選択'
@@ -786,7 +790,7 @@ def client_contract_change_history_list(request, pk):
                 action__in=['create', 'update', 'delete']
             )
         
-        # 派遣期間制限外情報の変更履歴
+        # 派遣抵触日制限外情報の変更履歴
         if hasattr(haken_info, 'haken_exempt_info') and haken_info.haken_exempt_info:
             haken_exempt_logs = AppLog.objects.filter(
                 model_name='ClientContractHakenExempt',

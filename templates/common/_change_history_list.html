@@ -65,7 +65,7 @@
                         {% elif log.model_name == 'ClientContractTtp' %}
                             <span class="badge bg-warning">紹介予定派遣</span>
                         {% elif log.model_name == 'ClientContractHakenExempt' %}
-                            <span class="badge bg-danger">派遣期間制限外</span>
+                            <span class="badge bg-danger">派遣抵触日制限外</span>
                         {% elif log.model_name == 'ContractPattern' %}
                             <span class="badge bg-primary">契約書パターン</span>
                         {% elif log.model_name == 'ContractTerms' %}
@@ -96,6 +96,8 @@
                             <span class="badge bg-primary">業務内容</span>
                         {% elif log.model_name == 'HakenResponsibilityDegree' %}
                             <span class="badge bg-primary">派遣責任程度</span>
+                        {% elif log.model_name == 'HakenTeishokubiExempt' %}
+                            <span class="badge bg-primary">派遣抵触日制限外</span>
                         {% elif log.model_name == 'DefaultValue' %}
                             <span class="badge bg-primary">初期値</span>
                         {% elif log.model_name == 'EmploymentType' %}

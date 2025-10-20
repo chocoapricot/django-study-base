@@ -20,9 +20,18 @@
         <form method="post">
             {% csrf_token %}
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.period_exempt_detail.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">期間制限外詳細</label>
+                <label for="{{ form.period_exempt_detail.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">
+                    抵触日制限外詳細
+                    {% my_help_icon "有期プロジェクト業務、日数限定業務、育児休業等・介護休業等の代替要員としての業務の場合は、抵触日の制限外となります" %}
+                </label>
                 <div class="col-sm-8">
                     {{ form.period_exempt_detail }}
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-sm btn-secondary" type="button"
+                            data-master-type="haken_teishokubi_exempt"
+                            data-target-id="{{ form.period_exempt_detail.id_for_label }}"
+                            data-modal-title="派遣抵触日制限外を選択">参照</button>
                 </div>
             </div>
 
@@ -35,5 +44,40 @@
         </form>
     </div>
 </div>
+
+<!-- 業務内容/責任程度 選択モーダル -->
+<div class="modal fade" id="hakenMasterModal" tabindex="-1" aria-labelledby="hakenMasterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="hakenMasterModalLabel"></div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- fetchで内容が挿入されます -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/contract-modal.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 派遣マスター参照ボタンのイベントリスナーを設定
+    document.addEventListener('click', function(e) {
+        if (e.target.hasAttribute('data-master-type')) {
+            e.preventDefault();
+            const masterType = e.target.getAttribute('data-master-type');
+            const targetId = e.target.getAttribute('data-target-id');
+            const modalTitle = e.target.getAttribute('data-modal-title');
+            
+            loadHakenMasterModal('{% url "contract:haken_master_select" %}', masterType, targetId, modalTitle);
+        }
+    });
+});
+</script>
 
 {% endblock %}
