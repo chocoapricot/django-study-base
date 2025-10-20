@@ -75,7 +75,14 @@
                                 <td>
                                     {{ haken_info.haken_office.name|default:"-" }}
                                     {% if haken_info.haken_office.haken_jigyosho_teishokubi %}
-                                        <span class="text-muted small">（抵触日：{{ haken_info.haken_office.haken_jigyosho_teishokubi|date:"Y/m/d" }}）</span>
+                                        {% if haken_info.haken_exempt_info and haken_info.haken_exempt_info.period_exempt_detail %}
+                                            <span class="badge bg-light">
+                                                抵触日対象外
+                                                {% my_help_icon "抵触日制限外の情報が登録された場合には、抵触日の制限は無くなります" %}
+                                            </span>
+                                        {% else %}
+                                            <span class="text-muted small">（抵触日：{{ haken_info.haken_office.haken_jigyosho_teishokubi|date:"Y/m/d" }}）</span>
+                                        {% endif %}
                                     {% else %}
                                         <span class="text-muted small">（抵触日未設定）</span>
                                     {% endif %}
@@ -198,7 +205,10 @@
                         </div>
                         <table class="table table-sm">
                             <tr>
-                                <th class="w-25 bg-light">抵触日制限外詳細</th>
+                                <th class="w-25 bg-light">
+                                    抵触日制限外詳細
+                                    {% my_help_icon "抵触日制限外の情報が登録された場合には、抵触日の制限は無くなります" %}
+                                </th>
                                 <td>{{ contract.haken_info.haken_exempt_info.period_exempt_detail|linebreaksbr|default:"-" }}</td>
                             </tr>
                         </table>
