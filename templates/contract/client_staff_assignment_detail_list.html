@@ -332,8 +332,9 @@ document.addEventListener('DOMContentLoaded', function() {
         var width;
         
         if (end) {
-            // 終了日がある場合
-            var endPos = ((end - displayStart) / displayRange) * 100;
+            // 終了日がある場合（終了日の翌日までを描画範囲とする）
+            var exclusiveEnd = new Date(end.getTime() + (24 * 60 * 60 * 1000));
+            var endPos = ((exclusiveEnd - displayStart) / displayRange) * 100;
             width = endPos - startPos;
         } else {
             // 無期限の場合（表示終了まで延長）
