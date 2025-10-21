@@ -394,6 +394,15 @@ def staff_assignment_confirm_from_create(request):
     # 粗利率計算
     profit_margin_info = _calculate_profit_margin(client_contract, staff_contract)
 
+    # 既存の割当済みスタッフ契約を取得（スタッフ名＞開始日でソート）
+    existing_assignments = ContractAssignment.objects.filter(
+        client_contract=client_contract
+    ).select_related('staff_contract__staff', 'staff_contract__employment_type').order_by(
+        'staff_contract__staff__name_last', 
+        'staff_contract__staff__name_first', 
+        'staff_contract__start_date'
+    )
+
     context = {
         'client_contract': client_contract,
         'staff_contract': staff_contract,
@@ -401,6 +410,7 @@ def staff_assignment_confirm_from_create(request):
         'from_create': True,  # 新規作成からの遷移であることを示すフラグ
         'show_daily_dispatch_warning': show_daily_dispatch_warning,
         'profit_margin_info': profit_margin_info,
+        'existing_assignments': existing_assignments,
     }
 
     return render(request, 'contract/client_staff_assignment_confirm.html', context)
