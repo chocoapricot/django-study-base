@@ -92,6 +92,10 @@ python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver
 
+# 起動のみ
+.\venv\Scripts\Activate 
+python manage.py runserver
+
 # まとめ
 .\venv\Scripts\Activate 
 .\_scripts\setup.bat
