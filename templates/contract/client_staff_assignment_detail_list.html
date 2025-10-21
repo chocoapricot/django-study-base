@@ -21,33 +21,16 @@
 {% if assignments_with_overlap %}
 <div class="content-box card bg-light mt-2 mb-4">
     <div class="card-header">
-        <i class="bi bi-calendar-range"></i> 契約期間の重なり
+        契約期間イメージ
     </div>
     <div class="card-body">
         <!-- ガントチャート コンテナ -->
         <div id="timeline" class="gantt-chart" style="min-height: 300px;"></div>
         
-        <!-- 凡例 -->
-        <div class="mt-3 p-3 bg-light border rounded">
-            <h6 class="mb-2"><i class="bi bi-info-circle"></i> 期間表示の見方</h6>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center mb-1">
-                        <div style="width: 20px; height: 12px; background: linear-gradient(135deg, #007bff, #0056b3); border-radius: 2px; margin-right: 6px;"></div>
-                        <small>クライアント契約</small>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center mb-1">
-                        <div style="width: 20px; height: 12px; background: linear-gradient(135deg, #28a745, #1e7e34); border-radius: 2px; margin-right: 6px;"></div>
-                        <small>スタッフ契約</small>
-                    </div>
-                </div>
+        <div class="row mt-3">
+            <div class="col text-left">
+                <a href="{% url 'contract:client_contract_detail' contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
             </div>
-            <small class="text-muted">
-                <i class="bi bi-lightbulb"></i>
-                ガントチャートでは各契約期間が正確な比例で表示されます。無期限契約には∞マークが表示されます。
-            </small>
         </div>
     </div>
 </div>
@@ -64,18 +47,17 @@
                 <table class="table table-sm table-hover">
                     <thead>
                         <tr>
-                            <th style="width: 20%;">スタッフ名</th>
-                            <th style="width: 25%;">契約名</th>
-                            <th style="width: 15%;">雇用形態</th>
+                            <th style="width: 25%;">スタッフ名</th>
+                            <th style="width: 35%;">契約名</th>
+                            <th style="width: 20%;">雇用形態</th>
                             <th style="width: 20%;">スタッフ契約期間</th>
-                            <th style="width: 20%;">重なり状況</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for item in assignments_with_overlap %}
-                        <tr>
+                        <tr data-staff-index="{{ forloop.counter0 }}" data-staff-name="{{ item.staff_contract.staff.name_last }} {{ item.staff_contract.staff.name_first }}">
                             <td>
-                                <a href="{% url 'contract:staff_contract_detail' item.staff_contract.pk %}">
+                                <a href="#" class="staff-select-link" data-staff-index="{{ forloop.counter0 }}">
                                     {{ item.staff_contract.staff.name_last }} {{ item.staff_contract.staff.name_first }}
                                 </a>
                                 {% if item.staff_contract.staff.has_international %}
@@ -96,19 +78,6 @@
                             <td>
                                 {{ item.staff_contract.start_date|date:"Y/m/d" }}～{% if item.staff_contract.end_date %}{{ item.staff_contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}
                             </td>
-                            <td>
-                                {% if item.has_overlap %}
-                                    <div class="text-success">
-                                        <i class="bi bi-check-circle"></i>
-                                        <small>{{ item.overlap_start|date:"Y/m/d" }}～{% if item.overlap_end %}{{ item.overlap_end|date:"Y/m/d" }}{% else %}無期限{% endif %}</small>
-                                    </div>
-                                {% else %}
-                                    <div class="text-warning">
-                                        <i class="bi bi-exclamation-triangle"></i>
-                                        <small>重なりなし</small>
-                                    </div>
-                                {% endif %}
-                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -118,11 +87,7 @@
             <p>アサインされているスタッフはいません。</p>
         {% endif %}
 
-        <div class="row mt-3">
-            <div class="col text-left">
-                <a href="{% url 'contract:client_contract_detail' contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
-            </div>
-        </div>
+
     </div>
 </div>
 {% endblock %}
@@ -135,25 +100,36 @@
     border-radius: 4px;
     padding: 15px;
 }
+.gantt-section {
+    background-color: white;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    padding: 10px;
+}
 .gantt-row {
     margin-bottom: 8px;
     padding: 5px;
-    background-color: white;
-    border-radius: 4px;
-    border: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
 }
 .gantt-label {
-    font-size: 11px;
+    font-size: 16px;
     font-weight: 500;
-    margin-bottom: 3px;
     color: #495057;
+    width: 200px;
+    flex-shrink: 0;
+    margin-right: 10px;
+    text-align: right;
+    padding-right: 5px;
 }
 .gantt-bar-container {
     position: relative;
-    height: 30px;
+    height: 40px;
     background-color: #f1f3f4;
     border-radius: 4px;
     overflow: hidden;
+    flex: 1;
 }
 .gantt-bar {
     position: absolute;
@@ -166,6 +142,7 @@
     font-weight: 500;
     color: white;
     text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    z-index: 2;
 }
 .gantt-bar.client {
     background: linear-gradient(135deg, #007bff, #0056b3);
@@ -175,25 +152,41 @@
     background: linear-gradient(135deg, #28a745, #1e7e34);
     border: 1px solid #155724;
 }
-.gantt-bar.infinite::after {
-    content: '∞';
+.gantt-bar.staff.selected {
+    background: linear-gradient(135deg, #fd7e14, #e55a00);
+    border: 1px solid #cc4400;
+}
+
+.gantt-bar .start-date {
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+.gantt-bar .end-date {
     position: absolute;
     right: 5px;
     top: 50%;
     transform: translateY(-50%);
     font-size: 14px;
-    font-weight: bold;
+    font-weight: 500;
     color: rgba(255, 255, 255, 0.9);
     text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
 }
 .gantt-timeline {
     position: relative;
-    height: 30px;
+    height: 40px;
     margin-bottom: 8px;
     padding: 0 5px;
-    font-size: 10px;
+    font-size: 14px;
     color: #6c757d;
     border-bottom: 1px solid #ddd;
+    white-space: nowrap;
+    overflow: hidden;
 }
 </style>
 {% endblock %}
@@ -205,6 +198,8 @@
 {% if assignments_with_overlap %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    var selectedStaffIndex = -1;
+    var staffBars = [];
     // タイムゾーンの問題を回避するため、日付文字列をUTCとしてパースする関数
     function parseDateAsUTC(dateString) {
         if (!dateString) return null;
@@ -241,12 +236,12 @@ document.addEventListener('DOMContentLoaded', function() {
     var displayStart = new Date(clientStart.getTime() - 5 * 24 * 60 * 60 * 1000); // クライアント契約開始日の5日前
     var displayEnd;
 
-    if (latestEnd) {
-        // 最も遅い終了日がある場合：その5日後まで
-        displayEnd = new Date(latestEnd.getTime() + 5 * 24 * 60 * 60 * 1000);
+    if (clientHasEndDate) {
+        // クライアント契約に終了日がある場合：クライアント契約終了日の5日後まで
+        displayEnd = new Date(clientEnd.getTime() + 5 * 24 * 60 * 60 * 1000);
     } else {
-        // 無期限契約のみの場合：最も早い開始日から1年後まで
-        displayEnd = new Date(earliestStart.getTime() + 365 * 24 * 60 * 60 * 1000);
+        // クライアント契約が無期限の場合：クライアント契約開始日から1年後まで
+        displayEnd = new Date(clientStart.getTime() + 365 * 24 * 60 * 60 * 1000);
     }
     
     var displayRange = displayEnd - displayStart;
@@ -266,16 +261,19 @@ document.addEventListener('DOMContentLoaded', function() {
         // タイムライン軸の作成
         createTimeline();
         
-        // クライアント契約の行
+        // クライアント契約セクション
+        createGanttSection();
         createGanttRow(
-            'クライアント契約',
+            '{{ contract.client.name|escapejs }}',
             '{{ contract.contract_name|escapejs }}',
             clientStart,
             clientHasEndDate ? clientEnd : null,
-            'client'
+            'client',
+            -1
         );
         
-        // スタッフ契約の行
+        // スタッフ契約セクション
+        createGanttSection();
         {% for item in assignments_with_overlap %}
         var staffStart = parseDateAsUTC('{{ item.staff_contract.start_date|date:"Y-m-d" }}');
         {% if item.staff_contract.end_date %}
@@ -284,13 +282,15 @@ document.addEventListener('DOMContentLoaded', function() {
         var staffEnd = null;
         {% endif %}
         
-        createGanttRow(
+        var staffBar = createGanttRow(
             '{{ item.staff_contract.staff.name_last|escapejs }} {{ item.staff_contract.staff.name_first|escapejs }}',
             '{{ item.staff_contract.contract_name|escapejs }}',
             staffStart,
             staffEnd,
-            'staff'
+            'staff',
+            {{ forloop.counter0 }}
         );
+        staffBars.push(staffBar);
         {% endfor %}
         
         console.log('ガントチャート作成完了');
@@ -300,18 +300,48 @@ document.addEventListener('DOMContentLoaded', function() {
         var container = document.getElementById('timeline');
         var timelineDiv = document.createElement('div');
         timelineDiv.className = 'gantt-timeline';
+        timelineDiv.style.display = 'flex';
+        timelineDiv.style.alignItems = 'center';
+        
+        // 左側のスペース（ラベル用）
+        var labelSpace = document.createElement('div');
+        labelSpace.style.width = '200px';
+        labelSpace.style.marginRight = '10px';
+        timelineDiv.appendChild(labelSpace);
+        
+        // タイムライン部分
+        var timelineContent = document.createElement('div');
+        timelineContent.style.flex = '1';
+        timelineContent.style.position = 'relative';
+        timelineContent.style.height = '35px';
         
         // 月の境界を計算
         var current = new Date(displayStart.getFullYear(), displayStart.getMonth(), 1);
         var monthPositions = [];
+        var previousYear = null;
         
         while (current <= displayEnd) {
             var position = ((current - displayStart) / displayRange) * 100;
             if (position >= 0 && position <= 100) {
+                var currentYear = current.getFullYear();
+                var isFirstMonth = previousYear === null;
+                var isYearChanged = previousYear !== null && previousYear !== currentYear;
+                
+                var label;
+                if (isFirstMonth || isYearChanged) {
+                    // 最初の月または年が変わった場合は年月表示
+                    label = current.toLocaleDateString('ja-JP', { year: 'numeric', month: 'short' });
+                } else {
+                    // それ以外は月のみ表示
+                    label = current.toLocaleDateString('ja-JP', { month: 'short' });
+                }
+                
                 monthPositions.push({
                     position: position,
-                    label: current.toLocaleDateString('ja-JP', { year: 'numeric', month: 'short' })
+                    label: label
                 });
+                
+                previousYear = currentYear;
             }
             current.setMonth(current.getMonth() + 1);
         }
@@ -321,22 +351,45 @@ document.addEventListener('DOMContentLoaded', function() {
             var span = document.createElement('span');
             span.textContent = month.label;
             span.style.position = 'absolute';
-            span.style.left = month.position + '%';
-            span.style.transform = 'translateX(-50%)';
-            timelineDiv.appendChild(span);
+            span.style.whiteSpace = 'nowrap';
+            
+            // 右端に近い場合は右寄せ、左端に近い場合は左寄せ、それ以外は中央寄せ
+            if (month.position > 90) {
+                span.style.right = (100 - month.position) + '%';
+                span.style.transform = 'none';
+            } else if (month.position < 10) {
+                span.style.left = month.position + '%';
+                span.style.transform = 'none';
+            } else {
+                span.style.left = month.position + '%';
+                span.style.transform = 'translateX(-50%)';
+            }
+            
+            timelineContent.appendChild(span);
         });
         
-        timelineDiv.style.position = 'relative';
-        timelineDiv.style.height = '25px';
+        timelineDiv.appendChild(timelineContent);
         timelineDiv.style.borderBottom = '1px solid #ddd';
         timelineDiv.style.marginBottom = '10px';
         
         container.appendChild(timelineDiv);
     }
     
-    function createGanttRow(label, content, start, end, type) {
+    function createGanttSection() {
+        var container = document.getElementById('timeline');
+        var sectionDiv = document.createElement('div');
+        sectionDiv.className = 'gantt-section';
+        
+        container.appendChild(sectionDiv);
+        
+        // 現在のセクションを記録（次の行で使用）
+        container.currentSection = sectionDiv;
+    }
+    
+    function createGanttRow(label, content, start, end, type, staffIndex) {
         console.log('createGanttRow呼び出し:', label, type);
         var container = document.getElementById('timeline');
+        var currentSection = container.currentSection;
         
         var rowDiv = document.createElement('div');
         rowDiv.className = 'gantt-row';
@@ -350,12 +403,28 @@ document.addEventListener('DOMContentLoaded', function() {
         barContainer.className = 'gantt-bar-container';
         
         // バーの位置とサイズを計算
-        var startPos = ((start - displayStart) / displayRange) * 100;
+        // スタッフバーの場合は表示範囲内に制限
+        var adjustedStart = start;
+        var adjustedEnd = end;
+        
+        if (type === 'staff') {
+            // 開始位置：表示開始より前の場合は表示開始に調整
+            if (start < displayStart) {
+                adjustedStart = displayStart;
+            }
+            
+            // 終了位置：表示終了より後の場合は表示終了に調整
+            if (end && end > displayEnd) {
+                adjustedEnd = displayEnd;
+            }
+        }
+        
+        var startPos = ((adjustedStart - displayStart) / displayRange) * 100;
         var width;
         
-        if (end) {
+        if (adjustedEnd) {
             // 終了日がある場合（終了日の翌日までを描画範囲とする）
-            var exclusiveEnd = new Date(end.getTime() + (24 * 60 * 60 * 1000));
+            var exclusiveEnd = new Date(adjustedEnd.getTime() + (24 * 60 * 60 * 1000));
             var endPos = ((exclusiveEnd - displayStart) / displayRange) * 100;
             width = endPos - startPos;
         } else {
@@ -371,16 +440,85 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // バー要素を作成
         var bar = document.createElement('div');
-        bar.className = 'gantt-bar ' + type + (!end ? ' infinite' : '');
+        bar.className = 'gantt-bar ' + type;
         bar.style.left = startPos + '%';
         bar.style.width = width + '%';
-        bar.textContent = content;
         bar.title = content + ' (' + start.toLocaleDateString('ja-JP') + '～' + (end ? end.toLocaleDateString('ja-JP') : '無期限') + ')';
+        
+        // 開始日を左側に表示
+        var startDateSpan = document.createElement('span');
+        startDateSpan.className = 'start-date';
+        startDateSpan.textContent = adjustedStart.toLocaleDateString('ja-JP', { year: 'numeric', month: 'numeric', day: 'numeric' });
+        bar.appendChild(startDateSpan);
+        
+        // 終了日を右側に表示
+        var endDateSpan = document.createElement('span');
+        endDateSpan.className = 'end-date';
+        if (adjustedEnd) {
+            var startYear = adjustedStart.getFullYear();
+            var endYear = adjustedEnd.getFullYear();
+            
+            if (startYear === endYear) {
+                // 開始年と終了年が同じ場合は年を省略
+                endDateSpan.textContent = adjustedEnd.toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric' });
+            } else {
+                // 年が異なる場合は年月日表示
+                endDateSpan.textContent = adjustedEnd.toLocaleDateString('ja-JP', { year: 'numeric', month: 'numeric', day: 'numeric' });
+            }
+        } else {
+            endDateSpan.textContent = '無期限';
+        }
+        bar.appendChild(endDateSpan);
         
         barContainer.appendChild(bar);
         rowDiv.appendChild(barContainer);
-        container.appendChild(rowDiv);
+        currentSection.appendChild(rowDiv);
+        
+        return bar; // バー要素を返す
     }
+    
+    // スタッフ選択機能
+    function selectStaff(staffIndex) {
+        // 既存の選択を解除
+        document.querySelectorAll('tbody tr').forEach(function(row) {
+            row.classList.remove('table-warning');
+        });
+        staffBars.forEach(function(bar) {
+            if (bar) bar.classList.remove('selected');
+        });
+        
+        if (staffIndex >= 0 && staffIndex < staffBars.length) {
+            // 新しい選択を適用
+            var selectedRow = document.querySelector('tr[data-staff-index="' + staffIndex + '"]');
+            if (selectedRow) {
+                selectedRow.classList.add('table-warning');
+            }
+            
+            if (staffBars[staffIndex]) {
+                staffBars[staffIndex].classList.add('selected');
+            }
+            
+            selectedStaffIndex = staffIndex;
+        } else {
+            selectedStaffIndex = -1;
+        }
+    }
+    
+    // スタッフ選択リンクのイベントハンドラー
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('staff-select-link')) {
+            e.preventDefault();
+            var staffIndex = parseInt(e.target.getAttribute('data-staff-index'));
+            
+            if (selectedStaffIndex === staffIndex) {
+                // 既に選択されている場合は選択解除
+                selectStaff(-1);
+            } else {
+                // 新しく選択
+                selectStaff(staffIndex);
+            }
+        }
+    });
     
     createGanttChart();
 });
