@@ -196,7 +196,7 @@ def client_assignment_confirm(request):
             'existing_assignments': existing_assignments,
         }
 
-        return render(request, 'contract/client_assignment_confirm.html', context)
+        return render(request, 'contract/staff_client_assignment_confirm.html', context)
 
     # POST以外はトップページにリダイレクト
     return redirect('contract:contract_index')
@@ -268,7 +268,7 @@ def staff_assignment_confirm(request):
             'existing_assignments': existing_assignments,
         }
 
-        return render(request, 'contract/staff_assignment_confirm.html', context)
+        return render(request, 'contract/client_staff_assignment_confirm.html', context)
 
     # POST以外はトップページにリダイレクト
     return redirect('contract:contract_index')
@@ -403,7 +403,7 @@ def staff_assignment_confirm_from_create(request):
         'profit_margin_info': profit_margin_info,
     }
 
-    return render(request, 'contract/staff_assignment_confirm.html', context)
+    return render(request, 'contract/client_staff_assignment_confirm.html', context)
 
 
 
