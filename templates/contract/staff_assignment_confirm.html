@@ -123,11 +123,14 @@
                             <a href="{% url 'contract:client_contract_assignment' client_contract.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
                         {% endif %}
                     </div>
-                </div
-            </div>
-        </div>
+                </div>
     </div>
 </div>
+
+<!-- 契約期間イメージ -->
+{% with chart_type='assignment_confirm' show_back_button=False client_contract=client_contract staff_contract=staff_contract existing_assignments=existing_assignments %}
+    {% include 'contract/_contract_timeline_chart.html' %}
+{% endwith %}
 
 <script>
 // ページロジック情報を設定
