@@ -205,26 +205,48 @@
 {% if assignments_with_overlap %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // タイムゾーンの問題を回避するため、日付文字列をUTCとしてパースする関数
+    function parseDateAsUTC(dateString) {
+        if (!dateString) return null;
+        var parts = dateString.split('-').map(function(part) { return parseInt(part, 10); });
+        // parts[1]は月で、JavaScriptのDateコンストラクタでは0から始まるため-1する
+        return new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+    }
+
     // 期間データの準備
-    var clientStart = new Date('{{ contract.start_date|date:"Y-m-d" }}');
+    var clientStart = parseDateAsUTC('{{ contract.start_date|date:"Y-m-d" }}');
     {% if contract.end_date %}
-    var clientEnd = new Date('{{ contract.end_date|date:"Y-m-d" }}');
+    var clientEnd = parseDateAsUTC('{{ contract.end_date|date:"Y-m-d" }}');
     var clientHasEndDate = true;
     {% else %}
     var clientEnd = null;
     var clientHasEndDate = false;
     {% endif %}
     
-    // 表示期間の決定（クライアント契約基準：開始前5日～終了後5日）
-    var displayStart = new Date(clientStart.getTime() - 5 * 24 * 60 * 60 * 1000); // 開始前5日
-    var displayEnd;
+    // 全契約の開始日と終了日を収集
+    var allStarts = [clientStart];
+    var allEnds = [clientEnd];
+
+    {% for item in assignments_with_overlap %}
+    allStarts.push(parseDateAsUTC('{{ item.staff_contract.start_date|date:"Y-m-d" }}'));
+    {% if item.staff_contract.end_date %}
+    allEnds.push(parseDateAsUTC('{{ item.staff_contract.end_date|date:"Y-m-d" }}'));
+    {% endif %}
+    {% endfor %}
     
-    if (clientHasEndDate) {
-        // クライアント契約に終了日がある場合：終了後5日まで
-        displayEnd = new Date(clientEnd.getTime() + 5 * 24 * 60 * 60 * 1000);
+    var earliestStart = new Date(Math.min.apply(null, allStarts));
+    var latestEnd = clientHasEndDate ? new Date(Math.max.apply(null, allEnds.filter(d => d))) : null;
+
+    // 表示期間の決定
+    var displayStart = new Date(earliestStart.getTime() - 5 * 24 * 60 * 60 * 1000); // 最も早い開始日の5日前
+    var displayEnd;
+
+    if (latestEnd) {
+        // 最も遅い終了日がある場合：その5日後まで
+        displayEnd = new Date(latestEnd.getTime() + 5 * 24 * 60 * 60 * 1000);
     } else {
-        // クライアント契約が無期限の場合：開始から1年後まで表示
-        displayEnd = new Date(clientStart.getTime() + 365 * 24 * 60 * 60 * 1000);
+        // 無期限契約のみの場合：最も早い開始日から1年後まで
+        displayEnd = new Date(earliestStart.getTime() + 365 * 24 * 60 * 60 * 1000);
     }
     
     var displayRange = displayEnd - displayStart;
@@ -255,9 +277,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // スタッフ契約の行
         {% for item in assignments_with_overlap %}
-        var staffStart = new Date('{{ item.staff_contract.start_date|date:"Y-m-d" }}');
+        var staffStart = parseDateAsUTC('{{ item.staff_contract.start_date|date:"Y-m-d" }}');
         {% if item.staff_contract.end_date %}
-        var staffEnd = new Date('{{ item.staff_contract.end_date|date:"Y-m-d" }}');
+        var staffEnd = parseDateAsUTC('{{ item.staff_contract.end_date|date:"Y-m-d" }}');
         {% else %}
         var staffEnd = null;
         {% endif %}
