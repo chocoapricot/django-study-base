@@ -91,9 +91,9 @@ django-study-base/
 └── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（91テーブル）
+## データベーステーブル一覧（93テーブル）
 
-### 本アプリケーション独自テーブル（73テーブル）
+### 本アプリケーション独自テーブル（75テーブル）
 
 | テーブル名 | モデル名 | 説明 |
 | --- | --- | --- |
@@ -138,6 +138,7 @@ django-study-base/
 | `apps_master_employment_type` | `EmploymentType` | 雇用形態マスター |
 | `apps_master_business_content` | `BusinessContent` | 業務内容マスター |
 | `apps_master_haken_responsibility_degree` | `HakenResponsibilityDegree` | 派遣責任程度マスター |
+| `apps_master_haken_teishokubi_exempt` | `HakenTeishokubiExempt` | 派遣抵触日制限外マスター |
 | `apps_master_information` | `Information` | お知らせマスター |
 | `apps_master_information_file` | `InformationFile` | お知らせファイル |
 | `apps_master_job_category` | `JobCategory` | 職種マスター |
@@ -163,6 +164,7 @@ django-study-base/
 | `apps_staff_file` | `StaffFile` | スタッフファイル |
 | `apps_staff_international` | `StaffInternational` | スタッフ外国籍情報 |
 | `apps_staff_mynumber` | `StaffMynumber` | スタッフマイナンバー |
+| `apps_staff_payroll` | `StaffPayroll` | スタッフ給与 |
 | `apps_staff_qualification` | `StaffQualification` | スタッフ保有資格 |
 | `apps_staff_skill` | `StaffSkill` | スタッフ保有スキル |
 | `apps_system_access_log` | `AccessLog` | アクセスログ |
