@@ -73,6 +73,24 @@ class StaffForm(forms.ModelForm):
             import re
             if not re.fullmatch(r'^[A-Za-z0-9]{1,10}', value):
                 raise forms.ValidationError('社員番号は半角英数字10文字以内で入力してください。')
+
+            # 編集時に自分自身を除外して重複チェック
+            qs = Staff.objects.filter(employee_no=value)
+            if self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                raise forms.ValidationError('この社員番号は既に使用されています。')
+        return value
+
+    def clean_email(self):
+        value = self.cleaned_data.get('email', '')
+        if value:
+            # 編集時に自分自身を除外して重複チェック
+            qs = Staff.objects.filter(email=value)
+            if self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+            if qs.exists():
+                raise forms.ValidationError('このメールアドレスは既に使用されています。')
         return value
     
     def clean(self):

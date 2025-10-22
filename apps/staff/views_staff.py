@@ -391,6 +391,9 @@ def staff_create(request):
 def staff_detail(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
 
+    from .models import StaffPayroll
+    has_payroll = StaffPayroll.objects.filter(staff=staff).exists()
+
     # 接続依頼の切り替え処理
     if request.method == 'POST' and 'toggle_connect_request' in request.POST:
         if staff.email:
@@ -584,6 +587,7 @@ def staff_detail(request, pk):
         'disability_request': disability_request,
         'contact_request': contact_request,
         'last_login': last_login,
+        'has_payroll': has_payroll,
     })
 
 # 連絡履歴 登録

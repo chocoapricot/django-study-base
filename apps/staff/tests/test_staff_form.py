@@ -272,7 +272,7 @@ class StaffFormTest(TestCase):
         """社員番号のみ入力、入社日なしのバリデーションテスト"""
         form_data = {
             'regist_status': self.regist_status_1.pk,
-            'employee_no': 'EMP001',  # 社員番号あり
+            'employee_no': 'EMP999',  # A unique employee number
             'name_last': '田中',
             'name_first': '太郎',
             'name_kana_last': 'タナカ',
@@ -283,7 +283,7 @@ class StaffFormTest(TestCase):
             'postal_code': '1000001',
             'address1': '東京都千代田区千代田',
             'phone': '03-1234-5678',
-            'email': 'tanaka@example.com'
+            'email': 'unique-email@example.com'  # A unique email
         }
         
         form = StaffForm(data=form_data)
