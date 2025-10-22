@@ -38,6 +38,8 @@
                             <span class="badge bg-warning">連絡先</span>
                         {% elif log.model_name == 'StaffDisability' %}
                             <span class="badge bg-warning">障害者情報</span>
+                        {% elif log.model_name == 'StaffPayroll' %}
+                            <span class="badge bg-info">給与情報</span>
                         {% elif log.model_name == 'ConnectStaff' %}
                             <span class="badge bg-warning">接続</span>
                         {% elif log.model_name == 'Qualification' %}
