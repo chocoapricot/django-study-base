@@ -254,6 +254,17 @@ class StaffLogsTestCase(TestCase):
         diff_log_exists = any("等級" in log.object_repr for log in update_logs)
         self.assertTrue(diff_log_exists, "差分情報を含む更新ログが見つかりませんでした。")
 
+        # 削除テスト
+        disability_pk = staff_disability.pk
+        staff_disability.delete()
+
+        delete_logs = AppLog.objects.filter(model_name='StaffDisability', object_id=str(disability_pk), action='delete')
+        self.assertGreaterEqual(delete_logs.count(), 1)
+        
+        # 削除ログにスタッフ名が含まれていることを確認
+        delete_log = delete_logs.first()
+        self.assertIn(str(self.staff), delete_log.object_repr, "削除ログにスタッフ名が含まれていません。")
+
     def test_staff_mynumber_log(self):
         """スタッフマイナンバーのログ記録テスト"""
         staff_mynumber = StaffMynumber.objects.create(
@@ -297,3 +308,107 @@ class StaffLogsTestCase(TestCase):
                     staff_file.file.delete()
                 except:
                     pass
+
+    def test_staff_detail_change_logs_include_deleted(self):
+        """スタッフ詳細画面の変更履歴に削除されたオブジェクトのログが含まれることをテスト"""
+        # 障害者情報を作成
+        Dropdowns.objects.create(category='disability_type', value='physical', name='身体障害', active=True)
+        staff_disability = StaffDisability.objects.create(
+            staff=self.staff, disability_type='physical', disability_grade='1級'
+        )
+        
+        # 作成ログが記録されることを確認
+        create_logs = AppLog.objects.filter(model_name='StaffDisability', object_id=str(staff_disability.pk), action='create')
+        self.assertGreaterEqual(create_logs.count(), 1)
+        
+        # 障害者情報を削除
+        disability_pk = staff_disability.pk
+        staff_disability.delete()
+        
+        # 削除ログが記録されることを確認
+        delete_logs = AppLog.objects.filter(model_name='StaffDisability', object_id=str(disability_pk), action='delete')
+        self.assertGreaterEqual(delete_logs.count(), 1)
+        
+        # スタッフ詳細画面のビューロジックをシミュレート
+        from django.db import models as django_models
+        
+        # 現在存在する関連オブジェクトのIDリストを取得（削除後なので空）
+        qualification_ids = list(self.staff.qualifications.values_list('pk', flat=True))
+        skill_ids = list(self.staff.skills.values_list('pk', flat=True))
+        file_ids = list(self.staff.files.values_list('pk', flat=True))
+
+        # 1対1の関連オブジェクトのIDを取得（削除後なのでNone）
+        mynumber_id = getattr(self.staff, 'mynumber', None) and self.staff.mynumber.pk
+        contact_id = getattr(self.staff, 'contact', None) and self.staff.contact.pk
+        bank_id = getattr(self.staff, 'bank', None) and self.staff.bank.pk
+        international_id = getattr(self.staff, 'international', None) and self.staff.international.pk
+        disability_id = getattr(self.staff, 'disability', None) and self.staff.disability.pk
+        payroll_id = getattr(self.staff, 'payroll', None) and self.staff.payroll.pk
+
+        # 修正後のクエリロジック
+        change_logs_query = AppLog.objects.filter(
+            django_models.Q(model_name='Staff', object_id=str(self.staff.pk)) |
+            django_models.Q(model_name='StaffQualification', object_id__in=[str(pk) for pk in qualification_ids]) |
+            django_models.Q(model_name='StaffSkill', object_id__in=[str(pk) for pk in skill_ids]) |
+            django_models.Q(model_name='StaffFile', object_id__in=[str(pk) for pk in file_ids]) |
+            django_models.Q(model_name='StaffMynumber', object_id=str(mynumber_id)) |
+            django_models.Q(model_name='StaffContact', object_id=str(contact_id)) |
+            django_models.Q(model_name='StaffBank', object_id=str(bank_id)) |
+            django_models.Q(model_name='StaffInternational', object_id=str(international_id)) |
+            django_models.Q(model_name='StaffDisability', object_id=str(disability_id)) |
+            django_models.Q(model_name='StaffPayroll', object_id=str(payroll_id)) |
+            django_models.Q(model_name='ConnectStaff', object_id=str(self.staff.pk)) |
+            # 削除されたオブジェクトのログも含める（object_reprにスタッフ名が含まれるもの）
+            django_models.Q(
+                model_name__in=['StaffQualification', 'StaffSkill', 'StaffFile', 'StaffMynumber', 
+                               'StaffContact', 'StaffBank', 'StaffInternational', 'StaffDisability', 'StaffPayroll'],
+                object_repr__icontains=str(self.staff),
+                action='delete'
+            ),
+            action__in=['create', 'update', 'delete']
+        )
+
+        change_logs = change_logs_query.order_by('-timestamp')
+        
+        
+        # 削除ログが含まれていることを確認
+        disability_delete_logs = [log for log in change_logs if log.model_name == 'StaffDisability' and log.action == 'delete']
+        self.assertGreater(len(disability_delete_logs), 0, "削除された障害者情報のログが変更履歴に含まれていません。")
+        
+        # 削除ログにスタッフ名が含まれていることを確認
+        delete_log = disability_delete_logs[0]
+        self.assertIn(str(self.staff), delete_log.object_repr, "削除ログにスタッフ名が含まれていません。")
+
+    def test_staff_change_history_list_include_deleted(self):
+        """スタッフ変更履歴一覧画面に削除されたオブジェクトのログが含まれることをテスト"""
+        # 障害者情報を作成
+        Dropdowns.objects.create(category='disability_type', value='physical', name='身体障害', active=True)
+        staff_disability = StaffDisability.objects.create(
+            staff=self.staff, disability_type='physical', disability_grade='1級'
+        )
+        
+        # 障害者情報を削除
+        disability_pk = staff_disability.pk
+        staff_disability.delete()
+        
+        # 削除ログが記録されることを確認
+        delete_logs = AppLog.objects.filter(model_name='StaffDisability', object_id=str(disability_pk), action='delete')
+        self.assertGreaterEqual(delete_logs.count(), 1)
+        
+        # スタッフ変更履歴一覧ビューをテスト
+        from django.urls import reverse
+        self.client.login(username='testuser', password='testpass123')
+        
+        response = self.client.get(reverse('staff:staff_change_history_list', args=[self.staff.pk]))
+        self.assertEqual(response.status_code, 200)
+        
+        # レスポンスのコンテキストから変更履歴を取得
+        change_logs = response.context['change_logs']
+        
+        # 削除ログが含まれていることを確認
+        disability_delete_logs = [log for log in change_logs if log.model_name == 'StaffDisability' and log.action == 'delete']
+        self.assertGreater(len(disability_delete_logs), 0, "変更履歴一覧に削除された障害者情報のログが含まれていません。")
+        
+        # 削除ログにスタッフ名が含まれていることを確認
+        delete_log = disability_delete_logs[0]
+        self.assertIn(str(self.staff), delete_log.object_repr, "削除ログにスタッフ名が含まれていません。")

@@ -138,7 +138,14 @@ def staff_change_history_list(request, pk):
         django_models.Q(model_name='StaffInternational', object_id=str(international_id)) |
         django_models.Q(model_name='StaffDisability', object_id=str(disability_id)) |
         django_models.Q(model_name='StaffPayroll', object_id=str(payroll_id)) |
-        django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
+        django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)) |
+        # 削除されたオブジェクトのログも含める（object_reprにスタッフ名が含まれるもの）
+        django_models.Q(
+            model_name__in=['StaffQualification', 'StaffSkill', 'StaffFile', 'StaffMynumber', 
+                           'StaffContact', 'StaffBank', 'StaffInternational', 'StaffDisability', 'StaffPayroll'],
+            object_repr__icontains=str(staff),
+            action='delete'
+        ),
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')
 
@@ -482,7 +489,7 @@ def staff_detail(request, pk):
     # 変更履歴（AppLogから取得、最新5件）- スタッフ、資格、技能、ファイルの変更を含む
     from django.db import models as django_models
 
-    # 関連オブジェクトのIDリストを取得
+    # 現在存在する関連オブジェクトのIDリストを取得
     qualification_ids = list(staff.qualifications.values_list('pk', flat=True))
     skill_ids = list(staff.skills.values_list('pk', flat=True))
     file_ids = list(staff.files.values_list('pk', flat=True))
@@ -495,6 +502,8 @@ def staff_detail(request, pk):
     disability_id = getattr(staff, 'disability', None) and staff.disability.pk
     payroll_id = getattr(staff, 'payroll', None) and staff.payroll.pk
 
+    # スタッフに関連するすべてのログを取得（削除されたオブジェクトも含む）
+    # object_reprにスタッフ名が含まれるログも検索対象に含める
     change_logs_query = AppLog.objects.filter(
         django_models.Q(model_name='Staff', object_id=str(staff.pk)) |
         django_models.Q(model_name='StaffQualification', object_id__in=[str(pk) for pk in qualification_ids]) |
@@ -506,7 +515,14 @@ def staff_detail(request, pk):
         django_models.Q(model_name='StaffInternational', object_id=str(international_id)) |
         django_models.Q(model_name='StaffDisability', object_id=str(disability_id)) |
         django_models.Q(model_name='StaffPayroll', object_id=str(payroll_id)) |
-        django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
+        django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)) |
+        # 削除されたオブジェクトのログも含める（object_reprにスタッフ名が含まれるもの）
+        django_models.Q(
+            model_name__in=['StaffQualification', 'StaffSkill', 'StaffFile', 'StaffMynumber', 
+                           'StaffContact', 'StaffBank', 'StaffInternational', 'StaffDisability', 'StaffPayroll'],
+            object_repr__icontains=str(staff),
+            action='delete'
+        ),
         action__in=['create', 'update', 'delete']
     )
 
