@@ -36,7 +36,7 @@
                                 <i class="bi bi-cash-stack"></i>　給与関連
                             </a>
                             {% else %}
-                            <a href="{% url 'staff:staff_payroll_create' staff_id=staff.pk %}" class="dropdown-item">
+                            <a href="{% url 'staff:staff_payroll_create' staff_pk=staff.pk %}" class="dropdown-item">
                                 <i class="bi bi-cash-stack"></i>　給与関連
                             </a>
                             {% endif %}
