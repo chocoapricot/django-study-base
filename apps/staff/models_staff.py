@@ -170,6 +170,11 @@ class Staff(MyModel):
         """銀行情報が登録されているかどうかを返す"""
         return hasattr(self, 'bank')
 
+    @property
+    def has_payroll(self):
+        """給与情報が登録されているかどうかを返す"""
+        return hasattr(self, 'payroll')
+
 def staff_file_upload_path(instance, filename):
     """スタッフファイルのアップロードパスを生成"""
     # ファイル拡張子を取得
