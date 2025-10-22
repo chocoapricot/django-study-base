@@ -1,0 +1,16 @@
+{% extends 'common/_base.html' %}
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header">
+        スタッフ給与詳細
+    </div>
+    <div class="card-body">
+        <p><strong>スタッフ:</strong> {{ staff.name }}</p>
+        <p><strong>健康保険加入日:</strong> {{ payroll.health_insurance_join_date|date:"Y-m-d"|default:"-" }}</p>
+        <p><strong>厚生年金加入日:</strong> {{ payroll.welfare_pension_join_date|date:"Y-m-d"|default:"-" }}</p>
+        <p><strong>雇用保険加入日:</strong> {{ payroll.employment_insurance_join_date|date:"Y-m-d"|default:"-" }}</p>
+        <a href="{% url 'staff:staff_payroll_edit' staff_id=staff.pk %}" class="btn btn-primary">編集</a>
+        <a href="{% url 'staff:staff_detail' pk=staff.pk %}" class="btn btn-secondary">戻る</a>
+    </div>
+</div>
+{% endblock %}

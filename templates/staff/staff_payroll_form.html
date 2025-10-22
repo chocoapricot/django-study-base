@@ -1,0 +1,20 @@
+{% extends 'common/_base.html' %}
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header">
+        {% if form.instance.pk %}
+            スタッフ給与編集
+        {% else %}
+            スタッフ給与登録
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">保存</button>
+            <a href="{% url 'staff:staff_detail' pk=staff.pk %}" class="btn btn-secondary">キャンセル</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

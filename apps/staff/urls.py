@@ -19,6 +19,7 @@ from .views import (
     staff_international_request_detail,
     staff_disability_detail, staff_disability_create, staff_disability_edit, staff_disability_delete,
     staff_disability_request_detail,
+    staff_payroll_detail, staff_payroll_create, staff_payroll_edit, staff_payroll_delete,
 )
 
 app_name = 'staff'
@@ -105,4 +106,10 @@ urlpatterns = [
     path('staff/<int:staff_pk>/disability/edit/', staff_disability_edit, name='staff_disability_edit'),
     path('staff/<int:staff_pk>/disability/delete/', staff_disability_delete, name='staff_disability_delete'),
     path('staff/<int:staff_pk>/disability/request/<int:pk>/', staff_disability_request_detail, name='staff_disability_request_detail'),
+
+    # 給与情報管理
+    path('staff/<int:staff_id>/payroll/', staff_payroll_detail, name='staff_payroll_detail'),
+    path('staff/<int:staff_id>/payroll/create/', staff_payroll_create, name='staff_payroll_create'),
+    path('staff/<int:staff_id>/payroll/edit/', staff_payroll_edit, name='staff_payroll_edit'),
+    path('staff/<int:staff_id>/payroll/delete/', staff_payroll_delete, name='staff_payroll_delete'),
 ]
