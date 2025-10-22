@@ -32,7 +32,7 @@
                                 <i class="bi bi-heart"></i>　障害者情報
                             </a>
                             {% if has_payroll %}
-                            <a href="{% url 'staff:staff_payroll_detail' staff_id=staff.pk %}" class="dropdown-item">
+                            <a href="{% url 'staff:staff_payroll_detail' staff_pk=staff.pk %}" class="dropdown-item">
                                 <i class="bi bi-cash-stack"></i>　給与関連
                             </a>
                             {% else %}

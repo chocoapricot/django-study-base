@@ -1,19 +1,68 @@
 {% extends 'common/_base.html' %}
+
+{% block title %}
+{% if form.instance.pk %}
+    スタッフ給与情報編集
+{% else %}
+    スタッフ給与情報登録
+{% endif %}
+{% endblock %}
+
 {% block content %}
-<div class="content-box card bg-light mt-2 mb-4">
-    <div class="card-header">
+{% include 'staff/_staff_info_card.html' with staff=staff %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
         {% if form.instance.pk %}
-            スタッフ給与編集
+            スタッフ給与情報編集
         {% else %}
-            スタッフ給与登録
+            スタッフ給与情報登録
         {% endif %}
     </div>
     <div class="card-body">
-        <form method="post">
+        <form method="post" class="mt-3">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">保存</button>
-            <a href="{% url 'staff:staff_detail' pk=staff.pk %}" class="btn btn-secondary">キャンセル</a>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.health_insurance_join_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">健康保険加入日</label>
+                <div class="col-sm-3">
+                    {{ form.health_insurance_join_date }}
+                    {% if form.health_insurance_join_date.errors %}
+                        <div class="text-danger small">{{ form.health_insurance_join_date.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.welfare_pension_join_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">厚生年金加入日</label>
+                <div class="col-sm-3">
+                    {{ form.welfare_pension_join_date }}
+                    {% if form.welfare_pension_join_date.errors %}
+                        <div class="text-danger small">{{ form.welfare_pension_join_date.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.employment_insurance_join_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">雇用保険加入日</label>
+                <div class="col-sm-3">
+                    {{ form.employment_insurance_join_date }}
+                    {% if form.employment_insurance_join_date.errors %}
+                        <div class="text-danger small">{{ form.employment_insurance_join_date.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-primary">
+                    {% if form.instance.pk %}更新{% else %}登録{% endif %}
+                </button>
+                {% if form.instance.pk %}
+                    <a href="{% url 'staff:staff_payroll_detail' staff_pk=staff.pk %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
+                {% else %}
+                    <a href="{% url 'staff:staff_detail' pk=staff.pk %}" class="btn btn-sm btn-secondary ms-2">戻る</a>
+                {% endif %}
+            </div>
         </form>
     </div>
 </div>

@@ -108,8 +108,8 @@ urlpatterns = [
     path('staff/<int:staff_pk>/disability/request/<int:pk>/', staff_disability_request_detail, name='staff_disability_request_detail'),
 
     # 給与情報管理
-    path('staff/<int:staff_id>/payroll/', staff_payroll_detail, name='staff_payroll_detail'),
-    path('staff/<int:staff_id>/payroll/create/', staff_payroll_create, name='staff_payroll_create'),
-    path('staff/<int:staff_id>/payroll/edit/', staff_payroll_edit, name='staff_payroll_edit'),
-    path('staff/<int:staff_id>/payroll/delete/', staff_payroll_delete, name='staff_payroll_delete'),
+    path('staff/<int:staff_pk>/payroll/', staff_payroll_detail, name='staff_payroll_detail'),
+    path('staff/<int:staff_pk>/payroll/create/', staff_payroll_create, name='staff_payroll_create'),
+    path('staff/<int:staff_pk>/payroll/edit/', staff_payroll_edit, name='staff_payroll_edit'),
+    path('staff/<int:staff_pk>/payroll/delete/', staff_payroll_delete, name='staff_payroll_delete'),
 ]

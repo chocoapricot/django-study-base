@@ -491,6 +491,7 @@ def staff_detail(request, pk):
     bank_id = getattr(staff, 'bank', None) and staff.bank.pk
     international_id = getattr(staff, 'international', None) and staff.international.pk
     disability_id = getattr(staff, 'disability', None) and staff.disability.pk
+    payroll_id = getattr(staff, 'payroll', None) and staff.payroll.pk
 
     change_logs_query = AppLog.objects.filter(
         django_models.Q(model_name='Staff', object_id=str(staff.pk)) |
@@ -502,6 +503,7 @@ def staff_detail(request, pk):
         django_models.Q(model_name='StaffBank', object_id=str(bank_id)) |
         django_models.Q(model_name='StaffInternational', object_id=str(international_id)) |
         django_models.Q(model_name='StaffDisability', object_id=str(disability_id)) |
+        django_models.Q(model_name='StaffPayroll', object_id=str(payroll_id)) |
         django_models.Q(model_name='ConnectStaff', object_id=str(staff.pk)),
         action__in=['create', 'update', 'delete']
     )

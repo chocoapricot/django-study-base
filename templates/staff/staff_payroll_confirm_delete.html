@@ -1,15 +1,26 @@
 {% extends 'common/_base.html' %}
+
+{% block title %}スタッフ給与情報削除{% endblock %}
+
 {% block content %}
-<div class="content-box card bg-light mt-2 mb-4">
-    <div class="card-header">
-        スタッフ給与削除
+{% include 'staff/_staff_info_card.html' with staff=staff %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        スタッフ給与情報削除
     </div>
     <div class="card-body">
-        <p>本当に「{{ staff.name }}」の給与情報を削除しますか？</p>
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            スタッフ給与情報を削除しますか？この操作は取り消せません。
+        </div>
+        
         <form method="post">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger">削除</button>
-            <a href="{% url 'staff:staff_detail' pk=staff.pk %}" class="btn btn-secondary">キャンセル</a>
+            <div class="d-flex justify-content-start mt-4">
+                <button type="submit" class="btn btn-sm btn-dark">削除する</button>
+                <a href="{% url 'staff:staff_payroll_detail' staff_pk=staff.pk %}" class="btn btn-sm btn-secondary ms-2">キャンセル</a>
+            </div>
         </form>
     </div>
 </div>

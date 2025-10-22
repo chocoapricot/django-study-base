@@ -10,7 +10,7 @@ class StaffPayrollForm(forms.ModelForm):
             'employment_insurance_join_date',
         ]
         widgets = {
-            'health_insurance_join_date': forms.DateInput(attrs={'type': 'date'}),
-            'welfare_pension_join_date': forms.DateInput(attrs={'type': 'date'}),
-            'employment_insurance_join_date': forms.DateInput(attrs={'type': 'date'}),
+            'health_insurance_join_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control form-control-sm'}),
+            'welfare_pension_join_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control form-control-sm'}),
+            'employment_insurance_join_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control form-control-sm'}),
         }
