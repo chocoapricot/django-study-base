@@ -13,8 +13,8 @@
         <p>本当に「{{ staff.name }}」の障害者情報を削除しますか？</p>
         <form method="post">
             {% csrf_token %}
-            <button type="submit" class="btn btn-sm btn-danger">はい、削除します</button>
-            <a href="{% url 'staff:staff_disability_detail' staff_pk=staff.pk %}" class="btn btn-sm btn-secondary">いいえ、戻ります</a>
+            <button type="submit" class="btn btn-sm btn-dark">削除</button>
+            <a href="{% url 'staff:staff_disability_detail' staff_pk=staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
         </form>
     </div>
 </div>
