@@ -140,6 +140,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var clientHasEndDate = false;
     {% endif %}
 
+    // 表示期間の決定（view側から渡された場合はそれを使用）
+    {% if display_start_date and display_end_date %}
+    var displayStart = parseDateAsUTC('{{ display_start_date|date:"Y-m-d" }}');
+    var displayEnd = parseDateAsUTC('{{ display_end_date|date:"Y-m-d" }}');
+    {% else %}
     // データが不正な場合は処理を中止
     if (!clientStart) {
         console.error('クライアント契約の開始日が取得できません:', '{{ client_contract.start_date|date:"Y-m-d" }}');
@@ -150,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // 表示期間の決定
+    // デフォルトの表示期間計算
     var displayStart = new Date(clientStart.getTime() - 5 * 24 * 60 * 60 * 1000);
     var displayEnd;
 
@@ -159,6 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         displayEnd = new Date(clientStart.getTime() + 365 * 24 * 60 * 60 * 1000);
     }
+    {% endif %}
 
     
     var displayRange = displayEnd - displayStart;

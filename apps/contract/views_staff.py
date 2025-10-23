@@ -1155,16 +1155,22 @@ def staff_contract_teishokubi_detail(request, pk):
 
     # チャート用のダミーデータを作成（既存のテンプレートを使用するため）
     if teishokubi_details:
-        # 最初と最後の期間から表示範囲を決定
-        first_detail = teishokubi_details.first()
-        last_detail = teishokubi_details.last()
+        from datetime import timedelta
         
-        # ダミーのクライアント契約データ
+        # 詳細の開始日の最古と終了日の最新を取得
+        earliest_start = min(detail.assignment_start_date for detail in teishokubi_details)
+        latest_end = max(detail.assignment_end_date for detail in teishokubi_details)
+        
+        # 表示期間を計算（詳細の最古開始日から最新終了日まで）
+        display_start_date = earliest_start
+        display_end_date = latest_end
+        
+        # ダミーのクライアント契約データ（派遣開始日から最新終了日まで）
         dummy_client_contract = type('obj', (object,), {
-            'start_date': first_detail.assignment_start_date,
-            'end_date': last_detail.assignment_end_date,
-            'client': type('obj', (object,), {'name': teishokubi.organization_name})(),
-            'contract_name': '期間イメージ'
+            'start_date': teishokubi.dispatch_start_date,
+            'end_date': latest_end,
+            'client': type('obj', (object,), {'name': '個人抵触日対象'})(),
+            'contract_name': '個人抵触日対象'
         })()
         
         # 個人抵触日詳細をスタッフ契約として表示するためのデータ
@@ -1185,10 +1191,12 @@ def staff_contract_teishokubi_detail(request, pk):
                     'name_last': label,
                     'name_first': ''
                 })(),
-                'contract_name': ''
+                'contract_name': label
             })()
             teishokubi_staff_contracts.append(staff_contract)
     else:
+        display_start_date = None
+        display_end_date = None
         dummy_client_contract = None
         teishokubi_staff_contracts = []
 
@@ -1202,6 +1210,9 @@ def staff_contract_teishokubi_detail(request, pk):
         'client_contract': dummy_client_contract,
         'existing_assignments': [type('obj', (object,), {'staff_contract': sc})() for sc in teishokubi_staff_contracts],
         'chart_type': 'assignment_confirm',
+        # 表示期間
+        'display_start_date': display_start_date,
+        'display_end_date': display_end_date,
     }
     return render(request, 'contract/staff_teishokubi_detail.html', context)
 
