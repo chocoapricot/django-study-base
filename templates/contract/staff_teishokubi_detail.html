@@ -133,6 +133,11 @@
     </div>
 </div>
 
+<!-- 期間イメージ -->
+{% if teishokubi_details %}
+{% include 'contract/_contract_timeline_chart.html' with show_back_button=False %}
+{% endif %}
+
 <!-- 変更履歴 -->
 {% include 'common/_change_history_list.html' with change_logs=change_logs %}
 

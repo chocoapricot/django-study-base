@@ -159,6 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         displayEnd = new Date(clientStart.getTime() + 365 * 24 * 60 * 60 * 1000);
     }
+
     
     var displayRange = displayEnd - displayStart;
     
@@ -271,6 +272,10 @@ document.addEventListener('DOMContentLoaded', function() {
         timelineContent.style.position = 'relative';
         timelineContent.style.height = '35px';
         
+        // 期間の長さを計算（年数）
+        var periodYears = (displayEnd - displayStart) / (365 * 24 * 60 * 60 * 1000);
+        var showYearOnly = periodYears > 2; // 2年以上の場合は年のみ表示
+        
         var current = new Date(displayStart.getFullYear(), displayStart.getMonth(), 1);
         var monthPositions = [];
         var previousYear = null;
@@ -282,17 +287,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 var isFirstMonth = previousYear === null;
                 var isYearChanged = previousYear !== null && previousYear !== currentYear;
                 
+                // 期間が長い場合は年のみ、短い場合は年月を表示
                 var label;
-                if (isFirstMonth || isYearChanged) {
-                    label = current.toLocaleDateString('ja-JP', { year: 'numeric', month: 'short' });
+                if (showYearOnly) {
+                    // 年のみ表示（年が変わった時のみ）
+                    if (isFirstMonth || isYearChanged) {
+                        label = current.toLocaleDateString('ja-JP', { year: 'numeric' });
+                    } else {
+                        label = null; // 月は表示しない
+                    }
                 } else {
-                    label = current.toLocaleDateString('ja-JP', { month: 'short' });
+                    // 通常の年月表示
+                    if (isFirstMonth || isYearChanged) {
+                        label = current.toLocaleDateString('ja-JP', { year: 'numeric', month: 'short' });
+                    } else {
+                        label = current.toLocaleDateString('ja-JP', { month: 'short' });
+                    }
                 }
                 
-                monthPositions.push({
-                    position: position,
-                    label: label
-                });
+                if (label) {
+                    monthPositions.push({
+                        position: position,
+                        label: label
+                    });
+                }
                 
                 previousYear = currentYear;
             }
@@ -318,6 +336,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             timelineContent.appendChild(span);
         });
+        
+
         
         timelineDiv.appendChild(timelineContent);
         timelineDiv.style.borderBottom = '1px solid #ddd';
