@@ -437,11 +437,11 @@ function setEndDate(months) {
 }
 </script>
 <!-- 業務内容/責任程度 選択モーダル -->
-<div class="modal fade" id="hakenMasterModal" tabindex="-1" aria-labelledby="hakenMasterModalLabel" aria-hidden="true">
+<div class="modal fade" id="masterModal" tabindex="-1" aria-labelledby="masterModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title" id="hakenMasterModalLabel"></div>
+                <div class="modal-title" id="masterModalLabel"></div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -465,22 +465,23 @@ document.addEventListener('click', function(e) {
         const targetId = e.target.getAttribute('data-target-id');
         const modalTitle = e.target.getAttribute('data-modal-title');
 
-        const modal = document.getElementById('hakenMasterModal');
+        const modal = document.getElementById('masterModal');
         modal.querySelector('.modal-title').textContent = modalTitle;
         modal.setAttribute('data-current-target-id', targetId);
         modal.setAttribute('data-current-master-type', masterType);
 
-        loadHakenMasterModalContent(null, 1);
+        loadMasterModalContent(null, 1);
         new bootstrap.Modal(modal).show();
     }
 });
 
-function loadHakenMasterModalContent(event, page = 1, clearSearch = false) {
+// loadMasterModal関数はcontract-modal.jsで定義済み
+function loadMasterModalContent(event, page = 1, clearSearch = false) {
     if (event) event.preventDefault();
     
-    const modal = document.getElementById('hakenMasterModal');
+    const modal = document.getElementById('masterModal');
     const modalBody = modal.querySelector('.modal-body');
-    const searchForm = document.getElementById('haken-search-form');
+    const searchForm = document.getElementById('master-search-form');
     
     let searchQuery = '';
     if (searchForm && !clearSearch) {
@@ -488,7 +489,7 @@ function loadHakenMasterModalContent(event, page = 1, clearSearch = false) {
     }
     
     const masterType = modal.getAttribute('data-current-master-type') || '';
-    const url = `{% url 'contract:haken_master_select' %}?type=${masterType}&page=${page}&q=${encodeURIComponent(searchQuery)}`;
+    const url = `{% url 'common:master_select' %}?type=${masterType}&page=${page}&q=${encodeURIComponent(searchQuery)}`;
     
     modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">読み込み中...</span></div></div>';
     
@@ -501,16 +502,7 @@ function loadHakenMasterModalContent(event, page = 1, clearSearch = false) {
         });
 }
 
-// 派遣マスター選択関数
-function selectHakenMaster(content) {
-    const modal = document.getElementById('hakenMasterModal');
-    const targetId = modal.getAttribute('data-current-target-id');
-    if (targetId) {
-        document.getElementById(targetId).value = content;
-    }
-    const modalInstance = bootstrap.Modal.getInstance(modal);
-    modalInstance.hide();
-}
+// selectMaster関数はcontract-modal.jsで定義済み
 
 // ページロジック情報を設定
 document.addEventListener('DOMContentLoaded', function() {

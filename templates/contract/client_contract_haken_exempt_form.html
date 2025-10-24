@@ -46,11 +46,11 @@
 </div>
 
 <!-- 業務内容/責任程度 選択モーダル -->
-<div class="modal fade" id="hakenMasterModal" tabindex="-1" aria-labelledby="hakenMasterModalLabel" aria-hidden="true">
+<div class="modal fade" id="masterModal" tabindex="-1" aria-labelledby="masterModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title" id="hakenMasterModalLabel"></div>
+                <div class="modal-title" id="masterModalLabel"></div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -74,10 +74,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const targetId = e.target.getAttribute('data-target-id');
             const modalTitle = e.target.getAttribute('data-modal-title');
             
-            loadHakenMasterModal('{% url "contract:haken_master_select" %}', masterType, targetId, modalTitle);
+            loadMasterModal('{% url "common:master_select" %}', masterType, targetId, modalTitle);
         }
     });
 });
+
+// マスター選択関数はcontract-modal.jsで定義済み
 </script>
 
 {% endblock %}

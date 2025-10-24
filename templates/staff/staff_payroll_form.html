@@ -1,4 +1,5 @@
 {% extends 'common/_base.html' %}
+{% load static %}
 
 {% block title %}
 {% if form.instance.pk %}
@@ -39,6 +40,12 @@
                         <div class="text-danger small">{{ form.health_insurance_non_enrollment_reason.errors.0 }}</div>
                     {% endif %}
                 </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-sm btn-secondary" type="button"
+                            data-phrase-category="health_insurance_non_enrollment"
+                            data-target-id="{{ form.health_insurance_non_enrollment_reason.id_for_label }}"
+                            data-modal-title="健康保険非加入理由を選択">参照</button>
+                </div>
             </div>
 
             <div class="row mb-3 align-items-center">
@@ -56,6 +63,12 @@
                     {% if form.pension_insurance_non_enrollment_reason.errors %}
                         <div class="text-danger small">{{ form.pension_insurance_non_enrollment_reason.errors.0 }}</div>
                     {% endif %}
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-sm btn-secondary" type="button"
+                            data-phrase-category="pension_insurance_non_enrollment"
+                            data-target-id="{{ form.pension_insurance_non_enrollment_reason.id_for_label }}"
+                            data-modal-title="厚生年金非加入理由を選択">参照</button>
                 </div>
             </div>
 
@@ -75,6 +88,12 @@
                         <div class="text-danger small">{{ form.employment_insurance_non_enrollment_reason.errors.0 }}</div>
                     {% endif %}
                 </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-sm btn-secondary" type="button"
+                            data-phrase-category="employment_insurance_non_enrollment"
+                            data-target-id="{{ form.employment_insurance_non_enrollment_reason.id_for_label }}"
+                            data-modal-title="雇用保険非加入理由を選択">参照</button>
+                </div>
             </div>
 
             <div class="row mb-3">
@@ -93,4 +112,37 @@
         </form>
     </div>
 </div>
+
+<!-- マスター選択モーダル -->
+<div class="modal fade" id="masterModal" tabindex="-1" aria-labelledby="masterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="masterModalLabel"></div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- ここにAjaxで内容が読み込まれます -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 汎用文言テンプレート参照ボタンのイベントリスナーを設定
+document.addEventListener('click', function(e) {
+    if (e.target.hasAttribute('data-phrase-category')) {
+        e.preventDefault();
+        const masterType = e.target.getAttribute('data-phrase-category');
+        const targetId = e.target.getAttribute('data-target-id');
+        const modalTitle = e.target.getAttribute('data-modal-title');
+        
+        loadMasterModal('{% url "common:master_select" %}', masterType, targetId, modalTitle);
+    }
+});
+
+// マスター選択関数はcontract-modal.jsで定義済み
+</script>
+
+<script src="{% static 'js/contract-modal.js' %}"></script>
 {% endblock %}

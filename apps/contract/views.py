@@ -690,48 +690,8 @@ def client_select(request):
         return render(request, 'contract/client_select.html', context)
 
 
-@login_required
-def haken_master_select(request):
-    """派遣マスター選択画面"""
-    search_query = request.GET.get('q', '')
-    master_type = request.GET.get('type', '')  # 'business_content' or 'responsibility_degree'
-    
-    # マスタータイプに応じてデータを取得（有効なもののみ）
-    if master_type == 'business_content':
-        from apps.master.models import BusinessContent
-        items = BusinessContent.objects.filter(is_active=True)
-        modal_title = '業務内容を選択'
-    elif master_type == 'responsibility_degree':
-        from apps.master.models import HakenResponsibilityDegree
-        items = HakenResponsibilityDegree.objects.filter(is_active=True)
-        modal_title = '責任の程度を選択'
-    elif master_type == 'haken_teishokubi_exempt':
-        from apps.master.models import HakenTeishokubiExempt
-        items = HakenTeishokubiExempt.objects.filter(is_active=True)
-        modal_title = '派遣抵触日制限外を選択'
-    else:
-        items = []
-        modal_title = 'マスター選択'
-    
-    if search_query:
-        items = items.filter(content__icontains=search_query)
-    
-    # 表示順で並び替え（モデルのMeta.orderingを使用）
-    items = items.order_by('display_order')
-    
-    # ページネーション
-    paginator = Paginator(items, 20)
-    page = request.GET.get('page')
-    items_page = paginator.get_page(page)
-    
-    context = {
-        'page_obj': items_page,
-        'search_query': search_query,
-        'master_type': master_type,
-        'modal_title': modal_title,
-    }
-
-    return render(request, 'contract/_haken_master_select_modal.html', context)
+# 派遣マスター選択は共通のマスター選択機能に統合されました
+# apps.common.views_master.master_select を使用してください
 
 # 変更履歴ビュー
 @login_required

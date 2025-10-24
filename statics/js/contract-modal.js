@@ -129,11 +129,11 @@ window.selectClient = function(clientId, clientName) {
     }
 };
 
-// 派遣マスター選択関数
-window.selectHakenMaster = function(content) {
-    console.log('selectHakenMaster called:', content);
+// マスター選択関数（汎用）
+window.selectMaster = function(content) {
+    console.log('selectMaster called:', content);
     
-    const modal = document.getElementById('hakenMasterModal');
+    const modal = document.getElementById('masterModal');
     if (modal) {
         const targetId = modal.getAttribute('data-current-target-id');
         if (targetId) {
@@ -142,9 +142,12 @@ window.selectHakenMaster = function(content) {
                 targetField.value = content;
             }
         }
-        hideModal('hakenMasterModal');
+        hideModal('masterModal');
     }
 };
+
+// 後方互換性のため
+window.selectHakenMaster = window.selectMaster;
 
 // スタッフモーダル読み込み関数
 window.loadStaffModal = async function(selectUrl) {
@@ -168,10 +171,10 @@ window.loadClientModal = async function(selectUrl, contractTypeCode) {
     }
 };
 
-// 派遣マスターモーダル読み込み関数
-window.loadHakenMasterModal = async function(selectUrl, masterType, targetId, modalTitle) {
+// マスターモーダル読み込み関数（汎用）
+window.loadMasterModal = async function(selectUrl, masterType, targetId, modalTitle) {
     try {
-        const modal = document.getElementById('hakenMasterModal');
+        const modal = document.getElementById('masterModal');
         if (modal) {
             modal.querySelector('.modal-title').textContent = modalTitle;
             modal.setAttribute('data-current-target-id', targetId);
@@ -181,13 +184,49 @@ window.loadHakenMasterModal = async function(selectUrl, masterType, targetId, mo
             const modalBody = modal.querySelector('.modal-body');
             modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">読み込み中...</span></div></div>';
             
-            await fetchModalContent(url, '#hakenMasterModal .modal-body');
-            showModal('hakenMasterModal');
+            await fetchModalContent(url, '#masterModal .modal-body');
+            showModal('masterModal');
         }
     } catch (error) {
-        console.error('Error loading haken master modal:', error);
+        console.error('Error loading master modal:', error);
     }
 };
+
+// 後方互換性のため
+window.loadHakenMasterModal = window.loadMasterModal;
+
+// マスターモーダルコンテンツ読み込み関数
+window.loadMasterModalContent = async function(event, page = 1, clearSearch = false) {
+    if (event) event.preventDefault();
+    
+    const modal = document.getElementById('masterModal');
+    if (!modal) return;
+    
+    const modalBody = modal.querySelector('.modal-body');
+    const masterType = modal.getAttribute('data-current-master-type');
+    
+    let url = `/common/master-select/?type=${masterType}&page=${page}`;
+    
+    if (!clearSearch) {
+        const searchForm = document.getElementById('master-search-form');
+        if (searchForm) {
+            const searchQuery = searchForm.querySelector('input[name="q"]').value;
+            if (searchQuery) {
+                url += `&q=${encodeURIComponent(searchQuery)}`;
+            }
+        }
+    }
+    
+    try {
+        modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">読み込み中...</span></div></div>';
+        await fetchModalContent(url, '#masterModal .modal-body');
+    } catch (error) {
+        console.error('Error loading master modal content:', error);
+    }
+};
+
+// 後方互換性のため
+window.loadHakenMasterModalContent = window.loadMasterModalContent;
 
 // モーダルが閉じられる際のフォーカス管理
 document.addEventListener('DOMContentLoaded', function() {

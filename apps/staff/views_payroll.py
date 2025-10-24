@@ -88,3 +88,4 @@ def staff_payroll_delete(request, staff_pk):
         'payroll': payroll,
     }
     return render(request, 'staff/staff_payroll_confirm_delete.html', context)
+
