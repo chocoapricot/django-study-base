@@ -10,7 +10,7 @@ class PhraseTemplateForm(forms.ModelForm):
         fields = ['category', 'content', 'is_active', 'display_order']
         widgets = {
             'category': forms.Select(attrs={'class': 'form-select form-select-sm'}),
-            'content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 4}),
+            'content': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
         }
