@@ -154,4 +154,11 @@ urlpatterns = [
     path('haken-teishokubi-exempt/<int:pk>/update/', views.haken_teishokubi_exempt_update, name='haken_teishokubi_exempt_update'),
     path('haken-teishokubi-exempt/<int:pk>/delete/', views.haken_teishokubi_exempt_delete, name='haken_teishokubi_exempt_delete'),
     path('haken-teishokubi-exempt/history/', views.haken_teishokubi_exempt_change_history_list, name='haken_teishokubi_exempt_change_history_list'),
+
+    # 汎用文言テンプレート管理
+    path('phrase-template/', views.phrase_template_list, name='phrase_template_list'),
+    path('phrase-template/create/', views.phrase_template_create, name='phrase_template_create'),
+    path('phrase-template/<int:pk>/update/', views.phrase_template_update, name='phrase_template_update'),
+    path('phrase-template/<int:pk>/delete/', views.phrase_template_delete, name='phrase_template_delete'),
+    path('phrase-template/history/', views.phrase_template_change_history_list, name='phrase_template_change_history_list'),
 ]

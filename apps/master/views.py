@@ -9,6 +9,7 @@ from .views_contract import *
 from .views_billing import *
 from .views_other import *
 from .views_haken_teishokubi_exempt import *
+from .views_phrase import *
 
 # マスタ設定データ
 MASTER_CONFIGS = [
@@ -155,6 +156,14 @@ MASTER_CONFIGS = [
         "model": "master.DefaultValue",
         "url_name": "master:default_value_list",
         "permission": "master.view_defaultvalue",
+    },
+    {
+        "category": "その他",
+        "name": "汎用文言テンプレート",
+        "description": "各種非加入理由などの定型文を管理します",
+        "model": "master.PhraseTemplate",
+        "url_name": "master:phrase_template_list",
+        "permission": "master.view_phrasetemplate",
     },
 ]
 

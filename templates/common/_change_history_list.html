@@ -100,6 +100,8 @@
                             <span class="badge bg-primary">派遣責任程度</span>
                         {% elif log.model_name == 'HakenTeishokubiExempt' %}
                             <span class="badge bg-primary">派遣抵触日制限外</span>
+                        {% elif log.model_name == 'PhraseTemplate' %}
+                            <span class="badge bg-primary">汎用文言テンプレート</span>
                         {% elif log.model_name == 'DefaultValue' %}
                             <span class="badge bg-primary">初期値</span>
                         {% elif log.model_name == 'EmploymentType' %}

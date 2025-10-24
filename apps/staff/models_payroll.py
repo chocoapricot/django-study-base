@@ -13,8 +13,26 @@ class StaffPayroll(MyModel):
         verbose_name='スタッフ'
     )
     health_insurance_join_date = models.DateField('健康保険加入日', blank=True, null=True)
+    health_insurance_non_enrollment_reason = models.TextField(
+        '健康保険非加入理由',
+        blank=True,
+        null=True,
+        help_text='健康保険に加入しない場合の理由を入力してください'
+    )
     welfare_pension_join_date = models.DateField('厚生年金加入日', blank=True, null=True)
+    pension_insurance_non_enrollment_reason = models.TextField(
+        '厚生年金非加入理由',
+        blank=True,
+        null=True,
+        help_text='厚生年金に加入しない場合の理由を入力してください'
+    )
     employment_insurance_join_date = models.DateField('雇用保険加入日', blank=True, null=True)
+    employment_insurance_non_enrollment_reason = models.TextField(
+        '雇用保険非加入理由',
+        blank=True,
+        null=True,
+        help_text='雇用保険に加入しない場合の理由を入力してください'
+    )
 
     class Meta:
         db_table = 'apps_staff_payroll'
