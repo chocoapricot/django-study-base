@@ -1,18 +1,18 @@
 {% extends 'common/_base.html' %}
 
-{% block title %}スタッフ給与情報削除{% endblock %}
+{% block title %}スタッフ給与関連情報削除{% endblock %}
 
 {% block content %}
 {% include 'staff/_staff_info_card.html' with staff=staff %}
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        スタッフ給与情報削除
+        スタッフ給与関連情報削除
     </div>
     <div class="card-body">
         <div class="alert alert-warning" role="alert">
             <i class="bi bi-exclamation-triangle-fill"></i>
-            スタッフ給与情報を削除しますか？この操作は取り消せません。
+            スタッフ給与関連情報を削除しますか？この操作は取り消せません。
         </div>
         
         <form method="post">
