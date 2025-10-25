@@ -1,0 +1,302 @@
+[
+{
+    "model": "master.phrasetemplate",
+    "pk": 1,
+    "fields": {
+        "version": 1761402019473745,
+        "created_at": "2025-10-25T14:36:06.126Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:36:06.126Z",
+        "updated_by": 1,
+        "title": 1,
+        "content": "現在、必要書類の準備中であり、yyyy/mm/ddには届出予定",
+        "is_active": true,
+        "display_order": 1
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 2,
+    "fields": {
+        "version": 1761402026916203,
+        "created_at": "2025-10-25T14:36:13.568Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:36:13.568Z",
+        "updated_by": 1,
+        "title": 2,
+        "content": "現在、必要書類の準備中であり、yyyy/mm/ddには届出予定",
+        "is_active": true,
+        "display_order": 1
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 3,
+    "fields": {
+        "version": 1761402034111855,
+        "created_at": "2025-10-25T14:36:20.764Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:36:20.764Z",
+        "updated_by": 1,
+        "title": 3,
+        "content": "現在、必要書類の準備中であり、yyyy/mm/ddには届出予定",
+        "is_active": true,
+        "display_order": 1
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 4,
+    "fields": {
+        "version": 1761402369579295,
+        "created_at": "2025-10-25T14:41:56.231Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:41:56.231Z",
+        "updated_by": 1,
+        "title": 1,
+        "content": "週所定労働時間が20時間未満のため",
+        "is_active": true,
+        "display_order": 10
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 5,
+    "fields": {
+        "version": 1761402375894968,
+        "created_at": "2025-10-25T14:42:02.547Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:42:02.547Z",
+        "updated_by": 1,
+        "title": 2,
+        "content": "週所定労働時間が20時間未満のため",
+        "is_active": true,
+        "display_order": 10
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 6,
+    "fields": {
+        "version": 1761402388004659,
+        "created_at": "2025-10-25T14:42:14.657Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:42:14.657Z",
+        "updated_by": 1,
+        "title": 2,
+        "content": "雇用期間が2か月以内のため",
+        "is_active": true,
+        "display_order": 11
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 7,
+    "fields": {
+        "version": 1761402396108738,
+        "created_at": "2025-10-25T14:42:22.761Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:42:22.761Z",
+        "updated_by": 1,
+        "title": 1,
+        "content": "雇用期間が2か月以内のため",
+        "is_active": true,
+        "display_order": 11
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 8,
+    "fields": {
+        "version": 1761402406765022,
+        "created_at": "2025-10-25T14:42:33.417Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:42:33.417Z",
+        "updated_by": 1,
+        "title": 1,
+        "content": "季節的業務（4か月以内）のため",
+        "is_active": true,
+        "display_order": 12
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 9,
+    "fields": {
+        "version": 1761402413078505,
+        "created_at": "2025-10-25T14:42:39.730Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:42:39.730Z",
+        "updated_by": 1,
+        "title": 2,
+        "content": "季節的業務（4か月以内）のため",
+        "is_active": true,
+        "display_order": 12
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 10,
+    "fields": {
+        "version": 1761402424894953,
+        "created_at": "2025-10-25T14:42:51.547Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:42:51.547Z",
+        "updated_by": 1,
+        "title": 2,
+        "content": "臨時的事業（6か月以内）のため",
+        "is_active": true,
+        "display_order": 13
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 11,
+    "fields": {
+        "version": 1761402431545526,
+        "created_at": "2025-10-25T14:42:58.197Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:42:58.198Z",
+        "updated_by": 1,
+        "title": 1,
+        "content": "臨時的事業（6か月以内）のため",
+        "is_active": true,
+        "display_order": 13
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 12,
+    "fields": {
+        "version": 1761402557306125,
+        "created_at": "2025-10-25T14:43:06.839Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:45:03.958Z",
+        "updated_by": 1,
+        "title": 1,
+        "content": "日々雇い入れられるため",
+        "is_active": true,
+        "display_order": 14
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 13,
+    "fields": {
+        "version": 1761402551004750,
+        "created_at": "2025-10-25T14:43:12.799Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:44:57.657Z",
+        "updated_by": 1,
+        "title": 2,
+        "content": "日々雇い入れられるため",
+        "is_active": true,
+        "display_order": 14
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 14,
+    "fields": {
+        "version": 1761402466708790,
+        "created_at": "2025-10-25T14:43:33.361Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:43:33.361Z",
+        "updated_by": 1,
+        "title": 1,
+        "content": "学生のため",
+        "is_active": true,
+        "display_order": 15
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 15,
+    "fields": {
+        "version": 1761402472985136,
+        "created_at": "2025-10-25T14:43:39.637Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:43:39.638Z",
+        "updated_by": 1,
+        "title": 2,
+        "content": "学生のため",
+        "is_active": true,
+        "display_order": 15
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 16,
+    "fields": {
+        "version": 1761402589447389,
+        "created_at": "2025-10-25T14:45:36.099Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:45:36.099Z",
+        "updated_by": 1,
+        "title": 3,
+        "content": "週所定労働時間が20時間未満のため",
+        "is_active": true,
+        "display_order": 10
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 17,
+    "fields": {
+        "version": 1761402599323577,
+        "created_at": "2025-10-25T14:45:45.975Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:45:45.976Z",
+        "updated_by": 1,
+        "title": 3,
+        "content": "31日以上の雇用見込みがないため",
+        "is_active": true,
+        "display_order": 11
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 18,
+    "fields": {
+        "version": 1761402649401042,
+        "created_at": "2025-10-25T14:46:36.053Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:46:36.053Z",
+        "updated_by": 1,
+        "title": 3,
+        "content": "日々雇い入れられるため",
+        "is_active": true,
+        "display_order": 14
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 19,
+    "fields": {
+        "version": 1761402657628538,
+        "created_at": "2025-10-25T14:46:44.280Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:46:44.280Z",
+        "updated_by": 1,
+        "title": 3,
+        "content": "学生のため",
+        "is_active": true,
+        "display_order": 15
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 20,
+    "fields": {
+        "version": 1761402672135172,
+        "created_at": "2025-10-25T14:46:58.787Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T14:46:58.787Z",
+        "updated_by": 1,
+        "title": 3,
+        "content": "65歳以上で新規雇用のため",
+        "is_active": true,
+        "display_order": 16
+    }
+}
+]
