@@ -16,7 +16,8 @@
         "phone_number": "03-1234-5678",
         "haken_permit_number": "派13-123456",
         "shokai_permit_number": "13-ユ-123456",
-        "foreign_regist_number": "20登-123456"
+        "foreign_regist_number": "20登-123456",
+        "dispatch_treatment_method": "agreement"
     }
 }
 ]
