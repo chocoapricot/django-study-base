@@ -57,12 +57,7 @@ class Constants:
         STAFF_NO_PENSION_INSURANCE = 'STAFF_NO_PENSION_INSURANCE'    # 厚生年金非加入理由
         STAFF_NO_EMPLOYMENT_INSURANCE = 'STAFF_NO_EMPLOYMENT_INSURANCE'  # 雇用保険非加入理由
         HAKEN_TEISHOKUBI_EXEMPT = 'HAKEN_TEISHOKUBI_EXEMPT'          # 派遣抵触日制限外
-
-    # 責任の程度 (haken_responsibility_degree)
-    class HAKEN_RESPONSIBILITY_DEGREE:
-        NO_POSITION = '3'           # 役職なし
-        VICE_LEADER = '4'           # 副リーダー（部下２名、リーダー不在の間における緊急対応が週１回程度有）
-        NO_POSITION_NO_AUTH = '5'   # 役職無し、付与される権限無し
+        HAKEN_RESPONSIBILITY_DEGREE = 'HAKEN_RESPONSIBILITY_DEGREE'  # 派遣・責任の程度
 
 
 # 使用例
@@ -77,9 +72,9 @@ class Constants:
     if contract.status == Constants.CONTRACT_STATUS.APPROVED:
         print("契約が承認されました")
     
-    # 責任の程度の比較:
-    if responsibility_degree == Constants.HAKEN_RESPONSIBILITY_DEGREE.NO_POSITION:
-        print("役職なし")
+    # 汎用文言テンプレートタイトルキーの使用:
+    if title_key == Constants.PHRASE_TEMPLATE_TITLE.HAKEN_RESPONSIBILITY_DEGREE:
+        print("派遣・責任の程度")
         
     # 必要に応じて他の定数も追加
 """
