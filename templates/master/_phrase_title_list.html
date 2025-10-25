@@ -1,0 +1,35 @@
+{% load help_tags %}
+
+<!-- 文言タイトル一覧（左側） -->
+<div class="col-md-4">
+    <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            文言タイトル一覧
+        </div>
+        <div class="card-body mb-0" style="margin-bottom: 2rem;">
+            <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+                <thead>
+                    <tr>
+                        <th>タイトル名</th>
+                        <th>件数</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for title in phrase_titles %}
+                    <tr{% if selected_title and title.pk == selected_title.pk %} class="table-warning"{% elif phrase.title and title.pk == phrase.title.pk %} class="table-warning"{% endif %}>
+                        <td>
+                            <a href="{% url 'master:phrase_template_list' %}?title={{ title.pk }}">{{ title.name }}</a>
+                            {% if title.description %}
+                                {% my_help_icon title.description %}
+                            {% endif %}
+                        </td>
+                        <td><span class="badge bg-secondary">{{ title.templates.count }}</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="2">文言タイトルが登録されていません</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

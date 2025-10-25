@@ -4,41 +4,49 @@
 {% block title %}汎用文言テンプレート削除{% endblock %}
 
 {% block content %}
-<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header">汎用文言テンプレート削除</div>
-    <div class="card-body">
-        <div class="alert alert-warning" role="alert">
-            <i class="bi bi-exclamation-triangle-fill"></i>
-            汎用文言テンプレート「{{ phrase.content|truncatechars:30 }}」を削除しますか？この操作は取り消せません。
-        </div>
+<!-- 文言タイトル一覧と文言テンプレート削除を左右に配置 -->
+<div class="row mt-2 mb-4">
+    {% include 'master/_phrase_title_list.html' %}
 
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-3 text-start text-md-end">
-                <strong>文言タイトル</strong>
-            </div>
-            <div class="col-sm-9">
-                {{ phrase.title.name }}
-            </div>
-        </div>
-
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-3 text-start text-md-end">
-                <strong>内容</strong>
-            </div>
-            <div class="col-sm-9">
-                {{ phrase.content }}
-            </div>
-        </div>
-
-        <form method="post">
-            {% csrf_token %}
-            <div class="row mt-3">
-                <div class="col text-left">
-                    <button type="submit" class="btn btn-sm btn-dark me-2">削除</button>
-                    <a href="{% url 'master:phrase_template_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+    <!-- 文言テンプレート削除（右側） -->
+    <div class="col-md-8">
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header">汎用文言テンプレート削除</div>
+            <div class="card-body">
+                <div class="alert alert-warning" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    汎用文言テンプレート「{{ phrase.content|truncatechars:30 }}」を削除しますか？この操作は取り消せません。
                 </div>
+
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-3 text-start text-md-end">
+                        <strong>文言タイトル</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {{ phrase.title.name }}
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-3 text-start text-md-end">
+                        <strong>内容</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {{ phrase.content }}
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row mt-3">
+                        <div class="col text-left">
+                            <button type="submit" class="btn btn-sm btn-dark me-2">削除</button>
+                            <a href="{% url 'master:phrase_template_list' %}?title={{ phrase.title.pk }}" class="btn btn-sm btn-secondary">戻る</a>
+                        </div>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 {% endblock %}

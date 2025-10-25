@@ -24,6 +24,12 @@ class PhraseTemplateTitle(MyModel):
         max_length=100,
         help_text='文言タイトルの名称を入力してください'
     )
+    description = models.TextField(
+        '補足',
+        blank=True,
+        null=True,
+        help_text='文言タイトルの補足説明を入力してください（任意）'
+    )
     format_type = models.CharField(
         '書式',
         max_length=10,

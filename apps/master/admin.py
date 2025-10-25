@@ -33,15 +33,15 @@ class PhraseTemplateAdmin(admin.ModelAdmin):
 
 @admin.register(PhraseTemplateTitle)
 class PhraseTemplateTitleAdmin(admin.ModelAdmin):
-    list_display = ('key', 'name', 'format_type', 'is_active', 'display_order', 'created_at')
+    list_display = ('key', 'name', 'get_description_short', 'format_type', 'is_active', 'display_order', 'created_at')
     list_filter = ('format_type', 'is_active', 'created_at')
-    search_fields = ('key', 'name')
+    search_fields = ('key', 'name', 'description')
     ordering = ('display_order', 'id')
     list_per_page = 20
     
     fieldsets = (
         (None, {
-            'fields': ('key', 'name', 'format_type', 'is_active', 'display_order')
+            'fields': ('key', 'name', 'description', 'format_type', 'is_active', 'display_order')
         }),
         ('システム情報', {
             'fields': ('created_at', 'updated_at', 'created_by', 'updated_by'),
@@ -50,3 +50,9 @@ class PhraseTemplateTitleAdmin(admin.ModelAdmin):
     )
     
     readonly_fields = ('created_at', 'updated_at', 'created_by', 'updated_by')
+    
+    def get_description_short(self, obj):
+        if obj.description:
+            return obj.description[:50] + ('...' if len(obj.description) > 50 else '')
+        return '-'
+    get_description_short.short_description = '補足'

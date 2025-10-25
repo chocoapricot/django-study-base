@@ -105,9 +105,13 @@ def phrase_template_create(request):
     else:
         form = PhraseTemplateForm(selected_title=selected_title)
 
+    # 文言タイトル一覧を取得
+    phrase_titles = PhraseTemplateTitle.get_active_list()
+    
     context = {
         'form': form,
         'selected_title': selected_title,
+        'phrase_titles': phrase_titles,
         'title': '汎用文言テンプレート作成',
     }
     return render(request, 'master/phrase_template_form.html', context)
@@ -128,10 +132,14 @@ def phrase_template_update(request, pk):
     else:
         form = PhraseTemplateForm(instance=phrase, selected_title=phrase.title)
 
+    # 文言タイトル一覧を取得
+    phrase_titles = PhraseTemplateTitle.get_active_list()
+    
     context = {
         'form': form,
         'phrase': phrase,
         'selected_title': phrase.title,
+        'phrase_titles': phrase_titles,
         'title': '汎用文言テンプレート編集',
     }
     return render(request, 'master/phrase_template_form.html', context)
@@ -150,8 +158,12 @@ def phrase_template_delete(request, pk):
         messages.success(request, f'汎用文言テンプレート「{title_name}」を削除しました。')
         return HttpResponseRedirect(reverse('master:phrase_template_list') + f'?title={title_pk}')
 
+    # 文言タイトル一覧を取得
+    phrase_titles = PhraseTemplateTitle.get_active_list()
+    
     context = {
         'phrase': phrase,
+        'phrase_titles': phrase_titles,
         'title': '汎用文言テンプレート削除',
     }
     return render(request, 'master/phrase_template_delete.html', context)
