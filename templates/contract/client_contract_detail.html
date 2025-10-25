@@ -35,7 +35,7 @@
                                 <a href="{% url 'contract:client_contract_draft_pdf' contract.pk %}" class="dropdown-item" target="_blank"><i class="bi bi-filetype-pdf"></i>　個別契約書(ドラフト)</a>
                                 <a href="{% url 'contract:client_contract_draft_quotation' contract.pk %}" class="dropdown-item" target="_blank"><i class="bi bi-file-earmark-text"></i>　見積書(ドラフト)</a>
                                 {% if contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH %}
-                                <a href="{% url 'contract:client_contract_draft_dispatch_notification' contract.pk %}" class="dropdown-item" target="_blank"><i class="bi bi-file-earmark-check"></i>　派遣通知書(ドラフト)</a>
+                                <a href="{% url 'contract:client_contract_draft_haken_notification' contract.pk %}" class="dropdown-item" target="_blank"><i class="bi bi-file-earmark-check"></i>　派遣先通知書(ドラフト)</a>
                                 {% endif %}
                                 {% endif %}
 

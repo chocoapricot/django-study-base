@@ -35,7 +35,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import io
-from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number, generate_teishokubi_notification_pdf, generate_dispatch_notification_pdf, generate_dispatch_ledger_pdf
+from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number, generate_teishokubi_notification_pdf, generate_haken_notification_pdf, generate_dispatch_ledger_pdf
 from .resources import ClientContractResource, StaffContractResource
 from .models import ContractAssignment
 from django.urls import reverse
@@ -917,9 +917,9 @@ def client_contract_issue(request, pk):
                     # 2. 派遣契約の場合、派遣通知書も発行
                     if contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
                         issued_at = timezone.now()
-                        pdf_content_dispatch, pdf_filename_dispatch, document_title_dispatch = generate_dispatch_notification_pdf(contract, request.user, issued_at)
+                        pdf_content_dispatch, pdf_filename_dispatch, document_title_dispatch = generate_haken_notification_pdf(contract, request.user, issued_at)
                         if not pdf_content_dispatch:
-                            raise Exception("派遣通知書のPDF生成に失敗しました。")
+                            raise Exception("派遣先通知書のPDF生成に失敗しました。")
 
                         new_print_dispatch = ClientContractPrint(
                             client_contract=contract,
@@ -933,7 +933,7 @@ def client_contract_issue(request, pk):
 
                         AppLog.objects.create(
                             user=request.user,
-                            action='dispatch_notification_issue',
+                            action='haken_notification_issue',
                             model_name='ClientContract',
                             object_id=str(contract.pk),
                             object_repr=f'派遣通知書PDF出力 (契約書同時発行): {contract.contract_name}'
@@ -1240,16 +1240,16 @@ def client_contract_draft_quotation(request, pk):
 
 @login_required
 @permission_required('contract.view_clientcontract', raise_exception=True)
-def client_contract_draft_dispatch_notification(request, pk):
-    """クライアント契約の派遣通知書のドラフトPDFを生成して返す"""
+def client_contract_draft_haken_notification(request, pk):
+    """クライアント契約の派遣先通知書のドラフトPDFを生成して返す"""
     contract = get_object_or_404(ClientContract, pk=pk)
 
     if contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
-        messages.error(request, 'この契約の派遣通知書は発行できません。')
+        messages.error(request, 'この契約の派遣先通知書は発行できません。')
         return redirect('contract:client_contract_detail', pk=pk)
 
     issued_at = timezone.now()
-    pdf_content, pdf_filename, document_title = generate_dispatch_notification_pdf(
+    pdf_content, pdf_filename, document_title = generate_haken_notification_pdf(
         contract, request.user, issued_at, watermark_text="DRAFT"
     )
 

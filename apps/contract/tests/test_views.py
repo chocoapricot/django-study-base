@@ -294,7 +294,7 @@ class ContractViewTest(TestCase):
         self.assertNotContains(response, f'　{user_full_name}）')
 
     def test_issue_contract_and_dispatch_notification_for_haken(self):
-        """派遣契約の契約書発行時に、個別契約書と派遣通知書が同時に発行されるかテスト"""
+        """派遣契約の契約書発行時に、個別契約書と派遣先通知書が同時に発行されるかテスト"""
         from ..models import ClientContractPrint
 
         # 派遣契約を承認済みにする

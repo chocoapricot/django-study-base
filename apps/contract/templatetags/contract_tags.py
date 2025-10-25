@@ -20,6 +20,6 @@ def get_latest_teishokubi_notification(issue_history):
 @register.filter
 def get_latest_dispatch_notification(issue_history):
     """
-    発行履歴から最新の派遣通知書を取得する。
+    発行履歴から最新の派遣先通知書を取得する。
     """
     return issue_history.filter(print_type=ClientContractPrint.PrintType.DISPATCH_NOTIFICATION).first()

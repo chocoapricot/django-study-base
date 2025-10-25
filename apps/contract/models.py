@@ -188,7 +188,7 @@ class ClientContractPrint(MyModel):
         CONTRACT = '10', '契約書'
         QUOTATION = '20', '見積書'
         TEISHOKUBI_NOTIFICATION = '30', '抵触日通知書'
-        DISPATCH_NOTIFICATION = '40', '派遣通知書'
+        DISPATCH_NOTIFICATION = '40', '派遣先通知書'
 
     client_contract = models.ForeignKey(
         ClientContract,

@@ -32,7 +32,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import io
-from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number, generate_teishokubi_notification_pdf, generate_dispatch_notification_pdf, generate_dispatch_ledger_pdf
+from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number, generate_teishokubi_notification_pdf, generate_haken_notification_pdf, generate_dispatch_ledger_pdf
 from .resources import ClientContractResource, StaffContractResource
 from .models import ContractAssignment
 from django.urls import reverse

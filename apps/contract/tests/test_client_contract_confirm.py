@@ -182,8 +182,8 @@ class ClientContractConfirmTest(TestCase):
         self.assertContains(response, "抵触日通知書")
         self.assertContains(response, reverse('contract:download_client_contract_pdf', args=[self.teishokubi_notification.pk]))
 
-        # 派遣通知書
-        self.assertContains(response, "派遣通知書")
+        # 派遣先通知書
+        self.assertContains(response, "派遣先通知書")
         self.assertContains(response, reverse('contract:download_client_contract_pdf', args=[self.dispatch_notification.pk]))
 
     def test_confirmer_name_displayed_on_detail_page(self):

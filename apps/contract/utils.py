@@ -407,9 +407,9 @@ def generate_dispatch_ledger_pdf(contract, user, issued_at, watermark_text=None)
     return pdf_content, pdf_filename, pdf_title
 
 
-def generate_dispatch_notification_pdf(contract, user, issued_at, watermark_text=None):
-    """派遣通知書PDFを生成する"""
-    pdf_title = "派遣通知書"
+def generate_haken_notification_pdf(contract, user, issued_at, watermark_text=None):
+    """派遣先通知書PDFを生成する"""
+    pdf_title = "派遣先通知書"
 
     intro_text = f"{contract.client.name} 様"
 
@@ -420,7 +420,7 @@ def generate_dispatch_notification_pdf(contract, user, issued_at, watermark_text
     ]
 
     timestamp = issued_at.strftime('%Y%m%d%H%M%S')
-    pdf_filename = f"dispatch_notification_{contract.pk}_{timestamp}.pdf"
+    pdf_filename = f"haken_notification_{contract.pk}_{timestamp}.pdf"
 
     buffer = io.BytesIO()
     generate_table_based_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text)
