@@ -378,7 +378,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="card-body py-2">
                     <div class="mb-2">• 契約アサイン: 「作成中」状態のスタッフ契約のみアサイン可能</div>
                     <div class="mb-2">• アサイン解除: 「作成中」状態の契約のみ解除可能</div>
-                    <div class="mb-0">• 派遣情報表示: 派遣契約の場合のみ派遣情報{% if contract.haken_info and contract.haken_info.ttp_info %}・紹介予定派遣情報{% endif %}{% if contract.haken_info and contract.haken_info.haken_exempt_info %}・派遣抵触日制限外情報{% endif %}を表示</div>
+                    <div class="mb-2">• 派遣情報表示: 派遣契約の場合のみ派遣情報{% if contract.haken_info and contract.haken_info.ttp_info %}・紹介予定派遣情報{% endif %}{% if contract.haken_info and contract.haken_info.haken_exempt_info %}・派遣抵触日制限外情報{% endif %}を表示</div>
+                    <div class="mb-0">• 給与関連情報チェック: 派遣契約の承認時に、アサインされたスタッフの給与関連情報（健康保険・厚生年金・雇用保険）が未登録の場合はエラー</div>
                 </div>
             </div>
 
