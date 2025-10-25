@@ -410,6 +410,7 @@ def generate_dispatch_ledger_pdf(contract, user, issued_at, watermark_text=None)
 def generate_haken_notification_pdf(contract, user, issued_at, watermark_text=None):
     """派遣先通知書PDFを生成する"""
     from apps.company.models import Company
+    from datetime import date
     
     pdf_title = "派遣先通知書"
 
@@ -418,6 +419,9 @@ def generate_haken_notification_pdf(contract, user, issued_at, watermark_text=No
     client = contract.client
     haken_info = contract.haken_info
     responsible_person = haken_info.responsible_person_client if haken_info else None
+
+    # クライアント契約に紐づくスタッフ契約を取得
+    staff_contracts = contract.staff_contracts.select_related('staff', 'employment_type').all()
 
     # --- PDFコンテンツの準備 ---
     # 宛先 (左上) - 派遣先
@@ -435,12 +439,87 @@ def generate_haken_notification_pdf(contract, user, issued_at, watermark_text=No
     # 前文
     intro_text = f"労働者派遣契約に基づき下記の者を派遣いたします。"
 
-    # テーブル項目
-    items = [
-        {"title": "件名", "text": str(contract.contract_name)},
-        {"title": "発行日", "text": issued_at.strftime('%Y年%m月%d日')},
-        {"title": "発行者", "text": user.get_full_name_japanese()},
-    ]
+    # テーブル項目（派遣労働者情報のみ）
+    items = []
+
+    # 派遣労働者情報を追加（2段階タイトル構造）
+    for i, staff_contract in enumerate(staff_contracts, 1):
+        staff = staff_contract.staff
+        
+        # 年齢計算（割当開始日時点）
+        age = ""
+        if staff.birth_date:
+            # 割当開始日 = スタッフ契約とクライアント契約が重なる期間の開始日
+            assignment_start_date = max(contract.start_date, staff_contract.start_date)
+            birth_date = staff.birth_date
+            age_years = assignment_start_date.year - birth_date.year
+            if (assignment_start_date.month, assignment_start_date.day) < (birth_date.month, birth_date.day):
+                age_years -= 1
+            
+            # 年齢区分による表記
+            if age_years < 18:
+                age = f"□　60歳以上\n■　60歳未満\n　-　■　45歳以上60歳未満\n　-　■　18歳未満（{age_years}歳）"
+            elif 18 <= age_years < 45:
+                age = "□　60歳以上\n■　60歳未満\n　-　□　45歳以上60歳未満\n　-　□　18歳未満（　歳）"
+            elif 45 <= age_years < 60:
+                age = "□　60歳以上\n■　60歳未満\n　-　■　45歳以上60歳未満\n　-　□　18歳未満（　歳）"
+            else:  # 60歳以上
+                age = "■　60歳以上\n□　60歳未満\n　-　□　45歳以上60歳未満\n　-　□　18歳未満（　歳）"
+
+        # 性別
+        gender = ""
+        if staff.sex:
+            from apps.system.settings.models import Dropdowns
+            try:
+                gender_dropdown = Dropdowns.objects.get(category='sex', value=str(staff.sex))
+                gender = gender_dropdown.name
+            except Dropdowns.DoesNotExist:
+                gender = str(staff.sex)
+
+        # 雇用形態
+        employment_type = ""
+        if staff_contract.employment_type:
+            if staff_contract.employment_type.is_fixed_term:
+                employment_type = "有期"
+            else:
+                employment_type = "無期"
+
+        # 派遣労働者情報をrowspan形式で追加（3列表示）
+        worker_title = f"派遣労働者{i}"
+        
+        # サブ項目を作成
+        rowspan_items = []
+        
+        # 氏名
+        full_name = f"{staff.name_last} {staff.name_first}"
+        rowspan_items.append({
+            "title": "氏名",
+            "text": full_name
+        })
+        
+        # 性別
+        rowspan_items.append({
+            "title": "性別",
+            "text": gender if gender else "-"
+        })
+        
+        # 年齢
+        rowspan_items.append({
+            "title": "年齢",
+            "text": age if age else "-"
+        })
+        
+        # 雇用形態
+        rowspan_items.append({
+            "title": "雇用形態",
+            "text": employment_type if employment_type else "-"
+        })
+
+        # rowspan形式でアイテムを追加
+        items.append({
+            "title": worker_title,
+            "rowspan_items": rowspan_items
+        })
 
     timestamp = issued_at.strftime('%Y%m%d%H%M%S')
     pdf_filename = f"haken_notification_{contract.pk}_{timestamp}.pdf"
