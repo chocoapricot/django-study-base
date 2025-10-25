@@ -26,30 +26,44 @@ class StaffPayrollForm(forms.ModelForm):
         給与情報の整合性をチェックする
         """
         cleaned_data = super().clean()
+        errors = []
         
         # 健康保険のバリデーション
-        self._validate_insurance_fields(
-            cleaned_data,
-            'health_insurance_join_date',
-            'health_insurance_non_enrollment_reason',
-            '健康保険'
-        )
+        try:
+            self._validate_insurance_fields(
+                cleaned_data,
+                'health_insurance_join_date',
+                'health_insurance_non_enrollment_reason',
+                '健康保険'
+            )
+        except forms.ValidationError as e:
+            errors.extend(e.messages)
         
         # 厚生年金のバリデーション
-        self._validate_insurance_fields(
-            cleaned_data,
-            'welfare_pension_join_date',
-            'pension_insurance_non_enrollment_reason',
-            '厚生年金'
-        )
+        try:
+            self._validate_insurance_fields(
+                cleaned_data,
+                'welfare_pension_join_date',
+                'pension_insurance_non_enrollment_reason',
+                '厚生年金'
+            )
+        except forms.ValidationError as e:
+            errors.extend(e.messages)
         
         # 雇用保険のバリデーション
-        self._validate_insurance_fields(
-            cleaned_data,
-            'employment_insurance_join_date',
-            'employment_insurance_non_enrollment_reason',
-            '雇用保険'
-        )
+        try:
+            self._validate_insurance_fields(
+                cleaned_data,
+                'employment_insurance_join_date',
+                'employment_insurance_non_enrollment_reason',
+                '雇用保険'
+            )
+        except forms.ValidationError as e:
+            errors.extend(e.messages)
+        
+        # すべてのエラーをまとめて発生させる
+        if errors:
+            raise forms.ValidationError(errors)
         
         return cleaned_data
     

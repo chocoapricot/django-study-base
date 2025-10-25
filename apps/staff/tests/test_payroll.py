@@ -66,6 +66,8 @@ class StaffPayrollViewsTest(TestCase):
         payroll = StaffPayroll.objects.create(staff=self.staff)
         data = {
             'health_insurance_join_date': '2023-01-01',
+            'pension_insurance_non_enrollment_reason': '年金制度対象外',
+            'employment_insurance_non_enrollment_reason': '短期雇用のため対象外',
         }
         response = self.client.post(reverse('staff:staff_payroll_edit', args=[self.staff.pk]), data)
         self.assertEqual(response.status_code, 302)
@@ -116,9 +118,11 @@ class StaffPayrollViewsTest(TestCase):
         }
         response = self.client.post(reverse('staff:staff_payroll_create', args=[self.staff.pk]), data)
         self.assertEqual(response.status_code, 200)  # フォームエラーで再表示
-        self.assertContains(response, '健康保険の加入日が入力されている場合、非加入理由は入力できません。')
-        self.assertContains(response, '厚生年金の加入日が入力されている場合、非加入理由は入力できません。')
-        self.assertContains(response, '雇用保険の加入日または非加入理由のいずれかを入力してください。')
+        # 複数のエラーメッセージが含まれることを確認（順序は問わない）
+        response_content = response.content.decode('utf-8')
+        self.assertIn('健康保険の加入日が入力されている場合、非加入理由は入力できません。', response_content)
+        self.assertIn('厚生年金の加入日が入力されている場合、非加入理由は入力できません。', response_content)
+        self.assertIn('雇用保険の加入日または非加入理由のいずれかを入力してください。', response_content)
 
     def test_staff_payroll_validation_valid_date_only(self):
         """加入日のみ入力された場合の正常ケーステスト"""
