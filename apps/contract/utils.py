@@ -409,10 +409,33 @@ def generate_dispatch_ledger_pdf(contract, user, issued_at, watermark_text=None)
 
 def generate_haken_notification_pdf(contract, user, issued_at, watermark_text=None):
     """派遣先通知書PDFを生成する"""
+    from apps.company.models import Company
+    
     pdf_title = "派遣先通知書"
 
-    intro_text = f"{contract.client.name} 様"
+    # --- データ取得 ---
+    company = Company.objects.first()
+    client = contract.client
+    haken_info = contract.haken_info
+    responsible_person = haken_info.responsible_person_client if haken_info else None
 
+    # --- PDFコンテンツの準備 ---
+    # 宛先 (左上) - 派遣先
+    client_name_text = f"{client.name} 御中"
+    to_address_lines = ["（派遣先）", client_name_text]
+
+    # 送付元 (右上) - 派遣元
+    company_name_text = f"{company.name}" if company else ""
+    company_address = f"{company.address}" if company and company.address else ""
+    
+    from_address_lines = ["（派遣元）", company_name_text]
+    if company_address:
+        from_address_lines.append(company_address)
+
+    # 前文
+    intro_text = f"労働者派遣契約に基づき下記の者を派遣いたします。"
+
+    # テーブル項目
     items = [
         {"title": "件名", "text": str(contract.contract_name)},
         {"title": "発行日", "text": issued_at.strftime('%Y年%m月%d日')},
@@ -423,7 +446,15 @@ def generate_haken_notification_pdf(contract, user, issued_at, watermark_text=No
     pdf_filename = f"haken_notification_{contract.pk}_{timestamp}.pdf"
 
     buffer = io.BytesIO()
-    generate_table_based_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text)
+    generate_table_based_contract_pdf(
+        buffer, 
+        pdf_title, 
+        intro_text, 
+        items, 
+        watermark_text=watermark_text,
+        to_address_lines=to_address_lines,
+        from_address_lines=from_address_lines
+    )
     pdf_content = buffer.getvalue()
     buffer.close()
 

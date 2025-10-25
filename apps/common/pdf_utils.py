@@ -12,7 +12,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib.units import cm
 
 
-def generate_table_based_contract_pdf(buffer, title, intro_text, items, watermark_text=None, postamble_text=None):
+def generate_table_based_contract_pdf(buffer, title, intro_text, items, watermark_text=None, postamble_text=None, to_address_lines=None, from_address_lines=None):
     """
     テーブルベースの契約書PDFを生成する共通関数。
     2パス処理を行い、フッターに総ページ数付きのページ番号を印字する。
@@ -27,6 +27,8 @@ def generate_table_based_contract_pdf(buffer, title, intro_text, items, watermar
                   rowspan: {'title': '結合セル項目名', 'rowspan_items': [{'title': '項目名', 'text': '内容'}, ...]}
     :param watermark_text: 透かしとして表示する文字列（オプショナル）
     :param postamble_text: 末文
+    :param to_address_lines: 宛先ブロックに表示する文字列のリスト (左上)（オプショナル）
+    :param from_address_lines: 送付元ブロックに表示する文字列のリスト (右上)（オプショナル）
     """
     # 日本語フォントの登録
     font_path = 'statics/fonts/ipagp.ttf'
@@ -46,6 +48,24 @@ def generate_table_based_contract_pdf(buffer, title, intro_text, items, watermar
     def build_story():
         """PDFの内容(Story)を構築する"""
         story = []
+        
+        # 0. 宛先と送付元（左上・右上）
+        if to_address_lines and from_address_lines:
+            to_address_flowables = [Paragraph(line.replace('\n', '<br/>'), styles['IntroText']) for line in to_address_lines]
+            from_address_flowables = [Paragraph(line.replace('\n', '<br/>'), styles['IntroText']) for line in from_address_lines]
+
+            address_table = Table(
+                [[to_address_flowables, from_address_flowables]],
+                colWidths=['60%', '40%']
+            )
+            address_table.setStyle(TableStyle([
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+            ]))
+            story.append(address_table)
+            story.append(Spacer(1, 1 * cm))
+        
         # 1. 帳票タイトル
         story.append(Paragraph(title, styles['MainTitle']))
 
