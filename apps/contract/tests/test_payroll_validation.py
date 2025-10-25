@@ -288,13 +288,6 @@ class PayrollValidationTest(TestCase):
             {'is_approved': 'true'}
         )
         
-        # メッセージを確認
-        from django.contrib.messages import get_messages
-        messages = list(get_messages(response.wsgi_request))
-        if messages:
-            for message in messages:
-                print(f"Message: {message}")
-        
         # 成功してリダイレクト
         self.assertEqual(response.status_code, 302)
         
