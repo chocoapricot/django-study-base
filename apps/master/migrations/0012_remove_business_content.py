@@ -56,10 +56,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(
-            migrate_business_content_to_phrase_template,
-            reverse_migrate_business_content
-        ),
+        # データ移行を無効化（サンプルデータで代替）
+        # migrations.RunPython(
+        #     migrate_business_content_to_phrase_template,
+        #     reverse_migrate_business_content
+        # ),
         migrations.DeleteModel(
             name='BusinessContent',
         ),
