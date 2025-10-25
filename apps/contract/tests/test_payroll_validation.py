@@ -27,6 +27,33 @@ class PayrollValidationTest(TestCase):
         staff_permissions = Permission.objects.filter(content_type=staff_content_type)
         self.user.user_permissions.add(*staff_permissions)
 
+        # 必要なドロップダウンデータを作成
+        from apps.system.settings.models import Dropdowns
+        
+        # 契約状況のドロップダウン
+        Dropdowns.objects.get_or_create(
+            category='contract_status',
+            value=Constants.CONTRACT_STATUS.DRAFT,
+            defaults={'name': '作成中', 'active': True, 'disp_seq': 1}
+        )
+        Dropdowns.objects.get_or_create(
+            category='contract_status',
+            value=Constants.CONTRACT_STATUS.PENDING,
+            defaults={'name': '申請', 'active': True, 'disp_seq': 2}
+        )
+        Dropdowns.objects.get_or_create(
+            category='contract_status',
+            value=Constants.CONTRACT_STATUS.APPROVED,
+            defaults={'name': '承認済', 'active': True, 'disp_seq': 3}
+        )
+        
+        # 請求単位のドロップダウン
+        Dropdowns.objects.get_or_create(
+            category='bill_unit',
+            value=Constants.BILL_UNIT.HOURLY_RATE,
+            defaults={'name': '時間単価', 'active': True, 'disp_seq': 1}
+        )
+
         # テストデータ作成
         self.client_obj = Client.objects.create(
             name='テストクライアント',
@@ -71,7 +98,7 @@ class PayrollValidationTest(TestCase):
             contract_name='テスト派遣契約',
             contract_pattern=self.contract_pattern,
             start_date=date(2024, 1, 1),
-            end_date=date(2024, 12, 31),
+            end_date=date(2024, 6, 30),  # 6ヶ月以内に修正
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             created_by=self.user,
             updated_by=self.user
@@ -84,7 +111,7 @@ class PayrollValidationTest(TestCase):
             contract_name='テストスタッフ契約',
             contract_pattern=self.staff_contract_pattern,
             start_date=date(2024, 1, 1),
-            end_date=date(2024, 12, 31),
+            end_date=date(2024, 6, 30),  # 6ヶ月以内に修正
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             created_by=self.user,
             updated_by=self.user
@@ -150,9 +177,9 @@ class PayrollValidationTest(TestCase):
             'contract_name': 'テスト派遣契約',
             'contract_pattern': self.contract_pattern.pk,
             'start_date': '2024-01-01',
-            'end_date': '2024-12-31',
+            'end_date': '2024-06-30',  # 6ヶ月以内に修正
             'contract_status': Constants.CONTRACT_STATUS.PENDING,  # 申請状態
-            'bill_unit': '10',  # 時間単価
+            'bill_unit': Constants.BILL_UNIT.HOURLY_RATE,  # 時間単価
             'contract_amount': '2000',
             # 派遣情報フィールド（有効な値を設定）
             'haken_office': str(self.client_department.pk),
@@ -194,9 +221,9 @@ class PayrollValidationTest(TestCase):
             'contract_name': 'テスト派遣契約',
             'contract_pattern': self.contract_pattern.pk,
             'start_date': '2024-01-01',
-            'end_date': '2024-12-31',
+            'end_date': '2024-06-30',  # 6ヶ月以内に修正
             'contract_status': Constants.CONTRACT_STATUS.PENDING,  # 申請状態
-            'bill_unit': '10',  # 時間単価
+            'bill_unit': Constants.BILL_UNIT.HOURLY_RATE,  # 時間単価
             'contract_amount': '2000',
             # 派遣情報フィールド（有効な値を設定）
             'haken_office': str(self.client_department.pk),
@@ -261,6 +288,13 @@ class PayrollValidationTest(TestCase):
             {'is_approved': 'true'}
         )
         
+        # メッセージを確認
+        from django.contrib.messages import get_messages
+        messages = list(get_messages(response.wsgi_request))
+        if messages:
+            for message in messages:
+                print(f"Message: {message}")
+        
         # 成功してリダイレクト
         self.assertEqual(response.status_code, 302)
         
@@ -297,9 +331,9 @@ class PayrollValidationTest(TestCase):
             'contract_name': 'テスト業務委託契約',
             'contract_pattern': outsourcing_pattern.pk,
             'start_date': '2024-01-01',
-            'end_date': '2024-12-31',
+            'end_date': '2024-12-31',  # 派遣以外なので12ヶ月でも問題なし
             'contract_status': Constants.CONTRACT_STATUS.PENDING,  # 申請状態
-            'bill_unit': '10',  # 時間単価
+            'bill_unit': Constants.BILL_UNIT.HOURLY_RATE,  # 時間単価
             'contract_amount': '2000',
         }
         

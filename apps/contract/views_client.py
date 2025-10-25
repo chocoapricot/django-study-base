@@ -795,6 +795,34 @@ def client_contract_approve(request, pk):
             # 「承認する」アクションは「申請」からのみ可能
             if contract.contract_status == Constants.CONTRACT_STATUS.PENDING:
                 try:
+                    # 派遣契約の場合、割当されたスタッフの給与関連情報をチェック
+                    if contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
+                        from .models import ContractAssignment
+                        from apps.staff.models import StaffPayroll
+                        
+                        # この契約に割当されているスタッフ契約を取得
+                        assignments = ContractAssignment.objects.filter(
+                            client_contract=contract
+                        ).select_related('staff_contract__staff')
+                        
+                        missing_payroll_staff = []
+                        for assignment in assignments:
+                            staff = assignment.staff_contract.staff
+                            try:
+                                # 給与関連情報が登録されているかチェック
+                                staff.payroll
+                            except StaffPayroll.DoesNotExist:
+                                missing_payroll_staff.append(f"{staff.name_last} {staff.name_first}")
+                        
+                        if missing_payroll_staff:
+                            staff_names = '、'.join(missing_payroll_staff)
+                            error_message = (
+                                f'派遣契約を承認するには、割当されたスタッフの給与関連情報が必要です。'
+                                f'以下のスタッフの給与関連情報を登録してください：{staff_names}'
+                            )
+                            messages.error(request, error_message)
+                            return redirect('contract:client_contract_detail', pk=contract.pk)
+                    
                     # TTPを想定する場合、クライアント契約の start_date/end_date を使って期間が6か月超でないかチェック
                     if contract.start_date and contract.end_date:
                         dstart = contract.start_date
