@@ -453,8 +453,43 @@ def generate_haken_notification_pdf(contract, user, issued_at, watermark_text=No
     # 前文
     intro_text = f"労働者派遣契約に基づき下記の者を派遣いたします。"
 
-    # テーブル項目（派遣労働者情報のみ）
+    # テーブル項目（契約情報と派遣労働者情報）
     items = []
+
+    # 契約情報を追加
+    contract_info_items = []
+    
+    # 契約番号
+    contract_info_items.append({
+        "title": "契約番号",
+        "text": contract.contract_number if contract.contract_number else "-"
+    })
+    
+    # クライアント名
+    contract_info_items.append({
+        "title": "派遣先名",
+        "text": client.name if client.name else "-"
+    })
+    
+    # 派遣期間
+    dispatch_period = ""
+    if contract.start_date and contract.end_date:
+        dispatch_period = f"{contract.start_date.strftime('%Y年%m月%d日')} ～ {contract.end_date.strftime('%Y年%m月%d日')}"
+    elif contract.start_date:
+        dispatch_period = f"{contract.start_date.strftime('%Y年%m月%d日')} ～ （終了日未定）"
+    else:
+        dispatch_period = "-"
+    
+    contract_info_items.append({
+        "title": "派遣期間",
+        "text": dispatch_period
+    })
+    
+    # 契約情報をrowspan形式で追加
+    items.append({
+        "title": "契約情報",
+        "rowspan_items": contract_info_items
+    })
 
     # 派遣労働者情報を追加（2段階タイトル構造）
     for i, staff_contract in enumerate(staff_contracts, 1):
