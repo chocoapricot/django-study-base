@@ -24,6 +24,15 @@
         <form method="post" class="mt-3">
             {% csrf_token %}
 
+            <!-- フォーム全体のエラーメッセージ表示 -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.health_insurance_join_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">健康保険加入日</label>
                 <div class="col-sm-2">
@@ -139,6 +148,36 @@ document.addEventListener('click', function(e) {
         
         loadMasterModal('{% url "common:master_select" %}', masterType, targetId, modalTitle);
     }
+});
+
+// ページロジック情報を設定
+document.addEventListener('DOMContentLoaded', function() {
+    // このページにロジック情報があることを通知
+    document.body.setAttribute('data-has-logic', 'true');
+    
+    const logicContent = document.getElementById('logic-info-content');
+    if (logicContent) {
+        logicContent.innerHTML = `
+            <div class="alert alert-info mb-3">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>スタッフ給与関連情報のバリデーションロジック</h6>
+            </div>
+            
+            <!-- 相関チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-check-circle text-success me-2"></i>相関チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 各保険: 加入日と非加入理由の両方を入力することはできません</div>
+                    <div class="mb-0">• 各保険: 加入日または非加入理由のいずれかを必ず入力してください</div>
+                </div>
+            </div>
+
+        `;
+    }
+    
+    // ロジック情報設定完了を通知
+    document.dispatchEvent(new Event('logicInfoSet'));
 });
 
 // マスター選択関数はcontract-modal.jsで定義済み

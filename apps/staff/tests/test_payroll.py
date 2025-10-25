@@ -83,3 +83,123 @@ class StaffPayrollViewsTest(TestCase):
         response = self.client.post(reverse('staff:staff_payroll_delete', args=[self.staff.pk]))
         self.assertEqual(response.status_code, 302)
         self.assertFalse(StaffPayroll.objects.filter(staff=self.staff).exists())
+
+    def test_staff_payroll_validation_date_and_reason_both_provided(self):
+        """日付と非加入理由の両方が入力された場合のバリデーションエラーテスト"""
+        data = {
+            'health_insurance_join_date': '2022-01-01',
+            'health_insurance_non_enrollment_reason': '他の保険に加入済み',
+        }
+        response = self.client.post(reverse('staff:staff_payroll_create', args=[self.staff.pk]), data)
+        self.assertEqual(response.status_code, 200)  # フォームエラーで再表示
+        self.assertContains(response, '健康保険の加入日が入力されている場合、非加入理由は入力できません。')
+
+    def test_staff_payroll_validation_neither_date_nor_reason(self):
+        """日付も非加入理由も入力されていない場合のバリデーションエラーテスト"""
+        data = {
+            # 健康保険の日付も理由も入力しない
+            'welfare_pension_join_date': '2022-01-01',
+            'employment_insurance_join_date': '2022-01-01',
+        }
+        response = self.client.post(reverse('staff:staff_payroll_create', args=[self.staff.pk]), data)
+        self.assertEqual(response.status_code, 200)  # フォームエラーで再表示
+        self.assertContains(response, '健康保険の加入日または非加入理由のいずれかを入力してください。')
+
+    def test_staff_payroll_validation_multiple_insurance_errors(self):
+        """複数の保険でバリデーションエラーが発生する場合のテスト"""
+        data = {
+            'health_insurance_join_date': '2022-01-01',
+            'health_insurance_non_enrollment_reason': '他の保険に加入済み',
+            'welfare_pension_join_date': '2022-01-01',
+            'pension_insurance_non_enrollment_reason': '年金制度対象外',
+            # 雇用保険は日付も理由も入力しない
+        }
+        response = self.client.post(reverse('staff:staff_payroll_create', args=[self.staff.pk]), data)
+        self.assertEqual(response.status_code, 200)  # フォームエラーで再表示
+        self.assertContains(response, '健康保険の加入日が入力されている場合、非加入理由は入力できません。')
+        self.assertContains(response, '厚生年金の加入日が入力されている場合、非加入理由は入力できません。')
+        self.assertContains(response, '雇用保険の加入日または非加入理由のいずれかを入力してください。')
+
+    def test_staff_payroll_validation_valid_date_only(self):
+        """加入日のみ入力された場合の正常ケーステスト"""
+        data = {
+            'health_insurance_join_date': '2022-01-01',
+            'welfare_pension_join_date': '2022-01-01',
+            'employment_insurance_join_date': '2022-01-01',
+        }
+        response = self.client.post(reverse('staff:staff_payroll_create', args=[self.staff.pk]), data)
+        self.assertEqual(response.status_code, 302)  # 正常に登録されてリダイレクト
+        self.assertTrue(StaffPayroll.objects.filter(staff=self.staff).exists())
+
+    def test_staff_payroll_validation_valid_reason_only(self):
+        """非加入理由のみ入力された場合の正常ケーステスト"""
+        data = {
+            'health_insurance_non_enrollment_reason': '他の保険に加入済み',
+            'pension_insurance_non_enrollment_reason': '年金制度対象外',
+            'employment_insurance_non_enrollment_reason': '短期雇用のため対象外',
+        }
+        response = self.client.post(reverse('staff:staff_payroll_create', args=[self.staff.pk]), data)
+        self.assertEqual(response.status_code, 302)  # 正常に登録されてリダイレクト
+        self.assertTrue(StaffPayroll.objects.filter(staff=self.staff).exists())
+
+from apps.staff.forms_payroll import StaffPayrollForm
+
+class StaffPayrollFormTest(TestCase):
+    def setUp(self):
+        self.staff = Staff.objects.create(
+            name_last='山田',
+            name_first='太郎',
+            name_kana_last='ヤマダ',
+            name_kana_first='タロウ',
+            birth_date=date(1990, 1, 1),
+            sex=1,
+        )
+
+    def test_form_validation_date_and_reason_both_provided(self):
+        """日付と非加入理由の両方が入力された場合のフォームバリデーションテスト"""
+        form_data = {
+            'health_insurance_join_date': '2022-01-01',
+            'health_insurance_non_enrollment_reason': '他の保険に加入済み',
+        }
+        form = StaffPayrollForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('健康保険の加入日が入力されている場合、非加入理由は入力できません。', form.non_field_errors())
+
+    def test_form_validation_neither_date_nor_reason(self):
+        """日付も非加入理由も入力されていない場合のフォームバリデーションテスト"""
+        form_data = {
+            # 健康保険の日付も理由も入力しない
+        }
+        form = StaffPayrollForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('健康保険の加入日または非加入理由のいずれかを入力してください。', form.non_field_errors())
+
+    def test_form_validation_valid_date_only(self):
+        """加入日のみ入力された場合の正常ケーステスト"""
+        form_data = {
+            'health_insurance_join_date': '2022-01-01',
+            'welfare_pension_join_date': '2022-01-01',
+            'employment_insurance_join_date': '2022-01-01',
+        }
+        form = StaffPayrollForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+    def test_form_validation_valid_reason_only(self):
+        """非加入理由のみ入力された場合の正常ケーステスト"""
+        form_data = {
+            'health_insurance_non_enrollment_reason': '他の保険に加入済み',
+            'pension_insurance_non_enrollment_reason': '年金制度対象外',
+            'employment_insurance_non_enrollment_reason': '短期雇用のため対象外',
+        }
+        form = StaffPayrollForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+    def test_form_validation_mixed_valid_cases(self):
+        """一部は日付、一部は理由を入力した混合ケーステスト"""
+        form_data = {
+            'health_insurance_join_date': '2022-01-01',
+            'pension_insurance_non_enrollment_reason': '年金制度対象外',
+            'employment_insurance_join_date': '2022-01-01',
+        }
+        form = StaffPayrollForm(data=form_data)
+        self.assertTrue(form.is_valid())

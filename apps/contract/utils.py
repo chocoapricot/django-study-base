@@ -421,7 +421,21 @@ def generate_haken_notification_pdf(contract, user, issued_at, watermark_text=No
     responsible_person = haken_info.responsible_person_client if haken_info else None
 
     # クライアント契約に紐づくスタッフ契約を取得
-    staff_contracts = contract.staff_contracts.select_related('staff', 'employment_type').all()
+    all_staff_contracts = contract.staff_contracts.select_related('staff', 'employment_type').all()
+    
+    # 同じスタッフが複数いる場合は、最も早い開始日の契約のみを残す
+    staff_contract_dict = {}
+    for staff_contract in all_staff_contracts:
+        staff_id = staff_contract.staff.id
+        if staff_id not in staff_contract_dict:
+            staff_contract_dict[staff_id] = staff_contract
+        else:
+            # より早い開始日の契約を保持
+            if staff_contract.start_date < staff_contract_dict[staff_id].start_date:
+                staff_contract_dict[staff_id] = staff_contract
+    
+    # 重複を除去したスタッフ契約リスト
+    staff_contracts = list(staff_contract_dict.values())
 
     # --- PDFコンテンツの準備 ---
     # 宛先 (左上) - 派遣先
@@ -513,6 +527,55 @@ def generate_haken_notification_pdf(contract, user, issued_at, watermark_text=No
         rowspan_items.append({
             "title": "雇用形態",
             "text": employment_type if employment_type else "-"
+        })
+        
+        # 協定対象（固定出力）
+        agreement_target_text = "■　協定対象　（労使協定方式）\n□　協定対象でない　（均等・均衡方式）"
+        rowspan_items.append({
+            "title": "協定対象",
+            "text": agreement_target_text
+        })
+        
+        # 保険加入状況
+        insurance_status_lines = []
+        
+        # スタッフの給与情報を取得
+        payroll = getattr(staff, 'payroll', None)
+        
+        # 健康保険
+        if payroll and payroll.health_insurance_join_date:
+            insurance_status_lines.append("健康保険：有")
+        else:
+            reason = payroll.health_insurance_non_enrollment_reason if payroll else ""
+            if reason:
+                insurance_status_lines.append(f"健康保険：無　（未加入理由）{reason}")
+            else:
+                insurance_status_lines.append("健康保険：無")
+        
+        # 厚生年金
+        if payroll and payroll.welfare_pension_join_date:
+            insurance_status_lines.append("厚生年金：有")
+        else:
+            reason = payroll.pension_insurance_non_enrollment_reason if payroll else ""
+            if reason:
+                insurance_status_lines.append(f"厚生年金：無　（未加入理由）{reason}")
+            else:
+                insurance_status_lines.append("厚生年金：無")
+        
+        # 雇用保険
+        if payroll and payroll.employment_insurance_join_date:
+            insurance_status_lines.append("雇用保険：有")
+        else:
+            reason = payroll.employment_insurance_non_enrollment_reason if payroll else ""
+            if reason:
+                insurance_status_lines.append(f"雇用保険：無　（未加入理由）{reason}")
+            else:
+                insurance_status_lines.append("雇用保険：無")
+        
+        insurance_status_text = "\n".join(insurance_status_lines)
+        rowspan_items.append({
+            "title": "保険加入状況",
+            "text": insurance_status_text
         })
 
         # rowspan形式でアイテムを追加

@@ -14,9 +14,60 @@ class StaffPayrollForm(forms.ModelForm):
         ]
         widgets = {
             'health_insurance_join_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control form-control-sm'}),
-            'health_insurance_non_enrollment_reason': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'health_insurance_non_enrollment_reason': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'welfare_pension_join_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control form-control-sm'}),
-            'pension_insurance_non_enrollment_reason': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'pension_insurance_non_enrollment_reason': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'employment_insurance_join_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control form-control-sm'}),
-            'employment_insurance_non_enrollment_reason': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'employment_insurance_non_enrollment_reason': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
         }
+
+    def clean(self):
+        """
+        給与情報の整合性をチェックする
+        """
+        cleaned_data = super().clean()
+        
+        # 健康保険のバリデーション
+        self._validate_insurance_fields(
+            cleaned_data,
+            'health_insurance_join_date',
+            'health_insurance_non_enrollment_reason',
+            '健康保険'
+        )
+        
+        # 厚生年金のバリデーション
+        self._validate_insurance_fields(
+            cleaned_data,
+            'welfare_pension_join_date',
+            'pension_insurance_non_enrollment_reason',
+            '厚生年金'
+        )
+        
+        # 雇用保険のバリデーション
+        self._validate_insurance_fields(
+            cleaned_data,
+            'employment_insurance_join_date',
+            'employment_insurance_non_enrollment_reason',
+            '雇用保険'
+        )
+        
+        return cleaned_data
+    
+    def _validate_insurance_fields(self, cleaned_data, date_field, reason_field, insurance_name):
+        """
+        保険の加入日と非加入理由の整合性をチェックする
+        """
+        join_date = cleaned_data.get(date_field)
+        non_enrollment_reason = cleaned_data.get(reason_field)
+        
+        # 日付が入っていて非加入理由も入力されている場合はエラー
+        if join_date and non_enrollment_reason:
+            raise forms.ValidationError(
+                f'{insurance_name}の加入日が入力されている場合、非加入理由は入力できません。'
+            )
+        
+        # 日付が入っていないのに非加入理由も入力されていない場合はエラー
+        if not join_date and not non_enrollment_reason:
+            raise forms.ValidationError(
+                f'{insurance_name}の加入日または非加入理由のいずれかを入力してください。'
+            )
