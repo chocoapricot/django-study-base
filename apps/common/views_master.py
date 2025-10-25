@@ -19,8 +19,13 @@ def master_select(request):
         items = Dropdowns.objects.filter(category='HAKEN_RESPONSIBILITY_DEGREE', active=True)
         modal_title = '責任の程度を選択'
     elif master_type == 'haken_teishokubi_exempt':
-        from apps.master.models import HakenTeishokubiExempt
-        items = HakenTeishokubiExempt.objects.filter(is_active=True)
+        from apps.master.models import PhraseTemplate
+        from apps.common.constants import Constants
+        items = PhraseTemplate.objects.filter(
+            is_active=True, 
+            title__key=Constants.PHRASE_TEMPLATE_TITLE.HAKEN_TEISHOKUBI_EXEMPT,
+            title__is_active=True
+        )
         modal_title = '派遣抵触日制限外を選択'
     elif master_type == 'health_insurance_non_enrollment':
         from apps.master.models import PhraseTemplate

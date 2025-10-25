@@ -143,12 +143,7 @@ urlpatterns = [
     path('client-regist-status/<int:pk>/delete/', views.client_regist_status_delete, name='client_regist_status_delete'),
     path('client-regist-status/history/', views.client_regist_status_change_history_list, name='client_regist_status_change_history_list'),
 
-    # 派遣抵触日制限外管理
-    path('haken-teishokubi-exempt/', views.haken_teishokubi_exempt_list, name='haken_teishokubi_exempt_list'),
-    path('haken-teishokubi-exempt/create/', views.haken_teishokubi_exempt_create, name='haken_teishokubi_exempt_create'),
-    path('haken-teishokubi-exempt/<int:pk>/update/', views.haken_teishokubi_exempt_update, name='haken_teishokubi_exempt_update'),
-    path('haken-teishokubi-exempt/<int:pk>/delete/', views.haken_teishokubi_exempt_delete, name='haken_teishokubi_exempt_delete'),
-    path('haken-teishokubi-exempt/history/', views.haken_teishokubi_exempt_change_history_list, name='haken_teishokubi_exempt_change_history_list'),
+
 
     # 汎用文言テンプレート管理
     path('phrase-template/', views.phrase_template_list, name='phrase_template_list'),

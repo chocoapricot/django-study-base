@@ -49,7 +49,7 @@ def main():
         "_sample_data/master_contract_terms.json",
         "_sample_data/master_business_content.json",
 
-        "_sample_data/master_haken_teishokubi_exempt.json",
+
         "_sample_data/master_phrase_template_title.json",
         "_sample_data/master_phrase_template.json",
         "_sample_data/master_default_value.json",
@@ -108,7 +108,7 @@ def main():
         ("python manage.py loaddata _sample_data/master_contract_terms.json", "契約文言マスタデータ"),
         ("python manage.py loaddata _sample_data/master_business_content.json", "業務内容マスタデータ"),
 
-        ("python manage.py loaddata _sample_data/master_haken_teishokubi_exempt.json", "派遣抵触日制限外マスタデータ"),
+
         ("python manage.py loaddata _sample_data/master_phrase_template_title.json", "汎用文言タイトルマスタデータ"),
         ("python manage.py loaddata _sample_data/master_phrase_template.json", "汎用文言テンプレートマスタデータ"),
         ("python manage.py loaddata _sample_data/master_default_value.json", "初期値マスタデータ"),
@@ -159,7 +159,7 @@ def main():
     print("- 契約書パターンマスタ")
     print("- 契約文言マスタ")
     print("- 業務内容マスタ")
-    print("- 派遣抵触日制限外マスタ")
+
     print("- 汎用文言タイトルマスタ")
     print("- 汎用文言テンプレートマスタ")
     print("- 初期値マスタ")

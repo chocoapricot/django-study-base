@@ -56,6 +56,7 @@ class Constants:
         STAFF_NO_HEALTH_INSURANCE = 'STAFF_NO_HEALTH_INSURANCE'      # 健康保険非加入理由
         STAFF_NO_PENSION_INSURANCE = 'STAFF_NO_PENSION_INSURANCE'    # 厚生年金非加入理由
         STAFF_NO_EMPLOYMENT_INSURANCE = 'STAFF_NO_EMPLOYMENT_INSURANCE'  # 雇用保険非加入理由
+        HAKEN_TEISHOKUBI_EXEMPT = 'HAKEN_TEISHOKUBI_EXEMPT'          # 派遣抵触日制限外
 
     # 責任の程度 (haken_responsibility_degree)
     class HAKEN_RESPONSIBILITY_DEGREE:

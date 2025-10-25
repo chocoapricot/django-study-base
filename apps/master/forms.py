@@ -20,7 +20,6 @@ from .models import (
     EmploymentType,
     StaffRegistStatus,
     ClientRegistStatus,
-    HakenTeishokubiExempt,
 )
 from apps.system.settings.models import Dropdowns
 from apps.common.constants import Constants
@@ -630,13 +629,3 @@ class ClientRegistStatusForm(forms.ModelForm):
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
-class HakenTeishokubiExemptForm(forms.ModelForm):
-    """派遣抵触日制限外フォーム"""
-    class Meta:
-        model = HakenTeishokubiExempt
-        fields = ['content', 'display_order', 'is_active']
-        widgets = {
-            'content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
-            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
-            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-        }
