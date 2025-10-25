@@ -15,7 +15,7 @@ class Constants:
     # 契約ステータス（contract_status）
     class CONTRACT_STATUS:
         DRAFT = '1'      # 作成中
-        PENDING = '5'    # 申請中
+        PENDING = '5'    # 申請
         APPROVED = '10'  # 承認済
         ISSUED = '20'    # 発行済
         CONFIRMED = '30' # 契約済

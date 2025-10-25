@@ -155,7 +155,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         else:
             self.fields['contract_pattern'].queryset = ContractPattern.objects.none()
 
-        # 編集画面では「作成中」「申請中」のみ選択可能にする
+        # 編集画面では「作成中」「申請」のみ選択可能にする
         editable_statuses = [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]
         choices = []
         for dropdown in Dropdowns.objects.filter(category='contract_status', active=True).order_by('disp_seq'):
@@ -206,7 +206,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
 
         # 契約状況に応じたフォームの制御
         if self.instance and self.instance.pk:
-            # 「作成中」「申請中」以外は全フィールドを編集不可にする
+            # 「作成中」「申請」以外は全フィールドを編集不可にする
             if self.instance.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
                 for field_name, field in self.fields.items():
                     # payment_siteはクライアント設定でロックされている場合、そのスタイルを維持
@@ -231,6 +231,8 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         end_date = cleaned_data.get('end_date')
         client = cleaned_data.get('client')
         payment_site = cleaned_data.get('payment_site')
+        contract_status = cleaned_data.get('contract_status')
+        client_contract_type_code = cleaned_data.get('client_contract_type_code')
         
         # 終了日を必須にする
         if not end_date:
@@ -245,8 +247,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
 
         # クライアントの基本契約締結日との関係チェック
         if client and start_date:
-            contract_type_code = self.cleaned_data.get('client_contract_type_code')
-            if contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:  # 派遣契約の場合
+            if client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:  # 派遣契約の場合
                 if client.basic_contract_date_haken and start_date < client.basic_contract_date_haken:
                     self.add_error('start_date', f'契約開始日は基本契約締結日（派遣）（{client.basic_contract_date_haken}）以降の日付を入力してください。')
             else:  # 業務委託などの場合
@@ -262,7 +263,44 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
                 elif payment_site != client.payment_site:
                     self.add_error('payment_site', 'クライアントで設定された支払条件と異なる支払条件は選択できません。')
         
+        # 派遣契約で申請状態にする場合の給与関連情報チェック
+        if (client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and 
+            contract_status == Constants.CONTRACT_STATUS.PENDING):
+            self._validate_assigned_staff_payroll()
+        
         return cleaned_data
+    
+    def _validate_assigned_staff_payroll(self):
+        """割当されたスタッフの給与関連情報をチェックする"""
+        # 編集時のみチェック（新規作成時はまだ割当がない）
+        if not self.instance or not self.instance.pk:
+            return
+        
+        from .models import ContractAssignment
+        from apps.staff.models import StaffPayroll
+        
+        # この契約に割当されているスタッフ契約を取得
+        assignments = ContractAssignment.objects.filter(
+            client_contract=self.instance
+        ).select_related('staff_contract__staff')
+        
+        missing_payroll_staff = []
+        for assignment in assignments:
+            staff = assignment.staff_contract.staff
+            try:
+                # 給与関連情報が登録されているかチェック
+                staff.payroll
+            except StaffPayroll.DoesNotExist:
+                missing_payroll_staff.append(f"{staff.name_last} {staff.name_first}")
+        
+        if missing_payroll_staff:
+            staff_names = '、'.join(missing_payroll_staff)
+            error_message = (
+                f'派遣契約を申請するには、割当されたスタッフの給与関連情報が必要です。'
+                f'以下のスタッフの給与関連情報を登録してください：{staff_names}'
+            )
+            # non_field_errorsとしてエラーを追加
+            self.add_error(None, error_message)
     
     def clean_payment_site(self):
         """支払条件のクリーニング"""
@@ -489,7 +527,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         # 契約番号は自動採番のため非表示
         self.fields['contract_number'].required = False
 
-        # 編集画面では「作成中」「申請中」のみ選択可能にする
+        # 編集画面では「作成中」「申請」のみ選択可能にする
         editable_statuses = [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]
         choices = []
         for dropdown in Dropdowns.objects.filter(category='contract_status', active=True).order_by('disp_seq'):
@@ -506,7 +544,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
 
         # 契約状況に応じたフォームの制御
         if self.instance and self.instance.pk:
-            # 「作成中」「申請中」以外は全フィールドを編集不可にする
+            # 「作成中」「申請」以外は全フィールドを編集不可にする
             if self.instance.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
                 for field_name, field in self.fields.items():
                     if hasattr(field.widget, 'attrs'):

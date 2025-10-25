@@ -40,6 +40,35 @@ from .resources import ClientContractResource, StaffContractResource
 from .models import ContractAssignment
 from django.urls import reverse
 
+
+def _check_assigned_staff_payroll(client_contract):
+    """
+    クライアント契約に割当されたスタッフの給与関連情報をチェックする
+    
+    Args:
+        client_contract: ClientContractインスタンス
+        
+    Returns:
+        list: 給与関連情報が未登録のスタッフ名のリスト
+    """
+    from apps.staff.models import StaffPayroll
+    
+    # この契約に割当されているスタッフ契約を取得
+    assignments = ContractAssignment.objects.filter(
+        client_contract=client_contract
+    ).select_related('staff_contract__staff')
+    
+    missing_payroll_staff = []
+    for assignment in assignments:
+        staff = assignment.staff_contract.staff
+        try:
+            # 給与関連情報が登録されているかチェック
+            staff.payroll
+        except StaffPayroll.DoesNotExist:
+            missing_payroll_staff.append(f"{staff.name_last} {staff.name_first}")
+    
+    return missing_payroll_staff
+
 # 契約管理トップページ
 @login_required
 def contract_index(request):
@@ -828,7 +857,7 @@ def client_contract_approve(request, pk):
     if request.method == 'POST':
         is_approved = request.POST.get('is_approved')
         if is_approved:
-            # 「承認する」アクションは「申請中」からのみ可能
+            # 「承認する」アクションは「申請」からのみ可能
             if contract.contract_status == Constants.CONTRACT_STATUS.PENDING:
                 try:
                     # TTPを想定する場合、クライアント契約の start_date/end_date を使って期間が6か月超でないかチェック
@@ -840,6 +869,16 @@ def client_contract_approve(request, pk):
                             months -= 1
                         if months > 6:
                             messages.error(request, '労働者派遣法（第40条の6および第40条の7）により紹介予定派遣の派遣期間は6ヶ月までです')
+                            return redirect('contract:client_contract_detail', pk=contract.pk)
+
+                    # 派遣契約の場合、割当されたスタッフの給与関連情報をチェック
+                    if contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
+                        missing_payroll_staff = _check_assigned_staff_payroll(contract)
+                        if missing_payroll_staff:
+                            staff_names = '、'.join(missing_payroll_staff)
+                            messages.error(request, 
+                                f'派遣契約を承認するには、割当されたスタッフの給与関連情報が必要です。'
+                                f'以下のスタッフの給与関連情報を登録してください：{staff_names}')
                             return redirect('contract:client_contract_detail', pk=contract.pk)
 
                     # 契約番号を採番

@@ -792,7 +792,7 @@ def client_contract_approve(request, pk):
     if request.method == 'POST':
         is_approved = request.POST.get('is_approved')
         if is_approved:
-            # 「承認する」アクションは「申請中」からのみ可能
+            # 「承認する」アクションは「申請」からのみ可能
             if contract.contract_status == Constants.CONTRACT_STATUS.PENDING:
                 try:
                     # TTPを想定する場合、クライアント契約の start_date/end_date を使って期間が6か月超でないかチェック
