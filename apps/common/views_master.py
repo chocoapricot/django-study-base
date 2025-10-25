@@ -24,15 +24,30 @@ def master_select(request):
         modal_title = '派遣抵触日制限外を選択'
     elif master_type == 'health_insurance_non_enrollment':
         from apps.master.models import PhraseTemplate
-        items = PhraseTemplate.objects.filter(is_active=True, category='health_insurance_non_enrollment')
+        from apps.common.constants import Constants
+        items = PhraseTemplate.objects.filter(
+            is_active=True, 
+            title__key=Constants.PHRASE_TEMPLATE_TITLE.STAFF_NO_HEALTH_INSURANCE,
+            title__is_active=True
+        )
         modal_title = '健康保険非加入理由を選択'
     elif master_type == 'pension_insurance_non_enrollment':
         from apps.master.models import PhraseTemplate
-        items = PhraseTemplate.objects.filter(is_active=True, category='pension_insurance_non_enrollment')
+        from apps.common.constants import Constants
+        items = PhraseTemplate.objects.filter(
+            is_active=True, 
+            title__key=Constants.PHRASE_TEMPLATE_TITLE.STAFF_NO_PENSION_INSURANCE,
+            title__is_active=True
+        )
         modal_title = '厚生年金非加入理由を選択'
     elif master_type == 'employment_insurance_non_enrollment':
         from apps.master.models import PhraseTemplate
-        items = PhraseTemplate.objects.filter(is_active=True, category='employment_insurance_non_enrollment')
+        from apps.common.constants import Constants
+        items = PhraseTemplate.objects.filter(
+            is_active=True, 
+            title__key=Constants.PHRASE_TEMPLATE_TITLE.STAFF_NO_EMPLOYMENT_INSURANCE,
+            title__is_active=True
+        )
         modal_title = '雇用保険非加入理由を選択'
     else:
         items = []

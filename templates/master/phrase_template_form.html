@@ -11,15 +11,28 @@
         <form method="post">
             {% csrf_token %}
 
+            {% if selected_title %}
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.category.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">分類</label>
+                <label class="col-sm-2 col-form-label text-start text-md-end">文言タイトル</label>
                 <div class="col-sm-4">
-                    {{ form.category }}
-                    {% if form.category.errors %}
-                        <div class="text-danger small">{{ form.category.errors.0 }}</div>
+                    <div class="form-control form-control-sm bg-light">{{ selected_title.name }}</div>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <div class="text-danger small">{{ form.title.errors.0 }}</div>
                     {% endif %}
                 </div>
             </div>
+            {% else %}
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.title.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">文言タイトル</label>
+                <div class="col-sm-4">
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <div class="text-danger small">{{ form.title.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.content.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">内容</label>
@@ -59,7 +72,11 @@
             <div class="row mt-3">
                 <div class="col text-left">
                     <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
-                    <a href="{% url 'master:phrase_template_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% if selected_title %}
+                        <a href="{% url 'master:phrase_template_list' %}?title={{ selected_title.pk }}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% else %}
+                        <a href="{% url 'master:phrase_template_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% endif %}
                 </div>
             </div>
         </form>

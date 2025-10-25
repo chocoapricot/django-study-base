@@ -1,0 +1,50 @@
+[
+{
+    "model": "master.phrasetemplatetitle",
+    "pk": 1,
+    "fields": {
+        "version": 1761383148293420,
+        "created_at": "2025-10-25T09:21:34.945Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T09:21:34.945Z",
+        "updated_by": 1,
+        "key": "STAFF_NO_HEALTH_INSURANCE",
+        "name": "健康保険非加入理由",
+        "format_type": "text",
+        "is_active": true,
+        "display_order": 100
+    }
+},
+{
+    "model": "master.phrasetemplatetitle",
+    "pk": 2,
+    "fields": {
+        "version": 1761383192679433,
+        "created_at": "2025-10-25T09:22:19.331Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T09:22:19.331Z",
+        "updated_by": 1,
+        "key": "STAFF_NO_PENSION_INSURANCE",
+        "name": "厚生年金非加入理由",
+        "format_type": "text",
+        "is_active": true,
+        "display_order": 101
+    }
+},
+{
+    "model": "master.phrasetemplatetitle",
+    "pk": 3,
+    "fields": {
+        "version": 1761385174234728,
+        "created_at": "2025-10-25T09:55:20.887Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T09:55:20.887Z",
+        "updated_by": 1,
+        "key": "STAFF_NO_EMPLOYMENT_INSURANCE",
+        "name": "雇用保険非加入理由",
+        "format_type": "text",
+        "is_active": true,
+        "display_order": 102
+    }
+}
+]

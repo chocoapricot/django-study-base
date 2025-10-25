@@ -51,6 +51,12 @@ class Constants:
         NOT_LIMITED = '0' # 限定しない
         LIMITED = '1'     # 限定する
 
+    # 汎用文言テンプレートタイトルキー
+    class PHRASE_TEMPLATE_TITLE:
+        STAFF_NO_HEALTH_INSURANCE = 'STAFF_NO_HEALTH_INSURANCE'      # 健康保険非加入理由
+        STAFF_NO_PENSION_INSURANCE = 'STAFF_NO_PENSION_INSURANCE'    # 厚生年金非加入理由
+        STAFF_NO_EMPLOYMENT_INSURANCE = 'STAFF_NO_EMPLOYMENT_INSURANCE'  # 雇用保険非加入理由
+
 
 # 使用例
 """
