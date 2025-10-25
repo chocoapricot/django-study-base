@@ -141,6 +141,7 @@ django-study-base/
 | `apps_master_job_category` | `JobCategory` | 職種マスター |
 | `apps_master_mail_template` | `MailTemplate` | メールテンプレート |
 | `apps_master_minimum_pay` | `MinimumPay` | 最低賃金マスター |
+| `apps_master_phrase_template_title` | `PhraseTemplateTitle` | 汎用文言タイトル |
 | `apps_master_phrase_template` | `PhraseTemplate` | 汎用文言テンプレート |
 | `apps_master_qualification` | `Qualification` | 資格マスター |
 | `apps_master_skill` | `Skill` | 技能マスター |
@@ -148,7 +149,6 @@ django-study-base/
 | `apps_master_staff_regist_status` | `StaffRegistStatus` | スタッフ登録状況 |
 | `apps_profile_staff` | `StaffProfile` | スタッフプロフィール |
 | `apps_profile_staff_bank` | `StaffProfileBank` | プロフィール銀行口座 |
-| `apps_profile_staff_contacts` | `StaffProfileContact` | プロフィール連絡先 |
 | `apps_profile_staff_disability` | `StaffProfileDisability` | プロフィール障害者情報 |
 | `apps_profile_staff_international` | `StaffProfileInternational` | プロフィール外国籍情報 |
 | `apps_profile_staff_mynumber` | `StaffProfileMynumber` | プロフィールマイナンバー |
@@ -157,7 +157,6 @@ django-study-base/
 | `apps_staff` | `Staff` | スタッフ基本情報 |
 | `apps_staff_bank` | `StaffBank` | スタッフ銀行口座 |
 | `apps_staff_contacted` | `StaffContacted` | スタッフ連絡履歴 |
-| `apps_staff_contacts` | `StaffContact` | スタッフ連絡先 |
 | `apps_staff_disability` | `StaffDisability` | スタッフ障害者情報 |
 | `apps_staff_file` | `StaffFile` | スタッフファイル |
 | `apps_staff_international` | `StaffInternational` | スタッフ外国籍情報 |
