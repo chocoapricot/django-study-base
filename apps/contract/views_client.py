@@ -21,7 +21,7 @@ from apps.system.logs.models import AppLog
 from apps.common.utils import fill_pdf_from_template
 from apps.client.models import Client, ClientUser
 from apps.staff.models import Staff
-from apps.master.models import ContractPattern, StaffAgreement, DefaultValue, BusinessContent
+from apps.master.models import ContractPattern, StaffAgreement, DefaultValue
 from apps.connect.models import ConnectStaff, ConnectStaffAgree, ConnectClient, MynumberRequest, ProfileRequest, BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
 from apps.staff.models import Staff
 from apps.client.models import Client
@@ -676,8 +676,13 @@ def haken_master_select(request):
 
     # マスタータイプに応じてデータを取得（有効なもののみ）
     if master_type == 'business_content':
-        from apps.master.models import BusinessContent
-        items = BusinessContent.objects.filter(is_active=True)
+        from apps.master.models import PhraseTemplate
+        from apps.common.constants import Constants
+        items = PhraseTemplate.objects.filter(
+            is_active=True, 
+            title__key=Constants.PHRASE_TEMPLATE_TITLE.CONTRACT_BUSINESS_CONTENT,
+            title__is_active=True
+        )
         modal_title = '業務内容を選択'
     elif master_type == 'responsibility_degree':
         from apps.system.settings.models import Dropdowns

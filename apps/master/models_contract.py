@@ -131,22 +131,7 @@ class JobCategory(MyModel):
         return self.name
 
 
-class BusinessContent(MyModel):
-    """
-    業務内容マスタ
-    """
-    content = models.TextField('内容')
-    display_order = models.IntegerField('表示順', default=0)
-    is_active = models.BooleanField('有効', default=True)
 
-    class Meta:
-        db_table = 'apps_master_business_content'
-        verbose_name = '業務内容'
-        verbose_name_plural = '業務内容'
-        ordering = ['display_order']
-
-    def __str__(self):
-        return self.content
 
 
 

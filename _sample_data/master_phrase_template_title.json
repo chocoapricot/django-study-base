@@ -83,5 +83,22 @@
         "is_active": true,
         "display_order": 201
     }
+},
+{
+    "model": "master.phrasetemplatetitle",
+    "pk": 6,
+    "fields": {
+        "version": 1761405605221184,
+        "created_at": "2025-10-25T15:35:51.873Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T15:35:51.873Z",
+        "updated_by": 1,
+        "key": "CONTRACT_BUSINESS_CONTENT",
+        "name": "業務内容",
+        "description": "クライアント契約、スタッフ契約に利用",
+        "format_type": "textarea",
+        "is_active": true,
+        "display_order": 202
+    }
 }
 ]

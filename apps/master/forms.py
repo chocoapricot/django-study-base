@@ -14,7 +14,6 @@ from .models import (
     ContractPattern,
     ContractTerms,
     MinimumPay,
-    BusinessContent,
 
     DefaultValue,
     EmploymentType,
@@ -25,16 +24,7 @@ from apps.system.settings.models import Dropdowns
 from apps.common.constants import Constants
 
 
-class BusinessContentForm(forms.ModelForm):
-    """業務内容フォーム"""
-    class Meta:
-        model = BusinessContent
-        fields = ['content', 'display_order', 'is_active']
-        widgets = {
-            'content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
-            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
-            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-        }
+
 
 
 

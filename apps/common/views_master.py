@@ -11,8 +11,13 @@ def master_select(request):
     
     # マスタータイプに応じてデータを取得（有効なもののみ）
     if master_type == 'business_content':
-        from apps.master.models import BusinessContent
-        items = BusinessContent.objects.filter(is_active=True)
+        from apps.master.models import PhraseTemplate
+        from apps.common.constants import Constants
+        items = PhraseTemplate.objects.filter(
+            is_active=True, 
+            title__key=Constants.PHRASE_TEMPLATE_TITLE.CONTRACT_BUSINESS_CONTENT,
+            title__is_active=True
+        )
         modal_title = '業務内容を選択'
     elif master_type == 'responsibility_degree':
         from apps.master.models import PhraseTemplate

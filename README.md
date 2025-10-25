@@ -136,9 +136,6 @@ django-study-base/
 | `apps_master_contract_terms` | `ContractTerms` | 契約文言マスター |
 | `apps_master_default_value` | `DefaultValue` | デフォルト値マスター |
 | `apps_master_employment_type` | `EmploymentType` | 雇用形態マスター |
-| `apps_master_business_content` | `BusinessContent` | 業務内容マスター |
-
-
 | `apps_master_information` | `Information` | お知らせマスター |
 | `apps_master_information_file` | `InformationFile` | お知らせファイル |
 | `apps_master_job_category` | `JobCategory` | 職種マスター |

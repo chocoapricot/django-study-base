@@ -13,7 +13,6 @@ from .models import (
     ContractPattern,
     ContractTerms,
     MinimumPay,
-    BusinessContent,
 
 )
 from .forms import (
@@ -21,7 +20,6 @@ from .forms import (
     ContractPatternForm,
     ContractTermForm,
     MinimumPayForm,
-    BusinessContentForm,
 
 )
 from apps.system.logs.models import AppLog
@@ -615,95 +613,6 @@ def minimum_pay_change_history_list(request):
     )
 
 
-# 業務内容管理ビュー
-@login_required
-@permission_required("master.view_businesscontent", raise_exception=True)
-def business_content_list(request):
-    """業務内容一覧"""
-    search_query = request.GET.get("search", "")
-    items = BusinessContent.objects.all()
-    if search_query:
-        items = items.filter(content__icontains=search_query)
-    items = items.order_by("display_order")
-    paginator = Paginator(items, 20)
-    page = request.GET.get("page")
-    items_page = paginator.get_page(page)
-    change_logs = AppLog.objects.filter(model_name="BusinessContent", action__in=["create", "update", "delete"]).order_by("-timestamp")[:5]
-    change_logs_count = AppLog.objects.filter(model_name="BusinessContent", action__in=["create", "update", "delete"]).count()
-    context = {
-        "items": items_page,
-        "search_query": search_query,
-        "change_logs": change_logs,
-        "change_logs_count": change_logs_count,
-        "history_url_name": "master:business_content_change_history_list",
-    }
-    return render(request, "master/business_content_list.html", context)
 
-
-@login_required
-@permission_required("master.add_businesscontent", raise_exception=True)
-def business_content_create(request):
-    """業務内容作成"""
-    if request.method == "POST":
-        form = BusinessContentForm(request.POST)
-        if form.is_valid():
-            item = form.save()
-            messages.success(request, f"業務内容「{item.content}」を作成しました。")
-            return redirect("master:business_content_list")
-    else:
-        form = BusinessContentForm()
-    context = {"form": form, "title": "業務内容作成"}
-    return render(request, "master/business_content_form.html", context)
-
-
-@login_required
-@permission_required("master.change_businesscontent", raise_exception=True)
-def business_content_update(request, pk):
-    """業務内容編集"""
-    item = get_object_or_404(BusinessContent, pk=pk)
-    if request.method == "POST":
-        form = BusinessContentForm(request.POST, instance=item)
-        if form.is_valid():
-            item = form.save()
-            messages.success(request, f"業務内容「{item.content}」を更新しました。")
-            return redirect("master:business_content_list")
-    else:
-        form = BusinessContentForm(instance=item)
-    context = {"form": form, "item": item, "title": f"業務内容編集"}
-    return render(request, "master/business_content_form.html", context)
-
-
-@login_required
-@permission_required("master.delete_businesscontent", raise_exception=True)
-def business_content_delete(request, pk):
-    """業務内容削除"""
-    item = get_object_or_404(BusinessContent, pk=pk)
-    if request.method == "POST":
-        item_content = item.content
-        item.delete()
-        messages.success(request, f"業務内容「{item_content}」を削除しました。")
-        return redirect("master:business_content_list")
-    context = {"item": item, "title": f"業務内容削除"}
-    return render(request, "master/business_content_delete.html", context)
-
-
-@login_required
-@permission_required("master.view_businesscontent", raise_exception=True)
-def business_content_change_history_list(request):
-    """業務内容変更履歴一覧"""
-    logs = AppLog.objects.filter(model_name="BusinessContent", action__in=["create", "update", "delete"]).order_by("-timestamp")
-    paginator = Paginator(logs, 20)
-    page = request.GET.get("page")
-    logs_page = paginator.get_page(page)
-    return render(
-        request,
-        "common/common_change_history_list.html",
-        {
-            "change_logs": logs_page,
-            "page_title": "業務内容変更履歴",
-            "back_url_name": "master:business_content_list",
-            "model_name": "BusinessContent",
-        },
-    )
 
 

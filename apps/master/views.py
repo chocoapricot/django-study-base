@@ -85,14 +85,7 @@ MASTER_CONFIGS = [
         "url_name": "master:minimum_pay_list",
         "permission": "master.view_minimumpay",
     },
-    {
-        "category": "契約",
-        "name": "業務内容管理",
-        "description": "業務内容の管理",
-        "model": "master.BusinessContent",
-        "url_name": "master:business_content_list",
-        "permission": "master.view_businesscontent",
-    },
+
 
 
     {

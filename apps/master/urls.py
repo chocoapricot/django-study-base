@@ -102,12 +102,7 @@ urlpatterns = [
     path('minimum-pay/<int:pk>/delete/', views.minimum_pay_delete, name='minimum_pay_delete'),
     path('minimum-pay/history/', views.minimum_pay_change_history_list, name='minimum_pay_change_history_list'),
 
-    # 業務内容管理
-    path('business-content/', views.business_content_list, name='business_content_list'),
-    path('business-content/create/', views.business_content_create, name='business_content_create'),
-    path('business-content/<int:pk>/update/', views.business_content_update, name='business_content_update'),
-    path('business-content/<int:pk>/delete/', views.business_content_delete, name='business_content_delete'),
-    path('business-content/history/', views.business_content_change_history_list, name='business_content_change_history_list'),
+
 
 
 
