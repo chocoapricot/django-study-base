@@ -187,9 +187,9 @@ def phrase_template_change_history_list(request):
     page_obj = paginator.get_page(page_number)
     
     context = {
-        'page_obj': page_obj,
-        'title': '汎用文言テンプレート変更履歴',
-        'model_name': 'PhraseTemplate',
-        'list_url': 'master:phrase_template_list',
+        'change_logs': page_obj,
+        'page_title': '汎用文言テンプレート変更履歴',
+        'back_url_name': 'master:phrase_template_list',
+        'info_card_path': None,  # 情報カードは不要
     }
-    return render(request, 'common/change_history_list.html', context)
+    return render(request, 'common/common_change_history_list.html', context)
