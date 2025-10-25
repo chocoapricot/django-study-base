@@ -8,6 +8,7 @@ class CompanyModelTest(TestCase):
         self.company = Company.objects.create(
             name="テスト会社",
             corporate_number="1234567890123",
+            dispatch_treatment_method='agreement',
             postal_code="1000001",
             address="東京都千代田区千代田1-1",
             phone_number="03-1234-5678"
@@ -22,7 +23,7 @@ class CompanyModelTest(TestCase):
     def test_company_unique_name(self):
         """会社名の一意性テスト"""
         with self.assertRaises(Exception):
-            Company.objects.create(name="テスト会社")
+            Company.objects.create(name="テスト会社", dispatch_treatment_method='agreement')
 
 class CompanyDepartmentModelTest(TestCase):
     """部署モデルのテスト"""
@@ -113,7 +114,7 @@ class CompanyUserModelTest(TestCase):
     """自社担当者モデルのテスト"""
 
     def setUp(self):
-        self.company = Company.objects.create(name="テスト株式会社", corporate_number="1112223334445")
+        self.company = Company.objects.create(name="テスト株式会社", corporate_number="1112223334445", dispatch_treatment_method='agreement')
         self.department = CompanyDepartment.objects.create(
             name="テスト部署",
             corporate_number="1112223334445",

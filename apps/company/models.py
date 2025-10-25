@@ -141,6 +141,19 @@ class Company(MyModel):
     haken_permit_number = models.CharField('許可番号(人材派遣)', max_length=100, blank=True, null=True)
     shokai_permit_number = models.CharField('許可番号(職業紹介)', max_length=100, blank=True, null=True)
     foreign_regist_number = models.CharField('登録番号(特定技能)', max_length=100, blank=True, null=True)
+    
+    # 派遣待遇決定方式の選択肢
+    DISPATCH_TREATMENT_METHOD_CHOICES = [
+        ('agreement', '労使協定方式'),
+        ('equal_balance', '派遣先均等・均衡方式'),
+    ]
+    dispatch_treatment_method = models.CharField(
+        '派遣待遇決定方式',
+        max_length=20,
+        choices=DISPATCH_TREATMENT_METHOD_CHOICES,
+        default='agreement',
+        help_text='派遣労働者の待遇決定方式を選択してください'
+    )
 
 
     class Meta:

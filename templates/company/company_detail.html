@@ -100,8 +100,15 @@
             </div>
         </div>
 
-
-        
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>派遣待遇決定方式</strong>
+                {% my_help_icon "派遣労働者の待遇決定方式を選択してください" %}
+            </div>
+            <div class="col-sm-4">
+                {{ company.get_dispatch_treatment_method_display }}
+            </div>
+        </div>
 
         <div class="d-flex justify-content-start">
             <a href="{% url 'company:company_edit' %}" class="btn btn-sm btn-primary me-2">編集</a>

@@ -218,3 +218,147 @@ class ContractUtilsTest(TestCase):
         unit_item = next((item for item in items if item['title'] == '組織単位'), None)
         self.assertIsNotNone(unit_item)
         self.assertEqual(unit_item['text'], '開発第一部　（部長）')
+
+    @patch('apps.contract.utils.generate_table_based_contract_pdf')
+    def test_haken_notification_agreement_method(self, mock_generate_pdf):
+        """
+        Test that the dispatch notification PDF uses the company's dispatch treatment method (agreement).
+        """
+        from apps.contract.utils import generate_haken_notification_pdf
+        from apps.contract.models import ClientContractHaken, StaffContract
+        from apps.company.models import Company
+        from apps.staff.models import Staff
+        from apps.master.models import EmploymentType
+        from datetime import datetime
+
+        # Create company with agreement method
+        company = Company.objects.create(
+            name='Test Company',
+            dispatch_treatment_method='agreement'
+        )
+
+        # Create employment type
+        employment_type = EmploymentType.objects.create(
+            name='正社員',
+            is_fixed_term=False
+        )
+
+        # Create staff
+        staff = Staff.objects.create(
+            name_last='田中',
+            name_first='太郎',
+            birth_date=datetime(1990, 1, 1).date()
+        )
+
+        # Create dispatch contract
+        haken_contract = ClientContract.objects.create(
+            client=self.client,
+            contract_name='Test Dispatch Contract',
+            contract_pattern=self.haken_pattern,
+            start_date=datetime.today().date(),
+            payment_site=self.payment_site,
+        )
+
+        # Create haken info
+        ClientContractHaken.objects.create(client_contract=haken_contract)
+
+        # Create staff contract
+        staff_contract = StaffContract.objects.create(
+            staff=staff,
+            employment_type=employment_type,
+            start_date=datetime.today().date(),
+            contract_name='Test Staff Contract'
+        )
+
+        # Link staff contract to client contract
+        haken_contract.staff_contracts.add(staff_contract)
+
+        # Generate notification PDF
+        generate_haken_notification_pdf(haken_contract, self.user, datetime.now())
+
+        # Check the mock call
+        mock_generate_pdf.assert_called_once()
+        args, kwargs = mock_generate_pdf.call_args
+        items = args[3]
+
+        # Find the worker item and check agreement target
+        worker_item = next((item for item in items if item['title'] == '派遣労働者1'), None)
+        self.assertIsNotNone(worker_item)
+        
+        # Check the agreement target sub-item
+        agreement_item = next((sub_item for sub_item in worker_item['rowspan_items'] if sub_item['title'] == '協定対象'), None)
+        self.assertIsNotNone(agreement_item)
+        self.assertIn('■　協定対象　（労使協定方式）', agreement_item['text'])
+        self.assertIn('□　協定対象でない　（均等・均衡方式）', agreement_item['text'])
+
+    @patch('apps.contract.utils.generate_table_based_contract_pdf')
+    def test_haken_notification_equal_balance_method(self, mock_generate_pdf):
+        """
+        Test that the dispatch notification PDF uses the company's dispatch treatment method (equal_balance).
+        """
+        from apps.contract.utils import generate_haken_notification_pdf
+        from apps.contract.models import ClientContractHaken, StaffContract
+        from apps.company.models import Company
+        from apps.staff.models import Staff
+        from apps.master.models import EmploymentType
+        from datetime import datetime
+
+        # Create company with equal_balance method
+        company = Company.objects.create(
+            name='Test Company',
+            dispatch_treatment_method='equal_balance'
+        )
+
+        # Create employment type
+        employment_type = EmploymentType.objects.create(
+            name='正社員',
+            is_fixed_term=False
+        )
+
+        # Create staff
+        staff = Staff.objects.create(
+            name_last='田中',
+            name_first='太郎',
+            birth_date=datetime(1990, 1, 1).date()
+        )
+
+        # Create dispatch contract
+        haken_contract = ClientContract.objects.create(
+            client=self.client,
+            contract_name='Test Dispatch Contract',
+            contract_pattern=self.haken_pattern,
+            start_date=datetime.today().date(),
+            payment_site=self.payment_site,
+        )
+
+        # Create haken info
+        ClientContractHaken.objects.create(client_contract=haken_contract)
+
+        # Create staff contract
+        staff_contract = StaffContract.objects.create(
+            staff=staff,
+            employment_type=employment_type,
+            start_date=datetime.today().date(),
+            contract_name='Test Staff Contract'
+        )
+
+        # Link staff contract to client contract
+        haken_contract.staff_contracts.add(staff_contract)
+
+        # Generate notification PDF
+        generate_haken_notification_pdf(haken_contract, self.user, datetime.now())
+
+        # Check the mock call
+        mock_generate_pdf.assert_called_once()
+        args, kwargs = mock_generate_pdf.call_args
+        items = args[3]
+
+        # Find the worker item and check agreement target
+        worker_item = next((item for item in items if item['title'] == '派遣労働者1'), None)
+        self.assertIsNotNone(worker_item)
+        
+        # Check the agreement target sub-item
+        agreement_item = next((sub_item for sub_item in worker_item['rowspan_items'] if sub_item['title'] == '協定対象'), None)
+        self.assertIsNotNone(agreement_item)
+        self.assertIn('□　協定対象　（労使協定方式）', agreement_item['text'])
+        self.assertIn('■　協定対象でない　（均等・均衡方式）', agreement_item['text'])

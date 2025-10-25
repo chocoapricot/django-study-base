@@ -119,7 +119,21 @@
                     {% endif %}
                 </div>
             </div>
-            
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.dispatch_treatment_method.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                    {{ form.dispatch_treatment_method.label }}
+                    {% my_help_icon "派遣労働者の待遇決定方式を選択してください" %}
+                </label>
+                <div class="col-sm-6">
+                    <div class="d-flex gap-3">
+                        {{ form.dispatch_treatment_method }}
+                    </div>
+                    {% if form.dispatch_treatment_method.errors %}
+                        <div class="text-danger">{{ form.dispatch_treatment_method.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
             
             <div class="mt-4">
                 <button type="submit" class="btn btn-sm btn-primary me-1">保存</button>
@@ -198,5 +212,21 @@ document.addEventListener('DOMContentLoaded', function() {
     document.dispatchEvent(new Event('logicInfoSet'));
 });
 </script>
+
+<style>
+/* 派遣待遇決定方式のラジオボタンを横並びにする */
+#id_dispatch_treatment_method {
+    display: flex !important;
+    gap: 1rem;
+}
+
+#id_dispatch_treatment_method .form-check {
+    margin-right: 1rem;
+}
+
+#id_dispatch_treatment_method input[type="radio"] {
+    margin-right: 0.5rem;
+}
+</style>
 
 {% endblock %}

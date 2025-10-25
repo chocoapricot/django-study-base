@@ -564,8 +564,13 @@ def generate_haken_notification_pdf(contract, user, issued_at, watermark_text=No
             "text": employment_type if employment_type else "-"
         })
         
-        # 協定対象（固定出力）
-        agreement_target_text = "■　協定対象　（労使協定方式）\n□　協定対象でない　（均等・均衡方式）"
+        # 協定対象（会社情報の派遣待遇決定方式に基づいて動的に設定）
+        agreement_target_text = ""
+        if company and company.dispatch_treatment_method == 'agreement':
+            agreement_target_text = "■　協定対象　（労使協定方式）\n□　協定対象でない　（均等・均衡方式）"
+        else:
+            agreement_target_text = "□　協定対象　（労使協定方式）\n■　協定対象でない　（均等・均衡方式）"
+        
         rowspan_items.append({
             "title": "協定対象",
             "text": agreement_target_text

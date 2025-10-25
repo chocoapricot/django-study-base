@@ -21,6 +21,7 @@ class CompanyViewTest(TestCase):
         self.company = Company.objects.create(
             name="テスト会社",
             corporate_number="1234567890123",
+            dispatch_treatment_method='agreement',
             postal_code="1000001",
             address="東京都千代田区千代田1-1",
             phone_number="03-1234-5678"
@@ -177,7 +178,7 @@ class CompanyUserViewTest(TestCase):
         )
         self.client.login(username='testuser', password='testpassword')
 
-        self.company = Company.objects.create(name="テスト株式会社", corporate_number="1112223334445")
+        self.company = Company.objects.create(name="テスト株式会社", corporate_number="1112223334445", dispatch_treatment_method='agreement')
         self.department = CompanyDepartment.objects.create(
             name="テスト部署",
             corporate_number="1112223334445",

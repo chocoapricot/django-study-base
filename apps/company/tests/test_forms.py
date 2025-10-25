@@ -20,31 +20,31 @@ class CompanyFormTest(TestCase):
         self.assertIn('corporate_number', form.errors)
 
         # 有効な法人番号（実際の法人番号例）
-        form_data = {'name': 'テスト会社', 'corporate_number': '2000012010019'}
+        form_data = {'name': 'テスト会社', 'corporate_number': '2000012010019', 'dispatch_treatment_method': 'agreement'}
         form = CompanyForm(data=form_data)
         if not form.is_valid():
             print("Form errors:", form.errors)
         self.assertTrue(form.is_valid())
 
         # 法人番号が空の場合は有効とする
-        form_data = {'name': 'テスト会社', 'corporate_number': ''}
+        form_data = {'name': 'テスト会社', 'corporate_number': '', 'dispatch_treatment_method': 'agreement'}
         form = CompanyForm(data=form_data)
         self.assertTrue(form.is_valid())
 
     def test_corporate_number_edge_cases(self):
         """法人番号のエッジケーステスト"""
         # 13桁未満
-        form_data = {'name': 'テスト会社', 'corporate_number': '12345'}
+        form_data = {'name': 'テスト会社', 'corporate_number': '12345', 'dispatch_treatment_method': 'agreement'}
         form = CompanyForm(data=form_data)
         self.assertFalse(form.is_valid())
 
         # 13桁超過
-        form_data = {'name': 'テスト会社', 'corporate_number': '12345678901234'}
+        form_data = {'name': 'テスト会社', 'corporate_number': '12345678901234', 'dispatch_treatment_method': 'agreement'}
         form = CompanyForm(data=form_data)
         self.assertFalse(form.is_valid())
 
         # 数字以外の文字を含む
-        form_data = {'name': 'テスト会社', 'corporate_number': '200001201001a'}
+        form_data = {'name': 'テスト会社', 'corporate_number': '200001201001a', 'dispatch_treatment_method': 'agreement'}
         form = CompanyForm(data=form_data)
         self.assertFalse(form.is_valid())
 
@@ -59,6 +59,7 @@ class CompanyFormTest(TestCase):
             'postal_code': '1000001',
             'address': '東京都千代田区千代田1-1',
             'phone_number': '03-1234-ABCD',
+            'dispatch_treatment_method': 'agreement',
         }
         form = CompanyForm(data=form_data)
         self.assertFalse(form.is_valid())
@@ -70,7 +71,7 @@ class CompanyUserFormTest(TestCase):
     """自社担当者フォームのテスト"""
 
     def setUp(self):
-        self.company = Company.objects.create(name="テスト株式会社")
+        self.company = Company.objects.create(name="テスト株式会社", dispatch_treatment_method='agreement')
         self.department = CompanyDepartment.objects.create(name="テスト部署")
         self.valid_data = {
             'department': self.department.pk,
