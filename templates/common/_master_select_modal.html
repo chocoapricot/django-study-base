@@ -23,9 +23,9 @@
         <tbody>
             {% for item in page_obj.object_list %}
             <tr>
-                <td style="white-space: pre-wrap;">{{ item.content }}</td>
+                <td style="white-space: pre-wrap;">{% if item.content %}{{ item.content }}{% else %}{{ item.name }}{% endif %}</td>
                 <td style="white-space: nowrap;">
-                    <button type="button" class="btn btn-sm btn-primary" onclick="selectMaster('{{ item.content|escapejs }}')">
+                    <button type="button" class="btn btn-sm btn-primary" onclick="selectMaster('{% if item.content %}{{ item.content|escapejs }}{% else %}{{ item.name|escapejs }}{% endif %}')">
                         選択
                     </button>
                 </td>

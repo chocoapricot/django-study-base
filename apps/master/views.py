@@ -93,14 +93,7 @@ MASTER_CONFIGS = [
         "url_name": "master:business_content_list",
         "permission": "master.view_businesscontent",
     },
-    {
-        "category": "契約",
-        "name": "派遣責任程度管理",
-        "description": "派遣責任程度の管理",
-        "model": "master.HakenResponsibilityDegree",
-        "url_name": "master:haken_responsibility_degree_list",
-        "permission": "master.view_hakenresponsibilitydegree",
-    },
+
     {
         "category": "契約",
         "name": "派遣抵触日制限外管理",
@@ -160,7 +153,7 @@ MASTER_CONFIGS = [
     {
         "category": "その他",
         "name": "汎用文言テンプレート",
-        "description": "各種非加入理由などの定型文を管理します",
+        "description": "画面に入力する定型文を管理します",
         "model": "master.PhraseTemplate",
         "url_name": "master:phrase_template_list",
         "permission": "master.view_phrasetemplate",

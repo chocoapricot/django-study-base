@@ -109,12 +109,7 @@ urlpatterns = [
     path('business-content/<int:pk>/delete/', views.business_content_delete, name='business_content_delete'),
     path('business-content/history/', views.business_content_change_history_list, name='business_content_change_history_list'),
 
-    # 派遣責任程度管理
-    path('haken-responsibility-degree/', views.haken_responsibility_degree_list, name='haken_responsibility_degree_list'),
-    path('haken-responsibility-degree/create/', views.haken_responsibility_degree_create, name='haken_responsibility_degree_create'),
-    path('haken-responsibility-degree/<int:pk>/update/', views.haken_responsibility_degree_update, name='haken_responsibility_degree_update'),
-    path('haken-responsibility-degree/<int:pk>/delete/', views.haken_responsibility_degree_delete, name='haken_responsibility_degree_delete'),
-    path('haken-responsibility-degree/history/', views.haken_responsibility_degree_change_history_list, name='haken_responsibility_degree_change_history_list'),
+
 
     # 雇用形態管理
     path('employment-type/', views.employment_type_list, name='employment_type_list'),

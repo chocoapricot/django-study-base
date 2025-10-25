@@ -15,8 +15,8 @@ def master_select(request):
         items = BusinessContent.objects.filter(is_active=True)
         modal_title = '業務内容を選択'
     elif master_type == 'responsibility_degree':
-        from apps.master.models import HakenResponsibilityDegree
-        items = HakenResponsibilityDegree.objects.filter(is_active=True)
+        from apps.system.settings.models import Dropdowns
+        items = Dropdowns.objects.filter(category='HAKEN_RESPONSIBILITY_DEGREE', active=True)
         modal_title = '責任の程度を選択'
     elif master_type == 'haken_teishokubi_exempt':
         from apps.master.models import HakenTeishokubiExempt
@@ -54,10 +54,16 @@ def master_select(request):
         modal_title = 'マスター選択'
     
     if search_query:
-        items = items.filter(content__icontains=search_query)
+        if master_type == 'responsibility_degree':
+            items = items.filter(name__icontains=search_query)
+        else:
+            items = items.filter(content__icontains=search_query)
     
     # 表示順で並び替え（モデルのMeta.orderingを使用）
-    items = items.order_by('display_order')
+    if master_type == 'responsibility_degree':
+        items = items.order_by('disp_seq')
+    else:
+        items = items.order_by('display_order')
     
     # ページネーション
     paginator = Paginator(items, 20)

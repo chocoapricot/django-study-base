@@ -3,7 +3,7 @@
     "model": "master.phrasetemplatetitle",
     "pk": 1,
     "fields": {
-        "version": 1761401893062156,
+        "version": 1761403019138769,
         "created_at": "2025-10-25T09:21:34.945Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:33:59.714Z",
@@ -20,7 +20,7 @@
     "model": "master.phrasetemplatetitle",
     "pk": 2,
     "fields": {
-        "version": 1761401901508627,
+        "version": 1761403019144195,
         "created_at": "2025-10-25T09:22:19.331Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:34:08.161Z",
@@ -37,7 +37,7 @@
     "model": "master.phrasetemplatetitle",
     "pk": 3,
     "fields": {
-        "version": 1761401907325799,
+        "version": 1761403019146578,
         "created_at": "2025-10-25T09:55:20.887Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:34:13.978Z",
@@ -48,6 +48,40 @@
         "format_type": "text",
         "is_active": true,
         "display_order": 102
+    }
+},
+{
+    "model": "master.phrasetemplatetitle",
+    "pk": 4,
+    "fields": {
+        "version": 1761403922718172,
+        "created_at": "2025-10-25T15:02:28.989Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T15:07:49.370Z",
+        "updated_by": 1,
+        "key": "HAKEN_RESPONSIBILITY_DEGREE",
+        "name": "派遣・責任の程度",
+        "description": "クライアント契約（派遣）で必要。派遣個別契約書に出力。",
+        "format_type": "text",
+        "is_active": true,
+        "display_order": 200
+    }
+},
+{
+    "model": "master.phrasetemplatetitle",
+    "pk": 5,
+    "fields": {
+        "version": 1761403899871125,
+        "created_at": "2025-10-25T15:07:08.395Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T15:07:26.523Z",
+        "updated_by": 1,
+        "key": "HAKEN_TEISHOKUBI_EXEMPT",
+        "name": "派遣抵触日制限外",
+        "description": "クライアント契約（派遣）で必要。派遣個別契約書に出力。",
+        "format_type": "textarea",
+        "is_active": true,
+        "display_order": 201
     }
 }
 ]

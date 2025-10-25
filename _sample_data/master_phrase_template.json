@@ -3,7 +3,7 @@
     "model": "master.phrasetemplate",
     "pk": 1,
     "fields": {
-        "version": 1761402019473745,
+        "version": 1761403021447963,
         "created_at": "2025-10-25T14:36:06.126Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:36:06.126Z",
@@ -18,7 +18,7 @@
     "model": "master.phrasetemplate",
     "pk": 2,
     "fields": {
-        "version": 1761402026916203,
+        "version": 1761403021453553,
         "created_at": "2025-10-25T14:36:13.568Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:36:13.568Z",
@@ -33,7 +33,7 @@
     "model": "master.phrasetemplate",
     "pk": 3,
     "fields": {
-        "version": 1761402034111855,
+        "version": 1761403021455974,
         "created_at": "2025-10-25T14:36:20.764Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:36:20.764Z",
@@ -48,7 +48,7 @@
     "model": "master.phrasetemplate",
     "pk": 4,
     "fields": {
-        "version": 1761402369579295,
+        "version": 1761403021458424,
         "created_at": "2025-10-25T14:41:56.231Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:41:56.231Z",
@@ -63,7 +63,7 @@
     "model": "master.phrasetemplate",
     "pk": 5,
     "fields": {
-        "version": 1761402375894968,
+        "version": 1761403021462136,
         "created_at": "2025-10-25T14:42:02.547Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:02.547Z",
@@ -78,7 +78,7 @@
     "model": "master.phrasetemplate",
     "pk": 6,
     "fields": {
-        "version": 1761402388004659,
+        "version": 1761403021465258,
         "created_at": "2025-10-25T14:42:14.657Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:14.657Z",
@@ -93,7 +93,7 @@
     "model": "master.phrasetemplate",
     "pk": 7,
     "fields": {
-        "version": 1761402396108738,
+        "version": 1761403021468319,
         "created_at": "2025-10-25T14:42:22.761Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:22.761Z",
@@ -108,7 +108,7 @@
     "model": "master.phrasetemplate",
     "pk": 8,
     "fields": {
-        "version": 1761402406765022,
+        "version": 1761403021471055,
         "created_at": "2025-10-25T14:42:33.417Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:33.417Z",
@@ -123,7 +123,7 @@
     "model": "master.phrasetemplate",
     "pk": 9,
     "fields": {
-        "version": 1761402413078505,
+        "version": 1761403021473760,
         "created_at": "2025-10-25T14:42:39.730Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:39.730Z",
@@ -138,7 +138,7 @@
     "model": "master.phrasetemplate",
     "pk": 10,
     "fields": {
-        "version": 1761402424894953,
+        "version": 1761403021476547,
         "created_at": "2025-10-25T14:42:51.547Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:51.547Z",
@@ -153,7 +153,7 @@
     "model": "master.phrasetemplate",
     "pk": 11,
     "fields": {
-        "version": 1761402431545526,
+        "version": 1761403021479340,
         "created_at": "2025-10-25T14:42:58.197Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:58.198Z",
@@ -168,7 +168,7 @@
     "model": "master.phrasetemplate",
     "pk": 12,
     "fields": {
-        "version": 1761402557306125,
+        "version": 1761403021483253,
         "created_at": "2025-10-25T14:43:06.839Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:45:03.958Z",
@@ -183,7 +183,7 @@
     "model": "master.phrasetemplate",
     "pk": 13,
     "fields": {
-        "version": 1761402551004750,
+        "version": 1761403021487592,
         "created_at": "2025-10-25T14:43:12.799Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:44:57.657Z",
@@ -198,7 +198,7 @@
     "model": "master.phrasetemplate",
     "pk": 14,
     "fields": {
-        "version": 1761402466708790,
+        "version": 1761403021490037,
         "created_at": "2025-10-25T14:43:33.361Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:43:33.361Z",
@@ -213,7 +213,7 @@
     "model": "master.phrasetemplate",
     "pk": 15,
     "fields": {
-        "version": 1761402472985136,
+        "version": 1761403021492242,
         "created_at": "2025-10-25T14:43:39.637Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:43:39.638Z",
@@ -228,7 +228,7 @@
     "model": "master.phrasetemplate",
     "pk": 16,
     "fields": {
-        "version": 1761402589447389,
+        "version": 1761403021494560,
         "created_at": "2025-10-25T14:45:36.099Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:45:36.099Z",
@@ -243,7 +243,7 @@
     "model": "master.phrasetemplate",
     "pk": 17,
     "fields": {
-        "version": 1761402599323577,
+        "version": 1761403021496908,
         "created_at": "2025-10-25T14:45:45.975Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:45:45.976Z",
@@ -258,7 +258,7 @@
     "model": "master.phrasetemplate",
     "pk": 18,
     "fields": {
-        "version": 1761402649401042,
+        "version": 1761403021499655,
         "created_at": "2025-10-25T14:46:36.053Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:46:36.053Z",
@@ -273,7 +273,7 @@
     "model": "master.phrasetemplate",
     "pk": 19,
     "fields": {
-        "version": 1761402657628538,
+        "version": 1761403021501886,
         "created_at": "2025-10-25T14:46:44.280Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:46:44.280Z",
@@ -288,7 +288,7 @@
     "model": "master.phrasetemplate",
     "pk": 20,
     "fields": {
-        "version": 1761402672135172,
+        "version": 1761403021504382,
         "created_at": "2025-10-25T14:46:58.787Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:46:58.787Z",
@@ -297,6 +297,111 @@
         "content": "65歳以上で新規雇用のため",
         "is_active": true,
         "display_order": 16
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 21,
+    "fields": {
+        "version": 1761403637920895,
+        "created_at": "2025-10-25T15:03:04.573Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T15:03:04.573Z",
+        "updated_by": 1,
+        "title": 4,
+        "content": "役職なし",
+        "is_active": true,
+        "display_order": 10
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 22,
+    "fields": {
+        "version": 1761403649376868,
+        "created_at": "2025-10-25T15:03:16.029Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T15:03:16.029Z",
+        "updated_by": 1,
+        "title": 4,
+        "content": "役職無し、付与される権限無し",
+        "is_active": true,
+        "display_order": 11
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 23,
+    "fields": {
+        "version": 1761403658986540,
+        "created_at": "2025-10-25T15:03:25.638Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T15:03:25.639Z",
+        "updated_by": 1,
+        "title": 4,
+        "content": "副リーダー（部下２名、リーダー不在の間における緊急対応が週１回程度有）",
+        "is_active": true,
+        "display_order": 20
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 24,
+    "fields": {
+        "version": 1761403949332136,
+        "created_at": "2025-10-25T15:08:15.984Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T15:08:15.984Z",
+        "updated_by": 1,
+        "title": 5,
+        "content": "労働者派遣法施行規則第22条の2第2号：産休・育休・介護休業・休職等の代替要員\r\n・派遣先従業員（氏名：○○○○）が育児休業中のため、その休業期間中の代替要員として派遣する。\r\n・休業者が復職した時点で、期間途中であっても派遣契約を終了する。\r\n・休業者の復職予定日が変更された場合は、派遣元・派遣先間で協議の上、派遣終了日を調整する。",
+        "is_active": true,
+        "display_order": 10
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 25,
+    "fields": {
+        "version": 1761403963842242,
+        "created_at": "2025-10-25T15:08:30.494Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T15:08:30.494Z",
+        "updated_by": 1,
+        "title": 5,
+        "content": "労働者派遣法施行規則第22条の2第3号：日数限定業務（１か月間の就業日数が、派遣先の通常の労働者の所定労働日数より相当程度少なく且つ１０日以内のもの）\r\n・週2日以内の勤務とし、恒常的な勤務とはしない。\r\n・派遣先において恒常的に週3日以上の勤務が必要となった場合は、期間制限の適用対象となるため契約を見直す。",
+        "is_active": true,
+        "display_order": 20
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 26,
+    "fields": {
+        "version": 1761403977102745,
+        "created_at": "2025-10-25T15:08:43.755Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T15:08:43.755Z",
+        "updated_by": 1,
+        "title": 5,
+        "content": "労働者派遣法施行規則第22条の2第4号：有期プロジェクト業務\r\n・プロジェクトの終了に伴い派遣契約を終了する。\r\n・プロジェクトの進捗状況により終了日が前後する場合は、派遣元・派遣先協議の上で終了日を変更する。",
+        "is_active": true,
+        "display_order": 30
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 27,
+    "fields": {
+        "version": 1761403991528562,
+        "created_at": "2025-10-25T15:08:58.180Z",
+        "created_by": 1,
+        "updated_at": "2025-10-25T15:08:58.181Z",
+        "updated_by": 1,
+        "title": 5,
+        "content": "労働者派遣法施行規則第22条の2第5号：育児や介護などで短時間勤務を行う者の補完業務\r\n・派遣先従業員（氏名：○○○○）が育児短時間勤務（1日6時間）を行っており、当該短縮勤務により生じる2時間分の業務を補うため。\r\n・短時間勤務者が担当する業務のうち時間外部分を担当する。\r\n・当該従業員の短時間勤務終了時に契約終了とする。\r\n・派遣先従業員が通常勤務に復帰した場合、派遣契約はその時点で終了とする。",
+        "is_active": true,
+        "display_order": 40
     }
 }
 ]

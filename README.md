@@ -137,7 +137,7 @@ django-study-base/
 | `apps_master_default_value` | `DefaultValue` | デフォルト値マスター |
 | `apps_master_employment_type` | `EmploymentType` | 雇用形態マスター |
 | `apps_master_business_content` | `BusinessContent` | 業務内容マスター |
-| `apps_master_haken_responsibility_degree` | `HakenResponsibilityDegree` | 派遣責任程度マスター |
+
 | `apps_master_haken_teishokubi_exempt` | `HakenTeishokubiExempt` | 派遣抵触日制限外マスター |
 | `apps_master_information` | `Information` | お知らせマスター |
 | `apps_master_information_file` | `InformationFile` | お知らせファイル |
