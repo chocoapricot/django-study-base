@@ -2,6 +2,7 @@ from django import forms
 from .models import Company, CompanyDepartment, CompanyUser
 from stdnum.jp import cn as houjin
 from django.core.exceptions import ValidationError
+from apps.common.forms import MyRadioSelect
 
 class CompanyForm(forms.ModelForm):
     def clean_phone_number(self):
@@ -23,7 +24,7 @@ class CompanyForm(forms.ModelForm):
             'haken_permit_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'shokai_permit_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'foreign_regist_number': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'dispatch_treatment_method': forms.RadioSelect(attrs={'class': 'd-flex gap-3'}),
+            'dispatch_treatment_method': MyRadioSelect(),
         }
     
     def clean_corporate_number(self):

@@ -7,6 +7,7 @@ from apps.staff.models import Staff
 from apps.system.settings.models import Dropdowns
 from apps.company.models import Company, CompanyUser, CompanyDepartment
 from apps.common.constants import Constants
+from apps.common.forms import MyRadioSelect
 
 
 class DynamicClientUserField(forms.CharField):
@@ -347,8 +348,8 @@ class ClientContractHakenForm(forms.ModelForm):
             'responsibility_degree': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'complaint_officer_company': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'responsible_person_company': forms.Select(attrs={'class': 'form-select form-select-sm'}),
-            'limit_by_agreement': forms.RadioSelect,
-            'limit_indefinite_or_senior': forms.RadioSelect,
+            'limit_by_agreement': MyRadioSelect(),
+            'limit_indefinite_or_senior': MyRadioSelect(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -381,7 +382,7 @@ class ClientContractHakenForm(forms.ModelForm):
             field.required = True
             if isinstance(field, forms.ModelChoiceField):
                 field.empty_label = '選択してください'
-            if isinstance(field.widget, forms.RadioSelect):
+            if isinstance(field.widget, (forms.RadioSelect, MyRadioSelect)):
                 field.error_messages['required'] = f'{field.label}を選択してください。'
                 if field_name in ['limit_by_agreement', 'limit_indefinite_or_senior']:
                     field.choices = [choice for choice in field.choices if choice[0]]

@@ -261,12 +261,7 @@
                     {% my_help_icon "通常は「限定する」を選択してください。限定しない場合、派遣会社は派遣先から「比較対象労働者」の賃金等の情報を提供してもらう必要があります。" %}
                 </label>
                 <div class="col-sm-4">
-                    {% for radio in haken_form.limit_by_agreement %}
-                    <div class="form-check form-check-inline">
-                        {{ radio.tag }}
-                        <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
-                    </div>
-                    {% endfor %}
+                    {{ haken_form.limit_by_agreement }}
                     {% for error in haken_form.limit_by_agreement.errors %}
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
@@ -277,12 +272,7 @@
 
                 </label>
                 <div class="col-sm-4">
-                    {% for radio in haken_form.limit_indefinite_or_senior %}
-                    <div class="form-check form-check-inline">
-                        {{ radio.tag }}
-                        <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
-                    </div>
-                    {% endfor %}
+                    {{ haken_form.limit_indefinite_or_senior }}
                     {% for error in haken_form.limit_indefinite_or_senior.errors %}
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}

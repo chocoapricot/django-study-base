@@ -4,6 +4,7 @@ from django import forms
 from django.forms import TextInput
 from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact
 from django.core.exceptions import ValidationError
+from apps.common.forms import MyRadioSelect
 
 # スタッフ連絡履歴フォーム
 class StaffContactedForm(forms.ModelForm):
@@ -146,8 +147,7 @@ class StaffForm(forms.ModelForm):
         choices=[],
         label='性別',  # 日本語ラベル
         required=True,
-        #widget=forms.RadioSelect(attrs={'class':'form-check form-check-inline'}),  # ここでラジオボタンを指定(⇒立て並びにしかできない！)
-        widget=forms.RadioSelect  # ここでラジオボタンを指定(⇒立て並びにしかできない！)
+        widget=MyRadioSelect()  # カスタムウィジェットで横並び表示
     )
 
     regist_status = forms.ModelChoiceField(
@@ -465,7 +465,7 @@ class StaffBankForm(forms.ModelForm):
     account_type = forms.ChoiceField(
         choices=[],
         label='口座種別',
-        widget=forms.RadioSelect,
+        widget=MyRadioSelect(),
         required=True,
     )
 
@@ -601,7 +601,7 @@ class StaffDisabilityForm(forms.ModelForm):
     """スタッフ障害者情報フォーム"""
     disability_type = forms.ChoiceField(
         label='障害の種類',
-        widget=forms.RadioSelect,
+        widget=MyRadioSelect(),
         choices=[],
         required=True,
     )

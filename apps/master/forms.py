@@ -22,6 +22,7 @@ from .models import (
 )
 from apps.system.settings.models import Dropdowns
 from apps.common.constants import Constants
+from apps.common.forms import MyRadioSelect
 
 
 
@@ -135,7 +136,7 @@ class ContractPatternForm(forms.ModelForm):
         fields = ['name', 'domain', 'contract_type_code', 'employment_type', 'memo', 'display_order', 'is_active']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
-            'domain': forms.RadioSelect(),
+            'domain': MyRadioSelect(),
             'contract_type_code': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'employment_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
@@ -195,7 +196,7 @@ class ContractTermForm(forms.ModelForm):
         widgets = {
             'contract_clause': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'contract_terms': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
-            'display_position': forms.RadioSelect,
+            'display_position': MyRadioSelect(),
             'memo': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
         }
@@ -440,7 +441,7 @@ class BillBankForm(forms.ModelForm):
         self.fields['account_type'] = forms.ChoiceField(
             choices=account_type_choices,
             label='口座種別',
-            widget=forms.RadioSelect
+            widget=MyRadioSelect()
         )
         self.fields['bank_code'].required = True
         self.fields['branch_code'].required = True
@@ -520,7 +521,7 @@ class InformationForm(forms.ModelForm):
     """お知らせ情報フォーム"""
     target = forms.ChoiceField(
         label='対象',
-        widget=forms.RadioSelect,
+        widget=MyRadioSelect(),
         choices=()
     )
 
@@ -579,7 +580,7 @@ class DefaultValueForm(forms.ModelForm):
                 # boolean形式の場合はラジオボタンに変更
                 self.fields['value'] = forms.ChoiceField(
                     choices=[('true', 'True'), ('false', 'False')],
-                    widget=forms.RadioSelect,
+                    widget=MyRadioSelect(),
                     initial=self.instance.value.lower() if self.instance.value else 'false'
                 )
 

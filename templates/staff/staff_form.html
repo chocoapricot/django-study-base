@@ -101,12 +101,7 @@
                 </div>
                 <label for="{{ form.sex.id_for_label }}" class="col-sm-2 col-form-label text-end">{{ form.sex.label }}</label>
                 <div class="col-sm-4">
-                    {% for radio in form.sex %}
-                    <div class="form-check form-check-inline" style="padding-left:0em">
-                        {{ radio.tag }}
-                        <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
-                    </div>
-                    {% endfor %}
+                    {{ form.sex }}
                 </div>
             </div>
 

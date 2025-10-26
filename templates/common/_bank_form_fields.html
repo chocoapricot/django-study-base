@@ -47,12 +47,7 @@
     <!-- 口座種別 -->
      <label class="col-sm-2 col-form-label" style="text-align:right">口座種別 <span class="text-danger">*</span></label>
     <div class="col-sm-2">
-        {% for radio in form.account_type %}
-        <div class="form-check form-check-inline">
-            {{ radio.tag }}
-            <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
-        </div>
-        {% endfor %}
+        {{ form.account_type }}
         {% if form.account_type.errors %}
             <div class="text-danger small">{{ form.account_type.errors.0 }}</div>
         {% endif %}

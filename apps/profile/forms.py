@@ -1,8 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from .models import StaffProfile, StaffProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact
-
-
+from apps.common.forms import MyRadioSelect
 from apps.common.forms.fields import to_fullwidth_katakana, validate_kana
 
 class StaffProfileForm(forms.ModelForm):
@@ -35,7 +34,7 @@ class StaffProfileForm(forms.ModelForm):
     sex = forms.ChoiceField(
         choices=[],
         label='性別',
-        widget=forms.RadioSelect,
+        widget=MyRadioSelect(),
         required=False,  # __init__で必須化
     )
     
@@ -210,7 +209,7 @@ class StaffProfileBankForm(forms.ModelForm):
     account_type = forms.ChoiceField(
         choices=[],
         label='口座種別',
-        widget=forms.RadioSelect,
+        widget=MyRadioSelect(),
     )
 
     class Meta:
@@ -286,7 +285,7 @@ class StaffProfileDisabilityForm(forms.ModelForm):
     """スタッフ障害者情報フォーム"""
     disability_type = forms.ChoiceField(
         label='障害の種類',
-        widget=forms.RadioSelect,
+        widget=MyRadioSelect(),
         choices=[],
         required=True,
     )
