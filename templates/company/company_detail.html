@@ -69,10 +69,17 @@
                 <strong>許可番号(人材派遣)</strong>
                 {% my_help_icon "労働者派遣事業 厚生労働大臣許可番号" %}
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-2">
                 <span class="copy-target">{{ company.haken_permit_number }}</span>
                 <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
                 <span class="copy-message">コピーしました!</span>
+            </div>
+            <div class="col-sm-2 text-start text-md-end">
+                <strong>派遣待遇決定方式</strong>
+                {% my_help_icon "派遣労働者の待遇決定方式を選択してください" %}
+            </div>
+            <div class="col-sm-4">
+                {{ company.get_dispatch_treatment_method_display }}
             </div>
         </div>
 
@@ -81,7 +88,7 @@
                 <strong>許可番号(職業紹介)</strong>
                 {% my_help_icon "有料職業紹介事業許可証 許可番号" %}
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-2">
                 <span class="copy-target">{{ company.shokai_permit_number }}</span>
                 <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
                 <span class="copy-message">コピーしました!</span>
@@ -93,20 +100,10 @@
                 <strong>登録番号(特定技能)</strong>
                 {% my_help_icon "特定技能外国人受入れに関する登録支援機関 登録番号" %}
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-2">
                 <span class="copy-target">{{ company.foreign_regist_number }}</span>
                 <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
                 <span class="copy-message">コピーしました!</span>
-            </div>
-        </div>
-
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end">
-                <strong>派遣待遇決定方式</strong>
-                {% my_help_icon "派遣労働者の待遇決定方式を選択してください" %}
-            </div>
-            <div class="col-sm-4">
-                {{ company.get_dispatch_treatment_method_display }}
             </div>
         </div>
 
