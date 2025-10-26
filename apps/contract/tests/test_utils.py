@@ -35,6 +35,12 @@ class ContractUtilsTest(TestCase):
             domain='10',
             contract_type_code='1'
         )
+        # スタッフ用の契約パターンを作成
+        self.staff_pattern = ContractPattern.objects.create(
+            name='雇用契約',
+            domain='20',
+            contract_type_code='10'
+        )
 
     @patch('apps.contract.utils.generate_table_based_contract_pdf')
     def test_generate_haken_contract_pdf_title(self, mock_generate_pdf):
@@ -266,6 +272,7 @@ class ContractUtilsTest(TestCase):
         staff_contract = StaffContract.objects.create(
             staff=staff,
             employment_type=employment_type,
+            contract_pattern=self.staff_pattern,
             start_date=datetime.today().date(),
             contract_name='Test Staff Contract'
         )
@@ -338,6 +345,7 @@ class ContractUtilsTest(TestCase):
         staff_contract = StaffContract.objects.create(
             staff=staff,
             employment_type=employment_type,
+            contract_pattern=self.staff_pattern,
             start_date=datetime.today().date(),
             contract_name='Test Staff Contract'
         )
