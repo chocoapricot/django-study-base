@@ -1441,8 +1441,9 @@ def download_client_contract_pdf(request, pk):
 @permission_required('contract.view_contractassignment', raise_exception=True)
 def staff_contract_expire_list(request):
     """スタッフ契約延長確認一覧（本日が割当期間内のアサインメント一覧）"""
-    from datetime import date
+    from datetime import date, timedelta
     from django.db.models import Q
+    from calendar import monthrange
     
     today = date.today()
     search_query = request.GET.get('q', '')
@@ -1496,10 +1497,149 @@ def staff_contract_expire_list(request):
                 'contract_status', assignment.staff_contract.contract_status
             )
     
+    # 契約期間イメージ用データを準備（全てのアサインメントを取得）
+    all_assignments = ContractAssignment.objects.select_related(
+        'client_contract__client',
+        'staff_contract__staff',
+        'client_contract__job_category',
+        'staff_contract__employment_type'
+    ).order_by('assignment_start_date')
+    
+    contract_timeline_data = _prepare_contract_timeline_data(all_assignments, today, search_query)
+    
     context = {
         'assignments': assignments_page,
         'search_query': search_query,
         'today': today,
         'total_count': assignments.count(),
+        'contract_timeline': contract_timeline_data,
     }
     return render(request, 'contract/staff_contract_expire_list.html', context)
+
+
+def _prepare_contract_timeline_data(all_assignments, today, search_query):
+    """契約期間イメージ表示用のデータを準備する"""
+    from datetime import date, timedelta
+    from calendar import monthrange
+    from django.db.models import Q
+    
+    # 今後12ヶ月の月リストを生成
+    months = []
+    current_date = today.replace(day=1)  # 今月の1日
+    prev_year = None
+    
+    for i in range(12):
+        # 前の月と年が異なる場合は年月、同じ場合は月のみ表示
+        if prev_year is None or current_date.year != prev_year:
+            display = f"{current_date.year}年{current_date.month}月"
+        else:
+            display = f"{current_date.month}月"
+        
+        months.append({
+            'year': current_date.year,
+            'month': current_date.month,
+            'display': display,
+            'date': current_date
+        })
+        
+        prev_year = current_date.year
+        
+        # 次の月へ
+        if current_date.month == 12:
+            current_date = current_date.replace(year=current_date.year + 1, month=1)
+        else:
+            current_date = current_date.replace(month=current_date.month + 1)
+    
+    # 検索条件でフィルタリング
+    filtered_assignments = all_assignments
+    if search_query:
+        filtered_assignments = all_assignments.filter(
+            Q(client_contract__client__name__icontains=search_query) |
+            Q(staff_contract__staff__name_last__icontains=search_query) |
+            Q(staff_contract__staff__name_first__icontains=search_query) |
+            Q(client_contract__contract_name__icontains=search_query) |
+            Q(staff_contract__contract_name__icontains=search_query) |
+            Q(staff_email__icontains=search_query) |
+            Q(client_corporate_number__icontains=search_query)
+        )
+    
+    # スタッフごとの契約期間データを準備
+    staff_contracts = {}
+    
+    # 表示対象のスタッフを特定（現在進行中の契約があるスタッフ）
+    current_staff_ids = set()
+    for assignment in filtered_assignments:
+        if (assignment.assignment_start_date <= today <= assignment.assignment_end_date):
+            current_staff_ids.add(assignment.staff_contract.staff.id)
+    
+    # 各スタッフのすべてのアサインメントを処理
+    for staff_id in current_staff_ids:
+        staff_assignments = [a for a in all_assignments if a.staff_contract.staff.id == staff_id]
+        
+        if staff_assignments:
+            first_assignment = staff_assignments[0]
+            staff_key = f"{first_assignment.staff_contract.staff.name_last} {first_assignment.staff_contract.staff.name_first}"
+            
+            staff_contracts[staff_key] = {
+                'staff_name': staff_key,
+                'staff_id': staff_id,
+                'employment_type': first_assignment.staff_contract.employment_type,
+                'months': [{'month': m['display'], 'status': 'none', 'client_name': '', 'assignment_id': None} for m in months]
+            }
+            
+            # このスタッフの全アサインメントを各月にマッピング
+            for assignment in staff_assignments:
+                for i, month_info in enumerate(months):
+                    month_start = month_info['date']
+                    # 月末日を取得
+                    last_day = monthrange(month_info['year'], month_info['month'])[1]
+                    month_end = month_start.replace(day=last_day)
+                    
+                    # アサインメント期間と月の重複をチェック
+                    assignment_start = assignment.assignment_start_date
+                    assignment_end = assignment.assignment_end_date
+                    
+                    has_contract = (
+                        assignment_start <= month_end and 
+                        assignment_end >= month_start
+                    )
+                    
+                    if has_contract:
+                        # 契約状態を判定
+                        if assignment_start > today:
+                            status = 'future'  # 未来の契約（別のアサインメント）
+                        elif assignment_start <= today <= assignment_end:
+                            status = 'current'  # 現在進行中の契約
+                        else:
+                            continue  # 過去の契約は表示しない
+                        
+                        # 契約終了月かどうかをチェック
+                        if assignment_end >= month_start and assignment_end <= month_end:
+                            # この月で契約が終了する
+                            # このスタッフの次のアサインメントがあるかチェック
+                            has_future_assignment = any(
+                                future_assignment.assignment_start_date > assignment_end
+                                for future_assignment in staff_assignments
+                            )
+                            
+                            if not has_future_assignment and status == 'current':
+                                status = 'ending'  # 契約終了（次のアサインメントなし）
+                        
+                        # 既存の契約がない場合、または優先度に基づいて更新
+                        current_status = staff_contracts[staff_key]['months'][i]['status']
+                        if (current_status == 'none' or 
+                            (current_status == 'future' and status in ['current', 'ending']) or
+                            (current_status == 'current' and status == 'ending')):
+                            
+                            staff_contracts[staff_key]['months'][i] = {
+                                'month': month_info['display'],
+                                'status': status,
+                                'client_name': assignment.client_contract.client.name,
+                                'assignment_id': assignment.id,
+                                'end_date': assignment.assignment_end_date if status == 'ending' else None
+                            }
+    
+    return {
+        'months': [m['display'] for m in months],
+        'staff_data': list(staff_contracts.values())
+    }

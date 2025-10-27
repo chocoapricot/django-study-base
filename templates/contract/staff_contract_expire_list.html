@@ -1,6 +1,7 @@
 {% extends 'common/_base.html' %}
 {% load humanize %}
 {% load help_tags %}
+{% load badge_tags %}
 
 {% block title %}スタッフ契約延長確認{% endblock %}
 
@@ -59,7 +60,7 @@
                                     </td>
                                     <td>
                                         {% if assignment.staff_contract.employment_type %}
-                                            <span class="badge bg-info">{{ assignment.staff_contract.employment_type.name }}</span>
+                                            <span class="badge {{ assignment.staff_contract.employment_type.display_order|badge_class }}">{{ assignment.staff_contract.employment_type.name }}</span>
                                         {% else %}
                                             <span class="badge bg-secondary">未設定</span>
                                         {% endif %}
@@ -148,6 +149,97 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 契約期間イメージ -->
+            {% if contract_timeline.staff_data %}
+            <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>契約期間イメージ（今後12ヶ月）</span>
+                    <small class="text-muted">スタッフごとの契約期間を月単位で表示</small>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 150px; position: sticky; left: 0; background-color: #f8f9fa; z-index: 10;">スタッフ名</th>
+                                    {% for month in contract_timeline.months %}
+                                    <th class="text-center" style="min-width: 60px;">{{ month }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for staff in contract_timeline.staff_data %}
+                                <tr>
+                                    <td style="position: sticky; left: 0; background-color: white; z-index: 5; font-weight: 500;">
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-2">{{ staff.staff_name }}</span>
+                                            {% if staff.employment_type %}
+                                                <span class="badge {{ staff.employment_type.display_order|badge_class }}" style="font-size: 0.7em;">{{ staff.employment_type.name }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    {% for month_data in staff.months %}
+                                    <td class="text-center p-1" 
+                                        {% if month_data.status == 'current' %}
+                                            style="background-color: #d4edda; border-color: #c3e6cb; min-width: 60px; width: 60px;" 
+                                            title="現在進行中: {{ month_data.client_name }}"
+                                        {% elif month_data.status == 'future' %}
+                                            style="background-color: #ffe4b5; border-color: #ffd280; min-width: 60px; width: 60px;" 
+                                            title="未来の契約: {{ month_data.client_name }}"
+                                        {% elif month_data.status == 'ending' %}
+                                            style="background-color: #d4edda; border-color: #c3e6cb; min-width: 60px; width: 60px;" 
+                                            title="契約終了月: {{ month_data.client_name }}"
+                                        {% else %}
+                                            style="background-color: #f8f9fa; border-color: #dee2e6; min-width: 60px; width: 60px;" 
+                                            title="契約なし"
+                                        {% endif %}>
+                                        {% if month_data.status == 'current' %}
+                                            <i class="bi bi-check-circle-fill" style="color: #28a745;"></i>
+                                        {% elif month_data.status == 'future' %}
+                                            <i class="bi bi-check-circle-fill" style="color: #ff8c00;"></i>
+                                        {% elif month_data.status == 'ending' %}
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                <i class="bi bi-exclamation-triangle-fill me-1" style="color: #dc3545;"></i>
+                                                <small style="font-size: 0.7em;">～{{ month_data.end_date|date:"n/j" }}</small>
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 凡例 -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="d-flex flex-wrap gap-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-2" style="width: 20px; height: 20px; background-color: #d4edda; border: 1px solid #c3e6cb;"></div>
+                                    <small><i class="bi bi-check-circle-fill me-1" style="color: #28a745;"></i>現在進行中</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="me-2" style="width: 20px; height: 20px; background-color: #ffe4b5; border: 1px solid #ffd280;"></div>
+                                    <small><i class="bi bi-check-circle-fill me-1" style="color: #ff8c00;"></i>未来の契約</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="me-2" style="width: 20px; height: 20px; background-color: #d4edda; border: 1px solid #c3e6cb;"></div>
+                                    <small><i class="bi bi-exclamation-triangle-fill me-1" style="color: #dc3545;"></i>契約終了月</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="me-2" style="width: 20px; height: 20px; background-color: #f8f9fa; border: 1px solid #dee2e6;"></div>
+                                    <small class="text-muted">契約なし</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
