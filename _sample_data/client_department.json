@@ -103,10 +103,10 @@
     "model": "client.clientdepartment",
     "pk": 5,
     "fields": {
-        "version": 1761582225216826,
+        "version": 1761583933858744,
         "created_at": "2024-10-30T11:57:18.158Z",
         "created_by": 1,
-        "updated_at": "2025-10-01T16:28:35.265Z",
+        "updated_at": "2025-10-27T17:08:00.511Z",
         "updated_by": 1,
         "client": 5,
         "name": "商品企画部",
@@ -117,8 +117,8 @@
         "is_haken_office": true,
         "is_haken_unit": true,
         "haken_unit_manager_title": "部長",
-        "haken_jigyosho_teishokubi": null,
-        "haken_jigyosho_teishokubi_notice_date": null,
+        "haken_jigyosho_teishokubi": "2029-03-31",
+        "haken_jigyosho_teishokubi_notice_date": "2025-09-01",
         "display_order": 1,
         "valid_from": "2021-01-01",
         "valid_to": null

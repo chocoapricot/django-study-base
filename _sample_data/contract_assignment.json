@@ -70,5 +70,23 @@
         "assignment_start_date": "2025-10-01",
         "assignment_end_date": "2026-03-31"
     }
+},
+{
+    "model": "contract.contractassignment",
+    "pk": 5,
+    "fields": {
+        "version": 1761583861654232,
+        "created_at": "2025-10-27T17:06:48.306Z",
+        "created_by": 1,
+        "updated_at": "2025-10-27T17:06:48.306Z",
+        "updated_by": 1,
+        "client_contract": 8,
+        "staff_contract": 15,
+        "assigned_at": "2025-10-27T17:06:48.306Z",
+        "staff_email": "oichi@staff.jp",
+        "client_corporate_number": "2000012020001",
+        "assignment_start_date": "2025-10-01",
+        "assignment_end_date": "2026-03-31"
+    }
 }
 ]

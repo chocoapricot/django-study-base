@@ -1157,7 +1157,7 @@ def client_staff_assignment_detail_list(request, pk):
                 queryset=ContractAssignment.objects.select_related(
                     'staff_contract__staff',
                     'staff_contract__employment_type'
-                ).order_by('staff_contract__start_date'),
+                ).order_by('staff_contract__staff__name_last', 'staff_contract__staff__name_first', 'staff_contract__start_date'),
                 to_attr='assigned_assignments'
             )
         ),
