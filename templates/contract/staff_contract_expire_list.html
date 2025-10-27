@@ -54,7 +54,7 @@
                             </thead>
                             <tbody>
                                 {% for assignment in assignments %}
-                                <tr {% if assignment.is_expiring_soon %}class="table-warning"{% elif assignment.is_expired %}class="table-danger"{% endif %}>
+                                <tr {% if assignment.has_future_contract %}{% elif assignment.is_expiring_soon %}class="table-warning"{% elif assignment.is_expired %}class="table-danger"{% endif %}>
                                     <td>
                                         {{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }}
                                     </td>
@@ -74,7 +74,10 @@
                                         </div>
                                     </td>
                                     <td>
-                                        {% if assignment.is_expired %}
+                                        {% if assignment.has_future_contract %}
+                                            <span class="badge bg-success">正常</span>
+                                            <small>別契約あり</small>
+                                        {% elif assignment.is_expired %}
                                             <span class="badge bg-danger">期限切れ</span>
                                             <small>{{ assignment.days_remaining|add:"-1" }}日経過</small>
                                         {% elif assignment.is_expiring_soon %}

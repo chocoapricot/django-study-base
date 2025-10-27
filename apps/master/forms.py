@@ -583,6 +583,15 @@ class DefaultValueForm(forms.ModelForm):
                     widget=MyRadioSelect(),
                     initial=self.instance.value.lower() if self.instance.value else 'false'
                 )
+            elif self.instance.format == 'number':
+                # number形式の場合は数値入力フィールドに変更
+                self.fields['value'] = forms.CharField(
+                    widget=forms.NumberInput(attrs={
+                        'class': 'form-control form-control-sm',
+                        'step': 'any'  # 整数・小数両方対応
+                    }),
+                    initial=self.instance.value
+                )
 
     def clean_value(self):
         """値のバリデーション"""
@@ -593,6 +602,17 @@ class DefaultValueForm(forms.ModelForm):
             # boolean形式の場合、true/falseのみ許可
             if value not in ['true', 'false']:
                 raise ValidationError('真偽値は "true" または "false" で入力してください。')
+        elif format_type == 'number':
+            # number形式の場合、数値のバリデーション
+            if value:
+                try:
+                    # 小数点が含まれている場合はfloat、そうでなければint
+                    if '.' in value:
+                        float(value)
+                    else:
+                        int(value)
+                except (ValueError, TypeError):
+                    raise ValidationError('数値を入力してください。')
         
         return value
 

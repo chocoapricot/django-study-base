@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Qualification, Skill, BillPayment, BillBank
 from .models_phrase import PhraseTemplate, PhraseTemplateTitle
+from .models_other import DefaultValue
 
 # 資格マスタ、技能マスタ、支払いサイト、会社銀行は
 # Webインターフェースで管理するため、admin.pyには登録しない
@@ -56,3 +57,30 @@ class PhraseTemplateTitleAdmin(admin.ModelAdmin):
             return obj.description[:50] + ('...' if len(obj.description) > 50 else '')
         return '-'
     get_description_short.short_description = '補足'
+
+
+@admin.register(DefaultValue)
+class DefaultValueAdmin(admin.ModelAdmin):
+    list_display = ('key', 'target_item', 'format', 'get_value_short', 'display_order', 'created_at')
+    list_filter = ('format', 'created_at')
+    search_fields = ('key', 'target_item', 'value')
+    ordering = ('display_order', 'target_item')
+    list_per_page = 20
+    
+    fieldsets = (
+        (None, {
+            'fields': ('key', 'target_item', 'format', 'value', 'display_order')
+        }),
+        ('システム情報', {
+            'fields': ('created_at', 'updated_at', 'created_by', 'updated_by'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    readonly_fields = ('created_at', 'updated_at', 'created_by', 'updated_by')
+    
+    def get_value_short(self, obj):
+        if obj.value:
+            return obj.value[:100] + ('...' if len(obj.value) > 100 else '')
+        return '-'
+    get_value_short.short_description = '値'

@@ -110,6 +110,7 @@ class DefaultValue(MyModel):
         ('text', 'テキスト'),
         ('textarea', 'テキストエリア'),
         ('boolean', '真偽値'),
+        ('number', '数値'),
     ]
 
     key = models.CharField('キー', max_length=255, primary_key=True)
@@ -135,10 +136,27 @@ class DefaultValue(MyModel):
             return self.value.lower() == 'true'
         return None
 
+    def get_number_value(self):
+        """
+        number形式の値をPythonの数値型で取得
+        """
+        if self.format == 'number':
+            try:
+                # 小数点が含まれている場合はfloat、そうでなければint
+                if '.' in self.value:
+                    return float(self.value)
+                else:
+                    return int(self.value)
+            except (ValueError, TypeError):
+                return None
+        return None
+
     def get_formatted_value(self):
         """
         形式に応じて適切にフォーマットされた値を取得
         """
         if self.format == 'boolean':
             return self.get_boolean_value()
+        elif self.format == 'number':
+            return self.get_number_value()
         return self.value

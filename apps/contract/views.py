@@ -1476,14 +1476,29 @@ def staff_contract_expire_list(request):
     page = request.GET.get('page')
     assignments_page = paginator.get_page(page)
     
+    # 警告日数を初期値マスタから取得
+    from apps.master.models import DefaultValue
+    try:
+        default_value = DefaultValue.objects.get(key='ContractAssignment.alertdays')
+        alert_days = int(default_value.value)
+    except (DefaultValue.DoesNotExist, ValueError, TypeError):
+        alert_days = 30  # デフォルト30日
+    
     # 各アサインメントに追加情報を設定
     for assignment in assignments_page:
         # 割当終了日までの残り日数を計算
         if assignment.assignment_end_date:
             delta = assignment.assignment_end_date - today
             assignment.days_remaining = delta.days
-            assignment.is_expiring_soon = delta.days <= 30  # 30日以内は要注意
+            assignment.is_expiring_soon = delta.days <= alert_days  # 設定された日数以内は要注意
             assignment.is_expired = delta.days < 0
+            
+            # このスタッフに未来の契約があるかチェック
+            future_assignments = ContractAssignment.objects.filter(
+                staff_contract__staff=assignment.staff_contract.staff,
+                assignment_start_date__gt=assignment.assignment_end_date
+            )
+            assignment.has_future_contract = future_assignments.exists()
         
         # 契約状況の表示名を取得
         from apps.system.settings.models import Dropdowns
