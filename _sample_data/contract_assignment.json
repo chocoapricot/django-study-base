@@ -1,0 +1,74 @@
+[
+{
+    "model": "contract.contractassignment",
+    "pk": 1,
+    "fields": {
+        "version": 1761582359638415,
+        "created_at": "2025-10-27T16:41:46.290Z",
+        "created_by": 1,
+        "updated_at": "2025-10-27T16:41:46.290Z",
+        "updated_by": 1,
+        "client_contract": 7,
+        "staff_contract": 11,
+        "assigned_at": "2025-10-27T16:41:46.290Z",
+        "staff_email": "hojo-uji@staff.jp",
+        "client_corporate_number": "3120001236504",
+        "assignment_start_date": "2025-10-01",
+        "assignment_end_date": "2025-11-30"
+    }
+},
+{
+    "model": "contract.contractassignment",
+    "pk": 2,
+    "fields": {
+        "version": 1761582368713202,
+        "created_at": "2025-10-27T16:41:55.365Z",
+        "created_by": 1,
+        "updated_at": "2025-10-27T16:41:55.365Z",
+        "updated_by": 1,
+        "client_contract": 7,
+        "staff_contract": 12,
+        "assigned_at": "2025-10-27T16:41:55.365Z",
+        "staff_email": "hojo-uji@staff.jp",
+        "client_corporate_number": "3120001236504",
+        "assignment_start_date": "2025-12-01",
+        "assignment_end_date": "2026-02-28"
+    }
+},
+{
+    "model": "contract.contractassignment",
+    "pk": 3,
+    "fields": {
+        "version": 1761582375152231,
+        "created_at": "2025-10-27T16:42:01.804Z",
+        "created_by": 1,
+        "updated_at": "2025-10-27T16:42:01.804Z",
+        "updated_by": 1,
+        "client_contract": 7,
+        "staff_contract": 13,
+        "assigned_at": "2025-10-27T16:42:01.804Z",
+        "staff_email": "hojo-uji@staff.jp",
+        "client_corporate_number": "3120001236504",
+        "assignment_start_date": "2026-03-01",
+        "assignment_end_date": "2026-03-31"
+    }
+},
+{
+    "model": "contract.contractassignment",
+    "pk": 4,
+    "fields": {
+        "version": 1761582988429930,
+        "created_at": "2025-10-27T16:52:15.082Z",
+        "created_by": 1,
+        "updated_at": "2025-10-27T16:52:15.082Z",
+        "updated_by": 1,
+        "client_contract": 7,
+        "staff_contract": 14,
+        "assigned_at": "2025-10-27T16:52:15.082Z",
+        "staff_email": "ishida-mitsunari@staff.jp",
+        "client_corporate_number": "3120001236504",
+        "assignment_start_date": "2025-10-01",
+        "assignment_end_date": "2026-03-31"
+    }
+}
+]

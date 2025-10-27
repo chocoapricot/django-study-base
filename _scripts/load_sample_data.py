@@ -67,7 +67,8 @@ def main():
         "_sample_data/connect_staff.json",
         "_sample_data/contract_client.json",
         "_sample_data/contract_staff.json",
-        "_sample_data/contract_client_haken.json"
+        "_sample_data/contract_client_haken.json",
+        "_sample_data/contract_assignment.json"
     ]
     
     missing_files = []
@@ -120,7 +121,8 @@ def main():
         ("python manage.py loaddata _sample_data/connect_staff.json", "スタッフ接続データ"),
         ("python manage.py loaddata _sample_data/contract_client.json", "クライアント契約データ"),
         ("python manage.py loaddata _sample_data/contract_client_haken.json", "クライアント契約派遣データ"),
-        ("python manage.py loaddata _sample_data/contract_staff.json", "スタッフ契約データ")
+        ("python manage.py loaddata _sample_data/contract_staff.json", "スタッフ契約データ"),
+        ("python manage.py loaddata _sample_data/contract_assignment.json", "契約アサインメントデータ")
     ]
     
     for command, description in import_commands:
@@ -173,6 +175,7 @@ def main():
     print("- クライアント契約データ")
     print("- クライアント契約派遣データ")
     print("- スタッフ契約データ")
+    print("- 契約アサインメントデータ")
 
 if __name__ == "__main__":
     main()

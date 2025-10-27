@@ -3,7 +3,7 @@
     "model": "client.clientdepartment",
     "pk": 1,
     "fields": {
-        "version": 1759676764661693,
+        "version": 1761582225184898,
         "created_at": "2024-10-30T11:49:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -18,6 +18,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2020-01-01",
         "valid_to": null
@@ -27,7 +28,7 @@
     "model": "client.clientdepartment",
     "pk": 2,
     "fields": {
-        "version": 1759676764673834,
+        "version": 1761582225198815,
         "created_at": "2024-10-30T11:51:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -42,6 +43,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 2,
         "valid_from": "2020-01-01",
         "valid_to": null
@@ -51,7 +53,7 @@
     "model": "client.clientdepartment",
     "pk": 3,
     "fields": {
-        "version": 1759676764676484,
+        "version": 1761582225204443,
         "created_at": "2024-10-30T11:53:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -66,6 +68,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2019-04-01",
         "valid_to": null
@@ -75,7 +78,7 @@
     "model": "client.clientdepartment",
     "pk": 4,
     "fields": {
-        "version": 1759676764678960,
+        "version": 1761582225209629,
         "created_at": "2024-10-30T11:55:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -90,6 +93,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 2,
         "valid_from": "2019-04-01",
         "valid_to": null
@@ -99,7 +103,7 @@
     "model": "client.clientdepartment",
     "pk": 5,
     "fields": {
-        "version": 1759676764681429,
+        "version": 1761582225216826,
         "created_at": "2024-10-30T11:57:18.158Z",
         "created_by": 1,
         "updated_at": "2025-10-01T16:28:35.265Z",
@@ -114,6 +118,7 @@
         "is_haken_unit": true,
         "haken_unit_manager_title": "部長",
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2021-01-01",
         "valid_to": null
@@ -123,7 +128,7 @@
     "model": "client.clientdepartment",
     "pk": 6,
     "fields": {
-        "version": 1759676764683928,
+        "version": 1761582225222068,
         "created_at": "2024-10-30T11:59:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -138,6 +143,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 2,
         "valid_from": "2021-01-01",
         "valid_to": null
@@ -147,7 +153,7 @@
     "model": "client.clientdepartment",
     "pk": 7,
     "fields": {
-        "version": 1759676764687934,
+        "version": 1761582225233512,
         "created_at": "2024-10-30T12:01:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -162,6 +168,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2018-01-01",
         "valid_to": null
@@ -171,7 +178,7 @@
     "model": "client.clientdepartment",
     "pk": 8,
     "fields": {
-        "version": 1759676764690897,
+        "version": 1761582225239282,
         "created_at": "2024-10-30T12:03:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -186,6 +193,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2020-04-01",
         "valid_to": null
@@ -195,7 +203,7 @@
     "model": "client.clientdepartment",
     "pk": 9,
     "fields": {
-        "version": 1759676764693406,
+        "version": 1761582225247624,
         "created_at": "2024-10-30T12:05:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -210,6 +218,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 2,
         "valid_from": "2020-04-01",
         "valid_to": null
@@ -219,7 +228,7 @@
     "model": "client.clientdepartment",
     "pk": 10,
     "fields": {
-        "version": 1759676764695903,
+        "version": 1761582225252868,
         "created_at": "2024-10-30T12:07:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -234,6 +243,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2018-01-01",
         "valid_to": "2023-03-31"
@@ -243,7 +253,7 @@
     "model": "client.clientdepartment",
     "pk": 11,
     "fields": {
-        "version": 1759676764698409,
+        "version": 1761582225257699,
         "created_at": "2024-11-20T10:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-20T10:00:00Z",
@@ -258,6 +268,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 3,
         "valid_from": "2020-01-01",
         "valid_to": null
@@ -267,7 +278,7 @@
     "model": "client.clientdepartment",
     "pk": 12,
     "fields": {
-        "version": 1759676764700885,
+        "version": 1761582225262627,
         "created_at": "2024-11-20T10:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-20T10:00:00Z",
@@ -282,6 +293,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 3,
         "valid_from": "2019-04-01",
         "valid_to": null
@@ -291,7 +303,7 @@
     "model": "client.clientdepartment",
     "pk": 13,
     "fields": {
-        "version": 1759676764705022,
+        "version": 1761582225268232,
         "created_at": "2024-11-20T10:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-20T10:00:00Z",
@@ -306,6 +318,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 2,
         "valid_from": "2018-01-01",
         "valid_to": null
@@ -315,7 +328,7 @@
     "model": "client.clientdepartment",
     "pk": 14,
     "fields": {
-        "version": 1759676764707914,
+        "version": 1761582225273370,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -330,6 +343,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2024-01-01",
         "valid_to": null
@@ -339,7 +353,7 @@
     "model": "client.clientdepartment",
     "pk": 15,
     "fields": {
-        "version": 1759676764710486,
+        "version": 1761582225279261,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -354,6 +368,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2024-01-01",
         "valid_to": null
@@ -363,7 +378,7 @@
     "model": "client.clientdepartment",
     "pk": 16,
     "fields": {
-        "version": 1759676764712998,
+        "version": 1761582225284347,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -378,6 +393,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2024-01-01",
         "valid_to": null
@@ -387,7 +403,7 @@
     "model": "client.clientdepartment",
     "pk": 17,
     "fields": {
-        "version": 1759676764715515,
+        "version": 1761582225289263,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -402,6 +418,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2024-01-01",
         "valid_to": null
@@ -411,7 +428,7 @@
     "model": "client.clientdepartment",
     "pk": 18,
     "fields": {
-        "version": 1759676764718046,
+        "version": 1761582225294769,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -426,6 +443,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2024-01-01",
         "valid_to": null
@@ -435,7 +453,7 @@
     "model": "client.clientdepartment",
     "pk": 19,
     "fields": {
-        "version": 1759676764720524,
+        "version": 1761582225299667,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -450,6 +468,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2024-01-01",
         "valid_to": null
@@ -459,7 +478,7 @@
     "model": "client.clientdepartment",
     "pk": 20,
     "fields": {
-        "version": 1759676764722963,
+        "version": 1761582225304371,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -474,6 +493,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2024-01-01",
         "valid_to": null
@@ -483,7 +503,7 @@
     "model": "client.clientdepartment",
     "pk": 21,
     "fields": {
-        "version": 1759676764725413,
+        "version": 1761582225308964,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -498,6 +518,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2024-01-01",
         "valid_to": null
@@ -507,7 +528,7 @@
     "model": "client.clientdepartment",
     "pk": 22,
     "fields": {
-        "version": 1759676764727816,
+        "version": 1761582225313871,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -522,6 +543,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2024-01-01",
         "valid_to": null
@@ -531,7 +553,7 @@
     "model": "client.clientdepartment",
     "pk": 23,
     "fields": {
-        "version": 1759676764730213,
+        "version": 1761582225318498,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -546,6 +568,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2024-01-01",
         "valid_to": null
@@ -555,7 +578,7 @@
     "model": "client.clientdepartment",
     "pk": 24,
     "fields": {
-        "version": 1759676764732774,
+        "version": 1761582225323334,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -570,6 +593,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2024-01-01",
         "valid_to": null
@@ -579,7 +603,7 @@
     "model": "client.clientdepartment",
     "pk": 25,
     "fields": {
-        "version": 1759676764735530,
+        "version": 1761582225328645,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -594,6 +618,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2024-01-01",
         "valid_to": null
@@ -603,7 +628,7 @@
     "model": "client.clientdepartment",
     "pk": 26,
     "fields": {
-        "version": 1759676764737978,
+        "version": 1761582225333584,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -618,6 +643,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2024-01-01",
         "valid_to": null
@@ -627,7 +653,7 @@
     "model": "client.clientdepartment",
     "pk": 27,
     "fields": {
-        "version": 1759676764740388,
+        "version": 1761582225337793,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -642,6 +668,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2024-01-01",
         "valid_to": null
@@ -651,7 +678,7 @@
     "model": "client.clientdepartment",
     "pk": 28,
     "fields": {
-        "version": 1759676764742833,
+        "version": 1761582225342404,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -666,6 +693,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2024-01-01",
         "valid_to": null
@@ -675,7 +703,7 @@
     "model": "client.clientdepartment",
     "pk": 29,
     "fields": {
-        "version": 1759676764745269,
+        "version": 1761582225347379,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -690,6 +718,7 @@
         "is_haken_unit": false,
         "haken_unit_manager_title": null,
         "haken_jigyosho_teishokubi": null,
+        "haken_jigyosho_teishokubi_notice_date": null,
         "display_order": 1,
         "valid_from": "2024-01-01",
         "valid_to": null
@@ -699,10 +728,10 @@
     "model": "client.clientdepartment",
     "pk": 30,
     "fields": {
-        "version": 1759677031000281,
+        "version": 1761582890030266,
         "created_at": "2025-10-05T15:24:39.360Z",
         "created_by": 1,
-        "updated_at": "2025-10-05T15:26:17.652Z",
+        "updated_at": "2025-10-27T16:50:36.682Z",
         "updated_by": 1,
         "client": 18,
         "name": "関西工場",
@@ -714,6 +743,7 @@
         "is_haken_unit": true,
         "haken_unit_manager_title": "工場長",
         "haken_jigyosho_teishokubi": "2030-12-31",
+        "haken_jigyosho_teishokubi_notice_date": "2025-01-01",
         "display_order": 20,
         "valid_from": null,
         "valid_to": null
