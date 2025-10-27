@@ -1436,3 +1436,70 @@ def download_client_contract_pdf(request, pk):
         return response
 
     raise Http404
+
+@login_required
+@permission_required('contract.view_contractassignment', raise_exception=True)
+def staff_contract_expire_list(request):
+    """スタッフ契約延長確認一覧（本日が割当期間内のアサインメント一覧）"""
+    from datetime import date
+    from django.db.models import Q
+    
+    today = date.today()
+    search_query = request.GET.get('q', '')
+    
+    # 本日が割当開始日～割当終了日に入るContractAssignmentを取得
+    assignments = ContractAssignment.objects.filter(
+        assignment_start_date__lte=today,
+        assignment_end_date__gte=today
+    ).select_related(
+        'client_contract__client',
+        'staff_contract__staff',
+        'client_contract__job_category',
+        'staff_contract__employment_type'
+    ).order_by('assignment_end_date', 'client_contract__client__name', 'staff_contract__staff__name_last')
+    
+    # 検索機能
+    if search_query:
+        assignments = assignments.filter(
+            Q(client_contract__client__name__icontains=search_query) |
+            Q(staff_contract__staff__name_last__icontains=search_query) |
+            Q(staff_contract__staff__name_first__icontains=search_query) |
+            Q(client_contract__contract_name__icontains=search_query) |
+            Q(staff_contract__contract_name__icontains=search_query) |
+            Q(staff_email__icontains=search_query) |
+            Q(client_corporate_number__icontains=search_query)
+        )
+    
+    # ページネーション
+    paginator = Paginator(assignments, 20)
+    page = request.GET.get('page')
+    assignments_page = paginator.get_page(page)
+    
+    # 各アサインメントに追加情報を設定
+    for assignment in assignments_page:
+        # 割当終了日までの残り日数を計算
+        if assignment.assignment_end_date:
+            delta = assignment.assignment_end_date - today
+            assignment.days_remaining = delta.days
+            assignment.is_expiring_soon = delta.days <= 30  # 30日以内は要注意
+            assignment.is_expired = delta.days < 0
+        
+        # 契約状況の表示名を取得
+        from apps.system.settings.models import Dropdowns
+        if assignment.client_contract.contract_status:
+            assignment.client_contract_status_display = Dropdowns.get_display_name(
+                'contract_status', assignment.client_contract.contract_status
+            )
+        
+        if assignment.staff_contract.contract_status:
+            assignment.staff_contract_status_display = Dropdowns.get_display_name(
+                'contract_status', assignment.staff_contract.contract_status
+            )
+    
+    context = {
+        'assignments': assignments_page,
+        'search_query': search_query,
+        'today': today,
+        'total_count': assignments.count(),
+    }
+    return render(request, 'contract/staff_contract_expire_list.html', context)

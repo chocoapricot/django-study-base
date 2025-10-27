@@ -1,0 +1,154 @@
+{% extends 'common/_base.html' %}
+{% load humanize %}
+{% load help_tags %}
+
+{% block title %}スタッフ契約延長確認{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>スタッフ契約延長確認</span>
+                    <small class="text-muted">本日（{{ today|date:"Y/m/d" }}）が割当期間内のアサインメント一覧</small>
+                </div>
+                <div class="card-body">
+                    <!-- 検索フォーム -->
+                    <form method="get" class="mb-3">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-sm" placeholder="クライアント名、スタッフ名、契約名、メールアドレス、法人番号で検索">
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-sm btn-primary me-2">検索</button>
+                                <a href="{% url 'contract:staff_contract_expire_list' %}" class="btn btn-sm btn-secondary">リセット</a>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- 統計情報 -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <div class="alert alert-info mb-0">
+                                <i class="bi bi-info-circle"></i>
+                                現在進行中のアサインメント: <strong>{{ total_count }}件</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- アサインメント一覧テーブル -->
+                    {% if assignments %}
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>クライアント</th>
+                                    <th>スタッフ</th>
+                                    <th>雇用形態</th>
+                                    <th>割当期間</th>
+                                    <th>残り日数</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for assignment in assignments %}
+                                <tr {% if assignment.is_expiring_soon %}class="table-warning"{% elif assignment.is_expired %}class="table-danger"{% endif %}>
+                                    <td>
+                                        {{ assignment.client_contract.client.name }}
+                                    </td>
+                                    <td>
+                                        {{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }}
+                                    </td>
+                                    <td>
+                                        {% if assignment.staff_contract.employment_type %}
+                                            {{ assignment.staff_contract.employment_type.name }}
+                                        {% else %}
+                                            <span class="text-muted">未設定</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div>
+                                            {{ assignment.assignment_start_date|date:"Y/m/d" }} ～ {{ assignment.assignment_end_date|date:"Y/m/d" }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if assignment.is_expired %}
+                                            <span class="badge bg-danger">期限切れ</span>
+                                            <small>{{ assignment.days_remaining|add:"-1" }}日経過</small>
+                                        {% elif assignment.is_expiring_soon %}
+                                            <span class="badge bg-warning text-dark">要注意</span>
+                                            <small>あと{{ assignment.days_remaining }}日</small>
+                                        {% else %}
+                                            <span class="badge bg-success">正常</span>
+                                            <small>あと{{ assignment.days_remaining }}日</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                            <a href="{% url 'contract:client_contract_detail' assignment.client_contract.pk %}" class="btn btn-sm btn-outline-primary" title="クライアント契約詳細">
+                                                <i class="bi bi-building"></i>
+                                            </a>
+                                            <a href="{% url 'contract:staff_contract_detail' assignment.staff_contract.pk %}" class="btn btn-sm btn-outline-info" title="スタッフ契約詳細">
+                                                <i class="bi bi-person"></i>
+                                            </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ページネーション -->
+                    {% if assignments.has_other_pages %}
+                    <nav aria-label="ページネーション">
+                        <ul class="pagination pagination-sm justify-content-center">
+                            {% if assignments.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ assignments.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}">前へ</a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for num in assignments.paginator.page_range %}
+                                {% if assignments.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
+                                    </li>
+                                {% elif num > assignments.number|add:'-3' and num < assignments.number|add:'3' %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}">{{ num }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if assignments.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ assignments.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}">次へ</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        {% if search_query %}
+                            検索条件に一致するアサインメントが見つかりませんでした。
+                        {% else %}
+                            現在進行中のアサインメントはありません。
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- 戻るボタン -->
+                    <div class="row mt-3">
+                        <div class="col text-left">
+                            <a href="{% url 'contract:contract_index' %}" class="btn btn-sm btn-secondary">戻る</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

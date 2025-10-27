@@ -41,6 +41,7 @@ urlpatterns = [
     path('staff/<int:pk>/pdf/', views.staff_contract_pdf, name='staff_contract_pdf'),
     path('staff/<int:pk>/draft_pdf/', views.staff_contract_draft_pdf, name='staff_contract_draft_pdf'),
     path('staff/export/', views.staff_contract_export, name='staff_contract_export'),
+    path('staff/expire_list/', views.staff_contract_expire_list, name='staff_contract_expire_list'),
     path('staff/teishokubi/', views.staff_contract_teishokubi_list, name='staff_contract_teishokubi_list'),
     path('staff/teishokubi/<int:pk>/', views.staff_contract_teishokubi_detail, name='staff_contract_teishokubi_detail'),
     path('staff/teishokubi/<int:pk>/detail/create/', views.staff_contract_teishokubi_detail_create, name='staff_contract_teishokubi_detail_create'),

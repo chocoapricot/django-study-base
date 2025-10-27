@@ -579,6 +579,12 @@ class ContractAssignment(MyModel):
         verbose_name='スタッフ契約'
     )
     assigned_at = models.DateTimeField('アサイン日時', auto_now_add=True)
+    
+    # 新しいフィールド
+    staff_email = models.EmailField('スタッフメールアドレス', blank=True, null=True)
+    client_corporate_number = models.CharField('クライアント法人番号', max_length=13, blank=True, null=True)
+    assignment_start_date = models.DateField('割当開始日', blank=True, null=True)
+    assignment_end_date = models.DateField('割当終了日', blank=True, null=True)
 
     class Meta:
         db_table = 'apps_contract_assignment'
@@ -588,6 +594,42 @@ class ContractAssignment(MyModel):
 
     def __str__(self):
         return f"{self.client_contract} - {self.staff_contract}"
+    
+    def save(self, *args, **kwargs):
+        """
+        保存時に自動的にフィールドを設定する
+        """
+        # スタッフメールアドレスを設定
+        if not self.staff_email and self.staff_contract and self.staff_contract.staff:
+            self.staff_email = self.staff_contract.staff.email
+        
+        # クライアント法人番号を設定
+        if not self.client_corporate_number and self.client_contract and self.client_contract.client:
+            self.client_corporate_number = self.client_contract.client.corporate_number
+        
+        # 割当開始日を設定（スタッフ契約とクライアント契約期間が重なる最初の日）
+        if not self.assignment_start_date and self.staff_contract and self.client_contract:
+            staff_start = self.staff_contract.start_date
+            client_start = self.client_contract.start_date
+            if staff_start and client_start:
+                self.assignment_start_date = max(staff_start, client_start)
+        
+        # 割当終了日を設定（スタッフ契約とクライアント契約期間が重なる最後の日）
+        if not self.assignment_end_date and self.staff_contract and self.client_contract:
+            staff_end = self.staff_contract.end_date
+            client_end = self.client_contract.end_date
+            
+            # 両方の終了日が設定されている場合は、早い方を採用
+            if staff_end and client_end:
+                self.assignment_end_date = min(staff_end, client_end)
+            # どちらか一方のみ設定されている場合は、設定されている方を採用
+            elif staff_end:
+                self.assignment_end_date = staff_end
+            elif client_end:
+                self.assignment_end_date = client_end
+            # 両方とも設定されていない場合は None のまま
+        
+        super().save(*args, **kwargs)
 
     def clean(self):
         """
