@@ -616,6 +616,8 @@ def delete_contract_assignment(request, assignment_pk):
         messages.error(request, 'このアサインは解除できません。クライアント契約が「作成中」ではありません。')
         if redirect_to == 'staff':
             return redirect('contract:staff_contract_detail', pk=staff_contract.pk)
+        elif redirect_to == 'expire_list':
+            return redirect('contract:staff_contract_expire_list')
         return redirect('contract:client_contract_detail', pk=client_contract.pk)
 
     try:
@@ -627,6 +629,8 @@ def delete_contract_assignment(request, assignment_pk):
     # 元の画面にリダイレクト
     if redirect_to == 'staff':
         return redirect('contract:staff_contract_detail', pk=staff_contract.pk)
+    elif redirect_to == 'expire_list':
+        return redirect('contract:staff_contract_expire_list')
 
     return redirect('contract:client_contract_detail', pk=client_contract.pk)
 
@@ -651,10 +655,17 @@ def contract_assignment_detail(request, assignment_pk):
         pk=assignment_pk
     )
     
-    # 遷移元を判定（リファラーから）
-    referer = request.META.get('HTTP_REFERER', '')
-    from_client = '/contract/client/' in referer
-    from_staff = '/contract/staff/' in referer
+    # 遷移元を判定（URLパラメータを優先、次にリファラーから）
+    from_param = request.GET.get('from')
+    from_expire_list = from_param == 'expire_list'
+    from_client = from_param == 'client'
+    from_staff = from_param == 'staff'
+    
+    # URLパラメータがない場合はリファラーから判定
+    if not from_param:
+        referer = request.META.get('HTTP_REFERER', '')
+        from_client = '/contract/client/' in referer and '/detail/' in referer
+        from_staff = '/contract/staff/' in referer and '/detail/' in referer
     
     # 変更履歴を取得（アサイン作成・削除のログ）
     change_logs = AppLog.objects.filter(
@@ -668,6 +679,7 @@ def contract_assignment_detail(request, assignment_pk):
         'staff_contract': assignment.staff_contract,
         'from_client': from_client,
         'from_staff': from_staff,
+        'from_expire_list': from_expire_list,
         'change_logs': change_logs,
         'Constants': Constants,
     }

@@ -198,7 +198,7 @@
                 <div class="row mt-3">
                     <div class="col text-left">
                         {% if assignment.client_contract.contract_status == Constants.CONTRACT_STATUS.DRAFT and assignment.staff_contract.contract_status == Constants.CONTRACT_STATUS.DRAFT %}
-                        <form action="{% url 'contract:delete_contract_assignment' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% endif %}" method="post" class="d-inline me-2">
+                        <form action="{% url 'contract:delete_contract_assignment' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% elif from_expire_list %}?from=expire_list{% endif %}" method="post" class="d-inline me-2">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-sm btn-dark" onclick="return confirm('このアサインを解除しますか？')">解除</button>
                         </form>
@@ -207,6 +207,8 @@
                             <a href="{% url 'contract:client_contract_detail' client_contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
                         {% elif from_staff %}
                             <a href="{% url 'contract:staff_contract_detail' staff_contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                        {% elif from_expire_list %}
+                            <a href="{% url 'contract:staff_contract_expire_list' %}" class="btn btn-sm btn-secondary">戻る</a>
                         {% else %}
                             <a href="{% url 'contract:contract_index' %}" class="btn btn-sm btn-secondary">戻る</a>
                         {% endif %}
