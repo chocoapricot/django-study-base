@@ -665,8 +665,8 @@ def contract_assignment_detail(request, assignment_pk):
     # URLパラメータがない場合はリファラーから判定
     if not from_param:
         referer = request.META.get('HTTP_REFERER', '')
-        from_client = '/contract/client/' in referer and '/detail/' in referer
-        from_staff = '/contract/staff/' in referer and '/detail/' in referer
+        from_client = '/contract/client/' in referer
+        from_staff = '/contract/staff/' in referer
     
     # 変更履歴を取得（アサイン作成・削除のログ）
     change_logs = AppLog.objects.filter(
