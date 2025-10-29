@@ -433,24 +433,26 @@ class ContractViewTest(TestCase):
         response = self.client.get(client_detail_url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '契約アサイン')
-        self.assertNotContains(response, 'アサインされているスタッフ契約はありません。')
+        self.assertNotContains(response, 'アサインされているスタッフはいません。')
         # スタッフ名と契約期間が表示されていることを確認
         self.assertContains(response, f'{assigned_staff_contract.staff.name_last} {assigned_staff_contract.staff.name_first}')
         self.assertContains(response, '2025/01/01～2025/12/31')
-        # スタッフ契約へのリンクがあることを確認
-        self.assertContains(response, f'href="{staff_detail_url}"')
+        # 契約アサイン詳細へのリンクがあることを確認
+        assignment_detail_url = reverse('contract:contract_assignment_detail', kwargs={'assignment_pk': ContractAssignment.objects.first().pk})
+        self.assertContains(response, f'href="{assignment_detail_url}?from=client"')
 
         # スタッフ契約詳細ページ
         response = self.client.get(staff_detail_url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '契約アサイン')
-        self.assertNotContains(response, 'アサインされているクライアント契約はありません。')
+        self.assertNotContains(response, 'アサインされているクライアントはありません。')
         # クライアント名と契約期間が表示されていることを確認
         self.assertContains(response, self.client_contract.client.name)
         expected_end_date = self.client_contract.end_date.strftime("%Y/%m/%d")
         self.assertContains(response, expected_end_date)
-        # クライアント契約へのリンクがあることを確認
-        self.assertContains(response, f'href="{client_detail_url}"')
+        # 契約アサイン詳細へのリンクがあることを確認
+        assignment_detail_url = reverse('contract:contract_assignment_detail', kwargs={'assignment_pk': ContractAssignment.objects.first().pk})
+        self.assertContains(response, f'href="{assignment_detail_url}?from=staff"')
 
     def test_ttp_info_not_displayed_for_non_haken_contract(self):
         """非派遣契約詳細ページで、TTP情報が表示されないかテスト"""
