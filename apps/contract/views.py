@@ -877,7 +877,7 @@ def client_contract_approve(request, pk):
                         if missing_payroll_staff:
                             staff_names = '、'.join(missing_payroll_staff)
                             messages.error(request, 
-                                f'派遣契約を承認するには、割当されたスタッフの給与関連情報が必要です。'
+                                f'派遣契約を承認するには、割当されたスタッフの給与関連情報が必要です。派遣先通知書に保険加入状況を記載する必要があるためです。'
                                 f'以下のスタッフの給与関連情報を登録してください：{staff_names}')
                             return redirect('contract:client_contract_detail', pk=contract.pk)
 
