@@ -750,6 +750,7 @@ def contract_assignment_confirm_view(request, assignment_pk):
         'form': form,
         'is_edit': confirm is not None,
         'from_param': from_param,
+        'Constants': Constants,
     }
     
     return render(request, 'contract/contract_assignment_confirm_form.html', context)

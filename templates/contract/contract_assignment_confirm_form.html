@@ -104,6 +104,9 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // 定数値をJavaScript変数として定義
+    const TERMINATE_CODE = '{{ Constants.ASSIGNMENT_CONFIRM_TYPE.TERMINATE }}';
+    
     const confirmTypeRadios = document.querySelectorAll('input[name="confirm_type"]');
     const terminationReasonRow = document.getElementById('termination-reason-row');
     const terminationReasonField = document.getElementById('{{ form.termination_reason.id_for_label }}');
@@ -112,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function toggleTerminationReason() {
         const selectedValue = document.querySelector('input[name="confirm_type"]:checked')?.value;
         
-        if (selectedValue === '2') { // 終了予定
+        if (selectedValue === TERMINATE_CODE) { // 終了予定
             terminationReasonRow.style.display = '';
             terminationReasonField.required = true;
             terminationReasonRequired.style.display = '';

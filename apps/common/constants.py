@@ -62,8 +62,8 @@ class Constants:
 
     # 契約割り当て確認種別 (assignment_confirm_type)
     class ASSIGNMENT_CONFIRM_TYPE:
-        EXTEND = '1'      # 延長予定
-        TERMINATE = '2'   # 終了予定
+        EXTEND = '10'     # 延長予定
+        TERMINATE = '90'  # 終了予定
 
 
 # 使用例

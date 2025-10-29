@@ -41,11 +41,9 @@
                             <tr>
                                 <th class="w-25 bg-light">確認種別</th>
                                 <td>
-                                    {% if confirm.confirm_type == '1' %}
-                                        <span class="badge bg-success">延長予定</span>
-                                    {% elif confirm.confirm_type == '2' %}
-                                        <span class="badge bg-warning">終了予定</span>
-                                    {% endif %}
+                                    <span class="badge {{ confirm.confirm_type|badge_class }}">
+                                        {{ confirm.get_confirm_type_display }}
+                                    </span>
                                 </td>
                             </tr>
                             {% if confirm.termination_reason %}

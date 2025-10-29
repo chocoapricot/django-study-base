@@ -58,11 +58,9 @@
                             <tr>
                                 <th class="w-25 bg-light">延長予定</th>
                                 <td>
-                                    {% if assignment.assignment_confirm.confirm_type == '1' %}
-                                        <span class="badge bg-success">延長予定</span>
-                                    {% elif assignment.assignment_confirm.confirm_type == '2' %}
-                                        <span class="badge bg-warning">終了予定</span>
-                                    {% endif %}
+                                    <span class="badge {{ assignment.assignment_confirm.confirm_type|badge_class }}">
+                                        {{ assignment.assignment_confirm.get_confirm_type_display }}
+                                    </span>
                                 </td>
                             </tr>
                             {% endif %}

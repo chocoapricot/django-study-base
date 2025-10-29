@@ -49,6 +49,7 @@
                                     <th>クライアント</th>
                                     <th>割当期間</th>
                                     <th>残り日数</th>
+                                    <th>延長確認</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -87,6 +88,15 @@
                                         {% else %}
                                             <span class="badge bg-success">正常</span>
                                             <small>あと{{ assignment.days_remaining }}日</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if assignment.assignment_confirm %}
+                                            <span class="badge {{ assignment.assignment_confirm.confirm_type|badge_class }}">
+                                                {{ assignment.assignment_confirm.get_confirm_type_display }}
+                                            </span>
+                                        {% else %}
+                                            <span class="text-muted">未確認</span>
                                         {% endif %}
                                     </td>
                                 </tr>

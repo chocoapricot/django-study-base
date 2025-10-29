@@ -1456,7 +1456,8 @@ def staff_contract_expire_list(request):
         'client_contract__client',
         'staff_contract__staff',
         'client_contract__job_category',
-        'staff_contract__employment_type'
+        'staff_contract__employment_type',
+        'assignment_confirm'
     ).order_by('assignment_end_date', 'client_contract__client__name', 'staff_contract__staff__name_last')
     
     # 検索機能
