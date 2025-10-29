@@ -1,0 +1,333 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+{% load humanize %}
+{% load dropdowns %}
+{% load badge_tags %}
+{% load help_tags %}
+
+{% block title %}契約アサイン詳細{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header">
+                契約アサイン詳細
+            </div>
+            <div class="card-body">
+                <!-- アサイン基本情報 -->
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="text-muted mb-3">アサイン基本情報</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th class="w-25 bg-light">割当期間</th>
+                                <td>
+                                    {% if assignment.assignment_start_date %}
+                                        {{ assignment.assignment_start_date|date:"Y年m月d日" }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                    　～　
+                                    {% if assignment.assignment_end_date %}
+                                        {{ assignment.assignment_end_date|date:"Y年m月d日" }}
+                                    {% else %}
+                                        無期限
+                                    {% endif %}
+                                </td>
+                            </tr>
+
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 契約情報（左右並び） -->
+                <div class="row mt-4">
+                    <!-- クライアント契約情報 -->
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="text-muted mb-0">クライアント契約情報</h6>
+                            <a href="{% url 'contract:client_contract_detail' client_contract.pk %}" class="btn btn-sm btn-outline-primary">詳細画面へ</a>
+                        </div>
+                        <table class="table table-sm">
+                            <tr>
+                                <th class="w-25 bg-light">契約番号</th>
+                                <td>{{ client_contract.contract_number|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">クライアント</th>
+                                <td>
+                                    <a href="{% url 'client:client_detail' client_contract.client.pk %}" class="text-decoration-none">
+                                        {{ client_contract.client.name }}
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">契約名</th>
+                                <td>{{ client_contract.contract_name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">契約種別</th>
+                                <td>
+                                    {% if client_contract.client_contract_type_code %}
+                                        <span class="badge {{ client_contract.client_contract_type_code|badge_class }}">
+                                            {% my_name 'client_contract_type' client_contract.client_contract_type_code %}
+                                        </span>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">職種</th>
+                                <td>{{ client_contract.job_category.name|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">契約期間</th>
+                                <td>
+                                    {{ client_contract.start_date|date:"Y年m月d日" }}
+                                    　～　
+                                    {% if client_contract.end_date %}
+                                        {{ client_contract.end_date|date:"Y年m月d日" }}
+                                    {% else %}
+                                        無期限
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">契約金額</th>
+                                <td>
+                                    {% if client_contract.contract_amount %}
+                                        {% if client_contract.bill_unit %}{% my_name 'bill_unit' client_contract.bill_unit %}&nbsp;{% endif %}{{ client_contract.contract_amount|floatformat:0|intcomma }}円
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">契約状況</th>
+                                <td>
+                                    <span class="badge {{ client_contract.contract_status|badge_class }}">
+                                        {% my_name 'contract_status' client_contract.contract_status %}
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- スタッフ契約情報 -->
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="text-muted mb-0">スタッフ契約情報</h6>
+                            <a href="{% url 'contract:staff_contract_detail' staff_contract.pk %}" class="btn btn-sm btn-outline-primary">詳細画面へ</a>
+                        </div>
+                        <table class="table table-sm">
+                            <tr>
+                                <th class="w-25 bg-light">契約番号</th>
+                                <td>{{ staff_contract.contract_number|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">スタッフ</th>
+                                <td>
+                                    <a href="{% url 'staff:staff_detail' staff_contract.staff.pk %}" class="text-decoration-none">
+                                        {{ staff_contract.staff.name_last }} {{ staff_contract.staff.name_first }}
+                                    </a>
+                                    {% if staff_contract.staff.has_international %}
+                                        <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
+                                    {% endif %}
+                                    {% if staff_contract.staff.has_disability %}
+                                        <i class="bi bi-heart" style="color:#17a2b8;" title="障害者"></i>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">契約名</th>
+                                <td>{{ staff_contract.contract_name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">雇用形態</th>
+                                <td>
+                                    {% if staff_contract.employment_type %}
+                                        <span class="badge {{ staff_contract.employment_type.display_order|badge_class }}">
+                                            {{ staff_contract.employment_type.name }}
+                                        </span>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">職種</th>
+                                <td>{{ staff_contract.job_category.name|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">契約期間</th>
+                                <td>
+                                    {{ staff_contract.start_date|date:"Y年m月d日" }}
+                                    　～　
+                                    {% if staff_contract.end_date %}
+                                        {{ staff_contract.end_date|date:"Y年m月d日" }}
+                                    {% else %}
+                                        無期限
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">契約金額</th>
+                                <td>
+                                    {% if staff_contract.contract_amount %}
+                                        {% if staff_contract.pay_unit %}{% my_name 'pay_unit' staff_contract.pay_unit %}&nbsp;{% endif %}{{ staff_contract.contract_amount|floatformat:0|intcomma }}円
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">契約状況</th>
+                                <td>
+                                    <span class="badge {{ staff_contract.contract_status|badge_class }}">
+                                        {% my_name 'contract_status' staff_contract.contract_status %}
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- アクションボタン -->
+                <div class="row mt-3">
+                    <div class="col text-left">
+                        {% if assignment.client_contract.contract_status == Constants.CONTRACT_STATUS.DRAFT and assignment.staff_contract.contract_status == Constants.CONTRACT_STATUS.DRAFT %}
+                        <form action="{% url 'contract:delete_contract_assignment' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% endif %}" method="post" class="d-inline me-2">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-dark" onclick="return confirm('このアサインを解除しますか？')">解除</button>
+                        </form>
+                        {% endif %}
+                        {% if from_client %}
+                            <a href="{% url 'contract:client_contract_detail' client_contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                        {% elif from_staff %}
+                            <a href="{% url 'contract:staff_contract_detail' staff_contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                        {% else %}
+                            <a href="{% url 'contract:contract_index' %}" class="btn btn-sm btn-secondary">戻る</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 変更履歴 -->
+{% if change_logs %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        変更履歴
+    </div>
+    <div class="card-body mb-0">
+        <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>対象</th>
+                    <th>操作</th>
+                    <th>変更内容</th>
+                    <th>変更者</th>
+                    <th>日時</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in change_logs %}
+                <tr>
+                    <td>
+                        <span class="badge bg-info">契約アサイン</span>
+                    </td>
+                    <td>
+                        {% if log.action == 'create' %}
+                            <span class="badge bg-success">作成</span>
+                        {% elif log.action == 'update' %}
+                            <span class="badge bg-warning">編集</span>
+                        {% elif log.action == 'delete' %}
+                            <span class="badge bg-danger">削除</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ log.description|default:"-" }}</td>
+                    <td>
+                        {% if log.user %}
+                            {{ log.user.get_full_name|default:log.user.username }}
+                        {% else %}
+                            システム
+                        {% endif %}
+                    </td>
+                    <td>{{ log.timestamp|date:"Y/m/d H:i:s" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        変更履歴
+    </div>
+    <div class="card-body mb-0">
+        <p class="text-muted mb-0">変更履歴がありません</p>
+    </div>
+</div>
+{% endif %}
+
+<script>
+// ページロジック情報を設定
+document.addEventListener('DOMContentLoaded', function() {
+    // このページにロジック情報があることを通知
+    document.body.setAttribute('data-has-logic', 'true');
+    
+    const logicContent = document.getElementById('logic-info-content');
+    if (logicContent) {
+        logicContent.innerHTML = `
+            <div class="alert alert-info mb-3">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>契約アサイン詳細画面のロジック情報</h6>
+            </div>
+            
+            <!-- 単項目チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-shield-check text-primary me-2"></i>単項目チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• アサイン解除権限: 両方の契約が「作成中」状態の場合のみ解除可能</div>
+                    <div class="mb-0">• 遷移元判定: リファラー情報から戻るボタンの遷移先を自動判定</div>
+                </div>
+            </div>
+
+            <!-- 相関チェック -->
+            <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-check-circle text-success me-2"></i>相関チェック</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 契約期間整合性: 割当期間がクライアント契約・スタッフ契約の重複期間内に設定</div>
+                    <div class="mb-0">• 職種整合性: クライアント契約とスタッフ契約の職種情報を比較表示</div>
+                </div>
+            </div>
+
+            <!-- 自動処理 -->
+            <div class="card" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="bi bi-gear text-secondary me-2"></i>自動処理</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">• 関連データ取得: クライアント契約・スタッフ契約の詳細情報を自動取得・表示</div>
+                    <div class="mb-2">• 変更履歴表示: アサイン作成・削除の履歴を自動取得・表示</div>
+                    <div class="mb-2">• 割当期間計算: 契約期間の重複部分を自動計算して表示</div>
+                    <div class="mb-0">• 詳細画面リンク: 各契約の詳細画面への直接リンクを提供</div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // ロジック情報設定完了を通知
+    document.dispatchEvent(new Event('logicInfoSet'));
+});
+</script>
+
+{% endblock %}

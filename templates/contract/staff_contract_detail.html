@@ -194,7 +194,7 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <a href="{% url 'contract:client_contract_detail' assignment.client_contract.pk %}">
+                                    <a href="{% url 'contract:contract_assignment_detail' assignment_pk=assignment.pk %}">
                                         {{ assignment.client_contract.start_date|date:"Y/m/d" }}～{% if assignment.client_contract.end_date %}{{ assignment.client_contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}
                                     </a>
                                 </td>

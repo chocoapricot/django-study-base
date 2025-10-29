@@ -629,3 +629,47 @@ def delete_contract_assignment(request, assignment_pk):
         return redirect('contract:staff_contract_detail', pk=staff_contract.pk)
 
     return redirect('contract:client_contract_detail', pk=client_contract.pk)
+
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def contract_assignment_detail(request, assignment_pk):
+    """
+    契約アサイン情報の詳細画面
+    クライアント契約とスタッフ契約の両方から参照される共通画面
+    """
+    from apps.system.logs.models import AppLog
+    
+    assignment = get_object_or_404(
+        ContractAssignment.objects.select_related(
+            'client_contract__client',
+            'staff_contract__staff',
+            'staff_contract__employment_type',
+            'client_contract__job_category',
+            'staff_contract__job_category'
+        ),
+        pk=assignment_pk
+    )
+    
+    # 遷移元を判定（リファラーから）
+    referer = request.META.get('HTTP_REFERER', '')
+    from_client = '/contract/client/' in referer
+    from_staff = '/contract/staff/' in referer
+    
+    # 変更履歴を取得（アサイン作成・削除のログ）
+    change_logs = AppLog.objects.filter(
+        model_name='ContractAssignment',
+        object_id=str(assignment.pk)
+    ).select_related('user').order_by('-timestamp')[:10]
+    
+    context = {
+        'assignment': assignment,
+        'client_contract': assignment.client_contract,
+        'staff_contract': assignment.staff_contract,
+        'from_client': from_client,
+        'from_staff': from_staff,
+        'change_logs': change_logs,
+        'Constants': Constants,
+    }
+    
+    return render(request, 'contract/contract_assignment_detail.html', context)
