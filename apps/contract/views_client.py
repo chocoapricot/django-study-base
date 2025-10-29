@@ -209,6 +209,16 @@ def client_contract_detail(request, pk):
     client_filter = request.GET.get('client', '')
     from_client_detail = bool(client_filter)
 
+    # 契約アサイン詳細からの遷移を判定
+    from_assignment = request.GET.get('from') == 'assignment'
+    assignment_pk = request.GET.get('assignment_pk', '')
+    if assignment_pk:
+        try:
+            assignment_pk = int(assignment_pk)
+        except (ValueError, TypeError):
+            assignment_pk = None
+            from_assignment = False
+
     # 遷移元を判定（リファラーから）
     referer = request.META.get('HTTP_REFERER', '')
     from_client_detail_direct = False
@@ -255,6 +265,8 @@ def client_contract_detail(request, pk):
         'client_filter': client_filter,
         'from_client_detail': from_client_detail,
         'from_client_detail_direct': from_client_detail_direct,
+        'from_assignment': from_assignment,
+        'assignment_pk': assignment_pk,
     }
     return render(request, 'contract/client_contract_detail.html', context)
 

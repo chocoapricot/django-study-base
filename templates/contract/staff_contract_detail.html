@@ -151,7 +151,10 @@
                             <a href="{% url 'contract:staff_contract_update' contract.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
                             <a href="{% url 'contract:staff_contract_delete' contract.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
                         {% endif %}
-                        {% if from_staff_detail_direct %}
+                        {% if from_assignment and assignment_pk %}
+                            <a href="{% url 'contract:contract_assignment_detail' assignment_pk=assignment_pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                            <!-- Debug: from_assignment={{ from_assignment }}, assignment_pk={{ assignment_pk }} -->
+                        {% elif from_staff_detail_direct %}
                             <a href="{% url 'staff:staff_detail' staff_filter %}" class="btn btn-sm btn-secondary">戻る</a>
                         {% elif staff_filter %}
                             <a href="{% url 'contract:staff_contract_list' %}?staff={{ staff_filter }}" class="btn btn-sm btn-secondary">戻る</a>

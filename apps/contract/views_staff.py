@@ -219,6 +219,16 @@ def staff_contract_detail(request, pk):
     staff_filter = request.GET.get('staff', '')
     from_staff_detail = bool(staff_filter)
 
+    # 契約アサイン詳細からの遷移を判定
+    from_assignment = request.GET.get('from') == 'assignment'
+    assignment_pk = request.GET.get('assignment_pk', '')
+    if assignment_pk:
+        try:
+            assignment_pk = int(assignment_pk)
+        except (ValueError, TypeError):
+            assignment_pk = None
+            from_assignment = False
+
     # 遷移元を判定（リファラーから）
     referer = request.META.get('HTTP_REFERER', '')
     from_staff_detail_direct = False
@@ -286,6 +296,8 @@ def staff_contract_detail(request, pk):
         'staff_filter': staff_filter,
         'from_staff_detail': from_staff_detail,
         'from_staff_detail_direct': from_staff_detail_direct,
+        'from_assignment': from_assignment,
+        'assignment_pk': assignment_pk,
         'minimum_wage': minimum_wage,
         'minimum_wage_pref_name': minimum_wage_pref_name,
         'has_ttp_assignment': has_ttp_assignment,
