@@ -1,7 +1,7 @@
 from django import forms
 from django.db.models import Subquery, OuterRef
 from django.utils import timezone
-from .models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp, ClientContractHakenExempt, StaffContractTeishokubiDetail
+from .models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp, ClientContractHakenExempt, StaffContractTeishokubiDetail, ContractAssignmentConfirm
 from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from apps.system.settings.models import Dropdowns
@@ -745,3 +745,42 @@ class StaffContractTeishokubiDetailForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['assignment_start_date'].label = '割当開始日'
         self.fields['assignment_end_date'].label = '割当終了日'
+
+
+class ContractAssignmentConfirmForm(forms.ModelForm):
+    """契約割り当て確認フォーム"""
+    
+    class Meta:
+        model = ContractAssignmentConfirm
+        fields = ['confirm_type', 'termination_reason', 'notes']
+        widgets = {
+            'confirm_type': forms.RadioSelect(attrs={'class': 'form-check-input'}),
+            'termination_reason': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # 確認種別の選択肢を設定
+        self.fields['confirm_type'].choices = [
+            (Constants.ASSIGNMENT_CONFIRM_TYPE.EXTEND, '延長予定'),
+            (Constants.ASSIGNMENT_CONFIRM_TYPE.TERMINATE, '終了予定')
+        ]
+        self.fields['confirm_type'].required = True
+        
+        # 終了理由は任意（JavaScriptで動的に制御）
+        self.fields['termination_reason'].required = False
+        self.fields['notes'].required = False
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        confirm_type = cleaned_data.get('confirm_type')
+        termination_reason = cleaned_data.get('termination_reason')
+        
+        # 終了予定の場合は終了理由が必須
+        if (confirm_type == Constants.ASSIGNMENT_CONFIRM_TYPE.TERMINATE and 
+            not termination_reason):
+            self.add_error('termination_reason', '終了予定の場合は終了理由を入力してください。')
+        
+        return cleaned_data

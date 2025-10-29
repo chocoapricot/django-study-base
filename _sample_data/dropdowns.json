@@ -4334,5 +4334,37 @@
         "disp_seq": 19,
         "active": true
     }
+},
+{
+    "model": "settings.dropdowns",
+    "pk": 390,
+    "fields": {
+        "version": 1760742627967830,
+        "created_at": "2025-10-30T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-10-30T00:00:00Z",
+        "updated_by": 1,
+        "category": "assignment_confirm_type",
+        "name": "延長予定",
+        "value": "1",
+        "disp_seq": 10,
+        "active": true
+    }
+},
+{
+    "model": "settings.dropdowns",
+    "pk": 391,
+    "fields": {
+        "version": 1760742627967831,
+        "created_at": "2025-10-30T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-10-30T00:00:00Z",
+        "updated_by": 1,
+        "category": "assignment_confirm_type",
+        "name": "終了予定",
+        "value": "2",
+        "disp_seq": 20,
+        "active": true
+    }
 }
 ]

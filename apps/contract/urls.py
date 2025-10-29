@@ -85,6 +85,10 @@ urlpatterns = [
 
     # アサイン情報詳細画面
     path('assignment/<int:assignment_pk>/detail/', views.contract_assignment_detail, name='contract_assignment_detail'),
+    
+    # 契約アサイン延長確認
+    path('assignment/<int:assignment_pk>/confirm/', views.contract_assignment_confirm_view, name='contract_assignment_confirm'),
+    path('assignment/<int:assignment_pk>/confirm/delete/', views.contract_assignment_confirm_delete, name='contract_assignment_confirm_delete'),
 
     path('assign/confirm/client/', views.client_assignment_confirm, name='client_assignment_confirm'),
     path('assign/confirm/staff/', views.staff_assignment_confirm, name='staff_assignment_confirm'),

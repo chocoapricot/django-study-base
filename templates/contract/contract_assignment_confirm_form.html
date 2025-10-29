@@ -1,0 +1,137 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+{% load help_tags %}
+
+{% block title %}{% if is_edit %}延長確認編集{% else %}延長確認登録{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header">
+                {% if is_edit %}延長確認編集{% else %}延長確認登録{% endif %}
+            </div>
+            <div class="card-body">
+                <!-- アサイン基本情報 -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-muted mb-3">アサイン基本情報</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th class="w-25 bg-light">クライアント契約</th>
+                                <td>{{ assignment.client_contract.client.name }} - {{ assignment.client_contract.contract_name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">スタッフ契約</th>
+                                <td>{{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }} - {{ assignment.staff_contract.contract_name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">割当期間</th>
+                                <td>
+                                    {% if assignment.assignment_start_date %}
+                                        {{ assignment.assignment_start_date|date:"Y年m月d日" }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                    　～　
+                                    {% if assignment.assignment_end_date %}
+                                        {{ assignment.assignment_end_date|date:"Y年m月d日" }}
+                                    {% else %}
+                                        無期限
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 延長確認フォーム -->
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- 確認種別 -->
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-sm-2 col-form-label" style="text-align:right">確認種別 <span class="text-danger">*</span></label>
+                        <div class="col-sm-6">
+                            {% for choice in form.confirm_type %}
+                                <div class="form-check form-check-inline">
+                                    {{ choice.tag }}
+                                    <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                        {{ choice.choice_label }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                            {% if form.confirm_type.errors %}
+                                <div class="text-danger small mt-1">{{ form.confirm_type.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- 終了理由 -->
+                    <div class="row mb-3 align-items-center" id="termination-reason-row">
+                        <label for="{{ form.termination_reason.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">終了理由 <span class="text-danger" id="termination-reason-required">*</span></label>
+                        <div class="col-sm-8">
+                            {{ form.termination_reason }}
+                            {% if form.termination_reason.errors %}
+                                <div class="text-danger small mt-1">{{ form.termination_reason.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- 備考 -->
+                    <div class="row mb-3 align-items-center">
+                        <label for="{{ form.notes.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">備考</label>
+                        <div class="col-sm-8">
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <div class="text-danger small mt-1">{{ form.notes.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- ボタン -->
+                    <div class="row mt-4">
+                        <div class="col text-left">
+                            <button type="submit" class="btn btn-sm btn-primary me-2">{% if is_edit %}更新{% else %}登録{% endif %}</button>
+                            <a href="{% url 'contract:contract_assignment_detail' assignment_pk=assignment.pk %}{% if from_param %}?from={{ from_param }}{% endif %}" class="btn btn-sm btn-secondary">戻る</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmTypeRadios = document.querySelectorAll('input[name="confirm_type"]');
+    const terminationReasonRow = document.getElementById('termination-reason-row');
+    const terminationReasonField = document.getElementById('{{ form.termination_reason.id_for_label }}');
+    const terminationReasonRequired = document.getElementById('termination-reason-required');
+    
+    function toggleTerminationReason() {
+        const selectedValue = document.querySelector('input[name="confirm_type"]:checked')?.value;
+        
+        if (selectedValue === '2') { // 終了予定
+            terminationReasonRow.style.display = '';
+            terminationReasonField.required = true;
+            terminationReasonRequired.style.display = '';
+        } else {
+            terminationReasonRow.style.display = 'none';
+            terminationReasonField.required = false;
+            terminationReasonRequired.style.display = 'none';
+            terminationReasonField.value = '';
+        }
+    }
+    
+    // 初期状態の設定
+    toggleTerminationReason();
+    
+    // ラジオボタンの変更時
+    confirmTypeRadios.forEach(radio => {
+        radio.addEventListener('change', toggleTerminationReason);
+    });
+});
+</script>
+
+{% endblock %}

@@ -12,8 +12,8 @@ from apps.common.constants import Constants
 from apps.master.models import ContractPattern, EmploymentType, JobCategory
 from apps.staff.models import Staff
 
-from .forms import StaffContractForm
-from .models import ClientContract, ContractAssignment, StaffContract
+from .forms import StaffContractForm, ContractAssignmentConfirmForm
+from .models import ClientContract, ContractAssignment, StaffContract, ContractAssignmentConfirm
 
 
 def _calculate_profit_margin(client_contract, staff_contract):
@@ -685,3 +685,93 @@ def contract_assignment_detail(request, assignment_pk):
     }
     
     return render(request, 'contract/contract_assignment_detail.html', context)
+
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def contract_assignment_confirm_view(request, assignment_pk):
+    """契約アサイン延長確認の詳細・作成・編集画面"""
+    assignment = get_object_or_404(
+        ContractAssignment.objects.select_related(
+            'client_contract__client',
+            'staff_contract__staff'
+        ),
+        pk=assignment_pk
+    )
+    
+    # 既存の確認情報を取得（存在しない場合はNone）
+    try:
+        confirm = assignment.assignment_confirm
+    except ContractAssignmentConfirm.DoesNotExist:
+        confirm = None
+    
+    if request.method == 'POST':
+        if confirm:
+            # 編集の場合
+            form = ContractAssignmentConfirmForm(request.POST, instance=confirm)
+        else:
+            # 新規作成の場合
+            form = ContractAssignmentConfirmForm(request.POST)
+        
+        if form.is_valid():
+            confirm_instance = form.save(commit=False)
+            if not confirm:
+                # 新規作成の場合のみ契約アサインを設定
+                confirm_instance.contract_assignment = assignment
+            confirm_instance.updated_by = request.user
+            if not confirm:
+                confirm_instance.created_by = request.user
+            confirm_instance.save()
+            
+            action = '更新' if confirm else '登録'
+            messages.success(request, f'延長確認情報を{action}しました。')
+            return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+    else:
+        if confirm:
+            # 編集の場合
+            form = ContractAssignmentConfirmForm(instance=confirm)
+        else:
+            # 新規作成の場合
+            form = ContractAssignmentConfirmForm()
+    
+    # 遷移元を判定
+    from_param = request.GET.get('from')
+    
+    context = {
+        'assignment': assignment,
+        'confirm': confirm,
+        'form': form,
+        'is_edit': confirm is not None,
+        'from_param': from_param,
+    }
+    
+    return render(request, 'contract/contract_assignment_confirm_form.html', context)
+
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def contract_assignment_confirm_delete(request, assignment_pk):
+    """契約アサイン延長確認の削除"""
+    assignment = get_object_or_404(ContractAssignment, pk=assignment_pk)
+    
+    try:
+        confirm = assignment.assignment_confirm
+    except ContractAssignmentConfirm.DoesNotExist:
+        messages.error(request, '削除対象の延長確認情報が見つかりません。')
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+    
+    if request.method == 'POST':
+        confirm.delete()
+        messages.success(request, '延長確認情報を削除しました。')
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+    
+    # 遷移元を判定
+    from_param = request.GET.get('from')
+    
+    context = {
+        'assignment': assignment,
+        'confirm': confirm,
+        'from_param': from_param,
+    }
+    
+    return render(request, 'contract/contract_assignment_confirm_delete.html', context)

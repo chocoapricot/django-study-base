@@ -11,8 +11,26 @@
 <div class="row">
     <div class="col-md-12">
         <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 契約アサイン詳細
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        その他情報
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            {% if assignment.assignment_confirm %}
+                                <a class="dropdown-item" href="{% url 'contract:contract_assignment_confirm' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% elif from_expire_list %}?from=expire_list{% endif %}">
+                                    <i class="bi bi-pencil me-2"></i>延長確認編集
+                                </a>
+                            {% else %}
+                                <a class="dropdown-item" href="{% url 'contract:contract_assignment_confirm' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% elif from_expire_list %}?from=expire_list{% endif %}">
+                                    <i class="bi bi-plus me-2"></i>延長確認登録
+                                </a>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
             </div>
             <div class="card-body">
                 <!-- アサイン基本情報 -->
@@ -193,6 +211,49 @@
                         </table>
                     </div>
                 </div>
+
+                <!-- 延長確認情報 -->
+                {% if assignment.assignment_confirm %}
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="text-muted mb-0">延長確認情報</h6>
+                            <div>
+                                <a href="{% url 'contract:contract_assignment_confirm' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% elif from_expire_list %}?from=expire_list{% endif %}" class="btn btn-sm btn-outline-primary me-2">編集</a>
+                                <a href="{% url 'contract:contract_assignment_confirm_delete' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% elif from_expire_list %}?from=expire_list{% endif %}" class="btn btn-sm btn-dark">削除</a>
+                            </div>
+                        </div>
+                        <table class="table table-sm">
+                            <tr>
+                                <th class="w-25 bg-light">確認種別</th>
+                                <td>
+                                    {% if assignment.assignment_confirm.confirm_type == '1' %}
+                                        <span class="badge bg-success">延長予定</span>
+                                    {% elif assignment.assignment_confirm.confirm_type == '2' %}
+                                        <span class="badge bg-warning">終了予定</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% if assignment.assignment_confirm.termination_reason %}
+                            <tr>
+                                <th class="w-25 bg-light">終了理由</th>
+                                <td>{{ assignment.assignment_confirm.termination_reason|linebreaksbr }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if assignment.assignment_confirm.notes %}
+                            <tr>
+                                <th class="w-25 bg-light">備考</th>
+                                <td>{{ assignment.assignment_confirm.notes|linebreaksbr }}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <th class="w-25 bg-light">確認日時</th>
+                                <td>{{ assignment.assignment_confirm.confirmed_at|date:"Y年m月d日 H:i" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
 
                 <!-- アクションボタン -->
                 <div class="row mt-3">

@@ -60,6 +60,11 @@ class Constants:
         HAKEN_RESPONSIBILITY_DEGREE = 'HAKEN_RESPONSIBILITY_DEGREE'  # 派遣・責任の程度
         CONTRACT_BUSINESS_CONTENT = 'CONTRACT_BUSINESS_CONTENT'      # 業務内容
 
+    # 契約割り当て確認種別 (assignment_confirm_type)
+    class ASSIGNMENT_CONFIRM_TYPE:
+        EXTEND = '1'      # 延長予定
+        TERMINATE = '2'   # 終了予定
+
 
 # 使用例
 """

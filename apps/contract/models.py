@@ -833,3 +833,51 @@ class StaffContractTeishokubiDetail(MyModel):
 
     def __str__(self):
         return f"{self.teishokubi} - {self.assignment_start_date}"
+
+
+class ContractAssignmentConfirm(MyModel):
+    """
+    契約割り当て確認情報を管理するモデル。
+    延長予定か終了かの確認と、終了の場合の理由を記録する。
+    """
+    contract_assignment = models.OneToOneField(
+        ContractAssignment,
+        on_delete=models.CASCADE,
+        related_name='assignment_confirm',
+        verbose_name='契約アサイン'
+    )
+    confirm_type = models.CharField(
+        '確認種別',
+        max_length=2,
+        choices=[
+            (Constants.ASSIGNMENT_CONFIRM_TYPE.EXTEND, '延長予定'),
+            (Constants.ASSIGNMENT_CONFIRM_TYPE.TERMINATE, '終了予定')
+        ],
+        help_text='延長予定か終了予定かを選択してください'
+    )
+    termination_reason = models.TextField(
+        '終了理由',
+        blank=True,
+        null=True,
+        help_text='終了予定の場合は理由を入力してください'
+    )
+    confirmed_at = models.DateTimeField('確認日時', auto_now_add=True)
+    notes = models.TextField('備考', blank=True, null=True)
+
+    class Meta:
+        db_table = 'apps_contract_assignment_confirm'
+        verbose_name = '契約割り当て確認'
+        verbose_name_plural = '契約割り当て確認'
+        ordering = ['-confirmed_at']
+
+    def __str__(self):
+        return f"{self.contract_assignment} - {self.get_confirm_type_display()}"
+
+    def clean(self):
+        """バリデーション"""
+        from django.core.exceptions import ValidationError
+        
+        # 終了予定の場合は終了理由が必須
+        if (self.confirm_type == Constants.ASSIGNMENT_CONFIRM_TYPE.TERMINATE and 
+            not self.termination_reason):
+            raise ValidationError('終了予定の場合は終了理由を入力してください。')

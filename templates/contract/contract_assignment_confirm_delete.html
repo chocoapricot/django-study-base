@@ -1,0 +1,86 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block title %}延長確認削除{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header">
+                延長確認削除
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    延長確認情報を削除しますか？この操作は取り消せません。
+                </div>
+
+                <!-- アサイン基本情報 -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-muted mb-3">アサイン基本情報</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th class="w-25 bg-light">クライアント契約</th>
+                                <td>{{ assignment.client_contract.client.name }} - {{ assignment.client_contract.contract_name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">スタッフ契約</th>
+                                <td>{{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }} - {{ assignment.staff_contract.contract_name }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 削除対象の延長確認情報 -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-muted mb-3">削除対象の延長確認情報</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th class="w-25 bg-light">確認種別</th>
+                                <td>
+                                    {% if confirm.confirm_type == '1' %}
+                                        <span class="badge bg-success">延長予定</span>
+                                    {% elif confirm.confirm_type == '2' %}
+                                        <span class="badge bg-warning">終了予定</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% if confirm.termination_reason %}
+                            <tr>
+                                <th class="w-25 bg-light">終了理由</th>
+                                <td>{{ confirm.termination_reason|linebreaksbr }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if confirm.notes %}
+                            <tr>
+                                <th class="w-25 bg-light">備考</th>
+                                <td>{{ confirm.notes|linebreaksbr }}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <th class="w-25 bg-light">確認日時</th>
+                                <td>{{ confirm.confirmed_at|date:"Y年m月d日 H:i" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ボタン -->
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row mt-3">
+                        <div class="col text-left">
+                            <button type="submit" class="btn btn-sm btn-dark me-2">削除する</button>
+                            <a href="{% url 'contract:contract_assignment_detail' assignment_pk=assignment.pk %}{% if from_param %}?from={{ from_param }}{% endif %}" class="btn btn-sm btn-secondary">戻る</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
