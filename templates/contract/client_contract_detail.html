@@ -248,7 +248,6 @@
                         {% endif %}
                         {% if from_assignment and assignment_pk %}
                             <a href="{% url 'contract:contract_assignment_detail' assignment_pk=assignment_pk %}" class="btn btn-sm btn-secondary">戻る</a>
-                            <!-- Debug: from_assignment={{ from_assignment }}, assignment_pk={{ assignment_pk }} -->
                         {% elif from_client_detail_direct %}
                             <a href="{% url 'client:client_detail' client_filter %}" class="btn btn-sm btn-secondary">戻る</a>
                         {% elif client_filter %}

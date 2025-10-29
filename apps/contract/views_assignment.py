@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from apps.common.constants import Constants
@@ -725,7 +726,13 @@ def contract_assignment_confirm_view(request, assignment_pk):
             
             action = '更新' if confirm else '登録'
             messages.success(request, f'延長確認情報を{action}しました。')
-            return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+            
+            # 遷移元パラメータを保持してリダイレクト
+            from_param = request.GET.get('from')
+            if from_param:
+                return redirect(f"{reverse('contract:contract_assignment_detail', kwargs={'assignment_pk': assignment_pk})}?from={from_param}")
+            else:
+                return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
     else:
         if confirm:
             # 編集の場合
@@ -763,7 +770,13 @@ def contract_assignment_confirm_delete(request, assignment_pk):
     if request.method == 'POST':
         confirm.delete()
         messages.success(request, '延長確認情報を削除しました。')
-        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+        
+        # 遷移元パラメータを保持してリダイレクト
+        from_param = request.GET.get('from')
+        if from_param:
+            return redirect(f"{reverse('contract:contract_assignment_detail', kwargs={'assignment_pk': assignment_pk})}?from={from_param}")
+        else:
+            return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
     
     # 遷移元を判定
     from_param = request.GET.get('from')

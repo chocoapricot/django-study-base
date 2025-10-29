@@ -48,8 +48,9 @@
                             <tr>
                                 <th>スタッフ</th>
                                 <td>
-                                    <a href="{% url 'staff:staff_detail' contract.staff.pk %}" class="text-decoration-none">
+                                    <a href="{% url 'staff:staff_detail' contract.staff.pk %}" class="text-decoration-none" target="_blank">
                                         {{ contract.staff.name_last }} {{ contract.staff.name_first }}
+                                        <i class="bi bi-box-arrow-up-right ms-1"></i>
                                     </a>
                                     {% if contract.staff.has_international %}
                                         <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
@@ -153,7 +154,6 @@
                         {% endif %}
                         {% if from_assignment and assignment_pk %}
                             <a href="{% url 'contract:contract_assignment_detail' assignment_pk=assignment_pk %}" class="btn btn-sm btn-secondary">戻る</a>
-                            <!-- Debug: from_assignment={{ from_assignment }}, assignment_pk={{ assignment_pk }} -->
                         {% elif from_staff_detail_direct %}
                             <a href="{% url 'staff:staff_detail' staff_filter %}" class="btn btn-sm btn-secondary">戻る</a>
                         {% elif staff_filter %}

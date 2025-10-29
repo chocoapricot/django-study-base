@@ -98,8 +98,9 @@
                             <tr>
                                 <th class="w-25 bg-light">クライアント</th>
                                 <td>
-                                    <a href="{% url 'contract:client_contract_detail' client_contract.pk %}?from=assignment&assignment_pk={{ assignment.pk }}" class="text-decoration-none">
+                                    <a href="{% url 'contract:client_contract_detail' client_contract.pk %}" class="text-decoration-none" target="_blank">
                                         {{ client_contract.client.name }}
+                                        <i class="bi bi-box-arrow-up-right ms-1"></i>
                                     </a>
                                 </td>
                             </tr>
@@ -169,8 +170,9 @@
                             <tr>
                                 <th class="w-25 bg-light">スタッフ</th>
                                 <td>
-                                    <a href="{% url 'contract:staff_contract_detail' staff_contract.pk %}?from=assignment&assignment_pk={{ assignment.pk }}" class="text-decoration-none">
+                                    <a href="{% url 'contract:staff_contract_detail' staff_contract.pk %}" class="text-decoration-none" target="_blank">
                                         {{ staff_contract.staff.name_last }} {{ staff_contract.staff.name_first }}
+                                        <i class="bi bi-box-arrow-up-right ms-1"></i>
                                     </a>
                                     {% if staff_contract.staff.has_international %}
                                         <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
