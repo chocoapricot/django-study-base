@@ -3,7 +3,7 @@
     "model": "master.phrasetemplate",
     "pk": 1,
     "fields": {
-        "version": 1761403021447963,
+        "version": 1761763426707493,
         "created_at": "2025-10-25T14:36:06.126Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:36:06.126Z",
@@ -18,7 +18,7 @@
     "model": "master.phrasetemplate",
     "pk": 2,
     "fields": {
-        "version": 1761403021453553,
+        "version": 1761763426716401,
         "created_at": "2025-10-25T14:36:13.568Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:36:13.568Z",
@@ -33,7 +33,7 @@
     "model": "master.phrasetemplate",
     "pk": 3,
     "fields": {
-        "version": 1761403021455974,
+        "version": 1761763426721774,
         "created_at": "2025-10-25T14:36:20.764Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:36:20.764Z",
@@ -48,7 +48,7 @@
     "model": "master.phrasetemplate",
     "pk": 4,
     "fields": {
-        "version": 1761403021458424,
+        "version": 1761763426728175,
         "created_at": "2025-10-25T14:41:56.231Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:41:56.231Z",
@@ -63,7 +63,7 @@
     "model": "master.phrasetemplate",
     "pk": 5,
     "fields": {
-        "version": 1761403021462136,
+        "version": 1761763426733200,
         "created_at": "2025-10-25T14:42:02.547Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:02.547Z",
@@ -78,7 +78,7 @@
     "model": "master.phrasetemplate",
     "pk": 6,
     "fields": {
-        "version": 1761403021465258,
+        "version": 1761763426737310,
         "created_at": "2025-10-25T14:42:14.657Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:14.657Z",
@@ -93,7 +93,7 @@
     "model": "master.phrasetemplate",
     "pk": 7,
     "fields": {
-        "version": 1761403021468319,
+        "version": 1761763426742070,
         "created_at": "2025-10-25T14:42:22.761Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:22.761Z",
@@ -108,7 +108,7 @@
     "model": "master.phrasetemplate",
     "pk": 8,
     "fields": {
-        "version": 1761403021471055,
+        "version": 1761763426746561,
         "created_at": "2025-10-25T14:42:33.417Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:33.417Z",
@@ -123,7 +123,7 @@
     "model": "master.phrasetemplate",
     "pk": 9,
     "fields": {
-        "version": 1761403021473760,
+        "version": 1761763426750716,
         "created_at": "2025-10-25T14:42:39.730Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:39.730Z",
@@ -138,7 +138,7 @@
     "model": "master.phrasetemplate",
     "pk": 10,
     "fields": {
-        "version": 1761403021476547,
+        "version": 1761763426755925,
         "created_at": "2025-10-25T14:42:51.547Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:51.547Z",
@@ -153,7 +153,7 @@
     "model": "master.phrasetemplate",
     "pk": 11,
     "fields": {
-        "version": 1761403021479340,
+        "version": 1761763426759912,
         "created_at": "2025-10-25T14:42:58.197Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:58.198Z",
@@ -168,7 +168,7 @@
     "model": "master.phrasetemplate",
     "pk": 12,
     "fields": {
-        "version": 1761403021483253,
+        "version": 1761763426764617,
         "created_at": "2025-10-25T14:43:06.839Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:45:03.958Z",
@@ -183,7 +183,7 @@
     "model": "master.phrasetemplate",
     "pk": 13,
     "fields": {
-        "version": 1761403021487592,
+        "version": 1761763426768998,
         "created_at": "2025-10-25T14:43:12.799Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:44:57.657Z",
@@ -198,7 +198,7 @@
     "model": "master.phrasetemplate",
     "pk": 14,
     "fields": {
-        "version": 1761403021490037,
+        "version": 1761763426773322,
         "created_at": "2025-10-25T14:43:33.361Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:43:33.361Z",
@@ -213,7 +213,7 @@
     "model": "master.phrasetemplate",
     "pk": 15,
     "fields": {
-        "version": 1761403021492242,
+        "version": 1761763426777006,
         "created_at": "2025-10-25T14:43:39.637Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:43:39.638Z",
@@ -228,7 +228,7 @@
     "model": "master.phrasetemplate",
     "pk": 16,
     "fields": {
-        "version": 1761403021494560,
+        "version": 1761763426780886,
         "created_at": "2025-10-25T14:45:36.099Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:45:36.099Z",
@@ -243,7 +243,7 @@
     "model": "master.phrasetemplate",
     "pk": 17,
     "fields": {
-        "version": 1761403021496908,
+        "version": 1761763426785390,
         "created_at": "2025-10-25T14:45:45.975Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:45:45.976Z",
@@ -258,7 +258,7 @@
     "model": "master.phrasetemplate",
     "pk": 18,
     "fields": {
-        "version": 1761403021499655,
+        "version": 1761763426789772,
         "created_at": "2025-10-25T14:46:36.053Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:46:36.053Z",
@@ -273,7 +273,7 @@
     "model": "master.phrasetemplate",
     "pk": 19,
     "fields": {
-        "version": 1761403021501886,
+        "version": 1761763426795422,
         "created_at": "2025-10-25T14:46:44.280Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:46:44.280Z",
@@ -288,7 +288,7 @@
     "model": "master.phrasetemplate",
     "pk": 20,
     "fields": {
-        "version": 1761403021504382,
+        "version": 1761763426801268,
         "created_at": "2025-10-25T14:46:58.787Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:46:58.787Z",
@@ -303,7 +303,7 @@
     "model": "master.phrasetemplate",
     "pk": 21,
     "fields": {
-        "version": 1761403637920895,
+        "version": 1761763426806713,
         "created_at": "2025-10-25T15:03:04.573Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:03:04.573Z",
@@ -318,7 +318,7 @@
     "model": "master.phrasetemplate",
     "pk": 22,
     "fields": {
-        "version": 1761403649376868,
+        "version": 1761763426811094,
         "created_at": "2025-10-25T15:03:16.029Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:03:16.029Z",
@@ -333,7 +333,7 @@
     "model": "master.phrasetemplate",
     "pk": 23,
     "fields": {
-        "version": 1761403658986540,
+        "version": 1761763426815776,
         "created_at": "2025-10-25T15:03:25.638Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:03:25.639Z",
@@ -348,7 +348,7 @@
     "model": "master.phrasetemplate",
     "pk": 24,
     "fields": {
-        "version": 1761403949332136,
+        "version": 1761763426820706,
         "created_at": "2025-10-25T15:08:15.984Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:08:15.984Z",
@@ -363,7 +363,7 @@
     "model": "master.phrasetemplate",
     "pk": 25,
     "fields": {
-        "version": 1761403963842242,
+        "version": 1761763426825681,
         "created_at": "2025-10-25T15:08:30.494Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:08:30.494Z",
@@ -378,7 +378,7 @@
     "model": "master.phrasetemplate",
     "pk": 26,
     "fields": {
-        "version": 1761403977102745,
+        "version": 1761763426830642,
         "created_at": "2025-10-25T15:08:43.755Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:08:43.755Z",
@@ -393,7 +393,7 @@
     "model": "master.phrasetemplate",
     "pk": 27,
     "fields": {
-        "version": 1761403991528562,
+        "version": 1761763426835796,
         "created_at": "2025-10-25T15:08:58.180Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:08:58.181Z",
@@ -408,7 +408,7 @@
     "model": "master.phrasetemplate",
     "pk": 28,
     "fields": {
-        "version": 1761406131560265,
+        "version": 1761763426841039,
         "created_at": "2025-10-25T15:44:38.212Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:44:38.212Z",
@@ -423,7 +423,7 @@
     "model": "master.phrasetemplate",
     "pk": 29,
     "fields": {
-        "version": 1761406131572333,
+        "version": 1761763426845791,
         "created_at": "2025-10-25T15:44:38.224Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:44:38.224Z",
@@ -438,7 +438,7 @@
     "model": "master.phrasetemplate",
     "pk": 30,
     "fields": {
-        "version": 1761406131574538,
+        "version": 1761763426850382,
         "created_at": "2025-10-25T15:44:38.226Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:44:38.226Z",
@@ -453,7 +453,7 @@
     "model": "master.phrasetemplate",
     "pk": 31,
     "fields": {
-        "version": 1761406131580451,
+        "version": 1761763426854957,
         "created_at": "2025-10-25T15:44:38.232Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:44:38.232Z",
@@ -468,7 +468,7 @@
     "model": "master.phrasetemplate",
     "pk": 32,
     "fields": {
-        "version": 1761406131583313,
+        "version": 1761763426859892,
         "created_at": "2025-10-25T15:44:38.235Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:44:38.235Z",
@@ -477,6 +477,66 @@
         "content": "自動車部品の組立。",
         "is_active": true,
         "display_order": 50
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 33,
+    "fields": {
+        "version": 1761829964023987,
+        "created_at": "2025-10-30T13:27:22.415Z",
+        "created_by": 1,
+        "updated_at": "2025-10-30T13:28:30.676Z",
+        "updated_by": 1,
+        "title": 7,
+        "content": "YYYY/MM/DD　○○株式会社に対し、□□氏の直接雇用を依頼。派遣先より採用見送りの回答あり。",
+        "is_active": true,
+        "display_order": 1
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 34,
+    "fields": {
+        "version": 1761829956135921,
+        "created_at": "2025-10-30T13:27:34.763Z",
+        "created_by": 1,
+        "updated_at": "2025-10-30T13:28:22.788Z",
+        "updated_by": 1,
+        "title": 8,
+        "content": "YYYY/MM/DD　新派遣先候補として△△株式会社を提示。本人希望によりマッチング継続中。",
+        "is_active": true,
+        "display_order": 1
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 35,
+    "fields": {
+        "version": 1761829949719736,
+        "created_at": "2025-10-30T13:27:47.381Z",
+        "created_by": 1,
+        "updated_at": "2025-10-30T13:28:16.372Z",
+        "updated_by": 1,
+        "title": 9,
+        "content": "YYYY/MM/DD付で当社無期雇用社員として採用。派遣契約終了後、社内業務へ配置転換。",
+        "is_active": true,
+        "display_order": 1
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 36,
+    "fields": {
+        "version": 1761829942919956,
+        "created_at": "2025-10-30T13:28:09.572Z",
+        "created_by": 1,
+        "updated_at": "2025-10-30T13:28:09.572Z",
+        "updated_by": 1,
+        "title": 10,
+        "content": "YYYY/MM/DD　ハローワーク紹介を実施。本人希望により再就職支援研修を受講。",
+        "is_active": true,
+        "display_order": 0
     }
 }
 ]

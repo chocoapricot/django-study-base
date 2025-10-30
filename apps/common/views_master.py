@@ -64,15 +64,52 @@ def master_select(request):
             title__is_active=True
         )
         modal_title = '雇用保険非加入理由を選択'
+    elif master_type == 'haken_direct_employment':
+        from apps.master.models import PhraseTemplate
+        from apps.common.constants import Constants
+        items = PhraseTemplate.objects.filter(
+            is_active=True, 
+            title__key=Constants.PHRASE_TEMPLATE_TITLE.HAKEN_DIRECT_EMPLOYMENT,
+            title__is_active=True
+        )
+        modal_title = '派遣先への直接雇用の依頼を選択'
+    elif master_type == 'haken_new_dispatch':
+        from apps.master.models import PhraseTemplate
+        from apps.common.constants import Constants
+        items = PhraseTemplate.objects.filter(
+            is_active=True, 
+            title__key=Constants.PHRASE_TEMPLATE_TITLE.HAKEN_NEW_DISPATCH,
+            title__is_active=True
+        )
+        modal_title = '新たな派遣先の提供を選択'
+    elif master_type == 'haken_indefinite_employment':
+        from apps.master.models import PhraseTemplate
+        from apps.common.constants import Constants
+        items = PhraseTemplate.objects.filter(
+            is_active=True, 
+            title__key=Constants.PHRASE_TEMPLATE_TITLE.HAKEN_INDEFINITE_EMPLOYMENT,
+            title__is_active=True
+        )
+        modal_title = '派遣元での無期雇用化を選択'
+    elif master_type == 'haken_other_measures':
+        from apps.master.models import PhraseTemplate
+        from apps.common.constants import Constants
+        items = PhraseTemplate.objects.filter(
+            is_active=True, 
+            title__key=Constants.PHRASE_TEMPLATE_TITLE.HAKEN_OTHER_MEASURES,
+            title__is_active=True
+        )
+        modal_title = 'その他の雇用安定措置を選択'
     else:
         items = []
         modal_title = 'マスター選択'
     
-    if search_query:
+    if search_query and hasattr(items, 'filter'):
         items = items.filter(content__icontains=search_query)
     
-    # 表示順で並び替え（モデルのMeta.orderingを使用）
-    items = items.order_by('display_order')
+    # 表示順で並び替え（QuerySetの場合のみ）
+    if hasattr(items, 'order_by'):
+        items = items.order_by('display_order')
     
     # ページネーション
     paginator = Paginator(items, 20)

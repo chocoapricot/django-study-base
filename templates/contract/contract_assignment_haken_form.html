@@ -1,0 +1,274 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+{% load help_tags %}
+
+{% block title %}{% if is_edit %}派遣雇用安定措置編集{% else %}派遣雇用安定措置登録{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                {% if is_edit %}派遣雇用安定措置編集{% else %}派遣雇用安定措置登録{% endif %}
+            </div>
+            <div class="card-body">
+                <!-- アサイン基本情報 -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-muted mb-3">アサイン基本情報</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th class="w-25 bg-light">クライアント</th>
+                                <td>{{ assignment.client_contract.client.name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">スタッフ</th>
+                                <td>{{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">割当期間</th>
+                                <td>
+                                    {% if assignment.assignment_start_date %}
+                                        {{ assignment.assignment_start_date|date:"Y年m月d日" }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                    　～　
+                                    {% if assignment.assignment_end_date %}
+                                        {{ assignment.assignment_end_date|date:"Y年m月d日" }}
+                                    {% else %}
+                                        無期限
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- フォーム -->
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <h6 class="text-muted mb-3">派遣雇用安定措置</h6>
+                    
+                    <!-- 派遣先への直接雇用の依頼 -->
+                    <div class="row mb-3 align-items-start">
+                        <label class="col-sm-2 col-form-label" style="text-align:right">派遣先への直接雇用の依頼</label>
+                        <div class="col-sm-10">
+                            <div class="form-check mb-2" style="margin-top: 0.375rem;">
+                                {{ form.direct_employment_request }}
+                                <label class="form-check-label" for="{{ form.direct_employment_request.id_for_label }}">
+                                    実施する
+                                </label>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    {{ form.direct_employment_detail }}
+                                    {% if form.direct_employment_detail.errors %}
+                                        <div class="text-danger small">{{ form.direct_employment_detail.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-sm-2">
+                                    <button class="btn btn-sm btn-secondary" type="button"
+                                            id="btn_direct_employment"
+                                            data-master-type="haken_direct_employment"
+                                            data-target-id="{{ form.direct_employment_detail.id_for_label }}"
+                                            data-modal-title="派遣先への直接雇用の依頼を選択">参照</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 新たな派遣先の提供 -->
+                    <div class="row mb-3 align-items-start">
+                        <label class="col-sm-2 col-form-label" style="text-align:right">新たな派遣先の提供</label>
+                        <div class="col-sm-10">
+                            <div class="form-check mb-2" style="margin-top: 0.375rem;">
+                                {{ form.new_dispatch_offer }}
+                                <label class="form-check-label" for="{{ form.new_dispatch_offer.id_for_label }}">
+                                    実施する
+                                </label>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    {{ form.new_dispatch_detail }}
+                                    {% if form.new_dispatch_detail.errors %}
+                                        <div class="text-danger small">{{ form.new_dispatch_detail.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-sm-2">
+                                    <button class="btn btn-sm btn-secondary" type="button"
+                                            id="btn_new_dispatch"
+                                            data-master-type="haken_new_dispatch"
+                                            data-target-id="{{ form.new_dispatch_detail.id_for_label }}"
+                                            data-modal-title="新たな派遣先の提供を選択">参照</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 派遣元での無期雇用化 -->
+                    <div class="row mb-3 align-items-start">
+                        <label class="col-sm-2 col-form-label" style="text-align:right">派遣元での無期雇用化</label>
+                        <div class="col-sm-10">
+                            <div class="form-check mb-2" style="margin-top: 0.375rem;">
+                                {{ form.indefinite_employment }}
+                                <label class="form-check-label" for="{{ form.indefinite_employment.id_for_label }}">
+                                    実施する
+                                </label>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    {{ form.indefinite_employment_detail }}
+                                    {% if form.indefinite_employment_detail.errors %}
+                                        <div class="text-danger small">{{ form.indefinite_employment_detail.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-sm-2">
+                                    <button class="btn btn-sm btn-secondary" type="button"
+                                            id="btn_indefinite_employment"
+                                            data-master-type="haken_indefinite_employment"
+                                            data-target-id="{{ form.indefinite_employment_detail.id_for_label }}"
+                                            data-modal-title="派遣元での無期雇用化を選択">参照</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- その他の雇用安定措置 -->
+                    <div class="row mb-3 align-items-start">
+                        <label class="col-sm-2 col-form-label" style="text-align:right">その他の雇用安定措置</label>
+                        <div class="col-sm-10">
+                            <div class="form-check mb-2" style="margin-top: 0.375rem;">
+                                {{ form.other_measures }}
+                                <label class="form-check-label" for="{{ form.other_measures.id_for_label }}">
+                                    実施する
+                                </label>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    {{ form.other_measures_detail }}
+                                    {% if form.other_measures_detail.errors %}
+                                        <div class="text-danger small">{{ form.other_measures_detail.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-sm-2">
+                                    <button class="btn btn-sm btn-secondary" type="button"
+                                            id="btn_other_measures"
+                                            data-master-type="haken_other_measures"
+                                            data-target-id="{{ form.other_measures_detail.id_for_label }}"
+                                            data-modal-title="その他の雇用安定措置を選択">参照</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ボタン -->
+                    <div class="row mt-4">
+                        <div class="col text-left">
+                            <button type="submit" class="btn btn-sm btn-primary me-2">
+                                {% if is_edit %}更新{% else %}登録{% endif %}
+                            </button>
+                            {% if is_edit %}
+                                <a href="{% url 'contract:contract_assignment_haken_delete' assignment_pk=assignment.pk %}{% if from_param %}?from={{ from_param }}{% endif %}" class="btn btn-sm btn-dark me-2">削除</a>
+                            {% endif %}
+                            {% if from_param == 'client' %}
+                                <a href="{% url 'contract:client_contract_detail' assignment.client_contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                            {% elif from_param == 'staff' %}
+                                <a href="{% url 'contract:staff_contract_detail' assignment.staff_contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                            {% elif from_param == 'expire_list' %}
+                                <a href="{% url 'contract:staff_contract_expire_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                            {% else %}
+                                <a href="{% url 'contract:contract_assignment_detail' assignment_pk=assignment.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // チェックボックスとテキストエリア、参照ボタンの連動
+    function toggleTextarea(checkboxId, textareaId, buttonId) {
+        const checkbox = document.getElementById(checkboxId);
+        const textarea = document.getElementById(textareaId);
+        const button = document.getElementById(buttonId);
+        
+        function toggle() {
+            if (checkbox.checked) {
+                textarea.readOnly = false;
+                textarea.style.backgroundColor = '';
+                if (button) {
+                    button.disabled = false;
+                    button.classList.remove('btn-outline-secondary');
+                    button.classList.add('btn-secondary');
+                }
+            } else {
+                textarea.readOnly = true;
+                textarea.style.backgroundColor = '#e9ecef';
+                // チェックを外した時は詳細欄をクリア
+                textarea.value = '';
+                if (button) {
+                    button.disabled = true;
+                    button.classList.remove('btn-secondary');
+                    button.classList.add('btn-outline-secondary');
+                }
+            }
+        }
+        
+        // 初期状態を設定
+        toggle();
+        
+        // チェックボックスの変更を監視
+        checkbox.addEventListener('change', toggle);
+    }
+    
+    // 各チェックボックスとテキストエリア、参照ボタンを連動
+    toggleTextarea('{{ form.direct_employment_request.id_for_label }}', '{{ form.direct_employment_detail.id_for_label }}', 'btn_direct_employment');
+    toggleTextarea('{{ form.new_dispatch_offer.id_for_label }}', '{{ form.new_dispatch_detail.id_for_label }}', 'btn_new_dispatch');
+    toggleTextarea('{{ form.indefinite_employment.id_for_label }}', '{{ form.indefinite_employment_detail.id_for_label }}', 'btn_indefinite_employment');
+    toggleTextarea('{{ form.other_measures.id_for_label }}', '{{ form.other_measures_detail.id_for_label }}', 'btn_other_measures');
+    // 汎用文言テンプレート参照ボタンのイベントリスナー
+    document.addEventListener('click', function(e) {
+        if (e.target.hasAttribute('data-master-type')) {
+            e.preventDefault();
+            
+            // ボタンが無効な場合は処理しない
+            if (e.target.disabled) {
+                return;
+            }
+            
+            const masterType = e.target.getAttribute('data-master-type');
+            const targetId = e.target.getAttribute('data-target-id');
+            const modalTitle = e.target.getAttribute('data-modal-title');
+            
+            loadMasterModal('{% url "common:master_select" %}', masterType, targetId, modalTitle);
+        }
+    });
+});
+</script>
+
+<!-- 汎用文言テンプレート選択モーダル -->
+<div class="modal fade" id="masterModal" tabindex="-1" aria-labelledby="masterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="masterModalLabel"></div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- fetchで内容が挿入されます -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/contract-modal.js' %}"></script>
+
+{% endblock %}

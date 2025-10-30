@@ -29,6 +29,19 @@
                                 </a>
                             {% endif %}
                         </li>
+                        {% if client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH %}
+                        <li>
+                            {% if assignment.haken_info %}
+                                <a class="dropdown-item" href="{% url 'contract:contract_assignment_haken' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% elif from_expire_list %}?from=expire_list{% endif %}">
+                                    <i class="bi bi-pencil me-2"></i>派遣雇用安定措置編集
+                                </a>
+                            {% else %}
+                                <a class="dropdown-item" href="{% url 'contract:contract_assignment_haken' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% elif from_expire_list %}?from=expire_list{% endif %}">
+                                    <i class="bi bi-plus me-2"></i>派遣雇用安定措置登録
+                                </a>
+                            {% endif %}
+                        </li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>

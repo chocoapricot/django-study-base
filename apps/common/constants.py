@@ -59,6 +59,10 @@ class Constants:
         HAKEN_TEISHOKUBI_EXEMPT = 'HAKEN_TEISHOKUBI_EXEMPT'          # 派遣抵触日制限外
         HAKEN_RESPONSIBILITY_DEGREE = 'HAKEN_RESPONSIBILITY_DEGREE'  # 派遣・責任の程度
         CONTRACT_BUSINESS_CONTENT = 'CONTRACT_BUSINESS_CONTENT'      # 業務内容
+        HAKEN_DIRECT_EMPLOYMENT = 'ANTEI_EMPLOYMENT_REQUEST'         # 派遣先への直接雇用の依頼
+        HAKEN_NEW_DISPATCH = 'ANTEI_NEW_HAKEN_OFFER'                 # 新たな派遣先の提供
+        HAKEN_INDEFINITE_EMPLOYMENT = 'ANTEI_MUKI_EMPLOYMENT'        # 派遣元での無期雇用化
+        HAKEN_OTHER_MEASURES = 'ANTEI_OTHERS'                        # その他の雇用安定措置
 
     # 契約割り当て確認種別 (assignment_confirm_type)
     class ASSIGNMENT_CONFIRM_TYPE:

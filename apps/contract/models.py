@@ -881,3 +881,93 @@ class ContractAssignmentConfirm(MyModel):
         if (self.confirm_type == Constants.ASSIGNMENT_CONFIRM_TYPE.TERMINATE and 
             not self.termination_reason):
             raise ValidationError('終了予定の場合は終了理由を入力してください。')
+
+
+class ContractAssignmentHaken(MyModel):
+    """
+    契約割り当て派遣雇用安定措置情報を管理するモデル。
+    派遣契約の場合の雇用安定措置に関する情報を記録する。
+    """
+    contract_assignment = models.OneToOneField(
+        ContractAssignment,
+        on_delete=models.CASCADE,
+        related_name='haken_info',
+        verbose_name='契約アサイン'
+    )
+    
+    # 派遣先への直接雇用の依頼
+    direct_employment_request = models.BooleanField(
+        '派遣先への直接雇用の依頼',
+        default=False,
+        help_text='派遣先への直接雇用の依頼を行うかどうか'
+    )
+    direct_employment_detail = models.TextField(
+        '直接雇用依頼詳細',
+        blank=True,
+        null=True,
+        help_text='直接雇用の依頼に関する詳細情報'
+    )
+    
+    # 新たな派遣先の提供
+    new_dispatch_offer = models.BooleanField(
+        '新たな派遣先の提供',
+        default=False,
+        help_text='新たな派遣先の提供を行うかどうか'
+    )
+    new_dispatch_detail = models.TextField(
+        '新派遣先提供詳細',
+        blank=True,
+        null=True,
+        help_text='新たな派遣先の提供に関する詳細情報'
+    )
+    
+    # 派遣元での無期雇用化
+    indefinite_employment = models.BooleanField(
+        '派遣元での無期雇用化',
+        default=False,
+        help_text='派遣元での無期雇用化を行うかどうか'
+    )
+    indefinite_employment_detail = models.TextField(
+        '無期雇用化詳細',
+        blank=True,
+        null=True,
+        help_text='派遣元での無期雇用化に関する詳細情報'
+    )
+    
+    # その他の雇用安定措置
+    other_measures = models.BooleanField(
+        'その他の雇用安定措置',
+        default=False,
+        help_text='その他の雇用安定措置を行うかどうか'
+    )
+    other_measures_detail = models.TextField(
+        'その他措置詳細',
+        blank=True,
+        null=True,
+        help_text='その他の雇用安定措置に関する詳細情報'
+    )
+
+    class Meta:
+        db_table = 'apps_contract_assignment_haken'
+        verbose_name = '契約割り当て派遣雇用安定措置'
+        verbose_name_plural = '契約割り当て派遣雇用安定措置'
+
+    def __str__(self):
+        return f"{self.contract_assignment} - 派遣雇用安定措置"
+
+    def clean(self):
+        """バリデーション"""
+        from django.core.exceptions import ValidationError
+        
+        # 各チェックボックスがTrueの場合、対応する詳細が必須
+        if self.direct_employment_request and not self.direct_employment_detail:
+            raise ValidationError('派遣先への直接雇用の依頼をチェックした場合は、詳細を入力してください。')
+        
+        if self.new_dispatch_offer and not self.new_dispatch_detail:
+            raise ValidationError('新たな派遣先の提供をチェックした場合は、詳細を入力してください。')
+        
+        if self.indefinite_employment and not self.indefinite_employment_detail:
+            raise ValidationError('派遣元での無期雇用化をチェックした場合は、詳細を入力してください。')
+        
+        if self.other_measures and not self.other_measures_detail:
+            raise ValidationError('その他の雇用安定措置をチェックした場合は、詳細を入力してください。')

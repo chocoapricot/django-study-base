@@ -3,7 +3,7 @@
     "model": "master.phrasetemplatetitle",
     "pk": 1,
     "fields": {
-        "version": 1761403019138769,
+        "version": 1761763422028565,
         "created_at": "2025-10-25T09:21:34.945Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:33:59.714Z",
@@ -20,7 +20,7 @@
     "model": "master.phrasetemplatetitle",
     "pk": 2,
     "fields": {
-        "version": 1761403019144195,
+        "version": 1761763422036479,
         "created_at": "2025-10-25T09:22:19.331Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:34:08.161Z",
@@ -37,7 +37,7 @@
     "model": "master.phrasetemplatetitle",
     "pk": 3,
     "fields": {
-        "version": 1761403019146578,
+        "version": 1761763422040842,
         "created_at": "2025-10-25T09:55:20.887Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:34:13.978Z",
@@ -54,7 +54,7 @@
     "model": "master.phrasetemplatetitle",
     "pk": 4,
     "fields": {
-        "version": 1761403922718172,
+        "version": 1761763422044280,
         "created_at": "2025-10-25T15:02:28.989Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:07:49.370Z",
@@ -71,7 +71,7 @@
     "model": "master.phrasetemplatetitle",
     "pk": 5,
     "fields": {
-        "version": 1761403899871125,
+        "version": 1761763422047797,
         "created_at": "2025-10-25T15:07:08.395Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:07:26.523Z",
@@ -88,7 +88,7 @@
     "model": "master.phrasetemplatetitle",
     "pk": 6,
     "fields": {
-        "version": 1761405605221184,
+        "version": 1761763422051300,
         "created_at": "2025-10-25T15:35:51.873Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:35:51.873Z",
@@ -99,6 +99,74 @@
         "format_type": "textarea",
         "is_active": true,
         "display_order": 202
+    }
+},
+{
+    "model": "master.phrasetemplatetitle",
+    "pk": 7,
+    "fields": {
+        "version": 1761830111110373,
+        "created_at": "2025-10-30T13:23:47.274Z",
+        "created_by": 1,
+        "updated_at": "2025-10-30T13:30:57.762Z",
+        "updated_by": 1,
+        "key": "ANTEI_EMPLOYMENT_REQUEST",
+        "name": "雇用安定措置：派遣先への直接雇用の依頼",
+        "description": "派遣契約が対象。派遣元管理台帳への記載が必要（労働者派遣法第37条・施行規則第23条）、派遣事業報告書で集計。",
+        "format_type": "textarea",
+        "is_active": true,
+        "display_order": 301
+    }
+},
+{
+    "model": "master.phrasetemplatetitle",
+    "pk": 8,
+    "fields": {
+        "version": 1761830115229033,
+        "created_at": "2025-10-30T13:25:02.211Z",
+        "created_by": 1,
+        "updated_at": "2025-10-30T13:31:01.881Z",
+        "updated_by": 1,
+        "key": "ANTEI_NEW_HAKEN_OFFER",
+        "name": "雇用安定措置：新たな派遣先の提供",
+        "description": "派遣契約が対象。派遣元管理台帳への記載が必要（労働者派遣法第37条・施行規則第23条）、派遣事業報告書で集計。",
+        "format_type": "textarea",
+        "is_active": true,
+        "display_order": 302
+    }
+},
+{
+    "model": "master.phrasetemplatetitle",
+    "pk": 9,
+    "fields": {
+        "version": 1761830118587859,
+        "created_at": "2025-10-30T13:26:05.644Z",
+        "created_by": 1,
+        "updated_at": "2025-10-30T13:31:05.240Z",
+        "updated_by": 1,
+        "key": "ANTEI_MUKI_EMPLOYMENT",
+        "name": "雇用安定措置：派遣元での無期雇用化",
+        "description": "派遣契約が対象。派遣元管理台帳への記載が必要（労働者派遣法第37条・施行規則第23条）、派遣事業報告書で集計。",
+        "format_type": "textarea",
+        "is_active": true,
+        "display_order": 302
+    }
+},
+{
+    "model": "master.phrasetemplatetitle",
+    "pk": 10,
+    "fields": {
+        "version": 1761830122132497,
+        "created_at": "2025-10-30T13:26:48.525Z",
+        "created_by": 1,
+        "updated_at": "2025-10-30T13:31:08.784Z",
+        "updated_by": 1,
+        "key": "ANTEI_OTHERS",
+        "name": "雇用安定措置：その他の雇用安定措置",
+        "description": "派遣契約が対象。派遣元管理台帳への記載が必要（労働者派遣法第37条・施行規則第23条）、派遣事業報告書で集計。",
+        "format_type": "textarea",
+        "is_active": true,
+        "display_order": 304
     }
 }
 ]

@@ -1,0 +1,127 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block title %}派遣雇用安定措置削除{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                派遣雇用安定措置削除
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    派遣雇用安定措置情報を削除しますか？この操作は取り消せません。
+                </div>
+
+                <!-- アサイン基本情報 -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-muted mb-3">アサイン基本情報</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <th class="w-25 bg-light">クライアント</th>
+                                <td>{{ assignment.client_contract.client.name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">スタッフ</th>
+                                <td>{{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }}</td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">割当期間</th>
+                                <td>
+                                    {% if assignment.assignment_start_date %}
+                                        {{ assignment.assignment_start_date|date:"Y年m月d日" }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                    　～　
+                                    {% if assignment.assignment_end_date %}
+                                        {{ assignment.assignment_end_date|date:"Y年m月d日" }}
+                                    {% else %}
+                                        無期限
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 削除対象の派遣雇用安定措置情報 -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-muted mb-3">削除対象の派遣雇用安定措置情報</h6>
+                        <table class="table table-sm">
+                            {% if haken_info.direct_employment_request %}
+                            <tr>
+                                <th class="w-25 bg-light">派遣先への直接雇用の依頼</th>
+                                <td>
+                                    <span class="badge bg-success">実施</span>
+                                    {% if haken_info.direct_employment_detail %}
+                                        <div class="mt-2">{{ haken_info.direct_employment_detail|linebreaksbr }}</div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% if haken_info.new_dispatch_offer %}
+                            <tr>
+                                <th class="w-25 bg-light">新たな派遣先の提供</th>
+                                <td>
+                                    <span class="badge bg-success">実施</span>
+                                    {% if haken_info.new_dispatch_detail %}
+                                        <div class="mt-2">{{ haken_info.new_dispatch_detail|linebreaksbr }}</div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% if haken_info.indefinite_employment %}
+                            <tr>
+                                <th class="w-25 bg-light">派遣元での無期雇用化</th>
+                                <td>
+                                    <span class="badge bg-success">実施</span>
+                                    {% if haken_info.indefinite_employment_detail %}
+                                        <div class="mt-2">{{ haken_info.indefinite_employment_detail|linebreaksbr }}</div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% if haken_info.other_measures %}
+                            <tr>
+                                <th class="w-25 bg-light">その他の雇用安定措置</th>
+                                <td>
+                                    <span class="badge bg-success">実施</span>
+                                    {% if haken_info.other_measures_detail %}
+                                        <div class="mt-2">{{ haken_info.other_measures_detail|linebreaksbr }}</div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ボタン -->
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row mt-4">
+                        <div class="col text-left">
+                            <button type="submit" class="btn btn-sm btn-dark me-2">削除する</button>
+                            {% if from_param == 'client' %}
+                                <a href="{% url 'contract:client_contract_detail' assignment.client_contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                            {% elif from_param == 'staff' %}
+                                <a href="{% url 'contract:staff_contract_detail' assignment.staff_contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                            {% elif from_param == 'expire_list' %}
+                                <a href="{% url 'contract:staff_contract_expire_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                            {% else %}
+                                <a href="{% url 'contract:contract_assignment_detail' assignment_pk=assignment.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

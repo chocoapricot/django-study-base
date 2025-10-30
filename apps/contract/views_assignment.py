@@ -13,8 +13,8 @@ from apps.common.constants import Constants
 from apps.master.models import ContractPattern, EmploymentType, JobCategory
 from apps.staff.models import Staff
 
-from .forms import StaffContractForm, ContractAssignmentConfirmForm
-from .models import ClientContract, ContractAssignment, StaffContract, ContractAssignmentConfirm
+from .forms import StaffContractForm, ContractAssignmentConfirmForm, ContractAssignmentHakenForm
+from .models import ClientContract, ContractAssignment, StaffContract, ContractAssignmentConfirm, ContractAssignmentHaken
 
 
 def _calculate_profit_margin(client_contract, staff_contract):
@@ -815,3 +815,111 @@ def contract_assignment_confirm_delete(request, assignment_pk):
     }
     
     return render(request, 'contract/contract_assignment_confirm_delete.html', context)
+
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def contract_assignment_haken_view(request, assignment_pk):
+    """契約アサイン派遣雇用安定措置の詳細・作成・編集画面"""
+    assignment = get_object_or_404(
+        ContractAssignment.objects.select_related(
+            'client_contract__client',
+            'staff_contract__staff'
+        ),
+        pk=assignment_pk
+    )
+    
+    # 派遣契約かどうかをチェック
+    if assignment.client_contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
+        messages.error(request, 'この機能は派遣契約のみ利用できます。')
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+    
+    # 既存の派遣雇用安定措置情報を取得（存在しない場合はNone）
+    try:
+        haken_info = assignment.haken_info
+    except ContractAssignmentHaken.DoesNotExist:
+        haken_info = None
+    
+    if request.method == 'POST':
+        if haken_info:
+            # 編集の場合
+            form = ContractAssignmentHakenForm(request.POST, instance=haken_info)
+        else:
+            # 新規作成の場合
+            form = ContractAssignmentHakenForm(request.POST)
+        
+        if form.is_valid():
+            haken_instance = form.save(commit=False)
+            if not haken_info:
+                # 新規作成の場合のみ契約アサインを設定
+                haken_instance.contract_assignment = assignment
+            haken_instance.updated_by = request.user
+            if not haken_info:
+                haken_instance.created_by = request.user
+            haken_instance.save()
+            
+            action = '更新' if haken_info else '登録'
+            messages.success(request, f'派遣雇用安定措置情報を{action}しました。')
+            
+            # 遷移元パラメータを保持してリダイレクト
+            from_param = request.GET.get('from')
+            if from_param:
+                return redirect(f"{reverse('contract:contract_assignment_detail', kwargs={'assignment_pk': assignment_pk})}?from={from_param}")
+            else:
+                return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+    else:
+        if haken_info:
+            # 編集の場合
+            form = ContractAssignmentHakenForm(instance=haken_info)
+        else:
+            # 新規作成の場合
+            form = ContractAssignmentHakenForm()
+    
+    # 遷移元を判定
+    from_param = request.GET.get('from')
+    
+    context = {
+        'assignment': assignment,
+        'haken_info': haken_info,
+        'form': form,
+        'is_edit': haken_info is not None,
+        'from_param': from_param,
+        'Constants': Constants,
+    }
+    
+    return render(request, 'contract/contract_assignment_haken_form.html', context)
+
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def contract_assignment_haken_delete(request, assignment_pk):
+    """契約アサイン派遣雇用安定措置の削除"""
+    assignment = get_object_or_404(ContractAssignment, pk=assignment_pk)
+    
+    try:
+        haken_info = assignment.haken_info
+    except ContractAssignmentHaken.DoesNotExist:
+        messages.error(request, '削除対象の派遣雇用安定措置情報が見つかりません。')
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+    
+    if request.method == 'POST':
+        haken_info.delete()
+        messages.success(request, '派遣雇用安定措置情報を削除しました。')
+        
+        # 遷移元パラメータを保持してリダイレクト
+        from_param = request.GET.get('from')
+        if from_param:
+            return redirect(f"{reverse('contract:contract_assignment_detail', kwargs={'assignment_pk': assignment_pk})}?from={from_param}")
+        else:
+            return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+    
+    # 遷移元を判定
+    from_param = request.GET.get('from')
+    
+    context = {
+        'assignment': assignment,
+        'haken_info': haken_info,
+        'from_param': from_param,
+    }
+    
+    return render(request, 'contract/contract_assignment_haken_delete.html', context)

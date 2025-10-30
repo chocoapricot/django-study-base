@@ -1,7 +1,7 @@
 from django import forms
 from django.db.models import Subquery, OuterRef
 from django.utils import timezone
-from .models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp, ClientContractHakenExempt, StaffContractTeishokubiDetail, ContractAssignmentConfirm
+from .models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp, ClientContractHakenExempt, StaffContractTeishokubiDetail, ContractAssignmentConfirm, ContractAssignmentHaken
 from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from apps.system.settings.models import Dropdowns
@@ -782,5 +782,53 @@ class ContractAssignmentConfirmForm(forms.ModelForm):
         if (confirm_type == Constants.ASSIGNMENT_CONFIRM_TYPE.TERMINATE and 
             not termination_reason):
             self.add_error('termination_reason', '終了予定の場合は終了理由を入力してください。')
+        
+        return cleaned_data
+
+
+class ContractAssignmentHakenForm(forms.ModelForm):
+    """契約割り当て派遣雇用安定措置フォーム"""
+    
+    class Meta:
+        model = ContractAssignmentHaken
+        fields = [
+            'direct_employment_request', 'direct_employment_detail',
+            'new_dispatch_offer', 'new_dispatch_detail',
+            'indefinite_employment', 'indefinite_employment_detail',
+            'other_measures', 'other_measures_detail'
+        ]
+        widgets = {
+            'direct_employment_request': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'direct_employment_detail': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'new_dispatch_offer': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'new_dispatch_detail': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'indefinite_employment': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'indefinite_employment_detail': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'other_measures': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'other_measures_detail': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # すべてのフィールドを任意に設定（JavaScriptで動的に制御）
+        for field_name in self.fields:
+            self.fields[field_name].required = False
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        
+        # 各チェックボックスがTrueの場合、対応する詳細が必須
+        if cleaned_data.get('direct_employment_request') and not cleaned_data.get('direct_employment_detail'):
+            self.add_error('direct_employment_detail', '派遣先への直接雇用の依頼をチェックした場合は、詳細を入力してください。')
+        
+        if cleaned_data.get('new_dispatch_offer') and not cleaned_data.get('new_dispatch_detail'):
+            self.add_error('new_dispatch_detail', '新たな派遣先の提供をチェックした場合は、詳細を入力してください。')
+        
+        if cleaned_data.get('indefinite_employment') and not cleaned_data.get('indefinite_employment_detail'):
+            self.add_error('indefinite_employment_detail', '派遣元での無期雇用化をチェックした場合は、詳細を入力してください。')
+        
+        if cleaned_data.get('other_measures') and not cleaned_data.get('other_measures_detail'):
+            self.add_error('other_measures_detail', 'その他の雇用安定措置をチェックした場合は、詳細を入力してください。')
         
         return cleaned_data
