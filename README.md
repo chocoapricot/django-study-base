@@ -91,9 +91,9 @@ django-study-base/
 └── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（92テーブル）
+## データベーステーブル一覧（94テーブル）
 
-### 本アプリケーション独自テーブル（75テーブル）
+### 本アプリケーション独自テーブル（76テーブル）
 
 | テーブル名 | モデル名 | 説明 |
 | --- | --- | --- |
@@ -116,6 +116,8 @@ django-study-base/
 | `apps_connect_staff` | `ConnectStaff` | スタッフ接続申請 |
 | `apps_connect_staff_agree` | `ConnectStaffAgree` | スタッフ同意 |
 | `apps_contract_assignment` | `ContractAssignment` | 契約割り当て |
+| `apps_contract_assignment_confirm` | `ContractAssignmentConfirm` | 契約割り当て確認 |
+| `apps_contract_assignment_haken` | `ContractAssignmentHaken` | 契約割り当て派遣情報 |
 | `apps_contract_client` | `ClientContract` | クライアント契約 |
 | `apps_contract_client_haken` | `ClientContractHaken` | クライアント契約派遣情報 |
 | `apps_contract_client_haken_exempt` | `ClientContractHakenExempt` | クライアント契約派遣抵触日制限外情報 |
@@ -149,6 +151,7 @@ django-study-base/
 | `apps_master_staff_regist_status` | `StaffRegistStatus` | スタッフ登録状況 |
 | `apps_profile_staff` | `StaffProfile` | スタッフプロフィール |
 | `apps_profile_staff_bank` | `StaffProfileBank` | プロフィール銀行口座 |
+| `apps_profile_staff_contacts` | `StaffProfileContacts` | プロフィール連絡先 |
 | `apps_profile_staff_disability` | `StaffProfileDisability` | プロフィール障害者情報 |
 | `apps_profile_staff_international` | `StaffProfileInternational` | プロフィール外国籍情報 |
 | `apps_profile_staff_mynumber` | `StaffProfileMynumber` | プロフィールマイナンバー |
@@ -157,6 +160,7 @@ django-study-base/
 | `apps_staff` | `Staff` | スタッフ基本情報 |
 | `apps_staff_bank` | `StaffBank` | スタッフ銀行口座 |
 | `apps_staff_contacted` | `StaffContacted` | スタッフ連絡履歴 |
+| `apps_staff_contacts` | `StaffContacts` | スタッフ連絡先 |
 | `apps_staff_disability` | `StaffDisability` | スタッフ障害者情報 |
 | `apps_staff_file` | `StaffFile` | スタッフファイル |
 | `apps_staff_international` | `StaffInternational` | スタッフ外国籍情報 |
@@ -182,10 +186,11 @@ django-study-base/
 | `socialaccount_socialapp_sites` | ソーシャルアプリとサイトの関連 |
 | `socialaccount_socialtoken` | ソーシャルアカウントトークン |
 
-### Django標準・その他テーブル（11テーブル）
+### Django標準・その他テーブル（12テーブル）
 
 | テーブル名 | 説明 |
 | --- | --- |
+| `accounts_myuser` | カスタムユーザー（メインテーブル） |
 | `accounts_myuser_groups` | ユーザーとグループの関連 |
 | `accounts_myuser_user_permissions` | ユーザーと権限の関連 |
 | `auth_group` | グループ |
