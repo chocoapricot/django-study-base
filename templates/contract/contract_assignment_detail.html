@@ -80,7 +80,6 @@
                     </div>
                 </div>
 
-
                 <!-- 契約情報（左右並び） -->
                 <div class="row mt-4">
                     <!-- クライアント契約情報 -->
@@ -258,6 +257,11 @@
         </div>
     </div>
 </div>
+
+<!-- 契約期間イメージ -->
+{% with chart_type='assignment_detail' client_contract=assignment.client_contract staff_contract=assignment.staff_contract %}
+    {% include 'contract/_contract_timeline_chart.html' %}
+{% endwith %}
 
 <!-- 変更履歴 -->
 {% if change_logs %}

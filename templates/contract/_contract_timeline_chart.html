@@ -258,6 +258,26 @@ document.addEventListener('DOMContentLoaded', function() {
         staffBars.push(staffBar);
         {% endfor %}
         {% endif %}
+        
+        {% elif chart_type == 'assignment_detail' %}
+        // アサイン詳細画面：単一のスタッフ契約を表示
+        {% if staff_contract %}
+        var staffStart = parseDateAsUTC('{{ staff_contract.start_date|date:"Y-m-d" }}');
+        {% if staff_contract.end_date %}
+        var staffEnd = parseDateAsUTC('{{ staff_contract.end_date|date:"Y-m-d" }}');
+        {% else %}
+        var staffEnd = null;
+        {% endif %}
+        
+        createGanttRow(
+            '{{ staff_contract.staff.name_last|escapejs }} {{ staff_contract.staff.name_first|escapejs }}',
+            '{{ staff_contract.contract_name|escapejs }}',
+            staffStart,
+            staffEnd,
+            'staff',
+            -1
+        );
+        {% endif %}
         {% endif %}
     }
     

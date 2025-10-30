@@ -674,6 +674,23 @@ def contract_assignment_detail(request, assignment_pk):
         object_id=str(assignment.pk)
     ).select_related('user').order_by('-timestamp')[:10]
     
+    # 期間表示用のデータを計算（クライアント契約をベースに前後5日表示）
+    from datetime import timedelta
+    client_start = assignment.client_contract.start_date
+    client_end = assignment.client_contract.end_date
+    
+    # クライアント契約をベースに表示期間を決定
+    if client_start:
+        display_start_date = client_start - timedelta(days=5)
+        if client_end:
+            display_end_date = client_end + timedelta(days=5)
+        else:
+            # クライアント契約が無期限の場合は開始日から1年後を表示終了とする
+            display_end_date = client_start + timedelta(days=365)
+    else:
+        display_start_date = None
+        display_end_date = None
+    
     context = {
         'assignment': assignment,
         'client_contract': assignment.client_contract,
@@ -682,6 +699,8 @@ def contract_assignment_detail(request, assignment_pk):
         'from_staff': from_staff,
         'from_expire_list': from_expire_list,
         'change_logs': change_logs,
+        'display_start_date': display_start_date,
+        'display_end_date': display_end_date,
         'Constants': Constants,
     }
     
