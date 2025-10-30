@@ -14,7 +14,7 @@
         <div class="row mb-3 mt-3">
             <label class="col-sm-2 col-form-label text-start text-md-end"><strong>健康保険加入日</strong></label>
             <div class="col-sm-2">
-                <p class="form-control-plaintext">{{ payroll.health_insurance_join_date|date:"Y-m-d"|default:"-" }}</p>
+                <p class="form-control-plaintext">{{ payroll.health_insurance_join_date|date:"Y/m/d"|default:"-" }}</p>
             </div>
             <label class="col-sm-2 col-form-label text-start text-md-end"><strong>健康保険非加入理由</strong></label>
             <div class="col-sm-4">
@@ -25,7 +25,7 @@
         <div class="row mb-3 mt-3">
             <label class="col-sm-2 col-form-label text-start text-md-end"><strong>厚生年金加入日</strong></label>
             <div class="col-sm-2">
-                <p class="form-control-plaintext">{{ payroll.welfare_pension_join_date|date:"Y-m-d"|default:"-" }}</p>
+                <p class="form-control-plaintext">{{ payroll.welfare_pension_join_date|date:"Y/m/d"|default:"-" }}</p>
             </div>
             <label class="col-sm-2 col-form-label text-start text-md-end"><strong>厚生年金非加入理由</strong></label>
             <div class="col-sm-4">
@@ -36,7 +36,7 @@
         <div class="row mb-3 mt-3">
             <label class="col-sm-2 col-form-label text-start text-md-end"><strong>雇用保険加入日</strong></label>
             <div class="col-sm-2">
-                <p class="form-control-plaintext">{{ payroll.employment_insurance_join_date|date:"Y-m-d"|default:"-" }}</p>
+                <p class="form-control-plaintext">{{ payroll.employment_insurance_join_date|date:"Y/m/d"|default:"-" }}</p>
             </div>
             <label class="col-sm-2 col-form-label text-start text-md-end"><strong>雇用保険非加入理由</strong></label>
             <div class="col-sm-4">

@@ -99,6 +99,19 @@
                                         {{ client_contract.client.name }}
                                         <i class="bi bi-box-arrow-up-right ms-1"></i>
                                     </a>
+                                    {% if client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and haken_info and haken_info.haken_office %}
+                                        　{{ haken_info.haken_office.name }}
+                                        {% if haken_info.haken_office.haken_jigyosho_teishokubi %}
+                                            {% if haken_info.haken_exempt_info and haken_info.haken_exempt_info.period_exempt_detail %}
+                                                <span class="badge bg-light">
+                                                    抵触日対象外
+                                                    {% my_help_icon "抵触日制限外の情報が登録された場合には、抵触日の制限は無くなります" %}
+                                                </span>
+                                            {% else %}
+                                                <span class="text-muted small">（抵触日：{{ haken_info.haken_office.haken_jigyosho_teishokubi|date:"Y/m/d" }}）</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
                                 </td>
                             </tr>
                             <tr>

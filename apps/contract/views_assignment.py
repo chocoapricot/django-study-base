@@ -652,6 +652,9 @@ def contract_assignment_detail(request, assignment_pk):
             'staff_contract__employment_type',
             'client_contract__job_category',
             'staff_contract__job_category'
+        ).prefetch_related(
+            'client_contract__haken_info__haken_office',
+            'client_contract__haken_info__haken_exempt_info'
         ),
         pk=assignment_pk
     )
@@ -691,10 +694,14 @@ def contract_assignment_detail(request, assignment_pk):
         display_start_date = None
         display_end_date = None
     
+    # 派遣情報を取得
+    haken_info = getattr(assignment.client_contract, 'haken_info', None)
+    
     context = {
         'assignment': assignment,
         'client_contract': assignment.client_contract,
         'staff_contract': assignment.staff_contract,
+        'haken_info': haken_info,
         'from_client': from_client,
         'from_staff': from_staff,
         'from_expire_list': from_expire_list,
