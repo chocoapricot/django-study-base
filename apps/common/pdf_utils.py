@@ -8,7 +8,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
 from reportlab.lib.units import cm
 
 
@@ -79,6 +79,56 @@ def generate_table_based_contract_pdf(buffer, title, intro_text, items, watermar
         current_row = 0
 
         for item in items:
+            # 新しいページタイトルの処理
+            if item.get('is_new_page_title'):
+                # 現在のテーブルがあれば追加
+                if table_data:
+                    table = Table(table_data, colWidths=['20%', '25%', '55%'])
+                    style = TableStyle([
+                        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                        ('PADDING', (0, 0), (-1, -1), 6),
+                    ])
+                    # 動的に生成したスタイルコマンドを追加
+                    for cmd in table_style_commands:
+                        style.add(*cmd)
+                    table.setStyle(style)
+                    story.append(table)
+                    story.append(Spacer(1, 10))
+                
+                # 改ページとタイトル追加
+                story.append(PageBreak())
+                story.append(Paragraph(item.get('title', ''), styles['MainTitle']))
+                
+                # テーブルデータをリセット
+                table_data = []
+                table_style_commands = []
+                current_row = 0
+                continue
+            
+            # 区切り線の処理
+            if item.get('is_separator'):
+                # 現在のテーブルがあれば追加
+                if table_data:
+                    table = Table(table_data, colWidths=['20%', '25%', '55%'])
+                    style = TableStyle([
+                        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                        ('PADDING', (0, 0), (-1, -1), 6),
+                    ])
+                    # 動的に生成したスタイルコマンドを追加
+                    for cmd in table_style_commands:
+                        style.add(*cmd)
+                    table.setStyle(style)
+                    story.append(table)
+                    story.append(Spacer(1, 20))  # 区切りスペース
+                
+                # テーブルデータをリセット
+                table_data = []
+                table_style_commands = []
+                current_row = 0
+                continue
+            
             if 'rowspan_items' in item:
                 # rowspan を持つ項目の処理
                 rowspan_title = Paragraph(item.get('title', ''), styles['RowSpanTitle'])

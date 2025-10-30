@@ -389,12 +389,164 @@ def generate_contract_pdf_content(contract):
 
 def generate_dispatch_ledger_pdf(contract, user, issued_at, watermark_text=None):
     """派遣元管理台帳PDFを生成する"""
+    from apps.company.models import Company
+    from datetime import date
+    
     pdf_title = "派遣元管理台帳"
-
-    intro_text = f"{contract.client.name} 御中"
-
-    # 内容はタイトルのみとの指定のため、itemsは空リストにする
+    
+    # 会社情報を取得
+    company = Company.objects.first()
+    client = contract.client
+    haken_info = contract.haken_info
+    
+    # クライアント契約に紐づくスタッフ契約を取得
+    all_staff_contracts = contract.staff_contracts.select_related('staff', 'employment_type').all()
+    
+    # 同じスタッフが複数いる場合は、最も早い開始日の契約のみを残す
+    staff_contract_dict = {}
+    for staff_contract in all_staff_contracts:
+        staff_id = staff_contract.staff.id
+        if staff_id not in staff_contract_dict:
+            staff_contract_dict[staff_id] = staff_contract
+        else:
+            # より早い開始日の契約を保持
+            if staff_contract.start_date < staff_contract_dict[staff_id].start_date:
+                staff_contract_dict[staff_id] = staff_contract
+    
+    # 重複を除去したスタッフ契約リスト
+    staff_contracts = list(staff_contract_dict.values())
+    
+    # PDFコンテンツの準備
+    intro_text = f"{client.name} 御中"
     items = []
+    
+    # スタッフごとに派遣元管理台帳の項目を作成
+    for i, staff_contract in enumerate(staff_contracts, 1):
+        staff = staff_contract.staff
+        
+        # スタッフが複数の場合、2人目以降は新しいタイトルから開始
+        if i > 1:
+            items.append({
+                "title": "派遣元管理台帳",
+                "is_new_page_title": True,
+                "text": ""
+            })
+        
+        # 1. 派遣労働者氏名
+        full_name = f"{staff.name_last} {staff.name_first}"
+        items.append({
+            "title": "派遣労働者氏名",
+            "text": full_name
+        })
+        
+        # 2. 協定対象派遣労働者かの別
+        agreement_target_text = ""
+        if company and company.dispatch_treatment_method == 'agreement':
+            agreement_target_text = "協定対象派遣労働者"
+        else:
+            agreement_target_text = "協定対象派遣労働者ではない"
+        items.append({
+            "title": "協定対象派遣労働者かの別",
+            "text": agreement_target_text
+        })
+        
+        # 3. 無期雇用か有期雇用かの別
+        employment_type_text = ""
+        contract_period_text = ""
+        if staff_contract.employment_type:
+            if staff_contract.employment_type.is_fixed_term:
+                employment_type_text = "有期雇用派遣労働者"
+                # 有期派遣労働者の場合は労働契約期間も出力
+                if staff_contract.start_date and staff_contract.end_date:
+                    contract_period_text = f"{staff_contract.start_date.strftime('%Y年%m月%d日')} ～ {staff_contract.end_date.strftime('%Y年%m月%d日')}"
+                elif staff_contract.start_date:
+                    contract_period_text = f"{staff_contract.start_date.strftime('%Y年%m月%d日')} ～ （終了日未定）"
+            else:
+                employment_type_text = "無期雇用派遣労働者"
+        else:
+            employment_type_text = "未設定"
+        
+        items.append({
+            "title": "無期雇用か有期雇用かの別",
+            "text": employment_type_text
+        })
+        
+        # 労働契約期間（有期雇用の場合のみ）
+        if contract_period_text:
+            items.append({
+                "title": "労働契約期間",
+                "text": contract_period_text
+            })
+        
+        # 4. 派遣先の名称
+        items.append({
+            "title": "派遣先の名称",
+            "text": client.name if client.name else "-"
+        })
+        
+        # 5. 派遣先の事業所の名称
+        workplace_name = ""
+        if haken_info and haken_info.haken_office:
+            workplace_name = haken_info.haken_office.name
+        items.append({
+            "title": "派遣先の事業所の名称",
+            "text": workplace_name if workplace_name else "-"
+        })
+        
+        # 6. 就業場所
+        workplace_address = ""
+        if haken_info and haken_info.work_location:
+            workplace_address = haken_info.work_location
+        items.append({
+            "title": "就業場所",
+            "text": workplace_address if workplace_address else "-"
+        })
+        
+        # 7. 組織単位
+        organization_unit = ""
+        if haken_info and haken_info.haken_unit:
+            organization_unit = haken_info.haken_unit.name
+        items.append({
+            "title": "組織単位",
+            "text": organization_unit if organization_unit else "-"
+        })
+        
+        # 8. 業務の種類
+        business_type = ""
+        if contract.business_content:
+            business_type = contract.business_content
+        elif staff_contract.business_content:
+            business_type = staff_contract.business_content
+        items.append({
+            "title": "業務の種類",
+            "text": business_type if business_type else "-"
+        })
+        
+        # 9. 派遣元責任者
+        company_responsible = ""
+        if haken_info and haken_info.responsible_person_company:
+            company_responsible = haken_info.responsible_person_company.name
+        items.append({
+            "title": "派遣元責任者",
+            "text": company_responsible if company_responsible else "-"
+        })
+        
+        # 10. 派遣先責任者
+        client_responsible = ""
+        if haken_info and haken_info.responsible_person_client:
+            client_responsible = haken_info.responsible_person_client.name
+        items.append({
+            "title": "派遣先責任者",
+            "text": client_responsible if client_responsible else "-"
+        })
+        
+        # スタッフ間の区切り（最後のスタッフ以外）
+        if i < len(staff_contracts):
+            items.append({
+                "title": "",
+                "text": "",
+                "is_separator": True
+            })
 
     timestamp = issued_at.strftime('%Y%m%d%H%M%S')
     pdf_filename = f"dispatch_ledger_{contract.pk}_{timestamp}.pdf"
