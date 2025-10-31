@@ -511,7 +511,30 @@ def generate_dispatch_ledger_pdf(contract, user, issued_at, watermark_text=None)
             "text": organization_unit if organization_unit else "-"
         })
         
-        # 8. 業務の種類
+        # 8. 60歳以上であるか否かの別（派遣先通知書のロジックを参考）
+        age_classification = ""
+        if staff.birth_date:
+            # 割当開始日 = スタッフ契約とクライアント契約が重なる期間の開始日
+            assignment_start_date = max(contract.start_date, staff_contract.start_date)
+            birth_date = staff.birth_date
+            age_years = assignment_start_date.year - birth_date.year
+            if (assignment_start_date.month, assignment_start_date.day) < (birth_date.month, birth_date.day):
+                age_years -= 1
+            
+            # 60歳以上かどうかの判定
+            if age_years >= 60:
+                age_classification = "60歳以上"
+            else:
+                age_classification = "60歳未満"
+        else:
+            age_classification = "生年月日未設定"
+        
+        items.append({
+            "title": "60歳以上であるか否かの別",
+            "text": age_classification
+        })
+        
+        # 9. 業務の種類
         business_type = ""
         if contract.business_content:
             business_type = contract.business_content
@@ -522,22 +545,86 @@ def generate_dispatch_ledger_pdf(contract, user, issued_at, watermark_text=None)
             "text": business_type if business_type else "-"
         })
         
-        # 9. 派遣元責任者
+        # 10. 派遣期間（クライアント契約の期間）
+        dispatch_period = ""
+        if contract.start_date and contract.end_date:
+            dispatch_period = f"{contract.start_date.strftime('%Y年%m月%d日')} ～ {contract.end_date.strftime('%Y年%m月%d日')}"
+        elif contract.start_date:
+            dispatch_period = f"{contract.start_date.strftime('%Y年%m月%d日')} ～ （終了日未定）"
+        else:
+            dispatch_period = "-"
+        
+        items.append({
+            "title": "派遣期間",
+            "text": dispatch_period
+        })
+        
+        # Helper functions for formatting user info (個別契約書と同じ表記)
+        def format_client_user_for_ledger(user, with_phone=False):
+            if not user:
+                return "-"
+            parts = []
+            if user.department:
+                parts.append(user.department.name)
+            if user.position:
+                parts.append(user.position)
+            parts.append(user.name)
+
+            base_info = '　'.join(filter(None, parts))
+
+            if with_phone and user.phone_number:
+                return f"{base_info} 電話番号：{user.phone_number}"
+            return base_info
+
+        def format_company_user_for_ledger(user, with_phone=False):
+            if not user:
+                return "-"
+            from apps.company.models import CompanyDepartment
+            parts = []
+            department = CompanyDepartment.objects.filter(department_code=user.department_code).first() if user.department_code else None
+            if department:
+                parts.append(department.name)
+            if user.position:
+                parts.append(user.position)
+            parts.append(user.name)
+
+            base_info = '　'.join(filter(None, parts))
+
+            if with_phone and user.phone_number:
+                return f"{base_info} 電話番号：{user.phone_number}"
+            return base_info
+        
+        # 11. 派遣元責任者（個別契約書と同じ表記：役職・氏名・電話番号）
         company_responsible = ""
         if haken_info and haken_info.responsible_person_company:
-            company_responsible = haken_info.responsible_person_company.name
+            # 製造派遣かどうかでタイトルを決定
+            is_manufacturing_dispatch = contract.job_category and contract.job_category.is_manufacturing_dispatch
+            company_responsible = format_company_user_for_ledger(haken_info.responsible_person_company, with_phone=True)
+        
+        company_responsible_title = "製造業務専門派遣元責任者" if (contract.job_category and contract.job_category.is_manufacturing_dispatch) else "派遣元責任者"
         items.append({
-            "title": "派遣元責任者",
+            "title": company_responsible_title,
             "text": company_responsible if company_responsible else "-"
         })
         
-        # 10. 派遣先責任者
+        # 12. 派遣先責任者（個別契約書と同じ表記：役職・氏名・電話番号）
         client_responsible = ""
         if haken_info and haken_info.responsible_person_client:
-            client_responsible = haken_info.responsible_person_client.name
+            client_responsible = format_client_user_for_ledger(haken_info.responsible_person_client, with_phone=True)
+        
+        client_responsible_title = "製造業務専門派遣先責任者" if (contract.job_category and contract.job_category.is_manufacturing_dispatch) else "派遣先責任者"
         items.append({
-            "title": "派遣先責任者",
+            "title": client_responsible_title,
             "text": client_responsible if client_responsible else "-"
+        })
+        
+        # 13. 責任の程度
+        responsibility_degree = ""
+        if haken_info and haken_info.responsibility_degree:
+            responsibility_degree = haken_info.responsibility_degree
+        items.append({
+            "title": "責任の程度",
+            "text": responsibility_degree if responsibility_degree else "-"
         })
         
         # スタッフ間の区切り（最後のスタッフ以外）

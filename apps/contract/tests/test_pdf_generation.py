@@ -625,3 +625,207 @@ class ContractPdfGenerationTest(TestCase):
 
         # Check that a field with no value is not present
         self.assertNotIn("休日", text_no_newline)
+    def test_generate_dispatch_ledger_pdf_content(self):
+        """派遣元管理台帳PDFが正しい内容で生成されることをテストする"""
+        from datetime import date
+        from apps.contract.utils import generate_dispatch_ledger_pdf
+        from apps.master.models import EmploymentType
+        
+        # 60歳以上のスタッフを作成
+        staff_over_60 = Staff.objects.create(
+            name_last="ベテラン",
+            name_first="スタッフ",
+            employee_no="S002",
+            birth_date=date(1960, 1, 1)  # 60歳以上
+        )
+        
+        # 雇用形態を作成
+        employment_type = EmploymentType.objects.create(
+            name="正社員",
+            is_fixed_term=False
+        )
+        
+        # 職種を作成（製造派遣）
+        job_category = JobCategory.objects.create(
+            name="製造業務",
+            is_manufacturing_dispatch=True
+        )
+        
+        # 派遣契約を作成
+        haken_contract = ClientContract.objects.create(
+            client=self.client,
+            contract_pattern=self.dispatch_pattern,
+            contract_number="H001",
+            start_date=date(2024, 4, 1),
+            end_date=date(2025, 3, 31),
+            job_category=job_category,
+            business_content="製造業務"
+        )
+        
+        # 派遣情報を作成
+        haken_info = ClientContractHaken.objects.create(
+            client_contract=haken_contract,
+            haken_office=self.client_dept,
+            haken_unit=self.client_dept,
+            work_location="東京都港区",
+            responsible_person_client=self.client_user,
+            responsible_person_company=self.company_user,
+            responsibility_degree="指示に従って業務を行う"
+        )
+        
+        # スタッフ契約を作成
+        staff_contract = StaffContract.objects.create(
+            staff=staff_over_60,
+            contract_name="製造業務契約",
+            contract_pattern=self.staff_pattern,
+            employment_type=employment_type,
+            start_date=date(2024, 4, 1),
+            end_date=date(2025, 3, 31)
+        )
+        
+        # 割当を作成
+        from apps.contract.models import ContractAssignment
+        ContractAssignment.objects.create(
+            client_contract=haken_contract,
+            staff_contract=staff_contract
+        )
+        
+        # PDFを生成
+        from django.utils import timezone
+        issued_at = timezone.now()
+        pdf_content, pdf_filename, document_title = generate_dispatch_ledger_pdf(
+            haken_contract, None, issued_at
+        )
+        
+        # PDFが生成されることを確認
+        self.assertIsNotNone(pdf_content)
+        self.assertIn("dispatch_ledger", pdf_filename)
+        self.assertEqual(document_title, "派遣元管理台帳")
+        
+        # PDFの内容を解析
+        pdf_document = fitz.open(stream=pdf_content, filetype="pdf")
+        text_content = ""
+        for page_num in range(pdf_document.page_count):
+            page = pdf_document.load_page(page_num)
+            text_content += page.get_text()
+        pdf_document.close()
+        
+        # 新しく追加された項目が含まれていることを確認（改行を考慮）
+        self.assertIn("60歳以上であるか", text_content)
+        self.assertIn("否かの別", text_content)
+        self.assertIn("60歳以上", text_content)  # 60歳以上のスタッフなので
+        
+        # 派遣期間が含まれていることを確認
+        self.assertIn("派遣期間", text_content)
+        self.assertIn("2024年04月01日", text_content)
+        self.assertIn("2025年03月31日", text_content)
+        
+        # 製造派遣の責任者タイトルが含まれていることを確認（改行を考慮）
+        self.assertIn("製造業務専門派遣", text_content)
+        self.assertIn("元責任者", text_content)
+        self.assertIn("先責任者", text_content)
+        
+        # 責任者の詳細情報（役職・氏名・電話番号）が含まれていることを確認
+        self.assertIn("Test Div Manager Hakenmoto Tantou 電話番号：03-1111-2222", text_content)
+        self.assertIn("Client Div Leader Hakensaki Tantou 電話番号：03-3333-4444", text_content)
+        
+        # 責任の程度が含まれていることを確認
+        self.assertIn("責任の程度", text_content)
+        self.assertIn("指示に従って業務を行う", text_content)
+        
+        # その他の基本項目も確認（改行を考慮）
+        self.assertIn("派遣労働者氏名", text_content)
+        self.assertIn("ベテラン スタッフ", text_content)
+        self.assertIn("協定対象派遣労働", text_content)
+        self.assertIn("者かの別", text_content)
+        self.assertIn("無期雇用か有期雇", text_content)
+        self.assertIn("用かの別", text_content)
+        self.assertIn("派遣先の名称", text_content)
+        self.assertIn("Test Client", text_content)
+        
+    def test_generate_dispatch_ledger_pdf_under_60_staff(self):
+        """60歳未満のスタッフの場合の派遣元管理台帳PDFをテストする"""
+        from datetime import date
+        from apps.contract.utils import generate_dispatch_ledger_pdf
+        from apps.master.models import EmploymentType
+        
+        # 60歳未満のスタッフを作成
+        staff_under_60 = Staff.objects.create(
+            name_last="若手",
+            name_first="スタッフ",
+            employee_no="S003",
+            birth_date=date(1990, 1, 1)  # 60歳未満
+        )
+        
+        # 雇用形態を作成
+        employment_type = EmploymentType.objects.create(
+            name="契約社員",
+            is_fixed_term=True
+        )
+        
+        # 通常の派遣契約を作成（製造派遣ではない）
+        normal_contract = ClientContract.objects.create(
+            client=self.client,
+            contract_pattern=self.dispatch_pattern,
+            contract_number="H002",
+            start_date=date(2024, 4, 1),
+            end_date=date(2025, 3, 31),
+            business_content="一般事務"
+        )
+        
+        # 派遣情報を作成
+        haken_info = ClientContractHaken.objects.create(
+            client_contract=normal_contract,
+            haken_office=self.client_dept,
+            haken_unit=self.client_dept,
+            work_location="東京都新宿区",
+            responsible_person_client=self.client_user,
+            responsible_person_company=self.company_user,
+            responsibility_degree="指示に従って業務を行う"
+        )
+        
+        # スタッフ契約を作成
+        staff_contract = StaffContract.objects.create(
+            staff=staff_under_60,
+            contract_name="一般事務契約",
+            contract_pattern=self.staff_pattern,
+            employment_type=employment_type,
+            start_date=date(2024, 4, 1),
+            end_date=date(2025, 3, 31)
+        )
+        
+        # 割当を作成
+        from apps.contract.models import ContractAssignment
+        ContractAssignment.objects.create(
+            client_contract=normal_contract,
+            staff_contract=staff_contract
+        )
+        
+        # PDFを生成
+        from django.utils import timezone
+        issued_at = timezone.now()
+        pdf_content, pdf_filename, document_title = generate_dispatch_ledger_pdf(
+            normal_contract, None, issued_at
+        )
+        
+        # PDFの内容を解析
+        pdf_document = fitz.open(stream=pdf_content, filetype="pdf")
+        text_content = ""
+        for page_num in range(pdf_document.page_count):
+            page = pdf_document.load_page(page_num)
+            text_content += page.get_text()
+        pdf_document.close()
+        
+        # 60歳未満の判定が正しく表示されることを確認（改行を考慮）
+        self.assertIn("60歳以上であるか", text_content)
+        self.assertIn("否かの別", text_content)
+        self.assertIn("60歳未満", text_content)
+        
+        # 通常の責任者タイトルが使用されることを確認
+        self.assertIn("派遣元責任者", text_content)
+        self.assertIn("派遣先責任者", text_content)
+        self.assertNotIn("製造業務専門", text_content)
+        
+        # 責任の程度が含まれていることを確認
+        self.assertIn("責任の程度", text_content)
+        self.assertIn("指示に従って業務を行う", text_content)
