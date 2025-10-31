@@ -739,6 +739,37 @@ def generate_dispatch_ledger_pdf(contract, user, issued_at, watermark_text=None)
             "text": employment_stability_text
         })
         
+        # 20. 紹介予定派遣に関する事項（個別契約書と同様の形式で出力）
+        if haken_info:
+            try:
+                ttp_info = haken_info.ttp_info
+                if ttp_info:
+                    ttp_sub_items = []
+                    # ClientContractTtpのフィールドをループして項目を作成
+                    ttp_fields = [
+                        'employer_name','contract_period', 'probation_period', 'business_content',
+                        'work_location', 'working_hours', 'break_time', 'overtime',
+                        'holidays', 'vacations', 'wages', 'insurances',
+                         'other'
+                    ]
+                    for field_name in ttp_fields:
+                        field = ttp_info._meta.get_field(field_name)
+                        value = getattr(ttp_info, field_name)
+                        if value:  # 値が設定されている項目のみ追加
+                            ttp_sub_items.append({
+                                'title': field.verbose_name,
+                                'text': str(value)
+                            })
+
+                    if ttp_sub_items:
+                        ttp_section = {
+                            'title': '紹介予定派遣に\n関する事項',
+                            'rowspan_items': ttp_sub_items
+                        }
+                        items.append(ttp_section)
+            except haken_info.__class__.ttp_info.RelatedObjectDoesNotExist:
+                pass # ttp_infoが存在しない場合は何もしない
+        
         # 割当間の区切り（最後の割当以外）
         if i < len(assignments):
             items.append({
@@ -748,7 +779,7 @@ def generate_dispatch_ledger_pdf(contract, user, issued_at, watermark_text=None)
             })
 
     timestamp = issued_at.strftime('%Y%m%d%H%M%S')
-    pdf_filename = f"dispatch_ledger_{contract.pk}_{timestamp}.pdf"
+    pdf_filename = f"haken_motokanri_{contract.pk}_{timestamp}.pdf"
 
     buffer = io.BytesIO()
     generate_table_based_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text)

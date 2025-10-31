@@ -732,7 +732,7 @@ class ContractPdfGenerationTest(TestCase):
         
         # PDFが生成されることを確認
         self.assertIsNotNone(pdf_content)
-        self.assertIn("dispatch_ledger", pdf_filename)
+        self.assertIn("haken_motokanri", pdf_filename)
         self.assertEqual(document_title, "派遣元管理台帳")
         
         # PDFの内容を解析
@@ -796,8 +796,9 @@ class ContractPdfGenerationTest(TestCase):
         self.assertIn("日々雇い入", text_content)
         self.assertIn("れられるため", text_content)
         
-        # 雇用安定措置の内容が含まれていることを確認
-        self.assertIn("雇用安定措置の内容", text_content)
+        # 雇用安定措置の内容が含まれていることを確認（改行を考慮）
+        text_no_newline = text_content.replace('\n', '')
+        self.assertIn("雇用安定措置の内容", text_no_newline)
         self.assertIn("派遣先への直接雇用の依頼", text_content)
         self.assertIn("正社員としての直接雇用を依頼", text_content)
         self.assertIn("新たな派遣先の提供", text_content)
@@ -952,8 +953,9 @@ class ContractPdfGenerationTest(TestCase):
         # 雇用安定措置の内容が含まれていることを確認
         self.assertIn("雇用安定措置の内容", text_content)
         self.assertIn("その他の雇用安定措置", text_content)
-        self.assertIn("教育訓練の実施による能力向上支援", text_content)    def tes
-t_generate_dispatch_ledger_pdf_no_employment_measures(self):
+        self.assertIn("教育訓練の実施による能力向上支援", text_content)
+        
+    def test_generate_dispatch_ledger_pdf_no_employment_measures(self):
         """派遣雇用安定措置情報がない場合の派遣元管理台帳PDFをテストする"""
         from datetime import date
         from apps.contract.utils import generate_dispatch_ledger_pdf
@@ -1035,3 +1037,139 @@ t_generate_dispatch_ledger_pdf_no_employment_measures(self):
         self.assertNotIn("新たな派遣先の提供", text_content)
         self.assertNotIn("派遣元での無期雇用化", text_content)
         self.assertNotIn("その他の雇用安定措置", text_content)
+
+    def test_generate_dispatch_ledger_pdf_with_ttp_info(self):
+        """紹介予定派遣情報が登録されている場合、派遣元管理台帳に「紹介予定派遣に関する事項」が出力されることをテストする"""
+        from datetime import date
+        from apps.contract.utils import generate_dispatch_ledger_pdf
+        from apps.master.models import EmploymentType
+        from apps.contract.models import ClientContractTtp
+        
+        # スタッフを作成
+        staff_ttp = Staff.objects.create(
+            name_last="紹介予定",
+            name_first="スタッフ",
+            employee_no="S005",
+            birth_date=date(1985, 1, 1)
+        )
+        
+        # 雇用形態を作成
+        employment_type = EmploymentType.objects.create(
+            name="契約社員",
+            is_fixed_term=True
+        )
+        
+        # 派遣契約を作成
+        ttp_contract = ClientContract.objects.create(
+            client=self.client,
+            contract_pattern=self.dispatch_pattern,
+            contract_number="H004",
+            start_date=date(2024, 4, 1),
+            end_date=date(2025, 3, 31),
+            business_content="一般事務"
+        )
+        
+        # 派遣情報を作成
+        haken_info = ClientContractHaken.objects.create(
+            client_contract=ttp_contract,
+            haken_office=self.client_dept,
+            haken_unit=self.client_dept,
+            work_location="東京都港区",
+            responsible_person_client=self.client_user,
+            responsible_person_company=self.company_user,
+            responsibility_degree="指示に従って業務を行う"
+        )
+        
+        # 紹介予定派遣情報を作成
+        ClientContractTtp.objects.create(
+            haken=haken_info,
+            employer_name="Test Client",
+            contract_period="1年間の有期雇用契約",
+            probation_period="3ヶ月の試用期間とする。",
+            business_content="一般事務業務",
+            work_location="東京都港区",
+            working_hours="9:00-18:00 (休憩1時間)",
+            break_time="12:00-13:00",
+            overtime="月20時間程度",
+            holidays="土日祝日",
+            vacations="年次有給休暇20日",
+            wages="月給30万円",
+            insurances="健康保険、厚生年金、雇用保険、労災保険",
+            other="その他特記事項なし"
+        )
+        
+        # スタッフ契約を作成
+        staff_contract = StaffContract.objects.create(
+            staff=staff_ttp,
+            contract_name="紹介予定派遣契約",
+            contract_pattern=self.staff_pattern,
+            employment_type=employment_type,
+            start_date=date(2024, 4, 1),
+            end_date=date(2025, 3, 31)
+        )
+        
+        # 割当を作成
+        from apps.contract.models import ContractAssignment
+        ContractAssignment.objects.create(
+            client_contract=ttp_contract,
+            staff_contract=staff_contract
+        )
+        
+        # PDFを生成
+        from django.utils import timezone
+        issued_at = timezone.now()
+        pdf_content, pdf_filename, document_title = generate_dispatch_ledger_pdf(
+            ttp_contract, None, issued_at
+        )
+        
+        # PDFの内容を解析
+        pdf_document = fitz.open(stream=pdf_content, filetype="pdf")
+        text_content = ""
+        for page_num in range(pdf_document.page_count):
+            page = pdf_document.load_page(page_num)
+            text_content += page.get_text()
+        pdf_document.close()
+        
+        # 紹介予定派遣に関する事項が含まれていることを確認（改行を考慮）
+        text_no_newline = text_content.replace('\n', '')
+        self.assertIn("紹介予定派遣に関する事項", text_no_newline)
+        
+        # 各項目が含まれていることを確認（実際のverbose_nameに基づく）
+        self.assertIn("雇用しようとする者の名称", text_no_newline)
+        self.assertIn("Test Client", text_no_newline)
+        
+        self.assertIn("契約期間", text_no_newline)
+        self.assertIn("1年間の有期雇用契約", text_no_newline)
+        
+        self.assertIn("試用期間に関する事項", text_no_newline)
+        self.assertIn("3ヶ月の試用期間とする。", text_no_newline)
+        
+        self.assertIn("業務内容", text_no_newline)
+        self.assertIn("一般事務業務", text_no_newline)
+        
+        self.assertIn("就業場所", text_no_newline)
+        self.assertIn("東京都港区", text_no_newline)
+        
+        self.assertIn("始業・終業", text_no_newline)
+        self.assertIn("9:00-18:00 (休憩1時間)", text_no_newline)
+        
+        self.assertIn("休憩時間", text_no_newline)
+        self.assertIn("12:00-13:00", text_no_newline)
+        
+        self.assertIn("所定時間外労働", text_no_newline)
+        self.assertIn("月20時間程度", text_no_newline)
+        
+        self.assertIn("休日", text_no_newline)
+        self.assertIn("土日祝日", text_no_newline)
+        
+        self.assertIn("休暇", text_no_newline)
+        self.assertIn("年次有給休暇20日", text_no_newline)
+        
+        self.assertIn("賃金", text_no_newline)
+        self.assertIn("月給30万円", text_no_newline)
+        
+        self.assertIn("各種保険の加入", text_no_newline)
+        self.assertIn("健康保険、厚生年金、雇用保険、労災保険", text_no_newline)
+        
+        self.assertIn("その他", text_no_newline)
+        self.assertIn("その他特記事項なし", text_no_newline)
