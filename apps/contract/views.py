@@ -1518,7 +1518,8 @@ def staff_contract_expire_list(request):
         'client_contract__client',
         'staff_contract__staff',
         'client_contract__job_category',
-        'staff_contract__employment_type'
+        'staff_contract__employment_type',
+        'assignment_confirm'
     ).order_by('assignment_start_date')
     
     contract_timeline_data = _prepare_contract_timeline_data(all_assignments, today, search_query)
@@ -1538,6 +1539,7 @@ def _prepare_contract_timeline_data(all_assignments, today, search_query):
     from datetime import date, timedelta
     from calendar import monthrange
     from django.db.models import Q
+    from apps.common.constants import Constants
     
     # 今後12ヶ月の月リストを生成
     months = []
@@ -1639,20 +1641,30 @@ def _prepare_contract_timeline_data(all_assignments, today, search_query):
                             )
                             
                             if not has_future_assignment and status == 'current':
-                                status = 'ending'  # 契約終了（次のアサインメントなし）
+                                # 延長確認登録で「終了予定」が登録されているかチェック
+                                has_termination_confirm = (
+                                    hasattr(assignment, 'assignment_confirm') and 
+                                    assignment.assignment_confirm and
+                                    assignment.assignment_confirm.confirm_type == Constants.ASSIGNMENT_CONFIRM_TYPE.TERMINATE
+                                )
+                                
+                                if has_termination_confirm:
+                                    status = 'ending_confirmed'  # 契約終了（終了予定として確認済み）
+                                else:
+                                    status = 'ending'  # 契約終了（次のアサインメントなし）
                         
                         # 既存の契約がない場合、または優先度に基づいて更新
                         current_status = staff_contracts[staff_key]['months'][i]['status']
                         if (current_status == 'none' or 
-                            (current_status == 'future' and status in ['current', 'ending']) or
-                            (current_status == 'current' and status == 'ending')):
+                            (current_status == 'future' and status in ['current', 'ending', 'ending_confirmed']) or
+                            (current_status == 'current' and status in ['ending', 'ending_confirmed'])):
                             
                             staff_contracts[staff_key]['months'][i] = {
                                 'month': month_info['display'],
                                 'status': status,
                                 'client_name': assignment.client_contract.client.name,
                                 'assignment_id': assignment.id,
-                                'end_date': assignment.assignment_end_date if status == 'ending' else None
+                                'end_date': assignment.assignment_end_date if status in ['ending', 'ending_confirmed'] else None
                             }
     
     return {

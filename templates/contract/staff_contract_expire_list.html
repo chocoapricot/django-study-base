@@ -195,7 +195,10 @@
                                             title="未来の契約: {{ month_data.client_name }}"
                                         {% elif month_data.status == 'ending' %}
                                             style="background-color: #d4edda; border-color: #c3e6cb; min-width: 60px; width: 60px;" 
-                                            title="契約終了月: {{ month_data.client_name }}"
+                                            title="契約終了月（要確認）: {{ month_data.client_name }}"
+                                        {% elif month_data.status == 'ending_confirmed' %}
+                                            style="background-color: #d4edda; border-color: #c3e6cb; min-width: 60px; width: 60px;" 
+                                            title="契約終了月（終了予定）: {{ month_data.client_name }}"
                                         {% else %}
                                             style="background-color: #f8f9fa; border-color: #dee2e6; min-width: 60px; width: 60px;" 
                                             title="契約なし"
@@ -207,6 +210,10 @@
                                         {% elif month_data.status == 'ending' %}
                                             <div class="d-flex align-items-center justify-content-center">
                                                 <i class="bi bi-exclamation-triangle-fill me-1" style="color: #dc3545;"></i>
+                                                <small style="font-size: 0.7em;">～{{ month_data.end_date|date:"n/j" }}</small>
+                                            </div>
+                                        {% elif month_data.status == 'ending_confirmed' %}
+                                            <div class="d-flex align-items-center justify-content-center">
                                                 <small style="font-size: 0.7em;">～{{ month_data.end_date|date:"n/j" }}</small>
                                             </div>
                                         {% else %}
@@ -230,7 +237,11 @@
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <div class="me-2" style="width: 20px; height: 20px; background-color: #d4edda; border: 1px solid #c3e6cb;"></div>
-                                    <small><i class="bi bi-exclamation-triangle-fill me-1" style="color: #dc3545;"></i>契約終了月</small>
+                                    <small><i class="bi bi-exclamation-triangle-fill me-1" style="color: #dc3545;"></i>契約終了月（要確認）</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="me-2" style="width: 20px; height: 20px; background-color: #d4edda; border: 1px solid #c3e6cb;"></div>
+                                    <small>契約終了月（終了予定）</small>
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <div class="me-2" style="width: 20px; height: 20px; background-color: #ffe4b5; border: 1px solid #ffd280;"></div>
