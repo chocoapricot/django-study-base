@@ -88,12 +88,18 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if item.is_currently_dispatched %}
-                            {% if item.current_contract_end %}
-                                <small class="d-block text-muted"> ～ {{ item.current_contract_end|date:"Y/m/d" }}</small>
-                            {% endif %}
-                        {% else %}
+                        {% if item.current_staff_count == 0 %}
                             -
+                        {% else %}
+                            {% if item.current_contract_list %}
+                                <div class="mt-1">
+                                    {% for contract in item.current_contract_list %}
+                                        <small class="d-block text-muted">
+                                            {{ contract.contract_start|date:"Y/m/d" }} ～ {{ contract.contract_end|date:"Y/m/d" }}
+                                        </small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                         {% endif %}
                     </td>
                 </tr>

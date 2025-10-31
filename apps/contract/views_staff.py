@@ -1102,21 +1102,36 @@ def staff_contract_teishokubi_list(request):
                 item.days_overdue = delta.days
                 item.is_expired = True
 
-        # 現在派遣中かどうかを確認（未来分も含む）
+        # 現在派遣中の契約一覧を取得（未来分も含む、重複期間を除去）
         current_assignments = ContractAssignment.objects.filter(
             staff_contract__staff__email=item.staff_email,
             client_contract__client__corporate_number=item.client_corporate_number,
             client_contract__haken_info__haken_unit__name=item.organization_name,
             client_contract__client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
             client_contract__end_date__gte=date.today()  # 終了日が今日以降（未来分も含む）
-        ).select_related('client_contract').first()
+        ).select_related('client_contract')
 
         if current_assignments:
             item.is_currently_dispatched = True
-            item.current_contract_end = current_assignments.client_contract.end_date
+            # 重複する契約期間を除去するため、ユニークな期間のセットを作成
+            unique_periods = set()
+            for assignment in current_assignments:
+                period_tuple = (assignment.client_contract.start_date, assignment.client_contract.end_date)
+                unique_periods.add(period_tuple)
+            
+            # ユニークな期間を開始日順でソートして最大5件まで表示
+            sorted_periods = sorted(list(unique_periods))[:5]
+            item.current_contract_list = []
+            for start_date, end_date in sorted_periods:
+                item.current_contract_list.append({
+                    'contract_start': start_date,
+                    'contract_end': end_date,
+                })
+            item.current_staff_count = len(item.current_contract_list)
         else:
             item.is_currently_dispatched = False
-            item.current_contract_end = None
+            item.current_contract_list = []
+            item.current_staff_count = 0
 
     context = {
         'teishokubi_list': teishokubi_page,
