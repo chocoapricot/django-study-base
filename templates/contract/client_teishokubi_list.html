@@ -18,10 +18,10 @@
                     <i class="bi bi-x"></i>
                 </span>
             </div>
-            <div class="input-group me-2 mb-2" style="width: 12em;">
+            <div class="input-group me-2 mb-2" style="width: 16em;">
                 <select name="dispatch_filter" class="form-select form-select-sm">
                     <option value="all" {% if dispatch_filter == 'all' %}selected{% endif %}>すべて</option>
-                    <option value="with_contract" {% if dispatch_filter == 'with_contract' %}selected{% endif %}>派遣契約あり</option>
+                    <option value="with_contract" {% if dispatch_filter == 'with_contract' %}selected{% endif %}>未終了派遣契約あり</option>
                 </select>
             </div>
             <button class="btn btn-primary btn-sm mb-2 me-2" type="submit">検索</button>
