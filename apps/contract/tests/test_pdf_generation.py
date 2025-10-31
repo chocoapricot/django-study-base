@@ -950,8 +950,9 @@ class ContractPdfGenerationTest(TestCase):
         self.assertIn("厚生年金：有", text_content)
         self.assertIn("雇用保険：有", text_content)
         
-        # 雇用安定措置の内容が含まれていることを確認
-        self.assertIn("雇用安定措置の内容", text_content)
+        # 雇用安定措置の内容が含まれていることを確認（改行を考慮）
+        text_no_newline = text_content.replace('\n', '')
+        self.assertIn("雇用安定措置の内容", text_no_newline)
         self.assertIn("その他の雇用安定措置", text_content)
         self.assertIn("教育訓練の実施による能力向上支援", text_content)
         
@@ -1028,8 +1029,9 @@ class ContractPdfGenerationTest(TestCase):
             text_content += page.get_text()
         pdf_document.close()
         
-        # 雇用安定措置の内容が「実施なし」と表示されることを確認
-        self.assertIn("雇用安定措置の内容", text_content)
+        # 雇用安定措置の内容が「実施なし」と表示されることを確認（改行を考慮）
+        text_no_newline = text_content.replace('\n', '')
+        self.assertIn("雇用安定措置の内容", text_no_newline)
         self.assertIn("実施なし", text_content)
         
         # 具体的な措置内容は含まれないことを確認
