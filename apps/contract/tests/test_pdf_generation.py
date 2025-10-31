@@ -639,6 +639,18 @@ class ContractPdfGenerationTest(TestCase):
             birth_date=date(1960, 1, 1)  # 60歳以上
         )
         
+        # payroll情報を作成
+        from apps.staff.models import StaffPayroll
+        StaffPayroll.objects.create(
+            staff=staff_over_60,
+            health_insurance_join_date=None,
+            health_insurance_non_enrollment_reason="雇用期間が2か月以内のため",
+            welfare_pension_join_date=date(2024, 4, 1),
+            pension_insurance_non_enrollment_reason="",
+            employment_insurance_join_date=None,
+            employment_insurance_non_enrollment_reason="日々雇い入れられるため"
+        )
+        
         # 雇用形態を作成
         employment_type = EmploymentType.objects.create(
             name="正社員",
@@ -673,6 +685,13 @@ class ContractPdfGenerationTest(TestCase):
             responsibility_degree="指示に従って業務を行う"
         )
         
+        # 抵触日制限外情報を作成
+        from apps.contract.models import ClientContractHakenExempt
+        ClientContractHakenExempt.objects.create(
+            haken=haken_info,
+            period_exempt_detail="労働者派遣法第40条の2第1項第1号に該当する業務（いわゆる26業務）に従事する場合"
+        )
+        
         # スタッフ契約を作成
         staff_contract = StaffContract.objects.create(
             staff=staff_over_60,
@@ -685,9 +704,23 @@ class ContractPdfGenerationTest(TestCase):
         
         # 割当を作成
         from apps.contract.models import ContractAssignment
-        ContractAssignment.objects.create(
+        assignment = ContractAssignment.objects.create(
             client_contract=haken_contract,
             staff_contract=staff_contract
+        )
+        
+        # 派遣雇用安定措置情報を作成
+        from apps.contract.models import ContractAssignmentHaken
+        ContractAssignmentHaken.objects.create(
+            contract_assignment=assignment,
+            direct_employment_request=True,
+            direct_employment_detail="正社員としての直接雇用を依頼",
+            new_dispatch_offer=True,
+            new_dispatch_detail="他の派遣先企業への紹介",
+            indefinite_employment=False,
+            indefinite_employment_detail="",
+            other_measures=False,
+            other_measures_detail=""
         )
         
         # PDFを生成
@@ -709,6 +742,14 @@ class ContractPdfGenerationTest(TestCase):
             page = pdf_document.load_page(page_num)
             text_content += page.get_text()
         pdf_document.close()
+        
+        # 新しい表記が含まれていることを確認（改行を考慮）
+        self.assertIn("派遣法（労働者派遣事業の適正な運営の確保及び派遣労働者の保護等に関する法律）第37条", text_content)
+        self.assertIn("「派遣元管理台帳", text_content)
+        self.assertIn("派遣元管理台帳を3年間保存しなければならない", text_content)
+        
+        # 旧表記（xxx御中）が含まれていないことを確認
+        self.assertNotIn("御中", text_content)
         
         # 新しく追加された項目が含まれていることを確認（改行を考慮）
         self.assertIn("60歳以上であるか", text_content)
@@ -733,6 +774,35 @@ class ContractPdfGenerationTest(TestCase):
         self.assertIn("責任の程度", text_content)
         self.assertIn("指示に従って業務を行う", text_content)
         
+        # 抵触日制限外詳細が含まれていることを確認
+        self.assertIn("抵触日制限外詳細", text_content)
+        self.assertIn("労働者派遣法第40条の2第1項第1号", text_content)
+        
+        # 新しく追加された項目が含まれていることを確認（改行を考慮）
+        self.assertIn("派遣労働者からの", text_content)
+        self.assertIn("苦情の処理状況", text_content)
+        self.assertIn("教育訓練の内容", text_content)
+        self.assertIn("キャリア・コンサルテ", text_content)
+        self.assertIn("ィングの日時及び内", text_content)
+        self.assertIn("容", text_content)
+        
+        # 各種保険の取得届提出の有無が含まれていることを確認（改行を考慮、労災保険除く）
+        self.assertIn("各種保険の取得届", text_content)
+        self.assertIn("提出の有無", text_content)
+        self.assertIn("健康保険：無", text_content)
+        self.assertIn("雇用期間が2か月以内のため", text_content)
+        self.assertIn("厚生年金：有", text_content)
+        self.assertIn("雇用保険：無", text_content)
+        self.assertIn("日々雇い入", text_content)
+        self.assertIn("れられるため", text_content)
+        
+        # 雇用安定措置の内容が含まれていることを確認
+        self.assertIn("雇用安定措置の内容", text_content)
+        self.assertIn("派遣先への直接雇用の依頼", text_content)
+        self.assertIn("正社員としての直接雇用を依頼", text_content)
+        self.assertIn("新たな派遣先の提供", text_content)
+        self.assertIn("他の派遣先企業への紹介", text_content)
+        
         # その他の基本項目も確認（改行を考慮）
         self.assertIn("派遣労働者氏名", text_content)
         self.assertIn("ベテラン スタッフ", text_content)
@@ -755,6 +825,18 @@ class ContractPdfGenerationTest(TestCase):
             name_first="スタッフ",
             employee_no="S003",
             birth_date=date(1990, 1, 1)  # 60歳未満
+        )
+        
+        # payroll情報を作成
+        from apps.staff.models import StaffPayroll
+        StaffPayroll.objects.create(
+            staff=staff_under_60,
+            health_insurance_join_date=date(2024, 4, 1),
+            health_insurance_non_enrollment_reason="",
+            welfare_pension_join_date=date(2024, 4, 1),
+            pension_insurance_non_enrollment_reason="",
+            employment_insurance_join_date=date(2024, 4, 1),
+            employment_insurance_non_enrollment_reason=""
         )
         
         # 雇用形態を作成
@@ -796,9 +878,23 @@ class ContractPdfGenerationTest(TestCase):
         
         # 割当を作成
         from apps.contract.models import ContractAssignment
-        ContractAssignment.objects.create(
+        assignment = ContractAssignment.objects.create(
             client_contract=normal_contract,
             staff_contract=staff_contract
+        )
+        
+        # 派遣雇用安定措置情報を作成（その他の措置のみ）
+        from apps.contract.models import ContractAssignmentHaken
+        ContractAssignmentHaken.objects.create(
+            contract_assignment=assignment,
+            direct_employment_request=False,
+            direct_employment_detail="",
+            new_dispatch_offer=False,
+            new_dispatch_detail="",
+            indefinite_employment=False,
+            indefinite_employment_detail="",
+            other_measures=True,
+            other_measures_detail="教育訓練の実施による能力向上支援"
         )
         
         # PDFを生成
@@ -816,6 +912,14 @@ class ContractPdfGenerationTest(TestCase):
             text_content += page.get_text()
         pdf_document.close()
         
+        # 新しい表記が含まれていることを確認（改行を考慮）
+        self.assertIn("派遣法（労働者派遣事業の適正な運営の確保及び派遣労働者の保護等に関する法律）第37条", text_content)
+        self.assertIn("「派遣元管理台帳", text_content)
+        self.assertIn("派遣元管理台帳を3年間保存しなければならない", text_content)
+        
+        # 旧表記（xxx御中）が含まれていないことを確認
+        self.assertNotIn("御中", text_content)
+        
         # 60歳未満の判定が正しく表示されることを確認（改行を考慮）
         self.assertIn("60歳以上であるか", text_content)
         self.assertIn("否かの別", text_content)
@@ -828,4 +932,106 @@ class ContractPdfGenerationTest(TestCase):
         
         # 責任の程度が含まれていることを確認
         self.assertIn("責任の程度", text_content)
-        self.assertIn("指示に従って業務を行う", text_content)
+        self.assertIn("指示に従って業務を行う", text_content)     
+   
+        # 新しく追加された項目が含まれていることを確認（改行を考慮）
+        self.assertIn("派遣労働者からの", text_content)
+        self.assertIn("苦情の処理状況", text_content)
+        self.assertIn("教育訓練の内容", text_content)
+        self.assertIn("キャリア・コンサルテ", text_content)
+        self.assertIn("ィングの日時及び内", text_content)
+        self.assertIn("容", text_content)
+        
+        # 各種保険の取得届提出の有無が含まれていることを確認（全て有の場合、改行を考慮、労災保険除く）
+        self.assertIn("各種保険の取得届", text_content)
+        self.assertIn("提出の有無", text_content)
+        self.assertIn("健康保険：有", text_content)
+        self.assertIn("厚生年金：有", text_content)
+        self.assertIn("雇用保険：有", text_content)
+        
+        # 雇用安定措置の内容が含まれていることを確認
+        self.assertIn("雇用安定措置の内容", text_content)
+        self.assertIn("その他の雇用安定措置", text_content)
+        self.assertIn("教育訓練の実施による能力向上支援", text_content)    def tes
+t_generate_dispatch_ledger_pdf_no_employment_measures(self):
+        """派遣雇用安定措置情報がない場合の派遣元管理台帳PDFをテストする"""
+        from datetime import date
+        from apps.contract.utils import generate_dispatch_ledger_pdf
+        from apps.master.models import EmploymentType
+        
+        # スタッフを作成
+        staff_no_measures = Staff.objects.create(
+            name_last="措置なし",
+            name_first="スタッフ",
+            employee_no="S004",
+            birth_date=date(1985, 1, 1)
+        )
+        
+        # 雇用形態を作成
+        employment_type = EmploymentType.objects.create(
+            name="契約社員",
+            is_fixed_term=True
+        )
+        
+        # 派遣契約を作成
+        no_measures_contract = ClientContract.objects.create(
+            client=self.client,
+            contract_pattern=self.dispatch_pattern,
+            contract_number="H003",
+            start_date=date(2024, 4, 1),
+            end_date=date(2025, 3, 31),
+            business_content="一般事務"
+        )
+        
+        # 派遣情報を作成
+        haken_info = ClientContractHaken.objects.create(
+            client_contract=no_measures_contract,
+            haken_office=self.client_dept,
+            haken_unit=self.client_dept,
+            work_location="東京都渋谷区",
+            responsible_person_client=self.client_user,
+            responsible_person_company=self.company_user,
+            responsibility_degree="指示に従って業務を行う"
+        )
+        
+        # スタッフ契約を作成
+        staff_contract = StaffContract.objects.create(
+            staff=staff_no_measures,
+            contract_name="一般事務契約",
+            contract_pattern=self.staff_pattern,
+            employment_type=employment_type,
+            start_date=date(2024, 4, 1),
+            end_date=date(2025, 3, 31)
+        )
+        
+        # 割当を作成（派遣雇用安定措置情報は作成しない）
+        from apps.contract.models import ContractAssignment
+        ContractAssignment.objects.create(
+            client_contract=no_measures_contract,
+            staff_contract=staff_contract
+        )
+        
+        # PDFを生成
+        from django.utils import timezone
+        issued_at = timezone.now()
+        pdf_content, pdf_filename, document_title = generate_dispatch_ledger_pdf(
+            no_measures_contract, None, issued_at
+        )
+        
+        # PDFの内容を解析
+        pdf_document = fitz.open(stream=pdf_content, filetype="pdf")
+        text_content = ""
+        for page_num in range(pdf_document.page_count):
+            page = pdf_document.load_page(page_num)
+            text_content += page.get_text()
+        pdf_document.close()
+        
+        # 雇用安定措置の内容が「実施なし」と表示されることを確認
+        self.assertIn("雇用安定措置の内容", text_content)
+        self.assertIn("実施なし", text_content)
+        
+        # 具体的な措置内容は含まれないことを確認
+        self.assertNotIn("派遣先への直接雇用の依頼", text_content)
+        self.assertNotIn("新たな派遣先の提供", text_content)
+        self.assertNotIn("派遣元での無期雇用化", text_content)
+        self.assertNotIn("その他の雇用安定措置", text_content)
