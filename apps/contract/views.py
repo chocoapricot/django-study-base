@@ -860,16 +860,27 @@ def client_contract_approve(request, pk):
             # 「承認する」アクションは「申請」からのみ可能
             if contract.contract_status == Constants.CONTRACT_STATUS.PENDING:
                 try:
-                    # TTPを想定する場合、クライアント契約の start_date/end_date を使って期間が6か月超でないかチェック
-                    if contract.start_date and contract.end_date:
-                        dstart = contract.start_date
-                        dend = contract.end_date
-                        months = (dend.year - dstart.year) * 12 + (dend.month - dstart.month)
-                        if dend.day < dstart.day:
-                            months -= 1
-                        if months > 6:
-                            messages.error(request, '労働者派遣法（第40条の6および第40条の7）により紹介予定派遣の派遣期間は6ヶ月までです')
-                            return redirect('contract:client_contract_detail', pk=contract.pk)
+                    # TTP（紹介予定派遣）の場合のみ、期間が6か月超でないかチェック
+                    if (contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and 
+                        contract.start_date and contract.end_date):
+                        # 派遣情報とTTP情報が存在するかチェック
+                        has_ttp = False
+                        try:
+                            if hasattr(contract, 'haken_info') and contract.haken_info:
+                                has_ttp = hasattr(contract.haken_info, 'ttp_info') and contract.haken_info.ttp_info
+                        except:
+                            has_ttp = False
+                        
+                        # TTPが設定されている場合のみ6ヶ月チェック
+                        if has_ttp:
+                            dstart = contract.start_date
+                            dend = contract.end_date
+                            months = (dend.year - dstart.year) * 12 + (dend.month - dstart.month)
+                            if dend.day < dstart.day:
+                                months -= 1
+                            if months > 6:
+                                messages.error(request, '労働者派遣法（第40条の6および第40条の7）により紹介予定派遣の派遣期間は6ヶ月までです')
+                                return redirect('contract:client_contract_detail', pk=contract.pk)
 
                     # 派遣契約の場合、割当されたスタッフの給与関連情報をチェック
                     if contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:

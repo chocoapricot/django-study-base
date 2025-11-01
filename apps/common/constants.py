@@ -32,6 +32,8 @@ class Constants:
 
     # 契約種別 (client_contract_type)
     class CLIENT_CONTRACT_TYPE:
+        CONTRACT = '1'   # 請負
+        QUASI_MANDATE = '10' # 準委任
         DISPATCH = '20' # 派遣
 
     # 支払単位 (pay_unit)
