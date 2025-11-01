@@ -663,6 +663,22 @@ class ContractPdfGenerationTest(TestCase):
             is_manufacturing_dispatch=True
         )
         
+        # 契約文言を作成
+        ContractTerms.objects.create(
+            contract_pattern=self.dispatch_pattern,
+            contract_clause="第1条（業務内容）",
+            contract_terms="派遣労働者は、派遣先の指示に従い、製造業務に従事する。",
+            display_position=2,  # 本文
+            display_order=1
+        )
+        ContractTerms.objects.create(
+            contract_pattern=self.dispatch_pattern,
+            contract_clause="第2条（就業時間）",
+            contract_terms="就業時間は午前9時から午後6時までとし、休憩時間は正午から午後1時までとする。",
+            display_position=2,  # 本文
+            display_order=2
+        )
+        
         # 派遣契約を作成
         haken_contract = ClientContract.objects.create(
             client=self.client,
@@ -750,6 +766,14 @@ class ContractPdfGenerationTest(TestCase):
         
         # 旧表記（xxx御中）が含まれていないことを確認
         self.assertNotIn("御中", text_content)
+        
+        # 契約文言の3列表示が含まれていることを確認（改行を考慮）
+        text_no_newline = text_content.replace('\n', ' ').replace('  ', ' ')
+        self.assertIn("個別契約書記載事", text_no_newline)
+        self.assertIn("第1条（業務内容）", text_content)
+        self.assertIn("派遣労働者は、派遣先の指示に従い、製造業務に従事する。", text_content)
+        self.assertIn("第2条（就業時間）", text_content)
+        self.assertIn("就業時間は午前9時から午後6時までとし", text_content)
         
         # 新しく追加された項目が含まれていることを確認（改行を考慮）
         self.assertIn("60歳以上であるか", text_content)

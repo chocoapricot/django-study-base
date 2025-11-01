@@ -629,13 +629,34 @@ def generate_dispatch_ledger_pdf(contract, user, issued_at, watermark_text=None)
             "text": client_responsible if client_responsible else "-"
         })
         
-        # 15. 派遣労働者からの苦情の処理状況（件名のみ）
+        # 15. 個別契約書記載事項（契約パターンの契約文言「本文」のみを出力）
+        if contract.contract_pattern:
+            # 契約パターンに紐づく契約文言の「本文」のみを取得
+            contract_terms = contract.contract_pattern.terms.filter(display_position=2).order_by('display_order')
+            
+            if contract_terms.exists():
+                # 3列表示のテーブル形式で出力
+                contract_terms_items = []
+                for term in contract_terms:
+                    contract_terms_items.append({
+                        'title': '個別契約書記載事項',
+                        'clause': term.contract_clause,
+                        'terms': term.contract_terms
+                    })
+                
+                # 3列表示の特別な項目として追加
+                items.append({
+                    'title': '個別契約書記載事項',
+                    'contract_terms_table': contract_terms_items
+                })
+        
+        # 16. 派遣労働者からの苦情の処理状況（件名のみ）
         items.append({
             "title": "派遣労働者からの苦情の処理状況",
             "text": "-"
         })
         
-        # 16. 各種保険の取得届提出の有無（派遣先通知書と同じロジック、労災保険除く）
+        # 17. 各種保険の取得届提出の有無（派遣先通知書と同じロジック、労災保険除く）
         staff = staff_contract.staff
         insurance_status_lines = []
         payroll = getattr(staff, 'payroll', None)
@@ -676,19 +697,19 @@ def generate_dispatch_ledger_pdf(contract, user, issued_at, watermark_text=None)
             "text": insurance_status_text
         })
         
-        # 17. 教育訓練の内容（件名のみ）
+        # 18. 教育訓練の内容（件名のみ）
         items.append({
             "title": "教育訓練の内容",
             "text": "-"
         })
         
-        # 18. キャリア・コンサルティングの日時及び内容（件名のみ）
+        # 19. キャリア・コンサルティングの日時及び内容（件名のみ）
         items.append({
             "title": "キャリア・コンサルティングの日時及び内容",
             "text": "-"
         })
         
-        # 19. 雇用安定措置の内容（派遣雇用安定措置登録から取得）
+        # 20. 雇用安定措置の内容（派遣雇用安定措置登録から取得）
         employment_stability_measures = []
         
         # 割当に紐づく派遣雇用安定措置情報を取得
@@ -739,7 +760,7 @@ def generate_dispatch_ledger_pdf(contract, user, issued_at, watermark_text=None)
             "text": employment_stability_text
         })
         
-        # 20. 紹介予定派遣に関する事項（個別契約書と同様の形式で出力）
+        # 21. 紹介予定派遣に関する事項（個別契約書と同様の形式で出力）
         if haken_info:
             try:
                 ttp_info = haken_info.ttp_info

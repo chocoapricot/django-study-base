@@ -129,7 +129,31 @@ def generate_table_based_contract_pdf(buffer, title, intro_text, items, watermar
                 current_row = 0
                 continue
             
-            if 'rowspan_items' in item:
+            if 'contract_terms_table' in item:
+                # 契約文言の3列表示テーブルの処理
+                contract_terms_items = item['contract_terms_table']
+                if contract_terms_items:
+                    # 最初の行のタイトルセルを結合用に設定
+                    first_item = contract_terms_items[0]
+                    rowspan_title = Paragraph(first_item.get('title', ''), styles['RowSpanTitle'])
+                    clause = Paragraph(str(first_item.get('clause', '')).replace('\n', '<br/>'), styles['ItemText'])
+                    terms = Paragraph(str(first_item.get('terms', '')).replace('\n', '<br/>'), styles['ItemText'])
+                    table_data.append([rowspan_title, clause, terms])
+                    
+                    # 残りの行（2行目以降）
+                    for i in range(1, len(contract_terms_items)):
+                        next_item = contract_terms_items[i]
+                        clause = Paragraph(str(next_item.get('clause', '')).replace('\n', '<br/>'), styles['ItemText'])
+                        terms = Paragraph(str(next_item.get('terms', '')).replace('\n', '<br/>'), styles['ItemText'])
+                        table_data.append(['', clause, terms])  # 最初の列は空
+                    
+                    # rowspanのスタイルコマンド（最初の列を結合）
+                    num_items = len(contract_terms_items)
+                    table_style_commands.append(('SPAN', (0, current_row), (0, current_row + num_items - 1)))
+                    table_style_commands.append(('VALIGN', (0, current_row), (0, current_row + num_items - 1), 'MIDDLE'))
+                    
+                    current_row += num_items
+            elif 'rowspan_items' in item:
                 # rowspan を持つ項目の処理
                 rowspan_title = Paragraph(item.get('title', ''), styles['RowSpanTitle'])
                 sub_items = item['rowspan_items']
