@@ -387,7 +387,7 @@ def generate_contract_pdf_content(contract):
     return pdf_content, pdf_filename, pdf_title
 
 
-def generate_dispatch_ledger_pdf(contract, user, issued_at, watermark_text=None):
+def generate_haken_motokanri_pdf(contract, user, issued_at, watermark_text=None):
     """派遣元管理台帳PDFを生成する"""
     from apps.company.models import Company
     from datetime import date
@@ -817,7 +817,7 @@ def generate_dispatch_ledger_pdf(contract, user, issued_at, watermark_text=None)
     return pdf_content, pdf_filename, pdf_title
 
 
-def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermark_text=None):
+def generate_haken_sakikanri_pdf(contract, user, issued_at, watermark_text=None):
     """派遣先管理台帳PDFを生成する"""
     from apps.company.models import Company
     from datetime import date
@@ -1601,3 +1601,9 @@ def generate_quotation_pdf(contract, user, issued_at, watermark_text=None):
     buffer.close()
 
     return pdf_content, pdf_filename, pdf_title
+
+
+# 後方互換性のためのエイリアス
+# 旧メソッド名から新メソッド名へのエイリアス
+generate_dispatch_ledger_pdf = generate_haken_motokanri_pdf
+generate_dispatch_destination_ledger_pdf = generate_haken_sakikanri_pdf

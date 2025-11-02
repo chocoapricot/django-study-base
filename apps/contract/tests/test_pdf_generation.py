@@ -628,7 +628,7 @@ class ContractPdfGenerationTest(TestCase):
     def test_generate_dispatch_ledger_pdf_content(self):
         """派遣元管理台帳PDFが正しい内容で生成されることをテストする"""
         from datetime import date
-        from apps.contract.utils import generate_dispatch_ledger_pdf
+        from apps.contract.utils import generate_haken_motokanri_pdf
         from apps.master.models import EmploymentType
         
         # 60歳以上のスタッフを作成
@@ -742,7 +742,7 @@ class ContractPdfGenerationTest(TestCase):
         # PDFを生成
         from django.utils import timezone
         issued_at = timezone.now()
-        pdf_content, pdf_filename, document_title = generate_dispatch_ledger_pdf(
+        pdf_content, pdf_filename, document_title = generate_haken_motokanri_pdf(
             haken_contract, None, issued_at
         )
         
@@ -841,7 +841,7 @@ class ContractPdfGenerationTest(TestCase):
     def test_generate_dispatch_ledger_pdf_under_60_staff(self):
         """60歳未満のスタッフの場合の派遣元管理台帳PDFをテストする"""
         from datetime import date
-        from apps.contract.utils import generate_dispatch_ledger_pdf
+        from apps.contract.utils import generate_haken_motokanri_pdf
         from apps.master.models import EmploymentType
         
         # 60歳未満のスタッフを作成
@@ -925,7 +925,7 @@ class ContractPdfGenerationTest(TestCase):
         # PDFを生成
         from django.utils import timezone
         issued_at = timezone.now()
-        pdf_content, pdf_filename, document_title = generate_dispatch_ledger_pdf(
+        pdf_content, pdf_filename, document_title = generate_haken_motokanri_pdf(
             normal_contract, None, issued_at
         )
         
@@ -983,7 +983,7 @@ class ContractPdfGenerationTest(TestCase):
     def test_generate_dispatch_ledger_pdf_no_employment_measures(self):
         """派遣雇用安定措置情報がない場合の派遣元管理台帳PDFをテストする"""
         from datetime import date
-        from apps.contract.utils import generate_dispatch_ledger_pdf
+        from apps.contract.utils import generate_haken_motokanri_pdf
         from apps.master.models import EmploymentType
         
         # スタッフを作成
@@ -1041,7 +1041,7 @@ class ContractPdfGenerationTest(TestCase):
         # PDFを生成
         from django.utils import timezone
         issued_at = timezone.now()
-        pdf_content, pdf_filename, document_title = generate_dispatch_ledger_pdf(
+        pdf_content, pdf_filename, document_title = generate_haken_motokanri_pdf(
             no_measures_contract, None, issued_at
         )
         
@@ -1067,7 +1067,7 @@ class ContractPdfGenerationTest(TestCase):
     def test_generate_dispatch_ledger_pdf_with_ttp_info(self):
         """紹介予定派遣情報が登録されている場合、派遣元管理台帳に「紹介予定派遣に関する事項」が出力されることをテストする"""
         from datetime import date
-        from apps.contract.utils import generate_dispatch_ledger_pdf
+        from apps.contract.utils import generate_haken_motokanri_pdf
         from apps.master.models import EmploymentType
         from apps.contract.models import ClientContractTtp
         
@@ -1144,7 +1144,7 @@ class ContractPdfGenerationTest(TestCase):
         # PDFを生成
         from django.utils import timezone
         issued_at = timezone.now()
-        pdf_content, pdf_filename, document_title = generate_dispatch_ledger_pdf(
+        pdf_content, pdf_filename, document_title = generate_haken_motokanri_pdf(
             ttp_contract, None, issued_at
         )
         

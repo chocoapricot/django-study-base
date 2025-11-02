@@ -35,7 +35,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import io
-from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number, generate_teishokubi_notification_pdf, generate_haken_notification_pdf, generate_dispatch_ledger_pdf, generate_dispatch_destination_ledger_pdf
+from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number, generate_teishokubi_notification_pdf, generate_haken_notification_pdf, generate_haken_motokanri_pdf, generate_haken_sakikanri_pdf
 from .resources import ClientContractResource, StaffContractResource
 from .models import ContractAssignment
 from django.urls import reverse
@@ -1073,7 +1073,7 @@ def issue_dispatch_ledger(request, pk):
         return redirect('contract:client_contract_detail', pk=pk)
 
     issued_at = timezone.now()
-    pdf_content, pdf_filename, document_title = generate_dispatch_destination_ledger_pdf(contract, request.user, issued_at)
+    pdf_content, pdf_filename, document_title = generate_haken_sakikanri_pdf(contract, request.user, issued_at)
 
     if pdf_content:
         new_print = ClientContractPrint.objects.create(
@@ -1295,7 +1295,7 @@ def client_dispatch_ledger_pdf(request, pk):
         return redirect('contract:client_contract_detail', pk=pk)
 
     issued_at = timezone.now()
-    pdf_content, pdf_filename, document_title = generate_dispatch_ledger_pdf(
+    pdf_content, pdf_filename, document_title = generate_haken_motokanri_pdf(
         contract, request.user, issued_at
     )
 
@@ -1377,7 +1377,7 @@ def client_contract_draft_dispatch_ledger(request, pk):
         return redirect('contract:client_contract_detail', pk=pk)
 
     issued_at = timezone.now()
-    pdf_content, pdf_filename, document_title = generate_dispatch_destination_ledger_pdf(
+    pdf_content, pdf_filename, document_title = generate_haken_sakikanri_pdf(
         contract, request.user, issued_at, watermark_text="DRAFT"
     )
 
