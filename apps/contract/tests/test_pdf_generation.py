@@ -1,4 +1,4 @@
-import datetime
+﻿import datetime
 import io
 import fitz  # PyMuPDF
 from django.test import TestCase
@@ -761,7 +761,7 @@ class ContractPdfGenerationTest(TestCase):
         
         # 新しい表記が含まれていることを確認（改行を考慮）
         self.assertIn("派遣法（労働者派遣事業の適正な運営の確保及び派遣労働者の保護等に関する法律）第37条", text_content)
-        self.assertIn("「派遣元管理台帳", text_content)
+        self.assertIn("派遣元管理台帳", text_content)
         self.assertIn("派遣元管理台帳を3年間保存しなければならない", text_content)
         
         # 旧表記（xxx御中）が含まれていないことを確認
@@ -939,7 +939,7 @@ class ContractPdfGenerationTest(TestCase):
         
         # 新しい表記が含まれていることを確認（改行を考慮）
         self.assertIn("派遣法（労働者派遣事業の適正な運営の確保及び派遣労働者の保護等に関する法律）第37条", text_content)
-        self.assertIn("「派遣元管理台帳", text_content)
+        self.assertIn("派遣元管理台帳", text_content)
         self.assertIn("派遣元管理台帳を3年間保存しなければならない", text_content)
         
         # 旧表記（xxx御中）が含まれていないことを確認

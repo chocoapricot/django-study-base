@@ -7,6 +7,7 @@ from apps.contract.models import ClientContract
 from apps.master.models import ContractPattern, BillPayment
 from apps.client.models import Client
 from apps.accounts.models import MyUser
+from apps.common.constants import Constants
 import datetime
 
 class ContractUtilsTest(TestCase):
@@ -98,16 +99,19 @@ class ContractUtilsTest(TestCase):
             payment_site=self.payment_site,
         )
 
-        ClientContractHaken.objects.create(client_contract=haken_contract)
+        haken_info = ClientContractHaken.objects.create(client_contract=haken_contract)
 
+        # PDFコンテンツを生成
         generate_contract_pdf_content(haken_contract)
 
+        # モックが呼び出されたことを確認
         mock_generate_pdf.assert_called_once()
         args, kwargs = mock_generate_pdf.call_args
-        items = args[3]
+        items = args[3]  # 4番目の引数がitemsリスト
 
+        # 許可番号が含まれていることを確認
         permit_number_item = next((item for item in items if item['title'] == '許可番号'), None)
-        self.assertIsNotNone(permit_number_item)
+        self.assertIsNotNone(permit_number_item, "許可番号項目が見つかりません")
         self.assertEqual(permit_number_item['text'], '派13-123456')
 
     @patch('apps.contract.utils.generate_table_based_contract_pdf')
