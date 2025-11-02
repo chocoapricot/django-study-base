@@ -1034,10 +1034,85 @@ def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermar
             "text": client_responsible if client_responsible else "-"
         })
         
-        # 12. 派遣労働者からの苦情の処理状況
+        # 12. 派遣元責任者（派遣元管理台帳と同じ）
+        def format_company_user_for_ledger(user, with_phone=False):
+            if not user:
+                return "-"
+            from apps.company.models import CompanyDepartment
+            parts = []
+            department = CompanyDepartment.objects.filter(department_code=user.department_code).first() if user.department_code else None
+            if department:
+                parts.append(department.name)
+            if user.position:
+                parts.append(user.position)
+            parts.append(user.name)
+
+            base_info = '　'.join(filter(None, parts))
+
+            if with_phone and user.phone_number:
+                return f"{base_info} 電話番号：{user.phone_number}"
+            return base_info
+        
+        company_responsible = ""
+        if haken_info and haken_info.responsible_person_company:
+            company_responsible = format_company_user_for_ledger(haken_info.responsible_person_company, with_phone=True)
+        
+        company_responsible_title = "製造業務専門派遣元責任者" if (contract.job_category and contract.job_category.is_manufacturing_dispatch) else "派遣元責任者"
+        items.append({
+            "title": company_responsible_title,
+            "text": company_responsible if company_responsible else "-"
+        })
+        
+        # 13. 派遣労働者からの苦情の処理状況
         items.append({
             "title": "派遣労働者からの苦情の処理状況",
-            "text": "-"
+            "text": "別添のとおり"
+        })
+        
+        # 14. 各種保険の取得届提出の有無（派遣元管理台帳と同じ）
+        insurance_status_lines = []
+        payroll = getattr(staff, 'payroll', None)
+        
+        # 健康保険
+        if payroll and payroll.health_insurance_join_date:
+            insurance_status_lines.append("健康保険：有")
+        else:
+            reason = payroll.health_insurance_non_enrollment_reason if payroll else ""
+            if reason:
+                insurance_status_lines.append(f"健康保険：無　（未加入理由）{reason}")
+            else:
+                insurance_status_lines.append("健康保険：無")
+        
+        # 厚生年金
+        if payroll and payroll.welfare_pension_join_date:
+            insurance_status_lines.append("厚生年金：有")
+        else:
+            reason = payroll.pension_insurance_non_enrollment_reason if payroll else ""
+            if reason:
+                insurance_status_lines.append(f"厚生年金：無　（未加入理由）{reason}")
+            else:
+                insurance_status_lines.append("厚生年金：無")
+        
+        # 雇用保険
+        if payroll and payroll.employment_insurance_join_date:
+            insurance_status_lines.append("雇用保険：有")
+        else:
+            reason = payroll.employment_insurance_non_enrollment_reason if payroll else ""
+            if reason:
+                insurance_status_lines.append(f"雇用保険：無　（未加入理由）{reason}")
+            else:
+                insurance_status_lines.append("雇用保険：無")
+        
+        insurance_status_text = "\n".join(insurance_status_lines)
+        items.append({
+            "title": "各種保険の取得届提出の有無",
+            "text": insurance_status_text
+        })
+        
+        # 15. 教育訓練の内容
+        items.append({
+            "title": "教育訓練の内容",
+            "text": "別添のとおり"
         })
         
         # 割当間の区切り（最後の割当以外）
