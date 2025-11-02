@@ -422,6 +422,13 @@ def generate_dispatch_ledger_pdf(contract, user, issued_at, watermark_text=None)
                 "text": ""
             })
         
+        # 0. 契約番号（最初に追加）
+        contract_number = contract.contract_number if contract.contract_number else "-"
+        items.append({
+            "title": "契約番号",
+            "text": contract_number
+        })
+        
         # 1. 派遣労働者氏名
         full_name = f"{staff.name_last} {staff.name_first}"
         items.append({
