@@ -846,14 +846,20 @@ def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermar
             })
         
         # 派遣先管理台帳の項目（派遣元管理台帳とは異なる項目）
-        # 1. 派遣労働者氏名
+        # 1. 契約番号
+        items.append({
+            "title": "契約番号",
+            "text": contract.contract_number if contract.contract_number else "-"
+        })
+        
+        # 2. 派遣労働者氏名
         full_name = f"{staff.name_last} {staff.name_first}"
         items.append({
             "title": "派遣労働者氏名",
             "text": full_name
         })
         
-        # 2. 60歳以上であるか否かの別
+        # 3. 60歳以上であるか否かの別
         age_classification = ""
         if staff.birth_date:
             # 割当開始日 = スタッフ契約とクライアント契約が重なる期間の開始日
@@ -876,7 +882,7 @@ def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermar
             "text": age_classification
         })
         
-        # 3. 無期雇用か有期雇用かの別
+        # 4. 無期雇用か有期雇用かの別
         employment_type_text = ""
         if staff_contract.employment_type:
             if staff_contract.employment_type.is_fixed_term:
@@ -891,7 +897,7 @@ def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermar
             "text": employment_type_text
         })
         
-        # 4. 労働契約期間（有期雇用の場合のみ）
+        # 5. 労働契約期間（有期雇用の場合のみ）
         contract_period_text = ""
         if staff_contract.employment_type and staff_contract.employment_type.is_fixed_term:
             if staff_contract.start_date and staff_contract.end_date:
@@ -906,13 +912,13 @@ def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermar
                 "text": contract_period_text
             })
         
-        # 5. 派遣元事業主の名称
+        # 6. 派遣元事業主の名称
         items.append({
             "title": "派遣元事業主の名称",
             "text": company.name if company and company.name else "-"
         })
         
-        # 6. 派遣元の事業所の名称（スタッフの所属部署）
+        # 7. 派遣元の事業所の名称（スタッフの所属部署）
         # 契約開始日時点での有効な部署を取得
         contract_start_date = contract.start_date
         staff_department_name = staff.get_department_name(contract_start_date)
@@ -922,7 +928,7 @@ def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermar
             "text": staff_department_name if staff_department_name else "-"
         })
         
-        # 7. 派遣元事業主の事業所の所在地
+        # 8. 派遣元事業主の事業所の所在地
         office_address = ""
         if staff.department_code:
             from apps.company.models import CompanyDepartment
@@ -973,7 +979,7 @@ def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermar
             "text": office_address
         })
         
-        # 8. 派遣期間
+        # 9. 派遣期間
         dispatch_period = ""
         if contract.start_date and contract.end_date:
             dispatch_period = f"{contract.start_date.strftime('%Y年%m月%d日')} ～ {contract.end_date.strftime('%Y年%m月%d日')}"
@@ -987,7 +993,7 @@ def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermar
             "text": dispatch_period
         })
         
-        # 9. 就業場所
+        # 10. 就業場所
         workplace_address = ""
         if haken_info and haken_info.work_location:
             workplace_address = haken_info.work_location
@@ -996,7 +1002,16 @@ def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermar
             "text": workplace_address if workplace_address else "-"
         })
         
-        # 10. 業務の種類
+        # 11. 組織単位
+        organization_unit = ""
+        if haken_info and haken_info.haken_unit:
+            organization_unit = haken_info.haken_unit.name
+        items.append({
+            "title": "組織単位",
+            "text": organization_unit if organization_unit else "-"
+        })
+        
+        # 12. 業務の種類
         business_type = ""
         if contract.business_content:
             business_type = contract.business_content
@@ -1007,7 +1022,19 @@ def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermar
             "text": business_type if business_type else "-"
         })
         
-        # 11. 派遣先責任者
+        # 13. 抵触日制限外詳細（登録がある場合のみ）
+        if haken_info:
+            try:
+                haken_exempt_info = haken_info.haken_exempt_info
+                if haken_exempt_info and haken_exempt_info.period_exempt_detail:
+                    items.append({
+                        "title": "抵触日制限外詳細",
+                        "text": str(haken_exempt_info.period_exempt_detail)
+                    })
+            except haken_info.__class__.haken_exempt_info.RelatedObjectDoesNotExist:
+                pass  # haken_exempt_infoが存在しない場合は何もしない
+        
+        # 14. 派遣先責任者
         client_responsible = ""
         if haken_info and haken_info.responsible_person_client:
             def format_client_user_for_ledger(user, with_phone=False):
@@ -1034,7 +1061,13 @@ def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermar
             "text": client_responsible if client_responsible else "-"
         })
         
-        # 12. 派遣元責任者（派遣元管理台帳と同じ）
+        # 15. 就業状況
+        items.append({
+            "title": "就業状況",
+            "text": "別添のとおり"
+        })
+        
+        # 16. 派遣元責任者（派遣元管理台帳と同じ）
         def format_company_user_for_ledger(user, with_phone=False):
             if not user:
                 return "-"
@@ -1063,13 +1096,13 @@ def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermar
             "text": company_responsible if company_responsible else "-"
         })
         
-        # 13. 派遣労働者からの苦情の処理状況
+        # 17. 派遣労働者からの苦情の処理状況
         items.append({
             "title": "派遣労働者からの苦情の処理状況",
             "text": "別添のとおり"
         })
         
-        # 14. 各種保険の取得届提出の有無（派遣元管理台帳と同じ）
+        # 18. 各種保険の取得届提出の有無（派遣元管理台帳と同じ）
         insurance_status_lines = []
         payroll = getattr(staff, 'payroll', None)
         
@@ -1109,11 +1142,42 @@ def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermar
             "text": insurance_status_text
         })
         
-        # 15. 教育訓練の内容
+        # 19. 教育訓練の内容
         items.append({
             "title": "教育訓練の内容",
             "text": "別添のとおり"
         })
+        
+        # 20. 紹介予定派遣に関する事項（TTPの場合のみ）
+        if haken_info:
+            try:
+                ttp_info = haken_info.ttp_info
+                if ttp_info:
+                    ttp_sub_items = []
+                    # ClientContractTtpのフィールドをループして項目を作成
+                    ttp_fields = [
+                        'employer_name','contract_period', 'probation_period', 'business_content',
+                        'work_location', 'working_hours', 'break_time', 'overtime',
+                        'holidays', 'vacations', 'wages', 'insurances',
+                         'other'
+                    ]
+                    for field_name in ttp_fields:
+                        field = ttp_info._meta.get_field(field_name)
+                        value = getattr(ttp_info, field_name)
+                        if value:  # 値が設定されている項目のみ追加
+                            ttp_sub_items.append({
+                                'title': field.verbose_name,
+                                'text': str(value)
+                            })
+
+                    if ttp_sub_items:
+                        ttp_section = {
+                            'title': '紹介予定派遣に\n関する事項',
+                            'rowspan_items': ttp_sub_items
+                        }
+                        items.append(ttp_section)
+            except haken_info.__class__.ttp_info.RelatedObjectDoesNotExist:
+                pass # ttp_infoが存在しない場合は何もしない
         
         # 割当間の区切り（最後の割当以外）
         if i < len(assignments):
