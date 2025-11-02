@@ -57,7 +57,10 @@
                             {% if item.dispatch_notification_pdf %}
                                 <a href="{% url 'contract:download_client_contract_pdf' item.dispatch_notification_pdf.pk %}" target="_blank" class="btn btn-sm btn-secondary mb-1 text-start">派遣先通知書</a>
                             {% endif %}
-                            {% if not item.latest_contract_pdf and not item.quotation_pdf and not item.teishokubi_notification_pdf and not item.dispatch_notification_pdf %}
+                            {% if item.dispatch_ledger_pdf %}
+                                <a href="{% url 'contract:download_client_contract_pdf' item.dispatch_ledger_pdf.pk %}" target="_blank" class="btn btn-sm btn-secondary mb-1 text-start">派遣先管理台帳</a>
+                            {% endif %}
+                            {% if not item.latest_contract_pdf and not item.quotation_pdf and not item.teishokubi_notification_pdf and not item.dispatch_notification_pdf and not item.dispatch_ledger_pdf %}
                                 -
                             {% endif %}
                         </div>

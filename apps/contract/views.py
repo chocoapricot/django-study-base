@@ -35,7 +35,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import io
-from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number, generate_teishokubi_notification_pdf, generate_haken_notification_pdf, generate_dispatch_ledger_pdf
+from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number, generate_teishokubi_notification_pdf, generate_haken_notification_pdf, generate_dispatch_ledger_pdf, generate_dispatch_destination_ledger_pdf
 from .resources import ClientContractResource, StaffContractResource
 from .models import ContractAssignment
 from django.urls import reverse
@@ -921,6 +921,9 @@ def client_contract_approve(request, pk):
                 # 抵触日通知書の共有フラグもクリア
                 contract.teishokubi_notification_issued_at = None
                 contract.teishokubi_notification_issued_by = None
+                # 派遣先管理台帳の発行フラグもクリア
+                contract.dispatch_ledger_issued_at = None
+                contract.dispatch_ledger_issued_by = None
                 contract.confirmed_at = None
                 contract.save()
                 # 承認解除時は見積書をUI上無効化する必要はない。
@@ -1054,6 +1057,55 @@ def issue_quotation(request, pk):
 
 
 @login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def issue_dispatch_ledger(request, pk):
+    """クライアント契約の派遣先管理台帳を発行する"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+    
+    # 派遣契約でない場合はエラー
+    if contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
+        messages.error(request, '派遣契約以外では派遣先管理台帳を発行できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+    
+    # 承認済み以降でない場合はエラー
+    if not contract.is_approved_or_later:
+        messages.error(request, '承認済み以降の契約でのみ派遣先管理台帳を発行できます。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
+    issued_at = timezone.now()
+    pdf_content, pdf_filename, document_title = generate_dispatch_destination_ledger_pdf(contract, request.user, issued_at)
+
+    if pdf_content:
+        new_print = ClientContractPrint.objects.create(
+            client_contract=contract,
+            printed_by=request.user,
+            printed_at=issued_at,
+            print_type=ClientContractPrint.PrintType.DISPATCH_LEDGER,
+            document_title=document_title,
+            contract_number=contract.contract_number
+        )
+        new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content))
+
+        # 契約側の派遣先管理台帳発行日時/発行者を更新（UI 判定はこれを参照する）
+        contract.dispatch_ledger_issued_at = issued_at
+        contract.dispatch_ledger_issued_by = request.user
+        contract.save()
+
+        AppLog.objects.create(
+            user=request.user,
+            action='dispatch_ledger_issue',
+            model_name='ClientContract',
+            object_id=str(contract.pk),
+            object_repr=f'派遣先管理台帳PDF出力: {contract.contract_name}'
+        )
+        messages.success(request, f'契約「{contract.contract_name}」の派遣先管理台帳を発行しました。')
+    else:
+        messages.error(request, "派遣先管理台帳のPDFの生成に失敗しました。")
+
+    return redirect('contract:client_contract_detail', pk=pk)
+
+
+@login_required
 @permission_required('contract.confirm_clientcontract', raise_exception=True)
 def client_contract_confirm(request, pk):
     """クライアント契約を確認済にする"""
@@ -1152,6 +1204,7 @@ def client_contract_confirm_list(request):
         quotation_pdf = next((p for p in all_prints_for_contract if p.print_type == ClientContractPrint.PrintType.QUOTATION), None)
         teishokubi_notification_pdf = next((p for p in all_prints_for_contract if p.print_type == ClientContractPrint.PrintType.TEISHOKUBI_NOTIFICATION), None)
         dispatch_notification_pdf = next((p for p in all_prints_for_contract if p.print_type == ClientContractPrint.PrintType.DISPATCH_NOTIFICATION), None)
+        dispatch_ledger_pdf = next((p for p in all_prints_for_contract if p.print_type == ClientContractPrint.PrintType.DISPATCH_LEDGER), None)
 
         contracts_with_status.append({
             'contract': contract,
@@ -1159,6 +1212,7 @@ def client_contract_confirm_list(request):
             'quotation_pdf': quotation_pdf,
             'teishokubi_notification_pdf': teishokubi_notification_pdf,
             'dispatch_notification_pdf': dispatch_notification_pdf,
+            'dispatch_ledger_pdf': dispatch_ledger_pdf,
         })
 
     context = {
@@ -1310,6 +1364,31 @@ def client_contract_draft_haken_notification(request, pk):
     else:
         messages.error(request, "派遣通知書のPDFの生成に失敗しました。")
         return redirect('contract:client_contract_detail', pk=pk)
+
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def client_contract_draft_dispatch_ledger(request, pk):
+    """クライアント契約の派遣先管理台帳のドラフトPDFを生成して返す"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+
+    if contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
+        messages.error(request, 'この契約の派遣先管理台帳は発行できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
+    issued_at = timezone.now()
+    pdf_content, pdf_filename, document_title = generate_dispatch_destination_ledger_pdf(
+        contract, request.user, issued_at, watermark_text="DRAFT"
+    )
+
+    if pdf_content:
+        response = HttpResponse(pdf_content, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
+        return response
+    else:
+        messages.error(request, "派遣先管理台帳のPDFの生成に失敗しました。")
+        return redirect('contract:client_contract_detail', pk=pk)
+
 
 @login_required
 def get_contract_patterns_by_employment_type(request):

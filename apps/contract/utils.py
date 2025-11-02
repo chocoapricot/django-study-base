@@ -810,6 +810,141 @@ def generate_dispatch_ledger_pdf(contract, user, issued_at, watermark_text=None)
     return pdf_content, pdf_filename, pdf_title
 
 
+def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermark_text=None):
+    """派遣先管理台帳PDFを生成する"""
+    from apps.company.models import Company
+    from datetime import date
+    
+    pdf_title = "派遣先管理台帳"
+    
+    # 会社情報を取得
+    company = Company.objects.first()
+    client = contract.client
+    haken_info = contract.haken_info
+    
+    # クライアント契約に紐づく割当を取得（割当ごとに出力）
+    from apps.contract.models import ContractAssignment
+    assignments = ContractAssignment.objects.filter(
+        client_contract=contract
+    ).select_related('staff_contract__staff', 'staff_contract__employment_type').all()
+    
+    # PDFコンテンツの準備
+    intro_text = "派遣法（労働者派遣事業の適正な運営の確保及び派遣労働者の保護等に関する法律）第42条「派遣先管理台帳」として作成が必要であり、派遣先事業主は、派遣先管理台帳を3年間保存しなければならない。"
+    items = []
+    
+    # 割当ごとに派遣先管理台帳の項目を作成
+    for i, assignment in enumerate(assignments, 1):
+        staff_contract = assignment.staff_contract
+        staff = staff_contract.staff
+        
+        # スタッフが複数の場合、2人目以降は新しいタイトルから開始
+        if i > 1:
+            items.append({
+                "title": "派遣先管理台帳",
+                "is_new_page_title": True,
+                "text": ""
+            })
+        
+        # 派遣先管理台帳の項目（派遣元管理台帳とは異なる項目）
+        # 1. 派遣労働者氏名
+        full_name = f"{staff.name_last} {staff.name_first}"
+        items.append({
+            "title": "派遣労働者氏名",
+            "text": full_name
+        })
+        
+        # 2. 派遣元事業主の名称
+        items.append({
+            "title": "派遣元事業主の名称",
+            "text": company.name if company and company.name else "-"
+        })
+        
+        # 3. 派遣期間
+        dispatch_period = ""
+        if contract.start_date and contract.end_date:
+            dispatch_period = f"{contract.start_date.strftime('%Y年%m月%d日')} ～ {contract.end_date.strftime('%Y年%m月%d日')}"
+        elif contract.start_date:
+            dispatch_period = f"{contract.start_date.strftime('%Y年%m月%d日')} ～ （終了日未定）"
+        else:
+            dispatch_period = "-"
+        
+        items.append({
+            "title": "派遣期間",
+            "text": dispatch_period
+        })
+        
+        # 4. 就業場所
+        workplace_address = ""
+        if haken_info and haken_info.work_location:
+            workplace_address = haken_info.work_location
+        items.append({
+            "title": "就業場所",
+            "text": workplace_address if workplace_address else "-"
+        })
+        
+        # 5. 業務の種類
+        business_type = ""
+        if contract.business_content:
+            business_type = contract.business_content
+        elif staff_contract.business_content:
+            business_type = staff_contract.business_content
+        items.append({
+            "title": "業務の種類",
+            "text": business_type if business_type else "-"
+        })
+        
+        # 6. 派遣先責任者
+        client_responsible = ""
+        if haken_info and haken_info.responsible_person_client:
+            def format_client_user_for_ledger(user, with_phone=False):
+                if not user:
+                    return "-"
+                parts = []
+                if user.department:
+                    parts.append(user.department.name)
+                if user.position:
+                    parts.append(user.position)
+                parts.append(user.name)
+
+                base_info = '　'.join(filter(None, parts))
+
+                if with_phone and user.phone_number:
+                    return f"{base_info} 電話番号：{user.phone_number}"
+                return base_info
+            
+            client_responsible = format_client_user_for_ledger(haken_info.responsible_person_client, with_phone=True)
+        
+        client_responsible_title = "製造業務専門派遣先責任者" if (contract.job_category and contract.job_category.is_manufacturing_dispatch) else "派遣先責任者"
+        items.append({
+            "title": client_responsible_title,
+            "text": client_responsible if client_responsible else "-"
+        })
+        
+        # 7. 派遣労働者からの苦情の処理状況
+        items.append({
+            "title": "派遣労働者からの苦情の処理状況",
+            "text": "-"
+        })
+        
+        # 割当間の区切り（最後の割当以外）
+        if i < len(assignments):
+            items.append({
+                "title": "",
+                "text": "",
+                "is_separator": True
+            })
+
+    timestamp = issued_at.strftime('%Y%m%d%H%M%S')
+    pdf_filename = f"haken_sakikanri_{contract.pk}_{timestamp}.pdf"
+
+    buffer = io.BytesIO()
+    generate_table_based_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text)
+    pdf_content = buffer.getvalue()
+    buffer.close()
+
+    return pdf_content, pdf_filename, pdf_title
+
+
 def generate_haken_notification_pdf(contract, user, issued_at, watermark_text=None):
     """派遣先通知書PDFを生成する"""
     from apps.company.models import Company

@@ -61,6 +61,26 @@
         </form>
         {% endif %}
 
+        {# 派遣先管理台帳発行スイッチ #}
+        {% if contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH %}
+        <form method="post" id="issue-dispatch-ledger-form" action="{% url 'contract:issue_dispatch_ledger' contract.pk %}" class="mb-3">
+            {% csrf_token %}
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="issueDispatchLedgerSwitch" name="is_issued"
+                       onchange="this.form.submit()"
+                       {% if contract.dispatch_ledger_issued_at %}checked{% endif %}
+                       {% if not contract.is_approved_or_later %}disabled{% endif %}>
+                <label class="form-check-label" for="issueDispatchLedgerSwitch">
+                    <i class="bi bi-file-earmark-spreadsheet" style="font-size: 20px; color: #17a2b8;"></i>
+                    派遣先管理台帳発行
+                    {% if contract.dispatch_ledger_issued_at %}
+                        <span class="text-muted small">（{{ contract.dispatch_ledger_issued_at|date:"Y/m/d H:i:s" }}　{{ contract.dispatch_ledger_issued_by.get_full_name_japanese|default:'' }}）</span>
+                    {% endif %}
+                </label>
+            </div>
+        </form>
+        {% endif %}
+
         {# 発行スイッチ #}
         <form method="post" id="issue-form" action="{% url 'contract:client_contract_issue' contract.pk %}" class="mb-3">
             {% csrf_token %}

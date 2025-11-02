@@ -31,6 +31,8 @@
                                     <span class="badge bg-warning">抵触日通知書</span>
                                 {% elif item.print_type == item.PrintType.DISPATCH_NOTIFICATION %}
                                     <span class="badge bg-info">派遣先通知書</span>
+                                {% elif item.print_type == item.PrintType.DISPATCH_LEDGER %}
+                                    <span class="badge bg-success">派遣先管理台帳</span>
                                 {% else %}
                                     <span class="badge bg-secondary">その他</span>
                                 {% endif %}

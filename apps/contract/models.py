@@ -108,6 +108,16 @@ class ClientContract(MyModel):
         related_name='issued_teishokubi_notifications',
         verbose_name='抵触日通知書共有者'
     )
+    # 派遣先管理台帳の発行日時・発行者
+    dispatch_ledger_issued_at = models.DateTimeField('派遣先管理台帳発行日時', blank=True, null=True)
+    dispatch_ledger_issued_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='issued_dispatch_ledgers',
+        verbose_name='派遣先管理台帳発行者'
+    )
     confirmed_at = models.DateTimeField('確認日時', blank=True, null=True)
     confirmed_by = models.ForeignKey(
         ClientUser,
@@ -189,6 +199,7 @@ class ClientContractPrint(MyModel):
         QUOTATION = '20', '見積書'
         TEISHOKUBI_NOTIFICATION = '30', '抵触日通知書'
         DISPATCH_NOTIFICATION = '40', '派遣先通知書'
+        DISPATCH_LEDGER = '50', '派遣先管理台帳'
 
     client_contract = models.ForeignKey(
         ClientContract,
