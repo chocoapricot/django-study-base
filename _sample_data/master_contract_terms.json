@@ -71,14 +71,14 @@
     "model": "master.contractterms",
     "pk": 5,
     "fields": {
-        "version": 1762098073636644,
+        "version": 1762101007361987,
         "created_at": "2025-09-07T00:00:00Z",
         "created_by": 1,
-        "updated_at": "2025-09-07T00:00:00Z",
+        "updated_at": "2025-11-02T16:45:54.014Z",
         "updated_by": 1,
         "contract_pattern": 3,
-        "contract_clause": "第1条（派遣基本契約）",
-        "contract_terms": "甲は乙に対し、労働者派遣法に基づき、労働者を派遣する。",
+        "contract_clause": "雇用形態",
+        "contract_terms": "本契約は、{{company_name}}（以下「乙」という）が、{{staff_name}}（以下「甲」という）として雇用するものであり、乙は甲に対し、労働者派遣法に基づき、労働者を派遣する。",
         "display_position": 2,
         "memo": null,
         "display_order": 10
@@ -1374,6 +1374,176 @@
         "display_position": 2,
         "memo": null,
         "display_order": 120
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 83,
+    "fields": {
+        "version": 1762100851813490,
+        "created_at": "2025-11-02T16:43:18.465Z",
+        "created_by": 1,
+        "updated_at": "2025-11-02T16:43:18.465Z",
+        "updated_by": 1,
+        "contract_pattern": 3,
+        "contract_clause": "契約期間（更新）",
+        "contract_terms": "契約の更新については、派遣契約の継続状況、業務量、勤務成績、健康状態等を総合的に勘案し、双方の合意により行うことがある。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 20
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 84,
+    "fields": {
+        "version": 1762100881979436,
+        "created_at": "2025-11-02T16:43:48.631Z",
+        "created_by": 1,
+        "updated_at": "2025-11-02T16:43:48.631Z",
+        "updated_by": 1,
+        "contract_pattern": 3,
+        "contract_clause": "労働時間・休日",
+        "contract_terms": "始業時刻：午前9時00分　終業時刻：午後6時00分\r\n休憩時間：午後12時00分～午後1時00分\r\n休日：土曜日・日曜日・国民の祝日・年末年始（12月29日～1月3日）\r\nなお、派遣先の就業時間等に準ずるものとし、変更がある場合は乙を通じて甲に通知する。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 50
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 85,
+    "fields": {
+        "version": 1762100911364119,
+        "created_at": "2025-11-02T16:44:18.016Z",
+        "created_by": 1,
+        "updated_at": "2025-11-02T16:44:18.016Z",
+        "updated_by": 1,
+        "contract_pattern": 3,
+        "contract_clause": "賃金・支払方法",
+        "contract_terms": "通勤手当：実費支給（上限30,000円）\r\n賃金の締切日：毎月末日\r\n賃金の支払日：翌月25日\r\n支払方法：指定口座への振込による",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 60
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 86,
+    "fields": {
+        "version": 1762100934515940,
+        "created_at": "2025-11-02T16:44:41.168Z",
+        "created_by": 1,
+        "updated_at": "2025-11-02T16:44:41.168Z",
+        "updated_by": 1,
+        "contract_pattern": 3,
+        "contract_clause": "社会保険等",
+        "contract_terms": "甲には、健康保険、厚生年金保険、雇用保険および労災保険を適用する。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 70
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 87,
+    "fields": {
+        "version": 1762100952688468,
+        "created_at": "2025-11-02T16:44:59.340Z",
+        "created_by": 1,
+        "updated_at": "2025-11-02T16:44:59.341Z",
+        "updated_by": 1,
+        "contract_pattern": 3,
+        "contract_clause": "年次有給休暇",
+        "contract_terms": "甲には、労働基準法に基づき年次有給休暇を付与する。\r\nなお、派遣先での就業日における休暇取得については、乙および派遣先双方の調整により行う。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 80
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 88,
+    "fields": {
+        "version": 1762100971118707,
+        "created_at": "2025-11-02T16:45:17.771Z",
+        "created_by": 1,
+        "updated_at": "2025-11-02T16:45:17.771Z",
+        "updated_by": 1,
+        "contract_pattern": 3,
+        "contract_clause": "服務規律",
+        "contract_terms": "甲は、乙の就業規則および派遣先の職場規律に従い、誠実に職務を遂行しなければならない。\r\n派遣先で指揮命令を行う者の指示に従うこと。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 90
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 89,
+    "fields": {
+        "version": 1762101026974212,
+        "created_at": "2025-11-02T16:46:13.626Z",
+        "created_by": 1,
+        "updated_at": "2025-11-02T16:46:13.626Z",
+        "updated_by": 1,
+        "contract_pattern": 3,
+        "contract_clause": "機密保持義務",
+        "contract_terms": "甲は、派遣先業務に関連して知り得た営業上または技術上の機密を、在職中および退職後を問わず第三者に漏らしてはならない。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 100
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 90,
+    "fields": {
+        "version": 1762101069012338,
+        "created_at": "2025-11-02T16:46:55.664Z",
+        "created_by": 1,
+        "updated_at": "2025-11-02T16:46:55.664Z",
+        "updated_by": 1,
+        "contract_pattern": 3,
+        "contract_clause": "契約の終了・中途解約",
+        "contract_terms": "1. 契約期間の満了により本契約は終了する。\r\n2. 甲または乙がやむを得ない事由により契約期間中に契約を解除する場合は、原則として30日前までに書面により通知する。\r\n3. 派遣先との派遣契約が中途で終了した場合、乙は甲に速やかにその旨を通知する。乙は可能な限り別の派遣先での就業機会を提供するよう努める。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 110
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 91,
+    "fields": {
+        "version": 1762101092054966,
+        "created_at": "2025-11-02T16:47:18.707Z",
+        "created_by": 1,
+        "updated_at": "2025-11-02T16:47:18.707Z",
+        "updated_by": 1,
+        "contract_pattern": 3,
+        "contract_clause": "安全衛生管理",
+        "contract_terms": "甲は、派遣先の安全衛生管理体制に従い、必要な安全措置を遵守するものとする。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 120
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 92,
+    "fields": {
+        "version": 1762101113875730,
+        "created_at": "2025-11-02T16:47:40.528Z",
+        "created_by": 1,
+        "updated_at": "2025-11-02T16:47:40.528Z",
+        "updated_by": 1,
+        "contract_pattern": 3,
+        "contract_clause": "その他",
+        "contract_terms": "本契約に定めのない事項または疑義が生じた場合は、労働基準法、労働者派遣法、労働契約法および乙の就業規則による。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 130
     }
 }
 ]
