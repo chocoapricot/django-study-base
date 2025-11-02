@@ -427,7 +427,7 @@ def generate_haken_motokanri_pdf(contract, user, issued_at, watermark_text=None)
     ).select_related('staff_contract__staff', 'staff_contract__employment_type').all()
     
     # PDFコンテンツの準備
-    intro_text = "派遣法（労働者派遣事業の適正な運営の確保及び派遣労働者の保護等に関する法律）第37条「派遣元管理台帳」として作成が必要であり、派遣元事業主は、派遣元管理台帳を3年間保存しなければならない。"
+    intro_text = "労働者派遣法（労働者派遣事業の適正な運営の確保及び派遣労働者の保護等に関する法律）第37条「派遣元管理台帳」として作成が必要であり、派遣元事業主は、派遣元管理台帳を3年間保存しなければならない。労働者派遣法施行規則第35条の記載事項が必要。"
     items = []
     
     # 割当ごとに派遣元管理台帳の項目を作成
@@ -857,7 +857,7 @@ def generate_haken_sakikanri_pdf(contract, user, issued_at, watermark_text=None)
     ).select_related('staff_contract__staff', 'staff_contract__employment_type').all()
     
     # PDFコンテンツの準備
-    intro_text = "派遣法（労働者派遣事業の適正な運営の確保及び派遣労働者の保護等に関する法律）第42条「派遣先管理台帳」として作成が必要であり、派遣先事業主は、派遣先管理台帳を3年間保存しなければならない。"
+    intro_text = "労働者派遣法（労働者派遣事業の適正な運営の確保及び派遣労働者の保護等に関する法律）第42条「派遣先管理台帳」として作成が必要であり、派遣先事業主は、派遣先管理台帳を3年間保存しなければならない。労働者派遣法施行規則第36条の記載事項が必要。"
     items = []
     
     # 割当ごとに派遣先管理台帳の項目を作成
