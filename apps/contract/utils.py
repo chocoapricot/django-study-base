@@ -129,8 +129,6 @@ def generate_contract_pdf_content(contract):
         if contract.business_content:
             items.append({"title": "業務内容", "text": str(contract.business_content)})
 
-        items.append({"title": "備考", "text": str(contract.notes)})
-
         # 派遣契約の場合、追加情報を挿入
         if contract.contract_pattern and contract.contract_pattern.contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and hasattr(contract, 'haken_info'):
             from apps.company.models import Company, CompanyDepartment
@@ -177,6 +175,14 @@ def generate_contract_pdf_content(contract):
                 items = [item for item in items if item.get("title") != "業務内容"]
                 haken_items.append({"title": "業務内容", "text": str(contract.business_content or "")})
 
+            # 抵触日制限外詳細は業務内容の次に配置
+            try:
+                haken_exempt_info = haken_info.haken_exempt_info
+                if haken_exempt_info and haken_exempt_info.period_exempt_detail:
+                    haken_items.append({"title": "抵触日制限外詳細", "text": str(haken_exempt_info.period_exempt_detail)})
+            except haken_info.__class__.haken_exempt_info.RelatedObjectDoesNotExist:
+                pass  # haken_exempt_infoが存在しない場合は何もしない
+
             haken_items.append({"title": "責任の程度", "text": str(haken_info.responsibility_degree or "")})
 
             # 派遣先事業所
@@ -222,56 +228,7 @@ def generate_contract_pdf_content(contract):
             haken_items.append({"title": "派遣元苦情申出先", "text": format_company_user(haken_info.complaint_officer_company, with_phone=True)})
             haken_items.append({"title": company_responsible_person_title, "text": format_company_user(haken_info.responsible_person_company, with_phone=True)})
 
-            # 限定の別
-            limit_by_agreement_display = haken_info.get_limit_by_agreement_display() if haken_info.limit_by_agreement else "N/A"
-            limit_indefinite_or_senior_display = haken_info.get_limit_indefinite_or_senior_display() if haken_info.limit_indefinite_or_senior else "N/A"
-            haken_items.append({"title": "協定対象派遣労働者に限定するか否かの別", "text": limit_by_agreement_display})
-            haken_items.append({"title": "無期雇用派遣労働者又は60歳以上の者に限定するか否かの別", "text": limit_indefinite_or_senior_display})
-
-            # 許可番号
-            company = Company.objects.first()
-            if company and company.haken_permit_number:
-                haken_items.append({"title": "許可番号", "text": company.haken_permit_number})
-
-            # 派遣抵触日制限外情報
-            try:
-                haken_exempt_info = haken_info.haken_exempt_info
-                if haken_exempt_info and haken_exempt_info.period_exempt_detail:
-                    haken_items.append({"title": "抵触日制限外詳細", "text": str(haken_exempt_info.period_exempt_detail)})
-            except haken_info.__class__.haken_exempt_info.RelatedObjectDoesNotExist:
-                pass  # haken_exempt_infoが存在しない場合は何もしない
-
-            # 紹介予定派遣(TTP)の場合、追加情報を挿入
-            try:
-                ttp_info = haken_info.ttp_info
-                if ttp_info:
-                    ttp_sub_items = []
-                    # ClientContractTtpのフィールドをループして項目を作成
-                    ttp_fields = [
-                        'employer_name','contract_period', 'probation_period', 'business_content',
-                        'work_location', 'working_hours', 'break_time', 'overtime',
-                        'holidays', 'vacations', 'wages', 'insurances',
-                         'other'
-                    ]
-                    for field_name in ttp_fields:
-                        field = ttp_info._meta.get_field(field_name)
-                        value = getattr(ttp_info, field_name)
-                        if value:  # 値が設定されている項目のみ追加
-                            ttp_sub_items.append({
-                                'title': field.verbose_name,
-                                'text': str(value)
-                            })
-
-                    if ttp_sub_items:
-                        ttp_section = {
-                            'title': '紹介予定派遣に\n関する事項',
-                            'rowspan_items': ttp_sub_items
-                        }
-                        haken_items.append(ttp_section)
-            except haken_info.__class__.ttp_info.RelatedObjectDoesNotExist:
-                pass # ttp_infoが存在しない場合は何もしない
-
-            # itemsリストに挿入
+            # itemsリストに挿入（備考の前に挿入）
             notes_index = -1
             for i, item in enumerate(items):
                 if item["title"] == "備考":
@@ -282,6 +239,8 @@ def generate_contract_pdf_content(contract):
                 items[notes_index:notes_index] = haken_items
             else:
                 items.extend(haken_items)
+
+        items.append({"title": "備考", "text": str(contract.notes)})
     elif isinstance(contract, StaffContract):
         contract_type = 'staff'
         intro_text = ""
@@ -367,6 +326,68 @@ def generate_contract_pdf_content(contract):
                 items[notes_index:notes_index] = term_items
             else:
                 items.extend(term_items)
+
+            # 派遣契約の場合、契約パターン文言の後に追加項目を挿入
+            if isinstance(contract, ClientContract) and contract.contract_pattern and contract.contract_pattern.contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and hasattr(contract, 'haken_info'):
+                haken_info = contract.haken_info
+                additional_items = []
+
+                # 紹介予定派遣(TTP)の場合、追加情報を挿入（契約パターン文言の次）
+                try:
+                    ttp_info = haken_info.ttp_info
+                    if ttp_info:
+                        ttp_sub_items = []
+                        # ClientContractTtpのフィールドをループして項目を作成
+                        ttp_fields = [
+                            'employer_name','contract_period', 'probation_period', 'business_content',
+                            'work_location', 'working_hours', 'break_time', 'overtime',
+                            'holidays', 'vacations', 'wages', 'insurances',
+                             'other'
+                        ]
+                        for field_name in ttp_fields:
+                            field = ttp_info._meta.get_field(field_name)
+                            value = getattr(ttp_info, field_name)
+                            if value:  # 値が設定されている項目のみ追加
+                                ttp_sub_items.append({
+                                    'title': field.verbose_name,
+                                    'text': str(value)
+                                })
+
+                        if ttp_sub_items:
+                            ttp_section = {
+                                'title': '紹介予定派遣に\n関する事項',
+                                'rowspan_items': ttp_sub_items
+                            }
+                            additional_items.append(ttp_section)
+                except haken_info.__class__.ttp_info.RelatedObjectDoesNotExist:
+                    pass # ttp_infoが存在しない場合は何もしない
+
+                # 協定対象派遣労働者に限定するか否かの別（紹介予定派遣に関する事項の次）
+                limit_by_agreement_display = haken_info.get_limit_by_agreement_display() if haken_info.limit_by_agreement else "N/A"
+                additional_items.append({"title": "協定対象派遣労働者に限定するか否かの別", "text": limit_by_agreement_display})
+
+                # 無期雇用派遣労働者又は60歳以上の者に限定するか否かの別（その次）
+                limit_indefinite_or_senior_display = haken_info.get_limit_indefinite_or_senior_display() if haken_info.limit_indefinite_or_senior else "N/A"
+                additional_items.append({"title": "無期雇用派遣労働者又は60歳以上の者に限定するか否かの別", "text": limit_indefinite_or_senior_display})
+
+                # 許可番号（その次）
+                from apps.company.models import Company
+                company = Company.objects.first()
+                if company and company.haken_permit_number:
+                    additional_items.append({"title": "許可番号", "text": company.haken_permit_number})
+
+                # 追加項目を備考の前に挿入
+                if additional_items:
+                    notes_index = -1
+                    for i, item in enumerate(items):
+                        if item["title"] == "備考":
+                            notes_index = i
+                            break
+
+                    if notes_index != -1:
+                        items[notes_index:notes_index] = additional_items
+                    else:
+                        items.extend(additional_items)
 
         if postamble_terms:
             postamble_text_parts = [replace_placeholders(term.contract_terms) for term in postamble_terms]
