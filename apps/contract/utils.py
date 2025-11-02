@@ -853,13 +853,127 @@ def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermar
             "text": full_name
         })
         
-        # 2. 派遣元事業主の名称
+        # 2. 60歳以上であるか否かの別
+        age_classification = ""
+        if staff.birth_date:
+            # 割当開始日 = スタッフ契約とクライアント契約が重なる期間の開始日
+            assignment_start_date = max(contract.start_date, staff_contract.start_date)
+            birth_date = staff.birth_date
+            age_years = assignment_start_date.year - birth_date.year
+            if (assignment_start_date.month, assignment_start_date.day) < (birth_date.month, birth_date.day):
+                age_years -= 1
+            
+            # 60歳以上かどうかの判定
+            if age_years >= 60:
+                age_classification = "60歳以上"
+            else:
+                age_classification = "60歳未満"
+        else:
+            age_classification = "生年月日未設定"
+        
+        items.append({
+            "title": "60歳以上であるか否かの別",
+            "text": age_classification
+        })
+        
+        # 3. 無期雇用か有期雇用かの別
+        employment_type_text = ""
+        if staff_contract.employment_type:
+            if staff_contract.employment_type.is_fixed_term:
+                employment_type_text = "有期雇用派遣労働者"
+            else:
+                employment_type_text = "無期雇用派遣労働者"
+        else:
+            employment_type_text = "未設定"
+        
+        items.append({
+            "title": "無期雇用か有期雇用かの別",
+            "text": employment_type_text
+        })
+        
+        # 4. 労働契約期間（有期雇用の場合のみ）
+        contract_period_text = ""
+        if staff_contract.employment_type and staff_contract.employment_type.is_fixed_term:
+            if staff_contract.start_date and staff_contract.end_date:
+                contract_period_text = f"{staff_contract.start_date.strftime('%Y年%m月%d日')} ～ {staff_contract.end_date.strftime('%Y年%m月%d日')}"
+            elif staff_contract.start_date:
+                contract_period_text = f"{staff_contract.start_date.strftime('%Y年%m月%d日')} ～ （終了日未定）"
+            else:
+                contract_period_text = "-"
+            
+            items.append({
+                "title": "労働契約期間",
+                "text": contract_period_text
+            })
+        
+        # 5. 派遣元事業主の名称
         items.append({
             "title": "派遣元事業主の名称",
             "text": company.name if company and company.name else "-"
         })
         
-        # 3. 派遣期間
+        # 6. 派遣元の事業所の名称（スタッフの所属部署）
+        # 契約開始日時点での有効な部署を取得
+        contract_start_date = contract.start_date
+        staff_department_name = staff.get_department_name(contract_start_date)
+        
+        items.append({
+            "title": "派遣元の事業所の名称",
+            "text": staff_department_name if staff_department_name else "-"
+        })
+        
+        # 7. 派遣元事業主の事業所の所在地
+        office_address = ""
+        if staff.department_code:
+            from apps.company.models import CompanyDepartment
+            try:
+                # 契約開始日時点で有効な部署を取得
+                department = CompanyDepartment.objects.filter(
+                    department_code=staff.department_code
+                ).filter(
+                    models.Q(valid_from__isnull=True) | models.Q(valid_from__lte=contract_start_date)
+                ).filter(
+                    models.Q(valid_to__isnull=True) | models.Q(valid_to__gte=contract_start_date)
+                ).first()
+                
+                if department and department.address:
+                    # スタッフの所属部署に住所がある場合
+                    office_info_parts = [department.address]
+                    if department.phone_number:
+                        office_info_parts.append(f"電話番号：{department.phone_number}")
+                    office_address = "\n".join(office_info_parts)
+                elif company and company.address:
+                    # 部署に住所がない場合は会社の住所を使用
+                    office_info_parts = [company.address]
+                    if company.phone_number:
+                        office_info_parts.append(f"電話番号：{company.phone_number}")
+                    office_address = "\n".join(office_info_parts)
+                else:
+                    office_address = "-"
+            except Exception:
+                # エラーの場合は会社の住所を使用
+                if company and company.address:
+                    office_info_parts = [company.address]
+                    if company.phone_number:
+                        office_info_parts.append(f"電話番号：{company.phone_number}")
+                    office_address = "\n".join(office_info_parts)
+                else:
+                    office_address = "-"
+        elif company and company.address:
+            # 部署コードがない場合は会社の住所を使用
+            office_info_parts = [company.address]
+            if company.phone_number:
+                office_info_parts.append(f"電話番号：{company.phone_number}")
+            office_address = "\n".join(office_info_parts)
+        else:
+            office_address = "-"
+        
+        items.append({
+            "title": "派遣元事業主の事業所の所在地",
+            "text": office_address
+        })
+        
+        # 8. 派遣期間
         dispatch_period = ""
         if contract.start_date and contract.end_date:
             dispatch_period = f"{contract.start_date.strftime('%Y年%m月%d日')} ～ {contract.end_date.strftime('%Y年%m月%d日')}"
@@ -873,7 +987,7 @@ def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermar
             "text": dispatch_period
         })
         
-        # 4. 就業場所
+        # 9. 就業場所
         workplace_address = ""
         if haken_info and haken_info.work_location:
             workplace_address = haken_info.work_location
@@ -882,7 +996,7 @@ def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermar
             "text": workplace_address if workplace_address else "-"
         })
         
-        # 5. 業務の種類
+        # 10. 業務の種類
         business_type = ""
         if contract.business_content:
             business_type = contract.business_content
@@ -893,7 +1007,7 @@ def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermar
             "text": business_type if business_type else "-"
         })
         
-        # 6. 派遣先責任者
+        # 11. 派遣先責任者
         client_responsible = ""
         if haken_info and haken_info.responsible_person_client:
             def format_client_user_for_ledger(user, with_phone=False):
@@ -920,7 +1034,7 @@ def generate_dispatch_destination_ledger_pdf(contract, user, issued_at, watermar
             "text": client_responsible if client_responsible else "-"
         })
         
-        # 7. 派遣労働者からの苦情の処理状況
+        # 12. 派遣労働者からの苦情の処理状況
         items.append({
             "title": "派遣労働者からの苦情の処理状況",
             "text": "-"
