@@ -922,7 +922,6 @@ class ContractAssignmentHakenPrint(MyModel):
     )
     pdf_file = models.FileField('PDFファイル', upload_to='assignment_haken_prints/', null=True, blank=True)
     document_title = models.CharField('タイトル', max_length=255, blank=True, null=True)
-    is_draft = models.BooleanField('ドラフト版', default=True)
 
     class Meta:
         db_table = 'apps_contract_assignment_haken_print'

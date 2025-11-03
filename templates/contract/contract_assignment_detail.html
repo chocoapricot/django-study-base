@@ -9,7 +9,7 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-md-12">
+    <div class="{% if is_dispatch_contract %}col-md-8{% else %}col-md-12{% endif %}">
         <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
             <div class="card-header d-flex justify-content-between align-items-center">
                 契約アサイン詳細
@@ -30,7 +30,7 @@
                                     </a>
                                 {% endif %}
                             </li>
-                            {% if client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH %}
+                            {% if is_dispatch_contract %}
                             <li>
                                 {% if assignment.haken_info %}
                                     <a class="dropdown-item" href="{% url 'contract:contract_assignment_haken' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% elif from_expire_list %}?from=expire_list{% endif %}">
@@ -45,7 +45,7 @@
                             {% endif %}
                         </ul>
                     </div>
-                    {% if client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH %}
+                    {% if is_dispatch_contract and staff_contract.contract_status == Constants.CONTRACT_STATUS.DRAFT or staff_contract.contract_status == Constants.CONTRACT_STATUS.PENDING %}
                     <div class="dropdown ms-2">
                         　
                         <a class="text-decoration-none dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -299,6 +299,96 @@
             </div>
         </div>
     </div>
+    {% if is_dispatch_contract %}
+    <div class="col-md-4">
+        <!-- 状況カード -->
+        <div class="content-box card bg-light mt-2 mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                状況
+            </div>
+            <div class="card-body">
+                {# 就業条件明示書発行スイッチ #}
+                <form method="post" id="employment-conditions-form" action="{% url 'contract:assignment_employment_conditions_issue' assignment_pk=assignment.pk %}" class="mb-3">
+                    {% csrf_token %}
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="employmentConditionsSwitch" name="is_issued"
+                               onchange="this.form.submit()"
+                               {% if employment_conditions_issued %}checked{% endif %}
+                               {% if staff_contract.contract_status != Constants.CONTRACT_STATUS.APPROVED %}disabled{% endif %}
+                               {% if employment_conditions_issued %}disabled{% endif %}>
+                        <label class="form-check-label" for="employmentConditionsSwitch">
+                            <i class="bi bi-file-earmark-text" style="font-size: 20px; color: #17a2b8;"></i>
+                            就業条件明示書発行
+                            {% if employment_conditions_issued_at %}
+                                <span class="text-muted small">（{{ employment_conditions_issued_at|date:"Y/m/d H:i:s" }}　{{ employment_conditions_issued_by.get_full_name_japanese|default:'' }}）</span>
+                            {% endif %}
+                        </label>
+                    </div>
+                </form>
+
+                {# スタッフ確認スイッチ（将来の拡張用） #}
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="staffConfirmSwitch" name="is_staff_confirmed"
+                               disabled>
+                        <label class="form-check-label" for="staffConfirmSwitch">
+                            <i class="bi bi-link" style="font-size: 20px; color: #17a2b8;"></i>
+                            スタッフ確認
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 発行履歴カード -->
+        {% if haken_print_history_count > 0 %}
+        <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                発行履歴
+            </div>
+            <div class="card-body mb-0">
+                <table class="table table-hover me-2 mt-2" style="border-top: 1px solid #ddd;">
+                    <thead>
+                        <tr>
+                            <th>種別</th>
+                            <th>ファイル</th>
+                            <th>発行者</th>
+                            <th>発行日時</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in haken_print_history %}
+                            <tr>
+                                <td>
+                                    {% if item.print_type == item.PrintType.EMPLOYMENT_CONDITIONS %}
+                                        <span class="badge bg-primary">就業条件明示書</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">その他</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'contract:download_assignment_haken_print_pdf' item.pk %}">
+                                        {{ item.document_title }}
+                                    </a>
+                                </td>
+                                <td>{{ item.printed_by.get_full_name_japanese|default:"-" }}</td>
+                                <td>{{ item.printed_at|date:"Y/m/d H:i:s" }}</td>
+                            </tr>
+                        {% empty %}
+                        <tr><td colspan="4">履歴がありません</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if haken_print_history_count > 5 %}
+            <div class="card-footer d-flex justify-content-center align-items-center">
+                <a href="{% url 'contract:assignment_haken_print_history_list' assignment_pk=assignment.pk %}">全て表示 (全{{ haken_print_history_count }}件)</a>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
 </div>
 
 <!-- 契約期間イメージ -->
@@ -365,6 +455,8 @@
 {% endif %}
 
 <script>
+
+
 // ページロジック情報を設定
 document.addEventListener('DOMContentLoaded', function() {
     // このページにロジック情報があることを通知
@@ -384,6 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="card-body py-2">
                     <div class="mb-2">• アサイン解除権限: 両方の契約が「作成中」状態の場合のみ解除可能</div>
+                    <div class="mb-2">• 印刷権限: スタッフ契約が「作成中」または「申請」状態の場合のみ就業条件明示書印刷可能</div>
                     <div class="mb-0">• 遷移元判定: リファラー情報から戻るボタンの遷移先を自動判定</div>
                 </div>
             </div>
@@ -395,7 +488,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="card-body py-2">
                     <div class="mb-2">• 契約期間整合性: 割当期間がクライアント契約・スタッフ契約の重複期間内に設定</div>
-                    <div class="mb-0">• 職種整合性: クライアント契約とスタッフ契約の職種情報を比較表示</div>
+                    <div class="mb-2">• 職種整合性: クライアント契約とスタッフ契約の職種情報を比較表示</div>
+                    <div class="mb-0">• 派遣契約判定: 派遣契約の場合のみ状況カードと発行履歴カードを表示</div>
                 </div>
             </div>
 
@@ -408,6 +502,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="mb-2">• 関連データ取得: クライアント契約・スタッフ契約の詳細情報を自動取得・表示</div>
                     <div class="mb-2">• 変更履歴表示: アサイン作成・削除の履歴を自動取得・表示</div>
                     <div class="mb-2">• 割当期間計算: 契約期間の重複部分を自動計算して表示</div>
+                    <div class="mb-2">• 発行履歴管理: 就業条件明示書の発行履歴を自動記録・表示</div>
                     <div class="mb-0">• 詳細画面リンク: 各契約の詳細画面への直接リンクを提供</div>
                 </div>
             </div>

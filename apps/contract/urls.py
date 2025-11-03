@@ -56,6 +56,7 @@ urlpatterns = [
     path('staff/<int:pk>/change_history/', views.staff_contract_change_history_list, name='staff_contract_change_history_list'),
     path('download/client/<int:pk>/', views.download_client_contract_pdf, name='download_client_contract_pdf'),
     path('download/staff/<int:pk>/', views.download_staff_contract_pdf, name='download_staff_contract_pdf'),
+
     
     # 選択画面
     path('client-select/', views.client_select, name='client_select'),
@@ -88,6 +89,9 @@ urlpatterns = [
 
     # アサイン情報詳細画面
     path('assignment/<int:assignment_pk>/detail/', views.contract_assignment_detail, name='contract_assignment_detail'),
+    path('assignment/<int:assignment_pk>/employment-conditions-issue/', views.assignment_employment_conditions_issue, name='assignment_employment_conditions_issue'),
+    path('download/assignment-haken-print/<int:pk>/', views.download_assignment_haken_print_pdf, name='download_assignment_haken_print_pdf'),
+    path('assignment/<int:assignment_pk>/haken-print-history/', views.assignment_haken_print_history_list, name='assignment_haken_print_history_list'),
     
     # 契約アサイン延長確認
     path('assignment/<int:assignment_pk>/confirm/', views.contract_assignment_confirm_view, name='contract_assignment_confirm'),

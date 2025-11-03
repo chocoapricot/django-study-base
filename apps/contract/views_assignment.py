@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -7,6 +7,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from apps.common.constants import Constants
@@ -697,11 +698,47 @@ def contract_assignment_detail(request, assignment_pk):
     # 派遣情報を取得
     haken_info = getattr(assignment.client_contract, 'haken_info', None)
     
+    # 派遣契約かどうかを判定
+    is_dispatch_contract = assignment.client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH
+    
+    # 就業条件明示書の発行状態と履歴を確認
+    employment_conditions_issued = False
+    employment_conditions_issued_at = None
+    employment_conditions_issued_by = None
+    haken_print_history = []
+    haken_print_history_count = 0
+    
+    if is_dispatch_contract:
+        from .models import ContractAssignmentHakenPrint
+        # 発行履歴を取得（最新5件）
+        haken_print_history = ContractAssignmentHakenPrint.objects.filter(
+            contract_assignment=assignment,
+            print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS
+        ).select_related('printed_by').order_by('-printed_at')[:5]
+        
+        # 発行履歴の総数を取得
+        haken_print_history_count = ContractAssignmentHakenPrint.objects.filter(
+            contract_assignment=assignment,
+            print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS
+        ).count()
+        
+        # 最新の発行履歴があるかチェック
+        if haken_print_history:
+            employment_conditions_issued = True
+            employment_conditions_issued_at = haken_print_history[0].printed_at
+            employment_conditions_issued_by = haken_print_history[0].printed_by
+    
     context = {
         'assignment': assignment,
         'client_contract': assignment.client_contract,
         'staff_contract': assignment.staff_contract,
         'haken_info': haken_info,
+        'is_dispatch_contract': is_dispatch_contract,
+        'employment_conditions_issued': employment_conditions_issued,
+        'employment_conditions_issued_at': employment_conditions_issued_at,
+        'employment_conditions_issued_by': employment_conditions_issued_by,
+        'haken_print_history': haken_print_history,
+        'haken_print_history_count': haken_print_history_count,
         'from_client': from_client,
         'from_staff': from_staff,
         'from_expire_list': from_expire_list,
@@ -923,3 +960,138 @@ def contract_assignment_haken_delete(request, assignment_pk):
     }
     
     return render(request, 'contract/contract_assignment_haken_delete.html', context)
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def assignment_employment_conditions_issue(request, assignment_pk):
+    """
+    就業条件明示書の正式発行（状況カードのスイッチから呼び出し）
+    """
+    if request.method != 'POST':
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+    
+    assignment = get_object_or_404(
+        ContractAssignment.objects.select_related(
+            'client_contract__client',
+            'staff_contract__staff',
+            'client_contract__haken_info__haken_office',
+            'client_contract__haken_info__commander',
+            'client_contract__haken_info__complaint_officer_client'
+        ),
+        pk=assignment_pk
+    )
+    
+    # 派遣契約かどうかチェック
+    if assignment.client_contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
+        messages.error(request, 'この契約は派遣契約ではないため、就業条件明示書を発行できません。')
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+    
+    # スタッフ契約が承認済みかチェック
+    if assignment.staff_contract.contract_status != Constants.CONTRACT_STATUS.APPROVED:
+        messages.error(request, 'スタッフ契約が承認済み状態の場合のみ就業条件明示書を発行できます。')
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+    
+    try:
+        from .models import ContractAssignmentHakenPrint
+        from django.core.files.base import ContentFile
+        
+        # 既に発行済みかチェック
+        existing_record = ContractAssignmentHakenPrint.objects.filter(
+            contract_assignment=assignment,
+            print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS
+        ).first()
+        
+        if existing_record:
+            messages.warning(request, '就業条件明示書は既に発行済みです。')
+            return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+        
+        # PDF生成（ウォーターマークなし）
+        from .utils import generate_employment_conditions_pdf
+        pdf_content = generate_employment_conditions_pdf(
+            assignment=assignment,
+            user=request.user,
+            issued_at=timezone.now(),
+            watermark_text=None
+        )
+        
+        # 発行履歴を保存
+        print_record = ContractAssignmentHakenPrint.objects.create(
+            contract_assignment=assignment,
+            print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS,
+            printed_by=request.user,
+            document_title=f"就業条件明示書"
+        )
+        
+        # PDFファイルを保存
+        filename = f"employment_conditions_{assignment.pk}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+        print_record.pdf_file.save(
+            filename,
+            ContentFile(pdf_content),
+            save=True
+        )
+        
+        # ログ記録
+        from apps.system.logs.models import AppLog
+        AppLog.objects.create(
+            user=request.user,
+            model_name='ContractAssignment',
+            object_id=str(assignment.pk),
+            action='issue',
+            object_repr=f'就業条件明示書を発行しました'
+        )
+        
+        messages.success(request, '就業条件明示書を発行しました。')
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+        
+    except Exception as e:
+        messages.error(request, f'就業条件明示書の発行中にエラーが発生しました: {str(e)}')
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def download_assignment_haken_print_pdf(request, pk):
+    """
+    契約アサイン派遣印刷履歴のPDFをダウンロードする
+    """
+    from .models import ContractAssignmentHakenPrint
+    from django.http import HttpResponse, Http404
+    
+    print_history = get_object_or_404(ContractAssignmentHakenPrint, pk=pk)
+    
+    if not print_history.pdf_file:
+        raise Http404("PDFファイルが見つかりません")
+    
+    try:
+        response = HttpResponse(print_history.pdf_file.read(), content_type='application/pdf')
+        response['Content-Disposition'] = f'inline; filename="{print_history.pdf_file.name}"'
+        return response
+    except Exception as e:
+        raise Http404(f"PDFファイルの読み込みに失敗しました: {str(e)}")
+
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def assignment_haken_print_history_list(request, assignment_pk):
+    """
+    契約アサイン派遣印刷履歴の一覧画面
+    """
+    from django.core.paginator import Paginator
+    from .models import ContractAssignmentHakenPrint
+    
+    assignment = get_object_or_404(ContractAssignment, pk=assignment_pk)
+    
+    # 発行履歴を取得
+    haken_print_history = ContractAssignmentHakenPrint.objects.filter(
+        contract_assignment=assignment
+    ).select_related('printed_by').order_by('-printed_at')
+    
+    # ページネーション
+    paginator = Paginator(haken_print_history, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'assignment': assignment,
+        'haken_print_history': page_obj,
+        'back_url': reverse('contract:contract_assignment_detail', kwargs={'assignment_pk': assignment_pk}),
+    }
+    
+    return render(request, 'contract/assignment_haken_print_history_list.html', context)

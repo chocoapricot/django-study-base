@@ -1769,6 +1769,8 @@ def _prepare_contract_timeline_data(all_assignments, today, search_query):
 def assignment_employment_conditions_pdf(request, assignment_pk):
     """
     就業条件明示書PDF出力
+    POSTリクエスト: 状況カードのスイッチから呼び出し（発行履歴に保存してリダイレクト）
+    GETリクエスト: 印刷メニューから呼び出し（PDFを直接表示）
     """
     from .models import ContractAssignmentHakenPrint
     from django.core.files.base import ContentFile
@@ -1789,6 +1791,11 @@ def assignment_employment_conditions_pdf(request, assignment_pk):
         messages.error(request, 'この契約は派遣契約ではないため、就業条件明示書を発行できません。')
         return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
     
+    # スタッフ契約の状態チェック（作成中または申請の場合のみ）
+    if assignment.staff_contract.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
+        messages.error(request, 'スタッフ契約が作成中または申請状態の場合のみ就業条件明示書を発行できます。')
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+    
     try:
         # PDF生成
         from .utils import generate_employment_conditions_pdf
@@ -1799,33 +1806,24 @@ def assignment_employment_conditions_pdf(request, assignment_pk):
             watermark_text="DRAFT"
         )
         
-        # 発行履歴を保存
-        print_record = ContractAssignmentHakenPrint.objects.create(
-            contract_assignment=assignment,
-            print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS,
-            printed_by=request.user,
-            document_title=f"就業条件明示書（ドラフト）",
-            is_draft=True
-        )
-        
-        # PDFファイルを保存
+        # ファイル名を生成
         filename = f"employment_conditions_draft_{assignment.pk}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
-        print_record.pdf_file.save(
-            filename,
-            ContentFile(pdf_content),
-            save=True
-        )
         
-        # ログ記録
+        # ログ記録（ドラフト版でも操作ログは残す）
         AppLog.objects.create(
             user=request.user,
             model_name='ContractAssignment',
             object_id=str(assignment.pk),
             action='print',
-            object_repr=f'就業条件明示書（ドラフト）を発行しました'
+            object_repr=f'就業条件明示書（ドラフト）を出力しました'
         )
         
-        # PDFをレスポンスとして返す
+        # POSTリクエストの場合はメッセージを表示してリダイレクト
+        if request.method == 'POST':
+            messages.success(request, '就業条件明示書（ドラフト）を出力しました。')
+            return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+        
+        # GETリクエストの場合はPDFを直接表示
         response = HttpResponse(pdf_content, content_type='application/pdf')
         response['Content-Disposition'] = f'inline; filename="{filename}"'
         return response
@@ -1833,3 +1831,4 @@ def assignment_employment_conditions_pdf(request, assignment_pk):
     except Exception as e:
         messages.error(request, f'就業条件明示書の生成中にエラーが発生しました: {str(e)}')
         return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+
