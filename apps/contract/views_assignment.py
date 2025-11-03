@@ -722,7 +722,7 @@ def contract_assignment_detail(request, assignment_pk):
             print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS
         ).count()
         
-        # 最新の発行履歴があるかチェック
+        # 発行状態は発行履歴の有無で判定
         if haken_print_history:
             employment_conditions_issued = True
             employment_conditions_issued_at = haken_print_history[0].printed_at
@@ -994,16 +994,6 @@ def assignment_employment_conditions_issue(request, assignment_pk):
         from .models import ContractAssignmentHakenPrint
         from django.core.files.base import ContentFile
         
-        # 既に発行済みかチェック
-        existing_record = ContractAssignmentHakenPrint.objects.filter(
-            contract_assignment=assignment,
-            print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS
-        ).first()
-        
-        if existing_record:
-            messages.warning(request, '就業条件明示書は既に発行済みです。')
-            return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
-        
         # PDF生成（ウォーターマークなし）
         from .utils import generate_employment_conditions_pdf
         pdf_content = generate_employment_conditions_pdf(
@@ -1094,4 +1084,48 @@ def assignment_haken_print_history_list(request, assignment_pk):
         'back_url': reverse('contract:contract_assignment_detail', kwargs={'assignment_pk': assignment_pk}),
     }
     
-    return render(request, 'contract/assignment_haken_print_history_list.html', context)
+    return render(request, 'contract/assignment_haken_print_history_list.html', context)@log
+in_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def assignment_employment_conditions_unissue(request, assignment_pk):
+    """
+    就業条件明示書の発行解除（発行済み → 承認済みに戻す）
+    """
+    if request.method != 'POST':
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+    
+    assignment = get_object_or_404(ContractAssignment, pk=assignment_pk)
+    
+    # 派遣契約かどうかチェック
+    if assignment.client_contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
+        messages.error(request, 'この契約は派遣契約ではないため、処理できません。')
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+    
+    # スタッフ契約が発行済みかチェック
+    if assignment.staff_contract.contract_status != Constants.CONTRACT_STATUS.ISSUED:
+        messages.error(request, 'スタッフ契約が発行済み状態でない場合は処理できません。')
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+    
+    try:
+        # スタッフ契約を承認済み状態に戻す
+        assignment.staff_contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
+        assignment.staff_contract.issued_at = None
+        assignment.staff_contract.issued_by = None
+        assignment.staff_contract.save()
+        
+        # ログ記録
+        from apps.system.logs.models import AppLog
+        AppLog.objects.create(
+            user=request.user,
+            model_name='ContractAssignment',
+            object_id=str(assignment.pk),
+            action='unissue',
+            object_repr=f'就業条件明示書の発行を解除しました'
+        )
+        
+        messages.success(request, '就業条件明示書の発行を解除しました。')
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+        
+    except Exception as e:
+        messages.error(request, f'発行解除中にエラーが発生しました: {str(e)}')
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)

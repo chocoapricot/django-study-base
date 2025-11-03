@@ -627,17 +627,6 @@ def staff_contract_approve(request, pk):
                     contract.quotation_issued_by = None
                 contract.confirmed_at = None
                 
-                # 関連する契約アサインの就業条件明示書発行履歴もクリア
-                from .models import ContractAssignmentHakenPrint
-                related_assignments = contract.assigned_assignments.all()
-                for assignment in related_assignments:
-                    # 派遣契約の場合のみ就業条件明示書発行履歴を削除
-                    if assignment.client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
-                        ContractAssignmentHakenPrint.objects.filter(
-                            contract_assignment=assignment,
-                            print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS
-                        ).delete()
-                
                 contract.save()
                 messages.success(request, f'契約「{contract.contract_name}」を作成中に戻しました。（発行履歴は保持されます）')
             else:
@@ -684,17 +673,6 @@ def staff_contract_issue(request, pk):
                 contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
                 contract.issued_at = None
                 contract.issued_by = None
-                
-                # 関連する契約アサインの就業条件明示書発行履歴もクリア
-                from .models import ContractAssignmentHakenPrint
-                related_assignments = contract.assigned_assignments.all()
-                for assignment in related_assignments:
-                    # 派遣契約の場合のみ就業条件明示書発行履歴を削除
-                    if assignment.client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
-                        ContractAssignmentHakenPrint.objects.filter(
-                            contract_assignment=assignment,
-                            print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS
-                        ).delete()
                 
                 contract.save()
                 messages.success(request, f'契約「{contract.contract_name}」を承認済に戻しました。')
