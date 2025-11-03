@@ -82,7 +82,7 @@ def get_contract_pdf_title(contract):
         else:
             return "業務委託個別契約書"
     elif isinstance(contract, StaffContract):
-        return "雇用契約書"
+        return "雇用契約書兼労働条件通知書"
     return "契約書"
 
 def generate_contract_pdf_content(contract):

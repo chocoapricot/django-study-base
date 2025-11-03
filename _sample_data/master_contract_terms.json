@@ -1193,14 +1193,14 @@
     "model": "master.contractterms",
     "pk": 73,
     "fields": {
-        "version": 1762099313277127,
+        "version": 1762177492281951,
         "created_at": "2025-11-02T16:17:39.929Z",
         "created_by": 1,
-        "updated_at": "2025-11-02T16:17:39.929Z",
+        "updated_at": "2025-11-03T14:00:38.934Z",
         "updated_by": 1,
         "contract_pattern": 2,
         "contract_clause": "契約更新の有無",
-        "contract_terms": "1. 契約の更新の有無：更新する場合がある。\r\n2. 更新判断の基準：業務量・勤務成績・態度・健康状態・会社の経営状況等を総合的に勘案して判断する。",
+        "contract_terms": "1. 契約の更新の有無：更新する場合がある。\r\n2. 更新判断の基準：業務量・勤務成績・態度・健康状態・会社の経営状況等を総合的に勘案して判断する。\r\n3. 更新上限の有無：有、通算契約期間 ２年まで。",
         "display_position": 2,
         "memo": null,
         "display_order": 30
@@ -1363,14 +1363,14 @@
     "model": "master.contractterms",
     "pk": 83,
     "fields": {
-        "version": 1762100851813490,
+        "version": 1762177466106728,
         "created_at": "2025-11-02T16:43:18.465Z",
         "created_by": 1,
-        "updated_at": "2025-11-02T16:43:18.465Z",
+        "updated_at": "2025-11-03T14:00:12.759Z",
         "updated_by": 1,
         "contract_pattern": 3,
         "contract_clause": "契約期間（更新）",
-        "contract_terms": "契約の更新については、派遣契約の継続状況、業務量、勤務成績、健康状態等を総合的に勘案し、双方の合意により行うことがある。",
+        "contract_terms": "契約の更新については、派遣契約の継続状況、業務量、勤務成績、健康状態等を総合的に勘案し、双方の合意により行うことがある。\r\n更新上限の有無：有、通算契約期間 ２年まで。",
         "display_position": 2,
         "memo": null,
         "display_order": 20
@@ -1527,6 +1527,227 @@
         "display_position": 2,
         "memo": null,
         "display_order": 130
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 93,
+    "fields": {
+        "version": 1762177770578017,
+        "created_at": "2025-11-03T14:02:38.956Z",
+        "created_by": 1,
+        "updated_at": "2025-11-03T14:05:17.230Z",
+        "updated_by": 1,
+        "contract_pattern": 9,
+        "contract_clause": "雇用形態",
+        "contract_terms": "本契約は、{{company_name}}（以下「乙」という）が、 {{staff_name}} 以下「甲」という）を 紹介予定派遣社員として雇用し、 派遣先企業において 一定期間派遣就業させた後、 派遣先への直接雇用を前提とするものである。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 10
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 94,
+    "fields": {
+        "version": 1762177795688302,
+        "created_at": "2025-11-03T14:02:38.985Z",
+        "created_by": 1,
+        "updated_at": "2025-11-03T14:05:42.340Z",
+        "updated_by": 1,
+        "contract_pattern": 9,
+        "contract_clause": "契約期間（更新）",
+        "contract_terms": "本契約の期間満了をもって終了するものとするが、派遣先企業との合意により、直接雇用に移行することを前提とする。\r\n更新上限の有無：無。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 20
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 95,
+    "fields": {
+        "version": 1762177612354834,
+        "created_at": "2025-11-03T14:02:39.007Z",
+        "created_by": 1,
+        "updated_at": "2025-11-03T14:02:39.007Z",
+        "updated_by": 1,
+        "contract_pattern": 9,
+        "contract_clause": "労働時間・休日",
+        "contract_terms": "始業時刻：午前9時00分　終業時刻：午後6時00分\r\n休憩時間：午後12時00分～午後1時00分\r\n休日：土曜日・日曜日・国民の祝日・年末年始（12月29日～1月3日）\r\nなお、派遣先の就業時間等に準ずるものとし、変更がある場合は乙を通じて甲に通知する。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 50
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 96,
+    "fields": {
+        "version": 1762177612385718,
+        "created_at": "2025-11-03T14:02:39.038Z",
+        "created_by": 1,
+        "updated_at": "2025-11-03T14:02:39.038Z",
+        "updated_by": 1,
+        "contract_pattern": 9,
+        "contract_clause": "賃金・支払方法",
+        "contract_terms": "通勤手当：実費支給（上限30,000円）\r\n賃金の締切日：毎月末日\r\n賃金の支払日：翌月25日\r\n支払方法：指定口座への振込による",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 60
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 97,
+    "fields": {
+        "version": 1762177612408505,
+        "created_at": "2025-11-03T14:02:39.060Z",
+        "created_by": 1,
+        "updated_at": "2025-11-03T14:02:39.060Z",
+        "updated_by": 1,
+        "contract_pattern": 9,
+        "contract_clause": "社会保険等",
+        "contract_terms": "甲には、健康保険、厚生年金保険、雇用保険および労災保険を適用する。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 70
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 98,
+    "fields": {
+        "version": 1762177612422859,
+        "created_at": "2025-11-03T14:02:39.075Z",
+        "created_by": 1,
+        "updated_at": "2025-11-03T14:02:39.075Z",
+        "updated_by": 1,
+        "contract_pattern": 9,
+        "contract_clause": "年次有給休暇",
+        "contract_terms": "甲には、労働基準法に基づき年次有給休暇を付与する。\r\nなお、派遣先での就業日における休暇取得については、乙および派遣先双方の調整により行う。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 80
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 99,
+    "fields": {
+        "version": 1762177976624709,
+        "created_at": "2025-11-03T14:02:39.090Z",
+        "created_by": 1,
+        "updated_at": "2025-11-03T14:08:43.277Z",
+        "updated_by": 1,
+        "contract_pattern": 9,
+        "contract_clause": "服務規律",
+        "contract_terms": "甲は、乙の就業規則および派遣先の職場規律に従い、誠実に職務を遂行しなければならない。\r\n派遣先で指揮命令を行う者の指示に従うこと。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 90
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 100,
+    "fields": {
+        "version": 1762177612452950,
+        "created_at": "2025-11-03T14:02:39.105Z",
+        "created_by": 1,
+        "updated_at": "2025-11-03T14:02:39.105Z",
+        "updated_by": 1,
+        "contract_pattern": 9,
+        "contract_clause": "機密保持義務",
+        "contract_terms": "甲は、派遣先業務に関連して知り得た営業上または技術上の機密を、在職中および退職後を問わず第三者に漏らしてはならない。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 100
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 101,
+    "fields": {
+        "version": 1762178028471985,
+        "created_at": "2025-11-03T14:02:39.120Z",
+        "created_by": 1,
+        "updated_at": "2025-11-03T14:09:35.124Z",
+        "updated_by": 1,
+        "contract_pattern": 9,
+        "contract_clause": "契約の終了・中途解約",
+        "contract_terms": "1. 甲または乙がやむを得ない事由により契約期間中に契約を解除する場合は、原則として30日前までに書面により申し出る。\r\n2. 派遣先との派遣契約が中途で終了した場合、乙は可能な限り他の就業機会を提供するよう努める。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 110
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 102,
+    "fields": {
+        "version": 1762177612483541,
+        "created_at": "2025-11-03T14:02:39.135Z",
+        "created_by": 1,
+        "updated_at": "2025-11-03T14:02:39.136Z",
+        "updated_by": 1,
+        "contract_pattern": 9,
+        "contract_clause": "安全衛生管理",
+        "contract_terms": "甲は、派遣先の安全衛生管理体制に従い、必要な安全措置を遵守するものとする。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 120
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 103,
+    "fields": {
+        "version": 1762177612497287,
+        "created_at": "2025-11-03T14:02:39.149Z",
+        "created_by": 1,
+        "updated_at": "2025-11-03T14:02:39.149Z",
+        "updated_by": 1,
+        "contract_pattern": 9,
+        "contract_clause": "その他",
+        "contract_terms": "本契約に定めのない事項または疑義が生じた場合は、労働基準法、労働者派遣法、労働契約法および乙の就業規則による。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 130
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 104,
+    "fields": {
+        "version": 1762177829787742,
+        "created_at": "2025-11-03T14:06:16.440Z",
+        "created_by": 1,
+        "updated_at": "2025-11-03T14:06:16.440Z",
+        "updated_by": 1,
+        "contract_pattern": 9,
+        "contract_clause": "紹介予定派遣の目的",
+        "contract_terms": "本契約は、派遣先における就業を通じて、甲・派遣先双方が直接雇用契約の締結可否を判断するためのものである。\r\n派遣期間終了後、派遣先が甲を直接雇用する場合、別途派遣先企業と甲との間で雇用契約を締結する。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 30
+    }
+},
+{
+    "model": "master.contractterms",
+    "pk": 105,
+    "fields": {
+        "version": 1762177896804745,
+        "created_at": "2025-11-03T14:07:23.457Z",
+        "created_by": 1,
+        "updated_at": "2025-11-03T14:07:23.457Z",
+        "updated_by": 1,
+        "contract_pattern": 9,
+        "contract_clause": "紹介予定期間終了後の取扱い",
+        "contract_terms": "紹介予定派遣期間終了後、派遣先企業が甲を直接雇用する場合は、派遣先企業と甲との間で直接雇用契約を締結する。\r\n直接雇用が成立しない場合、本契約は期間満了により終了するものとし、乙は可能な限り甲の新たな就業機会を提供するよう努める。",
+        "display_position": 2,
+        "memo": null,
+        "display_order": 40
     }
 }
 ]
