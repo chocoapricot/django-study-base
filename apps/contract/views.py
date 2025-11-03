@@ -36,6 +36,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import io
 from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number, generate_teishokubi_notification_pdf, generate_haken_notification_pdf, generate_haken_motokanri_pdf, generate_haken_sakikanri_pdf
+
 from .resources import ClientContractResource, StaffContractResource
 from .models import ContractAssignment
 from django.urls import reverse
@@ -1761,3 +1762,74 @@ def _prepare_contract_timeline_data(all_assignments, today, search_query):
         'months': [m['display'] for m in months],
         'staff_data': list(staff_contracts.values())
     }
+
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def assignment_employment_conditions_pdf(request, assignment_pk):
+    """
+    就業条件明示書PDF出力
+    """
+    from .models import ContractAssignmentHakenPrint
+    from django.core.files.base import ContentFile
+    
+    assignment = get_object_or_404(
+        ContractAssignment.objects.select_related(
+            'client_contract__client',
+            'staff_contract__staff',
+            'client_contract__haken_info__haken_office',
+            'client_contract__haken_info__commander',
+            'client_contract__haken_info__complaint_officer_client'
+        ),
+        pk=assignment_pk
+    )
+    
+    # 派遣契約かどうかチェック
+    if assignment.client_contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
+        messages.error(request, 'この契約は派遣契約ではないため、就業条件明示書を発行できません。')
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+    
+    try:
+        # PDF生成
+        from .utils import generate_employment_conditions_pdf
+        pdf_content = generate_employment_conditions_pdf(
+            assignment=assignment,
+            user=request.user,
+            issued_at=timezone.now(),
+            watermark_text="DRAFT"
+        )
+        
+        # 発行履歴を保存
+        print_record = ContractAssignmentPrint.objects.create(
+            contract_assignment=assignment,
+            print_type=ContractAssignmentPrint.PrintType.EMPLOYMENT_CONDITIONS,
+            printed_by=request.user,
+            document_title=f"就業条件明示書（ドラフト）",
+            is_draft=True
+        )
+        
+        # PDFファイルを保存
+        filename = f"employment_conditions_draft_{assignment.pk}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+        print_record.pdf_file.save(
+            filename,
+            ContentFile(pdf_content),
+            save=True
+        )
+        
+        # ログ記録
+        AppLog.objects.create(
+            user=request.user,
+            model_name='ContractAssignment',
+            object_id=str(assignment.pk),
+            action='print',
+            object_repr=f'就業条件明示書（ドラフト）を発行しました'
+        )
+        
+        # PDFをレスポンスとして返す
+        response = HttpResponse(pdf_content, content_type='application/pdf')
+        response['Content-Disposition'] = f'inline; filename="{filename}"'
+        return response
+        
+    except Exception as e:
+        messages.error(request, f'就業条件明示書の生成中にエラーが発生しました: {str(e)}')
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)

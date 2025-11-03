@@ -894,6 +894,46 @@ class ContractAssignmentConfirm(MyModel):
             raise ValidationError('終了予定の場合は終了理由を入力してください。')
 
 
+class ContractAssignmentHakenPrint(MyModel):
+    """
+    契約アサイン派遣関連書類の印刷履歴を管理するモデル。
+    """
+    class PrintType(models.TextChoices):
+        EMPLOYMENT_CONDITIONS = '10', '就業条件明示書'
+
+    contract_assignment = models.ForeignKey(
+        ContractAssignment,
+        on_delete=models.CASCADE,
+        related_name='haken_print_history',
+        verbose_name='契約アサイン'
+    )
+    print_type = models.CharField(
+        '種別',
+        max_length=2,
+        choices=PrintType.choices,
+        default=PrintType.EMPLOYMENT_CONDITIONS,
+    )
+    printed_at = models.DateTimeField('発行日時', auto_now_add=True)
+    printed_by = models.ForeignKey(
+        'accounts.MyUser',
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name='発行者'
+    )
+    pdf_file = models.FileField('PDFファイル', upload_to='assignment_haken_prints/', null=True, blank=True)
+    document_title = models.CharField('タイトル', max_length=255, blank=True, null=True)
+    is_draft = models.BooleanField('ドラフト版', default=True)
+
+    class Meta:
+        db_table = 'apps_contract_assignment_haken_print'
+        verbose_name = '契約アサイン派遣印刷履歴'
+        verbose_name_plural = '契約アサイン派遣印刷履歴'
+        ordering = ['-printed_at']
+
+    def __str__(self):
+        return f"{self.contract_assignment} - {self.get_print_type_display()} - {self.printed_at}"
+
+
 class ContractAssignmentHaken(MyModel):
     """
     契約割り当て派遣雇用安定措置情報を管理するモデル。

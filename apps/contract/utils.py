@@ -1628,3 +1628,79 @@ def generate_quotation_pdf(contract, user, issued_at, watermark_text=None):
 # 旧メソッド名から新メソッド名へのエイリアス
 generate_dispatch_ledger_pdf = generate_haken_motokanri_pdf
 generate_dispatch_destination_ledger_pdf = generate_haken_sakikanri_pdf
+
+def generate_employment_conditions_pdf(assignment, user, issued_at, watermark_text=None):
+    """
+    就業条件明示書PDFを生成する
+    
+    Args:
+        assignment: ContractAssignmentインスタンス
+        user: 発行者ユーザー
+        issued_at: 発行日時
+        watermark_text: 透かし文字（ドラフト版の場合など）
+        
+    Returns:
+        bytes: PDF内容
+    """
+    from apps.common.pdf_utils import generate_table_based_contract_pdf
+    import io
+    
+    pdf_title = "就業条件明示書"
+    intro_text = f"発行日：{issued_at.strftime('%Y年%m月%d日')}"
+    
+    # 表のデータを準備
+    client_contract = assignment.client_contract
+    staff_contract = assignment.staff_contract
+    staff = staff_contract.staff
+    
+    items = [
+        {"title": "派遣労働者氏名", "text": f"{staff.name_last} {staff.name_first}"},
+        {"title": "派遣先", "text": client_contract.client.name},
+        {"title": "契約名", "text": client_contract.contract_name},
+        {"title": "派遣期間", "text": f"{client_contract.start_date.strftime('%Y年%m月%d日')} ～ " + 
+         (client_contract.end_date.strftime('%Y年%m月%d日') if client_contract.end_date else "期間の定めなし")},
+    ]
+    
+    # 派遣先事業所
+    if hasattr(client_contract, 'haken_info') and client_contract.haken_info and client_contract.haken_info.haken_office:
+        items.append({"title": "派遣先事業所", "text": client_contract.haken_info.haken_office.name})
+    
+    # 業務内容
+    if client_contract.business_content:
+        items.append({"title": "業務内容", "text": client_contract.business_content})
+    
+    # 契約金額
+    if client_contract.contract_amount:
+        unit_text = ""
+        if client_contract.bill_unit == Constants.BILL_UNIT.HOURLY_RATE:
+            unit_text = "時間"
+        elif client_contract.bill_unit == Constants.BILL_UNIT.DAILY_RATE:
+            unit_text = "日"
+        elif client_contract.bill_unit == Constants.BILL_UNIT.MONTHLY_RATE:
+            unit_text = "月"
+        items.append({"title": "派遣料金", "text": f"{unit_text}{client_contract.contract_amount:,.0f}円"})
+    
+    # 指揮命令者
+    if (hasattr(client_contract, 'haken_info') and client_contract.haken_info and 
+        client_contract.haken_info.commander):
+        commander = client_contract.haken_info.commander
+        items.append({"title": "指揮命令者", "text": commander.name})
+    
+    # 苦情申出先
+    if (hasattr(client_contract, 'haken_info') and client_contract.haken_info and 
+        client_contract.haken_info.complaint_officer_client):
+        complaint_officer = client_contract.haken_info.complaint_officer_client
+        items.append({"title": "苦情申出先", "text": complaint_officer.name})
+    
+    # 末文
+    postamble_text = """※ この明示書は労働者派遣法第34条に基づき交付するものです。
+※ 就業条件等に変更がある場合は、事前に通知いたします。
+
+発行者：""" + (user.get_full_name() if user.get_full_name() else user.username)
+    
+    buffer = io.BytesIO()
+    generate_table_based_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text, postamble_text=postamble_text)
+    pdf_content = buffer.getvalue()
+    buffer.close()
+    
+    return pdf_content

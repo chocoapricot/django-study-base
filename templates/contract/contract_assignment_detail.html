@@ -13,36 +13,53 @@
         <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
             <div class="card-header d-flex justify-content-between align-items-center">
                 契約アサイン詳細
-                <div class="dropdown">
-                    <a class="text-decoration-none dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        その他情報
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            {% if assignment.assignment_confirm %}
-                                <a class="dropdown-item" href="{% url 'contract:contract_assignment_confirm' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% elif from_expire_list %}?from=expire_list{% endif %}">
-                                    <i class="bi bi-pencil me-2"></i>延長確認編集
-                                </a>
-                            {% else %}
-                                <a class="dropdown-item" href="{% url 'contract:contract_assignment_confirm' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% elif from_expire_list %}?from=expire_list{% endif %}">
-                                    <i class="bi bi-plus me-2"></i>延長確認登録
-                                </a>
+                <div class="d-flex">
+                    <div class="dropdown">
+                        <a class="text-decoration-none dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            その他情報
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                {% if assignment.assignment_confirm %}
+                                    <a class="dropdown-item" href="{% url 'contract:contract_assignment_confirm' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% elif from_expire_list %}?from=expire_list{% endif %}">
+                                        <i class="bi bi-pencil me-2"></i>延長確認編集
+                                    </a>
+                                {% else %}
+                                    <a class="dropdown-item" href="{% url 'contract:contract_assignment_confirm' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% elif from_expire_list %}?from=expire_list{% endif %}">
+                                        <i class="bi bi-plus me-2"></i>延長確認登録
+                                    </a>
+                                {% endif %}
+                            </li>
+                            {% if client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH %}
+                            <li>
+                                {% if assignment.haken_info %}
+                                    <a class="dropdown-item" href="{% url 'contract:contract_assignment_haken' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% elif from_expire_list %}?from=expire_list{% endif %}">
+                                        <i class="bi bi-pencil me-2"></i>派遣雇用安定措置編集
+                                    </a>
+                                {% else %}
+                                    <a class="dropdown-item" href="{% url 'contract:contract_assignment_haken' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% elif from_expire_list %}?from=expire_list{% endif %}">
+                                        <i class="bi bi-plus me-2"></i>派遣雇用安定措置登録
+                                    </a>
+                                {% endif %}
+                            </li>
                             {% endif %}
-                        </li>
-                        {% if client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH %}
-                        <li>
-                            {% if assignment.haken_info %}
-                                <a class="dropdown-item" href="{% url 'contract:contract_assignment_haken' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% elif from_expire_list %}?from=expire_list{% endif %}">
-                                    <i class="bi bi-pencil me-2"></i>派遣雇用安定措置編集
+                        </ul>
+                    </div>
+                    {% if client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH %}
+                    <div class="dropdown ms-2">
+                        　
+                        <a class="text-decoration-none dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            印刷
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'contract:assignment_employment_conditions_pdf' assignment_pk=assignment.pk %}" target="_blank">
+                                    <i class="bi bi-file-earmark-text me-2"></i>就業条件明示書（ドラフト）
                                 </a>
-                            {% else %}
-                                <a class="dropdown-item" href="{% url 'contract:contract_assignment_haken' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% elif from_expire_list %}?from=expire_list{% endif %}">
-                                    <i class="bi bi-plus me-2"></i>派遣雇用安定措置登録
-                                </a>
-                            {% endif %}
-                        </li>
-                        {% endif %}
-                    </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="card-body">

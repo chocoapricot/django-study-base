@@ -96,6 +96,9 @@ urlpatterns = [
     # 契約アサイン派遣雇用安定措置
     path('assignment/<int:assignment_pk>/haken/', views.contract_assignment_haken_view, name='contract_assignment_haken'),
     path('assignment/<int:assignment_pk>/haken/delete/', views.contract_assignment_haken_delete, name='contract_assignment_haken_delete'),
+    
+    # 就業条件明示書
+    path('assignment/<int:assignment_pk>/employment-conditions/', views.assignment_employment_conditions_pdf, name='assignment_employment_conditions_pdf'),
 
     path('assign/confirm/client/', views.client_assignment_confirm, name='client_assignment_confirm'),
     path('assign/confirm/staff/', views.staff_assignment_confirm, name='staff_assignment_confirm'),
