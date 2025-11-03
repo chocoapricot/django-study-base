@@ -922,6 +922,8 @@ class ContractAssignmentHakenPrint(MyModel):
     )
     pdf_file = models.FileField('PDFファイル', upload_to='assignment_haken_prints/', null=True, blank=True)
     document_title = models.CharField('タイトル', max_length=255, blank=True, null=True)
+    # 発行時点のスタッフ契約番号を保存（後で契約番号が変更/クリアされても履歴に残す）
+    contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
 
     class Meta:
         db_table = 'apps_contract_assignment_haken_print'

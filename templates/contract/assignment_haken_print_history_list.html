@@ -17,6 +17,7 @@
                     <thead>
                         <tr>
                             <th>種別</th>
+                            <th>契約番号</th>
                             <th>ファイル</th>
                             <th>発行者</th>
                             <th>発行日時</th>
@@ -32,6 +33,7 @@
                                         <span class="badge bg-secondary">その他</span>
                                     {% endif %}
                                 </td>
+                                <td>{% if item.contract_number %}{{ item.contract_number }}{% else %}-{% endif %}</td>
                                 <td>
                                     <a href="{% url 'contract:download_assignment_haken_print_pdf' item.pk %}">
                                         {{ item.document_title }}
@@ -41,7 +43,7 @@
                                 <td>{{ item.printed_at|date:"Y/m/d H:i:s" }}</td>
                             </tr>
                         {% empty %}
-                        <tr><td colspan="4">履歴がありません</td></tr>
+                        <tr><td colspan="5">履歴がありません</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>

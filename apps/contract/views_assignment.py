@@ -722,11 +722,24 @@ def contract_assignment_detail(request, assignment_pk):
             print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS
         ).count()
         
-        # 発行状態は発行履歴の有無で判定
-        if haken_print_history:
-            employment_conditions_issued = True
-            employment_conditions_issued_at = haken_print_history[0].printed_at
-            employment_conditions_issued_by = haken_print_history[0].printed_by
+        # 発行状態の判定
+        # スタッフ契約がDRAFTまたはPENDINGの場合は常に未発行
+        if assignment.staff_contract.contract_status in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
+            employment_conditions_issued = False
+        else:
+            # それ以外の場合は、同じ契約番号の発行履歴があるかで判定
+            current_contract_number = assignment.staff_contract.contract_number
+            if current_contract_number:
+                same_contract_history = ContractAssignmentHakenPrint.objects.filter(
+                    contract_assignment=assignment,
+                    print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS,
+                    contract_number=current_contract_number
+                ).select_related('printed_by').order_by('-printed_at').first()
+                
+                if same_contract_history:
+                    employment_conditions_issued = True
+                    employment_conditions_issued_at = same_contract_history.printed_at
+                    employment_conditions_issued_by = same_contract_history.printed_by
     
     context = {
         'assignment': assignment,
@@ -985,13 +998,26 @@ def assignment_employment_conditions_issue(request, assignment_pk):
         messages.error(request, 'この契約は派遣契約ではないため、就業条件明示書を発行できません。')
         return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
     
-    # スタッフ契約が承認済みかチェック
-    if assignment.staff_contract.contract_status != Constants.CONTRACT_STATUS.APPROVED:
-        messages.error(request, 'スタッフ契約が承認済み状態の場合のみ就業条件明示書を発行できます。')
+    # スタッフ契約の状態チェック
+    if assignment.staff_contract.contract_status in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
+        messages.error(request, 'スタッフ契約が作成中または申請状態の場合は就業条件明示書を発行できません。')
         return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
     
     try:
         from .models import ContractAssignmentHakenPrint
+        
+        # 同じ契約番号の発行履歴があるかチェック
+        current_contract_number = assignment.staff_contract.contract_number
+        if current_contract_number:
+            existing_record = ContractAssignmentHakenPrint.objects.filter(
+                contract_assignment=assignment,
+                print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS,
+                contract_number=current_contract_number
+            ).first()
+            
+            if existing_record:
+                messages.warning(request, f'契約番号「{current_contract_number}」の就業条件明示書は既に発行済みです。')
+                return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
         from django.core.files.base import ContentFile
         
         # PDF生成（ウォーターマークなし）
@@ -1008,7 +1034,8 @@ def assignment_employment_conditions_issue(request, assignment_pk):
             contract_assignment=assignment,
             print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS,
             printed_by=request.user,
-            document_title=f"就業条件明示書"
+            document_title=f"就業条件明示書",
+            contract_number=assignment.staff_contract.contract_number
         )
         
         # PDFファイルを保存
@@ -1084,8 +1111,9 @@ def assignment_haken_print_history_list(request, assignment_pk):
         'back_url': reverse('contract:contract_assignment_detail', kwargs={'assignment_pk': assignment_pk}),
     }
     
-    return render(request, 'contract/assignment_haken_print_history_list.html', context)@log
-in_required
+    return render(request, 'contract/assignment_haken_print_history_list.html', context)
+
+@login_required
 @permission_required('contract.view_clientcontract', raise_exception=True)
 def assignment_employment_conditions_unissue(request, assignment_pk):
     """
