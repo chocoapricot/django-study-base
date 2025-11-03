@@ -14,7 +14,7 @@ from datetime import datetime, date
 from django.core.files.base import ContentFile
 from datetime import date
 from django.forms.models import model_to_dict
-from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken, ClientContractTtp, ClientContractHakenExempt, StaffContractTeishokubi, StaffContractTeishokubiDetail
+from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken, ClientContractTtp, ClientContractHakenExempt, StaffContractTeishokubi, StaffContractTeishokubiDetail, ContractAssignmentHakenPrint
 from .forms import ClientContractForm, StaffContractForm, ClientContractHakenForm, ClientContractTtpForm, ClientContractHakenExemptForm, StaffContractTeishokubiDetailForm
 from apps.common.constants import Constants
 from django.conf import settings
@@ -1800,9 +1800,9 @@ def assignment_employment_conditions_pdf(request, assignment_pk):
         )
         
         # 発行履歴を保存
-        print_record = ContractAssignmentPrint.objects.create(
+        print_record = ContractAssignmentHakenPrint.objects.create(
             contract_assignment=assignment,
-            print_type=ContractAssignmentPrint.PrintType.EMPLOYMENT_CONDITIONS,
+            print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS,
             printed_by=request.user,
             document_title=f"就業条件明示書（ドラフト）",
             is_draft=True
