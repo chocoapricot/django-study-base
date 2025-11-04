@@ -3,7 +3,7 @@
     "model": "client.clientdepartment",
     "pk": 1,
     "fields": {
-        "version": 1761909039182672,
+        "version": 1762268703038432,
         "created_at": "2024-10-30T11:49:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -28,7 +28,7 @@
     "model": "client.clientdepartment",
     "pk": 2,
     "fields": {
-        "version": 1761909039188758,
+        "version": 1762268703051779,
         "created_at": "2024-10-30T11:51:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -53,7 +53,7 @@
     "model": "client.clientdepartment",
     "pk": 3,
     "fields": {
-        "version": 1761909039192099,
+        "version": 1762268703054511,
         "created_at": "2024-10-30T11:53:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -78,7 +78,7 @@
     "model": "client.clientdepartment",
     "pk": 4,
     "fields": {
-        "version": 1761909039195827,
+        "version": 1762268703057092,
         "created_at": "2024-10-30T11:55:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -103,10 +103,10 @@
     "model": "client.clientdepartment",
     "pk": 5,
     "fields": {
-        "version": 1761909039198509,
+        "version": 1762273474725625,
         "created_at": "2024-10-30T11:57:18.158Z",
         "created_by": 1,
-        "updated_at": "2025-10-27T17:08:00.511Z",
+        "updated_at": "2025-11-04T16:40:21.377Z",
         "updated_by": 1,
         "client": 5,
         "name": "商品企画部",
@@ -117,7 +117,7 @@
         "is_haken_office": true,
         "is_haken_unit": true,
         "haken_unit_manager_title": "部長",
-        "haken_jigyosho_teishokubi": "2029-03-31",
+        "haken_jigyosho_teishokubi": "2029-04-01",
         "haken_jigyosho_teishokubi_notice_date": "2025-09-01",
         "display_order": 1,
         "valid_from": "2021-01-01",
@@ -128,7 +128,7 @@
     "model": "client.clientdepartment",
     "pk": 6,
     "fields": {
-        "version": 1761909039201105,
+        "version": 1762268703062927,
         "created_at": "2024-10-30T11:59:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -153,7 +153,7 @@
     "model": "client.clientdepartment",
     "pk": 7,
     "fields": {
-        "version": 1761909039203706,
+        "version": 1762268703069541,
         "created_at": "2024-10-30T12:01:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -178,7 +178,7 @@
     "model": "client.clientdepartment",
     "pk": 8,
     "fields": {
-        "version": 1761909039206357,
+        "version": 1762268703072796,
         "created_at": "2024-10-30T12:03:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -203,7 +203,7 @@
     "model": "client.clientdepartment",
     "pk": 9,
     "fields": {
-        "version": 1761909039210240,
+        "version": 1762268703075546,
         "created_at": "2024-10-30T12:05:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -228,7 +228,7 @@
     "model": "client.clientdepartment",
     "pk": 10,
     "fields": {
-        "version": 1761909039213055,
+        "version": 1762268703078239,
         "created_at": "2024-10-30T12:07:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -253,7 +253,7 @@
     "model": "client.clientdepartment",
     "pk": 11,
     "fields": {
-        "version": 1761909039215625,
+        "version": 1762268703081101,
         "created_at": "2024-11-20T10:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-20T10:00:00Z",
@@ -278,7 +278,7 @@
     "model": "client.clientdepartment",
     "pk": 12,
     "fields": {
-        "version": 1761909039218430,
+        "version": 1762268703084836,
         "created_at": "2024-11-20T10:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-20T10:00:00Z",
@@ -303,7 +303,7 @@
     "model": "client.clientdepartment",
     "pk": 13,
     "fields": {
-        "version": 1761909039221023,
+        "version": 1762268703087368,
         "created_at": "2024-11-20T10:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-20T10:00:00Z",
@@ -328,7 +328,7 @@
     "model": "client.clientdepartment",
     "pk": 14,
     "fields": {
-        "version": 1761909039223686,
+        "version": 1762268703089864,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -353,7 +353,7 @@
     "model": "client.clientdepartment",
     "pk": 15,
     "fields": {
-        "version": 1761909039227383,
+        "version": 1762268703092309,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -378,7 +378,7 @@
     "model": "client.clientdepartment",
     "pk": 16,
     "fields": {
-        "version": 1761909039229979,
+        "version": 1762268703095223,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -403,7 +403,7 @@
     "model": "client.clientdepartment",
     "pk": 17,
     "fields": {
-        "version": 1761909039232503,
+        "version": 1762268703098979,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -428,7 +428,7 @@
     "model": "client.clientdepartment",
     "pk": 18,
     "fields": {
-        "version": 1761909039235005,
+        "version": 1762268703102112,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -453,7 +453,7 @@
     "model": "client.clientdepartment",
     "pk": 19,
     "fields": {
-        "version": 1761909039237572,
+        "version": 1762268703104612,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -478,7 +478,7 @@
     "model": "client.clientdepartment",
     "pk": 20,
     "fields": {
-        "version": 1761909039240395,
+        "version": 1762268703107050,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -503,7 +503,7 @@
     "model": "client.clientdepartment",
     "pk": 21,
     "fields": {
-        "version": 1761909039243830,
+        "version": 1762268703109519,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -528,7 +528,7 @@
     "model": "client.clientdepartment",
     "pk": 22,
     "fields": {
-        "version": 1761909039246494,
+        "version": 1762268703111988,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -553,7 +553,7 @@
     "model": "client.clientdepartment",
     "pk": 23,
     "fields": {
-        "version": 1761909039249218,
+        "version": 1762268703116001,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -578,7 +578,7 @@
     "model": "client.clientdepartment",
     "pk": 24,
     "fields": {
-        "version": 1761935054315610,
+        "version": 1762268703118986,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-10-31T18:40:00.967Z",
@@ -603,7 +603,7 @@
     "model": "client.clientdepartment",
     "pk": 25,
     "fields": {
-        "version": 1761909039257115,
+        "version": 1762268703121506,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -628,7 +628,7 @@
     "model": "client.clientdepartment",
     "pk": 26,
     "fields": {
-        "version": 1761909039261395,
+        "version": 1762268703123948,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -653,7 +653,7 @@
     "model": "client.clientdepartment",
     "pk": 27,
     "fields": {
-        "version": 1761909039264565,
+        "version": 1762268703126377,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -678,7 +678,7 @@
     "model": "client.clientdepartment",
     "pk": 28,
     "fields": {
-        "version": 1761909039267161,
+        "version": 1762268703128898,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -703,7 +703,7 @@
     "model": "client.clientdepartment",
     "pk": 29,
     "fields": {
-        "version": 1761909039269612,
+        "version": 1762268703134206,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -728,10 +728,10 @@
     "model": "client.clientdepartment",
     "pk": 30,
     "fields": {
-        "version": 1761909039272779,
+        "version": 1762273495156830,
         "created_at": "2025-10-05T15:24:39.360Z",
         "created_by": 1,
-        "updated_at": "2025-10-27T16:50:36.682Z",
+        "updated_at": "2025-11-04T16:40:41.808Z",
         "updated_by": 1,
         "client": 18,
         "name": "関西工場",
@@ -742,7 +742,7 @@
         "is_haken_office": true,
         "is_haken_unit": true,
         "haken_unit_manager_title": "工場長",
-        "haken_jigyosho_teishokubi": "2030-12-31",
+        "haken_jigyosho_teishokubi": "2030-01-01",
         "haken_jigyosho_teishokubi_notice_date": "2025-01-01",
         "display_order": 20,
         "valid_from": null,

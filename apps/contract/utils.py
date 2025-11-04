@@ -1643,54 +1643,250 @@ def generate_employment_conditions_pdf(assignment, user, issued_at, watermark_te
         bytes: PDF内容
     """
     from apps.common.pdf_utils import generate_table_based_contract_pdf
+    from apps.company.models import Company
     import io
     
     pdf_title = "就業条件明示書"
-    intro_text = f"発行日：{issued_at.strftime('%Y年%m月%d日')}"
     
     # 表のデータを準備
     client_contract = assignment.client_contract
     staff_contract = assignment.staff_contract
     staff = staff_contract.staff
     
+    # 会社名を取得
+    try:
+        company = Company.objects.first()
+        company_name = company.name if company else "会社名"
+    except:
+        company_name = "会社名"
+    
+    # 前文を作成（発行日を削除し、変更通知文を追加）
+    preamble_text = f"""{company_name}（以下「乙」という）は、{staff.name_last} {staff.name_first}（以下「甲」という）に対し、労働者派遣法に基づき、労働者を派遣する。労働者派遣法第34条に基づき就業条件明示書を交付する。就業条件等に変更がある場合は、事前に通知する。"""
+    
     items = [
+        # 契約番号を最初に追加
+        {"title": "契約番号", "text": client_contract.contract_number or "-"},
+        # 契約名は契約番号の次に移動
+        {"title": "契約名", "text": client_contract.contract_name},
         {"title": "派遣労働者氏名", "text": f"{staff.name_last} {staff.name_first}"},
         {"title": "派遣先", "text": client_contract.client.name},
-        {"title": "契約名", "text": client_contract.contract_name},
-        {"title": "派遣期間", "text": f"{client_contract.start_date.strftime('%Y年%m月%d日')} ～ " + 
-         (client_contract.end_date.strftime('%Y年%m月%d日') if client_contract.end_date else "期間の定めなし")},
+        # 派遣期間（アサインの期間を表示）
+        {"title": "派遣期間", "text": f"{assignment.assignment_start_date.strftime('%Y年%m月%d日') if assignment.assignment_start_date else client_contract.start_date.strftime('%Y年%m月%d日')} ～ " + 
+         (f"{assignment.assignment_end_date.strftime('%Y年%m月%d日')}" if assignment.assignment_end_date else (client_contract.end_date.strftime('%Y年%m月%d日') if client_contract.end_date else "期間の定めなし"))},
     ]
     
-    # 派遣先事業所
+    # 契約金額（雇用契約書兼労働条件通知書と同じ形式、派遣期間の次）
+    pay_unit_name = ""
+    if staff_contract.pay_unit:
+        from apps.system.settings.models import Dropdowns
+        try:
+            dropdown = Dropdowns.objects.get(category='pay_unit', value=staff_contract.pay_unit)
+            pay_unit_name = dropdown.name
+        except Dropdowns.DoesNotExist:
+            pass
+
+    contract_amount_text = "N/A"
+    if staff_contract.contract_amount is not None:
+        contract_amount_text = f"{staff_contract.contract_amount:,}円"
+        if pay_unit_name:
+            contract_amount_text = f"{pay_unit_name} {contract_amount_text}"
+    
+    items.append({"title": "契約金額", "text": contract_amount_text})
+    
+    # 派遣先事業所の名称及び所在地（事業所抵触日を含む）
     if hasattr(client_contract, 'haken_info') and client_contract.haken_info and client_contract.haken_info.haken_office:
-        items.append({"title": "派遣先事業所", "text": client_contract.haken_info.haken_office.name})
+        office = client_contract.haken_info.haken_office
+        client_name = office.client.name
+        office_name = office.name
+        
+        # 事業所抵触日があれば追加
+        teishokubi_text = ""
+        if office.haken_jigyosho_teishokubi:
+            teishokubi_text = f"（抵触日：{office.haken_jigyosho_teishokubi.strftime('%Y年%m月%d日')}）"
+        
+        postal = f"〒{office.postal_code}" if office.postal_code else ""
+        address = office.address or ""
+        phone = f"電話番号：{office.phone_number}" if office.phone_number else ""
+
+        line1 = f"{client_name}　{office_name}{teishokubi_text}"
+        line2 = f"{postal} {address} {phone}".strip()
+
+        haken_office_text = f"{line1}\n{line2}" if line2 else line1
+        items.append({"title": "派遣先事業所の名称及び所在地", "text": haken_office_text})
+    else:
+        items.append({"title": "派遣先事業所の名称及び所在地", "text": "-"})
     
-    # 業務内容
-    if client_contract.business_content:
-        items.append({"title": "業務内容", "text": client_contract.business_content})
+    # 就業場所（スタッフ契約の就業場所）
+    if staff_contract.work_location:
+        items.append({"title": "就業場所", "text": staff_contract.work_location})
     
-    # 契約金額
-    if client_contract.contract_amount:
-        unit_text = ""
-        if client_contract.bill_unit == Constants.BILL_UNIT.HOURLY_RATE:
-            unit_text = "時間"
-        elif client_contract.bill_unit == Constants.BILL_UNIT.DAILY_RATE:
-            unit_text = "日"
-        elif client_contract.bill_unit == Constants.BILL_UNIT.MONTHLY_RATE:
-            unit_text = "月"
-        items.append({"title": "派遣料金", "text": f"{unit_text}{client_contract.contract_amount:,.0f}円"})
+    # 組織単位（組織の長の職名と個人抵触日を含む）
+    if (hasattr(client_contract, 'haken_info') and client_contract.haken_info and 
+        client_contract.haken_info.haken_unit):
+        unit = client_contract.haken_info.haken_unit
+        unit_name = unit.name
+        
+        # 組織の長の職名と個人抵触日を取得
+        details = []
+        if unit.haken_unit_manager_title:
+            details.append(f"組織の長の職名：{unit.haken_unit_manager_title}")
+        
+        # スタッフの個人抵触日を取得
+        try:
+            from apps.contract.models import StaffContractTeishokubi
+            # スタッフのメールアドレスと組織名で個人抵触日を検索
+            staff_teishokubi = StaffContractTeishokubi.objects.filter(
+                staff_email=staff.email,
+                organization_name=unit_name
+            ).first()
+            
+            if staff_teishokubi and staff_teishokubi.conflict_date:
+                conflict_date_str = staff_teishokubi.conflict_date.strftime('%Y年%m月%d日')
+                details.append(f"抵触日：{conflict_date_str}")
+        except Exception:
+            pass  # 個人抵触日が取得できない場合は何もしない
+        
+        if details:
+            detail_text = "、".join(details)
+            haken_unit_text = f"{unit_name}　（{detail_text}）"
+        else:
+            haken_unit_text = unit_name
+        
+        items.append({"title": "組織単位", "text": haken_unit_text})
+    else:
+        items.append({"title": "組織単位", "text": "-"})
     
-    # 指揮命令者
+    # 業務内容（スタッフの業務内容を優先表示）
+    business_content = ""
+    if staff_contract.business_content:
+        business_content = staff_contract.business_content
+    elif client_contract.business_content:
+        business_content = client_contract.business_content
+    
+    if business_content:
+        items.append({"title": "業務内容", "text": business_content})
+    
+    # 責任の程度（業務内容の次に表示）
+    if hasattr(client_contract, 'haken_info') and client_contract.haken_info and client_contract.haken_info.responsibility_degree:
+        items.append({"title": "責任の程度", "text": client_contract.haken_info.responsibility_degree})
+    
+    # 派遣料金は削除（契約金額に統合）
+    
+    # 派遣先指揮命令者（クライアント契約派遣と同じ表記）
     if (hasattr(client_contract, 'haken_info') and client_contract.haken_info and 
         client_contract.haken_info.commander):
-        commander = client_contract.haken_info.commander
-        items.append({"title": "指揮命令者", "text": commander.name})
+        
+        def format_client_user_for_commander(user):
+            if not user:
+                return "-"
+            parts = []
+            if user.department:
+                parts.append(user.department.name)
+            if user.position:
+                parts.append(user.position)
+            parts.append(user.name)
+            return '　'.join(filter(None, parts))
+        
+        commander_text = format_client_user_for_commander(client_contract.haken_info.commander)
+        items.append({"title": "派遣先指揮命令者", "text": commander_text})
     
-    # 苦情申出先
+    # 派遣元責任者（派遣先管理台帳と同じ形式）
+    if (hasattr(client_contract, 'haken_info') and client_contract.haken_info and 
+        client_contract.haken_info.responsible_person_company):
+        
+        def format_company_user_for_employment_conditions(user):
+            if not user:
+                return "-"
+            from apps.company.models import CompanyDepartment
+            parts = []
+            department = CompanyDepartment.objects.filter(department_code=user.department_code).first() if user.department_code else None
+            if department:
+                parts.append(department.name)
+            if user.position:
+                parts.append(user.position)
+            parts.append(user.name)
+
+            base_info = '　'.join(filter(None, parts))
+
+            if user.phone_number:
+                return f"{base_info} 電話番号：{user.phone_number}"
+            return base_info
+        
+        company_responsible = format_company_user_for_employment_conditions(client_contract.haken_info.responsible_person_company)
+        company_responsible_title = "製造業務専門派遣元責任者" if (client_contract.job_category and client_contract.job_category.is_manufacturing_dispatch) else "派遣元責任者"
+        items.append({"title": company_responsible_title, "text": company_responsible})
+    
+    # 派遣先責任者（派遣先管理台帳と同じ形式）
+    if (hasattr(client_contract, 'haken_info') and client_contract.haken_info and 
+        client_contract.haken_info.responsible_person_client):
+        
+        def format_client_user_for_employment_conditions(user):
+            if not user:
+                return "-"
+            parts = []
+            if user.department:
+                parts.append(user.department.name)
+            if user.position:
+                parts.append(user.position)
+            parts.append(user.name)
+
+            base_info = '　'.join(filter(None, parts))
+
+            if user.phone_number:
+                return f"{base_info} 電話番号：{user.phone_number}"
+            return base_info
+        
+        client_responsible = format_client_user_for_employment_conditions(client_contract.haken_info.responsible_person_client)
+        client_responsible_title = "製造業務専門派遣先責任者" if (client_contract.job_category and client_contract.job_category.is_manufacturing_dispatch) else "派遣先責任者"
+        items.append({"title": client_responsible_title, "text": client_responsible})
+    
+    # 派遣元苦情申出先
+    if (hasattr(client_contract, 'haken_info') and client_contract.haken_info and 
+        client_contract.haken_info.complaint_officer_company):
+        
+        def format_company_user_for_complaint(user):
+            if not user:
+                return "-"
+            from apps.company.models import CompanyDepartment
+            parts = []
+            department = CompanyDepartment.objects.filter(department_code=user.department_code).first() if user.department_code else None
+            if department:
+                parts.append(department.name)
+            if user.position:
+                parts.append(user.position)
+            parts.append(user.name)
+
+            base_info = '　'.join(filter(None, parts))
+
+            if user.phone_number:
+                return f"{base_info} 電話番号：{user.phone_number}"
+            return base_info
+        
+        company_complaint_officer = format_company_user_for_complaint(client_contract.haken_info.complaint_officer_company)
+        items.append({"title": "派遣元苦情申出先", "text": company_complaint_officer})
+    
+    # 派遣先苦情申出先
     if (hasattr(client_contract, 'haken_info') and client_contract.haken_info and 
         client_contract.haken_info.complaint_officer_client):
-        complaint_officer = client_contract.haken_info.complaint_officer_client
-        items.append({"title": "苦情申出先", "text": complaint_officer.name})
+        
+        def format_client_user_for_complaint(user):
+            if not user:
+                return "-"
+            parts = []
+            if user.department:
+                parts.append(user.department.name)
+            if user.position:
+                parts.append(user.position)
+            parts.append(user.name)
+
+            base_info = '　'.join(filter(None, parts))
+
+            if user.phone_number:
+                return f"{base_info} 電話番号：{user.phone_number}"
+            return base_info
+        
+        client_complaint_officer = format_client_user_for_complaint(client_contract.haken_info.complaint_officer_client)
+        items.append({"title": "派遣先苦情申出先", "text": client_complaint_officer})
     
     # スタッフ契約の契約パターンから契約文言を取得
     if staff_contract.contract_pattern:
@@ -1700,13 +1896,6 @@ def generate_employment_conditions_pdf(assignment, user, issued_at, watermark_te
         ).order_by('display_order')
         
         if contract_terms.exists():
-            # 会社名を取得
-            from apps.company.models import Company
-            try:
-                company = Company.objects.first()
-                company_name = company.name if company else "会社名"
-            except:
-                company_name = "会社名"
             
             # 各契約文言を個別の行として追加
             for term in contract_terms:
@@ -1738,14 +1927,9 @@ def generate_employment_conditions_pdf(assignment, user, issued_at, watermark_te
                 # 契約条項と契約文言を別々の列として追加
                 items.append({"title": term.contract_clause, "text": term_text})
     
-    # 末文
-    postamble_text = """※ この明示書は労働者派遣法第34条に基づき交付するものです。
-※ 就業条件等に変更がある場合は、事前に通知いたします。
-
-発行者：""" + (user.get_full_name() if user.get_full_name() else user.username)
-    
+    # 末文は削除（postamble_textなし）
     buffer = io.BytesIO()
-    generate_table_based_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text, postamble_text=postamble_text)
+    generate_table_based_contract_pdf(buffer, pdf_title, preamble_text, items, watermark_text=watermark_text)
     pdf_content = buffer.getvalue()
     buffer.close()
     

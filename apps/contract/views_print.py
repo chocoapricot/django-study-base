@@ -173,7 +173,7 @@ def client_contract_draft_pdf(request, pk):
 
     if pdf_content:
         response = HttpResponse(pdf_content, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
+        response['Content-Disposition'] = f'inline; filename="{pdf_filename}"'
         return response
     else:
         messages.error(request, "PDFの生成に失敗しました。")
@@ -192,7 +192,7 @@ def client_contract_draft_quotation(request, pk):
 
     if pdf_content:
         response = HttpResponse(pdf_content, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
+        response['Content-Disposition'] = f'inline; filename="{pdf_filename}"'
         return response
     else:
         messages.error(request, "見積書のPDFの生成に失敗しました。")
@@ -215,7 +215,7 @@ def client_contract_draft_haken_notification(request, pk):
 
     if pdf_content:
         response = HttpResponse(pdf_content, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
+        response['Content-Disposition'] = f'inline; filename="{pdf_filename}"'
         return response
     else:
         messages.error(request, "派遣通知書のPDFの生成に失敗しました。")
