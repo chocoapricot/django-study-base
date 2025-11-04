@@ -1517,16 +1517,39 @@ def client_teishokubi_list(request):
 
 @login_required
 @permission_required('contract.view_clientcontract', raise_exception=True)
+def view_client_contract_pdf(request, pk):
+    """
+    クライアント契約印刷履歴のPDFをブラウザで表示する
+    """
+    print_history = get_object_or_404(ClientContractPrint, pk=pk)
+    
+    if not print_history.pdf_file:
+        raise Http404("PDFファイルが見つかりません")
+    
+    try:
+        response = HttpResponse(print_history.pdf_file.read(), content_type='application/pdf')
+        response['Content-Disposition'] = f'inline; filename="{print_history.pdf_file.name}"'
+        return response
+    except Exception as e:
+        raise Http404(f"PDFファイルの読み込みに失敗しました: {str(e)}")
+
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
 def download_client_contract_pdf(request, pk):
     """Downloads a previously generated client contract PDF."""
     print_history = get_object_or_404(ClientContractPrint, pk=pk)
 
-    if print_history.pdf_file:
+    if not print_history.pdf_file:
+        raise Http404("PDFファイルが見つかりません")
+    
+    try:
         response = HttpResponse(print_history.pdf_file.read(), content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{os.path.basename(print_history.pdf_file.name)}"'
+        filename = os.path.basename(print_history.pdf_file.name)
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
         return response
-
-    raise Http404
+    except Exception as e:
+        raise Http404(f"PDFファイルの読み込みに失敗しました: {str(e)}")
 
 @login_required
 @permission_required('contract.view_contractassignment', raise_exception=True)

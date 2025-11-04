@@ -350,57 +350,12 @@
     {% include 'contract/_contract_timeline_chart.html' %}
 {% endwith %}
 
-<!-- 発行履歴カード -->
-{% if is_dispatch_contract and haken_print_history_count > 0 %}
-<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        発行履歴
-    </div>
-    <div class="card-body mb-0">
-        <table class="table table-hover me-2 mt-2" style="border-top: 1px solid #ddd;">
-            <thead>
-                <tr>
-                    <th>種別</th>
-                    <th>契約番号</th>
-                    <th>ファイル</th>
-                    <th>発行者</th>
-                    <th>発行日時</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in haken_print_history %}
-                    <tr>
-                        <td>
-                            {% if item.print_type == item.PrintType.EMPLOYMENT_CONDITIONS %}
-                                <span class="badge bg-primary">就業条件明示書</span>
-                            {% else %}
-                                <span class="badge bg-secondary">その他</span>
-                            {% endif %}
-                        </td>
-                        <td>{% if item.contract_number %}{{ item.contract_number }}{% else %}-{% endif %}</td>
-                        <td>
-                            <a href="{% url 'contract:view_assignment_haken_print_pdf' item.pk %}" class="text-decoration-none" target="_blank">
-                                {{ item.document_title }}
-                            </a>
-                            <a href="{% url 'contract:download_assignment_haken_print_pdf' item.pk %}" class="text-decoration-none ms-2" title="ダウンロード">
-                                <i class="bi bi-download"></i>
-                            </a>
-                        </td>
-                        <td>{{ item.printed_by.get_full_name_japanese|default:"-" }}</td>
-                        <td>{{ item.printed_at|date:"Y/m/d H:i:s" }}</td>
-                    </tr>
-                {% empty %}
-                <tr><td colspan="5">履歴がありません</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% if haken_print_history_count > 5 %}
-    <div class="card-footer d-flex justify-content-center align-items-center">
-        <a href="{% url 'contract:assignment_haken_print_history_list' assignment_pk=assignment.pk %}">全て表示 (全{{ haken_print_history_count }}件)</a>
-    </div>
-    {% endif %}
-</div>
+<!-- 発行履歴（共通テンプレート使用） -->
+{% if is_dispatch_contract %}
+{% url 'contract:assignment_haken_print_history_list' assignment_pk=assignment.pk as assignment_history_url %}
+{% with issue_history=haken_print_history issue_history_count=haken_print_history_count history_url=assignment_history_url %}
+    {% include 'contract/_issue_history.html' with contract_type='assignment' view_url_name='contract:view_assignment_haken_print_pdf' download_url_name='contract:download_assignment_haken_print_pdf' %}
+{% endwith %}
 {% endif %}
 
 <!-- 変更履歴 -->

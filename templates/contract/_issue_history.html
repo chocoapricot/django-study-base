@@ -38,13 +38,42 @@
                                 {% endif %}
                             {% elif contract_type == 'staff' %}
                                 <span class="badge bg-primary">契約書</span>
+                            {% elif contract_type == 'assignment' %}
+                                {% if item.print_type == item.PrintType.EMPLOYMENT_CONDITIONS %}
+                                    <span class="badge bg-primary">就業条件明示書</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">その他</span>
+                                {% endif %}
                             {% endif %}
                         </td>
                         <td>{% if item.contract_number %}{{ item.contract_number }}{% else %}-{% endif %}</td>
                         <td>
-                            <a href="{% url download_url_name item.pk %}">
-                                {{ item.document_title }}
-                            </a>
+                            {% if contract_type == 'staff' %}
+                                <a href="{% url 'contract:view_staff_contract_pdf' item.pk %}" class="text-decoration-none" target="_blank" title="開く">
+                                    {{ item.document_title }}
+                                </a>
+                                <a href="{% url download_url_name item.pk %}" class="text-decoration-none ms-2" title="ダウンロード">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            {% elif contract_type == 'client' %}
+                                <a href="{% url 'contract:view_client_contract_pdf' item.pk %}" class="text-decoration-none" target="_blank" title="開く">
+                                    {{ item.document_title }}
+                                </a>
+                                <a href="{% url download_url_name item.pk %}" class="text-decoration-none ms-2" title="ダウンロード">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            {% elif contract_type == 'assignment' %}
+                                <a href="{% url view_url_name item.pk %}" class="text-decoration-none" target="_blank" title="開く">
+                                    {{ item.document_title }}
+                                </a>
+                                <a href="{% url download_url_name item.pk %}" class="text-decoration-none ms-2" title="ダウンロード">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            {% else %}
+                                <a href="{% url download_url_name item.pk %}">
+                                    {{ item.document_title }}
+                                </a>
+                            {% endif %}
                         </td>
                         <td>{{ item.printed_by.get_full_name_japanese|default:"-" }}</td>
                         <td>{{ item.printed_at|date:"Y/m/d H:i:s" }}</td>

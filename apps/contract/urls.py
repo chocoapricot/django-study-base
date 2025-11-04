@@ -54,6 +54,8 @@ urlpatterns = [
     path('client/<int:pk>/change_history/', views.client_contract_change_history_list, name='client_contract_change_history_list'),
     path('staff/<int:pk>/issue_history/', views.staff_contract_issue_history_list, name='staff_contract_issue_history_list'),
     path('staff/<int:pk>/change_history/', views.staff_contract_change_history_list, name='staff_contract_change_history_list'),
+    path('view/client/<int:pk>/', views.view_client_contract_pdf, name='view_client_contract_pdf'),
+    path('view/staff/<int:pk>/', views.view_staff_contract_pdf, name='view_staff_contract_pdf'),
     path('download/client/<int:pk>/', views.download_client_contract_pdf, name='download_client_contract_pdf'),
     path('download/staff/<int:pk>/', views.download_staff_contract_pdf, name='download_staff_contract_pdf'),
 
