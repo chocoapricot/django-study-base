@@ -91,9 +91,9 @@ django-study-base/
 └── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（94テーブル）
+## データベーステーブル一覧（95テーブル）
 
-### 本アプリケーション独自テーブル（76テーブル）
+### 本アプリケーション独自テーブル（77テーブル）
 
 | テーブル名 | モデル名 | 説明 |
 | --- | --- | --- |
@@ -118,6 +118,7 @@ django-study-base/
 | `apps_contract_assignment` | `ContractAssignment` | 契約割り当て |
 | `apps_contract_assignment_confirm` | `ContractAssignmentConfirm` | 契約割り当て確認 |
 | `apps_contract_assignment_haken` | `ContractAssignmentHaken` | 契約割り当て派遣情報 |
+| `apps_contract_assignment_haken_print` | `ContractAssignmentHakenPrint` | 契約割り当て派遣情報印刷履歴 |
 | `apps_contract_client` | `ClientContract` | クライアント契約 |
 | `apps_contract_client_haken` | `ClientContractHaken` | クライアント契約派遣情報 |
 | `apps_contract_client_haken_exempt` | `ClientContractHakenExempt` | クライアント契約派遣抵触日制限外情報 |
