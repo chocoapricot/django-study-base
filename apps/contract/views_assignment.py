@@ -1064,9 +1064,9 @@ def assignment_employment_conditions_issue(request, assignment_pk):
         return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
 @login_required
 @permission_required('contract.view_clientcontract', raise_exception=True)
-def download_assignment_haken_print_pdf(request, pk):
+def view_assignment_haken_print_pdf(request, pk):
     """
-    契約アサイン派遣印刷履歴のPDFをダウンロードする
+    契約アサイン派遣印刷履歴のPDFをブラウザで表示する
     """
     from .models import ContractAssignmentHakenPrint
     from django.http import HttpResponse, Http404
@@ -1079,6 +1079,30 @@ def download_assignment_haken_print_pdf(request, pk):
     try:
         response = HttpResponse(print_history.pdf_file.read(), content_type='application/pdf')
         response['Content-Disposition'] = f'inline; filename="{print_history.pdf_file.name}"'
+        return response
+    except Exception as e:
+        raise Http404(f"PDFファイルの読み込みに失敗しました: {str(e)}")
+
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def download_assignment_haken_print_pdf(request, pk):
+    """
+    契約アサイン派遣印刷履歴のPDFをダウンロードする
+    """
+    from .models import ContractAssignmentHakenPrint
+    from django.http import HttpResponse, Http404
+    import os
+    
+    print_history = get_object_or_404(ContractAssignmentHakenPrint, pk=pk)
+    
+    if not print_history.pdf_file:
+        raise Http404("PDFファイルが見つかりません")
+    
+    try:
+        response = HttpResponse(print_history.pdf_file.read(), content_type='application/pdf')
+        filename = os.path.basename(print_history.pdf_file.name)
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
         return response
     except Exception as e:
         raise Http404(f"PDFファイルの読み込みに失敗しました: {str(e)}")
