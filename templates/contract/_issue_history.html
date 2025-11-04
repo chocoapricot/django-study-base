@@ -1,4 +1,5 @@
 {% load humanize %}
+{% load help_tags %}
 <!-- 発行履歴一覧（インクルード用） -->
 {# 詳細ページ(history_urlあり)では履歴がある場合のみ、履歴一覧ページ(history_urlなし)では常にカードを表示 #}
 {% if history_url and issue_history_count > 0 or not history_url and issue_history %}
@@ -14,6 +15,7 @@
                     <th>種別</th>
                     <th>契約番号</th>
                     <th>ファイル</th>
+                    <th>ハッシュ値 {% my_help_preset "file_hash" %}</th>
                     <th>発行者</th>
                     <th>発行日時</th>
                 </tr>
@@ -75,11 +77,20 @@
                                 </a>
                             {% endif %}
                         </td>
+                        <td>
+                            {% if item.file_hash %}
+                                <span class="font-monospace text-muted" style="font-size: 0.8em;" title="{{ item.file_hash }}">
+                                    {{ item.file_hash|slice:":8" }}...
+                                </span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
                         <td>{{ item.printed_by.get_full_name_japanese|default:"-" }}</td>
                         <td>{{ item.printed_at|date:"Y/m/d H:i:s" }}</td>
                     </tr>
                 {% empty %}
-                <tr><td colspan="5">履歴がありません</td></tr>
+                <tr><td colspan="6">履歴がありません</td></tr>
                 {% endfor %}
             </tbody>
         </table>
