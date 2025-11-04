@@ -344,3 +344,175 @@ def assignment_employment_conditions_pdf(request, assignment_pk):
     except Exception as e:
         messages.error(request, f'就業条件明示書の生成中にエラーが発生しました: {str(e)}')
         return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def issue_quotation(request, pk):
+    """クライアント契約の見積書を発行する"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+
+    if int(contract.contract_status) < int(Constants.CONTRACT_STATUS.APPROVED):
+        messages.error(request, 'この契約の見積書は発行できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
+    # NOTE: allow re-issuing quotations even if a previous quotation exists.
+    # This lets users unapprove -> reapprove -> reissue a fresh quotation while
+    # preserving past quotation history.
+
+    issued_at = timezone.now()
+    pdf_content, pdf_filename, document_title = generate_quotation_pdf(contract, request.user, issued_at)
+
+    if pdf_content:
+        # 履歴として新しい ClientContractPrint を作成
+        new_print = ClientContractPrint(
+            client_contract=contract,
+            printed_by=request.user,
+            printed_at=issued_at,
+            print_type=ClientContractPrint.PrintType.QUOTATION,
+            document_title=document_title,
+            contract_number=contract.contract_number
+        )
+        new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
+
+        # 契約側の見積発行日時/発行者を更新（UI 判定はこれを参照する）
+        contract.quotation_issued_at = issued_at
+        contract.quotation_issued_by = request.user
+        contract.save()
+
+        AppLog.objects.create(
+            user=request.user,
+            action='quotation_issue',
+            model_name='ClientContract',
+            object_id=str(contract.pk),
+            object_repr=f'見積書PDF出力: {contract.contract_name}'
+        )
+        messages.success(request, f'契約「{contract.contract_name}」の見積書を発行しました。')
+    else:
+        messages.error(request, "見積書のPDFの生成に失敗しました。")
+
+    return redirect('contract:client_contract_detail', pk=pk)
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def issue_dispatch_ledger(request, pk):
+    """クライアント契約の派遣先管理台帳を発行する"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+    
+    # 派遣契約でない場合はエラー
+    if contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
+        messages.error(request, '派遣契約以外では派遣先管理台帳を発行できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+    
+    # 承認済み以降でない場合はエラー
+    if not contract.is_approved_or_later:
+        messages.error(request, '承認済み以降の契約でのみ派遣先管理台帳を発行できます。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
+    issued_at = timezone.now()
+    pdf_content, pdf_filename, document_title = generate_haken_sakikanri_pdf(contract, request.user, issued_at)
+
+    if pdf_content:
+        new_print = ClientContractPrint.objects.create(
+            client_contract=contract,
+            printed_by=request.user,
+            printed_at=issued_at,
+            print_type=ClientContractPrint.PrintType.DISPATCH_LEDGER,
+            document_title=document_title,
+            contract_number=contract.contract_number
+        )
+        new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content))
+
+        # 契約側の派遣先管理台帳発行日時/発行者を更新（UI 判定はこれを参照する）
+        contract.dispatch_ledger_issued_at = issued_at
+        contract.dispatch_ledger_issued_by = request.user
+        contract.save()
+
+        AppLog.objects.create(
+            user=request.user,
+            action='dispatch_ledger_issue',
+            model_name='ClientContract',
+            object_id=str(contract.pk),
+            object_repr=f'派遣先管理台帳PDF出力: {contract.contract_name}'
+        )
+        messages.success(request, f'契約「{contract.contract_name}」の派遣先管理台帳を発行しました。')
+    else:
+        messages.error(request, "派遣先管理台帳のPDFの生成に失敗しました。")
+
+    return redirect('contract:client_contract_detail', pk=pk)
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def issue_teishokubi_notification(request, pk):
+    """クライアント契約の抵触日通知書を発行する"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+
+    if int(contract.contract_status) < int(Constants.CONTRACT_STATUS.APPROVED) or contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
+        messages.error(request, 'この契約の抵触日通知書は共有できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
+    # 派遣情報および派遣先事業所の抵触日の存在チェック
+    haken_info = getattr(contract, 'haken_info', None)
+    if not haken_info or not haken_info.haken_office or not haken_info.haken_office.haken_jigyosho_teishokubi:
+        messages.error(request, '派遣事業所の抵触日が設定されていません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
+    issued_at = timezone.now()
+    pdf_content, pdf_filename, document_title = generate_teishokubi_notification_pdf(contract, request.user, issued_at)
+
+    if pdf_content:
+        new_print = ClientContractPrint(
+            client_contract=contract,
+            printed_by=request.user,
+            printed_at=issued_at,
+            print_type=ClientContractPrint.PrintType.TEISHOKUBI_NOTIFICATION,
+            document_title=document_title,
+            contract_number=contract.contract_number
+        )
+        new_print.pdf_file.save(pdf_filename, ContentFile(pdf_content), save=True)
+
+        # 抵触日通知書の共有日時/共有者を契約に記録
+        contract.teishokubi_notification_issued_at = issued_at
+        contract.teishokubi_notification_issued_by = request.user
+        contract.save()
+
+        AppLog.objects.create(
+            user=request.user,
+            action='teishokubi_notification_issue',
+            model_name='ClientContract',
+            object_id=str(contract.pk),
+            object_repr=f'抵触日通知書PDF出力: {contract.contract_name}'
+        )
+        messages.success(request, f'契約「{contract.contract_name}」の抵触日通知書を共有しました。')
+    else:
+        messages.error(request, "抵触日通知書のPDFの生成に失敗しました。")
+
+    return redirect('contract:client_contract_detail', pk=pk)
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def client_teishokubi_notification_pdf(request, pk):
+    """クライアント契約の抵触日通知書のPDFを生成して返す"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+
+    if contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
+        messages.error(request, 'この契約の抵触日通知書は発行できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
+    # 派遣情報および派遣先事業所の抵触日の存在チェック
+    haken_info = getattr(contract, 'haken_info', None)
+    if not haken_info or not haken_info.haken_office or not haken_info.haken_office.haken_jigyosho_teishokubi:
+        messages.error(request, '派遣事業所の抵触日が設定されていません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
+    issued_at = timezone.now()
+    pdf_content, pdf_filename, document_title = generate_teishokubi_notification_pdf(
+        contract, request.user, issued_at
+    )
+
+    if pdf_content:
+        response = HttpResponse(pdf_content, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
+        return response
+    else:
+        messages.error(request, "抵触日通知書のPDFの生成に失敗しました。")
+        return redirect('contract:client_contract_detail', pk=pk)
