@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views_print import *
 from .views_client import client_staff_assignment_detail_list
 from .views_assignment import contract_assignment_haken_view, contract_assignment_haken_delete
 

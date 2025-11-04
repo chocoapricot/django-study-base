@@ -1,6 +1,7 @@
 from .views_assignment import *
 from .views_haken import *
 from .views_staff import *
+from .views_print import *
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
@@ -1360,7 +1361,7 @@ def client_contract_draft_haken_notification(request, pk):
 
     if pdf_content:
         response = HttpResponse(pdf_content, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
+        response['Content-Disposition'] = f'inline; filename="{pdf_filename}"'
         return response
     else:
         messages.error(request, "派遣通知書のPDFの生成に失敗しました。")

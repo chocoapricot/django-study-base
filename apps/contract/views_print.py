@@ -103,7 +103,7 @@ def client_contract_export(request):
         contracts = contracts.filter(contract_status=status_filter)
     if contract_type_filter:
         contracts = contracts.filter(client_contract_type_code=contract_type_filter)
-
+    
     # 日付フィルタを適用
     if date_filter:
         today = date.today()
@@ -139,7 +139,6 @@ def client_contract_export(request):
 
     return response
 
-
 @login_required
 @permission_required('contract.view_clientcontract', raise_exception=True)
 def client_dispatch_ledger_pdf(request, pk):
@@ -162,7 +161,6 @@ def client_dispatch_ledger_pdf(request, pk):
     else:
         messages.error(request, "派遣元管理台帳のPDFの生成に失敗しました。")
         return redirect('contract:client_contract_detail', pk=pk)
-
 
 @login_required
 @permission_required('contract.view_clientcontract', raise_exception=True)
@@ -223,13 +221,126 @@ def client_contract_draft_haken_notification(request, pk):
 
 @login_required
 @permission_required('contract.view_clientcontract', raise_exception=True)
+def client_contract_draft_dispatch_ledger(request, pk):
+    """クライアント契約の派遣先管理台帳のドラフトPDFを生成して返す"""
+    contract = get_object_or_404(ClientContract, pk=pk)
+
+    if contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
+        messages.error(request, 'この契約の派遣先管理台帳は発行できません。')
+        return redirect('contract:client_contract_detail', pk=pk)
+
+    issued_at = timezone.now()
+    pdf_content, pdf_filename, document_title = generate_haken_sakikanri_pdf(
+        contract, request.user, issued_at, watermark_text="DRAFT"
+    )
+
+    if pdf_content:
+        response = HttpResponse(pdf_content, content_type='application/pdf')
+        response['Content-Disposition'] = f'inline; filename="{pdf_filename}"'
+        return response
+    else:
+        messages.error(request, "派遣先管理台帳のPDFの生成に失敗しました。")
+        return redirect('contract:client_contract_detail', pk=pk)
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def view_client_contract_pdf(request, pk):
+    """
+    クライアント契約印刷履歴のPDFをブラウザで表示する
+    """
+    print_history = get_object_or_404(ClientContractPrint, pk=pk)
+    
+    if not print_history.pdf_file:
+        raise Http404("PDFファイルが見つかりません")
+    
+    try:
+        response = HttpResponse(print_history.pdf_file.read(), content_type='application/pdf')
+        response['Content-Disposition'] = f'inline; filename="{print_history.pdf_file.name}"'
+        return response
+    except Exception as e:
+        raise Http404(f"PDFファイルの読み込みに失敗しました: {str(e)}")
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
 def download_client_contract_pdf(request, pk):
     """Downloads a previously generated client contract PDF."""
     print_history = get_object_or_404(ClientContractPrint, pk=pk)
 
-    if print_history.pdf_file:
+    if not print_history.pdf_file:
+        raise Http404("PDFファイルが見つかりません")
+    
+    try:
         response = HttpResponse(print_history.pdf_file.read(), content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{os.path.basename(print_history.pdf_file.name)}"'
+        filename = os.path.basename(print_history.pdf_file.name)
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
         return response
-
-    raise Http404
+    except Exception as e:
+        raise Http404(f"PDFファイルの読み込みに失敗しました: {str(e)}")
+        
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def assignment_employment_conditions_pdf(request, assignment_pk):
+    """
+    就業条件明示書PDF出力
+    POSTリクエスト: 状況カードのスイッチから呼び出し（発行履歴に保存してリダイレクト）
+    GETリクエスト: 印刷メニューから呼び出し（PDFを直接表示）
+    """
+    from .models import ContractAssignmentHakenPrint
+    from django.core.files.base import ContentFile
+    
+    assignment = get_object_or_404(
+        ContractAssignment.objects.select_related(
+            'client_contract__client',
+            'staff_contract__staff',
+            'client_contract__haken_info__haken_office',
+            'client_contract__haken_info__commander',
+            'client_contract__haken_info__complaint_officer_client'
+        ),
+        pk=assignment_pk
+    )
+    
+    # 派遣契約かどうかチェック
+    if assignment.client_contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
+        messages.error(request, 'この契約は派遣契約ではないため、就業条件明示書を発行できません。')
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+    
+    # スタッフ契約の状態チェック（作成中または申請の場合のみ）
+    if assignment.staff_contract.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
+        messages.error(request, 'スタッフ契約が作成中または申請状態の場合のみ就業条件明示書を発行できます。')
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+    
+    try:
+        # PDF生成
+        from .utils import generate_employment_conditions_pdf
+        pdf_content = generate_employment_conditions_pdf(
+            assignment=assignment,
+            user=request.user,
+            issued_at=timezone.now(),
+            watermark_text="DRAFT"
+        )
+        
+        # ファイル名を生成
+        filename = f"employment_conditions_draft_{assignment.pk}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+        
+        # ログ記録（ドラフト版でも操作ログは残す）
+        AppLog.objects.create(
+            user=request.user,
+            model_name='ContractAssignment',
+            object_id=str(assignment.pk),
+            action='print',
+            object_repr=f'就業条件明示書（ドラフト）を出力しました'
+        )
+        
+        # POSTリクエストの場合はメッセージを表示してリダイレクト
+        if request.method == 'POST':
+            messages.success(request, '就業条件明示書（ドラフト）を出力しました。')
+            return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+        
+        # GETリクエストの場合はPDFを直接表示
+        response = HttpResponse(pdf_content, content_type='application/pdf')
+        response['Content-Disposition'] = f'inline; filename="{filename}"'
+        return response
+        
+    except Exception as e:
+        messages.error(request, f'就業条件明示書の生成中にエラーが発生しました: {str(e)}')
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
