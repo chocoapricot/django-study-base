@@ -227,7 +227,7 @@ class ContractUtilsTest(TestCase):
         # Verify formatted unit item
         unit_item = next((item for item in items if item['title'] == '組織単位'), None)
         self.assertIsNotNone(unit_item)
-        self.assertEqual(unit_item['text'], '開発第一部　（部長）')
+        self.assertEqual(unit_item['text'], '開発第一部（組織の長の職名：部長）')
 
     @patch('apps.contract.utils.generate_table_based_contract_pdf')
     def test_haken_notification_agreement_method(self, mock_generate_pdf):

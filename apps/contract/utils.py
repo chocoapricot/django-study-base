@@ -208,8 +208,8 @@ def generate_contract_pdf_content(contract):
             if haken_info.haken_unit:
                 unit = haken_info.haken_unit
                 unit_name = unit.name
-                manager_title = f"（{unit.haken_unit_manager_title}）" if unit.haken_unit_manager_title else ""
-                haken_unit_text = f"{unit_name}　{manager_title}".strip()
+                manager_title = f"（組織の長の職名：{unit.haken_unit_manager_title}）" if unit.haken_unit_manager_title else ""
+                haken_unit_text = f"{unit_name}{manager_title}"
                 haken_items.append({"title": "組織単位", "text": haken_unit_text})
             else:
                 haken_items.append({"title": "組織単位", "text": ""})
@@ -546,7 +546,10 @@ def generate_haken_motokanri_pdf(contract, user, issued_at, watermark_text=None)
         # 8. 組織単位
         organization_unit = ""
         if haken_info and haken_info.haken_unit:
-            organization_unit = haken_info.haken_unit.name
+            unit = haken_info.haken_unit
+            unit_name = unit.name
+            manager_title = f"（組織の長の職名：{unit.haken_unit_manager_title}）" if unit.haken_unit_manager_title else ""
+            organization_unit = f"{unit_name}{manager_title}"
         items.append({
             "title": "組織単位",
             "text": organization_unit if organization_unit else "-"
@@ -1033,7 +1036,10 @@ def generate_haken_sakikanri_pdf(contract, user, issued_at, watermark_text=None)
         # 11. 組織単位
         organization_unit = ""
         if haken_info and haken_info.haken_unit:
-            organization_unit = haken_info.haken_unit.name
+            unit = haken_info.haken_unit
+            unit_name = unit.name
+            manager_title = f"（組織の長の職名：{unit.haken_unit_manager_title}）" if unit.haken_unit_manager_title else ""
+            organization_unit = f"{unit_name}{manager_title}"
         items.append({
             "title": "組織単位",
             "text": organization_unit if organization_unit else "-"
