@@ -831,7 +831,7 @@ def staff_contract_draft_pdf(request, pk):
 
     if pdf_content:
         response = HttpResponse(pdf_content, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
+        response['Content-Disposition'] = f'inline; filename="{pdf_filename}"'
         return response
     else:
         messages.error(request, "PDFの生成に失敗しました。")
