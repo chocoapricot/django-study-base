@@ -5,6 +5,8 @@ from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from django.contrib.auth import get_user_model
 from apps.company.models import CompanyUser
+import hashlib
+import os
 
 User = get_user_model()
 
@@ -224,6 +226,8 @@ class ClientContractPrint(MyModel):
     document_title = models.CharField('タイトル', max_length=255, blank=True, null=True)
     # 発行時点の契約番号を保存（後で契約番号が変更/クリアされても履歴に残す）
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
+    # PDFファイルのSHA256ハッシュ値
+    file_hash = models.CharField('ファイルハッシュ', max_length=64, blank=True, null=True, help_text='PDFファイルのSHA256ハッシュ値')
     # NOTE: UI の発行判定は ClientContract 側のフィールドで行うため、
     # Print 側に is_active フラグは不要。
 
@@ -235,6 +239,30 @@ class ClientContractPrint(MyModel):
 
     def __str__(self):
         return f"{self.client_contract} - {self.get_print_type_display()} - {self.printed_at}"
+    
+    def _calculate_file_hash(self):
+        """PDFファイルのSHA256ハッシュ値を計算する"""
+        if not self.pdf_file:
+            return None
+        
+        try:
+            # ファイルの先頭に戻る
+            self.pdf_file.seek(0)
+            # SHA256ハッシュを計算
+            hash_sha256 = hashlib.sha256()
+            for chunk in iter(lambda: self.pdf_file.read(4096), b""):
+                hash_sha256.update(chunk)
+            # ファイルポインタを先頭に戻す
+            self.pdf_file.seek(0)
+            return hash_sha256.hexdigest()
+        except Exception:
+            return None
+    
+    def save(self, *args, **kwargs):
+        # PDFファイルが存在し、ハッシュ値が未設定の場合に計算
+        if self.pdf_file and not self.file_hash:
+            self.file_hash = self._calculate_file_hash()
+        super().save(*args, **kwargs)
 
 
 class StaffContract(MyModel):
@@ -378,6 +406,8 @@ class StaffContractPrint(MyModel):
     document_title = models.CharField('タイトル', max_length=255, blank=True, null=True)
     # 発行時点の契約番号を保存
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
+    # PDFファイルのSHA256ハッシュ値
+    file_hash = models.CharField('ファイルハッシュ', max_length=64, blank=True, null=True, help_text='PDFファイルのSHA256ハッシュ値')
 
     class Meta:
         db_table = 'apps_contract_staff_print'
@@ -387,6 +417,30 @@ class StaffContractPrint(MyModel):
 
     def __str__(self):
         return f"{self.staff_contract} - {self.printed_at}"
+    
+    def _calculate_file_hash(self):
+        """PDFファイルのSHA256ハッシュ値を計算する"""
+        if not self.pdf_file:
+            return None
+        
+        try:
+            # ファイルの先頭に戻る
+            self.pdf_file.seek(0)
+            # SHA256ハッシュを計算
+            hash_sha256 = hashlib.sha256()
+            for chunk in iter(lambda: self.pdf_file.read(4096), b""):
+                hash_sha256.update(chunk)
+            # ファイルポインタを先頭に戻す
+            self.pdf_file.seek(0)
+            return hash_sha256.hexdigest()
+        except Exception:
+            return None
+    
+    def save(self, *args, **kwargs):
+        # PDFファイルが存在し、ハッシュ値が未設定の場合に計算
+        if self.pdf_file and not self.file_hash:
+            self.file_hash = self._calculate_file_hash()
+        super().save(*args, **kwargs)
 
 
 class ClientContractNumber(MyModel):
@@ -924,6 +978,8 @@ class ContractAssignmentHakenPrint(MyModel):
     document_title = models.CharField('タイトル', max_length=255, blank=True, null=True)
     # 発行時点のスタッフ契約番号を保存（後で契約番号が変更/クリアされても履歴に残す）
     contract_number = models.CharField('契約番号', max_length=50, blank=True, null=True)
+    # PDFファイルのSHA256ハッシュ値
+    file_hash = models.CharField('ファイルハッシュ', max_length=64, blank=True, null=True, help_text='PDFファイルのSHA256ハッシュ値')
 
     class Meta:
         db_table = 'apps_contract_assignment_haken_print'
@@ -933,6 +989,30 @@ class ContractAssignmentHakenPrint(MyModel):
 
     def __str__(self):
         return f"{self.contract_assignment} - {self.get_print_type_display()} - {self.printed_at}"
+    
+    def _calculate_file_hash(self):
+        """PDFファイルのSHA256ハッシュ値を計算する"""
+        if not self.pdf_file:
+            return None
+        
+        try:
+            # ファイルの先頭に戻る
+            self.pdf_file.seek(0)
+            # SHA256ハッシュを計算
+            hash_sha256 = hashlib.sha256()
+            for chunk in iter(lambda: self.pdf_file.read(4096), b""):
+                hash_sha256.update(chunk)
+            # ファイルポインタを先頭に戻す
+            self.pdf_file.seek(0)
+            return hash_sha256.hexdigest()
+        except Exception:
+            return None
+    
+    def save(self, *args, **kwargs):
+        # PDFファイルが存在し、ハッシュ値が未設定の場合に計算
+        if self.pdf_file and not self.file_hash:
+            self.file_hash = self._calculate_file_hash()
+        super().save(*args, **kwargs)
 
 
 class ContractAssignmentHaken(MyModel):
