@@ -1692,6 +1692,52 @@ def generate_employment_conditions_pdf(assignment, user, issued_at, watermark_te
         complaint_officer = client_contract.haken_info.complaint_officer_client
         items.append({"title": "苦情申出先", "text": complaint_officer.name})
     
+    # スタッフ契約の契約パターンから契約文言を取得
+    if staff_contract.contract_pattern:
+        # 契約パターンに関連する契約文言を取得（表示順でソート）
+        contract_terms = staff_contract.contract_pattern.terms.filter(
+            display_position=2  # 本文のみ
+        ).order_by('display_order')
+        
+        if contract_terms.exists():
+            # 会社名を取得
+            from apps.company.models import Company
+            try:
+                company = Company.objects.first()
+                company_name = company.name if company else "会社名"
+            except:
+                company_name = "会社名"
+            
+            # 各契約文言を個別の行として追加
+            for term in contract_terms:
+                # 契約文言のテンプレート変数を置換
+                term_text = term.contract_terms
+                term_text = term_text.replace('{{staff_name}}', f"{staff.name_last} {staff.name_first}")
+                term_text = term_text.replace('{{company_name}}', company_name)
+                
+                # 契約期間の置換
+                if staff_contract.start_date:
+                    start_date_str = staff_contract.start_date.strftime('%Y年%m月%d日')
+                    term_text = term_text.replace('{{start_date}}', start_date_str)
+                
+                if staff_contract.end_date:
+                    end_date_str = staff_contract.end_date.strftime('%Y年%m月%d日')
+                    term_text = term_text.replace('{{end_date}}', end_date_str)
+                else:
+                    term_text = term_text.replace('{{end_date}}', '期間の定めなし')
+                
+                # 契約金額の置換
+                if staff_contract.contract_amount:
+                    amount_str = f"{staff_contract.contract_amount:,.0f}円"
+                    term_text = term_text.replace('{{contract_amount}}', amount_str)
+                
+                # 業務内容の置換
+                if staff_contract.business_content:
+                    term_text = term_text.replace('{{business_content}}', staff_contract.business_content)
+                
+                # 契約条項と契約文言を別々の列として追加
+                items.append({"title": term.contract_clause, "text": term_text})
+    
     # 末文
     postamble_text = """※ この明示書は労働者派遣法第34条に基づき交付するものです。
 ※ 就業条件等に変更がある場合は、事前に通知いたします。
