@@ -246,9 +246,52 @@ def staff_contract_detail(request, pk):
     change_logs_count = all_change_logs.count()
     change_logs = all_change_logs[:5]  # 最新5件
 
-    # 発行履歴を取得
-    all_issue_history = StaffContractPrint.objects.filter(staff_contract=contract).order_by('-printed_at', '-pk')
-    issue_history_count = all_issue_history.count()
+    # 発行履歴を取得（スタッフ契約書 + 契約アサインの就業条件明示書）
+    from .models import ContractAssignmentHakenPrint
+    
+    # スタッフ契約書の発行履歴
+    staff_contract_prints = StaffContractPrint.objects.filter(staff_contract=contract).order_by('-printed_at', '-pk')
+    
+    # 契約アサインの就業条件明示書発行履歴
+    assignment_haken_prints = ContractAssignmentHakenPrint.objects.filter(
+        contract_assignment__staff_contract=contract,
+        print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS
+    ).select_related('contract_assignment__client_contract__client').order_by('-printed_at', '-pk')
+    
+    # 両方の履歴を統合してソート
+    all_issue_history = []
+    
+    # スタッフ契約書の履歴を追加
+    for print_record in staff_contract_prints:
+        all_issue_history.append({
+            'type': 'staff_contract',
+            'record': print_record,
+            'printed_at': print_record.printed_at,
+            'document_title': print_record.document_title,
+            'contract_number': print_record.contract_number,
+            'file_hash': print_record.file_hash,
+            'printed_by': print_record.printed_by,
+            'pk': print_record.pk,
+        })
+    
+    # 契約アサインの就業条件明示書履歴を追加
+    for print_record in assignment_haken_prints:
+        all_issue_history.append({
+            'type': 'assignment_haken',
+            'record': print_record,
+            'printed_at': print_record.printed_at,
+            'document_title': print_record.document_title,
+            'contract_number': print_record.contract_number,
+            'file_hash': print_record.file_hash,
+            'printed_by': print_record.printed_by,
+            'pk': print_record.pk,
+            'client_name': print_record.contract_assignment.client_contract.client.name,
+        })
+    
+    # 発行日時でソート（新しい順）
+    all_issue_history.sort(key=lambda x: x['printed_at'], reverse=True)
+    
+    issue_history_count = len(all_issue_history)
     issue_history_for_display = all_issue_history[:10]
 
     # 最低時給を取得（表示用なので時給単位に関係なく取得）
@@ -568,12 +611,55 @@ def staff_contract_extend(request, pk):
 @login_required
 @permission_required('contract.view_staffcontract', raise_exception=True)
 def staff_contract_issue_history_list(request, pk):
-    """スタッフ契約の発行履歴一覧"""
+    """スタッフ契約の発行履歴一覧（スタッフ契約書 + 契約アサインの就業条件明示書）"""
+    from .models import ContractAssignmentHakenPrint
+    
     contract = get_object_or_404(StaffContract, pk=pk)
 
-    issue_history_query = StaffContractPrint.objects.filter(staff_contract=contract).order_by('-printed_at', '-pk')
-
-    paginator = Paginator(issue_history_query, 20)
+    # スタッフ契約書の発行履歴
+    staff_contract_prints = StaffContractPrint.objects.filter(staff_contract=contract).order_by('-printed_at', '-pk')
+    
+    # 契約アサインの就業条件明示書発行履歴
+    assignment_haken_prints = ContractAssignmentHakenPrint.objects.filter(
+        contract_assignment__staff_contract=contract,
+        print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS
+    ).select_related('contract_assignment__client_contract__client').order_by('-printed_at', '-pk')
+    
+    # 両方の履歴を統合してソート
+    all_issue_history = []
+    
+    # スタッフ契約書の履歴を追加
+    for print_record in staff_contract_prints:
+        all_issue_history.append({
+            'type': 'staff_contract',
+            'record': print_record,
+            'printed_at': print_record.printed_at,
+            'document_title': print_record.document_title,
+            'contract_number': print_record.contract_number,
+            'file_hash': print_record.file_hash,
+            'printed_by': print_record.printed_by,
+            'pk': print_record.pk,
+        })
+    
+    # 契約アサインの就業条件明示書履歴を追加
+    for print_record in assignment_haken_prints:
+        all_issue_history.append({
+            'type': 'assignment_haken',
+            'record': print_record,
+            'printed_at': print_record.printed_at,
+            'document_title': print_record.document_title,
+            'contract_number': print_record.contract_number,
+            'file_hash': print_record.file_hash,
+            'printed_by': print_record.printed_by,
+            'pk': print_record.pk,
+            'client_name': print_record.contract_assignment.client_contract.client.name,
+        })
+    
+    # 発行日時でソート（新しい順）
+    all_issue_history.sort(key=lambda x: x['printed_at'], reverse=True)
+    
+    # ページネーション
+    paginator = Paginator(all_issue_history, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

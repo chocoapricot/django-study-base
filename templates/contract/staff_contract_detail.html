@@ -4,6 +4,7 @@
 {% load dropdowns %}
 {% load badge_tags %}
 {% load query_tags %}
+{% load help_tags %}
 
 {% block title %}スタッフ契約詳細 - {{ contract.contract_name }}{% endblock %}
 
@@ -221,11 +222,76 @@
     </div>
 </div>
 
-<!-- 発行履歴（共通テンプレート使用） -->
-{% url 'contract:staff_contract_issue_history_list' contract.pk as staff_contract_issue_history_url %}
-{% with issue_history=issue_history_for_display issue_history_count=issue_history_count history_url=staff_contract_issue_history_url %}
-    {% include 'contract/_issue_history.html' with contract_type='staff' download_url_name='contract:download_staff_contract_pdf' %}
-{% endwith %}
+<!-- 発行履歴（スタッフ契約書 + 契約アサインの就業条件明示書） -->
+{% if issue_history_count > 0 %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        発行履歴
+    </div>
+
+    <div class="card-body mb-0">
+        <table class="table table-hover me-2 mt-2" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>種別</th>
+                    <th>契約番号</th>
+                    <th>ファイル</th>
+                    <th>ハッシュ値 {% my_help_preset "file_hash" %}</th>
+                    <th>発行者</th>
+                    <th>発行日時</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in issue_history_for_display %}
+                    <tr>
+                        <td>
+                            {% if item.type == 'staff_contract' %}
+                                <span class="badge bg-primary">契約書</span>
+                            {% elif item.type == 'assignment_haken' %}
+                                <span class="badge bg-info">就業条件明示書</span>
+                            {% endif %}
+                        </td>
+                        <td>{% if item.contract_number %}{{ item.contract_number }}{% else %}-{% endif %}</td>
+                        <td>
+                            {% if item.type == 'staff_contract' %}
+                                <a href="{% url 'contract:view_staff_contract_pdf' item.pk %}" class="text-decoration-none" target="_blank" title="開く">
+                                    {{ item.document_title }}
+                                </a>
+                                <a href="{% url 'contract:download_staff_contract_pdf' item.pk %}" class="text-decoration-none ms-2" title="ダウンロード">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            {% elif item.type == 'assignment_haken' %}
+                                <a href="{% url 'contract:view_assignment_haken_print_pdf' item.pk %}" class="text-decoration-none" target="_blank" title="開く">
+                                    {{ item.document_title }}
+                                </a>
+                                <a href="{% url 'contract:download_assignment_haken_print_pdf' item.pk %}" class="text-decoration-none ms-2" title="ダウンロード">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.file_hash %}
+                                <span class="font-monospace text-muted" style="font-size: 0.8em;" title="{{ item.file_hash }}">
+                                    {{ item.file_hash|slice:":8" }}...
+                                </span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ item.printed_by.get_full_name_japanese|default:"-" }}</td>
+                        <td>{{ item.printed_at|date:"Y/m/d H:i:s" }}</td>
+                    </tr>
+                {% empty %}
+                <tr><td colspan="6">履歴がありません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer d-flex justify-content-center align-items-center">
+        <a href="{% url 'contract:staff_contract_issue_history_list' contract.pk %}">全て表示{% if issue_history_count > 0 %} (全{{ issue_history_count }}件){% endif %}</a>
+    </div>
+</div>
+{% endif %}
 
 <!-- 変更履歴（共通テンプレート使用） -->
 {% url 'contract:staff_contract_change_history_list' contract.pk as staff_contract_history_url %}
@@ -277,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="mb-2">• 最低賃金表示: 就業場所から都道府県を判定し、該当する最低時給を自動表示</div>
                     <div class="mb-2">• 遷移元判定: リファラー情報から戻るボタンの遷移先を自動判定</div>
                     <div class="mb-2">• 関連データ取得: 契約アサイン情報を自動取得・表示</div>
-                    <div class="mb-2">• 発行履歴管理: 契約書印刷履歴を自動記録・表示</div>
+                    <div class="mb-2">• 発行履歴管理: 契約書印刷履歴および関連する契約アサインの就業条件明示書発行履歴を自動記録・統合表示</div>
                     <div class="mb-2">• 変更履歴表示: AppLogから契約の変更履歴を自動取得・表示</div>
                     <div class="mb-2">• 業務内容コピー: 契約アサイン時に業務内容が空の場合、相手方から自動コピー（スタッフ契約⇔クライアント契約）</div>
                     <div class="mb-0">• 就業場所コピー: 契約アサイン時に就業場所が空の場合、相手方から自動コピー（スタッフ契約⇔クライアント契約の派遣情報）</div>

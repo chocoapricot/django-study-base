@@ -3,6 +3,7 @@
 {% load humanize %}
 {% load dropdowns %}
 {% load badge_tags %}
+{% load help_tags %}
 
 {% block title %}スタッフ契約 発行履歴 - {{ contract.contract_name }}{% endblock %}
 
@@ -17,8 +18,81 @@
     </ol>
 </nav>
 
-{% url 'contract:staff_contract_detail' contract.pk as back_url_path %}
-{% with issue_history=page_obj title="発行履歴一覧" back_url=back_url_path %}
-    {% include 'contract/_issue_history.html' with contract_type='staff' download_url_name='contract:download_staff_contract_pdf' %}
-{% endwith %}
+<!-- 発行履歴一覧（スタッフ契約書 + 契約アサインの就業条件明示書） -->
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        発行履歴一覧
+    </div>
+
+    <div class="card-body mb-0">
+        <table class="table table-hover me-2 mt-2" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>種別</th>
+                    <th>契約番号</th>
+                    <th>ファイル</th>
+                    <th>ハッシュ値 {% my_help_preset "file_hash" %}</th>
+                    <th>発行者</th>
+                    <th>発行日時</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in page_obj %}
+                    <tr>
+                        <td>
+                            {% if item.type == 'staff_contract' %}
+                                <span class="badge bg-primary">契約書</span>
+                            {% elif item.type == 'assignment_haken' %}
+                                <span class="badge bg-info">就業条件明示書</span>
+                            {% endif %}
+                        </td>
+                        <td>{% if item.contract_number %}{{ item.contract_number }}{% else %}-{% endif %}</td>
+                        <td>
+                            {% if item.type == 'staff_contract' %}
+                                <a href="{% url 'contract:view_staff_contract_pdf' item.pk %}" class="text-decoration-none" target="_blank" title="開く">
+                                    {{ item.document_title }}
+                                </a>
+                                <a href="{% url 'contract:download_staff_contract_pdf' item.pk %}" class="text-decoration-none ms-2" title="ダウンロード">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            {% elif item.type == 'assignment_haken' %}
+                                <a href="{% url 'contract:view_assignment_haken_print_pdf' item.pk %}" class="text-decoration-none" target="_blank" title="開く">
+                                    {{ item.document_title }}
+                                </a>
+                                <a href="{% url 'contract:download_assignment_haken_print_pdf' item.pk %}" class="text-decoration-none ms-2" title="ダウンロード">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.file_hash %}
+                                <span class="font-monospace text-muted" style="font-size: 0.8em;" title="{{ item.file_hash }}">
+                                    {{ item.file_hash|slice:":8" }}...
+                                </span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ item.printed_by.get_full_name_japanese|default:"-" }}</td>
+                        <td>{{ item.printed_at|date:"Y/m/d H:i:s" }}</td>
+                    </tr>
+                {% empty %}
+                <tr><td colspan="6">履歴がありません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- ページネーション -->
+        {% if page_obj.paginator %}
+            {% include 'common/_pagination.html' with page_obj=page_obj %}
+        {% endif %}
+
+        <!-- 戻るボタン -->
+        <div class="row mt-3">
+            <div class="col text-left">
+                <a href="{% url 'contract:staff_contract_detail' contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
