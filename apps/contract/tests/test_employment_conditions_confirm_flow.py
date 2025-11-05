@@ -285,7 +285,11 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
             contract_number=self.staff_contract.contract_number,
         )
         
-        # 3. 就業条件明示書の発行履歴を作成
+        # 3. アサインを発行済み状態にする
+        self.assignment.issued_at = timezone.now()
+        self.assignment.save()
+        
+        # 4. 就業条件明示書の発行履歴を作成
         haken_print = ContractAssignmentHakenPrint.objects.create(
             contract_assignment=self.assignment,
             print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS,
@@ -294,11 +298,11 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
             contract_number=self.staff_contract.contract_number,
         )
         
-        # 4. スタッフ契約確認一覧を取得
+        # 5. スタッフ契約確認一覧を取得
         response = self.client.get(reverse('contract:staff_contract_confirm_list'))
         self.assertEqual(response.status_code, 200)
         
-        # 5. 両方の書類が表示されていることを確認
+        # 6. 両方の書類が表示されていることを確認
         self.assertContains(response, 'スタッフ契約書')
         self.assertContains(response, '就業条件明示書')
         self.assertContains(response, 'テストスタッフ契約')
