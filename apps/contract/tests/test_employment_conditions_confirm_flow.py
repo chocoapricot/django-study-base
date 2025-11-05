@@ -230,7 +230,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
         
         # 5. 関連する契約アサインの確認状態がリセットされていることを確認
         self.assignment.refresh_from_db()
-        self.assertIsNone(self.assignment.employment_conditions_confirmed_at)
+        self.assertIsNone(self.assignment.confirmed_at)
     
     def test_employment_conditions_issue_flow(self):
         """就業条件明示書発行フローのテスト"""
@@ -242,7 +242,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
         self.staff_contract.save()
         
         # 2. 初期状態の確認
-        self.assertIsNone(self.assignment.employment_conditions_confirmed_at)
+        self.assertIsNone(self.assignment.confirmed_at)
         
         # 3. 就業条件明示書を発行
         with patch('apps.contract.utils.generate_employment_conditions_pdf') as mock_pdf:
@@ -266,7 +266,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
         
         # 6. 確認状態がリセットされていることを確認
         self.assignment.refresh_from_db()
-        self.assertIsNone(self.assignment.employment_conditions_confirmed_at)
+        self.assertIsNone(self.assignment.confirmed_at)
     
     def test_staff_contract_confirm_list_integration(self):
         """スタッフ契約確認一覧の統合テスト"""
@@ -360,7 +360,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
         # 3. 確認後の状態をチェック
         self.assertEqual(response.status_code, 302)
         self.assignment.refresh_from_db()
-        self.assertIsNotNone(self.assignment.employment_conditions_confirmed_at)
+        self.assertIsNotNone(self.assignment.confirmed_at)
     
     def test_staff_contract_approval_revoke_flow(self):
         """スタッフ契約承認解除フローのテスト"""
@@ -377,7 +377,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
         self.staff_contract.save()
         
         # 2. 契約アサインの確認状態を設定
-        self.assignment.employment_conditions_confirmed_at = timezone.now()
+        self.assignment.confirmed_at = timezone.now()
         self.assignment.save()
         
         # 3. 承認を解除（承認スイッチをOFF）
@@ -401,7 +401,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
         
         # 5. 関連する契約アサインの確認状態もリセットされていることを確認
         self.assignment.refresh_from_db()
-        self.assertIsNone(self.assignment.employment_conditions_confirmed_at)
+        self.assertIsNone(self.assignment.confirmed_at)
     
     def test_employment_conditions_reissue_flow(self):
         """就業条件明示書再発行フローのテスト"""
@@ -413,7 +413,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
         self.staff_contract.save()
         
         # 2. 初回発行と確認
-        self.assignment.employment_conditions_confirmed_at = timezone.now()
+        self.assignment.confirmed_at = timezone.now()
         self.assignment.save()
         
         # 3. 就業条件明示書を再発行
@@ -431,7 +431,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
         
         # 5. 確認状態がリセットされていることを確認
         self.assignment.refresh_from_db()
-        self.assertIsNone(self.assignment.employment_conditions_confirmed_at)
+        self.assertIsNone(self.assignment.confirmed_at)
         
         # 6. 発行履歴が複数作成されていることを確認
         haken_print_history = ContractAssignmentHakenPrint.objects.filter(

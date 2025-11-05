@@ -200,7 +200,7 @@ class AssignmentDetailStaffConfirmTest(TestCase):
         self.client.login(email='teststaff@example.com', password='password')
         
         # 1. 初期状態の確認（未確認）
-        self.assertIsNone(self.assignment.employment_conditions_confirmed_at)
+        self.assertIsNone(self.assignment.confirmed_at)
         
         # 2. 契約アサイン詳細画面を取得
         response = self.client.get(
@@ -224,7 +224,7 @@ class AssignmentDetailStaffConfirmTest(TestCase):
         
         # 1. スタッフ確認を実行
         confirmed_at = timezone.now()
-        self.assignment.employment_conditions_confirmed_at = confirmed_at
+        self.assignment.confirmed_at = confirmed_at
         self.assignment.save()
         
         # 2. 契約アサイン詳細画面を取得
@@ -240,7 +240,18 @@ class AssignmentDetailStaffConfirmTest(TestCase):
         self.assertContains(response, 'checked')
         
         # 5. 確認日時が表示されていることを確認（年月日のみチェック）
-        expected_date_part = confirmed_at.strftime('%Y/%m/%d')
+        # データベースから実際の値を取得してチェック
+        self.assignment.refresh_from_db()
+        actual_confirmed_at = self.assignment.confirmed_at
+        self.assertIsNotNone(actual_confirmed_at)
+        
+        # タイムゾーン変換を考慮して、JST（UTC+9）での日付をチェック
+        from datetime import timedelta
+        
+        # UTCからJST（UTC+9）に変換
+        confirmed_at_jst = actual_confirmed_at + timedelta(hours=9)
+        expected_date_part = confirmed_at_jst.strftime('%Y/%m/%d')
+        
         self.assertContains(response, expected_date_part)
     
     def test_context_variables(self):
@@ -249,7 +260,7 @@ class AssignmentDetailStaffConfirmTest(TestCase):
         
         # 1. スタッフ確認を実行
         confirmed_at = timezone.now()
-        self.assignment.employment_conditions_confirmed_at = confirmed_at
+        self.assignment.confirmed_at = confirmed_at
         self.assignment.save()
         
         # 2. 契約アサイン詳細画面を取得
