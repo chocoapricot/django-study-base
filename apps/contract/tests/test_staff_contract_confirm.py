@@ -12,12 +12,20 @@ from apps.system.settings.models import Dropdowns
 class StaffContractConfirmTest(TestCase):
     def setUp(self):
         # Dropdownsデータを作成
-        Dropdowns.objects.create(
-            category='contract_status',
-            value=Constants.CONTRACT_STATUS.ISSUED,
-            name='発行済',
-            active=True
-        )
+        statuses = [
+            (Constants.CONTRACT_STATUS.DRAFT, '作成中'),
+            (Constants.CONTRACT_STATUS.PENDING, '申請'),
+            (Constants.CONTRACT_STATUS.APPROVED, '承認済'),
+            (Constants.CONTRACT_STATUS.ISSUED, '発行済'),
+            (Constants.CONTRACT_STATUS.CONFIRMED, '確認済'),
+        ]
+        for value, name in statuses:
+            Dropdowns.objects.create(
+                category='contract_status',
+                value=value,
+                name=name,
+                active=True
+            )
         
         self.user = get_user_model().objects.create_user(
             username='testuser@example.com',
@@ -46,6 +54,9 @@ class StaffContractConfirmTest(TestCase):
             corporation_number=self.company.corporate_number,
         )
         from apps.master.models import ContractPattern
+        from apps.contract.models import StaffContractPrint
+        from django.utils import timezone
+        
         self.staff_pattern = ContractPattern.objects.create(name='スタッフ向け雇用契約', domain='1', is_active=True)
         self.contract = StaffContract.objects.create(
             staff=self.staff,
@@ -53,7 +64,17 @@ class StaffContractConfirmTest(TestCase):
             contract_name='Test Contract',
             contract_status=Constants.CONTRACT_STATUS.ISSUED,
             start_date='2025-01-01',
-            contract_pattern=self.staff_pattern
+            contract_pattern=self.staff_pattern,
+            issued_at=timezone.now(),
+            issued_by=self.user
+        )
+        
+        # 契約書の印刷履歴を作成
+        self.print_history = StaffContractPrint.objects.create(
+            staff_contract=self.contract,
+            printed_by=self.user,
+            document_title='Test Contract PDF',
+            contract_number='SC-2025-001'
         )
 
     def test_staff_contract_confirm_list_get(self):
@@ -65,14 +86,14 @@ class StaffContractConfirmTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'スタッフ契約確認')
         self.assertContains(response, 'Test Contract')
-        self.assertContains(response, '発行済')
+        self.assertContains(response, '未確認')  # 確認状況として「未確認」が表示される
 
     def test_staff_contract_confirm_list_post(self):
         """
         Test POST request to staff_contract_confirm_list view to confirm a contract.
         """
         self.client.login(email='testuser@example.com', password='password')
-        response = self.client.post(reverse('contract:staff_contract_confirm_list'), {'contract_id': self.contract.id, 'action': 'confirm'})
+        response = self.client.post(reverse('contract:staff_contract_confirm_list'), {'contract_id': self.contract.id, 'action': 'confirm_staff_contract'})
         self.assertEqual(response.status_code, 302) # Should redirect
 
         # Check if the agreement was created
@@ -96,7 +117,7 @@ class StaffContractConfirmTest(TestCase):
         self.contract.save()
 
         self.client.login(email='testuser@example.com', password='password')
-        response = self.client.post(reverse('contract:staff_contract_confirm_list'), {'contract_id': self.contract.id, 'action': 'unconfirm'})
+        response = self.client.post(reverse('contract:staff_contract_confirm_list'), {'contract_id': self.contract.id, 'action': 'unconfirm_staff_contract'})
         self.assertEqual(response.status_code, 302) # Should redirect
 
         self.contract.refresh_from_db()

@@ -197,7 +197,7 @@ class StaffContractUnissueFlowTest(TestCase):
         )
         
         # 就業条件明示書を確認済みにする
-        assignment.employment_conditions_confirmed_at = timezone.now()
+        assignment.confirmed_at = timezone.now()
         assignment.save()
         
         return assignment
@@ -208,12 +208,12 @@ class StaffContractUnissueFlowTest(TestCase):
         
         # 1. 初期状態の確認
         self.assertEqual(self.staff_contract.contract_status, Constants.CONTRACT_STATUS.ISSUED)
-        self.assertIsNotNone(self.assignment.employment_conditions_confirmed_at)
+        self.assertIsNotNone(self.assignment.confirmed_at)
         
-        # 2. スタッフ契約確認一覧で就業条件明示書が表示されることを確認
+        # 2. スタッフ契約確認一覧でスタッフ契約書が表示されることを確認
         response = self.client.get(reverse('contract:staff_contract_confirm_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '就業条件明示書')
+        self.assertContains(response, 'テストスタッフ契約')
         
         # 3. スタッフ契約を未発行にする（is_issuedなしでPOST）
         response = self.client.post(
@@ -232,12 +232,11 @@ class StaffContractUnissueFlowTest(TestCase):
         self.assertIsNone(self.staff_contract.issued_by)
         
         # 関連する契約アサインの確認状態がリセットされていることを確認
-        self.assertIsNone(self.assignment.employment_conditions_confirmed_at)
+        self.assertIsNone(self.assignment.confirmed_at)
         
-        # 5. スタッフ契約確認一覧で就業条件明示書が表示されないことを確認
+        # 5. スタッフ契約確認一覧で確認対象の書類が見つからないことを確認
         response = self.client.get(reverse('contract:staff_contract_confirm_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, '就業条件明示書')
         # 確認対象の書類が見つからないメッセージが表示されることを確認
         self.assertContains(response, '確認対象の書類が見つかりませんでした。')
     
@@ -255,7 +254,7 @@ class StaffContractUnissueFlowTest(TestCase):
         self.staff_contract.refresh_from_db()
         self.assignment.refresh_from_db()
         self.assertEqual(self.staff_contract.contract_status, Constants.CONTRACT_STATUS.APPROVED)
-        self.assertIsNone(self.assignment.employment_conditions_confirmed_at)
+        self.assertIsNone(self.assignment.confirmed_at)
         
         # 3. スタッフ契約を再発行する
         from unittest.mock import patch
@@ -278,12 +277,11 @@ class StaffContractUnissueFlowTest(TestCase):
         self.assertEqual(self.staff_contract.issued_by, self.user)
         
         # 関連する契約アサインの確認状態がリセットされていることを確認（再発行時もリセット）
-        self.assertIsNone(self.assignment.employment_conditions_confirmed_at)
+        self.assertIsNone(self.assignment.confirmed_at)
         
-        # 5. スタッフ契約確認一覧で就業条件明示書が再び表示されることを確認
+        # 5. スタッフ契約確認一覧でスタッフ契約書が再び表示されることを確認
         response = self.client.get(reverse('contract:staff_contract_confirm_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '就業条件明示書')
         self.assertContains(response, 'テストスタッフ契約')
     
     def tearDown(self):

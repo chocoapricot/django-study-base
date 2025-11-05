@@ -757,7 +757,7 @@ def staff_contract_issue(request, pk):
                     
                     # 関連する契約アサインの就業条件明示書確認状態もリセット（再発行時）
                     contract.contractassignment_set.update(
-                        employment_conditions_confirmed_at=None
+                        confirmed_at=None
                     )
                     
                     contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
@@ -771,7 +771,7 @@ def staff_contract_issue(request, pk):
             if contract.contract_status == Constants.CONTRACT_STATUS.ISSUED:
                 # 関連する契約アサインの就業条件明示書確認状態もリセット（未発行時）
                 contract.contractassignment_set.update(
-                    employment_conditions_confirmed_at=None
+                    confirmed_at=None
                 )
                 
                 contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
@@ -818,6 +818,16 @@ def staff_contract_confirm_list(request):
                 messages.success(request, f'スタッフ契約書「{contract.contract_name}」を確認しました。')
             else:
                 messages.error(request, '確認可能な同意文言が見つかりませんでした。')
+                
+        elif action == 'unconfirm_staff_contract':
+            contract_id = request.POST.get('contract_id')
+            contract = get_object_or_404(StaffContract, pk=contract_id)
+            
+            # スタッフ契約のステータスを発行済みに戻す
+            contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
+            contract.confirmed_at = None
+            contract.save()
+            messages.success(request, f'スタッフ契約書「{contract.contract_name}」を未確認に戻しました。')
                 
         elif action == 'confirm_employment_conditions':
             assignment_id = request.POST.get('assignment_id')

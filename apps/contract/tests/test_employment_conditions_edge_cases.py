@@ -128,11 +128,14 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
             staff=self.staff,
             corporate_number=self.company.corporate_number,
             contract_name='テストスタッフ契約',
-            contract_status=Constants.CONTRACT_STATUS.APPROVED,
+            contract_status=Constants.CONTRACT_STATUS.ISSUED,  # 発行済みに変更
+            contract_number='SC-2025-001',
             start_date=date(2025, 1, 1),
             end_date=date(2025, 12, 31),
             contract_pattern=self.staff_pattern,
             job_category=self.job_category,
+            issued_at=timezone.now(),
+            issued_by=self.user,
             created_by=self.user,
             updated_by=self.user,
         )
@@ -160,12 +163,24 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
         return contract
     
     def _create_contract_assignment(self):
-        return ContractAssignment.objects.create(
+        assignment = ContractAssignment.objects.create(
             client_contract=self.client_contract,
             staff_contract=self.staff_contract,
+            issued_at=timezone.now(),  # 発行済みにする
             created_by=self.user,
             updated_by=self.user,
         )
+        
+        # 就業条件明示書の発行履歴を作成
+        ContractAssignmentHakenPrint.objects.create(
+            contract_assignment=assignment,
+            print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS,
+            printed_by=self.user,
+            document_title='テスト就業条件明示書',
+            contract_number=self.staff_contract.contract_number,
+        )
+        
+        return assignment
     
     def test_unauthenticated_access(self):
         """未認証ユーザーのアクセステスト"""
@@ -432,6 +447,10 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
         
         # 両方のアサインに就業条件明示書の発行履歴を作成
         for assignment in [self.assignment, other_assignment]:
+            # アサインを発行済みにする
+            assignment.issued_at = timezone.now()
+            assignment.save()
+            
             ContractAssignmentHakenPrint.objects.create(
                 contract_assignment=assignment,
                 print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS,
