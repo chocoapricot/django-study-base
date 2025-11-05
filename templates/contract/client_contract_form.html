@@ -31,30 +31,22 @@
             {% endif %}
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約名</label>
-                <div class="col-sm-6">
-                    {{ form.contract_name }}
-                    {% for error in form.contract_name.errors %}
-                        <div class="text-danger small">{{ error }}</div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.job_category.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">職種</label>
-                <div class="col-sm-3">
-                    {{ form.job_category }}
-                    {% for error in form.job_category.errors %}
-                        <div class="text-danger small">{{ error }}</div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_status.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約状況</label>
-                <div class="col-sm-3">
-                    {{ form.contract_status }}
-                    {% for error in form.contract_status.errors %}
+                <label for="{{ form.client.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                    クライアント
+                    {% my_help_preset "client_selection" %}
+                </label>
+                <div class="col-sm-10">
+                    {{ form.client }}
+                    <div id="client-display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057;">
+                        <span id="client-display-text">未選択</span>　
+                        <button type="button" class="btn btn-sm btn-secondary me-2" id="clientSelectFetchButton">
+                            選択
+                        </button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="clearClient()">
+                            クリア
+                        </button>
+                    </div>
+                    {% for error in form.client.errors %}
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
                 </div>
@@ -81,22 +73,30 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.client.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
-                    クライアント
-                    {% my_help_preset "client_selection" %}
-                </label>
-                <div class="col-sm-10">
-                    {{ form.client }}
-                    <div id="client-display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057;">
-                        <span id="client-display-text">未選択</span>　
-                        <button type="button" class="btn btn-sm btn-secondary me-2" id="clientSelectFetchButton">
-                            選択
-                        </button>
-                        <button type="button" class="btn btn-sm btn-secondary" onclick="clearClient()">
-                            クリア
-                        </button>
-                    </div>
-                    {% for error in form.client.errors %}
+                <label for="{{ form.job_category.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">職種</label>
+                <div class="col-sm-3">
+                    {{ form.job_category }}
+                    {% for error in form.job_category.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.contract_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約名</label>
+                <div class="col-sm-6">
+                    {{ form.contract_name }}
+                    {% for error in form.contract_name.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.contract_status.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約状況</label>
+                <div class="col-sm-3">
+                    {{ form.contract_status }}
+                    {% for error in form.contract_status.errors %}
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
                 </div>
@@ -476,9 +476,40 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // 職種選択時の契約名自動設定
+    const jobCategorySelect = document.getElementById('{{ form.job_category.id_for_label }}');
+    if (jobCategorySelect) {
+        jobCategorySelect.addEventListener('change', function() {
+            updateContractName();
+        });
+    }
 });
 
 // selectClient関数は共通JSで定義済み（後方互換性のため残す）
+
+function updateContractName() {
+    const contractNameInput = document.getElementById('{{ form.contract_name.id_for_label }}');
+    const clientField = document.getElementById('{{ form.client.id_for_label }}');
+    const jobCategorySelect = document.getElementById('{{ form.job_category.id_for_label }}');
+    
+    // 契約名が既に入力されている場合は自動設定しない
+    if (contractNameInput && contractNameInput.value.trim() !== '') {
+        return;
+    }
+    
+    // クライアントと職種が両方選択されている場合のみ自動設定
+    if (clientField && clientField.value && jobCategorySelect && jobCategorySelect.value) {
+        const clientDisplayText = document.getElementById('client-display-text');
+        const jobCategoryText = jobCategorySelect.options[jobCategorySelect.selectedIndex].text;
+        
+        if (clientDisplayText && clientDisplayText.textContent !== '未選択') {
+            const clientName = clientDisplayText.textContent.trim();
+            const contractName = `${clientName} ${jobCategoryText}`;
+            contractNameInput.value = contractName;
+        }
+    }
+}
 
 function updateDispatchFields(clientId) {
     const fieldConfigs = {
@@ -711,6 +742,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="card-body py-2">
                     <div class="mb-2">• 契約番号: 自動採番</div>
                     <div class="mb-2">• 法人番号: 自社の法人番号を自動設定</div>
+                    <div class="mb-2">• 契約名: クライアント選択・職種選択時に「クライアント名+職種名」で自動設定（契約名が空の場合のみ）</div>
                     <div class="mb-2">• 契約終了日計算: 開始日から1ヶ月/3ヶ月/6ヶ月後を自動計算</div>
                     <div class="mb-2">• 派遣先情報: クライアント選択時に派遣先事業所・組織単位・担当者を自動取得</div>
                     <div class="mb-2">• 就業場所: 派遣先事業所選択時に住所を自動設定</div>

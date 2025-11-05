@@ -584,3 +584,6 @@ class ConnectStaffAgree(MyModel):
 
     def __str__(self):
         return f"{self.email} - {self.staff_agreement.name}"
+
+
+

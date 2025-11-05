@@ -650,6 +650,9 @@ class ContractAssignment(MyModel):
     client_corporate_number = models.CharField('クライアント法人番号', max_length=13, blank=True, null=True)
     assignment_start_date = models.DateField('割当開始日', blank=True, null=True)
     assignment_end_date = models.DateField('割当終了日', blank=True, null=True)
+    
+    # 就業条件明示書確認関連フィールド
+    employment_conditions_confirmed_at = models.DateTimeField('就業条件明示書確認日時', blank=True, null=True)
 
     class Meta:
         db_table = 'apps_contract_assignment'

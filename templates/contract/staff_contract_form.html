@@ -31,36 +31,6 @@
             {% endif %}
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約名</label>
-                <div class="col-sm-6">
-                    {{ form.contract_name }}
-                    {% if form.contract_name.errors %}
-                        <div class="text-danger small">{{ form.contract_name.errors.0 }}</div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.job_category.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">職種</label>
-                <div class="col-sm-3">
-                    {{ form.job_category }}
-                    {% if form.job_category.errors %}
-                        <div class="text-danger small">{{ form.job_category.errors.0 }}</div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_status.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約状況</label>
-                <div class="col-sm-3">
-                    {{ form.contract_status }}
-                    {% if form.contract_status.errors %}
-                        <div class="text-danger small">{{ form.contract_status.errors.0 }}</div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="row mb-3 align-items-center">
                 <label for="{{ form.staff.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
                     スタッフ
                     {% my_help_preset "staff_selection" %}
@@ -93,6 +63,36 @@
                     </div>
                     {% if form.contract_pattern.errors %}
                         <div class="text-danger small">{{ form.contract_pattern.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.job_category.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">職種</label>
+                <div class="col-sm-3">
+                    {{ form.job_category }}
+                    {% if form.job_category.errors %}
+                        <div class="text-danger small">{{ form.job_category.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.contract_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約名</label>
+                <div class="col-sm-6">
+                    {{ form.contract_name }}
+                    {% if form.contract_name.errors %}
+                        <div class="text-danger small">{{ form.contract_name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.contract_status.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約状況</label>
+                <div class="col-sm-3">
+                    {{ form.contract_status }}
+                    {% if form.contract_status.errors %}
+                        <div class="text-danger small">{{ form.contract_status.errors.0 }}</div>
                     {% endif %}
                 </div>
             </div>
@@ -282,7 +282,39 @@ document.addEventListener('DOMContentLoaded', function() {
             {% endif %}
         {% endif %}
     }
+
+    // 職種選択時の契約名自動設定
+    const jobCategorySelect = document.getElementById('{{ form.job_category.id_for_label }}');
+    if (jobCategorySelect) {
+        jobCategorySelect.addEventListener('change', function() {
+            updateStaffContractName();
+        });
+    }
 });
+
+// スタッフ契約名を自動生成する関数
+function updateStaffContractName() {
+    const contractNameInput = document.getElementById('{{ form.contract_name.id_for_label }}');
+    const staffField = document.getElementById('{{ form.staff.id_for_label }}');
+    const jobCategorySelect = document.getElementById('{{ form.job_category.id_for_label }}');
+    
+    // 契約名が既に入力されている場合は自動設定しない
+    if (contractNameInput && contractNameInput.value.trim() !== '') {
+        return;
+    }
+    
+    // スタッフと職種が両方選択されている場合のみ自動設定
+    if (staffField && staffField.value && jobCategorySelect && jobCategorySelect.value) {
+        const staffDisplayText = document.getElementById('staff-display-text');
+        const jobCategoryText = jobCategorySelect.options[jobCategorySelect.selectedIndex].text;
+        
+        if (staffDisplayText && staffDisplayText.textContent !== '未選択') {
+            const staffName = staffDisplayText.textContent.trim();
+            const contractName = `${staffName} ${jobCategoryText}`;
+            contractNameInput.value = contractName;
+        }
+    }
+}
 
 // 雇用形態バッジを更新する関数
 function updateEmploymentTypeBadge(employmentType, employmentTypeName, badgeClass = null) {

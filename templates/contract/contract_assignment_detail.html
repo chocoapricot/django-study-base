@@ -326,14 +326,18 @@
                     </div>
                 </form>
 
-                {# スタッフ確認スイッチ（将来の拡張用） #}
+                {# スタッフ確認スイッチ #}
                 <div class="mb-3">
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="staffConfirmSwitch" name="is_staff_confirmed"
+                               {% if employment_conditions_confirmed %}checked{% endif %}
                                disabled>
                         <label class="form-check-label" for="staffConfirmSwitch">
                             <i class="bi bi-link" style="font-size: 20px; color: #17a2b8;"></i>
                             スタッフ確認
+                            {% if employment_conditions_confirmed_at %}
+                                <span class="text-muted small">（{{ employment_conditions_confirmed_at|date:"Y/m/d H:i:s" }}）</span>
+                            {% endif %}
                         </label>
                     </div>
                 </div>

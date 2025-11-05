@@ -94,6 +94,11 @@ window.selectStaff = function(staffId, staffName, employmentType, employmentType
         }
     }
     
+    // スタッフ契約名を自動更新（関数が存在する場合）
+    if (typeof updateStaffContractName === 'function') {
+        updateStaffContractName();
+    }
+    
     // モーダルを閉じる
     hideModal('selectModal');
 };
@@ -116,6 +121,11 @@ window.selectClient = function(clientId, clientName) {
     
     // モーダルを閉じる
     hideModal('selectModal');
+    
+    // 契約名を自動更新（関数が存在する場合）
+    if (typeof updateContractName === 'function') {
+        updateContractName();
+    }
     
     // 派遣契約の場合、関連フィールドを更新
     const contractTypeField = document.querySelector('select[name="client_contract_type_code"]');

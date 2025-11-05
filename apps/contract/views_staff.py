@@ -713,6 +713,12 @@ def staff_contract_approve(request, pk):
                     contract.quotation_issued_by = None
                 contract.confirmed_at = None
                 
+                # 関連する契約アサインの就業条件明示書確認状態をリセット
+                # （発行履歴は保持する）
+                contract.contractassignment_set.update(
+                    employment_conditions_confirmed_at=None
+                )
+                
                 contract.save()
                 messages.success(request, f'契約「{contract.contract_name}」を作成中に戻しました。（発行履歴は保持されます）')
             else:
@@ -747,6 +753,12 @@ def staff_contract_issue(request, pk):
                         object_id=str(contract.pk),
                         object_repr=f'契約書PDF出力: {contract.contract_name}'
                     )
+                    
+                    # 関連する契約アサインの就業条件明示書確認状態もリセット（再発行時）
+                    contract.contractassignment_set.update(
+                        employment_conditions_confirmed_at=None
+                    )
+                    
                     contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
                     contract.issued_at = timezone.now()
                     contract.issued_by = request.user
@@ -756,6 +768,11 @@ def staff_contract_issue(request, pk):
                     messages.error(request, "契約書の発行に失敗しました。")
         else:
             if contract.contract_status == Constants.CONTRACT_STATUS.ISSUED:
+                # 関連する契約アサインの就業条件明示書確認状態もリセット（未発行時）
+                contract.contractassignment_set.update(
+                    employment_conditions_confirmed_at=None
+                )
+                
                 contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
                 contract.issued_at = None
                 contract.issued_by = None
@@ -766,16 +783,21 @@ def staff_contract_issue(request, pk):
 
 @login_required
 def staff_contract_confirm_list(request):
-    """スタッフ契約確認一覧"""
+    """スタッフ契約確認一覧（スタッフ契約書 + 就業条件明示書）"""
+    from apps.connect.models import ConnectStaff
+    from apps.company.models import Company
+    from .models import ContractAssignmentHakenPrint
+    
     user = request.user
 
     if request.method == 'POST':
-        contract_id = request.POST.get('contract_id')
         action = request.POST.get('action')
-        contract = get_object_or_404(StaffContract, pk=contract_id)
-
-        if action == 'confirm':
-            # スタッフ同意文言を取得
+        
+        if action == 'confirm_staff_contract':
+            contract_id = request.POST.get('contract_id')
+            contract = get_object_or_404(StaffContract, pk=contract_id)
+            
+            # スタッフ同意文言の処理
             staff_agreement = StaffAgreement.objects.filter(
                 Q(corporation_number=contract.corporate_number) | Q(corporation_number__isnull=True) | Q(corporation_number=''),
                 is_active=True
@@ -788,18 +810,22 @@ def staff_contract_confirm_list(request):
                     staff_agreement=staff_agreement,
                     defaults={'is_agreed': True}
                 )
+                # スタッフ契約のステータスを更新
                 contract.contract_status = Constants.CONTRACT_STATUS.CONFIRMED
                 contract.confirmed_at = timezone.now()
                 contract.save()
-                messages.success(request, f'契約「{contract.contract_name}」を確認しました。')
+                messages.success(request, f'スタッフ契約書「{contract.contract_name}」を確認しました。')
             else:
                 messages.error(request, '確認可能な同意文言が見つかりませんでした。')
-
-        elif action == 'unconfirm':
-            contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
-            contract.confirmed_at = None
-            contract.save()
-            messages.success(request, f'契約「{contract.contract_name}」を未確認に戻しました。')
+                
+        elif action == 'confirm_employment_conditions':
+            assignment_id = request.POST.get('assignment_id')
+            assignment = get_object_or_404(ContractAssignment, pk=assignment_id)
+            
+            # 就業条件明示書の確認
+            assignment.employment_conditions_confirmed_at = timezone.now()
+            assignment.save()
+            messages.success(request, f'就業条件明示書を確認しました。')
 
         return redirect('contract:staff_contract_confirm_list')
 
@@ -810,58 +836,97 @@ def staff_contract_confirm_list(request):
 
     if not staff:
         context = {
-            'contracts_with_status': [],
+            'confirm_items': [],
             'title': 'スタッフ契約確認',
         }
         return render(request, 'contract/staff_contract_confirm_list.html', context)
 
-    # 接続許可されている法人番号を取得
-    approved_corporate_numbers = ConnectStaff.objects.filter(
+    # 会社の法人番号を取得
+    company = Company.objects.first()
+    if not company or not company.corporate_number:
+        context = {
+            'confirm_items': [],
+            'title': 'スタッフ契約確認',
+        }
+        return render(request, 'contract/staff_contract_confirm_list.html', context)
+
+    # 承認済みの接続スタッフを確認
+    connect_staff = ConnectStaff.objects.filter(
+        corporate_number=company.corporate_number,
         email=user.email,
         status='approved'
-    ).values_list('corporate_number', flat=True)
+    ).first()
 
-    # 契約を取得
-    contracts_query = StaffContract.objects.filter(
+    if not connect_staff:
+        context = {
+            'confirm_items': [],
+            'title': 'スタッフ契約確認',
+        }
+        return render(request, 'contract/staff_contract_confirm_list.html', context)
+
+    confirm_items = []
+    
+    # 1. スタッフ契約書の確認対象を取得
+    staff_contracts = StaffContract.objects.filter(
         staff=staff,
-        corporate_number__in=approved_corporate_numbers,
+        corporate_number=company.corporate_number,
         contract_status__in=[Constants.CONTRACT_STATUS.ISSUED, Constants.CONTRACT_STATUS.CONFIRMED]
-    ).select_related('staff').order_by('-start_date')
-
+    ).order_by('-start_date')
+    
+    for contract in staff_contracts:
+        latest_pdf = StaffContractPrint.objects.filter(staff_contract=contract).order_by('-printed_at').first()
+        confirm_items.append({
+            'type': 'staff_contract',
+            'contract': contract,
+            'assignment': None,
+            'latest_pdf': latest_pdf,
+            'confirmed_at': contract.confirmed_at,
+            'is_confirmed': contract.contract_status == Constants.CONTRACT_STATUS.CONFIRMED,
+            'sort_date': latest_pdf.printed_at if latest_pdf else contract.created_at,
+        })
+    
+    # 2. 就業条件明示書の確認対象を取得
+    assignments = ContractAssignment.objects.filter(
+        staff_contract__staff=staff,
+        staff_contract__contract_status__in=[Constants.CONTRACT_STATUS.ISSUED, Constants.CONTRACT_STATUS.CONFIRMED],  # スタッフ契約が発行済みまたは確認済み
+        client_contract__client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH
+    ).select_related(
+        'client_contract__client',
+        'staff_contract'
+    ).order_by('-assigned_at')
+    
+    for assignment in assignments:
+        # スタッフ契約の法人番号が自社と一致するかチェック
+        if assignment.staff_contract.corporate_number != company.corporate_number:
+            continue
+            
+        # 就業条件明示書の発行履歴があるかチェック
+        latest_haken_print = ContractAssignmentHakenPrint.objects.filter(
+            contract_assignment=assignment,
+            print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS
+        ).order_by('-printed_at').first()
+        
+        if latest_haken_print:
+            confirm_items.append({
+                'type': 'employment_conditions',
+                'contract': assignment.staff_contract,
+                'assignment': assignment,
+                'latest_pdf': latest_haken_print,
+                'confirmed_at': assignment.employment_conditions_confirmed_at,
+                'is_confirmed': assignment.employment_conditions_confirmed_at is not None,
+                'sort_date': latest_haken_print.printed_at,
+            })
+    
+    # 発行日時でソート（新しい順）
+    confirm_items.sort(key=lambda x: x['sort_date'], reverse=True)
+    
     # ページネーション
-    paginator = Paginator(contracts_query, 20) # 1ページあたり20件
+    paginator = Paginator(confirm_items, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # 同意状況とPDFの情報を追加
-    contracts_with_status = []
-    for contract in page_obj:
-        # 同意文言の取得
-        staff_agreement = StaffAgreement.objects.filter(
-            Q(corporation_number=contract.corporate_number) | Q(corporation_number__isnull=True) | Q(corporation_number=''),
-            is_active=True
-        ).order_by('-corporation_number', '-created_at').first()
-
-        is_agreed = False
-        if staff_agreement:
-            is_agreed = ConnectStaffAgree.objects.filter(
-                email=user.email,
-                corporate_number=contract.corporate_number,
-                staff_agreement=staff_agreement,
-                is_agreed=True
-            ).exists()
-
-        # 最新のPDFを取得
-        latest_pdf = StaffContractPrint.objects.filter(staff_contract=contract).order_by('-printed_at').first()
-
-        contracts_with_status.append({
-            'contract': contract,
-            'is_agreed': is_agreed,
-            'latest_pdf': latest_pdf,
-        })
-
     context = {
-        'contracts_with_status': contracts_with_status,
+        'confirm_items': page_obj,
         'page_obj': page_obj,
         'title': 'スタッフ契約確認',
         'CONTRACT_STATUS': Constants.CONTRACT_STATUS,

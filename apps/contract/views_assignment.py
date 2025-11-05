@@ -750,6 +750,8 @@ def contract_assignment_detail(request, assignment_pk):
         'employment_conditions_issued': employment_conditions_issued,
         'employment_conditions_issued_at': employment_conditions_issued_at,
         'employment_conditions_issued_by': employment_conditions_issued_by,
+        'employment_conditions_confirmed': assignment.employment_conditions_confirmed_at is not None,
+        'employment_conditions_confirmed_at': assignment.employment_conditions_confirmed_at,
         'haken_print_history': haken_print_history,
         'haken_print_history_count': haken_print_history_count,
         'from_client': from_client,
@@ -1055,6 +1057,10 @@ def assignment_employment_conditions_issue(request, assignment_pk):
             action='issue',
             object_repr=f'就業条件明示書を発行しました'
         )
+        
+        # 就業条件明示書の確認状態をリセット（再発行時）
+        assignment.employment_conditions_confirmed_at = None
+        assignment.save()
         
         messages.success(request, '就業条件明示書を発行しました。')
         return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
