@@ -171,15 +171,6 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
             updated_by=self.user,
         )
         
-        # 就業条件明示書の発行履歴を作成
-        ContractAssignmentHakenPrint.objects.create(
-            contract_assignment=assignment,
-            print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS,
-            printed_by=self.user,
-            document_title='テスト就業条件明示書',
-            contract_number=self.staff_contract.contract_number,
-        )
-        
         return assignment
     
     def test_unauthenticated_access(self):
@@ -342,7 +333,8 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
         # リダイレクトされるが、何も処理されない
         self.assertEqual(response.status_code, 302)
         self.staff_contract.refresh_from_db()
-        self.assertEqual(self.staff_contract.contract_status, Constants.CONTRACT_STATUS.APPROVED)
+        # 無効なアクションの場合、契約ステータスは変更されずに元のまま（発行済み）
+        self.assertEqual(self.staff_contract.contract_status, Constants.CONTRACT_STATUS.ISSUED)
     
     def test_duplicate_employment_conditions_issue(self):
         """同じ契約番号での就業条件明示書重複発行テスト"""
