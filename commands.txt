@@ -4,6 +4,12 @@ cd django_study_base
 python manage.py startapp myapp
 python.exe -m pip install --upgrade pip
 
+# 環境つくりなおし
+python -3.14 -m venv .venv
+.venv\Scripts\Activate 
+python.exe -m pip install --upgrade pip
+pip install -r requirements.txt
+
 # 今回はいらないけど。2.2.5はNG。2.2.4
 pip install mysqlclient
 # インポート/エクスポート
@@ -91,17 +97,17 @@ python manage.py test
 python manage.py test apps.api.tests
 
 # サーバ起動
-.\venv\Scripts\Activate 
+.venv\Scripts\Activate 
 python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver
 
 # 起動のみ
-.\venv\Scripts\Activate 
+.venv\Scripts\Activate 
 python manage.py runserver
 
 # まとめ
-.\venv\Scripts\Activate 
+.venv\Scripts\Activate 
 .\_scripts\setup.bat
 python manage.py runserver
 
