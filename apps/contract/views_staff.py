@@ -713,10 +713,11 @@ def staff_contract_approve(request, pk):
                     contract.quotation_issued_by = None
                 contract.confirmed_at = None
                 
-                # 関連する契約アサインの就業条件明示書確認状態をリセット
+                # 関連する契約アサインの就業条件明示書発行・確認状態をリセット
                 # （発行履歴は保持する）
                 contract.contractassignment_set.update(
-                    employment_conditions_confirmed_at=None
+                    issued_at=None,
+                    confirmed_at=None
                 )
                 
                 contract.save()
@@ -823,7 +824,7 @@ def staff_contract_confirm_list(request):
             assignment = get_object_or_404(ContractAssignment, pk=assignment_id)
             
             # 就業条件明示書の確認
-            assignment.employment_conditions_confirmed_at = timezone.now()
+            assignment.confirmed_at = timezone.now()
             assignment.save()
             messages.success(request, f'就業条件明示書を確認しました。')
 
@@ -900,21 +901,21 @@ def staff_contract_confirm_list(request):
         if assignment.staff_contract.corporate_number != company.corporate_number:
             continue
             
-        # 就業条件明示書の発行履歴があるかチェック
-        latest_haken_print = ContractAssignmentHakenPrint.objects.filter(
-            contract_assignment=assignment,
-            print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS
-        ).order_by('-printed_at').first()
-        
-        if latest_haken_print:
+        # 就業条件明示書が発行済みかチェック（issued_atがあるかで判定）
+        if assignment.issued_at:
+            # 最新の発行履歴を取得
+            latest_haken_print = ContractAssignmentHakenPrint.objects.filter(
+                contract_assignment=assignment,
+                print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS
+            ).order_by('-printed_at').first()
             confirm_items.append({
                 'type': 'employment_conditions',
                 'contract': assignment.staff_contract,
                 'assignment': assignment,
                 'latest_pdf': latest_haken_print,
-                'confirmed_at': assignment.employment_conditions_confirmed_at,
-                'is_confirmed': assignment.employment_conditions_confirmed_at is not None,
-                'sort_date': latest_haken_print.printed_at,
+                'confirmed_at': assignment.confirmed_at,
+                'is_confirmed': assignment.confirmed_at is not None,
+                'sort_date': assignment.issued_at,  # 発行日時でソート
             })
     
     # 発行日時でソート（新しい順）

@@ -195,19 +195,21 @@ class StaffContractApprovalRevokeTest(TestCase):
             contract_number=self.staff_contract.contract_number,
         )
         
-        # 就業条件明示書を確認済みにする
-        assignment.employment_conditions_confirmed_at = timezone.now()
+        # 就業条件明示書を発行・確認済みにする
+        assignment.issued_at = timezone.now()
+        assignment.confirmed_at = timezone.now()
         assignment.save()
         
         return assignment
     
-    def test_staff_contract_approval_revoke_clears_employment_conditions(self):
-        """スタッフ契約承認解除時に就業条件明示書確認状態がリセットされることをテスト"""
+    def test_staff_contract_approval_revoke_clears_assignment_status(self):
+        """スタッフ契約承認解除時に契約アサインの発行・確認状態がリセットされることをテスト"""
         self.client.login(email='teststaff@example.com', password='password')
         
         # 1. 初期状態の確認
         self.assertEqual(self.staff_contract.contract_status, Constants.CONTRACT_STATUS.APPROVED)
-        self.assertIsNotNone(self.assignment.employment_conditions_confirmed_at)
+        self.assertIsNotNone(self.assignment.issued_at)
+        self.assertIsNotNone(self.assignment.confirmed_at)
         
         # 就業条件明示書の発行履歴が存在することを確認
         haken_prints = ContractAssignmentHakenPrint.objects.filter(
@@ -234,8 +236,9 @@ class StaffContractApprovalRevokeTest(TestCase):
         self.assertIsNone(self.staff_contract.issued_at)
         self.assertIsNone(self.staff_contract.issued_by)
         
-        # 関連する契約アサインの確認状態がリセットされていることを確認
-        self.assertIsNone(self.assignment.employment_conditions_confirmed_at)
+        # 関連する契約アサインの発行・確認状態がリセットされていることを確認
+        self.assertIsNone(self.assignment.issued_at)
+        self.assertIsNone(self.assignment.confirmed_at)
         
         # 就業条件明示書の発行履歴は保持されていることを確認
         haken_prints_after = ContractAssignmentHakenPrint.objects.filter(
@@ -275,8 +278,9 @@ class StaffContractApprovalRevokeTest(TestCase):
         self.assertIsNone(self.staff_contract.issued_at)
         self.assertIsNone(self.staff_contract.issued_by)
         
-        # 関連する契約アサインの確認状態がリセットされていることを確認
-        self.assertIsNone(self.assignment.employment_conditions_confirmed_at)
+        # 関連する契約アサインの発行・確認状態がリセットされていることを確認
+        self.assertIsNone(self.assignment.issued_at)
+        self.assertIsNone(self.assignment.confirmed_at)
         
         # 就業条件明示書の発行履歴は保持されていることを確認
         haken_prints_after = ContractAssignmentHakenPrint.objects.filter(
@@ -325,7 +329,8 @@ class StaffContractApprovalRevokeTest(TestCase):
             contract_number=self.staff_contract.contract_number,
         )
         
-        additional_assignment.employment_conditions_confirmed_at = timezone.now()
+        additional_assignment.issued_at = timezone.now()
+        additional_assignment.confirmed_at = timezone.now()
         additional_assignment.save()
         
         # 1. 初期状態の確認
@@ -351,12 +356,14 @@ class StaffContractApprovalRevokeTest(TestCase):
         ).count()
         self.assertEqual(total_haken_prints_after, 2)  # 発行履歴は保持される
         
-        # 全ての関連する契約アサインの確認状態がリセットされていることを確認
+        # 全ての関連する契約アサインの発行・確認状態がリセットされていることを確認
         self.assignment.refresh_from_db()
         additional_assignment.refresh_from_db()
         
-        self.assertIsNone(self.assignment.employment_conditions_confirmed_at)
-        self.assertIsNone(additional_assignment.employment_conditions_confirmed_at)
+        self.assertIsNone(self.assignment.issued_at)
+        self.assertIsNone(self.assignment.confirmed_at)
+        self.assertIsNone(additional_assignment.issued_at)
+        self.assertIsNone(additional_assignment.confirmed_at)
     
     def tearDown(self):
         """テスト後のクリーンアップ"""
