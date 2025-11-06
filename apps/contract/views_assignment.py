@@ -1193,3 +1193,104 @@ def assignment_employment_conditions_unissue(request, assignment_pk):
     except Exception as e:
         messages.error(request, f'発行解除中にエラーが発生しました: {str(e)}')
         return redirect('contract:contract_assignment_detail', assignment_pk=assignment_pk)
+
+
+@login_required
+@permission_required('contract.change_staffcontract', raise_exception=True)
+def staff_contract_assignment_employment_conditions_issue(request, contract_pk, assignment_pk):
+    """
+    スタッフ契約の状況カードから就業条件明示書を発行する
+    """
+    staff_contract = get_object_or_404(StaffContract, pk=contract_pk)
+    assignment = get_object_or_404(
+        ContractAssignment.objects.select_related(
+            'client_contract__client',
+            'staff_contract__staff',
+            'client_contract__haken_info__haken_office',
+            'client_contract__haken_info__commander',
+            'client_contract__haken_info__complaint_officer_client'
+        ),
+        pk=assignment_pk,
+        staff_contract=staff_contract
+    )
+    
+    # 有期雇用かどうかチェック
+    if not staff_contract.employment_type or not staff_contract.employment_type.is_fixed_term:
+        messages.error(request, 'この機能は有期雇用のスタッフ契約のみ利用できます。')
+        return redirect('contract:staff_contract_detail', pk=contract_pk)
+    
+    # 派遣契約かどうかチェック
+    if assignment.client_contract.client_contract_type_code != Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
+        messages.error(request, 'この契約は派遣契約ではないため、就業条件明示書を発行できません。')
+        return redirect('contract:staff_contract_detail', pk=contract_pk)
+    
+    # スタッフ契約の状態チェック（発行済みのみ）
+    if staff_contract.contract_status != Constants.CONTRACT_STATUS.ISSUED:
+        messages.error(request, 'スタッフ契約が発行済み状態でない場合は就業条件明示書を発行できません。')
+        return redirect('contract:staff_contract_detail', pk=contract_pk)
+    
+    try:
+        from .models import ContractAssignmentHakenPrint
+        
+        # 同じ契約番号の発行履歴があるかチェック
+        current_contract_number = staff_contract.contract_number
+        if current_contract_number:
+            existing_record = ContractAssignmentHakenPrint.objects.filter(
+                contract_assignment=assignment,
+                print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS,
+                contract_number=current_contract_number
+            ).first()
+            
+            if existing_record:
+                messages.warning(request, f'契約番号「{current_contract_number}」の就業条件明示書は既に発行済みです。')
+                return redirect('contract:staff_contract_detail', pk=contract_pk)
+        
+        from django.core.files.base import ContentFile
+        
+        # PDF生成（ウォーターマークなし）
+        from .utils import generate_employment_conditions_pdf
+        pdf_content = generate_employment_conditions_pdf(
+            assignment=assignment,
+            user=request.user,
+            issued_at=timezone.now(),
+            watermark_text=None
+        )
+        
+        # 発行履歴を保存
+        print_record = ContractAssignmentHakenPrint.objects.create(
+            contract_assignment=assignment,
+            print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS,
+            printed_by=request.user,
+            document_title=f"就業条件明示書",
+            contract_number=staff_contract.contract_number
+        )
+        
+        # PDFファイルを保存
+        filename = f"employment_conditions_{assignment.pk}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+        print_record.pdf_file.save(
+            filename,
+            ContentFile(pdf_content),
+            save=True
+        )
+        
+        # ログ記録
+        from apps.system.logs.models import AppLog
+        AppLog.objects.create(
+            user=request.user,
+            model_name='ContractAssignment',
+            object_id=str(assignment.pk),
+            action='issue',
+            object_repr=f'就業条件明示書を発行しました（スタッフ契約から）'
+        )
+        
+        # 就業条件明示書の発行日時を設定し、確認状態をリセット（再発行時）
+        assignment.issued_at = timezone.now()
+        assignment.confirmed_at = None
+        assignment.save()
+        
+        messages.success(request, f'「{assignment.client_contract.client.name}」の就業条件明示書を発行しました。')
+        return redirect('contract:staff_contract_detail', pk=contract_pk)
+        
+    except Exception as e:
+        messages.error(request, f'就業条件明示書の発行中にエラーが発生しました: {str(e)}')
+        return redirect('contract:staff_contract_detail', pk=contract_pk)

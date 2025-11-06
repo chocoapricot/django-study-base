@@ -329,6 +329,31 @@ def staff_contract_detail(request, pk):
             has_ttp_assignment = True
             break
 
+    # 各アサインの就業条件明示書発行状態を取得
+    for assignment in contract.assigned_assignments:
+        # 就業条件明示書の発行状態を確認
+        assignment.employment_conditions_issued = False
+        assignment.employment_conditions_issued_at = None
+        
+        if assignment.client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
+            # 発行状態の判定
+            # スタッフ契約がDRAFTまたはPENDINGの場合は常に未発行
+            if contract.contract_status in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
+                assignment.employment_conditions_issued = False
+            else:
+                # それ以外の場合は、同じ契約番号の発行履歴があるかで判定
+                current_contract_number = contract.contract_number
+                if current_contract_number:
+                    same_contract_history = ContractAssignmentHakenPrint.objects.filter(
+                        contract_assignment=assignment,
+                        print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS,
+                        contract_number=current_contract_number
+                    ).order_by('-printed_at').first()
+                    
+                    if same_contract_history:
+                        assignment.employment_conditions_issued = True
+                        assignment.employment_conditions_issued_at = same_contract_history.printed_at
+
     context = {
         'contract': contract,
         'issue_history': all_issue_history,
@@ -345,6 +370,7 @@ def staff_contract_detail(request, pk):
         'minimum_wage_pref_name': minimum_wage_pref_name,
         'has_ttp_assignment': has_ttp_assignment,
         'CONTRACT_STATUS': Constants.CONTRACT_STATUS,
+        'Constants': Constants,
     }
     return render(request, 'contract/staff_contract_detail.html', context)
 

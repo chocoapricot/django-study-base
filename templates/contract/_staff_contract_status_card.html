@@ -56,5 +56,29 @@
                 </label>
             </div>
         </div>
+
+        {# 就業条件明示書発行（有期雇用かつ派遣アサインがある場合のみ表示） #}
+        {% if contract.employment_type and contract.employment_type.is_fixed_term %}
+            {% for assignment in contract.assigned_assignments %}
+                {% if assignment.client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH %}
+                    <form method="get" id="employment-conditions-form-{{ assignment.pk }}" action="{% url 'contract:staff_contract_assignment_employment_conditions_issue' contract.pk assignment.pk %}" class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="employmentConditionsSwitch{{ assignment.pk }}" name="is_issued"
+                                   onchange="if(this.checked && confirm('就業条件明示書を発行しますか？')) { this.form.submit(); } else { this.checked = false; }"
+                                   {% if assignment.employment_conditions_issued %}checked{% endif %}
+                                   {% if contract.contract_status != Constants.CONTRACT_STATUS.ISSUED %}disabled{% endif %}
+                                   {% if assignment.employment_conditions_issued %}disabled{% endif %}>
+                            <label class="form-check-label" for="employmentConditionsSwitch{{ assignment.pk }}">
+                                <i class="bi bi-file-earmark-text" style="font-size: 20px; color: #17a2b8;"></i>
+                                就業条件明示書発行（{{ assignment.client_contract.client.name }}）
+                                {% if assignment.employment_conditions_issued_at %}
+                                    <span class="text-muted small">（{{ assignment.employment_conditions_issued_at|date:"Y/m/d H:i:s" }}）</span>
+                                {% endif %}
+                            </label>
+                        </div>
+                    </form>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
     </div>
 </div>

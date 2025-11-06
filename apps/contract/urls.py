@@ -106,6 +106,7 @@ urlpatterns = [
     
     # 就業条件明示書
     path('assignment/<int:assignment_pk>/employment-conditions/', views.assignment_employment_conditions_pdf, name='assignment_employment_conditions_pdf'),
+    path('staff/<int:contract_pk>/assignment/<int:assignment_pk>/employment-conditions-issue/', views.staff_contract_assignment_employment_conditions_issue, name='staff_contract_assignment_employment_conditions_issue'),
 
     path('assign/confirm/client/', views.client_assignment_confirm, name='client_assignment_confirm'),
     path('assign/confirm/staff/', views.staff_assignment_confirm, name='staff_assignment_confirm'),
