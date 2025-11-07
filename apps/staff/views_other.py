@@ -16,7 +16,7 @@ from .forms import StaffMynumberForm, StaffBankForm, StaffInternationalForm, Sta
 from apps.system.settings.utils import my_parameter
 from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
-from apps.common.utils import fill_excel_from_template, fill_pdf_from_template
+from apps.common.utils import fill_excel_from_template  # , fill_pdf_from_template
 from apps.common.constants import Constants
 from django.http import HttpResponse
 from .resources import StaffResource

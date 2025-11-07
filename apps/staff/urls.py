@@ -1,7 +1,8 @@
 # urls.py
 from django.urls import path
 from .views import (
-    staff_list, staff_create, staff_detail, staff_update, staff_delete, staff_face, staff_rirekisho, staff_fuyokojo, staff_kyushoku,
+    staff_list, staff_create, staff_detail, staff_update, staff_delete, staff_face, staff_rirekisho, # staff_fuyokojo, 
+    staff_kyushoku,
     staff_export,
     staff_contacted_create, staff_contacted_list, staff_contacted_update, staff_contacted_delete, staff_contacted_detail,
     staff_change_history_list, staff_mail_send,
@@ -34,7 +35,7 @@ urlpatterns = [
     path('staff/delete/<int:pk>/', staff_delete, name='staff_delete'),
     path('staff/rirekisho/<int:pk>/', staff_rirekisho, name='staff_rirekisho'),
     path('staff/kyushoku/<int:pk>/', staff_kyushoku, name='staff_kyushoku'),
-    path('staff/fuyokojo/<int:pk>/', staff_fuyokojo, name='staff_fuyokojo'),
+    # path('staff/fuyokojo/<int:pk>/', staff_fuyokojo, name='staff_fuyokojo'),
 
     # 連絡履歴
     path('staff/<int:staff_pk>/contacted/create/', staff_contacted_create, name='staff_contacted_create'),

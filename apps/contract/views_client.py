@@ -18,7 +18,7 @@ from django.conf import settings
 from django.utils import timezone
 import os
 from apps.system.logs.models import AppLog
-from apps.common.utils import fill_pdf_from_template
+# from apps.common.utils import fill_pdf_from_template
 from apps.client.models import Client, ClientUser
 from apps.staff.models import Staff
 from apps.master.models import ContractPattern, StaffAgreement, DefaultValue

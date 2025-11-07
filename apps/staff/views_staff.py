@@ -16,7 +16,7 @@ from .forms import StaffForm, StaffContactedForm, StaffFileForm
 from apps.system.settings.utils import my_parameter
 from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
-from apps.common.utils import fill_excel_from_template, fill_pdf_from_template
+from apps.common.utils import fill_excel_from_template
 from apps.common.constants import Constants
 from django.http import HttpResponse
 from .resources import StaffResource
@@ -803,26 +803,26 @@ def staff_kyushoku(request, pk):
     response['Content-Disposition'] = 'attachment; filename="staff_kyushoku_'+str(pk)+'.xlsx"'
     return response
 
-@login_required
-@permission_required('staff.view_staff', raise_exception=True)
-def staff_fuyokojo(request, pk):
-    staff = Staff.objects.get(pk=pk)
-    sex_dropdown = Dropdowns.objects.filter(category='sex', value=staff.sex, active=True).first()
+# @login_required
+# @permission_required('staff.view_staff', raise_exception=True)
+# def staff_fuyokojo(request, pk):
+#     staff = Staff.objects.get(pk=pk)
+#     sex_dropdown = Dropdowns.objects.filter(category='sex', value=staff.sex, active=True).first()
 
-    # フォームに埋め込むデータを準備
-    form_data = {
-        'Text6': staff.name_kana_last + " " + staff.name_kana_first,  # カナ名
-        'Text7': staff.name_last + " " + staff.name_first,  # 名前
-        'Text10': staff.address1 + staff.address2 + staff.address3,  # 住所
-    }
+#     # フォームに埋め込むデータを準備
+#     form_data = {
+#         'Text6': staff.name_kana_last + " " + staff.name_kana_first,  # カナ名
+#         'Text7': staff.name_last + " " + staff.name_first,  # 名前
+#         'Text10': staff.address1 + staff.address2 + staff.address3,  # 住所
+#     }
 
-    # PDFフォームにデータを埋め込む（メモリ上にPDFを作成）
-    output_pdf = fill_pdf_from_template('templates/pdfs/2025bun_01_input.pdf', form_data)
+#     # PDFフォームにデータを埋め込む（メモリ上にPDFを作成）
+#     output_pdf = fill_pdf_from_template('templates/pdfs/2025bun_01_input.pdf', form_data)
 
-    # メモリ上のPDFをレスポンスとして返す
-    response = HttpResponse(output_pdf.read(), content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="staff_fuyokojo_'+str(pk)+'.pdf"'
-    return response
+#     # メモリ上のPDFをレスポンスとして返す
+#     response = HttpResponse(output_pdf.read(), content_type='application/pdf')
+#     response['Content-Disposition'] = 'attachment; filename="staff_fuyokojo_'+str(pk)+'.pdf"'
+#     return response
 
 # スタッフ資格登録
 @login_required
