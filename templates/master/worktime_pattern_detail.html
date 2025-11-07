@@ -66,12 +66,34 @@
                 {% for work_time in work_times %}
                 <tr>
                     <td>{{ work_time.time_name.content|default:"-" }}</td>
-                    <td>{{ work_time.start_time|time:"H:i" }} - {{ work_time.end_time|time:"H:i" }}</td>
+                    <td>
+                        {% if work_time.start_time_next_day %}
+                            <span class="text-info" data-bs-toggle="tooltip" title="翌日">{{ work_time.start_time|time:"H:i" }}</span>
+                        {% else %}
+                            {{ work_time.start_time|time:"H:i" }}
+                        {% endif %}
+                        -
+                        {% if work_time.end_time_next_day %}
+                            <span class="text-info" data-bs-toggle="tooltip" title="翌日">{{ work_time.end_time|time:"H:i" }}</span>
+                        {% else %}
+                            {{ work_time.end_time|time:"H:i" }}
+                        {% endif %}
+                    </td>
                     <td>
                         {% if work_time.break_times.all %}
                             {% for break_time in work_time.break_times.all %}
                                 <div>
-                                    {{ break_time.start_time|time:"H:i" }} - {{ break_time.end_time|time:"H:i" }}
+                                    {% if break_time.start_time_next_day %}
+                                        <span class="text-info" data-bs-toggle="tooltip" title="翌日">{{ break_time.start_time|time:"H:i" }}</span>
+                                    {% else %}
+                                        {{ break_time.start_time|time:"H:i" }}
+                                    {% endif %}
+                                    -
+                                    {% if break_time.end_time_next_day %}
+                                        <span class="text-info" data-bs-toggle="tooltip" title="翌日">{{ break_time.end_time|time:"H:i" }}</span>
+                                    {% else %}
+                                        {{ break_time.end_time|time:"H:i" }}
+                                    {% endif %}
                                     <a href="{% url 'master:worktime_pattern_break_update' break_time.pk %}" class="btn btn-dark py-0 px-1 ms-1" style="font-size: 0.75rem;" title="編集"><i class="bi bi-pencil"></i></a>
                                     <a href="{% url 'master:worktime_pattern_break_delete' break_time.pk %}" class="btn btn-dark py-0 px-1" style="font-size: 0.75rem;" title="削除"><i class="bi bi-x"></i></a>
                                     {% if forloop.last %}
@@ -104,4 +126,16 @@
     {% include 'common/_change_history_list.html' %}
 {% endwith %}
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ツールチップの初期化
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
 {% endblock %}

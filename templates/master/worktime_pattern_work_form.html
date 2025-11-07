@@ -30,6 +30,15 @@
                         <div class="text-danger">{{ form.start_time.errors }}</div>
                     {% endif %}
                 </div>
+                <div class="col-sm-3">
+                    <div class="form-check">
+                        {{ form.start_time_next_day }}
+                        <label class="form-check-label" for="{{ form.start_time_next_day.id_for_label }}">翌日</label>
+                    </div>
+                    {% if form.start_time_next_day.errors %}
+                        <div class="text-danger">{{ form.start_time_next_day.errors }}</div>
+                    {% endif %}
+                </div>
             </div>
 
             <div class="row mb-3 align-items-center">
@@ -38,6 +47,15 @@
                     {{ form.end_time }}
                     {% if form.end_time.errors %}
                         <div class="text-danger">{{ form.end_time.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-check">
+                        {{ form.end_time_next_day }}
+                        <label class="form-check-label" for="{{ form.end_time_next_day.id_for_label }}">翌日</label>
+                    </div>
+                    {% if form.end_time_next_day.errors %}
+                        <div class="text-danger">{{ form.end_time_next_day.errors }}</div>
                     {% endif %}
                 </div>
             </div>

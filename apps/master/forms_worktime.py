@@ -19,11 +19,13 @@ class WorkTimePatternWorkForm(forms.ModelForm):
     """就業時間パターン勤務時間フォーム"""
     class Meta:
         model = WorkTimePatternWork
-        fields = ['time_name', 'start_time', 'end_time', 'display_order']
+        fields = ['time_name', 'start_time', 'start_time_next_day', 'end_time', 'end_time_next_day', 'display_order']
         widgets = {
             'time_name': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'start_time': forms.TimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'time'}),
+            'start_time_next_day': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'end_time': forms.TimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'time'}),
+            'end_time_next_day': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
         }
 
@@ -44,10 +46,12 @@ class WorkTimePatternBreakForm(forms.ModelForm):
     """就業時間パターン休憩時間フォーム"""
     class Meta:
         model = WorkTimePatternBreak
-        fields = ['start_time', 'end_time', 'display_order']
+        fields = ['start_time', 'start_time_next_day', 'end_time', 'end_time_next_day', 'display_order']
         widgets = {
             'start_time': forms.TimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'time'}),
+            'start_time_next_day': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'end_time': forms.TimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'time'}),
+            'end_time_next_day': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
         }
 

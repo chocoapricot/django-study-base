@@ -44,7 +44,9 @@ class WorkTimePatternWork(MyModel):
         limit_choices_to={'title__key': 'WORKTIME_NAME', 'is_active': True}
     )
     start_time = models.TimeField('開始時刻')
+    start_time_next_day = models.BooleanField('開始時刻翌日', default=False, help_text='開始時刻が翌日の場合にチェック')
     end_time = models.TimeField('終了時刻')
+    end_time_next_day = models.BooleanField('終了時刻翌日', default=False, help_text='終了時刻が翌日の場合にチェック')
     display_order = models.IntegerField('表示順', default=0)
 
     class Meta:
@@ -59,6 +61,17 @@ class WorkTimePatternWork(MyModel):
     def __str__(self):
         name_part = f"【{self.time_name.content}】" if self.time_name else ""
         return f"{name_part} {self.start_time.strftime('%H:%M')}-{self.end_time.strftime('%H:%M')}"
+    
+    def get_time_display(self):
+        """時刻表示（翌日フラグ考慮）"""
+        start = self.start_time.strftime('%H:%M')
+        end = self.end_time.strftime('%H:%M')
+        return f"{start}-{end}"
+    
+    def get_full_display(self):
+        """完全な表示（名称 + 時刻）"""
+        name = self.time_name.content if self.time_name else "未設定"
+        return f"{name} {self.get_time_display()}"
 
 
 class WorkTimePatternBreak(MyModel):
@@ -72,7 +85,9 @@ class WorkTimePatternBreak(MyModel):
         related_name='break_times'
     )
     start_time = models.TimeField('開始時刻')
+    start_time_next_day = models.BooleanField('開始時刻翌日', default=False, help_text='開始時刻が翌日の場合にチェック')
     end_time = models.TimeField('終了時刻')
+    end_time_next_day = models.BooleanField('終了時刻翌日', default=False, help_text='終了時刻が翌日の場合にチェック')
     display_order = models.IntegerField('表示順', default=0)
 
     class Meta:

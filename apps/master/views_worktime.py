@@ -270,7 +270,7 @@ def worktime_pattern_break_create(request, work_pk):
     context = {
         'form': form,
         'work_time': work_time,
-        'title': '休憩時間作成'
+        'title': f'休憩時間作成 - {work_time.get_full_display()}'
     }
     return render(request, 'master/worktime_pattern_break_form.html', context)
 
@@ -295,7 +295,7 @@ def worktime_pattern_break_update(request, pk):
         'form': form,
         'break_time': break_time,
         'work_time': work_time,
-        'title': '休憩時間編集'
+        'title': f'休憩時間編集 - {work_time.get_full_display()}'
     }
     return render(request, 'master/worktime_pattern_break_form.html', context)
 
@@ -305,7 +305,8 @@ def worktime_pattern_break_update(request, pk):
 def worktime_pattern_break_delete(request, pk):
     """休憩時間削除"""
     break_time = get_object_or_404(WorkTimePatternBreak, pk=pk)
-    pattern_pk = break_time.work_time.worktime_pattern.pk
+    work_time = break_time.work_time
+    pattern_pk = work_time.worktime_pattern.pk
     
     if request.method == 'POST':
         break_time.delete()
@@ -314,6 +315,7 @@ def worktime_pattern_break_delete(request, pk):
     
     context = {
         'break_time': break_time,
-        'title': '休憩時間削除'
+        'work_time': work_time,
+        'title': f'休憩時間削除 - {work_time.get_full_display()}'
     }
     return render(request, 'master/worktime_pattern_break_confirm_delete.html', context)
