@@ -94,5 +94,21 @@
         "end_time": "08:00:00",
         "display_order": 30
     }
+},
+{
+    "model": "master.worktimepatternwork",
+    "pk": 7,
+    "fields": {
+        "version": 1762551374194015,
+        "created_at": "2025-11-07T21:51:47.953Z",
+        "created_by": 1,
+        "updated_at": "2025-11-07T21:52:00.846Z",
+        "updated_by": 1,
+        "worktime_pattern": 5,
+        "time_name": 38,
+        "start_time": "09:00:00",
+        "end_time": "13:00:00",
+        "display_order": 10
+    }
 }
 ]
