@@ -3,7 +3,7 @@
     "model": "master.phrasetemplate",
     "pk": 1,
     "fields": {
-        "version": 1762098085844293,
+        "version": 1762377177201527,
         "created_at": "2025-10-25T14:36:06.126Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:36:06.126Z",
@@ -18,7 +18,7 @@
     "model": "master.phrasetemplate",
     "pk": 2,
     "fields": {
-        "version": 1762098085864125,
+        "version": 1762377177215967,
         "created_at": "2025-10-25T14:36:13.568Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:36:13.568Z",
@@ -33,7 +33,7 @@
     "model": "master.phrasetemplate",
     "pk": 3,
     "fields": {
-        "version": 1762098085871544,
+        "version": 1762377177218811,
         "created_at": "2025-10-25T14:36:20.764Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:36:20.764Z",
@@ -48,7 +48,7 @@
     "model": "master.phrasetemplate",
     "pk": 4,
     "fields": {
-        "version": 1762098085877713,
+        "version": 1762377177221893,
         "created_at": "2025-10-25T14:41:56.231Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:41:56.231Z",
@@ -63,7 +63,7 @@
     "model": "master.phrasetemplate",
     "pk": 5,
     "fields": {
-        "version": 1762098085883675,
+        "version": 1762377177224777,
         "created_at": "2025-10-25T14:42:02.547Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:02.547Z",
@@ -78,7 +78,7 @@
     "model": "master.phrasetemplate",
     "pk": 6,
     "fields": {
-        "version": 1762098085893648,
+        "version": 1762377177229453,
         "created_at": "2025-10-25T14:42:14.657Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:14.657Z",
@@ -93,7 +93,7 @@
     "model": "master.phrasetemplate",
     "pk": 7,
     "fields": {
-        "version": 1762098085901996,
+        "version": 1762377177231960,
         "created_at": "2025-10-25T14:42:22.761Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:22.761Z",
@@ -108,7 +108,7 @@
     "model": "master.phrasetemplate",
     "pk": 8,
     "fields": {
-        "version": 1762098085909879,
+        "version": 1762377177234359,
         "created_at": "2025-10-25T14:42:33.417Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:33.417Z",
@@ -123,7 +123,7 @@
     "model": "master.phrasetemplate",
     "pk": 9,
     "fields": {
-        "version": 1762098085918100,
+        "version": 1762377177238029,
         "created_at": "2025-10-25T14:42:39.730Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:39.730Z",
@@ -138,7 +138,7 @@
     "model": "master.phrasetemplate",
     "pk": 10,
     "fields": {
-        "version": 1762098085923495,
+        "version": 1762377177240863,
         "created_at": "2025-10-25T14:42:51.547Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:51.547Z",
@@ -153,7 +153,7 @@
     "model": "master.phrasetemplate",
     "pk": 11,
     "fields": {
-        "version": 1762098085930343,
+        "version": 1762377177246008,
         "created_at": "2025-10-25T14:42:58.197Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:42:58.198Z",
@@ -168,7 +168,7 @@
     "model": "master.phrasetemplate",
     "pk": 12,
     "fields": {
-        "version": 1762098085935774,
+        "version": 1762377177249523,
         "created_at": "2025-10-25T14:43:06.839Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:45:03.958Z",
@@ -183,7 +183,7 @@
     "model": "master.phrasetemplate",
     "pk": 13,
     "fields": {
-        "version": 1762098085941278,
+        "version": 1762377177253122,
         "created_at": "2025-10-25T14:43:12.799Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:44:57.657Z",
@@ -198,7 +198,7 @@
     "model": "master.phrasetemplate",
     "pk": 14,
     "fields": {
-        "version": 1762098085947858,
+        "version": 1762377177256610,
         "created_at": "2025-10-25T14:43:33.361Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:43:33.361Z",
@@ -213,7 +213,7 @@
     "model": "master.phrasetemplate",
     "pk": 15,
     "fields": {
-        "version": 1762098085953525,
+        "version": 1762377177262298,
         "created_at": "2025-10-25T14:43:39.637Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:43:39.638Z",
@@ -228,7 +228,7 @@
     "model": "master.phrasetemplate",
     "pk": 16,
     "fields": {
-        "version": 1762098085959989,
+        "version": 1762377177267013,
         "created_at": "2025-10-25T14:45:36.099Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:45:36.099Z",
@@ -243,7 +243,7 @@
     "model": "master.phrasetemplate",
     "pk": 17,
     "fields": {
-        "version": 1762098085966483,
+        "version": 1762377177270721,
         "created_at": "2025-10-25T14:45:45.975Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:45:45.976Z",
@@ -258,7 +258,7 @@
     "model": "master.phrasetemplate",
     "pk": 18,
     "fields": {
-        "version": 1762098085972090,
+        "version": 1762377177274527,
         "created_at": "2025-10-25T14:46:36.053Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:46:36.053Z",
@@ -273,7 +273,7 @@
     "model": "master.phrasetemplate",
     "pk": 19,
     "fields": {
-        "version": 1762098085978026,
+        "version": 1762377177280444,
         "created_at": "2025-10-25T14:46:44.280Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:46:44.280Z",
@@ -288,7 +288,7 @@
     "model": "master.phrasetemplate",
     "pk": 20,
     "fields": {
-        "version": 1762098085984698,
+        "version": 1762377177284583,
         "created_at": "2025-10-25T14:46:58.787Z",
         "created_by": 1,
         "updated_at": "2025-10-25T14:46:58.787Z",
@@ -303,7 +303,7 @@
     "model": "master.phrasetemplate",
     "pk": 21,
     "fields": {
-        "version": 1762098085990571,
+        "version": 1762377177288339,
         "created_at": "2025-10-25T15:03:04.573Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:03:04.573Z",
@@ -318,7 +318,7 @@
     "model": "master.phrasetemplate",
     "pk": 22,
     "fields": {
-        "version": 1762098085996020,
+        "version": 1762377177295086,
         "created_at": "2025-10-25T15:03:16.029Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:03:16.029Z",
@@ -333,7 +333,7 @@
     "model": "master.phrasetemplate",
     "pk": 23,
     "fields": {
-        "version": 1762098086001495,
+        "version": 1762377177299485,
         "created_at": "2025-10-25T15:03:25.638Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:03:25.639Z",
@@ -348,7 +348,7 @@
     "model": "master.phrasetemplate",
     "pk": 24,
     "fields": {
-        "version": 1762098086006796,
+        "version": 1762377177301978,
         "created_at": "2025-10-25T15:08:15.984Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:08:15.984Z",
@@ -363,7 +363,7 @@
     "model": "master.phrasetemplate",
     "pk": 25,
     "fields": {
-        "version": 1762098086013024,
+        "version": 1762377177304375,
         "created_at": "2025-10-25T15:08:30.494Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:08:30.494Z",
@@ -378,7 +378,7 @@
     "model": "master.phrasetemplate",
     "pk": 26,
     "fields": {
-        "version": 1762098086018246,
+        "version": 1762377177306812,
         "created_at": "2025-10-25T15:08:43.755Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:08:43.755Z",
@@ -393,7 +393,7 @@
     "model": "master.phrasetemplate",
     "pk": 27,
     "fields": {
-        "version": 1762098086023880,
+        "version": 1762377177311497,
         "created_at": "2025-10-25T15:08:58.180Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:08:58.181Z",
@@ -408,7 +408,7 @@
     "model": "master.phrasetemplate",
     "pk": 28,
     "fields": {
-        "version": 1762098086029476,
+        "version": 1762377177315434,
         "created_at": "2025-10-25T15:44:38.212Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:44:38.212Z",
@@ -423,7 +423,7 @@
     "model": "master.phrasetemplate",
     "pk": 29,
     "fields": {
-        "version": 1762098086034824,
+        "version": 1762377177318920,
         "created_at": "2025-10-25T15:44:38.224Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:44:38.224Z",
@@ -438,7 +438,7 @@
     "model": "master.phrasetemplate",
     "pk": 30,
     "fields": {
-        "version": 1762098086040296,
+        "version": 1762377177322806,
         "created_at": "2025-10-25T15:44:38.226Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:44:38.226Z",
@@ -453,7 +453,7 @@
     "model": "master.phrasetemplate",
     "pk": 31,
     "fields": {
-        "version": 1762098086045452,
+        "version": 1762377177329541,
         "created_at": "2025-10-25T15:44:38.232Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:44:38.232Z",
@@ -468,7 +468,7 @@
     "model": "master.phrasetemplate",
     "pk": 32,
     "fields": {
-        "version": 1762098086050901,
+        "version": 1762377177333192,
         "created_at": "2025-10-25T15:44:38.235Z",
         "created_by": 1,
         "updated_at": "2025-10-25T15:44:38.235Z",
@@ -483,7 +483,7 @@
     "model": "master.phrasetemplate",
     "pk": 33,
     "fields": {
-        "version": 1762098086057305,
+        "version": 1762377177336785,
         "created_at": "2025-10-30T13:27:22.415Z",
         "created_by": 1,
         "updated_at": "2025-10-30T13:28:30.676Z",
@@ -498,7 +498,7 @@
     "model": "master.phrasetemplate",
     "pk": 34,
     "fields": {
-        "version": 1762098086063286,
+        "version": 1762377177340468,
         "created_at": "2025-10-30T13:27:34.763Z",
         "created_by": 1,
         "updated_at": "2025-10-30T13:28:22.788Z",
@@ -513,7 +513,7 @@
     "model": "master.phrasetemplate",
     "pk": 35,
     "fields": {
-        "version": 1762098086069065,
+        "version": 1762377177345645,
         "created_at": "2025-10-30T13:27:47.381Z",
         "created_by": 1,
         "updated_at": "2025-10-30T13:28:16.372Z",
@@ -528,7 +528,7 @@
     "model": "master.phrasetemplate",
     "pk": 36,
     "fields": {
-        "version": 1762098086075370,
+        "version": 1762377177348098,
         "created_at": "2025-10-30T13:28:09.572Z",
         "created_by": 1,
         "updated_at": "2025-10-30T13:28:09.572Z",
@@ -543,7 +543,7 @@
     "model": "master.phrasetemplate",
     "pk": 37,
     "fields": {
-        "version": 1762100065827912,
+        "version": 1762377177350518,
         "created_at": "2025-11-02T16:30:04.217Z",
         "created_by": 1,
         "updated_at": "2025-11-02T16:30:12.480Z",
@@ -552,6 +552,261 @@
         "content": "ソフトウェア開発業務。",
         "is_active": true,
         "display_order": 60
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 38,
+    "fields": {
+        "version": 1762536798252414,
+        "created_at": "2025-11-07T17:47:43.176Z",
+        "created_by": 1,
+        "updated_at": "2025-11-07T17:49:04.904Z",
+        "updated_by": 1,
+        "title": 11,
+        "content": "標準勤務",
+        "is_active": true,
+        "display_order": 10
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 39,
+    "fields": {
+        "version": 1762536729525311,
+        "created_at": "2025-11-07T17:47:56.177Z",
+        "created_by": 1,
+        "updated_at": "2025-11-07T17:47:56.177Z",
+        "updated_by": 1,
+        "title": 11,
+        "content": "平日",
+        "is_active": true,
+        "display_order": 20
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 40,
+    "fields": {
+        "version": 1762536743100025,
+        "created_at": "2025-11-07T17:48:09.752Z",
+        "created_by": 1,
+        "updated_at": "2025-11-07T17:48:09.752Z",
+        "updated_by": 1,
+        "title": 11,
+        "content": "休日",
+        "is_active": true,
+        "display_order": 21
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 41,
+    "fields": {
+        "version": 1762536806076045,
+        "created_at": "2025-11-07T17:49:12.728Z",
+        "created_by": 1,
+        "updated_at": "2025-11-07T17:49:12.728Z",
+        "updated_by": 1,
+        "title": 11,
+        "content": "深夜勤務",
+        "is_active": true,
+        "display_order": 12
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 42,
+    "fields": {
+        "version": 1762536829276665,
+        "created_at": "2025-11-07T17:49:35.929Z",
+        "created_by": 1,
+        "updated_at": "2025-11-07T17:49:35.929Z",
+        "updated_by": 1,
+        "title": 11,
+        "content": "土曜",
+        "is_active": true,
+        "display_order": 22
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 43,
+    "fields": {
+        "version": 1762536843074240,
+        "created_at": "2025-11-07T17:49:49.726Z",
+        "created_by": 1,
+        "updated_at": "2025-11-07T17:49:49.726Z",
+        "updated_by": 1,
+        "title": 11,
+        "content": "日曜",
+        "is_active": true,
+        "display_order": 23
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 44,
+    "fields": {
+        "version": 1762536864760130,
+        "created_at": "2025-11-07T17:50:11.412Z",
+        "created_by": 1,
+        "updated_at": "2025-11-07T17:50:11.412Z",
+        "updated_by": 1,
+        "title": 11,
+        "content": "シフト1",
+        "is_active": true,
+        "display_order": 31
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 45,
+    "fields": {
+        "version": 1762536874124955,
+        "created_at": "2025-11-07T17:50:20.777Z",
+        "created_by": 1,
+        "updated_at": "2025-11-07T17:50:20.777Z",
+        "updated_by": 1,
+        "title": 11,
+        "content": "シフト2",
+        "is_active": true,
+        "display_order": 32
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 46,
+    "fields": {
+        "version": 1762536885916162,
+        "created_at": "2025-11-07T17:50:32.568Z",
+        "created_by": 1,
+        "updated_at": "2025-11-07T17:50:32.568Z",
+        "updated_by": 1,
+        "title": 11,
+        "content": "シフト3",
+        "is_active": true,
+        "display_order": 33
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 47,
+    "fields": {
+        "version": 1762536892138560,
+        "created_at": "2025-11-07T17:50:38.790Z",
+        "created_by": 1,
+        "updated_at": "2025-11-07T17:50:38.791Z",
+        "updated_by": 1,
+        "title": 11,
+        "content": "シフト4",
+        "is_active": true,
+        "display_order": 34
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 48,
+    "fields": {
+        "version": 1762536899362464,
+        "created_at": "2025-11-07T17:50:46.014Z",
+        "created_by": 1,
+        "updated_at": "2025-11-07T17:50:46.014Z",
+        "updated_by": 1,
+        "title": 11,
+        "content": "シフト5",
+        "is_active": true,
+        "display_order": 35
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 49,
+    "fields": {
+        "version": 1762536914827416,
+        "created_at": "2025-11-07T17:51:01.479Z",
+        "created_by": 1,
+        "updated_at": "2025-11-07T17:51:01.479Z",
+        "updated_by": 1,
+        "title": 11,
+        "content": "A勤",
+        "is_active": true,
+        "display_order": 41
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 50,
+    "fields": {
+        "version": 1762536922467054,
+        "created_at": "2025-11-07T17:51:09.119Z",
+        "created_by": 1,
+        "updated_at": "2025-11-07T17:51:09.119Z",
+        "updated_by": 1,
+        "title": 11,
+        "content": "B勤",
+        "is_active": true,
+        "display_order": 42
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 51,
+    "fields": {
+        "version": 1762536929607253,
+        "created_at": "2025-11-07T17:51:16.259Z",
+        "created_by": 1,
+        "updated_at": "2025-11-07T17:51:16.259Z",
+        "updated_by": 1,
+        "title": 11,
+        "content": "C勤",
+        "is_active": true,
+        "display_order": 43
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 52,
+    "fields": {
+        "version": 1762537022103969,
+        "created_at": "2025-11-07T17:52:48.756Z",
+        "created_by": 1,
+        "updated_at": "2025-11-07T17:52:48.756Z",
+        "updated_by": 1,
+        "title": 11,
+        "content": "日勤",
+        "is_active": true,
+        "display_order": 50
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 53,
+    "fields": {
+        "version": 1762537036202686,
+        "created_at": "2025-11-07T17:53:02.855Z",
+        "created_by": 1,
+        "updated_at": "2025-11-07T17:53:02.855Z",
+        "updated_by": 1,
+        "title": 11,
+        "content": "準夜勤",
+        "is_active": true,
+        "display_order": 51
+    }
+},
+{
+    "model": "master.phrasetemplate",
+    "pk": 54,
+    "fields": {
+        "version": 1762537042014659,
+        "created_at": "2025-11-07T17:53:08.667Z",
+        "created_by": 1,
+        "updated_at": "2025-11-07T17:53:08.667Z",
+        "updated_by": 1,
+        "title": 11,
+        "content": "夜勤",
+        "is_active": true,
+        "display_order": 52
     }
 }
 ]
