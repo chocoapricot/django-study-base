@@ -1,14 +1,9 @@
 ﻿import datetime
 import io
 from django.test import TestCase
-from unittest import skipIf
 from unittest.mock import patch
 
-try:
-    import fitz  # PyMuPDF
-    HAS_PYMUPDF = True
-except ImportError:
-    HAS_PYMUPDF = False
+import pypdfium2 as pdfium
 
 from apps.accounts.models import MyUser
 from apps.client.models import Client, ClientDepartment, ClientUser
@@ -17,6 +12,29 @@ from apps.contract.models import ClientContract, ClientContractHaken, StaffContr
 from apps.master.models import ContractPattern, BillPayment, ContractTerms, JobCategory
 from apps.staff.models import Staff
 from apps.contract.utils import generate_contract_pdf_content, generate_teishokubi_notification_pdf
+
+
+def extract_text_from_pdf(pdf_content):
+    """pypdfium2を使用してPDFからテキストを抽出する"""
+    if isinstance(pdf_content, bytes):
+        pdf_document = pdfium.PdfDocument(pdf_content)
+    else:
+        pdf_document = pdfium.PdfDocument(pdf_content)
+    
+    text = ""
+    for page_num in range(len(pdf_document)):
+        page = pdf_document[page_num]
+        textpage = page.get_textpage()
+        page_text = textpage.get_text_range()
+        # \r を \n に変換してPyMuPDFと同じような動作にする
+        page_text = page_text.replace('\r', '\n')
+        text += page_text
+        textpage.close()
+        page.close()
+    
+    pdf_document.close()
+    return text
+
 
 class ContractPdfGenerationTest(TestCase):
 
@@ -215,7 +233,6 @@ class ContractPdfGenerationTest(TestCase):
         self.assertNotIn("派遣元責任者", items_dict)
         self.assertNotIn("協定対象派遣労働者に限定するか否かの別", items_dict)
 
-    @skipIf(not HAS_PYMUPDF, "PyMuPDF not available")
     def test_normal_contract_pdf_includes_business_content(self):
         """Test that PDF for normal contract includes business_content."""
         self.normal_contract.business_content = "This is a test for business content in a normal contract."
@@ -224,9 +241,7 @@ class ContractPdfGenerationTest(TestCase):
         pdf_content, _, _ = generate_contract_pdf_content(self.normal_contract)
         self.assertIsNotNone(pdf_content)
 
-        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
-        text = "".join(page.get_text() for page in pdf_document)
-        pdf_document.close()
+        text = extract_text_from_pdf(pdf_content)
 
         self.assertIn("業務内容", text)
         self.assertIn("This is a test for business content in a normal contract.", text)
@@ -265,7 +280,6 @@ class ContractPdfGenerationTest(TestCase):
         self.assertNotIn("製造業務専門派遣先責任者", items_dict)
         self.assertNotIn("製造業務専門派遣元責任者", items_dict)
 
-    @skipIf(not HAS_PYMUPDF, "PyMuPDF not available")
     def test_generate_teishokubi_notification_pdf_content(self):
         """抵触日通知書PDFが正しい内容で生成されることをテストする"""
         # 派遣先事業所と抵触日を設定
@@ -287,11 +301,7 @@ class ContractPdfGenerationTest(TestCase):
         self.assertEqual(pdf_title, "抵触日通知書")
 
         # PDFからテキストを抽出
-        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
-        text = ""
-        for page in pdf_document:
-            text += page.get_text()
-        pdf_document.close()
+        text = extract_text_from_pdf(pdf_content)
 
         # PDF内容の検証
         self.assertIn("派遣可能期間の制限（事業所単位の期間制限）に抵触する日の通知", text)
@@ -307,7 +317,6 @@ class ContractPdfGenerationTest(TestCase):
         self.assertIn(haken_office.name, text)
         self.assertIn(haken_office.address, text)
 
-    @skipIf(not HAS_PYMUPDF, "PyMuPDF not available")
     def test_generate_teishokubi_notification_pdf_with_notice_date(self):
         """抵触日通知日が設定されている場合、PDFに通知日が印字されることをテストする"""
         # 派遣先事業所と抵触日、通知日を設定
@@ -331,17 +340,12 @@ class ContractPdfGenerationTest(TestCase):
         self.assertEqual(pdf_title, "抵触日通知書")
 
         # PDFからテキストを抽出
-        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
-        text = ""
-        for page in pdf_document:
-            text += page.get_text()
-        pdf_document.close()
+        text = extract_text_from_pdf(pdf_content)
 
         # 通知日が印字されていることを確認（年月日のみ）
         expected_notice_date = "2025年09月15日"
         self.assertIn(expected_notice_date, text)
 
-    @skipIf(not HAS_PYMUPDF, "PyMuPDF not available")
     def test_generate_teishokubi_notification_pdf_without_notice_date(self):
         """抵触日通知日が設定されていない場合、PDFに通知日が印字されないことをテストする"""
         # 派遣先事業所と抵触日を設定（通知日は設定しない）
@@ -364,17 +368,12 @@ class ContractPdfGenerationTest(TestCase):
         self.assertEqual(pdf_title, "抵触日通知書")
 
         # PDFからテキストを抽出
-        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
-        text = ""
-        for page in pdf_document:
-            text += page.get_text()
-        pdf_document.close()
+        text = extract_text_from_pdf(pdf_content)
 
         # 通知日が印字されていないことを確認
         # 特定の通知日フォーマットが含まれていないことを確認
         self.assertNotIn("2025年09月15日", text)
 
-    @skipIf(not HAS_PYMUPDF, "PyMuPDF not available")
     def test_generate_teishokubi_notification_pdf_from_department_with_notice_date(self):
         """クライアント組織から直接生成する場合も通知日が印字されることをテストする"""
         # 通知日を設定したクライアント組織を作成
@@ -396,11 +395,7 @@ class ContractPdfGenerationTest(TestCase):
         self.assertEqual(pdf_title, "抵触日通知書")
 
         # PDFからテキストを抽出
-        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
-        text = ""
-        for page in pdf_document:
-            text += page.get_text()
-        pdf_document.close()
+        text = extract_text_from_pdf(pdf_content)
 
         # 通知日が印字されていることを確認（年月日のみ）
         expected_notice_date = "2025年09月20日"
@@ -517,42 +512,31 @@ class ContractPdfGenerationTest(TestCase):
         # Check postamble_text
         self.assertEqual(postamble_text, f"Signed by {expected_company_name} and {expected_client_name}.")
 
-    @skipIf(not HAS_PYMUPDF, "PyMuPDF not available")
     def test_generate_client_contract_pdf_removes_unwanted_preamble(self):
         """クライアント契約書PDFから不要な前文が削除されていることを確認する"""
         pdf_content, _, _ = generate_contract_pdf_content(self.normal_contract)
         self.assertIsNotNone(pdf_content)
 
         # PDFからテキストを抽出
-        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
-        text = ""
-        for page in pdf_document:
-            text += page.get_text()
-        pdf_document.close()
+        text = extract_text_from_pdf(pdf_content)
 
         # 不要な文言が含まれていないことを確認
         unwanted_text = f"{self.normal_contract.client.name}様との間で、以下の通り業務委託契約を締結します。"
         self.assertNotIn(unwanted_text, text)
 
-    @skipIf(not HAS_PYMUPDF, "PyMuPDF not available")
     def test_generate_staff_contract_pdf_removes_unwanted_preamble(self):
         """スタッフ契約書PDFから不要な前文が削除されていることを確認する"""
         pdf_content, _, _ = generate_contract_pdf_content(self.staff_contract)
         self.assertIsNotNone(pdf_content)
 
         # PDFからテキストを抽出
-        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
-        text = ""
-        for page in pdf_document:
-            text += page.get_text()
-        pdf_document.close()
+        text = extract_text_from_pdf(pdf_content)
 
         # 不要な文言が含まれていないことを確認
         full_name = f"{self.staff_contract.staff.name_last} {self.staff_contract.staff.name_first}"
         unwanted_text = f"{full_name}様との間で、以下の通り雇用契約を締結します。"
         self.assertNotIn(unwanted_text, text)
 
-    @skipIf(not HAS_PYMUPDF, "PyMuPDF not available")
     def test_staff_contract_pdf_with_pay_unit(self):
         """スタッフ契約書PDFで支払単位が正しく印字されることをテストする"""
         from apps.system.settings.models import Dropdowns
@@ -567,11 +551,7 @@ class ContractPdfGenerationTest(TestCase):
         self.assertIsNotNone(pdf_content)
 
         # PDFからテキストを抽出
-        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
-        text = ""
-        for page in pdf_document:
-            text += page.get_text()
-        pdf_document.close()
+        text = extract_text_from_pdf(pdf_content)
 
         # 支払単位と金額が正しく印字されていることを確認
         self.assertIn("契約金額", text)
@@ -595,7 +575,6 @@ class ContractPdfGenerationTest(TestCase):
         self.assertIn("業務内容", items_dict)
         self.assertEqual(items_dict["業務内容"], "テスト用業務内容")
 
-    @skipIf(not HAS_PYMUPDF, "PyMuPDF not available")
     def test_dispatch_contract_pdf_includes_ttp_info(self):
         """紹介予定派遣の場合に、PDFにTTP情報が正しく印字されることをテストする"""
         from apps.contract.models import ClientContractTtp
@@ -613,12 +592,7 @@ class ContractPdfGenerationTest(TestCase):
         self.assertIsNotNone(pdf_content)
 
         # 3. Extract text from PDF
-        pdf_document = fitz.open(stream=io.BytesIO(pdf_content), filetype="pdf")
-        text = ""
-        for page in pdf_document:
-            # Note: fitz may convert full-width spaces to half-width spaces
-            text += page.get_text().replace("　", " ")
-        pdf_document.close()
+        text = extract_text_from_pdf(pdf_content).replace("　", " ")
 
         # 4. Assertions
         # The title is split by a newline, so check for parts or combined text
@@ -640,7 +614,6 @@ class ContractPdfGenerationTest(TestCase):
 
         # Check that a field with no value is not present
         self.assertNotIn("休日", text_no_newline)
-    @skipIf(not HAS_PYMUPDF, "PyMuPDF not available")
     def test_generate_dispatch_ledger_pdf_content(self):
         """派遣元管理台帳PDFが正しい内容で生成されることをテストする"""
         from datetime import date
@@ -768,12 +741,7 @@ class ContractPdfGenerationTest(TestCase):
         self.assertEqual(document_title, "派遣元管理台帳")
         
         # PDFの内容を解析
-        pdf_document = fitz.open(stream=pdf_content, filetype="pdf")
-        text_content = ""
-        for page_num in range(pdf_document.page_count):
-            page = pdf_document.load_page(page_num)
-            text_content += page.get_text()
-        pdf_document.close()
+        text_content = extract_text_from_pdf(pdf_content)
         
         # 新しい表記が含まれていることを確認（改行を考慮）
         self.assertIn("派遣法（労働者派遣事業の適正な運営の確保及び派遣労働者の保護等に関する法律）第37条", text_content)
@@ -854,7 +822,6 @@ class ContractPdfGenerationTest(TestCase):
         self.assertIn("派遣先の名称", text_content)
         self.assertIn("Test Client", text_content)
         
-    @skipIf(not HAS_PYMUPDF, "PyMuPDF not available")
     def test_generate_dispatch_ledger_pdf_under_60_staff(self):
         """60歳未満のスタッフの場合の派遣元管理台帳PDFをテストする"""
         from datetime import date
@@ -947,12 +914,7 @@ class ContractPdfGenerationTest(TestCase):
         )
         
         # PDFの内容を解析
-        pdf_document = fitz.open(stream=pdf_content, filetype="pdf")
-        text_content = ""
-        for page_num in range(pdf_document.page_count):
-            page = pdf_document.load_page(page_num)
-            text_content += page.get_text()
-        pdf_document.close()
+        text_content = extract_text_from_pdf(pdf_content)
         
         # 新しい表記が含まれていることを確認（改行を考慮）
         self.assertIn("派遣法（労働者派遣事業の適正な運営の確保及び派遣労働者の保護等に関する法律）第37条", text_content)
@@ -997,7 +959,6 @@ class ContractPdfGenerationTest(TestCase):
         self.assertIn("その他の雇用安定措置", text_content)
         self.assertIn("教育訓練の実施による能力向上支援", text_content)
         
-    @skipIf(not HAS_PYMUPDF, "PyMuPDF not available")
     def test_generate_dispatch_ledger_pdf_no_employment_measures(self):
         """派遣雇用安定措置情報がない場合の派遣元管理台帳PDFをテストする"""
         from datetime import date
@@ -1064,12 +1025,7 @@ class ContractPdfGenerationTest(TestCase):
         )
         
         # PDFの内容を解析
-        pdf_document = fitz.open(stream=pdf_content, filetype="pdf")
-        text_content = ""
-        for page_num in range(pdf_document.page_count):
-            page = pdf_document.load_page(page_num)
-            text_content += page.get_text()
-        pdf_document.close()
+        text_content = extract_text_from_pdf(pdf_content)
         
         # 雇用安定措置の内容が「実施なし」と表示されることを確認（改行を考慮）
         text_no_newline = text_content.replace('\n', '')
@@ -1082,7 +1038,6 @@ class ContractPdfGenerationTest(TestCase):
         self.assertNotIn("派遣元での無期雇用化", text_content)
         self.assertNotIn("その他の雇用安定措置", text_content)
 
-    @skipIf(not HAS_PYMUPDF, "PyMuPDF not available")
     def test_generate_dispatch_ledger_pdf_with_ttp_info(self):
         """紹介予定派遣情報が登録されている場合、派遣元管理台帳に「紹介予定派遣に関する事項」が出力されることをテストする"""
         from datetime import date
@@ -1168,12 +1123,7 @@ class ContractPdfGenerationTest(TestCase):
         )
         
         # PDFの内容を解析
-        pdf_document = fitz.open(stream=pdf_content, filetype="pdf")
-        text_content = ""
-        for page_num in range(pdf_document.page_count):
-            page = pdf_document.load_page(page_num)
-            text_content += page.get_text()
-        pdf_document.close()
+        text_content = extract_text_from_pdf(pdf_content)
         
         # 紹介予定派遣に関する事項が含まれていることを確認（改行を考慮）
         text_no_newline = text_content.replace('\n', '')
