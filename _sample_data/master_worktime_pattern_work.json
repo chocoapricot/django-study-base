@@ -3,78 +3,96 @@
     "model": "master.worktimepatternwork",
     "pk": 1,
     "fields": {
+        "version": 1762550639850411,
+        "created_at": "2024-01-01T00:00:00Z",
+        "created_by": null,
+        "updated_at": "2024-01-01T00:00:00Z",
+        "updated_by": null,
         "worktime_pattern": 1,
         "time_name": 38,
         "start_time": "09:00:00",
         "end_time": "18:00:00",
-        "display_order": 10,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z"
+        "display_order": 10
     }
 },
 {
     "model": "master.worktimepatternwork",
     "pk": 2,
     "fields": {
+        "version": 1762550639863641,
+        "created_at": "2024-01-01T00:00:00Z",
+        "created_by": null,
+        "updated_at": "2024-01-01T00:00:00Z",
+        "updated_by": null,
         "worktime_pattern": 2,
         "time_name": 38,
         "start_time": "09:00:00",
         "end_time": "15:00:00",
-        "display_order": 10,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z"
+        "display_order": 10
     }
 },
 {
     "model": "master.worktimepatternwork",
     "pk": 3,
     "fields": {
+        "version": 1762550639867240,
+        "created_at": "2024-01-01T00:00:00Z",
+        "created_by": null,
+        "updated_at": "2024-01-01T00:00:00Z",
+        "updated_by": null,
         "worktime_pattern": 3,
         "time_name": 38,
         "start_time": "09:00:00",
         "end_time": "20:00:00",
-        "display_order": 10,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z"
+        "display_order": 10
     }
 },
 {
     "model": "master.worktimepatternwork",
     "pk": 4,
     "fields": {
+        "version": 1762550639873049,
+        "created_at": "2024-01-01T00:00:00Z",
+        "created_by": null,
+        "updated_at": "2024-01-01T00:00:00Z",
+        "updated_by": null,
         "worktime_pattern": 4,
         "time_name": 52,
         "start_time": "08:00:00",
         "end_time": "16:00:00",
-        "display_order": 10,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z"
+        "display_order": 10
     }
 },
 {
     "model": "master.worktimepatternwork",
     "pk": 5,
     "fields": {
+        "version": 1762550639878653,
+        "created_at": "2024-01-01T00:00:00Z",
+        "created_by": null,
+        "updated_at": "2024-01-01T00:00:00Z",
+        "updated_by": null,
         "worktime_pattern": 4,
         "time_name": 53,
         "start_time": "16:00:00",
         "end_time": "00:00:00",
-        "display_order": 20,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z"
+        "display_order": 20
     }
 },
 {
     "model": "master.worktimepatternwork",
     "pk": 6,
     "fields": {
+        "version": 1762550639882213,
+        "created_at": "2024-01-01T00:00:00Z",
+        "created_by": null,
+        "updated_at": "2024-01-01T00:00:00Z",
+        "updated_by": null,
         "worktime_pattern": 4,
         "time_name": 54,
         "start_time": "00:00:00",
         "end_time": "08:00:00",
-        "display_order": 30,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z"
+        "display_order": 30
     }
 }
 ]
