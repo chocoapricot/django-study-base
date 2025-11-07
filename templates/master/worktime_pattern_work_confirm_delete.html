@@ -12,7 +12,7 @@
     <div class="card-body">
         <div class="alert alert-warning" role="alert">
             <i class="bi bi-exclamation-triangle-fill"></i>
-            勤務時間「{% if work_time.time_name %}{{ work_time.time_name }} {% endif %}{{ work_time.start_time|time:"H:i" }}-{{ work_time.end_time|time:"H:i" }}」を削除しますか？この操作は取り消せません。関連する休憩時間も削除されます。
+            勤務時間「{% if work_time.time_name %}{{ work_time.time_name.content }} {% endif %}{{ work_time.start_time|time:"H:i" }} - {{ work_time.end_time|time:"H:i" }}」を削除しますか？この操作は取り消せません。関連する休憩時間も削除されます。
         </div>
 
         <form method="post" id="id_form">

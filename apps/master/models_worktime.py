@@ -1,5 +1,6 @@
 from django.db import models
 from apps.common.models import MyModel
+from .models_phrase import PhraseTemplate
 
 
 class WorkTimePattern(MyModel):
@@ -35,7 +36,13 @@ class WorkTimePatternWork(MyModel):
         verbose_name='就業時間パターン',
         related_name='work_times'
     )
-    time_name = models.CharField('時間名称', max_length=100, blank=True, null=True, help_text='例：日勤、準夜勤、夜勤')
+    time_name = models.ForeignKey(
+        PhraseTemplate,
+        on_delete=models.PROTECT,
+        verbose_name='時間名称',
+        related_name='worktime_pattern_works',
+        limit_choices_to={'title__key': 'WORKTIME_NAME', 'is_active': True}
+    )
     start_time = models.TimeField('開始時刻')
     end_time = models.TimeField('終了時刻')
     display_order = models.IntegerField('表示順', default=0)
@@ -50,7 +57,7 @@ class WorkTimePatternWork(MyModel):
         ]
 
     def __str__(self):
-        name_part = f"【{self.time_name}】" if self.time_name else ""
+        name_part = f"【{self.time_name.content}】" if self.time_name else ""
         return f"{name_part} {self.start_time.strftime('%H:%M')}-{self.end_time.strftime('%H:%M')}"
 
 
@@ -64,7 +71,6 @@ class WorkTimePatternBreak(MyModel):
         verbose_name='勤務時間',
         related_name='break_times'
     )
-    time_name = models.CharField('時間名称', max_length=100, blank=True, null=True, help_text='例：休憩１、休憩２')
     start_time = models.TimeField('開始時刻')
     end_time = models.TimeField('終了時刻')
     display_order = models.IntegerField('表示順', default=0)
@@ -79,5 +85,4 @@ class WorkTimePatternBreak(MyModel):
         ]
 
     def __str__(self):
-        name_part = f"【{self.time_name}】" if self.time_name else ""
-        return f"休憩{name_part} {self.start_time.strftime('%H:%M')}-{self.end_time.strftime('%H:%M')}"
+        return f"休憩 {self.start_time.strftime('%H:%M')}-{self.end_time.strftime('%H:%M')}"

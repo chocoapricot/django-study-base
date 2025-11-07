@@ -12,7 +12,7 @@
     <div class="card-body">
         <div class="alert alert-warning" role="alert">
             <i class="bi bi-exclamation-triangle-fill"></i>
-            休憩時間「{{ break_time.start_time|time:"H:i" }}-{{ break_time.end_time|time:"H:i" }}」を削除しますか？この操作は取り消せません。
+            休憩時間「{{ break_time.start_time|time:"H:i" }} - {{ break_time.end_time|time:"H:i" }}」を削除しますか？この操作は取り消せません。
         </div>
 
         <form method="post" id="id_form">

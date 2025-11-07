@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
         "worktime_pattern": 1,
-        "time_name": "",
+        "time_name": 38,
         "start_time": "09:00:00",
         "end_time": "18:00:00",
         "display_order": 10,
@@ -17,7 +17,7 @@
     "pk": 2,
     "fields": {
         "worktime_pattern": 2,
-        "time_name": "",
+        "time_name": 38,
         "start_time": "09:00:00",
         "end_time": "15:00:00",
         "display_order": 10,
@@ -30,7 +30,7 @@
     "pk": 3,
     "fields": {
         "worktime_pattern": 3,
-        "time_name": "",
+        "time_name": 38,
         "start_time": "09:00:00",
         "end_time": "20:00:00",
         "display_order": 10,
@@ -43,7 +43,7 @@
     "pk": 4,
     "fields": {
         "worktime_pattern": 4,
-        "time_name": "日勤",
+        "time_name": 52,
         "start_time": "08:00:00",
         "end_time": "16:00:00",
         "display_order": 10,
@@ -56,7 +56,7 @@
     "pk": 5,
     "fields": {
         "worktime_pattern": 4,
-        "time_name": "準夜勤",
+        "time_name": 53,
         "start_time": "16:00:00",
         "end_time": "00:00:00",
         "display_order": 20,
@@ -69,7 +69,7 @@
     "pk": 6,
     "fields": {
         "worktime_pattern": 4,
-        "time_name": "夜勤",
+        "time_name": 54,
         "start_time": "00:00:00",
         "end_time": "08:00:00",
         "display_order": 30,

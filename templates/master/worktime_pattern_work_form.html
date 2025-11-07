@@ -9,7 +9,7 @@
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">{{ title }}</div>
     <div class="card-body">
-        <form method="post" novalidate>
+        <form method="post" novalidate id="worktime_form">
             {% csrf_token %}
             
             <div class="row mb-3 align-items-center">
@@ -55,14 +55,10 @@
 
         <div class="row mt-3">
             <div class="col text-left">
-                <button type="submit" form="id_form" class="btn btn-sm btn-primary" onclick="this.closest('form').submit();">保存</button>
+                <button type="submit" form="worktime_form" class="btn btn-sm btn-primary">保存</button>
                 <a href="{% url 'master:worktime_pattern_detail' pattern.pk %}" class="btn btn-sm btn-secondary">戻る</a>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-document.querySelector('form').id = 'id_form';
-</script>
 {% endblock %}

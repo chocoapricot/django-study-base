@@ -34,17 +34,10 @@ class WorkTimePatternWorkForm(forms.ModelForm):
             self.worktime_pattern = self.instance.worktime_pattern
         
         # PhraseTemplateから時間名称を取得
-        time_name_choices = [('', '選択してください（任意）')]
-        phrases = PhraseTemplate.get_active_by_title_key('WORKTIME_NAME')
-        time_name_choices.extend([
-            (phrase.content, phrase.content) for phrase in phrases
-        ])
-        self.fields['time_name'] = forms.ChoiceField(
-            choices=time_name_choices,
-            label='時間名称',
-            required=False,
-            widget=forms.Select(attrs={'class': 'form-control form-control-sm'})
-        )
+        self.fields['time_name'].queryset = PhraseTemplate.get_active_by_title_key('WORKTIME_NAME')
+        self.fields['time_name'].label_from_instance = lambda obj: obj.content
+        self.fields['time_name'].empty_label = '選択してください'
+        self.fields['time_name'].required = True
 
 
 class WorkTimePatternBreakForm(forms.ModelForm):
