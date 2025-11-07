@@ -70,9 +70,10 @@
                                    {% if assignment.employment_conditions_issued %}disabled{% endif %}>
                             <label class="form-check-label" for="employmentConditionsSwitch{{ assignment.pk }}">
                                 <i class="bi bi-file-earmark-text" style="font-size: 20px; color: #17a2b8;"></i>
-                                就業条件明示書発行（{{ assignment.client_contract.client.name }}）
+                                就業条件明示書発行
+                                <span class="text-muted small">{{ assignment.client_contract.client.name }}</span>
                                 {% if assignment.employment_conditions_issued_at %}
-                                    <span class="text-muted small">（{{ assignment.employment_conditions_issued_at|date:"Y/m/d H:i:s" }}）</span>
+                                    <span class="text-muted small">（{{ assignment.employment_conditions_issued_at|date:"Y/m/d H:i:s" }}　{{ assignment.employment_conditions_issued_by.get_full_name_japanese|default:'' }}）</span>
                                 {% endif %}
                             </label>
                         </div>

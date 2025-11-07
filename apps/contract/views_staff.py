@@ -334,6 +334,7 @@ def staff_contract_detail(request, pk):
         # 就業条件明示書の発行状態を確認
         assignment.employment_conditions_issued = False
         assignment.employment_conditions_issued_at = None
+        assignment.employment_conditions_issued_by = None
         
         if assignment.client_contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
             # 発行状態の判定
@@ -353,6 +354,7 @@ def staff_contract_detail(request, pk):
                     if same_contract_history:
                         assignment.employment_conditions_issued = True
                         assignment.employment_conditions_issued_at = same_contract_history.printed_at
+                        assignment.employment_conditions_issued_by = same_contract_history.printed_by
 
     context = {
         'contract': contract,
