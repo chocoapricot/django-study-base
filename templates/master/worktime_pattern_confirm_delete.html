@@ -1,0 +1,26 @@
+{% extends 'common/_base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">{{ title }}</div>
+    <div class="card-body">
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            就業時間パターン「{{ pattern.name }}」を削除しますか？この操作は取り消せません。
+        </div>
+
+        <form method="post" id="id_form">
+            {% csrf_token %}
+        </form>
+
+        <div class="row mt-3">
+            <div class="col text-left">
+                <button type="submit" form="id_form" class="btn btn-sm btn-dark">削除</button>
+                <a href="{% url 'master:worktime_pattern_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

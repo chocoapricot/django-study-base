@@ -1,0 +1,107 @@
+{% extends 'common/_base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">{{ title }}</div>
+    <div class="card-body mb-0">
+        <div class="row">
+            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>名称</strong></label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ pattern.name }}</p>
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>メモ</strong></label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ pattern.memo|linebreaksbr|default:"-" }}</p>
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>表示順</strong></label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">{{ pattern.display_order }}</p>
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>状態</strong></label>
+            <div class="col-sm-10">
+                <p class="form-control-plaintext">
+                    {% if pattern.is_active %}
+                        <span class="badge bg-success">有効</span>
+                    {% else %}
+                        <span class="badge bg-secondary">無効</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="col text-left">
+            <a href="{% url 'master:worktime_pattern_update' pattern.pk %}" class="btn btn-sm btn-primary">編集</a>
+            <a href="{% url 'master:worktime_pattern_delete' pattern.pk %}" class="btn btn-sm btn-dark">削除</a>
+            <a href="{% url 'master:worktime_pattern_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+        </div>
+    </div>
+</div>
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        勤務時間・休憩時間一覧
+        <a href="{% url 'master:worktime_pattern_work_create' pattern.pk %}" class="btn btn-sm btn-primary">勤務時間追加</a>
+    </div>
+    <div class="card-body">
+        {% for work_time in work_times %}
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <span>
+                    <i class="bi bi-clock"></i>
+                    {% if work_time.time_name %}{{ work_time.time_name }} - {% endif %}
+                    {{ work_time.start_time|time:"H:i" }} - {{ work_time.end_time|time:"H:i" }}
+                </span>
+                <div>
+                    <a href="{% url 'master:worktime_pattern_break_create' work_time.pk %}" class="btn btn-sm btn-light">休憩追加</a>
+                    <a href="{% url 'master:worktime_pattern_work_update' work_time.pk %}" class="btn btn-sm btn-light" title="編集"><i class="bi bi-pencil"></i></a>
+                    <a href="{% url 'master:worktime_pattern_work_delete' work_time.pk %}" class="btn btn-sm btn-light" title="削除"><i class="bi bi-x"></i></a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if work_time.break_times.all %}
+                <table class="table table-sm table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>開始時刻</th>
+                            <th>終了時刻</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for break_time in work_time.break_times.all %}
+                        <tr>
+                            <td>{{ break_time.start_time|time:"H:i" }}</td>
+                            <td>{{ break_time.end_time|time:"H:i" }}</td>
+                            <td>
+                                <a href="{% url 'master:worktime_pattern_break_update' break_time.pk %}" class="btn btn-dark btn-sm" title="編集"><i class="bi bi-pencil"></i></a>
+                                <a href="{% url 'master:worktime_pattern_break_delete' break_time.pk %}" class="btn btn-dark btn-sm" title="削除"><i class="bi bi-x"></i></a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted mb-0">休憩時間が登録されていません。</p>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center">勤務時間が登録されていません。</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% url 'master:worktime_pattern_change_history_list' as history_url %}
+{% with title="" change_logs=change_logs change_logs_count=change_logs_count history_url=history_url show_full_content=True %}
+    {% include 'common/_change_history_list.html' %}
+{% endwith %}
+
+{% endblock %}

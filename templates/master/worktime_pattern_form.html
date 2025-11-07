@@ -1,0 +1,70 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">{{ title }}</div>
+    <div class="card-body">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.name.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger">{{ form.name.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.memo.label }}</label>
+                <div class="col-sm-8">
+                    {{ form.memo }}
+                    {% if form.memo.errors %}
+                        <div class="text-danger">{{ form.memo.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.display_order.label }}</label>
+                <div class="col-sm-2">
+                    {{ form.display_order }}
+                    {% if form.display_order.errors %}
+                        <div class="text-danger">{{ form.display_order.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label class="col-sm-2 col-form-label" style="text-align:right">{{ form.is_active.label }}</label>
+                <div class="col-sm-6">
+                    <div class="form-check">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">有効にする</label>
+                    </div>
+                    {% if form.is_active.errors %}
+                        <div class="text-danger">{{ form.is_active.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </form>
+
+        <div class="row mt-3">
+            <div class="col text-left">
+                <button type="submit" form="id_form" class="btn btn-sm btn-primary">保存</button>
+                <a href="{% url 'master:worktime_pattern_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelector('form').id = 'id_form';
+</script>
+{% endblock %}

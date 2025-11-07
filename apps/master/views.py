@@ -8,8 +8,8 @@ from .views_client import *
 from .views_contract import *
 from .views_billing import *
 from .views_other import *
-
 from .views_phrase import *
+from .views_worktime import *
 
 # マスタ設定データ
 MASTER_CONFIGS = [
@@ -84,6 +84,14 @@ MASTER_CONFIGS = [
         "model": "master.MinimumPay",
         "url_name": "master:minimum_pay_list",
         "permission": "master.view_minimumpay",
+    },
+    {
+        "category": "契約",
+        "name": "就業時間パターン管理",
+        "description": "就業時間と休憩時間のパターンを管理",
+        "model": "master.WorkTimePattern",
+        "url_name": "master:worktime_pattern_list",
+        "permission": "master.view_worktimepattern",
     },
 
 

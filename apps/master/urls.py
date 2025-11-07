@@ -146,4 +146,20 @@ urlpatterns = [
     path('phrase-template/<int:pk>/update/', views.phrase_template_update, name='phrase_template_update'),
     path('phrase-template/<int:pk>/delete/', views.phrase_template_delete, name='phrase_template_delete'),
     path('phrase-template/history/', views.phrase_template_change_history_list, name='phrase_template_change_history_list'),
+
+    # 就業時間パターン管理
+    path('worktime-pattern/', views.worktime_pattern_list, name='worktime_pattern_list'),
+    path('worktime-pattern/create/', views.worktime_pattern_create, name='worktime_pattern_create'),
+    path('worktime-pattern/<int:pk>/detail/', views.worktime_pattern_detail, name='worktime_pattern_detail'),
+    path('worktime-pattern/<int:pk>/update/', views.worktime_pattern_update, name='worktime_pattern_update'),
+    path('worktime-pattern/<int:pk>/delete/', views.worktime_pattern_delete, name='worktime_pattern_delete'),
+    path('worktime-pattern/history/', views.worktime_pattern_change_history_list, name='worktime_pattern_change_history_list'),
+    # 勤務時間管理
+    path('worktime-pattern/<int:pattern_pk>/work/create/', views.worktime_pattern_work_create, name='worktime_pattern_work_create'),
+    path('worktime-pattern-work/<int:pk>/update/', views.worktime_pattern_work_update, name='worktime_pattern_work_update'),
+    path('worktime-pattern-work/<int:pk>/delete/', views.worktime_pattern_work_delete, name='worktime_pattern_work_delete'),
+    # 休憩時間管理
+    path('worktime-pattern-work/<int:work_pk>/break/create/', views.worktime_pattern_break_create, name='worktime_pattern_break_create'),
+    path('worktime-pattern-break/<int:pk>/update/', views.worktime_pattern_break_update, name='worktime_pattern_break_update'),
+    path('worktime-pattern-break/<int:pk>/delete/', views.worktime_pattern_break_delete, name='worktime_pattern_break_delete'),
 ]

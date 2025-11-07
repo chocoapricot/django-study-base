@@ -52,6 +52,9 @@ def main():
         "_sample_data/master_default_value.json",
         "_sample_data/master_client_regist_status.json",
         "_sample_data/master_staff_regist_status.json",
+        "_sample_data/master_worktime_pattern.json",
+        "_sample_data/master_worktime_pattern_work.json",
+        "_sample_data/master_worktime_pattern_break.json",
         "_sample_data/company.json",
         "_sample_data/company_department.json",
         "_sample_data/company_user.json",
@@ -109,6 +112,9 @@ def main():
         ("python manage.py loaddata _sample_data/master_default_value.json", "初期値マスタデータ"),
         ("python manage.py loaddata _sample_data/master_client_regist_status.json", "クライアント登録ステータスマスタデータ"),
         ("python manage.py loaddata _sample_data/master_staff_regist_status.json", "スタッフ登録ステータスマスタデータ"),
+        ("python manage.py loaddata _sample_data/master_worktime_pattern.json", "就業時間パターンマスタデータ"),
+        ("python manage.py loaddata _sample_data/master_worktime_pattern_work.json", "就業時間パターン勤務時間マスタデータ"),
+        ("python manage.py loaddata _sample_data/master_worktime_pattern_break.json", "就業時間パターン休憩時間マスタデータ"),
         ("python manage.py loaddata _sample_data/staff.json", "スタッフデータ"),
         ("python manage.py loaddata _sample_data/staff_international.json", "スタッフ外国籍情報データ"),
         ("python manage.py loaddata _sample_data/staff_disability.json", "スタッフ障害者情報データ"),
@@ -159,6 +165,7 @@ def main():
     print("- 初期値マスタ")
     print("- クライアント登録ステータスマスタ")
     print("- スタッフ登録ステータスマスタ")
+    print("- 就業時間パターンマスタ")
     print("- 会社データ")
     print("- 部署データ")
     print("- 自社担当者データ")

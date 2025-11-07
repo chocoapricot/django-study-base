@@ -1,0 +1,80 @@
+[
+{
+    "model": "master.worktimepatternwork",
+    "pk": 1,
+    "fields": {
+        "worktime_pattern": 1,
+        "time_name": "",
+        "start_time": "09:00:00",
+        "end_time": "18:00:00",
+        "display_order": 10,
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2024-01-01T00:00:00Z"
+    }
+},
+{
+    "model": "master.worktimepatternwork",
+    "pk": 2,
+    "fields": {
+        "worktime_pattern": 2,
+        "time_name": "",
+        "start_time": "09:00:00",
+        "end_time": "15:00:00",
+        "display_order": 10,
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2024-01-01T00:00:00Z"
+    }
+},
+{
+    "model": "master.worktimepatternwork",
+    "pk": 3,
+    "fields": {
+        "worktime_pattern": 3,
+        "time_name": "",
+        "start_time": "09:00:00",
+        "end_time": "20:00:00",
+        "display_order": 10,
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2024-01-01T00:00:00Z"
+    }
+},
+{
+    "model": "master.worktimepatternwork",
+    "pk": 4,
+    "fields": {
+        "worktime_pattern": 4,
+        "time_name": "日勤",
+        "start_time": "08:00:00",
+        "end_time": "16:00:00",
+        "display_order": 10,
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2024-01-01T00:00:00Z"
+    }
+},
+{
+    "model": "master.worktimepatternwork",
+    "pk": 5,
+    "fields": {
+        "worktime_pattern": 4,
+        "time_name": "準夜勤",
+        "start_time": "16:00:00",
+        "end_time": "00:00:00",
+        "display_order": 20,
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2024-01-01T00:00:00Z"
+    }
+},
+{
+    "model": "master.worktimepatternwork",
+    "pk": 6,
+    "fields": {
+        "worktime_pattern": 4,
+        "time_name": "夜勤",
+        "start_time": "00:00:00",
+        "end_time": "08:00:00",
+        "display_order": 30,
+        "created_at": "2024-01-01T00:00:00Z",
+        "updated_at": "2024-01-01T00:00:00Z"
+    }
+}
+]
