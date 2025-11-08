@@ -62,6 +62,16 @@
                 </td>
             </tr>
             <tr>
+                <th>就業時間</th>
+                <td>
+                    {% if contract.worktime_pattern %}
+                        {% include 'common/_worktime_pattern_display.html' with worktime_pattern=contract.worktime_pattern %}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
                 <th>契約種別</th>
                 <td>
                     {% if contract.employment_type %}

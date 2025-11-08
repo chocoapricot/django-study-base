@@ -107,6 +107,7 @@ class ContractFormTest(TestCase):
             'pay_unit': self.pay_unit.value,
             'work_location': 'テスト就業場所',
             'business_content': 'テスト業務内容',
+            'worktime_pattern': self.worktime_pattern.pk,
         }
         form = StaffContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
@@ -211,6 +212,7 @@ class ContractFormTest(TestCase):
             'contract_amount': 300000,
             'contract_pattern': self.staff_pattern.pk,
             'pay_unit': self.pay_unit.value,
+            'worktime_pattern': self.worktime_pattern.pk,
         }
         
         form = StaffContractForm(data=form_data)
@@ -285,6 +287,7 @@ class ContractFormTest(TestCase):
             'end_date': date(2024, 12, 31),
             'contract_amount': 30000,
             'pay_unit': pay_unit_daily.value,
+            'worktime_pattern': self.worktime_pattern.pk,
         }
         form = StaffContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
@@ -303,6 +306,7 @@ class ContractFormTest(TestCase):
             'contract_amount': 300000,
             'contract_pattern': self.staff_pattern.pk,
             'pay_unit': self.pay_unit.value,
+            'worktime_pattern': self.worktime_pattern.pk,
         }
         form = StaffContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)

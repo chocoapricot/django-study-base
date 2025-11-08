@@ -493,7 +493,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         fields = [
             'staff', 'employment_type', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
             'start_date', 'end_date', 'contract_amount', 'pay_unit',
-            'work_location', 'business_content', 'notes', 'memo'
+            'work_location', 'business_content', 'notes', 'memo', 'worktime_pattern'
         ]
         widgets = {
             'staff': forms.HiddenInput(),
@@ -510,6 +510,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
             'business_content': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 4}),
             'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'worktime_pattern': forms.HiddenInput(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -531,6 +532,9 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
 
         # 契約番号は自動採番のため非表示
         self.fields['contract_number'].required = False
+        
+        # 就業時間パターンは必須
+        self.fields['worktime_pattern'].required = True
 
         # 編集画面では「作成中」「申請」のみ選択可能にする
         editable_statuses = [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]

@@ -59,6 +59,7 @@ class ContractCorporateNumberTest(TestCase):
             'end_date': '2025-12-31',
             'pay_unit': self.pay_unit.value,
             'contract_pattern': self.staff_pattern.pk,
+            'worktime_pattern': self.worktime_pattern.pk,
         }
         form = StaffContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)

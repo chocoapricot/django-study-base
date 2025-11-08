@@ -322,6 +322,13 @@ class StaffContract(MyModel):
     business_content = models.TextField('業務内容', blank=True, null=True)
     notes = models.TextField('備考', blank=True, null=True)
     memo = models.TextField('メモ', blank=True, null=True)
+    worktime_pattern = models.ForeignKey(
+        'master.WorkTimePattern',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name='就業時間'
+    )
     approved_at = models.DateTimeField('承認日時', blank=True, null=True)
     approved_by = models.ForeignKey(
         User,
