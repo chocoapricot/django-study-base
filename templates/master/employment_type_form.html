@@ -61,6 +61,21 @@
             </div>
 
             <div class="row mb-3 align-items-center">
+                <label for="{{ form.worktime_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">就業時間パターン</label>
+                <div class="col-sm-6">
+                    <input type="hidden" id="{{ form.worktime_pattern.id_for_label }}" name="{{ form.worktime_pattern.name }}" value="{{ form.worktime_pattern.value|default:'' }}">
+                    <input type="text" id="worktime_pattern_display" class="form-control form-control-sm" readonly value="{% if form.worktime_pattern.value %}{{ form.instance.worktime_pattern.name }}{% endif %}" placeholder="選択してください">
+                    {% if form.worktime_pattern.errors %}
+                        <div class="text-danger small">{{ form.worktime_pattern.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-sm btn-secondary me-1" type="button" id="selectWorktimePatternBtn">参照</button>
+                    <button class="btn btn-sm btn-secondary" type="button" id="clearWorktimePatternBtn">クリア</button>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-10">
                     <div class="form-check">
@@ -84,4 +99,204 @@
         </form>
     </div>
 </div>
+
+<!-- 就業時間パターン選択モーダル -->
+<div class="modal fade" id="worktimePatternModal" tabindex="-1" aria-labelledby="worktimePatternModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="worktimePatternModalLabel">就業時間パターン選択</div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- 検索フォーム -->
+                <form id="worktime-search-form" method="get" class="mb-3">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input type="text" name="q" class="form-control form-control-sm" placeholder="名称で検索" value="">
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-sm btn-primary me-2">検索</button>
+                            <button type="button" class="btn btn-sm btn-secondary" id="clearSearchBtn">クリア</button>
+                        </div>
+                    </div>
+                </form>
+                
+                <!-- パターン一覧 -->
+                <div id="pattern-list"></div>
+                
+                <!-- ページネーション -->
+                <div id="pagination-container" class="mt-3"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = new bootstrap.Modal(document.getElementById('worktimePatternModal'));
+    const hiddenInput = document.getElementById('{{ form.worktime_pattern.id_for_label }}');
+    const displayInput = document.getElementById('worktime_pattern_display');
+    
+    // 参照ボタン
+    document.getElementById('selectWorktimePatternBtn').addEventListener('click', function() {
+        loadPatterns(1);
+        modal.show();
+    });
+    
+    // クリアボタン
+    document.getElementById('clearWorktimePatternBtn').addEventListener('click', function() {
+        hiddenInput.value = '';
+        displayInput.value = '';
+    });
+    
+    // 検索フォーム送信
+    document.getElementById('worktime-search-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        loadPatterns(1);
+    });
+    
+    // 検索クリアボタン
+    document.getElementById('clearSearchBtn').addEventListener('click', function() {
+        document.querySelector('#worktime-search-form input[name="q"]').value = '';
+        loadPatterns(1);
+    });
+    
+    // パターン読み込み
+    function loadPatterns(page) {
+        const searchQuery = document.querySelector('#worktime-search-form input[name="q"]').value;
+        const url = '{% url "master:worktime_pattern_select_modal" %}?page=' + page + '&q=' + encodeURIComponent(searchQuery);
+        
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                renderPatterns(data.patterns);
+                renderPagination(data);
+            })
+            .catch(error => console.error('Error:', error));
+    }
+    
+    // 時刻フォーマット関数（翌日フラグ考慮）
+    function formatTime(time, isNextDay) {
+        return isNextDay ? '翌' + time : time;
+    }
+    
+    // パターン一覧表示
+    function renderPatterns(patterns) {
+        const container = document.getElementById('pattern-list');
+        
+        if (patterns.length === 0) {
+            container.innerHTML = '<p class="text-center text-muted">該当するパターンがありません。</p>';
+            return;
+        }
+        
+        let html = '<div class="table-responsive"><table class="table table-hover">';
+        html += '<thead><tr>';
+        html += '<th style="width: 20%;">名称</th>';
+        html += '<th style="width: 60%;">勤務時間</th>';
+        html += '<th style="width: 10%;">メモ</th>';
+        html += '<th style="width: 10%;">操作</th>';
+        html += '</tr></thead><tbody>';
+        
+        patterns.forEach(pattern => {
+            html += '<tr>';
+            html += '<td>' + pattern.name + '</td>';
+            html += '<td>';
+            
+            if (pattern.work_times.length > 0) {
+                pattern.work_times.forEach(wt => {
+                    html += '<div class="mb-1">';
+                    if (wt.time_name) {
+                        html += '<strong>' + wt.time_name + ':</strong> ';
+                    }
+                    html += formatTime(wt.start_time, wt.start_time_next_day) + ' - ' + formatTime(wt.end_time, wt.end_time_next_day);
+                    
+                    if (wt.breaks.length > 0) {
+                        html += ' <span class="text-muted small">(休憩: ';
+                        wt.breaks.forEach((bt, idx) => {
+                            if (idx > 0) html += ', ';
+                            html += formatTime(bt.start_time, bt.start_time_next_day) + '-' + formatTime(bt.end_time, bt.end_time_next_day);
+                        });
+                        html += ')</span>';
+                    }
+                    html += '</div>';
+                });
+            } else {
+                html += '<span class="text-muted">未設定</span>';
+            }
+            
+            html += '</td>';
+            html += '<td>' + (pattern.memo ? '<span class="text-muted small">' + pattern.memo + '</span>' : '') + '</td>';
+            html += '<td style="white-space: nowrap;">';
+            html += '<button type="button" class="btn btn-sm btn-primary select-pattern-btn" data-pattern-id="' + pattern.id + '" data-pattern-name="' + pattern.name + '">選択</button>';
+            html += '</td>';
+            html += '</tr>';
+        });
+        
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
+        
+        // 選択ボタンのクリックイベント設定
+        container.querySelectorAll('.select-pattern-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const patternId = this.getAttribute('data-pattern-id');
+                const patternName = this.getAttribute('data-pattern-name');
+                hiddenInput.value = patternId;
+                displayInput.value = patternName;
+                modal.hide();
+            });
+        });
+    }
+    
+    // ページネーション表示
+    function renderPagination(data) {
+        const container = document.getElementById('pagination-container');
+        
+        if (data.total_pages <= 1) {
+            container.innerHTML = '';
+            return;
+        }
+        
+        let html = '<nav><ul class="pagination pagination-sm justify-content-center">';
+        
+        // 前へ
+        if (data.has_previous) {
+            html += '<li class="page-item"><a class="page-link" href="#" data-page="' + (data.current_page - 1) + '">前へ</a></li>';
+        } else {
+            html += '<li class="page-item disabled"><span class="page-link">前へ</span></li>';
+        }
+        
+        // ページ番号
+        for (let i = 1; i <= data.total_pages; i++) {
+            if (i === data.current_page) {
+                html += '<li class="page-item active"><span class="page-link">' + i + '</span></li>';
+            } else {
+                html += '<li class="page-item"><a class="page-link" href="#" data-page="' + i + '">' + i + '</a></li>';
+            }
+        }
+        
+        // 次へ
+        if (data.has_next) {
+            html += '<li class="page-item"><a class="page-link" href="#" data-page="' + (data.current_page + 1) + '">次へ</a></li>';
+        } else {
+            html += '<li class="page-item disabled"><span class="page-link">次へ</span></li>';
+        }
+        
+        html += '</ul></nav>';
+        container.innerHTML = html;
+        
+        // ページネーションクリックイベント
+        container.querySelectorAll('a.page-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = this.getAttribute('data-page');
+                loadPatterns(page);
+            });
+        });
+    }
+});
+</script>
 {% endblock %}

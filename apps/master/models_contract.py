@@ -142,6 +142,14 @@ class EmploymentType(MyModel):
     name = models.CharField('名称', max_length=100)
     display_order = models.IntegerField('表示順', default=0)
     is_fixed_term = models.BooleanField('有期', default=True)
+    worktime_pattern = models.ForeignKey(
+        'WorkTimePattern',
+        on_delete=models.SET_NULL,
+        verbose_name='就業時間パターン',
+        blank=True,
+        null=True,
+        related_name='employment_types'
+    )
     is_active = models.BooleanField('有効', default=True)
 
     class Meta:

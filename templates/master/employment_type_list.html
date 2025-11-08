@@ -1,6 +1,7 @@
 {% extends 'common/_base.html' %}
 {% load static %}
 {% load badge_tags %}
+{% load time_tags %}
 
 {% block title %}雇用形態一覧{% endblock %}
 
@@ -23,7 +24,7 @@
                 </div>
                 <div class="col-md-3">
                     <button type="submit" class="btn btn-sm btn-primary">検索</button>
-                    <button class="btn btn-sm btn-secondary" type="button" onclick="resetForm('searchForm', '{% url "master:employment_type_list" %}')">リセット</button>
+                    <button class="btn btn-sm btn-secondary" type="button" id="resetBtn">リセット</button>
                 </div>
             </div>
         </form>
@@ -33,11 +34,12 @@
             <table class="table table-sm table-hover">
                 <thead>
                     <tr>
-                        <th width="40%">名称</th>
-                        <th width="20%">表示イメージ</th>
+                        <th width="25%">名称</th>
+                        <th width="15%">表示イメージ</th>
                         <th width="10%">期間</th>
+                        <th width="25%">就業時間</th>
                         <th width="10%">状態</th>
-                        <th width="10%">表示順</th>
+                        <th width="5%">表示順</th>
                         <th width="10%">操作</th>
                     </tr>
                 </thead>
@@ -55,6 +57,21 @@
                                 <span class="badge bg-info">有期</span>
                             {% else %}
                                 <span class="badge bg-primary">無期</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.worktime_pattern %}
+                                {% if item.worktime_pattern.work_times.all %}
+                                    {% for wt in item.worktime_pattern.work_times.all %}
+                                        <div class="small">
+                                            {% if wt.time_name %}{{ wt.time_name.content }}: {% endif %}{{ wt.start_time|format_time_with_next_day:wt.start_time_next_day }}-{{ wt.end_time|format_time_with_next_day:wt.end_time_next_day }}
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-muted small">{{ item.worktime_pattern.name }}</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">未設定</span>
                             {% endif %}
                         </td>
                         <td>
@@ -76,7 +93,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center">データが登録されていません。</td>
+                        <td colspan="7" class="text-center">データが登録されていません。</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -99,4 +116,11 @@
 {% endwith %}
 
 <script src="{% static 'js/form_utils.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('resetBtn').addEventListener('click', function() {
+        window.location.href = '{% url "master:employment_type_list" %}';
+    });
+});
+</script>
 {% endblock %}

@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
+from django.http import JsonResponse
 from itertools import chain
 
 from .models import WorkTimePattern, WorkTimePatternWork, WorkTimePatternBreak
@@ -319,3 +320,63 @@ def worktime_pattern_break_delete(request, pk):
         'title': f'休憩時間削除 - {work_time.get_full_display()}'
     }
     return render(request, 'master/worktime_pattern_break_confirm_delete.html', context)
+
+
+
+@login_required
+@permission_required("master.view_worktimepattern", raise_exception=True)
+def worktime_pattern_select_modal(request):
+    """就業時間パターン選択モーダル用API"""
+    search_query = request.GET.get("q", "")
+    patterns = WorkTimePattern.objects.filter(is_active=True)
+    
+    if search_query:
+        patterns = patterns.filter(name__icontains=search_query)
+    
+    patterns = patterns.order_by('display_order', 'name')
+    
+    # ページネーション
+    paginator = Paginator(patterns, 10)
+    page = request.GET.get("page", 1)
+    patterns_page = paginator.get_page(page)
+    
+    # JSON形式でデータを返す
+    data = {
+        'patterns': [],
+        'has_previous': patterns_page.has_previous(),
+        'has_next': patterns_page.has_next(),
+        'current_page': patterns_page.number,
+        'total_pages': paginator.num_pages,
+    }
+    
+    for pattern in patterns_page:
+        work_times = pattern.work_times.all()
+        work_times_data = []
+        for wt in work_times:
+            breaks = wt.break_times.all()
+            breaks_data = [
+                {
+                    'start_time': bt.start_time.strftime('%H:%M'),
+                    'start_time_next_day': bt.start_time_next_day,
+                    'end_time': bt.end_time.strftime('%H:%M'),
+                    'end_time_next_day': bt.end_time_next_day,
+                }
+                for bt in breaks
+            ]
+            work_times_data.append({
+                'time_name': wt.time_name.content if wt.time_name else '',
+                'start_time': wt.start_time.strftime('%H:%M'),
+                'start_time_next_day': wt.start_time_next_day,
+                'end_time': wt.end_time.strftime('%H:%M'),
+                'end_time_next_day': wt.end_time_next_day,
+                'breaks': breaks_data,
+            })
+        
+        data['patterns'].append({
+            'id': pattern.id,
+            'name': pattern.name,
+            'memo': pattern.memo or '',
+            'work_times': work_times_data,
+        })
+    
+    return JsonResponse(data)

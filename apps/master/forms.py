@@ -34,13 +34,21 @@ class EmploymentTypeForm(forms.ModelForm):
     """雇用形態フォーム"""
     class Meta:
         model = EmploymentType
-        fields = ['name', 'display_order', 'is_fixed_term', 'is_active']
+        fields = ['name', 'display_order', 'is_fixed_term', 'worktime_pattern', 'is_active']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'is_fixed_term': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'worktime_pattern': forms.HiddenInput(),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # 就業時間パターンの選択肢を有効なものに限定
+        from .models import WorkTimePattern
+        self.fields['worktime_pattern'].queryset = WorkTimePattern.objects.filter(is_active=True).order_by('display_order', 'name')
+        self.fields['worktime_pattern'].required = False
 
 
 class MailTemplateForm(forms.ModelForm):

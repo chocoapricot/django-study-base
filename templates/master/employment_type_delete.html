@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load static %}
+{% load time_tags %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -18,6 +19,36 @@
             </div>
             <div class="col-sm-9">
                 {{ item.name }}
+            </div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-3 text-start text-md-end">
+                <strong>就業時間パターン</strong>
+            </div>
+            <div class="col-sm-9">
+                {% if item.worktime_pattern %}
+                    <div>{{ item.worktime_pattern.name }}</div>
+                    {% if item.worktime_pattern.work_times.all %}
+                        <div class="mt-2">
+                            {% for wt in item.worktime_pattern.work_times.all %}
+                                <div class="mb-1">
+                                    {% if wt.time_name %}<strong>{{ wt.time_name.content }}:</strong> {% endif %}
+                                    <span>{{ wt.start_time|format_time_with_next_day:wt.start_time_next_day }} - {{ wt.end_time|format_time_with_next_day:wt.end_time_next_day }}</span>
+                                    {% if wt.break_times.all %}
+                                        <span class="text-muted small">(休憩: 
+                                            {% for bt in wt.break_times.all %}
+                                                {% if not forloop.first %}, {% endif %}{{ bt.start_time|format_time_with_next_day:bt.start_time_next_day }}-{{ bt.end_time|format_time_with_next_day:bt.end_time_next_day }}
+                                            {% endfor %}
+                                        )</span>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <span class="text-muted">未設定</span>
+                {% endif %}
             </div>
         </div>
 
