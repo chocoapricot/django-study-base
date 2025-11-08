@@ -6,6 +6,7 @@ from apps.contract.models import ClientContract, ClientContractHaken
 from apps.staff.models import Staff, StaffInternational
 from apps.client.models import Client
 from apps.master.models import ContractPattern, JobCategory, EmploymentType
+from apps.master.models_worktime import WorkTimePattern
 from apps.system.settings.models import Dropdowns
 from apps.common.constants import Constants
 
@@ -111,6 +112,12 @@ class StaffContractFormValidationTest(TestCase):
             active=True
         )
         
+        # 就業時間パターン
+        self.worktime_pattern = WorkTimePattern.objects.create(
+            name='標準勤務',
+            is_active=True
+        )
+        
         # クライアント
         self.client = Client.objects.create(
             name='テストクライアント',
@@ -164,6 +171,7 @@ class StaffContractFormValidationTest(TestCase):
             'pay_unit': '10',
             'work_location': 'テスト勤務地',
             'business_content': 'テスト業務内容',
+            'worktime_pattern': self.worktime_pattern.pk,
         }
 
     def test_foreign_staff_dispatch_agriculture_fishery_valid(self):

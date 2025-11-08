@@ -583,6 +583,10 @@ class StaffContractFormMinimumWageValidationTest(TestCase):
         from apps.master.models import MinimumPay
         MinimumPay.objects.create(pref='13', start_date=date(2023, 10, 1), hourly_wage=1113, is_active=True)
 
+        # WorkTimePattern
+        from apps.master.models_worktime import WorkTimePattern
+        self.worktime_pattern = WorkTimePattern.objects.create(name='標準勤務', is_active=True)
+
         self.base_form_data = {
             'staff': self.staff.pk,
             'contract_name': '最低賃金テスト契約',
@@ -592,6 +596,7 @@ class StaffContractFormMinimumWageValidationTest(TestCase):
             'end_date': date(2024, 12, 31),
             'pay_unit': self.pay_unit_hourly.value,
             'work_location': '東京都新宿区',
+            'worktime_pattern': self.worktime_pattern.pk,
         }
 
     def test_minimum_wage_validation_success(self):

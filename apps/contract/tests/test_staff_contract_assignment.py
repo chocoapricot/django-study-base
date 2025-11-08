@@ -7,6 +7,7 @@ from apps.contract.models import ClientContract, StaffContract, ContractAssignme
 from apps.client.models import Client
 from apps.staff.models import Staff
 from apps.master.models import EmploymentType
+from apps.master.models_worktime import WorkTimePattern
 from apps.common.constants import Constants
 from datetime import date, timedelta
 
@@ -69,6 +70,12 @@ class StaffContractAssignmentTestCase(TestCase):
             employment_type=self.employment_type
         )
         
+        # 就業時間パターン作成
+        self.worktime_pattern = WorkTimePattern.objects.create(
+            name='標準勤務',
+            is_active=True
+        )
+        
         # クライアント作成
         self.client_obj = Client.objects.create(
             name='テストクライアント',
@@ -114,6 +121,7 @@ class StaffContractAssignmentTestCase(TestCase):
             'contract_pattern': self.staff_contract_pattern.pk,
             'pay_unit': Constants.PAY_UNIT.HOURLY,
             'contract_amount': '300000',
+            'worktime_pattern': self.worktime_pattern.pk,
         }
         
         response = self.client.post(url, data)
@@ -142,6 +150,7 @@ class StaffContractAssignmentTestCase(TestCase):
             'contract_pattern': self.staff_contract_pattern.pk,
             'pay_unit': Constants.PAY_UNIT.HOURLY,
             'contract_amount': '300000',
+            'worktime_pattern': self.worktime_pattern.pk,
         }
         
         response = self.client.post(url, data)
@@ -172,6 +181,7 @@ class StaffContractAssignmentTestCase(TestCase):
                 'contract_pattern': self.staff_contract_pattern.pk,
                 'pay_unit': Constants.PAY_UNIT.HOURLY,
                 'contract_amount': '300000',
+                'worktime_pattern': self.worktime_pattern.pk,
             },
             'from_view': 'client'
         }
@@ -200,6 +210,7 @@ class StaffContractAssignmentTestCase(TestCase):
                 'contract_pattern': self.staff_contract_pattern.pk,
                 'pay_unit': Constants.PAY_UNIT.HOURLY,
                 'contract_amount': '300000',
+                'worktime_pattern': self.worktime_pattern.pk,
             },
             'from_view': 'client'
         }

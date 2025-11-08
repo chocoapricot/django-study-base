@@ -6,6 +6,7 @@ from ..models import ClientContract, StaffContract, ClientContractHaken, ClientC
 from apps.client.models import Client as TestClient, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from apps.master.models import ContractPattern, DefaultValue
+from apps.master.models_worktime import WorkTimePattern
 from apps.common.constants import Constants
 import datetime
 from unittest.mock import patch
@@ -77,6 +78,12 @@ class StaffContractViewTest(TestCase):
         from apps.system.settings.models import Dropdowns
         self.pay_unit_daily = Dropdowns.objects.create(category='pay_unit', value='20', name='日給', active=True)
         self.bill_unit_monthly = Dropdowns.objects.create(category='bill_unit', value='10', name='月額', active=True)
+        
+        # 就業時間パターン作成
+        self.worktime_pattern = WorkTimePattern.objects.create(
+            name='標準勤務',
+            is_active=True
+        )
 
         self.client.login(username='testuser', password='testpass123')
 
@@ -242,6 +249,7 @@ class StaffContractViewTest(TestCase):
             'pay_unit': self.pay_unit_daily.value,
             'work_location': '本社ビル',
             'business_content': 'プログラミング業務',
+            'worktime_pattern': self.worktime_pattern.pk,
         }
         response = self.client.post(url, post_data)
 
@@ -263,6 +271,7 @@ class StaffContractViewTest(TestCase):
             contract_pattern=self.staff_pattern,
             work_location='旧就業場所',
             business_content='旧業務内容',
+            worktime_pattern=self.worktime_pattern,
         )
 
         url = reverse('contract:staff_contract_update', kwargs={'pk': staff_contract.pk})
@@ -275,6 +284,7 @@ class StaffContractViewTest(TestCase):
             'pay_unit': self.pay_unit_daily.value, # 必須フィールド
             'work_location': '新就業場所',
             'business_content': '新業務内容',
+            'worktime_pattern': self.worktime_pattern.pk,
         }
 
         response = self.client.post(url, post_data)

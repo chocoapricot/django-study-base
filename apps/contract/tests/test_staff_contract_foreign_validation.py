@@ -9,6 +9,7 @@ from apps.staff.models import Staff, StaffInternational
 from apps.contract.models import StaffContract
 from apps.contract.forms import StaffContractForm
 from apps.master.models import JobCategory, ContractPattern, EmploymentType, StaffRegistStatus
+from apps.master.models_worktime import WorkTimePattern
 from apps.common.constants import Constants
 
 
@@ -55,6 +56,12 @@ class StaffContractForeignValidationTest(TestCase):
         self.contract_pattern = ContractPattern.objects.create(
             name='標準契約',
             domain=Constants.DOMAIN.STAFF,
+            is_active=True
+        )
+
+        # 就業時間パターン作成
+        self.worktime_pattern = WorkTimePattern.objects.create(
+            name='標準勤務',
             is_active=True
         )
 
@@ -120,6 +127,7 @@ class StaffContractForeignValidationTest(TestCase):
             'end_date': date.today() + timedelta(days=365),
             'contract_amount': 300000,
             'pay_unit': '30',  # 月給
+            'worktime_pattern': self.worktime_pattern.pk,
         }
 
         form = StaffContractForm(data=form_data)
@@ -138,6 +146,7 @@ class StaffContractForeignValidationTest(TestCase):
             'end_date': date.today() + timedelta(days=180),  # 在留期限内
             'contract_amount': 300000,
             'pay_unit': '30',  # 月給
+            'worktime_pattern': self.worktime_pattern.pk,
         }
 
         form = StaffContractForm(data=form_data)
@@ -156,6 +165,7 @@ class StaffContractForeignValidationTest(TestCase):
             'end_date': date.today() + timedelta(days=180),
             'contract_amount': 300000,
             'pay_unit': '30',  # 月給
+            'worktime_pattern': self.worktime_pattern.pk,
         }
 
         form = StaffContractForm(data=form_data)
@@ -176,6 +186,7 @@ class StaffContractForeignValidationTest(TestCase):
             'end_date': date.today() + timedelta(days=400),  # 在留期限を超える
             'contract_amount': 300000,
             'pay_unit': '30',  # 月給
+            'worktime_pattern': self.worktime_pattern.pk,
         }
 
         form = StaffContractForm(data=form_data)
@@ -197,6 +208,7 @@ class StaffContractForeignValidationTest(TestCase):
             'end_date': self.international_info.residence_period_to,  # 在留期限と同日
             'contract_amount': 300000,
             'pay_unit': '30',  # 月給
+            'worktime_pattern': self.worktime_pattern.pk,
         }
 
         form = StaffContractForm(data=form_data)
@@ -215,6 +227,7 @@ class StaffContractForeignValidationTest(TestCase):
             # end_dateは未設定
             'contract_amount': 300000,
             'pay_unit': '30',  # 月給
+            'worktime_pattern': self.worktime_pattern.pk,
         }
 
         form = StaffContractForm(data=form_data)
@@ -233,6 +246,7 @@ class StaffContractForeignValidationTest(TestCase):
             'end_date': date.today() + timedelta(days=180),
             'contract_amount': 300000,
             'pay_unit': '30',  # 月給
+            'worktime_pattern': self.worktime_pattern.pk,
         }
 
         form = StaffContractForm(data=form_data)
@@ -251,6 +265,7 @@ class StaffContractForeignValidationTest(TestCase):
             'end_date': date.today() + timedelta(days=400),  # 在留期限を超える
             'contract_amount': 300000,
             'pay_unit': '30',  # 月給
+            'worktime_pattern': self.worktime_pattern.pk,
         }
 
         form = StaffContractForm(data=form_data)
