@@ -129,6 +129,43 @@ def generate_contract_pdf_content(contract):
         if contract.business_content:
             items.append({"title": "業務内容", "text": str(contract.business_content)})
 
+        # 就業時間（非派遣契約の場合、ここで追加）
+        # 派遣契約の場合は後で派遣情報セクションに追加される
+        is_dispatch = contract.contract_pattern and contract.contract_pattern.contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH
+        if not is_dispatch and contract.worktime_pattern:
+            worktime_pattern = contract.worktime_pattern
+            worktime_lines = []
+            
+            # 勤務時間を取得
+            work_times = worktime_pattern.work_times.all().order_by('display_order')
+            for wt in work_times:
+                # 時刻フォーマット関数（翌日フラグ考慮）
+                def format_time(time_str, is_next_day):
+                    if is_next_day:
+                        return f"翌{time_str}"
+                    return time_str
+                
+                # 勤務時間の行を作成
+                time_line = f"{format_time(wt.start_time, wt.start_time_next_day)} ～ {format_time(wt.end_time, wt.end_time_next_day)}"
+                
+                # 時間名称があれば追加
+                if wt.time_name:
+                    time_line = f"{wt.time_name}：{time_line}"
+                
+                # 休憩時間を取得
+                break_times = wt.break_times.all().order_by('display_order')
+                if break_times.exists():
+                    break_parts = []
+                    for bt in break_times:
+                        break_part = f"{format_time(bt.start_time, bt.start_time_next_day)}-{format_time(bt.end_time, bt.end_time_next_day)}"
+                        break_parts.append(break_part)
+                    time_line += f"　（休憩：{', '.join(break_parts)}）"
+                
+                worktime_lines.append(time_line)
+            
+            if worktime_lines:
+                items.append({"title": "就業時間", "text": "\n".join(worktime_lines)})
+
         # 派遣契約の場合、追加情報を挿入
         if contract.contract_pattern and contract.contract_pattern.contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and hasattr(contract, 'haken_info'):
             from apps.company.models import Company, CompanyDepartment
@@ -184,6 +221,41 @@ def generate_contract_pdf_content(contract):
                 pass  # haken_exempt_infoが存在しない場合は何もしない
 
             haken_items.append({"title": "責任の程度", "text": str(haken_info.responsibility_degree or "")})
+
+            # 就業時間（派遣契約の場合）
+            if contract.worktime_pattern:
+                worktime_pattern = contract.worktime_pattern
+                worktime_lines = []
+                
+                # 勤務時間を取得
+                work_times = worktime_pattern.work_times.all().order_by('display_order')
+                for wt in work_times:
+                    # 時刻フォーマット関数（翌日フラグ考慮）
+                    def format_time(time_str, is_next_day):
+                        if is_next_day:
+                            return f"翌{time_str}"
+                        return time_str
+                    
+                    # 勤務時間の行を作成
+                    time_line = f"{format_time(wt.start_time, wt.start_time_next_day)} ～ {format_time(wt.end_time, wt.end_time_next_day)}"
+                    
+                    # 時間名称があれば追加
+                    if wt.time_name:
+                        time_line = f"{wt.time_name}：{time_line}"
+                    
+                    # 休憩時間を取得
+                    break_times = wt.break_times.all().order_by('display_order')
+                    if break_times.exists():
+                        break_parts = []
+                        for bt in break_times:
+                            break_part = f"{format_time(bt.start_time, bt.start_time_next_day)}-{format_time(bt.end_time, bt.end_time_next_day)}"
+                            break_parts.append(break_part)
+                        time_line += f"　（休憩：{', '.join(break_parts)}）"
+                    
+                    worktime_lines.append(time_line)
+                
+                if worktime_lines:
+                    haken_items.append({"title": "就業時間", "text": "\n".join(worktime_lines)})
 
             # 派遣先事業所
             if haken_info.haken_office:
@@ -271,8 +343,44 @@ def generate_contract_pdf_content(contract):
             {"title": "契約金額", "text": contract_amount_text},
             {"title": "就業場所", "text": str(contract.work_location or "")},
             {"title": "業務内容", "text": str(contract.business_content or "")},
-            {"title": "備考", "text": str(contract.notes or "")},
         ]
+        
+        # 就業時間（就業時間パターンから取得）
+        if contract.worktime_pattern:
+            worktime_pattern = contract.worktime_pattern
+            worktime_lines = []
+            
+            # 勤務時間を取得
+            work_times = worktime_pattern.work_times.all().order_by('display_order')
+            for wt in work_times:
+                # 時刻フォーマット関数（翌日フラグ考慮）
+                def format_time(time_str, is_next_day):
+                    if is_next_day:
+                        return f"翌{time_str}"
+                    return time_str
+                
+                # 勤務時間の行を作成
+                time_line = f"{format_time(wt.start_time, wt.start_time_next_day)} ～ {format_time(wt.end_time, wt.end_time_next_day)}"
+                
+                # 時間名称があれば追加
+                if wt.time_name:
+                    time_line = f"{wt.time_name}：{time_line}"
+                
+                # 休憩時間を取得
+                break_times = wt.break_times.all().order_by('display_order')
+                if break_times.exists():
+                    break_parts = []
+                    for bt in break_times:
+                        break_part = f"{format_time(bt.start_time, bt.start_time_next_day)}-{format_time(bt.end_time, bt.end_time_next_day)}"
+                        break_parts.append(break_part)
+                    time_line += f"　（休憩：{', '.join(break_parts)}）"
+                
+                worktime_lines.append(time_line)
+            
+            if worktime_lines:
+                items.append({"title": "就業時間", "text": "\n".join(worktime_lines)})
+        
+        items.append({"title": "備考", "text": str(contract.notes or "")})
     else:
         return None, None
 
@@ -1775,6 +1883,41 @@ def generate_employment_conditions_pdf(assignment, user, issued_at, watermark_te
     # 責任の程度（業務内容の次に表示）
     if hasattr(client_contract, 'haken_info') and client_contract.haken_info and client_contract.haken_info.responsibility_degree:
         items.append({"title": "責任の程度", "text": client_contract.haken_info.responsibility_degree})
+    
+    # 就業時間（スタッフ契約の就業時間パターンから取得）
+    if staff_contract.worktime_pattern:
+        worktime_pattern = staff_contract.worktime_pattern
+        worktime_lines = []
+        
+        # 勤務時間を取得
+        work_times = worktime_pattern.work_times.all().order_by('display_order')
+        for wt in work_times:
+            # 時刻フォーマット関数（翌日フラグ考慮）
+            def format_time(time_str, is_next_day):
+                if is_next_day:
+                    return f"翌{time_str}"
+                return time_str
+            
+            # 勤務時間の行を作成
+            time_line = f"{format_time(wt.start_time, wt.start_time_next_day)} ～ {format_time(wt.end_time, wt.end_time_next_day)}"
+            
+            # 時間名称があれば追加
+            if wt.time_name:
+                time_line = f"{wt.time_name}：{time_line}"
+            
+            # 休憩時間を取得
+            break_times = wt.break_times.all().order_by('display_order')
+            if break_times.exists():
+                break_parts = []
+                for bt in break_times:
+                    break_part = f"{format_time(bt.start_time, bt.start_time_next_day)}-{format_time(bt.end_time, bt.end_time_next_day)}"
+                    break_parts.append(break_part)
+                time_line += f"　（休憩：{', '.join(break_parts)}）"
+            
+            worktime_lines.append(time_line)
+        
+        if worktime_lines:
+            items.append({"title": "就業時間", "text": "\n".join(worktime_lines)})
     
     # 派遣料金は削除（契約金額に統合）
     
