@@ -78,6 +78,16 @@
                                 <td>{{ client_contract.start_date|date:"Y/m/d" }}～{% if client_contract.end_date %}{{ client_contract.end_date|date:"Y/m/d" }}{% else %}無期限{% endif %}</td>
                             </tr>
                             <tr>
+                                <th>就業時間</th>
+                                <td>
+                                    {% if client_contract.worktime_pattern %}
+                                        {% include 'common/_worktime_pattern_display.html' with worktime_pattern=client_contract.worktime_pattern %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
                                 <th>契約金額</th>
                                 <td>
                                     {% if client_contract.contract_amount %}
