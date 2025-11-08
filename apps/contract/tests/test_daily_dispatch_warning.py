@@ -95,6 +95,13 @@ class DailyDispatchWarningTestCase(TestCase):
             employment_type=self.fixed_term_employment
         )
         
+        # 就業時間パターン作成
+        from apps.master.models import WorkTimePattern
+        self.worktime_pattern = WorkTimePattern.objects.create(
+            name='標準勤務',
+            is_active=True
+        )
+        
         # テストクライアント（Djangoのテストクライアント）
         self.client = Client()
         self.client.login(username='testuser', password='testpass123')
@@ -115,6 +122,7 @@ class DailyDispatchWarningTestCase(TestCase):
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             client_contract_type_code=contract_type,
             contract_pattern=self.client_contract_pattern,
+            worktime_pattern=self.worktime_pattern,
             created_by=self.user,
             updated_by=self.user
         )
@@ -159,6 +167,7 @@ class DailyDispatchWarningTestCase(TestCase):
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             pay_unit=Constants.PAY_UNIT.HOURLY,
             contract_amount=1500,
+            worktime_pattern=self.worktime_pattern,
             created_by=self.user,
             updated_by=self.user
         )
