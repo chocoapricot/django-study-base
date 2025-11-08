@@ -139,8 +139,9 @@ def generate_contract_pdf_content(contract):
             # 勤務時間を取得
             work_times = worktime_pattern.work_times.all().order_by('display_order')
             for wt in work_times:
-                # 時刻フォーマット関数（翌日フラグ考慮）
-                def format_time(time_str, is_next_day):
+                # 時刻フォーマット関数（翌日フラグ考慮、秒なし）
+                def format_time(time_obj, is_next_day):
+                    time_str = time_obj.strftime('%H:%M') if hasattr(time_obj, 'strftime') else str(time_obj)[:5]
                     if is_next_day:
                         return f"翌{time_str}"
                     return time_str
@@ -150,7 +151,7 @@ def generate_contract_pdf_content(contract):
                 
                 # 時間名称があれば追加
                 if wt.time_name:
-                    time_line = f"{wt.time_name}：{time_line}"
+                    time_line = f"{wt.time_name.content}：{time_line}"
                 
                 # 休憩時間を取得
                 break_times = wt.break_times.all().order_by('display_order')
@@ -230,8 +231,9 @@ def generate_contract_pdf_content(contract):
                 # 勤務時間を取得
                 work_times = worktime_pattern.work_times.all().order_by('display_order')
                 for wt in work_times:
-                    # 時刻フォーマット関数（翌日フラグ考慮）
-                    def format_time(time_str, is_next_day):
+                    # 時刻フォーマット関数（翌日フラグ考慮、秒なし）
+                    def format_time(time_obj, is_next_day):
+                        time_str = time_obj.strftime('%H:%M') if hasattr(time_obj, 'strftime') else str(time_obj)[:5]
                         if is_next_day:
                             return f"翌{time_str}"
                         return time_str
@@ -241,7 +243,7 @@ def generate_contract_pdf_content(contract):
                     
                     # 時間名称があれば追加
                     if wt.time_name:
-                        time_line = f"{wt.time_name}：{time_line}"
+                        time_line = f"{wt.time_name.content}：{time_line}"
                     
                     # 休憩時間を取得
                     break_times = wt.break_times.all().order_by('display_order')
@@ -353,8 +355,9 @@ def generate_contract_pdf_content(contract):
             # 勤務時間を取得
             work_times = worktime_pattern.work_times.all().order_by('display_order')
             for wt in work_times:
-                # 時刻フォーマット関数（翌日フラグ考慮）
-                def format_time(time_str, is_next_day):
+                # 時刻フォーマット関数（翌日フラグ考慮、秒なし）
+                def format_time(time_obj, is_next_day):
+                    time_str = time_obj.strftime('%H:%M') if hasattr(time_obj, 'strftime') else str(time_obj)[:5]
                     if is_next_day:
                         return f"翌{time_str}"
                     return time_str
@@ -364,7 +367,7 @@ def generate_contract_pdf_content(contract):
                 
                 # 時間名称があれば追加
                 if wt.time_name:
-                    time_line = f"{wt.time_name}：{time_line}"
+                    time_line = f"{wt.time_name.content}：{time_line}"
                 
                 # 休憩時間を取得
                 break_times = wt.break_times.all().order_by('display_order')
@@ -1892,8 +1895,9 @@ def generate_employment_conditions_pdf(assignment, user, issued_at, watermark_te
         # 勤務時間を取得
         work_times = worktime_pattern.work_times.all().order_by('display_order')
         for wt in work_times:
-            # 時刻フォーマット関数（翌日フラグ考慮）
-            def format_time(time_str, is_next_day):
+            # 時刻フォーマット関数（翌日フラグ考慮、秒なし）
+            def format_time(time_obj, is_next_day):
+                time_str = time_obj.strftime('%H:%M') if hasattr(time_obj, 'strftime') else str(time_obj)[:5]
                 if is_next_day:
                     return f"翌{time_str}"
                 return time_str
@@ -1903,7 +1907,7 @@ def generate_employment_conditions_pdf(assignment, user, issued_at, watermark_te
             
             # 時間名称があれば追加
             if wt.time_name:
-                time_line = f"{wt.time_name}：{time_line}"
+                time_line = f"{wt.time_name.content}：{time_line}"
             
             # 休憩時間を取得
             break_times = wt.break_times.all().order_by('display_order')

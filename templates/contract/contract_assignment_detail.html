@@ -177,6 +177,16 @@
                                 </td>
                             </tr>
                             <tr>
+                                <th class="w-25 bg-light">就業時間</th>
+                                <td>
+                                    {% if client_contract.worktime_pattern %}
+                                        {% include 'common/_worktime_pattern_display.html' with worktime_pattern=client_contract.worktime_pattern %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
                                 <th class="w-25 bg-light">契約金額</th>
                                 <td>
                                     {% if client_contract.contract_amount %}
@@ -251,6 +261,16 @@
                                         {{ staff_contract.end_date|date:"Y年m月d日" }}
                                     {% else %}
                                         無期限
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="w-25 bg-light">就業時間</th>
+                                <td>
+                                    {% if staff_contract.worktime_pattern %}
+                                        {% include 'common/_worktime_pattern_display.html' with worktime_pattern=staff_contract.worktime_pattern %}
+                                    {% else %}
+                                        -
                                     {% endif %}
                                 </td>
                             </tr>
