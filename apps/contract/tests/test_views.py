@@ -79,6 +79,11 @@ class ContractViewTest(TestCase):
             name_furigana='テストクライアント',
             address='Test Address'
         )
+        
+        # 就業時間パターン
+        from apps.master.models import WorkTimePattern
+        self.worktime_pattern = WorkTimePattern.objects.create(name='標準勤務', is_active=True)
+        
         self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='10', contract_type_code='20')
         self.client_contract = ClientContract.objects.create(
             client=self.test_client,
@@ -87,7 +92,8 @@ class ContractViewTest(TestCase):
             end_date=datetime.date.today() + datetime.timedelta(days=30),
             contract_pattern=self.contract_pattern,
             client_contract_type_code='20',
-            corporate_number=self.company.corporate_number
+            corporate_number=self.company.corporate_number,
+            worktime_pattern=self.worktime_pattern
         )
 
         # 抵触日ありの派遣先事業所と契約
@@ -108,7 +114,8 @@ class ContractViewTest(TestCase):
             start_date=datetime.date.today(),
             contract_pattern=self.contract_pattern,
             client_contract_type_code='20',
-            corporate_number=self.company.corporate_number
+            corporate_number=self.company.corporate_number,
+            worktime_pattern=self.worktime_pattern
         )
         self.haken_office_without_teishokubi = ClientDepartment.objects.create(
             client=self.test_client,
@@ -136,7 +143,8 @@ class ContractViewTest(TestCase):
             contract_pattern=self.non_haken_contract_pattern,
             client_contract_type_code='10',
             contract_status=Constants.CONTRACT_STATUS.DRAFT, # 編集可能にするためDRAFTに
-            corporate_number=self.company.corporate_number
+            corporate_number=self.company.corporate_number,
+            worktime_pattern=self.worktime_pattern
         )
 
         self.staff = Staff.objects.create(
@@ -473,6 +481,7 @@ class ContractViewTest(TestCase):
             'client_contract_type_code': '10',
             'business_content': 'これは請負契約の業務内容です。',
             'bill_unit': '10', # 月額
+            'worktime_pattern': self.worktime_pattern.pk,
         }
         response = self.client.post(url, post_data)
 
@@ -523,6 +532,10 @@ class ClientContractConfirmListViewTest(TestCase):
 
         # 契約書パターンを作成
         self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='10')
+        
+        # 就業時間パターン
+        from apps.master.models import WorkTimePattern
+        self.worktime_pattern = WorkTimePattern.objects.create(name='標準勤務', is_active=True)
 
         # ①「承認済」の契約を作成
         self.approved_contract = ClientContract.objects.create(
@@ -532,6 +545,7 @@ class ClientContractConfirmListViewTest(TestCase):
             contract_pattern=self.contract_pattern,
             contract_status=Constants.CONTRACT_STATUS.APPROVED,
             corporate_number=self.company.corporate_number,
+            worktime_pattern=self.worktime_pattern,
         )
 
         # ②「発行済」の契約を作成
@@ -542,6 +556,7 @@ class ClientContractConfirmListViewTest(TestCase):
             contract_pattern=self.contract_pattern,
             contract_status=Constants.CONTRACT_STATUS.ISSUED,
             corporate_number=self.company.corporate_number,
+            worktime_pattern=self.worktime_pattern,
         )
         # 発行済契約には、確認ボタンの表示条件である発行済みPDFが必要
         ClientContractPrint.objects.create(
@@ -558,6 +573,7 @@ class ClientContractConfirmListViewTest(TestCase):
             contract_pattern=self.contract_pattern,
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             corporate_number=self.company.corporate_number,
+            worktime_pattern=self.worktime_pattern,
         )
 
     def test_list_contracts_and_button_visibility(self):
@@ -613,6 +629,10 @@ class ClientContractIssueHistoryViewTest(TestCase):
         self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
         self.test_client_model = TestClient.objects.create(name='Test Client', corporate_number='6000000000001')
         self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='10')
+        
+        # 就業時間パターン
+        from apps.master.models import WorkTimePattern
+        self.worktime_pattern = WorkTimePattern.objects.create(name='標準勤務', is_active=True)
 
         # 10件以上の発行履歴を持つ契約
         self.contract_many = ClientContract.objects.create(
@@ -621,6 +641,7 @@ class ClientContractIssueHistoryViewTest(TestCase):
             start_date=datetime.date.today(),
             contract_pattern=self.contract_pattern,
             corporate_number=self.company.corporate_number,
+            worktime_pattern=self.worktime_pattern,
         )
         for i in range(12):
             ClientContractPrint.objects.create(
@@ -636,6 +657,7 @@ class ClientContractIssueHistoryViewTest(TestCase):
             start_date=datetime.date.today(),
             contract_pattern=self.contract_pattern,
             corporate_number=self.company.corporate_number,
+            worktime_pattern=self.worktime_pattern,
         )
         for i in range(5):
             ClientContractPrint.objects.create(

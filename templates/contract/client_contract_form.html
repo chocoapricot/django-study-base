@@ -133,6 +133,39 @@
             </div>
 
             <div class="row mb-3 align-items-center">
+                <label for="{{ form.worktime_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">就業時間</label>
+                <div class="col-sm-8">
+                    <input type="hidden" id="{{ form.worktime_pattern.id_for_label }}" name="{{ form.worktime_pattern.name }}" value="{{ form.worktime_pattern.value|default:'' }}">
+                    <div id="worktime_pattern_display">
+                        {% if form.instance.worktime_pattern %}
+                            <div class="border rounded p-2 bg-white">
+                                <div class="mb-1 small text-muted">{{ form.instance.worktime_pattern.name }}</div>
+                                {% if form.instance.worktime_pattern.work_times.all %}
+                                    {% for wt in form.instance.worktime_pattern.work_times.all %}
+                                        <div>
+                                            {% if wt.time_name %}{{ wt.time_name.content }}: {% endif %}{{ wt.start_time|time:"H:i" }}{% if wt.start_time_next_day %}(翌){% endif %}-{{ wt.end_time|time:"H:i" }}{% if wt.end_time_next_day %}(翌){% endif %}
+                                            {% if wt.break_times.all %}
+                                                <span class="small text-muted">(休憩: {% for bt in wt.break_times.all %}{% if not forloop.first %}, {% endif %}{{ bt.start_time|time:"H:i" }}{% if bt.start_time_next_day %}(翌){% endif %}-{{ bt.end_time|time:"H:i" }}{% if bt.end_time_next_day %}(翌){% endif %}{% endfor %})</span>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="text-muted">未設定</div>
+                        {% endif %}
+                    </div>
+                    {% if form.worktime_pattern.errors %}
+                        <div class="text-danger small">{{ form.worktime_pattern.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-sm btn-secondary me-1" type="button" id="selectWorktimePatternBtn">参照</button>
+                    <button class="btn btn-sm btn-secondary" type="button" id="clearWorktimePatternBtn">クリア</button>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
                 <label for="{{ form.contract_amount.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
                     契約金額
                 </label>
@@ -379,6 +412,41 @@
             </div>
             <div class="modal-body">
                 <!-- fetchで内容が挿入されます -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 就業時間パターン選択モーダル -->
+<div class="modal fade" id="worktimePatternModal" tabindex="-1" aria-labelledby="worktimePatternModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="worktimePatternModalLabel">就業時間パターン選択</div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- 検索フォーム -->
+                <form id="worktime-search-form" method="get" class="mb-3">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input type="text" name="q" class="form-control form-control-sm" placeholder="名称で検索" value="">
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-sm btn-primary me-2">検索</button>
+                            <button type="button" class="btn btn-sm btn-secondary" id="clearSearchBtn">クリア</button>
+                        </div>
+                    </div>
+                </form>
+                
+                <!-- パターン一覧 -->
+                <div id="pattern-list"></div>
+                
+                <!-- ページネーション -->
+                <div id="pagination-container" class="mt-3"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">閉じる</button>
@@ -665,6 +733,213 @@ function setEndDate(months) {
     endDateInput.value = `${year}-${month}-${day}`;
 }
 
+// 就業時間パターン選択モーダル関連
+document.addEventListener('DOMContentLoaded', function() {
+    const modalElement = document.getElementById('worktimePatternModal');
+    if (!modalElement) return;
+    
+    const modal = new bootstrap.Modal(modalElement);
+    const hiddenInput = document.getElementById('{{ form.worktime_pattern.id_for_label }}');
+    const displayContainer = document.getElementById('worktime_pattern_display');
+    
+    // 参照ボタン
+    const selectBtn = document.getElementById('selectWorktimePatternBtn');
+    if (selectBtn) {
+        selectBtn.addEventListener('click', function() {
+            loadPatterns(1);
+            modal.show();
+        });
+    }
+    
+    // クリアボタン
+    const clearBtn = document.getElementById('clearWorktimePatternBtn');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            hiddenInput.value = '';
+            displayContainer.innerHTML = '<div class="text-muted">未設定</div>';
+        });
+    }
+    
+    // 検索フォーム送信
+    const searchForm = document.getElementById('worktime-search-form');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            loadPatterns(1);
+        });
+    }
+    
+    // 検索クリアボタン
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    if (clearSearchBtn) {
+        clearSearchBtn.addEventListener('click', function() {
+            document.querySelector('#worktime-search-form input[name="q"]').value = '';
+            loadPatterns(1);
+        });
+    }
+    
+    // パターン読み込み
+    function loadPatterns(page) {
+        const searchQuery = document.querySelector('#worktime-search-form input[name="q"]').value;
+        const url = '{% url "master:worktime_pattern_select_modal" %}?page=' + page + '&q=' + encodeURIComponent(searchQuery);
+        
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                renderPatterns(data.patterns);
+                renderPagination(data);
+            })
+            .catch(error => console.error('Error:', error));
+    }
+    
+    // 時刻フォーマット関数（翌日フラグ考慮）
+    function formatTime(time, isNextDay) {
+        return isNextDay ? '翌' + time : time;
+    }
+    
+    // パターン一覧表示
+    function renderPatterns(patterns) {
+        const container = document.getElementById('pattern-list');
+        
+        if (patterns.length === 0) {
+            container.innerHTML = '<p class="text-center text-muted">該当するパターンがありません。</p>';
+            return;
+        }
+        
+        let html = '<div class="table-responsive"><table class="table table-hover">';
+        html += '<thead><tr>';
+        html += '<th style="width: 20%;">名称</th>';
+        html += '<th style="width: 60%;">勤務時間</th>';
+        html += '<th style="width: 10%;">メモ</th>';
+        html += '<th style="width: 10%;">操作</th>';
+        html += '</tr></thead><tbody>';
+        
+        patterns.forEach(pattern => {
+            html += '<tr>';
+            html += '<td>' + pattern.name + '</td>';
+            html += '<td>';
+            
+            if (pattern.work_times.length > 0) {
+                pattern.work_times.forEach(wt => {
+                    html += '<div class="mb-1">';
+                    if (wt.time_name) {
+                        html += '<strong>' + wt.time_name + ':</strong> ';
+                    }
+                    html += formatTime(wt.start_time, wt.start_time_next_day) + ' - ' + formatTime(wt.end_time, wt.end_time_next_day);
+                    
+                    if (wt.breaks.length > 0) {
+                        html += ' <span class="text-muted small">(休憩: ';
+                        wt.breaks.forEach((bt, idx) => {
+                            if (idx > 0) html += ', ';
+                            html += formatTime(bt.start_time, bt.start_time_next_day) + '-' + formatTime(bt.end_time, bt.end_time_next_day);
+                        });
+                        html += ')</span>';
+                    }
+                    html += '</div>';
+                });
+            } else {
+                html += '<span class="text-muted">未設定</span>';
+            }
+            
+            html += '</td>';
+            html += '<td>' + (pattern.memo ? '<span class="text-muted small">' + pattern.memo + '</span>' : '') + '</td>';
+            html += '<td style="white-space: nowrap;">';
+            html += '<button type="button" class="btn btn-sm btn-primary select-pattern-btn" data-pattern-id="' + pattern.id + '" data-pattern-name="' + pattern.name + '">選択</button>';
+            html += '</td>';
+            html += '</tr>';
+        });
+        
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
+        
+        // 選択ボタンのクリックイベント設定
+        container.querySelectorAll('.select-pattern-btn').forEach((btn, index) => {
+            btn.addEventListener('click', function() {
+                const patternId = this.getAttribute('data-pattern-id');
+                const patternName = this.getAttribute('data-pattern-name');
+                const pattern = patterns[index];
+                
+                hiddenInput.value = patternId;
+                
+                // 詳細情報を表示
+                let displayHtml = '<div class="border rounded p-2 bg-white">';
+                displayHtml += '<div class="mb-1 small text-muted">' + patternName + '</div>';
+                
+                if (pattern.work_times.length > 0) {
+                    pattern.work_times.forEach(wt => {
+                        displayHtml += '<div>';
+                        if (wt.time_name) {
+                            displayHtml += wt.time_name + ': ';
+                        }
+                        displayHtml += formatTime(wt.start_time, wt.start_time_next_day) + '-' + formatTime(wt.end_time, wt.end_time_next_day);
+                        
+                        if (wt.breaks.length > 0) {
+                            displayHtml += ' <span class="small text-muted">(休憩: ';
+                            wt.breaks.forEach((bt, idx) => {
+                                if (idx > 0) displayHtml += ', ';
+                                displayHtml += formatTime(bt.start_time, bt.start_time_next_day) + '-' + formatTime(bt.end_time, bt.end_time_next_day);
+                            });
+                            displayHtml += ')</span>';
+                        }
+                        displayHtml += '</div>';
+                    });
+                }
+                
+                displayHtml += '</div>';
+                displayContainer.innerHTML = displayHtml;
+                
+                modal.hide();
+            });
+        });
+    }
+    
+    // ページネーション表示
+    function renderPagination(data) {
+        const container = document.getElementById('pagination-container');
+        
+        if (data.total_pages <= 1) {
+            container.innerHTML = '';
+            return;
+        }
+        
+        let html = '<nav><ul class="pagination pagination-sm justify-content-center">';
+        
+        // 前へ
+        if (data.has_previous) {
+            html += '<li class="page-item"><a class="page-link" href="#" data-page="' + (data.current_page - 1) + '">前へ</a></li>';
+        } else {
+            html += '<li class="page-item disabled"><span class="page-link">前へ</span></li>';
+        }
+        
+        // ページ番号
+        for (let i = 1; i <= data.total_pages; i++) {
+            if (i === data.current_page) {
+                html += '<li class="page-item active"><span class="page-link">' + i + '</span></li>';
+            } else {
+                html += '<li class="page-item"><a class="page-link" href="#" data-page="' + i + '">' + i + '</a></li>';
+            }
+        }
+        
+        // 次へ
+        if (data.has_next) {
+            html += '<li class="page-item"><a class="page-link" href="#" data-page="' + (data.current_page + 1) + '">次へ</a></li>';
+        } else {
+            html += '<li class="page-item disabled"><span class="page-link">次へ</span></li>';
+        }
+        
+        html += '</ul></nav>';
+        container.innerHTML = html;
+        
+        // ページネーションクリックイベント
+        container.querySelectorAll('a.page-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = this.getAttribute('data-page');
+                loadPatterns(page);
+            });
+        });
+    }
+});
 
 // マスター選択関連の関数（contract-modal.jsで定義済み）
 function loadMasterModalContent(event, page = 1, clearSearch = false) {

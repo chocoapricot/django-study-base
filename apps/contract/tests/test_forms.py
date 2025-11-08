@@ -53,6 +53,10 @@ class ContractFormTest(TestCase):
         self.staff_pattern = ContractPattern.objects.create(name='スタッフ向け雇用契約', domain='1', is_active=True)
         self.bill_unit = Dropdowns.objects.create(category='bill_unit', value='10', name='月額', active=True)
         self.pay_unit = Dropdowns.objects.create(category='pay_unit', value='10', name='月給', active=True)
+        
+        # 就業時間パターン
+        from apps.master.models import WorkTimePattern
+        self.worktime_pattern = WorkTimePattern.objects.create(name='標準勤務', is_active=True)
 
     def test_client_contract_form_with_new_fields(self):
         """クライアント契約フォーム（新しいフィールドあり）のテスト"""
@@ -74,6 +78,7 @@ class ContractFormTest(TestCase):
             'end_date': date(2024, 12, 31),
             'client_contract_type_code': self.client_pattern.contract_type_code,
             'bill_unit': self.bill_unit.value,
+            'worktime_pattern': self.worktime_pattern.pk,
         }
         form = ClientContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
@@ -224,6 +229,7 @@ class ContractFormTest(TestCase):
             'contract_pattern': self.client_pattern.pk,
             'client_contract_type_code': self.client_pattern.contract_type_code,
             'bill_unit': self.bill_unit.value,
+            'worktime_pattern': self.worktime_pattern.pk,
         }
         
         form = ClientContractForm(data=form_data)
@@ -250,6 +256,7 @@ class ContractFormTest(TestCase):
             'contract_amount': 500000,
             'bill_unit': bill_unit_monthly.value,
             'client_contract_type_code': self.client_pattern.contract_type_code,
+            'worktime_pattern': self.worktime_pattern.pk,
         }
         form = ClientContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
