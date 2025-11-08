@@ -67,21 +67,7 @@
                     <input type="hidden" id="{{ form.worktime_pattern.id_for_label }}" name="{{ form.worktime_pattern.name }}" value="{{ form.worktime_pattern.value|default:'' }}">
                     <div class="d-flex align-items-center">
                         <div id="worktime_pattern_display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057; flex: 0 0 auto;">
-                            {% if form.instance.worktime_pattern %}
-                                <div class="small text-muted">{{ form.instance.worktime_pattern.name }}</div>
-                                {% if form.instance.worktime_pattern.work_times.all %}
-                                    {% for wt in form.instance.worktime_pattern.work_times.all %}
-                                        <div>
-                                            {% if wt.time_name %}{{ wt.time_name.content }}: {% endif %}{{ wt.start_time|format_time_with_next_day:wt.start_time_next_day }}-{{ wt.end_time|format_time_with_next_day:wt.end_time_next_day }}
-                                            {% if wt.break_times.all %}
-                                                <span class="small text-muted">(休憩: {% for bt in wt.break_times.all %}{% if not forloop.first %}, {% endif %}{{ bt.start_time|format_time_with_next_day:bt.start_time_next_day }}-{{ bt.end_time|format_time_with_next_day:bt.end_time_next_day }}{% endfor %})</span>
-                                            {% endif %}
-                                        </div>
-                                    {% endfor %}
-                                {% endif %}
-                            {% else %}
-                                <span class="text-muted">未設定</span>
-                            {% endif %}
+                            {% include 'common/_worktime_pattern_display.html' with worktime_pattern=form.instance.worktime_pattern %}
                         </div>
                         <div style="margin-left: 10px;">
                             <button type="button" class="btn btn-sm btn-secondary me-1" id="selectWorktimePatternBtn">参照</button>

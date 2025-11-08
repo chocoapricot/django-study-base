@@ -81,17 +81,7 @@
                 <th>就業時間</th>
                 <td>
                     {% if contract.worktime_pattern %}
-                        <div class="small text-muted">{{ contract.worktime_pattern.name }}</div>
-                        {% if contract.worktime_pattern.work_times.all %}
-                            {% for wt in contract.worktime_pattern.work_times.all %}
-                                <div>
-                                    {% if wt.time_name %}{{ wt.time_name.content }}: {% endif %}{% if wt.start_time_next_day %}翌{% endif %}{{ wt.start_time|time:"H:i" }}-{% if wt.end_time_next_day %}翌{% endif %}{{ wt.end_time|time:"H:i" }}
-                                    {% if wt.break_times.all %}
-                                        <span class="small text-muted">(休憩: {% for bt in wt.break_times.all %}{% if not forloop.first %}, {% endif %}{% if bt.start_time_next_day %}翌{% endif %}{{ bt.start_time|time:"H:i" }}-{% if bt.end_time_next_day %}翌{% endif %}{{ bt.end_time|time:"H:i" }}{% endfor %})</span>
-                                    {% endif %}
-                                </div>
-                            {% endfor %}
-                        {% endif %}
+                        {% include 'common/_worktime_pattern_display.html' with worktime_pattern=contract.worktime_pattern %}
                     {% else %}
                         -
                     {% endif %}
