@@ -65,7 +65,7 @@
                 <label for="{{ form.worktime_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">就業時間</label>
                 <div class="col-sm-10">
                     <input type="hidden" id="{{ form.worktime_pattern.id_for_label }}" name="{{ form.worktime_pattern.name }}" value="{{ form.worktime_pattern.value|default:'' }}">
-                    <div class="d-flex align-items-start">
+                    <div class="d-flex align-items-center">
                         <div id="worktime_pattern_display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057; flex: 0 0 auto;">
                             {% if form.instance.worktime_pattern %}
                                 <div class="small text-muted">{{ form.instance.worktime_pattern.name }}</div>
