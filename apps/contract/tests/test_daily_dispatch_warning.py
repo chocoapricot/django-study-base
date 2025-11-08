@@ -472,6 +472,7 @@ class DailyDispatchWarningTestCase(TestCase):
                 'contract_pattern': self.staff_contract_pattern.pk,
                 'pay_unit': Constants.PAY_UNIT.HOURLY,
                 'contract_amount': '1500',
+                'worktime_pattern': self.worktime_pattern.pk,
             },
             'from_view': 'client'
         }
