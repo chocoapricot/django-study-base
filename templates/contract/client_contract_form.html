@@ -134,34 +134,37 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.worktime_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">就業時間</label>
-                <div class="col-sm-8">
+                <div class="col-sm-10">
                     <input type="hidden" id="{{ form.worktime_pattern.id_for_label }}" name="{{ form.worktime_pattern.name }}" value="{{ form.worktime_pattern.value|default:'' }}">
-                    <div id="worktime_pattern_display">
-                        {% if form.instance.worktime_pattern %}
-                            <div class="border rounded p-2 bg-white">
-                                <div class="mb-1 small text-muted">{{ form.instance.worktime_pattern.name }}</div>
+                    <div class="d-flex align-items-start">
+                        <div id="worktime_pattern_display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057; flex: 0 0 auto;">
+                            {% if form.instance.worktime_pattern %}
+                                <div class="small text-muted">{{ form.instance.worktime_pattern.name }}</div>
                                 {% if form.instance.worktime_pattern.work_times.all %}
                                     {% for wt in form.instance.worktime_pattern.work_times.all %}
                                         <div>
-                                            {% if wt.time_name %}{{ wt.time_name.content }}: {% endif %}{{ wt.start_time|time:"H:i" }}{% if wt.start_time_next_day %}(翌){% endif %}-{{ wt.end_time|time:"H:i" }}{% if wt.end_time_next_day %}(翌){% endif %}
+                                            {% if wt.time_name %}{{ wt.time_name.content }}: {% endif %}{% if wt.start_time_next_day %}翌{% endif %}{{ wt.start_time|time:"H:i" }}-{% if wt.end_time_next_day %}翌{% endif %}{{ wt.end_time|time:"H:i" }}
                                             {% if wt.break_times.all %}
-                                                <span class="small text-muted">(休憩: {% for bt in wt.break_times.all %}{% if not forloop.first %}, {% endif %}{{ bt.start_time|time:"H:i" }}{% if bt.start_time_next_day %}(翌){% endif %}-{{ bt.end_time|time:"H:i" }}{% if bt.end_time_next_day %}(翌){% endif %}{% endfor %})</span>
+                                                <span class="small text-muted">(休憩: {% for bt in wt.break_times.all %}{% if not forloop.first %}, {% endif %}{% if bt.start_time_next_day %}翌{% endif %}{{ bt.start_time|time:"H:i" }}-{% if bt.end_time_next_day %}翌{% endif %}{{ bt.end_time|time:"H:i" }}{% endfor %})</span>
                                             {% endif %}
                                         </div>
                                     {% endfor %}
                                 {% endif %}
-                            </div>
-                        {% else %}
-                            <div class="text-muted">未設定</div>
-                        {% endif %}
+                            {% else %}
+                                <div class="small text-muted">標準勤務</div>
+                                <div>日勤: 09:00-18:00 <span class="small text-muted">(休憩: 12:00-13:00)</span></div>
+                                <div>準夜勤: 16:00-翌00:00 <span class="small text-muted">(休憩: 20:00-21:00)</span></div>
+                                <div>夜勤: 翌00:00-翌08:00 <span class="small text-muted">(休憩: 翌06:00-翌06:30)</span></div>
+                            {% endif %}
+                        </div>
+                        <div style="margin-left: 10px;">
+                            <button type="button" class="btn btn-sm btn-secondary me-1" id="selectWorktimePatternBtn">参照</button>
+                            <button type="button" class="btn btn-sm btn-secondary" id="clearWorktimePatternBtn">クリア</button>
+                        </div>
                     </div>
                     {% if form.worktime_pattern.errors %}
                         <div class="text-danger small">{{ form.worktime_pattern.errors.0 }}</div>
                     {% endif %}
-                </div>
-                <div class="col-sm-2">
-                    <button class="btn btn-sm btn-secondary me-1" type="button" id="selectWorktimePatternBtn">参照</button>
-                    <button class="btn btn-sm btn-secondary" type="button" id="clearWorktimePatternBtn">クリア</button>
                 </div>
             </div>
 
@@ -756,7 +759,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (clearBtn) {
         clearBtn.addEventListener('click', function() {
             hiddenInput.value = '';
-            displayContainer.innerHTML = '<div class="text-muted">未設定</div>';
+            displayContainer.innerHTML = '<span class="text-muted">未選択</span>';
         });
     }
     
@@ -825,7 +828,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (wt.time_name) {
                         html += '<strong>' + wt.time_name + ':</strong> ';
                     }
-                    html += formatTime(wt.start_time, wt.start_time_next_day) + ' - ' + formatTime(wt.end_time, wt.end_time_next_day);
+                    html += formatTime(wt.start_time, wt.start_time_next_day) + '-' + formatTime(wt.end_time, wt.end_time_next_day);
                     
                     if (wt.breaks.length > 0) {
                         html += ' <span class="text-muted small">(休憩: ';
@@ -862,8 +865,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 hiddenInput.value = patternId;
                 
                 // 詳細情報を表示
-                let displayHtml = '<div class="border rounded p-2 bg-white">';
-                displayHtml += '<div class="mb-1 small text-muted">' + patternName + '</div>';
+                let displayHtml = '<div class="small text-muted">' + patternName + '</div>';
+                displayHtml += '<div>';
                 
                 if (pattern.work_times.length > 0) {
                     pattern.work_times.forEach(wt => {

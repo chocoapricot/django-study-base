@@ -63,34 +63,34 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.worktime_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">就業時間</label>
-                <div class="col-sm-8">
+                <div class="col-sm-10">
                     <input type="hidden" id="{{ form.worktime_pattern.id_for_label }}" name="{{ form.worktime_pattern.name }}" value="{{ form.worktime_pattern.value|default:'' }}">
-                    <div id="worktime_pattern_display">
-                        {% if form.instance.worktime_pattern %}
-                            <div class="border rounded p-2 bg-white">
-                                <div class="mb-1"><strong>{{ form.instance.worktime_pattern.name }}</strong></div>
+                    <div class="d-flex align-items-start">
+                        <div id="worktime_pattern_display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057; flex: 0 0 auto;">
+                            {% if form.instance.worktime_pattern %}
+                                <div class="small text-muted">{{ form.instance.worktime_pattern.name }}</div>
                                 {% if form.instance.worktime_pattern.work_times.all %}
                                     {% for wt in form.instance.worktime_pattern.work_times.all %}
-                                        <div class="small text-muted">
+                                        <div>
                                             {% if wt.time_name %}{{ wt.time_name.content }}: {% endif %}{{ wt.start_time|format_time_with_next_day:wt.start_time_next_day }}-{{ wt.end_time|format_time_with_next_day:wt.end_time_next_day }}
                                             {% if wt.break_times.all %}
-                                                (休憩: {% for bt in wt.break_times.all %}{% if not forloop.first %}, {% endif %}{{ bt.start_time|format_time_with_next_day:bt.start_time_next_day }}-{{ bt.end_time|format_time_with_next_day:bt.end_time_next_day }}{% endfor %})
+                                                <span class="small text-muted">(休憩: {% for bt in wt.break_times.all %}{% if not forloop.first %}, {% endif %}{{ bt.start_time|format_time_with_next_day:bt.start_time_next_day }}-{{ bt.end_time|format_time_with_next_day:bt.end_time_next_day }}{% endfor %})</span>
                                             {% endif %}
                                         </div>
                                     {% endfor %}
                                 {% endif %}
-                            </div>
-                        {% else %}
-                            <div class="text-muted">未設定</div>
-                        {% endif %}
+                            {% else %}
+                                <span class="text-muted">未設定</span>
+                            {% endif %}
+                        </div>
+                        <div style="margin-left: 10px;">
+                            <button type="button" class="btn btn-sm btn-secondary me-1" id="selectWorktimePatternBtn">参照</button>
+                            <button type="button" class="btn btn-sm btn-secondary" id="clearWorktimePatternBtn">クリア</button>
+                        </div>
                     </div>
                     {% if form.worktime_pattern.errors %}
                         <div class="text-danger small">{{ form.worktime_pattern.errors.0 }}</div>
                     {% endif %}
-                </div>
-                <div class="col-sm-2">
-                    <button class="btn btn-sm btn-secondary me-1" type="button" id="selectWorktimePatternBtn">参照</button>
-                    <button class="btn btn-sm btn-secondary" type="button" id="clearWorktimePatternBtn">クリア</button>
                 </div>
             </div>
 
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // クリアボタン
     document.getElementById('clearWorktimePatternBtn').addEventListener('click', function() {
         hiddenInput.value = '';
-        displayContainer.innerHTML = '<div class="text-muted">未設定</div>';
+        displayContainer.innerHTML = '<span class="text-muted">未設定</span>';
     });
     
     // 検索フォーム送信
@@ -231,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (wt.time_name) {
                         html += '<strong>' + wt.time_name + ':</strong> ';
                     }
-                    html += formatTime(wt.start_time, wt.start_time_next_day) + ' - ' + formatTime(wt.end_time, wt.end_time_next_day);
+                    html += formatTime(wt.start_time, wt.start_time_next_day) + '-' + formatTime(wt.end_time, wt.end_time_next_day);
                     
                     if (wt.breaks.length > 0) {
                         html += ' <span class="text-muted small">(休憩: ';
@@ -268,24 +268,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 hiddenInput.value = patternId;
                 
                 // 詳細情報を表示
-                let displayHtml = '<div class="border rounded p-2 bg-white">';
-                displayHtml += '<div class="mb-1"><strong>' + patternName + '</strong></div>';
+                let displayHtml = '<div class="small text-muted">' + patternName + '</div>';
+                displayHtml += '<div>';
                 
                 if (pattern.work_times.length > 0) {
                     pattern.work_times.forEach(wt => {
-                        displayHtml += '<div class="small text-muted">';
+                        displayHtml += '<div>';
                         if (wt.time_name) {
                             displayHtml += wt.time_name + ': ';
                         }
                         displayHtml += formatTime(wt.start_time, wt.start_time_next_day) + '-' + formatTime(wt.end_time, wt.end_time_next_day);
                         
                         if (wt.breaks.length > 0) {
-                            displayHtml += ' (休憩: ';
+                            displayHtml += ' <span class="small text-muted">(休憩: ';
                             wt.breaks.forEach((bt, idx) => {
                                 if (idx > 0) displayHtml += ', ';
                                 displayHtml += formatTime(bt.start_time, bt.start_time_next_day) + '-' + formatTime(bt.end_time, bt.end_time_next_day);
                             });
-                            displayHtml += ')';
+                            displayHtml += ')</span>';
                         }
                         displayHtml += '</div>';
                     });
