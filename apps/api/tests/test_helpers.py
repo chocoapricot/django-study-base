@@ -11,9 +11,6 @@ class FetchCompanyInfoTest(TestCase):
         corporate_number = "1180301018771"
         response = fetch_company_info(corporate_number)
         
-        # レスポンスの中身を確認
-        print("Response:", response)  # デバッグ用にレスポンス内容を表示
-        
         # 期待する結果の確認
         self.assertIsNotNone(response)
         self.assertIn("name", response)  # name フィールドが含まれていることを確認

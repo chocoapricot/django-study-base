@@ -195,8 +195,6 @@ class StaffProfileViewTest(TestCase):
         }
         
         response = self.client.post(reverse('profile:staff_edit'), data)
-        if hasattr(response, 'context') and response.context and 'form' in response.context:
-            print('form.errors:', response.context['form'].errors)
         self.assertEqual(response.status_code, 302)  # リダイレクト
         
         # プロフィールが作成されたことを確認

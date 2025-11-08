@@ -126,11 +126,6 @@ class StaffContractAssignmentTestCase(TestCase):
         
         response = self.client.post(url, data)
         
-        # レスポンスの詳細を確認
-        if response.status_code != 302:
-            print(f"Response status: {response.status_code}")
-            print(f"Response content: {response.content.decode()}")
-        
         # スタッフ契約が作成されることを確認
         self.assertTrue(StaffContract.objects.filter(contract_name='テストスタッフ契約').exists())
         

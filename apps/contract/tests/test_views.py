@@ -485,12 +485,6 @@ class ContractViewTest(TestCase):
         }
         response = self.client.post(url, post_data)
 
-        # フォームが無効な場合はエラーを表示
-        if response.status_code != 302:
-            form = response.context.get('form')
-            if form:
-                print("Form errors:", form.errors.as_json())
-
         self.assertEqual(response.status_code, 302, "POSTリクエストがリダイレクトされませんでした。")
 
         self.non_haken_contract.refresh_from_db()

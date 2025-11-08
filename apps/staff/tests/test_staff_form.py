@@ -332,8 +332,6 @@ class StaffFormTest(TestCase):
         }
         
         form = StaffForm(data=form_data)
-        if not form.is_valid():
-            print(f"Form errors: {form.errors}")
         self.assertTrue(form.is_valid())
     
     def test_valid_both_filled_hire_date_employee_no(self):
@@ -356,8 +354,6 @@ class StaffFormTest(TestCase):
         }
         
         form = StaffForm(data=form_data)
-        if not form.is_valid():
-            print(f"Form errors: {form.errors}")
         self.assertTrue(form.is_valid())
     
     def test_valid_resignation_date_with_hire_date(self):
@@ -381,8 +377,6 @@ class StaffFormTest(TestCase):
         }
         
         form = StaffForm(data=form_data)
-        if not form.is_valid():
-            print(f"Form errors: {form.errors}")
         self.assertTrue(form.is_valid())
     
     def test_hire_date_after_resignation_date_validation(self):
@@ -475,6 +469,4 @@ class StaffFormTest(TestCase):
         }
         
         form = StaffForm(data=form_data)
-        if not form.is_valid():
-            print(f"Form errors: {form.errors}")
         self.assertTrue(form.is_valid())

@@ -145,8 +145,6 @@ class BillBankFormTest(TestCase):
             'display_order': 1
         }
         form = BillBankForm(data=form_data)
-        if not form.is_valid():
-            print(form.errors)
         self.assertTrue(form.is_valid())
     
     def test_invalid_form_missing_account_holder(self):

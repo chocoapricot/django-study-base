@@ -148,7 +148,6 @@ class StaffSortingTest(TestCase):
         response = self.client.get(reverse('staff:staff_list'), {'sort': 'age', 'page': 1})
         self.assertEqual(response.status_code, 200)
         staffs_on_page = response.context['staffs'].object_list
-        print(f"Ages on page (ascending): {[s.age for s in staffs_on_page]}")
         self.assertEqual(staffs_on_page[0].age, 10) # self.staff_obj
         self.assertEqual(staffs_on_page[9].age, 29) # 20 + 9
 
@@ -156,6 +155,5 @@ class StaffSortingTest(TestCase):
         response = self.client.get(reverse('staff:staff_list'), {'sort': '-age', 'page': 1})
         self.assertEqual(response.status_code, 200)
         staffs_on_page = response.context['staffs'].object_list
-        print(f"Ages on page (descending): {[s.age for s in staffs_on_page]}")
         self.assertEqual(staffs_on_page[0].age, 32) # 20 + 12
         self.assertEqual(staffs_on_page[9].age, 23) # 20 + 3

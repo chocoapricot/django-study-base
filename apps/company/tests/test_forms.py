@@ -22,8 +22,6 @@ class CompanyFormTest(TestCase):
         # 有効な法人番号（実際の法人番号例）
         form_data = {'name': 'テスト会社', 'corporate_number': '2000012010019', 'dispatch_treatment_method': 'agreement'}
         form = CompanyForm(data=form_data)
-        if not form.is_valid():
-            print("Form errors:", form.errors)
         self.assertTrue(form.is_valid())
 
         # 法人番号が空の場合は有効とする
