@@ -10,6 +10,131 @@ from apps.system.logs.models import AppLog
 from apps.company.models import Company
 from apps.common.constants import Constants
 
+
+# ========================================
+# ヘルパー関数（共通化）
+# ========================================
+
+def format_time_with_next_day(time_obj, is_next_day):
+    """
+    時刻を翌日フラグ考慮でフォーマットする（秒なし）
+    
+    Args:
+        time_obj: 時刻オブジェクト
+        is_next_day: 翌日フラグ
+    
+    Returns:
+        str: フォーマットされた時刻文字列（例：「09:00」「翌01:00」）
+    """
+    time_str = time_obj.strftime('%H:%M') if hasattr(time_obj, 'strftime') else str(time_obj)[:5]
+    if is_next_day:
+        return f"翌{time_str}"
+    return time_str
+
+
+def format_worktime_pattern(worktime_pattern):
+    """
+    就業時間パターンから就業時間テキストを生成する
+    
+    Args:
+        worktime_pattern: WorktimePatternオブジェクト
+    
+    Returns:
+        str: フォーマットされた就業時間テキスト（複数行）
+    """
+    if not worktime_pattern:
+        return ""
+    
+    worktime_lines = []
+    
+    # 勤務時間を取得
+    work_times = worktime_pattern.work_times.all().order_by('display_order')
+    for wt in work_times:
+        # 勤務時間の行を作成
+        time_line = f"{format_time_with_next_day(wt.start_time, wt.start_time_next_day)} ～ {format_time_with_next_day(wt.end_time, wt.end_time_next_day)}"
+        
+        # 時間名称があれば追加
+        if wt.time_name:
+            time_line = f"{wt.time_name.content}：{time_line}"
+        
+        # 休憩時間を取得
+        break_times = wt.break_times.all().order_by('display_order')
+        if break_times.exists():
+            break_parts = []
+            for bt in break_times:
+                break_part = f"{format_time_with_next_day(bt.start_time, bt.start_time_next_day)}-{format_time_with_next_day(bt.end_time, bt.end_time_next_day)}"
+                break_parts.append(break_part)
+            time_line += f"　（休憩：{', '.join(break_parts)}）"
+        
+        worktime_lines.append(time_line)
+    
+    return "\n".join(worktime_lines)
+
+
+def format_client_user_info(user, with_phone=False, default_text="N/A"):
+    """
+    クライアントユーザー情報をフォーマットする
+    
+    Args:
+        user: ClientUserオブジェクト
+        with_phone: 電話番号を含めるか
+        default_text: ユーザーが存在しない場合のデフォルトテキスト
+    
+    Returns:
+        str: フォーマットされたユーザー情報
+    """
+    if not user:
+        return default_text
+    
+    parts = []
+    if user.department:
+        parts.append(user.department.name)
+    if user.position:
+        parts.append(user.position)
+    parts.append(user.name)
+    
+    base_info = '　'.join(filter(None, parts))
+    
+    if with_phone and user.phone_number:
+        return f"{base_info} 電話番号：{user.phone_number}"
+    return base_info
+
+
+def format_company_user_info(user, with_phone=False, default_text="N/A"):
+    """
+    会社ユーザー情報をフォーマットする
+    
+    Args:
+        user: CompanyUserオブジェクト
+        with_phone: 電話番号を含めるか
+        default_text: ユーザーが存在しない場合のデフォルトテキスト
+    
+    Returns:
+        str: フォーマットされたユーザー情報
+    """
+    if not user:
+        return default_text
+    
+    from apps.company.models import CompanyDepartment
+    parts = []
+    department = CompanyDepartment.objects.filter(department_code=user.department_code).first() if user.department_code else None
+    if department:
+        parts.append(department.name)
+    if user.position:
+        parts.append(user.position)
+    parts.append(user.name)
+    
+    base_info = '　'.join(filter(None, parts))
+    
+    if with_phone and user.phone_number:
+        return f"{base_info} 電話番号：{user.phone_number}"
+    return base_info
+
+
+# ========================================
+# 契約番号生成関数
+# ========================================
+
 def generate_client_contract_number(contract: ClientContract) -> str:
     """
     クライアント契約番号を採番する。
@@ -133,79 +258,15 @@ def generate_contract_pdf_content(contract):
         # 派遣契約の場合は後で派遣情報セクションに追加される
         is_dispatch = contract.contract_pattern and contract.contract_pattern.contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH
         if not is_dispatch and contract.worktime_pattern:
-            worktime_pattern = contract.worktime_pattern
-            worktime_lines = []
-            
-            # 勤務時間を取得
-            work_times = worktime_pattern.work_times.all().order_by('display_order')
-            for wt in work_times:
-                # 時刻フォーマット関数（翌日フラグ考慮、秒なし）
-                def format_time(time_obj, is_next_day):
-                    time_str = time_obj.strftime('%H:%M') if hasattr(time_obj, 'strftime') else str(time_obj)[:5]
-                    if is_next_day:
-                        return f"翌{time_str}"
-                    return time_str
-                
-                # 勤務時間の行を作成
-                time_line = f"{format_time(wt.start_time, wt.start_time_next_day)} ～ {format_time(wt.end_time, wt.end_time_next_day)}"
-                
-                # 時間名称があれば追加
-                if wt.time_name:
-                    time_line = f"{wt.time_name.content}：{time_line}"
-                
-                # 休憩時間を取得
-                break_times = wt.break_times.all().order_by('display_order')
-                if break_times.exists():
-                    break_parts = []
-                    for bt in break_times:
-                        break_part = f"{format_time(bt.start_time, bt.start_time_next_day)}-{format_time(bt.end_time, bt.end_time_next_day)}"
-                        break_parts.append(break_part)
-                    time_line += f"　（休憩：{', '.join(break_parts)}）"
-                
-                worktime_lines.append(time_line)
-            
-            if worktime_lines:
-                items.append({"title": "就業時間", "text": "\n".join(worktime_lines)})
+            worktime_text = format_worktime_pattern(contract.worktime_pattern)
+            if worktime_text:
+                items.append({"title": "就業時間", "text": worktime_text})
 
         # 派遣契約の場合、追加情報を挿入
         if contract.contract_pattern and contract.contract_pattern.contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and hasattr(contract, 'haken_info'):
             from apps.company.models import Company, CompanyDepartment
             haken_info = contract.haken_info
             haken_items = []
-
-            # Helper to format user info
-            def format_client_user(user, with_phone=False):
-                if not user:
-                    return "N/A"
-                parts = []
-                if user.department:
-                    parts.append(user.department.name)
-                if user.position:
-                    parts.append(user.position)
-                parts.append(user.name)
-
-                base_info = '　'.join(filter(None, parts))
-
-                if with_phone and user.phone_number:
-                    return f"{base_info} 電話番号：{user.phone_number}"
-                return base_info
-
-            def format_company_user(user, with_phone=False):
-                if not user:
-                    return "N/A"
-                parts = []
-                department = CompanyDepartment.objects.filter(department_code=user.department_code).first() if user.department_code else None
-                if department:
-                    parts.append(department.name)
-                if user.position:
-                    parts.append(user.position)
-                parts.append(user.name)
-
-                base_info = '　'.join(filter(None, parts))
-
-                if with_phone and user.phone_number:
-                    return f"{base_info} 電話番号：{user.phone_number}"
-                return base_info
 
             # 業務内容を haken_items にも追加（派遣契約PDFのレイアウトを維持するため）
             if contract.business_content:
@@ -224,40 +285,9 @@ def generate_contract_pdf_content(contract):
             haken_items.append({"title": "責任の程度", "text": str(haken_info.responsibility_degree or "")})
 
             # 就業時間（派遣契約の場合）
-            if contract.worktime_pattern:
-                worktime_pattern = contract.worktime_pattern
-                worktime_lines = []
-                
-                # 勤務時間を取得
-                work_times = worktime_pattern.work_times.all().order_by('display_order')
-                for wt in work_times:
-                    # 時刻フォーマット関数（翌日フラグ考慮、秒なし）
-                    def format_time(time_obj, is_next_day):
-                        time_str = time_obj.strftime('%H:%M') if hasattr(time_obj, 'strftime') else str(time_obj)[:5]
-                        if is_next_day:
-                            return f"翌{time_str}"
-                        return time_str
-                    
-                    # 勤務時間の行を作成
-                    time_line = f"{format_time(wt.start_time, wt.start_time_next_day)} ～ {format_time(wt.end_time, wt.end_time_next_day)}"
-                    
-                    # 時間名称があれば追加
-                    if wt.time_name:
-                        time_line = f"{wt.time_name.content}：{time_line}"
-                    
-                    # 休憩時間を取得
-                    break_times = wt.break_times.all().order_by('display_order')
-                    if break_times.exists():
-                        break_parts = []
-                        for bt in break_times:
-                            break_part = f"{format_time(bt.start_time, bt.start_time_next_day)}-{format_time(bt.end_time, bt.end_time_next_day)}"
-                            break_parts.append(break_part)
-                        time_line += f"　（休憩：{', '.join(break_parts)}）"
-                    
-                    worktime_lines.append(time_line)
-                
-                if worktime_lines:
-                    haken_items.append({"title": "就業時間", "text": "\n".join(worktime_lines)})
+            worktime_text = format_worktime_pattern(contract.worktime_pattern)
+            if worktime_text:
+                haken_items.append({"title": "就業時間", "text": worktime_text})
 
             # 派遣先事業所
             if haken_info.haken_office:
@@ -294,13 +324,13 @@ def generate_contract_pdf_content(contract):
             company_responsible_person_title = "製造業務専門派遣元責任者" if is_manufacturing_dispatch else "派遣元責任者"
 
             # 派遣先
-            haken_items.append({"title": "派遣先指揮命令者", "text": format_client_user(haken_info.commander)})
-            haken_items.append({"title": "派遣先苦情申出先", "text": format_client_user(haken_info.complaint_officer_client, with_phone=True)})
-            haken_items.append({"title": client_responsible_person_title, "text": format_client_user(haken_info.responsible_person_client, with_phone=True)})
+            haken_items.append({"title": "派遣先指揮命令者", "text": format_client_user_info(haken_info.commander)})
+            haken_items.append({"title": "派遣先苦情申出先", "text": format_client_user_info(haken_info.complaint_officer_client, with_phone=True)})
+            haken_items.append({"title": client_responsible_person_title, "text": format_client_user_info(haken_info.responsible_person_client, with_phone=True)})
 
             # 派遣元
-            haken_items.append({"title": "派遣元苦情申出先", "text": format_company_user(haken_info.complaint_officer_company, with_phone=True)})
-            haken_items.append({"title": company_responsible_person_title, "text": format_company_user(haken_info.responsible_person_company, with_phone=True)})
+            haken_items.append({"title": "派遣元苦情申出先", "text": format_company_user_info(haken_info.complaint_officer_company, with_phone=True)})
+            haken_items.append({"title": company_responsible_person_title, "text": format_company_user_info(haken_info.responsible_person_company, with_phone=True)})
 
             # itemsリストに挿入（備考の前に挿入）
             notes_index = -1
@@ -348,40 +378,9 @@ def generate_contract_pdf_content(contract):
         ]
         
         # 就業時間（就業時間パターンから取得）
-        if contract.worktime_pattern:
-            worktime_pattern = contract.worktime_pattern
-            worktime_lines = []
-            
-            # 勤務時間を取得
-            work_times = worktime_pattern.work_times.all().order_by('display_order')
-            for wt in work_times:
-                # 時刻フォーマット関数（翌日フラグ考慮、秒なし）
-                def format_time(time_obj, is_next_day):
-                    time_str = time_obj.strftime('%H:%M') if hasattr(time_obj, 'strftime') else str(time_obj)[:5]
-                    if is_next_day:
-                        return f"翌{time_str}"
-                    return time_str
-                
-                # 勤務時間の行を作成
-                time_line = f"{format_time(wt.start_time, wt.start_time_next_day)} ～ {format_time(wt.end_time, wt.end_time_next_day)}"
-                
-                # 時間名称があれば追加
-                if wt.time_name:
-                    time_line = f"{wt.time_name.content}：{time_line}"
-                
-                # 休憩時間を取得
-                break_times = wt.break_times.all().order_by('display_order')
-                if break_times.exists():
-                    break_parts = []
-                    for bt in break_times:
-                        break_part = f"{format_time(bt.start_time, bt.start_time_next_day)}-{format_time(bt.end_time, bt.end_time_next_day)}"
-                        break_parts.append(break_part)
-                    time_line += f"　（休憩：{', '.join(break_parts)}）"
-                
-                worktime_lines.append(time_line)
-            
-            if worktime_lines:
-                items.append({"title": "就業時間", "text": "\n".join(worktime_lines)})
+        worktime_text = format_worktime_pattern(contract.worktime_pattern)
+        if worktime_text:
+            items.append({"title": "就業時間", "text": worktime_text})
         
         items.append({"title": "備考", "text": str(contract.notes or "")})
     else:
@@ -699,40 +698,9 @@ def generate_haken_motokanri_pdf(contract, user, issued_at, watermark_text=None)
         })
         
         # 12. 就業時間（クライアント契約の就業時間パターンから取得）
-        if contract.worktime_pattern:
-            worktime_pattern = contract.worktime_pattern
-            worktime_lines = []
-            
-            # 勤務時間を取得
-            work_times = worktime_pattern.work_times.all().order_by('display_order')
-            for wt in work_times:
-                # 時刻フォーマット関数（翌日フラグ考慮、秒なし）
-                def format_time(time_obj, is_next_day):
-                    time_str = time_obj.strftime('%H:%M') if hasattr(time_obj, 'strftime') else str(time_obj)[:5]
-                    if is_next_day:
-                        return f"翌{time_str}"
-                    return time_str
-                
-                # 勤務時間の行を作成
-                time_line = f"{format_time(wt.start_time, wt.start_time_next_day)} ～ {format_time(wt.end_time, wt.end_time_next_day)}"
-                
-                # 時間名称があれば追加
-                if wt.time_name:
-                    time_line = f"{wt.time_name.content}：{time_line}"
-                
-                # 休憩時間を取得
-                break_times = wt.break_times.all().order_by('display_order')
-                if break_times.exists():
-                    break_parts = []
-                    for bt in break_times:
-                        break_part = f"{format_time(bt.start_time, bt.start_time_next_day)}-{format_time(bt.end_time, bt.end_time_next_day)}"
-                        break_parts.append(break_part)
-                    time_line += f"　（休憩：{', '.join(break_parts)}）"
-                
-                worktime_lines.append(time_line)
-            
-            if worktime_lines:
-                items.append({"title": "就業時間", "text": "\n".join(worktime_lines)})
+        worktime_text = format_worktime_pattern(contract.worktime_pattern)
+        if worktime_text:
+            items.append({"title": "就業時間", "text": worktime_text})
         
         # 14. 派遣期間（クライアント契約の期間）
         dispatch_period = ""
@@ -748,63 +716,30 @@ def generate_haken_motokanri_pdf(contract, user, issued_at, watermark_text=None)
             "text": dispatch_period
         })
         
-        # Helper functions for formatting user info (個別契約書と同じ表記)
-        def format_client_user_for_ledger(user, with_phone=False):
-            if not user:
-                return "-"
-            parts = []
-            if user.department:
-                parts.append(user.department.name)
-            if user.position:
-                parts.append(user.position)
-            parts.append(user.name)
-
-            base_info = '　'.join(filter(None, parts))
-
-            if with_phone and user.phone_number:
-                return f"{base_info} 電話番号：{user.phone_number}"
-            return base_info
-
-        def format_company_user_for_ledger(user, with_phone=False):
-            if not user:
-                return "-"
-            from apps.company.models import CompanyDepartment
-            parts = []
-            department = CompanyDepartment.objects.filter(department_code=user.department_code).first() if user.department_code else None
-            if department:
-                parts.append(department.name)
-            if user.position:
-                parts.append(user.position)
-            parts.append(user.name)
-
-            base_info = '　'.join(filter(None, parts))
-
-            if with_phone and user.phone_number:
-                return f"{base_info} 電話番号：{user.phone_number}"
-            return base_info
-        
         # 15. 派遣元責任者（個別契約書と同じ表記：役職・氏名・電話番号）
-        company_responsible = ""
-        if haken_info and haken_info.responsible_person_company:
-            # 製造派遣かどうかでタイトルを決定
-            is_manufacturing_dispatch = contract.job_category and contract.job_category.is_manufacturing_dispatch
-            company_responsible = format_company_user_for_ledger(haken_info.responsible_person_company, with_phone=True)
+        company_responsible = format_company_user_info(
+            haken_info.responsible_person_company if haken_info else None,
+            with_phone=True,
+            default_text="-"
+        )
         
         company_responsible_title = "製造業務専門派遣元責任者" if (contract.job_category and contract.job_category.is_manufacturing_dispatch) else "派遣元責任者"
         items.append({
             "title": company_responsible_title,
-            "text": company_responsible if company_responsible else "-"
+            "text": company_responsible
         })
         
         # 16. 派遣先責任者（個別契約書と同じ表記：役職・氏名・電話番号）
-        client_responsible = ""
-        if haken_info and haken_info.responsible_person_client:
-            client_responsible = format_client_user_for_ledger(haken_info.responsible_person_client, with_phone=True)
+        client_responsible = format_client_user_info(
+            haken_info.responsible_person_client if haken_info else None,
+            with_phone=True,
+            default_text="-"
+        )
         
         client_responsible_title = "製造業務専門派遣先責任者" if (contract.job_category and contract.job_category.is_manufacturing_dispatch) else "派遣先責任者"
         items.append({
             "title": client_responsible_title,
-            "text": client_responsible if client_responsible else "-"
+            "text": client_responsible
         })
         
         # 17. 個別契約書記載事項（契約パターンの契約文言「本文」のみを出力）
@@ -1204,40 +1139,9 @@ def generate_haken_sakikanri_pdf(contract, user, issued_at, watermark_text=None)
         })
         
         # 13. 就業時間（クライアント契約の就業時間パターンから取得）
-        if contract.worktime_pattern:
-            worktime_pattern = contract.worktime_pattern
-            worktime_lines = []
-            
-            # 勤務時間を取得
-            work_times = worktime_pattern.work_times.all().order_by('display_order')
-            for wt in work_times:
-                # 時刻フォーマット関数（翌日フラグ考慮、秒なし）
-                def format_time(time_obj, is_next_day):
-                    time_str = time_obj.strftime('%H:%M') if hasattr(time_obj, 'strftime') else str(time_obj)[:5]
-                    if is_next_day:
-                        return f"翌{time_str}"
-                    return time_str
-                
-                # 勤務時間の行を作成
-                time_line = f"{format_time(wt.start_time, wt.start_time_next_day)} ～ {format_time(wt.end_time, wt.end_time_next_day)}"
-                
-                # 時間名称があれば追加
-                if wt.time_name:
-                    time_line = f"{wt.time_name.content}：{time_line}"
-                
-                # 休憩時間を取得
-                break_times = wt.break_times.all().order_by('display_order')
-                if break_times.exists():
-                    break_parts = []
-                    for bt in break_times:
-                        break_part = f"{format_time(bt.start_time, bt.start_time_next_day)}-{format_time(bt.end_time, bt.end_time_next_day)}"
-                        break_parts.append(break_part)
-                    time_line += f"　（休憩：{', '.join(break_parts)}）"
-                
-                worktime_lines.append(time_line)
-            
-            if worktime_lines:
-                items.append({"title": "就業時間", "text": "\n".join(worktime_lines)})
+        worktime_text = format_worktime_pattern(contract.worktime_pattern)
+        if worktime_text:
+            items.append({"title": "就業時間", "text": worktime_text})
         
         # 14. 抵触日制限外詳細（登録がある場合のみ）
         if haken_info:
@@ -1252,30 +1156,16 @@ def generate_haken_sakikanri_pdf(contract, user, issued_at, watermark_text=None)
                 pass  # haken_exempt_infoが存在しない場合は何もしない
         
         # 15. 派遣先責任者
-        client_responsible = ""
-        if haken_info and haken_info.responsible_person_client:
-            def format_client_user_for_ledger(user, with_phone=False):
-                if not user:
-                    return "-"
-                parts = []
-                if user.department:
-                    parts.append(user.department.name)
-                if user.position:
-                    parts.append(user.position)
-                parts.append(user.name)
-
-                base_info = '　'.join(filter(None, parts))
-
-                if with_phone and user.phone_number:
-                    return f"{base_info} 電話番号：{user.phone_number}"
-                return base_info
-            
-            client_responsible = format_client_user_for_ledger(haken_info.responsible_person_client, with_phone=True)
+        client_responsible = format_client_user_info(
+            haken_info.responsible_person_client if haken_info else None,
+            with_phone=True,
+            default_text="-"
+        )
         
         client_responsible_title = "製造業務専門派遣先責任者" if (contract.job_category and contract.job_category.is_manufacturing_dispatch) else "派遣先責任者"
         items.append({
             "title": client_responsible_title,
-            "text": client_responsible if client_responsible else "-"
+            "text": client_responsible
         })
         
         # 16. 就業状況
@@ -1285,32 +1175,16 @@ def generate_haken_sakikanri_pdf(contract, user, issued_at, watermark_text=None)
         })
         
         # 17. 派遣元責任者（派遣元管理台帳と同じ）
-        def format_company_user_for_ledger(user, with_phone=False):
-            if not user:
-                return "-"
-            from apps.company.models import CompanyDepartment
-            parts = []
-            department = CompanyDepartment.objects.filter(department_code=user.department_code).first() if user.department_code else None
-            if department:
-                parts.append(department.name)
-            if user.position:
-                parts.append(user.position)
-            parts.append(user.name)
-
-            base_info = '　'.join(filter(None, parts))
-
-            if with_phone and user.phone_number:
-                return f"{base_info} 電話番号：{user.phone_number}"
-            return base_info
-        
-        company_responsible = ""
-        if haken_info and haken_info.responsible_person_company:
-            company_responsible = format_company_user_for_ledger(haken_info.responsible_person_company, with_phone=True)
+        company_responsible = format_company_user_info(
+            haken_info.responsible_person_company if haken_info else None,
+            with_phone=True,
+            default_text="-"
+        )
         
         company_responsible_title = "製造業務専門派遣元責任者" if (contract.job_category and contract.job_category.is_manufacturing_dispatch) else "派遣元責任者"
         items.append({
             "title": company_responsible_title,
-            "text": company_responsible if company_responsible else "-"
+            "text": company_responsible
         })
         
         # 18. 派遣労働者からの苦情の処理状況
@@ -1960,157 +1834,58 @@ def generate_employment_conditions_pdf(assignment, user, issued_at, watermark_te
         items.append({"title": "責任の程度", "text": client_contract.haken_info.responsibility_degree})
     
     # 就業時間（スタッフ契約の就業時間パターンから取得）
-    if staff_contract.worktime_pattern:
-        worktime_pattern = staff_contract.worktime_pattern
-        worktime_lines = []
-        
-        # 勤務時間を取得
-        work_times = worktime_pattern.work_times.all().order_by('display_order')
-        for wt in work_times:
-            # 時刻フォーマット関数（翌日フラグ考慮、秒なし）
-            def format_time(time_obj, is_next_day):
-                time_str = time_obj.strftime('%H:%M') if hasattr(time_obj, 'strftime') else str(time_obj)[:5]
-                if is_next_day:
-                    return f"翌{time_str}"
-                return time_str
-            
-            # 勤務時間の行を作成
-            time_line = f"{format_time(wt.start_time, wt.start_time_next_day)} ～ {format_time(wt.end_time, wt.end_time_next_day)}"
-            
-            # 時間名称があれば追加
-            if wt.time_name:
-                time_line = f"{wt.time_name.content}：{time_line}"
-            
-            # 休憩時間を取得
-            break_times = wt.break_times.all().order_by('display_order')
-            if break_times.exists():
-                break_parts = []
-                for bt in break_times:
-                    break_part = f"{format_time(bt.start_time, bt.start_time_next_day)}-{format_time(bt.end_time, bt.end_time_next_day)}"
-                    break_parts.append(break_part)
-                time_line += f"　（休憩：{', '.join(break_parts)}）"
-            
-            worktime_lines.append(time_line)
-        
-        if worktime_lines:
-            items.append({"title": "就業時間", "text": "\n".join(worktime_lines)})
+    worktime_text = format_worktime_pattern(staff_contract.worktime_pattern)
+    if worktime_text:
+        items.append({"title": "就業時間", "text": worktime_text})
     
     # 派遣料金は削除（契約金額に統合）
     
     # 派遣先指揮命令者（クライアント契約派遣と同じ表記）
     if (hasattr(client_contract, 'haken_info') and client_contract.haken_info and 
         client_contract.haken_info.commander):
-        
-        def format_client_user_for_commander(user):
-            if not user:
-                return "-"
-            parts = []
-            if user.department:
-                parts.append(user.department.name)
-            if user.position:
-                parts.append(user.position)
-            parts.append(user.name)
-            return '　'.join(filter(None, parts))
-        
-        commander_text = format_client_user_for_commander(client_contract.haken_info.commander)
+        commander_text = format_client_user_info(client_contract.haken_info.commander, default_text="-")
         items.append({"title": "派遣先指揮命令者", "text": commander_text})
     
     # 派遣元責任者（派遣先管理台帳と同じ形式）
     if (hasattr(client_contract, 'haken_info') and client_contract.haken_info and 
         client_contract.haken_info.responsible_person_company):
-        
-        def format_company_user_for_employment_conditions(user):
-            if not user:
-                return "-"
-            from apps.company.models import CompanyDepartment
-            parts = []
-            department = CompanyDepartment.objects.filter(department_code=user.department_code).first() if user.department_code else None
-            if department:
-                parts.append(department.name)
-            if user.position:
-                parts.append(user.position)
-            parts.append(user.name)
-
-            base_info = '　'.join(filter(None, parts))
-
-            if user.phone_number:
-                return f"{base_info} 電話番号：{user.phone_number}"
-            return base_info
-        
-        company_responsible = format_company_user_for_employment_conditions(client_contract.haken_info.responsible_person_company)
+        company_responsible = format_company_user_info(
+            client_contract.haken_info.responsible_person_company,
+            with_phone=True,
+            default_text="-"
+        )
         company_responsible_title = "製造業務専門派遣元責任者" if (client_contract.job_category and client_contract.job_category.is_manufacturing_dispatch) else "派遣元責任者"
         items.append({"title": company_responsible_title, "text": company_responsible})
     
     # 派遣先責任者（派遣先管理台帳と同じ形式）
     if (hasattr(client_contract, 'haken_info') and client_contract.haken_info and 
         client_contract.haken_info.responsible_person_client):
-        
-        def format_client_user_for_employment_conditions(user):
-            if not user:
-                return "-"
-            parts = []
-            if user.department:
-                parts.append(user.department.name)
-            if user.position:
-                parts.append(user.position)
-            parts.append(user.name)
-
-            base_info = '　'.join(filter(None, parts))
-
-            if user.phone_number:
-                return f"{base_info} 電話番号：{user.phone_number}"
-            return base_info
-        
-        client_responsible = format_client_user_for_employment_conditions(client_contract.haken_info.responsible_person_client)
+        client_responsible = format_client_user_info(
+            client_contract.haken_info.responsible_person_client,
+            with_phone=True,
+            default_text="-"
+        )
         client_responsible_title = "製造業務専門派遣先責任者" if (client_contract.job_category and client_contract.job_category.is_manufacturing_dispatch) else "派遣先責任者"
         items.append({"title": client_responsible_title, "text": client_responsible})
     
     # 派遣元苦情申出先
     if (hasattr(client_contract, 'haken_info') and client_contract.haken_info and 
         client_contract.haken_info.complaint_officer_company):
-        
-        def format_company_user_for_complaint(user):
-            if not user:
-                return "-"
-            from apps.company.models import CompanyDepartment
-            parts = []
-            department = CompanyDepartment.objects.filter(department_code=user.department_code).first() if user.department_code else None
-            if department:
-                parts.append(department.name)
-            if user.position:
-                parts.append(user.position)
-            parts.append(user.name)
-
-            base_info = '　'.join(filter(None, parts))
-
-            if user.phone_number:
-                return f"{base_info} 電話番号：{user.phone_number}"
-            return base_info
-        
-        company_complaint_officer = format_company_user_for_complaint(client_contract.haken_info.complaint_officer_company)
+        company_complaint_officer = format_company_user_info(
+            client_contract.haken_info.complaint_officer_company,
+            with_phone=True,
+            default_text="-"
+        )
         items.append({"title": "派遣元苦情申出先", "text": company_complaint_officer})
     
     # 派遣先苦情申出先
     if (hasattr(client_contract, 'haken_info') and client_contract.haken_info and 
         client_contract.haken_info.complaint_officer_client):
-        
-        def format_client_user_for_complaint(user):
-            if not user:
-                return "-"
-            parts = []
-            if user.department:
-                parts.append(user.department.name)
-            if user.position:
-                parts.append(user.position)
-            parts.append(user.name)
-
-            base_info = '　'.join(filter(None, parts))
-
-            if user.phone_number:
-                return f"{base_info} 電話番号：{user.phone_number}"
-            return base_info
-        
-        client_complaint_officer = format_client_user_for_complaint(client_contract.haken_info.complaint_officer_client)
+        client_complaint_officer = format_client_user_info(
+            client_contract.haken_info.complaint_officer_client,
+            with_phone=True,
+            default_text="-"
+        )
         items.append({"title": "派遣先苦情申出先", "text": client_complaint_officer})
     
     # スタッフ契約の契約パターンから契約文言を取得
