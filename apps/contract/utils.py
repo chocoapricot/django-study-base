@@ -1635,11 +1635,11 @@ def generate_quotation_pdf(contract, user, issued_at, watermark_text=None):
     if worktime_text:
         items.append({"title": "就業時間", "text": worktime_text})
     
-    # 発行日を追加
-    items.append({"title": "発行日", "text": issued_at.strftime('%Y年%m月%d日')})
-    
     # 備考を追加
     items.append({"title": "備考", "text": str(contract.notes)})
+    
+    # 発行日を最後に追加
+    items.append({"title": "発行日", "text": issued_at.strftime('%Y年%m月%d日')})
 
     timestamp = issued_at.strftime('%Y%m%d%H%M%S')
     pdf_filename = f"quotation_{contract.pk}_{timestamp}.pdf"
