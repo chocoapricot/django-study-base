@@ -698,7 +698,43 @@ def generate_haken_motokanri_pdf(contract, user, issued_at, watermark_text=None)
             "text": responsibility_degree if responsibility_degree else "-"
         })
         
-        # 12. 派遣期間（クライアント契約の期間）
+        # 12. 就業時間（クライアント契約の就業時間パターンから取得）
+        if contract.worktime_pattern:
+            worktime_pattern = contract.worktime_pattern
+            worktime_lines = []
+            
+            # 勤務時間を取得
+            work_times = worktime_pattern.work_times.all().order_by('display_order')
+            for wt in work_times:
+                # 時刻フォーマット関数（翌日フラグ考慮、秒なし）
+                def format_time(time_obj, is_next_day):
+                    time_str = time_obj.strftime('%H:%M') if hasattr(time_obj, 'strftime') else str(time_obj)[:5]
+                    if is_next_day:
+                        return f"翌{time_str}"
+                    return time_str
+                
+                # 勤務時間の行を作成
+                time_line = f"{format_time(wt.start_time, wt.start_time_next_day)} ～ {format_time(wt.end_time, wt.end_time_next_day)}"
+                
+                # 時間名称があれば追加
+                if wt.time_name:
+                    time_line = f"{wt.time_name.content}：{time_line}"
+                
+                # 休憩時間を取得
+                break_times = wt.break_times.all().order_by('display_order')
+                if break_times.exists():
+                    break_parts = []
+                    for bt in break_times:
+                        break_part = f"{format_time(bt.start_time, bt.start_time_next_day)}-{format_time(bt.end_time, bt.end_time_next_day)}"
+                        break_parts.append(break_part)
+                    time_line += f"　（休憩：{', '.join(break_parts)}）"
+                
+                worktime_lines.append(time_line)
+            
+            if worktime_lines:
+                items.append({"title": "就業時間", "text": "\n".join(worktime_lines)})
+        
+        # 14. 派遣期間（クライアント契約の期間）
         dispatch_period = ""
         if contract.start_date and contract.end_date:
             dispatch_period = f"{contract.start_date.strftime('%Y年%m月%d日')} ～ {contract.end_date.strftime('%Y年%m月%d日')}"
@@ -747,7 +783,7 @@ def generate_haken_motokanri_pdf(contract, user, issued_at, watermark_text=None)
                 return f"{base_info} 電話番号：{user.phone_number}"
             return base_info
         
-        # 13. 派遣元責任者（個別契約書と同じ表記：役職・氏名・電話番号）
+        # 15. 派遣元責任者（個別契約書と同じ表記：役職・氏名・電話番号）
         company_responsible = ""
         if haken_info and haken_info.responsible_person_company:
             # 製造派遣かどうかでタイトルを決定
@@ -760,7 +796,7 @@ def generate_haken_motokanri_pdf(contract, user, issued_at, watermark_text=None)
             "text": company_responsible if company_responsible else "-"
         })
         
-        # 14. 派遣先責任者（個別契約書と同じ表記：役職・氏名・電話番号）
+        # 16. 派遣先責任者（個別契約書と同じ表記：役職・氏名・電話番号）
         client_responsible = ""
         if haken_info and haken_info.responsible_person_client:
             client_responsible = format_client_user_for_ledger(haken_info.responsible_person_client, with_phone=True)
@@ -771,7 +807,7 @@ def generate_haken_motokanri_pdf(contract, user, issued_at, watermark_text=None)
             "text": client_responsible if client_responsible else "-"
         })
         
-        # 15. 個別契約書記載事項（契約パターンの契約文言「本文」のみを出力）
+        # 17. 個別契約書記載事項（契約パターンの契約文言「本文」のみを出力）
         if contract.contract_pattern:
             # 契約パターンに紐づく契約文言の「本文」のみを取得
             contract_terms = contract.contract_pattern.terms.filter(display_position=2).order_by('display_order')
@@ -792,13 +828,13 @@ def generate_haken_motokanri_pdf(contract, user, issued_at, watermark_text=None)
                     'contract_terms_table': contract_terms_items
                 })
         
-        # 16. 派遣労働者からの苦情の処理状況（件名のみ）
+        # 18. 派遣労働者からの苦情の処理状況（件名のみ）
         items.append({
             "title": "派遣労働者からの苦情の処理状況",
             "text": "-"
         })
         
-        # 17. 各種保険の取得届提出の有無（派遣先通知書と同じロジック、労災保険除く）
+        # 19. 各種保険の取得届提出の有無（派遣先通知書と同じロジック、労災保険除く）
         staff = staff_contract.staff
         insurance_status_lines = []
         payroll = getattr(staff, 'payroll', None)
@@ -839,19 +875,19 @@ def generate_haken_motokanri_pdf(contract, user, issued_at, watermark_text=None)
             "text": insurance_status_text
         })
         
-        # 18. 教育訓練の内容（件名のみ）
+        # 20. 教育訓練の内容（件名のみ）
         items.append({
             "title": "教育訓練の内容",
             "text": "-"
         })
         
-        # 19. キャリア・コンサルティングの日時及び内容（件名のみ）
+        # 21. キャリア・コンサルティングの日時及び内容（件名のみ）
         items.append({
             "title": "キャリア・コンサルティングの日時及び内容",
             "text": "-"
         })
         
-        # 20. 雇用安定措置の内容（派遣雇用安定措置登録から取得）
+        # 22. 雇用安定措置の内容（派遣雇用安定措置登録から取得）
         employment_stability_measures = []
         
         # 割当に紐づく派遣雇用安定措置情報を取得
@@ -902,7 +938,7 @@ def generate_haken_motokanri_pdf(contract, user, issued_at, watermark_text=None)
             "text": employment_stability_text
         })
         
-        # 21. 紹介予定派遣に関する事項（個別契約書と同様の形式で出力）
+        # 23. 紹介予定派遣に関する事項（個別契約書と同様の形式で出力）
         if haken_info:
             try:
                 ttp_info = haken_info.ttp_info
@@ -1167,7 +1203,43 @@ def generate_haken_sakikanri_pdf(contract, user, issued_at, watermark_text=None)
             "text": business_type if business_type else "-"
         })
         
-        # 13. 抵触日制限外詳細（登録がある場合のみ）
+        # 13. 就業時間（クライアント契約の就業時間パターンから取得）
+        if contract.worktime_pattern:
+            worktime_pattern = contract.worktime_pattern
+            worktime_lines = []
+            
+            # 勤務時間を取得
+            work_times = worktime_pattern.work_times.all().order_by('display_order')
+            for wt in work_times:
+                # 時刻フォーマット関数（翌日フラグ考慮、秒なし）
+                def format_time(time_obj, is_next_day):
+                    time_str = time_obj.strftime('%H:%M') if hasattr(time_obj, 'strftime') else str(time_obj)[:5]
+                    if is_next_day:
+                        return f"翌{time_str}"
+                    return time_str
+                
+                # 勤務時間の行を作成
+                time_line = f"{format_time(wt.start_time, wt.start_time_next_day)} ～ {format_time(wt.end_time, wt.end_time_next_day)}"
+                
+                # 時間名称があれば追加
+                if wt.time_name:
+                    time_line = f"{wt.time_name.content}：{time_line}"
+                
+                # 休憩時間を取得
+                break_times = wt.break_times.all().order_by('display_order')
+                if break_times.exists():
+                    break_parts = []
+                    for bt in break_times:
+                        break_part = f"{format_time(bt.start_time, bt.start_time_next_day)}-{format_time(bt.end_time, bt.end_time_next_day)}"
+                        break_parts.append(break_part)
+                    time_line += f"　（休憩：{', '.join(break_parts)}）"
+                
+                worktime_lines.append(time_line)
+            
+            if worktime_lines:
+                items.append({"title": "就業時間", "text": "\n".join(worktime_lines)})
+        
+        # 14. 抵触日制限外詳細（登録がある場合のみ）
         if haken_info:
             try:
                 haken_exempt_info = haken_info.haken_exempt_info
@@ -1179,7 +1251,7 @@ def generate_haken_sakikanri_pdf(contract, user, issued_at, watermark_text=None)
             except haken_info.__class__.haken_exempt_info.RelatedObjectDoesNotExist:
                 pass  # haken_exempt_infoが存在しない場合は何もしない
         
-        # 14. 派遣先責任者
+        # 15. 派遣先責任者
         client_responsible = ""
         if haken_info and haken_info.responsible_person_client:
             def format_client_user_for_ledger(user, with_phone=False):
@@ -1206,13 +1278,13 @@ def generate_haken_sakikanri_pdf(contract, user, issued_at, watermark_text=None)
             "text": client_responsible if client_responsible else "-"
         })
         
-        # 15. 就業状況
+        # 16. 就業状況
         items.append({
             "title": "就業状況",
             "text": "別添のとおり"
         })
         
-        # 16. 派遣元責任者（派遣元管理台帳と同じ）
+        # 17. 派遣元責任者（派遣元管理台帳と同じ）
         def format_company_user_for_ledger(user, with_phone=False):
             if not user:
                 return "-"
@@ -1241,13 +1313,13 @@ def generate_haken_sakikanri_pdf(contract, user, issued_at, watermark_text=None)
             "text": company_responsible if company_responsible else "-"
         })
         
-        # 17. 派遣労働者からの苦情の処理状況
+        # 18. 派遣労働者からの苦情の処理状況
         items.append({
             "title": "派遣労働者からの苦情の処理状況",
             "text": "別添のとおり"
         })
         
-        # 18. 各種保険の取得届提出の有無（派遣元管理台帳と同じ）
+        # 19. 各種保険の取得届提出の有無（派遣元管理台帳と同じ）
         insurance_status_lines = []
         payroll = getattr(staff, 'payroll', None)
         
@@ -1287,13 +1359,13 @@ def generate_haken_sakikanri_pdf(contract, user, issued_at, watermark_text=None)
             "text": insurance_status_text
         })
         
-        # 19. 教育訓練の内容
+        # 27. 教育訓練の内容
         items.append({
             "title": "教育訓練の内容",
             "text": "別添のとおり"
         })
         
-        # 20. 紹介予定派遣に関する事項（TTPの場合のみ）
+        # 28. 紹介予定派遣に関する事項（TTPの場合のみ）
         if haken_info:
             try:
                 ttp_info = haken_info.ttp_info
