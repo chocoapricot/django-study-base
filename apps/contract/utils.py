@@ -131,6 +131,52 @@ def format_company_user_info(user, with_phone=False, default_text="N/A"):
     return base_info
 
 
+def format_insurance_status(staff):
+    """
+    スタッフの保険加入状況をフォーマットする
+    
+    Args:
+        staff: Staffオブジェクト
+    
+    Returns:
+        str: フォーマットされた保険加入状況テキスト（複数行）
+    """
+    insurance_status_lines = []
+    payroll = getattr(staff, 'payroll', None)
+    
+    # 健康保険
+    if payroll and payroll.health_insurance_join_date:
+        insurance_status_lines.append("健康保険：有")
+    else:
+        reason = payroll.health_insurance_non_enrollment_reason if payroll else ""
+        if reason:
+            insurance_status_lines.append(f"健康保険：無　（未加入理由）{reason}")
+        else:
+            insurance_status_lines.append("健康保険：無")
+    
+    # 厚生年金
+    if payroll and payroll.welfare_pension_join_date:
+        insurance_status_lines.append("厚生年金：有")
+    else:
+        reason = payroll.pension_insurance_non_enrollment_reason if payroll else ""
+        if reason:
+            insurance_status_lines.append(f"厚生年金：無　（未加入理由）{reason}")
+        else:
+            insurance_status_lines.append("厚生年金：無")
+    
+    # 雇用保険
+    if payroll and payroll.employment_insurance_join_date:
+        insurance_status_lines.append("雇用保険：有")
+    else:
+        reason = payroll.employment_insurance_non_enrollment_reason if payroll else ""
+        if reason:
+            insurance_status_lines.append(f"雇用保険：無　（未加入理由）{reason}")
+        else:
+            insurance_status_lines.append("雇用保険：無")
+    
+    return "\n".join(insurance_status_lines)
+
+
 # ========================================
 # 契約番号生成関数
 # ========================================
@@ -771,40 +817,7 @@ def generate_haken_motokanri_pdf(contract, user, issued_at, watermark_text=None)
         
         # 19. 各種保険の取得届提出の有無（派遣先通知書と同じロジック、労災保険除く）
         staff = staff_contract.staff
-        insurance_status_lines = []
-        payroll = getattr(staff, 'payroll', None)
-        
-        # 健康保険
-        if payroll and payroll.health_insurance_join_date:
-            insurance_status_lines.append("健康保険：有")
-        else:
-            reason = payroll.health_insurance_non_enrollment_reason if payroll else ""
-            if reason:
-                insurance_status_lines.append(f"健康保険：無　（未加入理由）{reason}")
-            else:
-                insurance_status_lines.append("健康保険：無")
-        
-        # 厚生年金
-        if payroll and payroll.welfare_pension_join_date:
-            insurance_status_lines.append("厚生年金：有")
-        else:
-            reason = payroll.pension_insurance_non_enrollment_reason if payroll else ""
-            if reason:
-                insurance_status_lines.append(f"厚生年金：無　（未加入理由）{reason}")
-            else:
-                insurance_status_lines.append("厚生年金：無")
-        
-        # 雇用保険
-        if payroll and payroll.employment_insurance_join_date:
-            insurance_status_lines.append("雇用保険：有")
-        else:
-            reason = payroll.employment_insurance_non_enrollment_reason if payroll else ""
-            if reason:
-                insurance_status_lines.append(f"雇用保険：無　（未加入理由）{reason}")
-            else:
-                insurance_status_lines.append("雇用保険：無")
-        
-        insurance_status_text = "\n".join(insurance_status_lines)
+        insurance_status_text = format_insurance_status(staff)
         items.append({
             "title": "各種保険の取得届提出の有無",
             "text": insurance_status_text
@@ -1194,40 +1207,7 @@ def generate_haken_sakikanri_pdf(contract, user, issued_at, watermark_text=None)
         })
         
         # 19. 各種保険の取得届提出の有無（派遣元管理台帳と同じ）
-        insurance_status_lines = []
-        payroll = getattr(staff, 'payroll', None)
-        
-        # 健康保険
-        if payroll and payroll.health_insurance_join_date:
-            insurance_status_lines.append("健康保険：有")
-        else:
-            reason = payroll.health_insurance_non_enrollment_reason if payroll else ""
-            if reason:
-                insurance_status_lines.append(f"健康保険：無　（未加入理由）{reason}")
-            else:
-                insurance_status_lines.append("健康保険：無")
-        
-        # 厚生年金
-        if payroll and payroll.welfare_pension_join_date:
-            insurance_status_lines.append("厚生年金：有")
-        else:
-            reason = payroll.pension_insurance_non_enrollment_reason if payroll else ""
-            if reason:
-                insurance_status_lines.append(f"厚生年金：無　（未加入理由）{reason}")
-            else:
-                insurance_status_lines.append("厚生年金：無")
-        
-        # 雇用保険
-        if payroll and payroll.employment_insurance_join_date:
-            insurance_status_lines.append("雇用保険：有")
-        else:
-            reason = payroll.employment_insurance_non_enrollment_reason if payroll else ""
-            if reason:
-                insurance_status_lines.append(f"雇用保険：無　（未加入理由）{reason}")
-            else:
-                insurance_status_lines.append("雇用保険：無")
-        
-        insurance_status_text = "\n".join(insurance_status_lines)
+        insurance_status_text = format_insurance_status(staff)
         items.append({
             "title": "各種保険の取得届提出の有無",
             "text": insurance_status_text
@@ -1459,42 +1439,7 @@ def generate_haken_notification_pdf(contract, user, issued_at, watermark_text=No
         })
         
         # 保険加入状況
-        insurance_status_lines = []
-        
-        # スタッフの給与情報を取得
-        payroll = getattr(staff, 'payroll', None)
-        
-        # 健康保険
-        if payroll and payroll.health_insurance_join_date:
-            insurance_status_lines.append("健康保険：有")
-        else:
-            reason = payroll.health_insurance_non_enrollment_reason if payroll else ""
-            if reason:
-                insurance_status_lines.append(f"健康保険：無　（未加入理由）{reason}")
-            else:
-                insurance_status_lines.append("健康保険：無")
-        
-        # 厚生年金
-        if payroll and payroll.welfare_pension_join_date:
-            insurance_status_lines.append("厚生年金：有")
-        else:
-            reason = payroll.pension_insurance_non_enrollment_reason if payroll else ""
-            if reason:
-                insurance_status_lines.append(f"厚生年金：無　（未加入理由）{reason}")
-            else:
-                insurance_status_lines.append("厚生年金：無")
-        
-        # 雇用保険
-        if payroll and payroll.employment_insurance_join_date:
-            insurance_status_lines.append("雇用保険：有")
-        else:
-            reason = payroll.employment_insurance_non_enrollment_reason if payroll else ""
-            if reason:
-                insurance_status_lines.append(f"雇用保険：無　（未加入理由）{reason}")
-            else:
-                insurance_status_lines.append("雇用保険：無")
-        
-        insurance_status_text = "\n".join(insurance_status_lines)
+        insurance_status_text = format_insurance_status(staff)
         rowspan_items.append({
             "title": "保険加入状況",
             "text": insurance_status_text
