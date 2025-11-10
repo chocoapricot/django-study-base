@@ -90,9 +90,9 @@ django-study-base/
 └── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（95テーブル）
+## データベーステーブル一覧（98テーブル）
 
-### 本アプリケーション独自テーブル（77テーブル）
+### 本アプリケーション独自テーブル（80テーブル）
 
 | テーブル名 | モデル名 | 説明 |
 | --- | --- | --- |
@@ -149,6 +149,9 @@ django-study-base/
 | `apps_master_skill` | `Skill` | 技能マスター |
 | `apps_master_staff_agreement` | `StaffAgreement` | スタッフ同意書マスター |
 | `apps_master_staff_regist_status` | `StaffRegistStatus` | スタッフ登録状況 |
+| `apps_master_worktime_pattern` | `WorktimePattern` | 勤務時間パターンマスター |
+| `apps_master_worktime_pattern_break` | `WorktimePatternBreak` | 勤務時間パターン休憩 |
+| `apps_master_worktime_pattern_work` | `WorktimePatternWork` | 勤務時間パターン勤務 |
 | `apps_profile_staff` | `StaffProfile` | スタッフプロフィール |
 | `apps_profile_staff_bank` | `StaffProfileBank` | プロフィール銀行口座 |
 | `apps_profile_staff_contacts` | `StaffProfileContacts` | プロフィール連絡先 |
