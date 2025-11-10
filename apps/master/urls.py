@@ -163,4 +163,11 @@ urlpatterns = [
     path('worktime-pattern-work/<int:work_pk>/break/create/', views.worktime_pattern_break_create, name='worktime_pattern_break_create'),
     path('worktime-pattern-break/<int:pk>/update/', views.worktime_pattern_break_update, name='worktime_pattern_break_update'),
     path('worktime-pattern-break/<int:pk>/delete/', views.worktime_pattern_break_delete, name='worktime_pattern_break_delete'),
+
+    # 時間外算出パターン管理
+    path('overtime-pattern/', views.overtime_pattern_list, name='overtime_pattern_list'),
+    path('overtime-pattern/create/', views.overtime_pattern_create, name='overtime_pattern_create'),
+    path('overtime-pattern/<int:pk>/update/', views.overtime_pattern_update, name='overtime_pattern_update'),
+    path('overtime-pattern/<int:pk>/delete/', views.overtime_pattern_delete, name='overtime_pattern_delete'),
+    path('overtime-pattern/history/', views.overtime_pattern_change_history_list, name='overtime_pattern_change_history_list'),
 ]

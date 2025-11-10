@@ -90,9 +90,9 @@ django-study-base/
 └── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（98テーブル）
+## データベーステーブル一覧（99テーブル）
 
-### 本アプリケーション独自テーブル（80テーブル）
+### 本アプリケーション独自テーブル（81テーブル）
 
 | テーブル名 | モデル名 | 説明 |
 | --- | --- | --- |
@@ -143,6 +143,7 @@ django-study-base/
 | `apps_master_job_category` | `JobCategory` | 職種マスター |
 | `apps_master_mail_template` | `MailTemplate` | メールテンプレート |
 | `apps_master_minimum_pay` | `MinimumPay` | 最低賃金マスター |
+| `apps_master_overtime_pattern` | `OvertimePattern` | 時間外算出パターンマスター |
 | `apps_master_phrase_template_title` | `PhraseTemplateTitle` | 汎用文言タイトル |
 | `apps_master_phrase_template` | `PhraseTemplate` | 汎用文言テンプレート |
 | `apps_master_qualification` | `Qualification` | 資格マスター |

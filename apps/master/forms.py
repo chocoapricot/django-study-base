@@ -14,11 +14,11 @@ from .models import (
     ContractPattern,
     ContractTerms,
     MinimumPay,
-
     DefaultValue,
     EmploymentType,
     StaffRegistStatus,
     ClientRegistStatus,
+    OvertimePattern,
 )
 from apps.system.settings.models import Dropdowns
 from apps.common.constants import Constants
@@ -648,3 +648,16 @@ class ClientRegistStatusForm(forms.ModelForm):
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
+
+
+class OvertimePatternForm(forms.ModelForm):
+    """時間外算出パターンフォーム"""
+    class Meta:
+        model = OvertimePattern
+        fields = ['name', 'memo', 'display_order', 'is_active']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }

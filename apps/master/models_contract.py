@@ -166,3 +166,26 @@ class EmploymentType(MyModel):
         return self.name
 
 
+class OvertimePattern(MyModel):
+    """
+    時間外算出パターンマスタ
+    """
+    name = models.CharField('名称', max_length=100)
+    memo = models.TextField('メモ', blank=True, null=True)
+    display_order = models.IntegerField('表示順', default=0)
+    is_active = models.BooleanField('有効', default=True)
+
+    class Meta:
+        db_table = 'apps_master_overtime_pattern'
+        verbose_name = '時間外算出パターン'
+        verbose_name_plural = '時間外算出パターン'
+        ordering = ['display_order', 'name']
+        indexes = [
+            models.Index(fields=['is_active']),
+            models.Index(fields=['display_order']),
+        ]
+
+    def __str__(self):
+        return self.name
+
+

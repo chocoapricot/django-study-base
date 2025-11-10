@@ -93,6 +93,14 @@ MASTER_CONFIGS = [
         "url_name": "master:worktime_pattern_list",
         "permission": "master.view_worktimepattern",
     },
+    {
+        "category": "契約",
+        "name": "時間外算出パターン管理",
+        "description": "時間外労働の算出パターンを管理",
+        "model": "master.OvertimePattern",
+        "url_name": "master:overtime_pattern_list",
+        "permission": "master.view_overtimepattern",
+    },
 
 
 
