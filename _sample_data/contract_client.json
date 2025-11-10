@@ -3,10 +3,10 @@
     "model": "contract.clientcontract",
     "pk": 1,
     "fields": {
-        "version": 1761582249934764,
+        "version": 1762786814568877,
         "created_at": "2024-01-15T09:00:00Z",
         "created_by": 1,
-        "updated_at": "2025-10-17T13:45:07.952Z",
+        "updated_at": "2025-11-10T15:16:01.221Z",
         "updated_by": 1,
         "client": 3,
         "client_contract_type_code": "1",
@@ -24,6 +24,7 @@
         "notes": "月次定例会議を実施。緊急対応は24時間以内に対応。",
         "memo": "",
         "payment_site": 1,
+        "worktime_pattern": 1,
         "approved_at": null,
         "approved_by": null,
         "issued_at": null,
@@ -32,6 +33,8 @@
         "quotation_issued_by": null,
         "teishokubi_notification_issued_at": null,
         "teishokubi_notification_issued_by": null,
+        "dispatch_ledger_issued_at": null,
+        "dispatch_ledger_issued_by": null,
         "confirmed_at": null,
         "confirmed_by": null
     }
@@ -40,10 +43,10 @@
     "model": "contract.clientcontract",
     "pk": 2,
     "fields": {
-        "version": 1761582249955125,
+        "version": 1762786790318199,
         "created_at": "2024-02-01T10:30:00Z",
         "created_by": 1,
-        "updated_at": "2025-10-17T13:45:00.657Z",
+        "updated_at": "2025-11-10T15:15:36.970Z",
         "updated_by": 1,
         "client": 4,
         "client_contract_type_code": "10",
@@ -61,6 +64,7 @@
         "notes": "薬事法対応のため、システム変更時は事前承認が必要。",
         "memo": "",
         "payment_site": 2,
+        "worktime_pattern": 3,
         "approved_at": null,
         "approved_by": null,
         "issued_at": null,
@@ -69,6 +73,8 @@
         "quotation_issued_by": null,
         "teishokubi_notification_issued_at": null,
         "teishokubi_notification_issued_by": null,
+        "dispatch_ledger_issued_at": null,
+        "dispatch_ledger_issued_by": null,
         "confirmed_at": null,
         "confirmed_by": null
     }
@@ -77,7 +83,7 @@
     "model": "contract.clientcontract",
     "pk": 3,
     "fields": {
-        "version": 1761582249969777,
+        "version": 1762680656809008,
         "created_at": "2024-03-10T14:15:00Z",
         "created_by": 1,
         "updated_at": "2025-10-17T13:45:23.918Z",
@@ -98,6 +104,7 @@
         "notes": "政府調達ガイドラインに準拠。成果物は全て日本語で作成。",
         "memo": "",
         "payment_site": 4,
+        "worktime_pattern": null,
         "approved_at": null,
         "approved_by": null,
         "issued_at": null,
@@ -106,6 +113,8 @@
         "quotation_issued_by": null,
         "teishokubi_notification_issued_at": null,
         "teishokubi_notification_issued_by": null,
+        "dispatch_ledger_issued_at": null,
+        "dispatch_ledger_issued_by": null,
         "confirmed_at": null,
         "confirmed_by": null
     }
@@ -114,10 +123,10 @@
     "model": "contract.clientcontract",
     "pk": 4,
     "fields": {
-        "version": 1761582250001682,
+        "version": 1762786803760153,
         "created_at": "2024-04-01T08:00:00Z",
         "created_by": 1,
-        "updated_at": "2025-10-17T13:44:52.703Z",
+        "updated_at": "2025-11-10T15:15:50.412Z",
         "updated_by": 1,
         "client": 3,
         "client_contract_type_code": "1",
@@ -135,6 +144,7 @@
         "notes": "POC期間3ヶ月、本格導入6ヶ月の予定。成果に応じて契約延長の可能性あり。",
         "memo": "",
         "payment_site": 1,
+        "worktime_pattern": 1,
         "approved_at": null,
         "approved_by": null,
         "issued_at": null,
@@ -143,6 +153,8 @@
         "quotation_issued_by": null,
         "teishokubi_notification_issued_at": null,
         "teishokubi_notification_issued_by": null,
+        "dispatch_ledger_issued_at": null,
+        "dispatch_ledger_issued_by": null,
         "confirmed_at": null,
         "confirmed_by": null
     }
@@ -151,10 +163,10 @@
     "model": "contract.clientcontract",
     "pk": 5,
     "fields": {
-        "version": 1761582250013171,
+        "version": 1762786773067809,
         "created_at": "2024-05-15T11:45:00Z",
         "created_by": 1,
-        "updated_at": "2025-10-17T13:44:43.207Z",
+        "updated_at": "2025-11-10T15:15:19.720Z",
         "updated_by": 1,
         "client": 4,
         "client_contract_type_code": "10",
@@ -172,6 +184,7 @@
         "notes": "段階的移行により業務停止時間を最小化。移行後3ヶ月間の運用サポート含む。",
         "memo": "",
         "payment_site": 2,
+        "worktime_pattern": 3,
         "approved_at": null,
         "approved_by": null,
         "issued_at": null,
@@ -180,6 +193,8 @@
         "quotation_issued_by": null,
         "teishokubi_notification_issued_at": null,
         "teishokubi_notification_issued_by": null,
+        "dispatch_ledger_issued_at": null,
+        "dispatch_ledger_issued_by": null,
         "confirmed_at": null,
         "confirmed_by": null
     }
@@ -188,7 +203,7 @@
     "model": "contract.clientcontract",
     "pk": 6,
     "fields": {
-        "version": 1761582250054769,
+        "version": 1762680656839572,
         "created_at": "2023-12-01T16:20:00Z",
         "created_by": 1,
         "updated_at": "2025-10-17T13:45:36.729Z",
@@ -209,6 +224,7 @@
         "notes": "契約期間終了により完了。最終報告書提出済み。",
         "memo": "",
         "payment_site": 3,
+        "worktime_pattern": null,
         "approved_at": null,
         "approved_by": null,
         "issued_at": null,
@@ -217,6 +233,8 @@
         "quotation_issued_by": null,
         "teishokubi_notification_issued_at": null,
         "teishokubi_notification_issued_by": null,
+        "dispatch_ledger_issued_at": null,
+        "dispatch_ledger_issued_by": null,
         "confirmed_at": null,
         "confirmed_by": null
     }
@@ -225,10 +243,10 @@
     "model": "contract.clientcontract",
     "pk": 7,
     "fields": {
-        "version": 1761582250067521,
+        "version": 1762786740781652,
         "created_at": "2025-10-05T15:25:33.199Z",
         "created_by": 1,
-        "updated_at": "2025-10-17T13:44:16.500Z",
+        "updated_at": "2025-11-10T15:14:47.433Z",
         "updated_by": 1,
         "client": 18,
         "client_contract_type_code": "20",
@@ -246,6 +264,7 @@
         "notes": "",
         "memo": "",
         "payment_site": 1,
+        "worktime_pattern": 3,
         "approved_at": null,
         "approved_by": null,
         "issued_at": null,
@@ -254,6 +273,8 @@
         "quotation_issued_by": null,
         "teishokubi_notification_issued_at": null,
         "teishokubi_notification_issued_by": null,
+        "dispatch_ledger_issued_at": null,
+        "dispatch_ledger_issued_by": null,
         "confirmed_at": null,
         "confirmed_by": null
     }
@@ -262,10 +283,10 @@
     "model": "contract.clientcontract",
     "pk": 8,
     "fields": {
-        "version": 1761583878237407,
+        "version": 1762786758025920,
         "created_at": "2025-10-27T17:06:17.739Z",
         "created_by": 1,
-        "updated_at": "2025-10-27T17:07:04.889Z",
+        "updated_at": "2025-11-10T15:15:04.678Z",
         "updated_by": 1,
         "client": 5,
         "client_contract_type_code": "20",
@@ -283,6 +304,7 @@
         "notes": "",
         "memo": "",
         "payment_site": 1,
+        "worktime_pattern": 2,
         "approved_at": null,
         "approved_by": null,
         "issued_at": null,
@@ -291,6 +313,8 @@
         "quotation_issued_by": null,
         "teishokubi_notification_issued_at": null,
         "teishokubi_notification_issued_by": null,
+        "dispatch_ledger_issued_at": null,
+        "dispatch_ledger_issued_by": null,
         "confirmed_at": null,
         "confirmed_by": null
     }

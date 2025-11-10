@@ -384,6 +384,11 @@ def client_contract_create(request):
                     return redirect('contract:client_contract_detail', pk=contract.pk)
             except Exception as e:
                 messages.error(request, f"保存中にエラーが発生しました: {e}")
+        
+        # バリデーションエラー時にselected_clientを再設定
+        if post_client:
+            selected_client = post_client
+        is_haken = post_is_haken
     else:  # GET
         initial_data = {}
         haken_initial_data = {}
