@@ -3,7 +3,7 @@
     "model": "client.clientdepartment",
     "pk": 1,
     "fields": {
-        "version": 1762268703038432,
+        "version": 1762792314469020,
         "created_at": "2024-10-30T11:49:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -28,7 +28,7 @@
     "model": "client.clientdepartment",
     "pk": 2,
     "fields": {
-        "version": 1762268703051779,
+        "version": 1762792314475042,
         "created_at": "2024-10-30T11:51:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -53,7 +53,7 @@
     "model": "client.clientdepartment",
     "pk": 3,
     "fields": {
-        "version": 1762268703054511,
+        "version": 1762792314477718,
         "created_at": "2024-10-30T11:53:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -78,7 +78,7 @@
     "model": "client.clientdepartment",
     "pk": 4,
     "fields": {
-        "version": 1762268703057092,
+        "version": 1762792314480249,
         "created_at": "2024-10-30T11:55:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -103,7 +103,7 @@
     "model": "client.clientdepartment",
     "pk": 5,
     "fields": {
-        "version": 1762273474725625,
+        "version": 1762792314483280,
         "created_at": "2024-10-30T11:57:18.158Z",
         "created_by": 1,
         "updated_at": "2025-11-04T16:40:21.377Z",
@@ -128,7 +128,7 @@
     "model": "client.clientdepartment",
     "pk": 6,
     "fields": {
-        "version": 1762268703062927,
+        "version": 1762792314487909,
         "created_at": "2024-10-30T11:59:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -153,7 +153,7 @@
     "model": "client.clientdepartment",
     "pk": 7,
     "fields": {
-        "version": 1762268703069541,
+        "version": 1762792314490829,
         "created_at": "2024-10-30T12:01:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -178,7 +178,7 @@
     "model": "client.clientdepartment",
     "pk": 8,
     "fields": {
-        "version": 1762268703072796,
+        "version": 1762792314493379,
         "created_at": "2024-10-30T12:03:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -203,10 +203,10 @@
     "model": "client.clientdepartment",
     "pk": 9,
     "fields": {
-        "version": 1762268703075546,
+        "version": 1762792415964339,
         "created_at": "2024-10-30T12:05:18.158Z",
         "created_by": 1,
-        "updated_at": "2024-10-31T04:14:34.286Z",
+        "updated_at": "2025-11-10T16:49:22.616Z",
         "updated_by": 1,
         "client": 8,
         "name": "事業開発部",
@@ -214,11 +214,11 @@
         "postal_code": "1000005",
         "address": "東京都千代田区丸の内2-5-2 事業開発センター",
         "phone_number": "03-3218-5678",
-        "is_haken_office": false,
-        "is_haken_unit": false,
-        "haken_unit_manager_title": null,
-        "haken_jigyosho_teishokubi": null,
-        "haken_jigyosho_teishokubi_notice_date": null,
+        "is_haken_office": true,
+        "is_haken_unit": true,
+        "haken_unit_manager_title": "部長",
+        "haken_jigyosho_teishokubi": "2028-11-01",
+        "haken_jigyosho_teishokubi_notice_date": "2025-11-01",
         "display_order": 2,
         "valid_from": "2020-04-01",
         "valid_to": null
@@ -228,7 +228,7 @@
     "model": "client.clientdepartment",
     "pk": 10,
     "fields": {
-        "version": 1762268703078239,
+        "version": 1762792314498624,
         "created_at": "2024-10-30T12:07:18.158Z",
         "created_by": 1,
         "updated_at": "2024-10-31T04:14:34.286Z",
@@ -253,7 +253,7 @@
     "model": "client.clientdepartment",
     "pk": 11,
     "fields": {
-        "version": 1762268703081101,
+        "version": 1762792314501823,
         "created_at": "2024-11-20T10:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-20T10:00:00Z",
@@ -278,7 +278,7 @@
     "model": "client.clientdepartment",
     "pk": 12,
     "fields": {
-        "version": 1762268703084836,
+        "version": 1762792314504441,
         "created_at": "2024-11-20T10:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-20T10:00:00Z",
@@ -303,7 +303,7 @@
     "model": "client.clientdepartment",
     "pk": 13,
     "fields": {
-        "version": 1762268703087368,
+        "version": 1762792314506948,
         "created_at": "2024-11-20T10:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-20T10:00:00Z",
@@ -328,7 +328,7 @@
     "model": "client.clientdepartment",
     "pk": 14,
     "fields": {
-        "version": 1762268703089864,
+        "version": 1762792314509448,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -353,7 +353,7 @@
     "model": "client.clientdepartment",
     "pk": 15,
     "fields": {
-        "version": 1762268703092309,
+        "version": 1762792314511995,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -378,7 +378,7 @@
     "model": "client.clientdepartment",
     "pk": 16,
     "fields": {
-        "version": 1762268703095223,
+        "version": 1762792314515064,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -403,7 +403,7 @@
     "model": "client.clientdepartment",
     "pk": 17,
     "fields": {
-        "version": 1762268703098979,
+        "version": 1762792314517869,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -428,7 +428,7 @@
     "model": "client.clientdepartment",
     "pk": 18,
     "fields": {
-        "version": 1762268703102112,
+        "version": 1762792314520560,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -453,7 +453,7 @@
     "model": "client.clientdepartment",
     "pk": 19,
     "fields": {
-        "version": 1762268703104612,
+        "version": 1762792314523035,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -478,7 +478,7 @@
     "model": "client.clientdepartment",
     "pk": 20,
     "fields": {
-        "version": 1762268703107050,
+        "version": 1762792314525488,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -503,7 +503,7 @@
     "model": "client.clientdepartment",
     "pk": 21,
     "fields": {
-        "version": 1762268703109519,
+        "version": 1762792314527957,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -528,7 +528,7 @@
     "model": "client.clientdepartment",
     "pk": 22,
     "fields": {
-        "version": 1762268703111988,
+        "version": 1762792314531724,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -553,7 +553,7 @@
     "model": "client.clientdepartment",
     "pk": 23,
     "fields": {
-        "version": 1762268703116001,
+        "version": 1762792314534943,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -578,7 +578,7 @@
     "model": "client.clientdepartment",
     "pk": 24,
     "fields": {
-        "version": 1762268703118986,
+        "version": 1762792314537664,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-10-31T18:40:00.967Z",
@@ -603,7 +603,7 @@
     "model": "client.clientdepartment",
     "pk": 25,
     "fields": {
-        "version": 1762268703121506,
+        "version": 1762792314540212,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -628,7 +628,7 @@
     "model": "client.clientdepartment",
     "pk": 26,
     "fields": {
-        "version": 1762268703123948,
+        "version": 1762792314542659,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -653,7 +653,7 @@
     "model": "client.clientdepartment",
     "pk": 27,
     "fields": {
-        "version": 1762268703126377,
+        "version": 1762792314545643,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -678,7 +678,7 @@
     "model": "client.clientdepartment",
     "pk": 28,
     "fields": {
-        "version": 1762268703128898,
+        "version": 1762792314549133,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -703,7 +703,7 @@
     "model": "client.clientdepartment",
     "pk": 29,
     "fields": {
-        "version": 1762268703134206,
+        "version": 1762792314552503,
         "created_at": "2024-11-21T00:00:00Z",
         "created_by": 1,
         "updated_at": "2024-11-21T00:00:00Z",
@@ -728,7 +728,7 @@
     "model": "client.clientdepartment",
     "pk": 30,
     "fields": {
-        "version": 1762273495156830,
+        "version": 1762792314555032,
         "created_at": "2025-10-05T15:24:39.360Z",
         "created_by": 1,
         "updated_at": "2025-11-04T16:40:41.808Z",
