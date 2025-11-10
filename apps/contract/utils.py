@@ -1597,6 +1597,12 @@ def generate_quotation_pdf(contract, user, issued_at, watermark_text=None):
     end_date_str = contract.end_date.strftime('%Y年%m月%d日') if contract.end_date else "無期限"
     contract_period = f"{start_date_str}　～　{end_date_str}"
     
+    # 契約期間の名称を決定（派遣契約の場合は「派遣期間」）
+    contract_period_title = "契約期間"
+    if contract.contract_pattern and contract.contract_pattern.contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH:
+        contract_period_title = "派遣期間"
+    
+    # お見積金額を個別契約書と同じ形式で出力（単位を前に）
     bill_unit_name = ""
     if contract.bill_unit:
         from apps.system.settings.models import Dropdowns
@@ -1606,20 +1612,34 @@ def generate_quotation_pdf(contract, user, issued_at, watermark_text=None):
         except Dropdowns.DoesNotExist:
             pass
 
-    contract_amount_text = "別途ご相談"
+    contract_amount_text = "N/A"
     if contract.contract_amount is not None:
-        contract_amount_text = f"¥{contract.contract_amount:,}"
-        if bill_unit_name:
-            contract_amount_text += f" / {bill_unit_name}"
+        contract_amount_text = f"{bill_unit_name} "
+        contract_amount_text += f"¥{contract.contract_amount:,}"
+    else:
+        contract_amount_text = "N/A"
 
     items = [
         {"title": "件名", "text": str(contract.contract_name)},
-        {"title": "契約期間", "text": contract_period},
+        {"title": contract_period_title, "text": contract_period},
         {"title": "お見積金額", "text": contract_amount_text},
-        {"title": "支払条件", "text": str(contract.payment_site.name if contract.payment_site else "別途ご相談")},
-        {"title": "発行日", "text": issued_at.strftime('%Y年%m月%d日')},
-        {"title": "発行者", "text": user.get_full_name_japanese()},
+        {"title": "支払条件", "text": str(contract.payment_site.name if contract.payment_site else "N/A")},
     ]
+    
+    # 業務内容を追加
+    if contract.business_content:
+        items.append({"title": "業務内容", "text": str(contract.business_content)})
+    
+    # 就業時間を追加
+    worktime_text = format_worktime_pattern(contract.worktime_pattern)
+    if worktime_text:
+        items.append({"title": "就業時間", "text": worktime_text})
+    
+    # 発行日を追加
+    items.append({"title": "発行日", "text": issued_at.strftime('%Y年%m月%d日')})
+    
+    # 備考を追加
+    items.append({"title": "備考", "text": str(contract.notes)})
 
     timestamp = issued_at.strftime('%Y%m%d%H%M%S')
     pdf_filename = f"quotation_{contract.pk}_{timestamp}.pdf"
