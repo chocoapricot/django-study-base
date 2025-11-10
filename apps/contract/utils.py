@@ -1641,11 +1641,14 @@ def generate_quotation_pdf(contract, user, issued_at, watermark_text=None):
     # 発行日を最後に追加
     items.append({"title": "発行日", "text": issued_at.strftime('%Y年%m月%d日')})
 
+    # 文末の文章（有効期限）
+    postamble_text = "本見積の有効期限は発行日より30日間とします。"
+
     timestamp = issued_at.strftime('%Y%m%d%H%M%S')
     pdf_filename = f"quotation_{contract.pk}_{timestamp}.pdf"
 
     buffer = io.BytesIO()
-    generate_table_based_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text)
+    generate_table_based_contract_pdf(buffer, pdf_title, intro_text, items, watermark_text=watermark_text, postamble_text=postamble_text)
     pdf_content = buffer.getvalue()
     buffer.close()
 
