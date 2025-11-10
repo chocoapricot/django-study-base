@@ -155,6 +155,7 @@ urlpatterns = [
     path('worktime-pattern/<int:pk>/delete/', views.worktime_pattern_delete, name='worktime_pattern_delete'),
     path('worktime-pattern/history/', views.worktime_pattern_change_history_list, name='worktime_pattern_change_history_list'),
     path('worktime-pattern/select-modal/', views.worktime_pattern_select_modal, name='worktime_pattern_select_modal'),
+    path('worktime-pattern/<int:pk>/json/', views.worktime_pattern_detail_json, name='worktime_pattern_detail_json'),
     # 勤務時間管理
     path('worktime-pattern/<int:pattern_pk>/work/create/', views.worktime_pattern_work_create, name='worktime_pattern_work_create'),
     path('worktime-pattern-work/<int:pk>/update/', views.worktime_pattern_work_update, name='worktime_pattern_work_update'),

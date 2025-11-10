@@ -50,6 +50,7 @@ HELP_TEXTS = {
     # 契約関連
     'contract_start_date_client': '基本契約締結日以降である必要あり',
     'contract_start_date_staff': '契約期間は入社日～退職日内の必要あり',
+    'worktime_pattern_staff': 'スタッフの雇用形態で就業時間が設定されている場合は自動設定され変更不可',
     
     # 契約選択関連
     'staff_employee_no': '契約対象となるスタッフには社員番号が必要です',

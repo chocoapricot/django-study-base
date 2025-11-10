@@ -449,6 +449,10 @@ def staff_contract_create(request):
                         # 雇用形態が設定されていない場合、スタッフの現在の雇用形態を設定
                         if not contract.employment_type and contract.staff and contract.staff.employment_type:
                             contract.employment_type = contract.staff.employment_type
+                        
+                        # 雇用形態に就業時間パターンが設定されている場合は強制的に適用
+                        if contract.employment_type and contract.employment_type.worktime_pattern:
+                            contract.worktime_pattern = contract.employment_type.worktime_pattern
 
                         contract.save()
                         messages.success(request, f'スタッフ契約「{contract.contract_name}」を作成しました。')
@@ -534,6 +538,11 @@ def staff_contract_update(request, pk):
         if form.is_valid():
             contract = form.save(commit=False)
             contract.updated_by = request.user
+            
+            # 雇用形態に就業時間パターンが設定されている場合は強制的に適用
+            if contract.employment_type and contract.employment_type.worktime_pattern:
+                contract.worktime_pattern = contract.employment_type.worktime_pattern
+            
             contract.save()
             messages.success(request, f'スタッフ契約「{contract.contract_name}」を更新しました。')
             return redirect('contract:staff_contract_detail', pk=contract.pk)

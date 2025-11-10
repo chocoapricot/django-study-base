@@ -380,3 +380,41 @@ def worktime_pattern_select_modal(request):
         })
     
     return JsonResponse(data)
+
+
+@login_required
+@permission_required("master.view_worktimepattern", raise_exception=True)
+def worktime_pattern_detail_json(request, pk):
+    """就業時間パターン詳細JSON取得API"""
+    pattern = get_object_or_404(WorkTimePattern, pk=pk)
+    
+    work_times = pattern.work_times.all()
+    work_times_data = []
+    for wt in work_times:
+        breaks = wt.break_times.all()
+        breaks_data = [
+            {
+                'start_time': bt.start_time.strftime('%H:%M'),
+                'start_time_next_day': bt.start_time_next_day,
+                'end_time': bt.end_time.strftime('%H:%M'),
+                'end_time_next_day': bt.end_time_next_day,
+            }
+            for bt in breaks
+        ]
+        work_times_data.append({
+            'time_name': wt.time_name.content if wt.time_name else '',
+            'start_time': wt.start_time.strftime('%H:%M'),
+            'start_time_next_day': wt.start_time_next_day,
+            'end_time': wt.end_time.strftime('%H:%M'),
+            'end_time_next_day': wt.end_time_next_day,
+            'breaks': breaks_data,
+        })
+    
+    data = {
+        'id': pattern.id,
+        'name': pattern.name,
+        'memo': pattern.memo or '',
+        'work_times': work_times_data,
+    }
+    
+    return JsonResponse(data)

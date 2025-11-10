@@ -524,8 +524,6 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         if self.instance and self.instance.pk and hasattr(self.instance, 'staff') and self.instance.staff:
             self.fields['staff_display'].initial = f"{self.instance.staff.name_last} {self.instance.staff.name_first}"
 
-
-
         # 支払単位の選択肢を設定
         self.fields['pay_unit'].choices = Dropdowns.get_choices('pay_unit')
         self.fields['pay_unit'].required = True
@@ -535,6 +533,23 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         
         # 就業時間パターンは必須
         self.fields['worktime_pattern'].required = True
+        
+        # 雇用形態に就業時間パターンが設定されているかチェック
+        employment_type = None
+        if self.instance and self.instance.pk and self.instance.employment_type:
+            employment_type = self.instance.employment_type
+        elif self.is_bound and self.data.get('employment_type'):
+            try:
+                from apps.master.models import EmploymentType
+                employment_type = EmploymentType.objects.get(pk=self.data.get('employment_type'))
+            except (EmploymentType.DoesNotExist, ValueError):
+                pass
+        
+        # 雇用形態に就業時間パターンが設定されている場合は編集不可にする
+        if employment_type and employment_type.worktime_pattern:
+            self.fields['worktime_pattern'].widget.attrs['data-locked'] = 'true'
+            self.fields['worktime_pattern'].widget.attrs['data-locked-by-employment'] = 'true'
+            self.fields['worktime_pattern'].help_text = '雇用形態で設定された就業時間が適用されます'
 
         # 編集画面では「作成中」「申請」のみ選択可能にする
         editable_statuses = [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]
@@ -578,6 +593,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         work_location = cleaned_data.get('work_location')
         job_category = cleaned_data.get('job_category')
         employment_type = cleaned_data.get('employment_type')
+        worktime_pattern = cleaned_data.get('worktime_pattern')
 
         # 開始日と終了日の関係チェック
         if start_date and end_date and start_date > end_date:
@@ -603,6 +619,11 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         
         # クライアント契約との契約期間整合性チェック
         self._validate_contract_period_compatibility(start_date, end_date)
+        
+        # 雇用形態に就業時間パターンが設定されている場合のチェック
+        if employment_type and employment_type.worktime_pattern:
+            # 雇用形態の就業時間パターンを強制的に適用
+            cleaned_data['worktime_pattern'] = employment_type.worktime_pattern
 
         # 最低賃金チェック
         try:

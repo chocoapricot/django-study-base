@@ -56,7 +56,7 @@ async function fetchModalContent(url, modalSelector) {
 }
 
 // スタッフ選択関数
-window.selectStaff = function(staffId, staffName, employmentType, employmentTypeName, badgeClass) {
+window.selectStaff = function(staffId, staffName, employmentType, employmentTypeName, badgeClass, worktimePatternId, worktimePatternName) {
     console.log('selectStaff called:', staffId, staffName);
     
     // フィールドに値を設定
@@ -77,20 +77,25 @@ window.selectStaff = function(staffId, staffName, employmentType, employmentType
         displayText.textContent = staffName;
     }
     
-    // 雇用形態バッジを更新
-    const badgeElement = document.getElementById('staff-employment-type-badge');
-    if (badgeElement && employmentType && employmentTypeName) {
-        const className = badgeClass || 'bg-primary';
-        badgeElement.innerHTML = `<span class="badge ${className}" style="font-size:13px">${employmentTypeName}</span>`;
-        
-        // 契約書パターンを更新（存在する場合）
-        if (typeof updateContractPatterns === 'function') {
-            updateContractPatterns(employmentType);
-        }
-    } else if (badgeElement) {
-        badgeElement.textContent = '-';
-        if (typeof updateContractPatterns === 'function') {
-            updateContractPatterns(null);
+    // 雇用形態バッジを更新（就業時間パターン情報も渡す）
+    if (typeof updateEmploymentTypeBadge === 'function') {
+        updateEmploymentTypeBadge(employmentType, employmentTypeName, badgeClass, worktimePatternId, worktimePatternName);
+    } else {
+        // 従来の処理（後方互換性のため）
+        const badgeElement = document.getElementById('staff-employment-type-badge');
+        if (badgeElement && employmentType && employmentTypeName) {
+            const className = badgeClass || 'bg-primary';
+            badgeElement.innerHTML = `<span class="badge ${className}" style="font-size:13px">${employmentTypeName}</span>`;
+            
+            // 契約書パターンを更新（存在する場合）
+            if (typeof updateContractPatterns === 'function') {
+                updateContractPatterns(employmentType);
+            }
+        } else if (badgeElement) {
+            badgeElement.textContent = '-';
+            if (typeof updateContractPatterns === 'function') {
+                updateContractPatterns(null);
+            }
         }
     }
     
