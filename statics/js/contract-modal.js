@@ -105,8 +105,6 @@ window.selectStaff = function(staffId, staffName, employmentType, employmentType
 
 // クライアント選択関数
 window.selectClient = function(clientId, clientName) {
-    console.log('selectClient called:', clientId, clientName);
-    
     // フィールドに値を設定
     const clientField = document.querySelector('input[name="client"]');
     if (clientField) {
@@ -128,13 +126,15 @@ window.selectClient = function(clientId, clientName) {
     }
     
     // 派遣契約の場合、関連フィールドを更新
-    const contractTypeField = document.querySelector('select[name="client_contract_type_code"]');
-    if (contractTypeField && contractTypeField.value === '20' && typeof updateDispatchFields === 'function') {
-        updateDispatchFields(clientId);
-        // 就業場所をクリア
-        const workLocationField = document.querySelector('textarea[name="work_location"]');
-        if (workLocationField) {
-            workLocationField.value = '';
+    const contractTypeField = document.querySelector('input[name="client_contract_type_code"]');
+    if (contractTypeField && contractTypeField.value === '20') {
+        if (typeof updateDispatchFields === 'function') {
+            updateDispatchFields(clientId);
+            // 就業場所をクリア
+            const workLocationField = document.querySelector('textarea[name="work_location"]');
+            if (workLocationField) {
+                workLocationField.value = '';
+            }
         }
     }
 };

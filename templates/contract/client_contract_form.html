@@ -643,7 +643,8 @@ function updateDispatchFields(clientId) {
         initialDispatchValues[key] = '';
     });
 }
-window.selectClient = selectClient;
+// updateDispatchFields関数をグローバルに公開
+window.updateDispatchFields = updateDispatchFields;
 
 function loadClientModalContent(event, page, clearSearch = false, modalType = 'selectModal') {
     if (event) {
