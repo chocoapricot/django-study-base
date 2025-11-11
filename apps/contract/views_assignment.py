@@ -307,34 +307,18 @@ def staff_assignment_confirm_from_create(request):
         return redirect('contract:client_contract_detail', pk=client_contract_id)
 
     # セッションデータからフォームデータを復元
+    # フォームに渡すデータは文字列形式のまま保持する
     restored_form_data = {}
     for key, value in form_data.items():
         if key == 'staff' and value:
             try:
-                restored_form_data[key] = Staff.objects.get(pk=value)
+                Staff.objects.get(pk=value)  # 存在確認のみ
+                restored_form_data[key] = value  # IDのまま保持
             except Staff.DoesNotExist:
                 messages.error(request, 'スタッフが見つかりません。')
                 if 'pending_staff_contract' in request.session:
                     del request.session['pending_staff_contract']
                 return redirect('contract:contract_index')
-        elif key == 'employment_type' and value and value != 'None':
-            try:
-                from apps.master.models import EmploymentType
-                restored_form_data[key] = EmploymentType.objects.get(pk=value)
-            except EmploymentType.DoesNotExist:
-                restored_form_data[key] = None
-        elif key == 'job_category' and value and value != 'None':
-            try:
-                from apps.master.models import JobCategory
-                restored_form_data[key] = JobCategory.objects.get(pk=value)
-            except JobCategory.DoesNotExist:
-                restored_form_data[key] = None
-        elif key == 'contract_pattern' and value and value != 'None':
-            try:
-                from apps.master.models import ContractPattern
-                restored_form_data[key] = ContractPattern.objects.get(pk=value)
-            except ContractPattern.DoesNotExist:
-                restored_form_data[key] = None
         elif key in ['start_date', 'end_date'] and value:
             from datetime import datetime
             if isinstance(value, str):
@@ -445,32 +429,16 @@ def create_contract_assignment_view(request):
             form_data = pending_staff_contract.get('form_data')
 
             # セッションデータからフォームデータを復元
+            # フォームに渡すデータは文字列形式のまま保持する
             restored_form_data = {}
             for key, value in form_data.items():
                 if key == 'staff' and value:
                     try:
-                        restored_form_data[key] = Staff.objects.get(pk=value)
+                        Staff.objects.get(pk=value)  # 存在確認のみ
+                        restored_form_data[key] = value  # IDのまま保持
                     except Staff.DoesNotExist:
                         messages.error(request, 'スタッフが見つかりません。')
                         return redirect('contract:contract_index')
-                elif key == 'employment_type' and value and value != 'None':
-                    try:
-                        from apps.master.models import EmploymentType
-                        restored_form_data[key] = EmploymentType.objects.get(pk=value)
-                    except EmploymentType.DoesNotExist:
-                        restored_form_data[key] = None
-                elif key == 'job_category' and value and value != 'None':
-                    try:
-                        from apps.master.models import JobCategory
-                        restored_form_data[key] = JobCategory.objects.get(pk=value)
-                    except JobCategory.DoesNotExist:
-                        restored_form_data[key] = None
-                elif key == 'contract_pattern' and value and value != 'None':
-                    try:
-                        from apps.master.models import ContractPattern
-                        restored_form_data[key] = ContractPattern.objects.get(pk=value)
-                    except ContractPattern.DoesNotExist:
-                        restored_form_data[key] = None
                 elif key in ['start_date', 'end_date'] and value:
                     from datetime import datetime
                     if isinstance(value, str):

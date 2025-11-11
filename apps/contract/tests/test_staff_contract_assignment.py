@@ -168,15 +168,15 @@ class StaffContractAssignmentTestCase(TestCase):
         session['pending_staff_contract'] = {
             'client_contract_id': self.client_contract.pk,
             'form_data': {
-                'staff': self.staff.pk,
+                'staff': str(self.staff.pk),
                 'contract_name': 'テストスタッフ契約（確認画面）',
                 'start_date': date.today().isoformat(),
                 'end_date': (date.today() + timedelta(days=365)).isoformat(),
-                'employment_type': self.employment_type.pk,
-                'contract_pattern': self.staff_contract_pattern.pk,
+                'employment_type': str(self.employment_type.pk),
+                'contract_pattern': str(self.staff_contract_pattern.pk),
                 'pay_unit': Constants.PAY_UNIT.HOURLY,
                 'contract_amount': '300000',
-                'worktime_pattern': self.worktime_pattern.pk,
+                'worktime_pattern': str(self.worktime_pattern.pk),
             },
             'from_view': 'client'
         }
@@ -197,15 +197,15 @@ class StaffContractAssignmentTestCase(TestCase):
         session['pending_staff_contract'] = {
             'client_contract_id': self.client_contract.pk,
             'form_data': {
-                'staff': self.staff.pk,
+                'staff': str(self.staff.pk),
                 'contract_name': 'テストスタッフ契約（アサイン実行）',
                 'start_date': date.today().isoformat(),
                 'end_date': (date.today() + timedelta(days=365)).isoformat(),
-                'employment_type': self.employment_type.pk,
-                'contract_pattern': self.staff_contract_pattern.pk,
+                'employment_type': str(self.employment_type.pk),
+                'contract_pattern': str(self.staff_contract_pattern.pk),
                 'pay_unit': Constants.PAY_UNIT.HOURLY,
                 'contract_amount': '300000',
-                'worktime_pattern': self.worktime_pattern.pk,
+                'worktime_pattern': str(self.worktime_pattern.pk),
             },
             'from_view': 'client'
         }

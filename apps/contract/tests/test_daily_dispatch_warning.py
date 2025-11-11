@@ -464,15 +464,15 @@ class DailyDispatchWarningTestCase(TestCase):
         session['pending_staff_contract'] = {
             'client_contract_id': client_contract.pk,
             'form_data': {
-                'staff': young_staff.pk,
+                'staff': str(young_staff.pk),
                 'contract_name': 'テストスタッフ契約（新規作成）',
                 'start_date': date.today().isoformat(),
                 'end_date': (date.today() + timedelta(days=30)).isoformat(),
-                'employment_type': self.fixed_term_employment.pk,
-                'contract_pattern': self.staff_contract_pattern.pk,
+                'employment_type': str(self.fixed_term_employment.pk),
+                'contract_pattern': str(self.staff_contract_pattern.pk),
                 'pay_unit': Constants.PAY_UNIT.HOURLY,
                 'contract_amount': '1500',
-                'worktime_pattern': self.worktime_pattern.pk,
+                'worktime_pattern': str(self.worktime_pattern.pk),
             },
             'from_view': 'client'
         }
