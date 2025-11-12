@@ -654,9 +654,46 @@ class OvertimePatternForm(forms.ModelForm):
     """時間外算出パターンフォーム"""
     class Meta:
         model = OvertimePattern
-        fields = ['name', 'memo', 'display_order', 'is_active']
+        fields = [
+            'name', 'calculation_type',
+            'daily_overtime_enabled', 'daily_overtime_hours',
+            'weekly_overtime_enabled', 'weekly_overtime_hours',
+            'monthly_overtime_enabled', 'monthly_overtime_hours',
+            'monthly_estimated_enabled', 'monthly_estimated_hours',
+            'monthly_range_min', 'monthly_range_max',
+            'flexible_daily_overtime_enabled', 'flexible_daily_overtime_hours',
+            'flexible_weekly_overtime_enabled', 'flexible_weekly_overtime_hours',
+            'days_28_hours', 'days_28_minutes',
+            'days_29_hours', 'days_29_minutes',
+            'days_30_hours', 'days_30_minutes',
+            'days_31_hours', 'days_31_minutes',
+            'memo', 'display_order', 'is_active'
+        ]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'calculation_type': MyRadioSelect(),
+            'daily_overtime_enabled': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'daily_overtime_hours': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'weekly_overtime_enabled': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'weekly_overtime_hours': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'monthly_overtime_enabled': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'monthly_overtime_hours': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'monthly_estimated_enabled': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'monthly_estimated_hours': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'monthly_range_min': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'monthly_range_max': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'flexible_daily_overtime_enabled': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'flexible_daily_overtime_hours': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'flexible_weekly_overtime_enabled': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'flexible_weekly_overtime_hours': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'days_28_hours': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'days_28_minutes': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'days_29_hours': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'days_29_minutes': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'days_30_hours': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'days_30_minutes': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'days_31_hours': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'days_31_minutes': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),

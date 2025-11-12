@@ -21,6 +21,173 @@
             </div>
 
             <div class="row mb-3 align-items-center">
+                <label class="col-sm-2 col-form-label text-start text-md-end">計算方式</label>
+                <div class="col-sm-10">
+                    {{ form.calculation_type }}
+                    {% if form.calculation_type.errors %}
+                        <div class="text-danger small">{{ form.calculation_type.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 割増方式の設定 -->
+            <div id="premium-section" class="calculation-section">
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                        <div class="form-check form-check-inline">
+                            {{ form.daily_overtime_enabled }}
+                            <label class="form-check-label" for="{{ form.daily_overtime_enabled.id_for_label }}">日単位時間外計算</label>
+                        </div>
+                        <div class="d-inline-block ms-2" style="width: 100px;">
+                            {{ form.daily_overtime_hours }}
+                        </div>
+                        <span class="ms-1">時間</span>
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                        <div class="form-check form-check-inline">
+                            {{ form.weekly_overtime_enabled }}
+                            <label class="form-check-label" for="{{ form.weekly_overtime_enabled.id_for_label }}">週単位時間外計算</label>
+                        </div>
+                        <div class="d-inline-block ms-2" style="width: 100px;">
+                            {{ form.weekly_overtime_hours }}
+                        </div>
+                        <span class="ms-1">時間</span>
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                        <div class="form-check form-check-inline">
+                            {{ form.monthly_overtime_enabled }}
+                            <label class="form-check-label" for="{{ form.monthly_overtime_enabled.id_for_label }}">月単位時間外割増</label>
+                        </div>
+                        <div class="d-inline-block ms-2" style="width: 100px;">
+                            {{ form.monthly_overtime_hours }}
+                        </div>
+                        <span class="ms-1">時間</span>
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                        <div class="form-check form-check-inline">
+                            {{ form.monthly_estimated_enabled }}
+                            <label class="form-check-label" for="{{ form.monthly_estimated_enabled.id_for_label }}">月単位見込み残業</label>
+                        </div>
+                        <div class="d-inline-block ms-2" style="width: 100px;">
+                            {{ form.monthly_estimated_hours }}
+                        </div>
+                        <span class="ms-1">時間</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 月単位時間範囲方式の設定 -->
+            <div id="monthly-range-section" class="calculation-section">
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                        <div class="d-inline-block" style="width: 100px;">
+                            {{ form.monthly_range_min }}
+                        </div>
+                        <span class="ms-1 me-2">～</span>
+                        <div class="d-inline-block" style="width: 100px;">
+                            {{ form.monthly_range_max }}
+                        </div>
+                        <span class="ms-1">時間</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1ヶ月単位変形労働の設定 -->
+            <div id="flexible-section" class="calculation-section">
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                        <div class="form-check form-check-inline">
+                            {{ form.flexible_daily_overtime_enabled }}
+                            <label class="form-check-label" for="{{ form.flexible_daily_overtime_enabled.id_for_label }}">日単位時間外計算</label>
+                        </div>
+                        <div class="d-inline-block ms-2" style="width: 100px;">
+                            {{ form.flexible_daily_overtime_hours }}
+                        </div>
+                        <span class="ms-1">時間</span>
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                        <div class="form-check form-check-inline">
+                            {{ form.flexible_weekly_overtime_enabled }}
+                            <label class="form-check-label" for="{{ form.flexible_weekly_overtime_enabled.id_for_label }}">週単位時間外計算</label>
+                        </div>
+                        <div class="d-inline-block ms-2" style="width: 100px;">
+                            {{ form.flexible_weekly_overtime_hours }}
+                        </div>
+                        <span class="ms-1">時間</span>
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                        <div class="mb-2">
+                            <span class="me-2">28日</span>
+                            <div class="d-inline-block" style="width: 80px;">
+                                {{ form.days_28_hours }}
+                            </div>
+                            <span class="ms-1 me-2">時間</span>
+                            <div class="d-inline-block" style="width: 80px;">
+                                {{ form.days_28_minutes }}
+                            </div>
+                            <span class="ms-1">分</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="me-2">29日</span>
+                            <div class="d-inline-block" style="width: 80px;">
+                                {{ form.days_29_hours }}
+                            </div>
+                            <span class="ms-1 me-2">時間</span>
+                            <div class="d-inline-block" style="width: 80px;">
+                                {{ form.days_29_minutes }}
+                            </div>
+                            <span class="ms-1">分</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="me-2">30日</span>
+                            <div class="d-inline-block" style="width: 80px;">
+                                {{ form.days_30_hours }}
+                            </div>
+                            <span class="ms-1 me-2">時間</span>
+                            <div class="d-inline-block" style="width: 80px;">
+                                {{ form.days_30_minutes }}
+                            </div>
+                            <span class="ms-1">分</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="me-2">31日</span>
+                            <div class="d-inline-block" style="width: 80px;">
+                                {{ form.days_31_hours }}
+                            </div>
+                            <span class="ms-1 me-2">時間</span>
+                            <div class="d-inline-block" style="width: 80px;">
+                                {{ form.days_31_minutes }}
+                            </div>
+                            <span class="ms-1">分</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
                 <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">メモ</label>
                 <div class="col-sm-10">
                     {{ form.memo }}
@@ -64,4 +231,34 @@
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const calculationType = document.querySelectorAll('input[name="calculation_type"]');
+    const premiumSection = document.getElementById('premium-section');
+    const monthlyRangeSection = document.getElementById('monthly-range-section');
+    const flexibleSection = document.getElementById('flexible-section');
+
+    function toggleSections() {
+        const selectedType = document.querySelector('input[name="calculation_type"]:checked').value;
+        premiumSection.style.display = 'none';
+        monthlyRangeSection.style.display = 'none';
+        flexibleSection.style.display = 'none';
+        
+        if (selectedType === 'premium') {
+            premiumSection.style.display = 'block';
+        } else if (selectedType === 'monthly_range') {
+            monthlyRangeSection.style.display = 'block';
+        } else if (selectedType === 'flexible') {
+            flexibleSection.style.display = 'block';
+        }
+    }
+
+    calculationType.forEach(radio => {
+        radio.addEventListener('change', toggleSections);
+    });
+
+    toggleSections();
+});
+</script>
 {% endblock %}

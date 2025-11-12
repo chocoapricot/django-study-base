@@ -172,6 +172,49 @@ class OvertimePattern(MyModel):
     """
     name = models.CharField('名称', max_length=100)
     memo = models.TextField('メモ', blank=True, null=True)
+    
+    # 計算方式選択
+    CALCULATION_TYPE_CHOICES = [
+        ('premium', '割増'),
+        ('monthly_range', '月単位時間範囲'),
+        ('flexible', '1ヶ月単位変形労働'),
+    ]
+    calculation_type = models.CharField('計算方式', max_length=20, choices=CALCULATION_TYPE_CHOICES, default='premium')
+    
+    # 割増方式の設定
+    daily_overtime_enabled = models.BooleanField('日単位時間外計算', default=False)
+    daily_overtime_hours = models.IntegerField('日単位時間外時間', default=8, blank=True, null=True)
+    
+    weekly_overtime_enabled = models.BooleanField('週単位時間外計算', default=False)
+    weekly_overtime_hours = models.IntegerField('週単位時間外時間', default=40, blank=True, null=True)
+    
+    monthly_overtime_enabled = models.BooleanField('月単位時間外割増', default=False)
+    monthly_overtime_hours = models.IntegerField('月単位時間外割増時間', default=60, blank=True, null=True)
+    
+    monthly_estimated_enabled = models.BooleanField('月単位見込み残業', default=False)
+    monthly_estimated_hours = models.IntegerField('月単位見込み残業時間', default=20, blank=True, null=True)
+    
+    # 月単位時間範囲方式の設定
+    monthly_range_min = models.IntegerField('月単位時間範囲最小', default=140, blank=True, null=True)
+    monthly_range_max = models.IntegerField('月単位時間範囲最大', default=160, blank=True, null=True)
+    
+    # 1ヶ月単位変形労働の設定
+    flexible_daily_overtime_enabled = models.BooleanField('変形労働日単位時間外計算', default=False)
+    flexible_daily_overtime_hours = models.IntegerField('変形労働日単位時間外時間', default=8, blank=True, null=True)
+    
+    flexible_weekly_overtime_enabled = models.BooleanField('変形労働週単位時間外計算', default=False)
+    flexible_weekly_overtime_hours = models.IntegerField('変形労働週単位時間外時間', default=40, blank=True, null=True)
+    
+    # 28日～31日の設定
+    days_28_hours = models.IntegerField('28日時間', default=160)
+    days_28_minutes = models.IntegerField('28日分', default=0)
+    days_29_hours = models.IntegerField('29日時間', default=165)
+    days_29_minutes = models.IntegerField('29日分', default=42)
+    days_30_hours = models.IntegerField('30日時間', default=171)
+    days_30_minutes = models.IntegerField('30日分', default=25)
+    days_31_hours = models.IntegerField('31日時間', default=177)
+    days_31_minutes = models.IntegerField('31日分', default=8)
+    
     display_order = models.IntegerField('表示順', default=0)
     is_active = models.BooleanField('有効', default=True)
 
