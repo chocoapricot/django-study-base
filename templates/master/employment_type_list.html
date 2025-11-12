@@ -34,13 +34,14 @@
             <table class="table table-sm table-hover">
                 <thead>
                     <tr>
-                        <th width="25%">名称</th>
-                        <th width="15%">表示イメージ</th>
-                        <th width="10%">期間</th>
-                        <th width="25%">就業時間</th>
-                        <th width="10%">状態</th>
-                        <th width="5%">表示順</th>
-                        <th width="10%">操作</th>
+                        <th width="20%">名称</th>
+                        <th width="12%">表示イメージ</th>
+                        <th width="8%">期間</th>
+                        <th width="20%">就業時間</th>
+                        <th width="20%">時間外算出</th>
+                        <th width="8%">状態</th>
+                        <th width="4%">表示順</th>
+                        <th width="8%">操作</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -75,6 +76,22 @@
                             {% endif %}
                         </td>
                         <td>
+                            {% if item.overtime_pattern %}
+                                <div class="small">
+                                    <span class="badge {% if item.overtime_pattern.calculation_type == 'premium' %}bg-primary{% elif item.overtime_pattern.calculation_type == 'monthly_range' %}bg-warning{% else %}bg-info{% endif %}">{{ item.overtime_pattern.get_calculation_type_display }}</span>
+                                    {% if item.overtime_pattern.calculation_type == 'premium' %}
+                                        {% if item.overtime_pattern.daily_overtime_enabled %}日{{ item.overtime_pattern.daily_overtime_hours }}h {% endif %}{% if item.overtime_pattern.weekly_overtime_enabled %}週{{ item.overtime_pattern.weekly_overtime_hours }}h {% endif %}{% if item.overtime_pattern.monthly_overtime_enabled %}月{{ item.overtime_pattern.monthly_overtime_hours }}h{% endif %}
+                                    {% elif item.overtime_pattern.calculation_type == 'monthly_range' %}
+                                        {{ item.overtime_pattern.monthly_range_min }}～{{ item.overtime_pattern.monthly_range_max }}h
+                                    {% elif item.overtime_pattern.calculation_type == 'flexible' %}
+                                        {% if item.overtime_pattern.flexible_daily_overtime_enabled %}日{{ item.overtime_pattern.flexible_daily_overtime_hours }}h {% endif %}{% if item.overtime_pattern.flexible_weekly_overtime_enabled %}週{{ item.overtime_pattern.flexible_weekly_overtime_hours }}h{% endif %}
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <span class="text-muted">未設定</span>
+                            {% endif %}
+                        </td>
+                        <td>
                             {% if item.is_active %}
                                 <span class="badge bg-success">有効</span>
                             {% else %}
@@ -93,7 +110,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="7" class="text-center">データが登録されていません。</td>
+                        <td colspan="8" class="text-center">データが登録されていません。</td>
                     </tr>
                     {% endfor %}
                 </tbody>

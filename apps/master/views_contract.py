@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from urllib.parse import urlencode
 from datetime import date
 from itertools import chain
@@ -708,3 +708,68 @@ def overtime_pattern_change_history_list(request):
             "model_name": "OvertimePattern",
         },
     )
+
+
+@login_required
+@permission_required("master.view_overtimepattern", raise_exception=True)
+def overtime_pattern_select_modal(request):
+    """時間外算出パターン選択モーダル用API"""
+    search_query = request.GET.get("q", "")
+    patterns = OvertimePattern.objects.filter(is_active=True)
+    
+    if search_query:
+        patterns = patterns.filter(name__icontains=search_query)
+    
+    patterns = patterns.order_by('display_order', 'name')
+    
+    # ページネーション
+    paginator = Paginator(patterns, 10)
+    page = request.GET.get("page", 1)
+    patterns_page = paginator.get_page(page)
+    
+    # JSON形式でデータを返す
+    data = {
+        'patterns': [],
+        'has_previous': patterns_page.has_previous(),
+        'has_next': patterns_page.has_next(),
+        'current_page': patterns_page.number,
+        'total_pages': paginator.num_pages,
+    }
+    
+    for pattern in patterns_page:
+        # 計算方式の表示名を取得
+        calculation_type_display = pattern.get_calculation_type_display()
+        
+        # 設定内容を構築
+        settings = []
+        if pattern.calculation_type == 'premium':
+            if pattern.daily_overtime_enabled:
+                settings.append(f"日{pattern.daily_overtime_hours}h")
+            if pattern.weekly_overtime_enabled:
+                settings.append(f"週{pattern.weekly_overtime_hours}h")
+            if pattern.monthly_overtime_enabled:
+                settings.append(f"月{pattern.monthly_overtime_hours}h")
+            if pattern.monthly_estimated_enabled:
+                settings.append(f"見込{pattern.monthly_estimated_hours}h")
+        elif pattern.calculation_type == 'monthly_range':
+            settings.append(f"{pattern.monthly_range_min}～{pattern.monthly_range_max}h")
+        elif pattern.calculation_type == 'flexible':
+            if pattern.flexible_daily_overtime_enabled:
+                settings.append(f"日{pattern.flexible_daily_overtime_hours}h")
+            if pattern.flexible_weekly_overtime_enabled:
+                settings.append(f"週{pattern.flexible_weekly_overtime_hours}h")
+            settings.append(f"28日:{pattern.days_28_hours}h{pattern.days_28_minutes}m")
+            settings.append(f"29日:{pattern.days_29_hours}h{pattern.days_29_minutes}m")
+            settings.append(f"30日:{pattern.days_30_hours}h{pattern.days_30_minutes}m")
+            settings.append(f"31日:{pattern.days_31_hours}h{pattern.days_31_minutes}m")
+        
+        data['patterns'].append({
+            'id': pattern.id,
+            'name': pattern.name,
+            'calculation_type': pattern.calculation_type,
+            'calculation_type_display': calculation_type_display,
+            'settings': ', '.join(settings) if settings else '未設定',
+            'memo': pattern.memo or '',
+        })
+    
+    return JsonResponse(data)

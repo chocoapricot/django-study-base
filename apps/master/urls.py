@@ -171,4 +171,5 @@ urlpatterns = [
     path('overtime-pattern/<int:pk>/update/', views.overtime_pattern_update, name='overtime_pattern_update'),
     path('overtime-pattern/<int:pk>/delete/', views.overtime_pattern_delete, name='overtime_pattern_delete'),
     path('overtime-pattern/history/', views.overtime_pattern_change_history_list, name='overtime_pattern_change_history_list'),
+    path('overtime-pattern/select-modal/', views.overtime_pattern_select_modal, name='overtime_pattern_select_modal'),
 ]

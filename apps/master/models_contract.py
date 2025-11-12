@@ -150,6 +150,14 @@ class EmploymentType(MyModel):
         null=True,
         related_name='employment_types'
     )
+    overtime_pattern = models.ForeignKey(
+        'OvertimePattern',
+        on_delete=models.SET_NULL,
+        verbose_name='時間外算出パターン',
+        blank=True,
+        null=True,
+        related_name='employment_types'
+    )
     is_active = models.BooleanField('有効', default=True)
 
     class Meta:
