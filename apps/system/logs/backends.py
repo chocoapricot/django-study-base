@@ -1,6 +1,7 @@
 from django.core.mail.backends.console import EmailBackend as ConsoleEmailBackend
 from django.core.mail.backends.smtp import EmailBackend as SMTPEmailBackend
 from django.utils import timezone
+from apps.common.constants import Constants
 from .utils import log_mail, update_mail_log_status
 import logging
 import uuid
@@ -37,7 +38,7 @@ class LoggingEmailBackend:
                         body=message.body,
                         mail_type=mail_type,
                         from_email=message.from_email,
-                        status='pending',
+                        status=Constants.MAIL_STATUS.PENDING,
                         backend=self.__class__.__name__,
                         message_id=message_id
                     )
@@ -49,7 +50,7 @@ class LoggingEmailBackend:
                     if id(message) in self.mail_logs:
                         update_mail_log_status(
                             self.mail_logs[id(message)].id, 
-                            'sent'
+                            Constants.MAIL_STATUS.SENT
                         )
                     sent_count += 1
                 else:
@@ -57,7 +58,7 @@ class LoggingEmailBackend:
                     if id(message) in self.mail_logs:
                         update_mail_log_status(
                             self.mail_logs[id(message)].id, 
-                            'failed',
+                            Constants.MAIL_STATUS.FAILED,
                             error_message='メール送信に失敗しました'
                         )
                         
@@ -67,7 +68,7 @@ class LoggingEmailBackend:
                 if id(message) in self.mail_logs:
                     update_mail_log_status(
                         self.mail_logs[id(message)].id, 
-                        'failed',
+                        Constants.MAIL_STATUS.FAILED,
                         error_message=str(e)
                     )
         
@@ -83,13 +84,13 @@ class LoggingEmailBackend:
         body_lower = body.lower()
         
         if 'パスワードリセット' in subject or 'password reset' in subject_lower:
-            return 'password_reset'
+            return Constants.MAIL_TYPE.PASSWORD_RESET
         elif 'サインアップ' in subject or 'signup' in subject_lower or '確認' in subject:
-            return 'signup'
+            return Constants.MAIL_TYPE.SIGNUP
         elif 'パスワード変更' in subject or 'password change' in subject_lower:
-            return 'password_change'
+            return Constants.MAIL_TYPE.PASSWORD_CHANGE
         else:
-            return 'general'
+            return Constants.MAIL_TYPE.GENERAL
 
 class LoggingConsoleEmailBackend(LoggingEmailBackend, ConsoleEmailBackend):
     """ログ機能付きコンソールメールバックエンド"""

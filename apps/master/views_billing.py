@@ -27,6 +27,7 @@ from .forms import (
     CSVImportForm,
 )
 from apps.system.logs.models import AppLog
+from apps.common.constants import Constants
 
 # 支払条件マスタ
 @login_required
@@ -586,13 +587,13 @@ def bank_import_process(request, task_id):
                     name = row[3].strip()
                     record_type = row[4]
 
-                    if record_type == "1":  # 銀行
+                    if record_type == Constants.BANK_RECORD_TYPE.BANK:  # 銀行
                         bank, created = Bank.objects.update_or_create(
                             bank_code=bank_code,
                             defaults={"name": name, "is_active": True},
                         )
                         imported_count += 1
-                    elif record_type == "2":  # 支店
+                    elif record_type == Constants.BANK_RECORD_TYPE.BRANCH:  # 支店
                         try:
                             bank = Bank.objects.get(bank_code=bank_code)
                             branch, created = BankBranch.objects.update_or_create(

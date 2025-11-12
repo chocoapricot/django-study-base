@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 
 from apps.common.models import MyModel
+from apps.common.constants import Constants, get_connect_status_choices, get_request_status_choices
 from apps.staff.models import Staff
 from apps.profile.models import StaffProfileMynumber, StaffProfile, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact
 from apps.master.models import StaffAgreement
@@ -14,14 +15,11 @@ class ConnectStaff(MyModel):
     法人番号とメールアドレスをキーに、承認ステータスを管理する。
     """
     
-    STATUS_CHOICES = [
-        ('pending', '未承認'),
-        ('approved', '承認済み'),
-    ]
+    STATUS_CHOICES = get_connect_status_choices()
     
     corporate_number = models.CharField('法人番号', max_length=13, help_text='会社の法人番号')
     email = models.EmailField('メールアドレス', help_text='スタッフのメールアドレス')
-    status = models.CharField('ステータス', max_length=20, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField('ステータス', max_length=20, choices=STATUS_CHOICES, default=Constants.CONNECT_STATUS.PENDING)
     approved_at = models.DateTimeField('承認日時', null=True, blank=True)
     approved_by = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, blank=True,
                                    related_name='approved_staff_connections', verbose_name='承認者')
@@ -39,12 +37,12 @@ class ConnectStaff(MyModel):
     @property
     def is_approved(self):
         """承認済みかどうか"""
-        return self.status == 'approved'
+        return self.status == Constants.CONNECT_STATUS.APPROVED
     
     def approve(self, user):
         """承認する"""
         User = get_user_model()
-        self.status = 'approved'
+        self.status = Constants.CONNECT_STATUS.APPROVED
         self.approved_at = timezone.now()
         self.approved_by = user
         self.save()
@@ -204,7 +202,7 @@ class ConnectStaff(MyModel):
 
     def unapprove(self):
         """未承認に戻す"""
-        self.status = 'pending'
+        self.status = Constants.CONNECT_STATUS.PENDING
         self.approved_at = None
         self.approved_by = None
         self.save()
@@ -225,11 +223,7 @@ class BankRequest(MyModel):
     銀行情報の提出を要求するためのモデル。
     """
 
-    STATUS_CHOICES = [
-        ('pending', '未承認'),
-        ('approved', '承認済み'),
-        ('rejected', '却下'),
-    ]
+    STATUS_CHOICES = get_request_status_choices()
 
     connect_staff = models.ForeignKey(
         ConnectStaff,
@@ -247,7 +241,7 @@ class BankRequest(MyModel):
         'ステータス',
         max_length=20,
         choices=STATUS_CHOICES,
-        default='pending',
+        default=Constants.REQUEST_STATUS.PENDING,
         help_text='申請の現在のステータス'
     )
 
@@ -267,11 +261,7 @@ class ContactRequest(MyModel):
     連絡先情報の提出を要求するためのモデル。
     """
 
-    STATUS_CHOICES = [
-        ('pending', '未承認'),
-        ('approved', '承認済み'),
-        ('rejected', '却下'),
-    ]
+    STATUS_CHOICES = get_request_status_choices()
 
     connect_staff = models.ForeignKey(
         ConnectStaff,
@@ -289,7 +279,7 @@ class ContactRequest(MyModel):
         'ステータス',
         max_length=20,
         choices=STATUS_CHOICES,
-        default='pending',
+        default=Constants.REQUEST_STATUS.PENDING,
         help_text='申請の現在のステータス'
     )
 
@@ -309,11 +299,7 @@ class MynumberRequest(MyModel):
     マイナンバーの提出を要求するためのモデル。
     """
 
-    STATUS_CHOICES = [
-        ('pending', '未承認'),
-        ('approved', '承認済み'),
-        ('rejected', '却下'),
-    ]
+    STATUS_CHOICES = get_request_status_choices()
 
     connect_staff = models.ForeignKey(
         ConnectStaff,
@@ -331,7 +317,7 @@ class MynumberRequest(MyModel):
         'ステータス',
         max_length=20,
         choices=STATUS_CHOICES,
-        default='pending',
+        default=Constants.REQUEST_STATUS.PENDING,
         help_text='申請の現在のステータス'
     )
 
@@ -351,11 +337,7 @@ class DisabilityRequest(MyModel):
     障害者情報の提出を要求するためのモデル。
     """
 
-    STATUS_CHOICES = [
-        ('pending', '未承認'),
-        ('approved', '承認済み'),
-        ('rejected', '却下'),
-    ]
+    STATUS_CHOICES = get_request_status_choices()
 
     connect_staff = models.ForeignKey(
         ConnectStaff,
@@ -373,7 +355,7 @@ class DisabilityRequest(MyModel):
         'ステータス',
         max_length=20,
         choices=STATUS_CHOICES,
-        default='pending',
+        default=Constants.REQUEST_STATUS.PENDING,
         help_text='申請の現在のステータス'
     )
 
@@ -393,11 +375,7 @@ class ProfileRequest(MyModel):
     プロフィールの提出を要求するためのモデル。
     """
 
-    STATUS_CHOICES = [
-        ('pending', '未承認'),
-        ('approved', '承認済み'),
-        ('rejected', '却下'),
-    ]
+    STATUS_CHOICES = get_request_status_choices()
 
     connect_staff = models.ForeignKey(
         ConnectStaff,
@@ -417,7 +395,7 @@ class ProfileRequest(MyModel):
         'ステータス',
         max_length=20,
         choices=STATUS_CHOICES,
-        default='pending',
+        default=Constants.REQUEST_STATUS.PENDING,
         help_text='申請の現在のステータス'
     )
 
@@ -462,13 +440,13 @@ class ProfileRequest(MyModel):
         staff.save()
 
         # 申請ステータスを更新
-        self.status = 'approved'
+        self.status = Constants.REQUEST_STATUS.APPROVED
         self.save()
         return True, "プロフィール申請を承認し、スタッフ情報を更新しました。"
 
     def reject(self, user):
         """プロフィール申請を却下する"""
-        self.status = 'rejected'
+        self.status = Constants.REQUEST_STATUS.REJECTED
         self.save()
         return True, "プロフィール申請を却下しました。"
 
@@ -478,11 +456,7 @@ class ConnectInternationalRequest(MyModel):
     外国籍情報の提出を要求するためのモデル。
     """
 
-    STATUS_CHOICES = [
-        ('pending', '未承認'),
-        ('approved', '承認済み'),
-        ('rejected', '却下'),
-    ]
+    STATUS_CHOICES = get_request_status_choices()
 
     connect_staff = models.ForeignKey(
         ConnectStaff,
@@ -500,7 +474,7 @@ class ConnectInternationalRequest(MyModel):
         'ステータス',
         max_length=20,
         choices=STATUS_CHOICES,
-        default='pending',
+        default=Constants.REQUEST_STATUS.PENDING,
         help_text='申請の現在のステータス'
     )
 
@@ -521,14 +495,11 @@ class ConnectClient(MyModel):
     現在は将来の拡張用として準備されている。
     """
     
-    STATUS_CHOICES = [
-        ('pending', '未承認'),
-        ('approved', '承認済み'),
-    ]
+    STATUS_CHOICES = get_connect_status_choices()
     
     corporate_number = models.CharField('法人番号', max_length=13, help_text='会社の法人番号')
     email = models.EmailField('メールアドレス', help_text='クライアントのメールアドレス')
-    status = models.CharField('ステータス', max_length=20, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField('ステータス', max_length=20, choices=STATUS_CHOICES, default=Constants.CONNECT_STATUS.PENDING)
     approved_at = models.DateTimeField('承認日時', null=True, blank=True)
     approved_by = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, blank=True,
                                    related_name='approved_client_connections', verbose_name='承認者')
@@ -546,18 +517,18 @@ class ConnectClient(MyModel):
     @property
     def is_approved(self):
         """承認済みかどうか"""
-        return self.status == 'approved'
+        return self.status == Constants.CONNECT_STATUS.APPROVED
     
     def approve(self, user):
         """承認する"""
-        self.status = 'approved'
+        self.status = Constants.CONNECT_STATUS.APPROVED
         self.approved_at = timezone.now()
         self.approved_by = user
         self.save()
     
     def unapprove(self):
         """未承認に戻す"""
-        self.status = 'pending'
+        self.status = Constants.CONNECT_STATUS.PENDING
         self.approved_at = None
         self.approved_by = None
         self.save()

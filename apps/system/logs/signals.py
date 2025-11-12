@@ -1,6 +1,7 @@
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from allauth.account.signals import email_confirmed, user_signed_up
+from apps.common.constants import Constants
 from .utils import log_mail
 
 User = get_user_model()
@@ -15,9 +16,9 @@ def log_signup_email(sender, request, user, **kwargs):
             to_email=user.email,
             subject='アカウント確認のお願い',  # 実際の件名は後で更新される
             body='サインアップ確認メール',  # 実際の本文は後で更新される
-            mail_type='signup',
+            mail_type=Constants.MAIL_TYPE.SIGNUP,
             recipient_user=user,
-            status='pending'
+            status=Constants.MAIL_STATUS.PENDING
         )
 
 @receiver(email_confirmed)

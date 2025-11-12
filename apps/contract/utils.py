@@ -638,7 +638,7 @@ def generate_haken_motokanri_pdf(contract, user, issued_at, watermark_text=None)
         
         # 3. 協定対象派遣労働者かの別
         agreement_target_text = ""
-        if company and company.dispatch_treatment_method == 'agreement':
+        if company and company.dispatch_treatment_method == Constants.DISPATCH_TREATMENT_METHOD.AGREEMENT:
             agreement_target_text = "協定対象派遣労働者"
         else:
             agreement_target_text = "協定対象派遣労働者ではない"
@@ -1428,7 +1428,7 @@ def generate_haken_notification_pdf(contract, user, issued_at, watermark_text=No
         
         # 協定対象（会社情報の派遣待遇決定方式に基づいて動的に設定）
         agreement_target_text = ""
-        if company and company.dispatch_treatment_method == 'agreement':
+        if company and company.dispatch_treatment_method == Constants.DISPATCH_TREATMENT_METHOD.AGREEMENT:
             agreement_target_text = "■　協定対象　（労使協定方式）\n□　協定対象でない　（均等・均衡方式）"
         else:
             agreement_target_text = "□　協定対象　（労使協定方式）\n■　協定対象でない　（均等・均衡方式）"

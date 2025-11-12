@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from apps.common.models import MyModel
+from apps.common.constants import Constants, get_mail_type_choices, get_mail_status_choices, get_app_action_choices
 
 User = get_user_model()
 
@@ -10,18 +11,8 @@ class MailLog(MyModel):
     送信日時、宛先、件名、本文、送信ステータスなどを記録する。
     """
     
-    MAIL_TYPE_CHOICES = [
-        ('signup', 'サインアップ確認'),
-        ('password_reset', 'パスワードリセット'),
-        ('password_change', 'パスワード変更通知'),
-        ('general', '一般'),
-    ]
-    
-    STATUS_CHOICES = [
-        ('sent', '送信成功'),
-        ('failed', '送信失敗'),
-        ('pending', '送信待ち'),
-    ]
+    MAIL_TYPE_CHOICES = get_mail_type_choices()
+    STATUS_CHOICES = get_mail_status_choices()
     
     # 送信者情報
     from_email = models.EmailField('送信者メールアドレス', max_length=255)
@@ -42,7 +33,7 @@ class MailLog(MyModel):
         'メール種別', 
         max_length=20, 
         choices=MAIL_TYPE_CHOICES, 
-        default='general'
+        default=Constants.MAIL_TYPE.GENERAL
     )
     subject = models.CharField('件名', max_length=255)
     body = models.TextField('本文')
@@ -52,7 +43,7 @@ class MailLog(MyModel):
         '送信状況', 
         max_length=10, 
         choices=STATUS_CHOICES, 
-        default='pending'
+        default=Constants.MAIL_STATUS.PENDING
     )
     sent_at = models.DateTimeField('送信日時', null=True, blank=True)
     error_message = models.TextField('エラーメッセージ', blank=True, null=True)
@@ -79,7 +70,7 @@ class MailLog(MyModel):
     @property
     def is_successful(self):
         """送信成功かどうか"""
-        return self.status == 'sent'
+        return self.status == Constants.MAIL_STATUS.SENT
     
     @property
     def mail_type_display_name(self):
@@ -99,16 +90,7 @@ class AppLog(models.Model):
     誰が、いつ、どのオブジェクトに対して何をしたかを記録する。
     """
     
-    ACTION_CHOICES = [
-        ('create', '作成'),
-        ('update', '編集'),
-        ('delete', '削除'),
-        ('login', 'ログイン'),
-        ('login_failed', 'ログイン失敗'),
-        ('logout', 'ログアウト'),
-        ('view', '閲覧'),
-        ('print', '印刷'),
-    ]
+    ACTION_CHOICES = get_app_action_choices()
     
     user = models.ForeignKey(
         User, 

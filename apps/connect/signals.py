@@ -1,6 +1,7 @@
 from django.db.models.signals import post_save, pre_save, post_delete
 from django.dispatch import receiver
 
+from apps.common.constants import Constants
 from apps.profile.models import StaffProfile
 from .models import ConnectStaff, ProfileRequest, ConnectStaffAgree
 
@@ -18,7 +19,7 @@ def create_or_update_profile_request(sender, instance, **kwargs):
         return
 
     # 承認済みの接続を取得
-    connections = ConnectStaff.objects.filter(email=user_email, status='approved')
+    connections = ConnectStaff.objects.filter(email=user_email, status=Constants.CONNECT_STATUS.APPROVED)
 
     for conn in connections:
         # 既存のリクエストを削除
@@ -27,7 +28,7 @@ def create_or_update_profile_request(sender, instance, **kwargs):
         ProfileRequest.objects.create(
             connect_staff=conn,
             staff_profile=instance,
-            status='pending'
+            status=Constants.REQUEST_STATUS.PENDING
         )
 
 
@@ -39,7 +40,7 @@ def delete_agreement_on_unapprove(sender, instance, **kwargs):
     if instance.pk:
         try:
             original = sender.objects.get(pk=instance.pk)
-            if original.status == 'approved' and instance.status != 'approved':
+            if original.status == Constants.CONNECT_STATUS.APPROVED and instance.status != Constants.CONNECT_STATUS.APPROVED:
                 ConnectStaffAgree.objects.filter(
                     email=instance.email,
                     corporate_number=instance.corporate_number

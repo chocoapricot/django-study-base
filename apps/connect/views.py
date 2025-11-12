@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.utils.http import url_has_allowed_host_and_scheme
 from apps.system.logs.utils import log_model_action
 from apps.system.logs.models import AppLog
+from apps.common.constants import Constants
 from .models import ConnectStaff, ConnectClient, ConnectStaffAgree
 from apps.master.models import StaffAgreement
 from .forms import StaffAgreeForm
@@ -86,7 +87,7 @@ def connect_staff_approve(request, pk):
             # 未同意の同意書があれば、同意画面にリダイレクト
             return redirect(reverse('connect:staff_agree', kwargs={'pk': pk}))
 
-    if connection.status == 'pending':
+    if connection.status == Constants.CONNECT_STATUS.PENDING:
         connection.approve(request.user)
         
         from apps.staff.models import Staff
@@ -185,7 +186,7 @@ def connect_staff_unapprove(request, pk):
         messages.error(request, 'この申請を変更する権限がありません。')
         return redirect('connect:staff_list')
     
-    if connection.status == 'approved':
+    if connection.status == Constants.CONNECT_STATUS.APPROVED:
         connection.unapprove()
         
         # スタッフの変更履歴に記録するため、スタッフIDを取得
@@ -270,7 +271,7 @@ def connect_client_approve(request, pk):
         messages.error(request, 'この申請を承認する権限がありません。')
         return redirect('connect:client_list')
     
-    if connection.status == 'pending':
+    if connection.status == Constants.CONNECT_STATUS.PENDING:
         connection.approve(request.user)
         
         # クライアント担当者の変更履歴に記録するため、担当者IDを取得
@@ -321,7 +322,7 @@ def connect_client_unapprove(request, pk):
         messages.error(request, 'この申請を変更する権限がありません。')
         return redirect('connect:client_list')
     
-    if connection.status == 'approved':
+    if connection.status == Constants.CONNECT_STATUS.APPROVED:
         connection.unapprove()
         
         # クライアント担当者の変更履歴に記録するため、担当者IDを取得

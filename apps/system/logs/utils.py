@@ -6,8 +6,11 @@
 from .models import AppLog, MailLog
 
 
-def log_mail(to_email, subject, body, mail_type='general', recipient_user=None, 
-             from_email=None, status='pending', backend=None, message_id=None, error_message=None):
+from apps.common.constants import Constants
+
+
+def log_mail(to_email, subject, body, mail_type=None, recipient_user=None, 
+             from_email=None, status=None, backend=None, message_id=None, error_message=None):
     """
     メール送信ログを記録
     
@@ -30,6 +33,12 @@ def log_mail(to_email, subject, body, mail_type='general', recipient_user=None,
     
     if not from_email:
         from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@example.com')
+    
+    if mail_type is None:
+        mail_type = Constants.MAIL_TYPE.GENERAL
+    
+    if status is None:
+        status = Constants.MAIL_STATUS.PENDING
     
     return MailLog.objects.create(
         to_email=to_email,
@@ -61,7 +70,7 @@ def update_mail_log_status(mail_log_id, status, error_message=None, message_id=N
         mail_log = MailLog.objects.get(id=mail_log_id)
         mail_log.status = status
         
-        if status == 'sent':
+        if status == Constants.MAIL_STATUS.SENT:
             mail_log.sent_at = timezone.now()
         
         if error_message:
@@ -87,7 +96,7 @@ def log_view_detail(user, instance):
     """
     AppLog.objects.create(
         user=user if user and user.is_authenticated else None,
-        action='view',
+        action=Constants.APP_ACTION.VIEW,
         model_name=instance.__class__.__name__,
         object_id=str(getattr(instance, 'pk', '')),
         object_repr=f"{instance} の詳細画面を閲覧"

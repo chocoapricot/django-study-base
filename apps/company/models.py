@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from apps.common.models import MyModel
+from apps.common.constants import Constants, get_dispatch_treatment_method_choices
 
 class CompanyDepartment(MyModel):
     """
@@ -143,15 +144,12 @@ class Company(MyModel):
     foreign_regist_number = models.CharField('登録番号(特定技能)', max_length=100, blank=True, null=True)
     
     # 派遣待遇決定方式の選択肢
-    DISPATCH_TREATMENT_METHOD_CHOICES = [
-        ('agreement', '労使協定方式'),
-        ('equal_balance', '派遣先均等・均衡方式'),
-    ]
+    DISPATCH_TREATMENT_METHOD_CHOICES = get_dispatch_treatment_method_choices()
     dispatch_treatment_method = models.CharField(
         '派遣待遇決定方式',
         max_length=20,
         choices=DISPATCH_TREATMENT_METHOD_CHOICES,
-        default='agreement',
+        default=Constants.DISPATCH_TREATMENT_METHOD.AGREEMENT,
         help_text='派遣労働者の待遇決定方式を選択してください'
     )
 
