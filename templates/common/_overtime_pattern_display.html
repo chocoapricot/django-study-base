@@ -1,32 +1,7 @@
 {% if overtime_pattern %}
     <div class="small text-muted">{{ overtime_pattern.name }}</div>
     <div>
-        <span class="badge {% if overtime_pattern.calculation_type == 'premium' %}bg-primary{% elif overtime_pattern.calculation_type == 'monthly_range' %}bg-warning{% else %}bg-info{% endif %}">
-            {{ overtime_pattern.get_calculation_type_display }}
-        </span>
-        {% if overtime_pattern.calculation_type == 'premium' %}
-            {% if overtime_pattern.daily_overtime_enabled %}
-                <span class="small">日{{ overtime_pattern.daily_overtime_hours }}h</span>
-            {% endif %}
-            {% if overtime_pattern.weekly_overtime_enabled %}
-                <span class="small">週{{ overtime_pattern.weekly_overtime_hours }}h</span>
-            {% endif %}
-            {% if overtime_pattern.monthly_overtime_enabled %}
-                <span class="small">月{{ overtime_pattern.monthly_overtime_hours }}h</span>
-            {% endif %}
-            {% if overtime_pattern.monthly_estimated_enabled %}
-                <span class="small">見込{{ overtime_pattern.monthly_estimated_hours }}h</span>
-            {% endif %}
-        {% elif overtime_pattern.calculation_type == 'monthly_range' %}
-            <span class="small">{{ overtime_pattern.monthly_range_min }}～{{ overtime_pattern.monthly_range_max }}h</span>
-        {% elif overtime_pattern.calculation_type == 'flexible' %}
-            {% if overtime_pattern.flexible_daily_overtime_enabled %}
-                <span class="small">日{{ overtime_pattern.flexible_daily_overtime_hours }}h</span>
-            {% endif %}
-            {% if overtime_pattern.flexible_weekly_overtime_enabled %}
-                <span class="small">週{{ overtime_pattern.flexible_weekly_overtime_hours }}h</span>
-            {% endif %}
-        {% endif %}
+        {{ overtime_pattern.get_calculation_type_display }}: <span class="small text-muted">{% if overtime_pattern.calculation_type == 'premium' %}{% if overtime_pattern.daily_overtime_enabled %}日{{ overtime_pattern.daily_overtime_hours }}h {% endif %}{% if overtime_pattern.weekly_overtime_enabled %}週{{ overtime_pattern.weekly_overtime_hours }}h {% endif %}{% if overtime_pattern.monthly_overtime_enabled %}月{{ overtime_pattern.monthly_overtime_hours }}h {% endif %}{% if overtime_pattern.monthly_estimated_enabled %}見込{{ overtime_pattern.monthly_estimated_hours }}h{% endif %}{% elif overtime_pattern.calculation_type == 'monthly_range' %}{{ overtime_pattern.monthly_range_min }}～{{ overtime_pattern.monthly_range_max }}h{% elif overtime_pattern.calculation_type == 'flexible' %}{% if overtime_pattern.flexible_daily_overtime_enabled %}日{{ overtime_pattern.flexible_daily_overtime_hours }}h {% endif %}{% if overtime_pattern.flexible_weekly_overtime_enabled %}週{{ overtime_pattern.flexible_weekly_overtime_hours }}h{% endif %}{% endif %}</span>
     </div>
 {% else %}
     <span class="text-muted">未設定</span>
