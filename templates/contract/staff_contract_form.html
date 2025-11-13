@@ -927,8 +927,6 @@ function clearOvertimePattern() {
 function updateOvertimePatternFromEmployment(patternId, patternName) {
     const hiddenInput = document.getElementById('{{ form.overtime_pattern.id_for_label }}');
     const displayDiv = document.getElementById('overtime_pattern_display');
-    const selectBtn = document.getElementById('selectOvertimePatternBtn');
-    const clearBtn = document.getElementById('clearOvertimePatternBtn');
     
     // 時間外算出パターンを設定
     hiddenInput.value = patternId;
@@ -953,31 +951,12 @@ function updateOvertimePatternFromEmployment(patternId, patternName) {
             console.error('Error:', error);
             displayDiv.innerHTML = '<div class="small text-muted">' + patternName + '</div>';
         });
-    
-    // ボタンを非表示
-    if (selectBtn) {
-        selectBtn.style.display = 'none';
-    }
-    if (clearBtn) {
-        clearBtn.style.display = 'none';
-    }
 }
 
 // 時間外算出パターンのロックを解除する関数
 function unlockOvertimePattern() {
     const hiddenInput = document.getElementById('{{ form.overtime_pattern.id_for_label }}');
-    const selectBtn = document.getElementById('selectOvertimePatternBtn');
-    const clearBtn = document.getElementById('clearOvertimePatternBtn');
-    
     hiddenInput.removeAttribute('data-locked-by-employment');
-    
-    // ボタンを表示
-    if (selectBtn) {
-        selectBtn.style.display = '';
-    }
-    if (clearBtn) {
-        clearBtn.style.display = '';
-    }
 }
 
 // 時間外算出パターン検索フォームのイベントリスナー
