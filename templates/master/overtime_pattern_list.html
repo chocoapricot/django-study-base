@@ -32,9 +32,8 @@
             <table class="table table-sm table-hover">
                 <thead>
                     <tr>
-                        <th width="25%">名称</th>
-                        <th width="10%">計算方式</th>
-                        <th width="35%">メモ</th>
+                        <th width="35%">名称</th>
+                        <th width="35%">詳細</th>
                         <th width="10%">状態</th>
                         <th width="10%">表示順</th>
                         <th width="10%">操作</th>
@@ -47,15 +46,8 @@
                             <a href="{% url 'master:overtime_pattern_update' item.pk %}">{{ item.name|truncatechars:100 }}</a>
                         </td>
                         <td>
-                            {% if item.calculation_type == 'premium' %}
-                                <span class="badge bg-primary">割増</span>
-                            {% elif item.calculation_type == 'monthly_range' %}
-                                <span class="badge bg-warning">時間範囲</span>
-                            {% else %}
-                                <span class="badge bg-info">変形労働</span>
-                            {% endif %}
+                            {% include 'common/_overtime_pattern_display.html' with overtime_pattern=item %}
                         </td>
-                        <td>{{ item.memo|truncatechars:100|default:"-" }}</td>
                         <td>
                             {% if item.is_active %}
                                 <span class="badge bg-success">有効</span>
@@ -75,7 +67,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center">データが登録されていません。</td>
+                        <td colspan="5" class="text-center">データが登録されていません。</td>
                     </tr>
                     {% endfor %}
                 </tbody>

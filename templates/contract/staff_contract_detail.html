@@ -121,7 +121,7 @@
                                 <th>時間外算出</th>
                                 <td>
                                     {% if contract.overtime_pattern %}
-                                        {{ contract.overtime_pattern.name }}
+                                        {% include 'common/_overtime_pattern_display.html' with overtime_pattern=contract.overtime_pattern %}
                                     {% else %}
                                         -
                                     {% endif %}
