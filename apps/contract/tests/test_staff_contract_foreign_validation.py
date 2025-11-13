@@ -8,7 +8,7 @@ from datetime import date, timedelta
 from apps.staff.models import Staff, StaffInternational
 from apps.contract.models import StaffContract
 from apps.contract.forms import StaffContractForm
-from apps.master.models import JobCategory, ContractPattern, EmploymentType, StaffRegistStatus
+from apps.master.models import JobCategory, ContractPattern, EmploymentType, StaffRegistStatus, OvertimePattern
 from apps.master.models_worktime import WorkTimePattern
 from apps.common.constants import Constants
 
@@ -62,6 +62,13 @@ class StaffContractForeignValidationTest(TestCase):
         # 就業時間パターン作成
         self.worktime_pattern = WorkTimePattern.objects.create(
             name='標準勤務',
+            is_active=True
+        )
+        
+        # 時間外算出パターン作成
+        self.overtime_pattern = OvertimePattern.objects.create(
+            name='標準時間外算出',
+            calculation_type='premium',
             is_active=True
         )
 
@@ -128,6 +135,7 @@ class StaffContractForeignValidationTest(TestCase):
             'contract_amount': 300000,
             'pay_unit': '30',  # 月給
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
 
         form = StaffContractForm(data=form_data)
@@ -147,6 +155,7 @@ class StaffContractForeignValidationTest(TestCase):
             'contract_amount': 300000,
             'pay_unit': '30',  # 月給
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
 
         form = StaffContractForm(data=form_data)
@@ -166,6 +175,7 @@ class StaffContractForeignValidationTest(TestCase):
             'contract_amount': 300000,
             'pay_unit': '30',  # 月給
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
 
         form = StaffContractForm(data=form_data)
@@ -187,6 +197,7 @@ class StaffContractForeignValidationTest(TestCase):
             'contract_amount': 300000,
             'pay_unit': '30',  # 月給
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
 
         form = StaffContractForm(data=form_data)
@@ -209,6 +220,7 @@ class StaffContractForeignValidationTest(TestCase):
             'contract_amount': 300000,
             'pay_unit': '30',  # 月給
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
 
         form = StaffContractForm(data=form_data)
@@ -228,6 +240,7 @@ class StaffContractForeignValidationTest(TestCase):
             'contract_amount': 300000,
             'pay_unit': '30',  # 月給
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
 
         form = StaffContractForm(data=form_data)
@@ -247,6 +260,7 @@ class StaffContractForeignValidationTest(TestCase):
             'contract_amount': 300000,
             'pay_unit': '30',  # 月給
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
 
         form = StaffContractForm(data=form_data)
@@ -266,6 +280,7 @@ class StaffContractForeignValidationTest(TestCase):
             'contract_amount': 300000,
             'pay_unit': '30',  # 月給
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
 
         form = StaffContractForm(data=form_data)

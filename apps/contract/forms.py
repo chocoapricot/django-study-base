@@ -493,7 +493,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         fields = [
             'staff', 'employment_type', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
             'start_date', 'end_date', 'contract_amount', 'pay_unit',
-            'work_location', 'business_content', 'notes', 'memo', 'worktime_pattern'
+            'work_location', 'business_content', 'notes', 'memo', 'worktime_pattern', 'overtime_pattern'
         ]
         widgets = {
             'staff': forms.HiddenInput(),
@@ -511,6 +511,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
             'notes': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'worktime_pattern': forms.HiddenInput(),
+            'overtime_pattern': forms.HiddenInput(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -534,6 +535,9 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         # 就業時間パターンは必須
         self.fields['worktime_pattern'].required = True
         
+        # 時間外算出パターンは必須
+        self.fields['overtime_pattern'].required = True
+        
         # 雇用形態に就業時間パターンが設定されているかチェック
         employment_type = None
         if self.instance and self.instance.pk and self.instance.employment_type:
@@ -550,6 +554,12 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
             self.fields['worktime_pattern'].widget.attrs['data-locked'] = 'true'
             self.fields['worktime_pattern'].widget.attrs['data-locked-by-employment'] = 'true'
             self.fields['worktime_pattern'].help_text = '雇用形態で設定された就業時間が適用されます'
+        
+        # 雇用形態に時間外算出パターンが設定されている場合は編集不可にする
+        if employment_type and employment_type.overtime_pattern:
+            self.fields['overtime_pattern'].widget.attrs['data-locked'] = 'true'
+            self.fields['overtime_pattern'].widget.attrs['data-locked-by-employment'] = 'true'
+            self.fields['overtime_pattern'].help_text = '雇用形態で設定された時間外算出が適用されます'
 
         # 編集画面では「作成中」「申請」のみ選択可能にする
         editable_statuses = [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]
@@ -624,6 +634,11 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         if employment_type and employment_type.worktime_pattern:
             # 雇用形態の就業時間パターンを強制的に適用
             cleaned_data['worktime_pattern'] = employment_type.worktime_pattern
+        
+        # 雇用形態に時間外算出パターンが設定されている場合のチェック
+        if employment_type and employment_type.overtime_pattern:
+            # 雇用形態の時間外算出パターンを強制的に適用
+            cleaned_data['overtime_pattern'] = employment_type.overtime_pattern
 
         # 最低賃金チェック
         try:

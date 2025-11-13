@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django import forms
 from apps.client.models import Client as ClientModel
 from apps.staff.models import Staff
-from apps.master.models import JobCategory, ContractPattern, Dropdowns
+from apps.master.models import JobCategory, ContractPattern, Dropdowns, OvertimePattern
 from ..models import ClientContract, StaffContract
 from ..forms import ClientContractForm, StaffContractForm
 from apps.common.constants import Constants
@@ -55,8 +55,15 @@ class ContractFormTest(TestCase):
         self.pay_unit = Dropdowns.objects.create(category='pay_unit', value='10', name='月給', active=True)
         
         # 就業時間パターン
-        from apps.master.models import WorkTimePattern
+        from apps.master.models import WorkTimePattern, OvertimePattern
         self.worktime_pattern = WorkTimePattern.objects.create(name='標準勤務', is_active=True)
+        
+        # 時間外算出パターン
+        self.overtime_pattern = OvertimePattern.objects.create(
+            name='標準時間外算出',
+            calculation_type='premium',
+            is_active=True
+        )
 
     def test_client_contract_form_with_new_fields(self):
         """クライアント契約フォーム（新しいフィールドあり）のテスト"""
@@ -108,6 +115,7 @@ class ContractFormTest(TestCase):
             'work_location': 'テスト就業場所',
             'business_content': 'テスト業務内容',
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
         form = StaffContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
@@ -288,6 +296,7 @@ class ContractFormTest(TestCase):
             'contract_amount': 30000,
             'pay_unit': pay_unit_daily.value,
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
         form = StaffContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
@@ -307,6 +316,7 @@ class ContractFormTest(TestCase):
             'contract_pattern': self.staff_pattern.pk,
             'pay_unit': self.pay_unit.value,
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
         form = StaffContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
@@ -586,6 +596,13 @@ class StaffContractFormMinimumWageValidationTest(TestCase):
         # WorkTimePattern
         from apps.master.models_worktime import WorkTimePattern
         self.worktime_pattern = WorkTimePattern.objects.create(name='標準勤務', is_active=True)
+        
+        # OvertimePattern
+        self.overtime_pattern = OvertimePattern.objects.create(
+            name='標準時間外算出',
+            calculation_type='premium',
+            is_active=True
+        )
 
         self.base_form_data = {
             'staff': self.staff.pk,
@@ -597,6 +614,7 @@ class StaffContractFormMinimumWageValidationTest(TestCase):
             'pay_unit': self.pay_unit_hourly.value,
             'work_location': '東京都新宿区',
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
 
     def test_minimum_wage_validation_success(self):

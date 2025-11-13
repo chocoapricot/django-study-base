@@ -58,7 +58,7 @@
                         <td>{{ staff.department_name|default:"-" }}</td>
                         <td>
                                 <button type="button" class="btn btn-sm btn-primary" 
-                                        onclick="selectStaff('{{ staff.pk }}', '{{ staff.name_last|escapejs }} {{ staff.name_first|escapejs }}', '{% if staff.employment_type %}{{ staff.employment_type.pk }}{% endif %}', '{% if staff.employment_type %}{{ staff.employment_type.name|escapejs }}{% endif %}', '{% if staff.employment_type %}{{ staff.employment_type.display_order|badge_class }}{% endif %}')">
+                                        onclick="selectStaff('{{ staff.pk }}', '{{ staff.name_last|escapejs }} {{ staff.name_first|escapejs }}', '{% if staff.employment_type %}{{ staff.employment_type.pk }}{% endif %}', '{% if staff.employment_type %}{{ staff.employment_type.name|escapejs }}{% endif %}', '{% if staff.employment_type %}{{ staff.employment_type.display_order|badge_class }}{% endif %}', '{% if staff.employment_type.worktime_pattern %}{{ staff.employment_type.worktime_pattern.pk }}{% endif %}', '{% if staff.employment_type.worktime_pattern %}{{ staff.employment_type.worktime_pattern.name|escapejs }}{% endif %}', '{% if staff.employment_type.overtime_pattern %}{{ staff.employment_type.overtime_pattern.pk }}{% endif %}', '{% if staff.employment_type.overtime_pattern %}{{ staff.employment_type.overtime_pattern.name|escapejs }}{% endif %}')">
                                     選択
                                 </button>
                         </td>

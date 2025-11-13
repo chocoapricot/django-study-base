@@ -167,6 +167,27 @@
             </div>
 
             <div class="row mb-3 align-items-center">
+                <label for="{{ form.overtime_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                    時間外算出
+                </label>
+                <div class="col-sm-10">
+                    <input type="hidden" id="{{ form.overtime_pattern.id_for_label }}" name="{{ form.overtime_pattern.name }}" value="{{ form.overtime_pattern.value|default:'' }}">
+                    <div class="d-flex align-items-center">
+                        <div id="overtime_pattern_display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057; flex: 0 0 auto;">
+                            {% include 'common/_overtime_pattern_display.html' with overtime_pattern=form.instance.overtime_pattern %}
+                        </div>
+                        <div style="margin-left: 10px;">
+                            <button type="button" class="btn btn-sm btn-secondary me-1" id="selectOvertimePatternBtn">参照</button>
+                            <button type="button" class="btn btn-sm btn-secondary" id="clearOvertimePatternBtn">クリア</button>
+                        </div>
+                    </div>
+                    {% if form.overtime_pattern.errors %}
+                        <div class="text-danger small">{{ form.overtime_pattern.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
                 <label for="{{ form.work_location.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">就業場所</label>
                 <div class="col-sm-10">
                     {{ form.work_location }}
@@ -281,6 +302,24 @@
     </div>
 </div>
 
+<!-- 時間外算出パターン選択モーダル -->
+<div class="modal fade" id="overtimePatternModal" tabindex="-1" aria-labelledby="overtimePatternModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="overtimePatternModalLabel">時間外算出パターン選択</div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% include 'common/_overtime_pattern_select_modal_body.html' %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="{% static 'js/contract-modal.js' %}"></script>
 <script>
 // ページ読み込み時に選択されたスタッフ情報を処理
@@ -352,6 +391,30 @@ document.addEventListener('DOMContentLoaded', function() {
             '{{ contract.employment_type.worktime_pattern.name|escapejs }}'
         );
     {% endif %}
+
+    // 時間外算出パターン選択ボタン
+    const selectOvertimePatternBtn = document.getElementById('selectOvertimePatternBtn');
+    if (selectOvertimePatternBtn) {
+        selectOvertimePatternBtn.addEventListener('click', function() {
+            loadOvertimePatternModal();
+        });
+    }
+
+    // 時間外算出パターンクリアボタン
+    const clearOvertimePatternBtn = document.getElementById('clearOvertimePatternBtn');
+    if (clearOvertimePatternBtn) {
+        clearOvertimePatternBtn.addEventListener('click', function() {
+            clearOvertimePattern();
+        });
+    }
+    
+    // 編集時に雇用形態に時間外算出パターンが設定されているかチェック
+    {% if contract and contract.employment_type and contract.employment_type.overtime_pattern %}
+        updateOvertimePatternFromEmployment(
+            '{{ contract.employment_type.overtime_pattern.pk }}',
+            '{{ contract.employment_type.overtime_pattern.name|escapejs }}'
+        );
+    {% endif %}
 });
 
 // スタッフ契約名を自動生成する関数
@@ -379,7 +442,7 @@ function updateStaffContractName() {
 }
 
 // 雇用形態バッジを更新する関数
-function updateEmploymentTypeBadge(employmentType, employmentTypeName, badgeClass = null, worktimePatternId = null, worktimePatternName = null) {
+function updateEmploymentTypeBadge(employmentType, employmentTypeName, badgeClass = null, worktimePatternId = null, worktimePatternName = null, overtimePatternId = null, overtimePatternName = null) {
     const badgeElement = document.getElementById('staff-employment-type-badge');
     if (badgeElement && employmentType && employmentTypeName) {
         const className = badgeClass || 'bg-primary';
@@ -397,12 +460,21 @@ function updateEmploymentTypeBadge(employmentType, employmentTypeName, badgeClas
             // 就業時間パターンが設定されていない場合はロックを解除
             unlockWorktimePattern();
         }
+        
+        // 雇用形態に時間外算出パターンが設定されている場合の処理
+        if (overtimePatternId && overtimePatternName) {
+            updateOvertimePatternFromEmployment(overtimePatternId, overtimePatternName);
+        } else {
+            // 時間外算出パターンが設定されていない場合はロックを解除
+            unlockOvertimePattern();
+        }
     } else if (badgeElement) {
         badgeElement.textContent = '-';
         if (typeof updateContractPatterns === 'function') {
             updateContractPatterns(null);
         }
         unlockWorktimePattern();
+        unlockOvertimePattern();
     }
 }
 
@@ -701,6 +773,226 @@ document.getElementById('clearSearchBtn').addEventListener('click', function() {
     document.querySelector('#worktime-search-form input[name="q"]').value = '';
     loadWorktimePatternModal(1, '');
 });
+
+// 時間外算出パターン選択モーダルを読み込む
+function loadOvertimePatternModal(page = 1, searchQuery = '') {
+    const modal = new bootstrap.Modal(document.getElementById('overtimePatternModal'));
+    const patternList = document.getElementById('overtime-pattern-list');
+    const paginationContainer = document.getElementById('overtime-pagination-container');
+    
+    patternList.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">読み込み中...</span></div></div>';
+    paginationContainer.innerHTML = '';
+    
+    modal.show();
+    
+    const url = `{% url 'master:overtime_pattern_select_modal' %}?page=${page}&q=${encodeURIComponent(searchQuery)}`;
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            renderOvertimePatterns(data.patterns);
+            renderOvertimePagination(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            patternList.innerHTML = '<p class="text-center text-danger">データの取得に失敗しました。</p>';
+        });
+}
+
+// 時間外算出パターン一覧表示
+function renderOvertimePatterns(patterns) {
+    const container = document.getElementById('overtime-pattern-list');
+    
+    if (!patterns || patterns.length === 0) {
+        container.innerHTML = '<p class="text-center text-muted">該当するパターンがありません。</p>';
+        return;
+    }
+    
+    let html = '<div class="table-responsive"><table class="table table-hover">';
+    html += '<thead><tr>';
+    html += '<th style="width: 20%;">名称</th>';
+    html += '<th style="width: 15%;">計算方式</th>';
+    html += '<th style="width: 40%;">設定内容</th>';
+    html += '<th style="width: 15%;">メモ</th>';
+    html += '<th style="width: 10%;">操作</th>';
+    html += '</tr></thead><tbody>';
+    
+    patterns.forEach((pattern, index) => {
+        html += '<tr>';
+        html += '<td>' + pattern.name + '</td>';
+        html += '<td>';
+        if (pattern.calculation_type === 'premium') {
+            html += '<span class="badge bg-primary">割増</span>';
+        } else if (pattern.calculation_type === 'monthly_range') {
+            html += '<span class="badge bg-warning">時間範囲</span>';
+        } else {
+            html += '<span class="badge bg-info">変形労働</span>';
+        }
+        html += '</td>';
+        html += '<td><span class="small">' + pattern.settings + '</span></td>';
+        html += '<td>' + (pattern.memo ? '<span class="text-muted small">' + pattern.memo + '</span>' : '') + '</td>';
+        html += '<td style="white-space: nowrap;">';
+        html += '<button type="button" class="btn btn-sm btn-primary select-overtime-pattern-btn" data-pattern-index="' + index + '">選択</button>';
+        html += '</td>';
+        html += '</tr>';
+    });
+    
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+    
+    // 選択ボタンのクリックイベント設定
+    container.querySelectorAll('.select-overtime-pattern-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const patternIndex = parseInt(this.getAttribute('data-pattern-index'));
+            const pattern = patterns[patternIndex];
+            selectOvertimePattern(pattern);
+        });
+    });
+}
+
+// 時間外算出パターンページネーション表示
+function renderOvertimePagination(data) {
+    const container = document.getElementById('overtime-pagination-container');
+    
+    if (data.total_pages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    let html = '<nav><ul class="pagination pagination-sm justify-content-center">';
+    
+    // 前へ
+    if (data.has_previous) {
+        html += '<li class="page-item"><a class="page-link overtime-page-link" href="#" data-page="' + (data.current_page - 1) + '">前へ</a></li>';
+    } else {
+        html += '<li class="page-item disabled"><span class="page-link">前へ</span></li>';
+    }
+    
+    // ページ番号
+    for (let i = 1; i <= data.total_pages; i++) {
+        if (i === data.current_page) {
+            html += '<li class="page-item active"><span class="page-link">' + i + '</span></li>';
+        } else {
+            html += '<li class="page-item"><a class="page-link overtime-page-link" href="#" data-page="' + i + '">' + i + '</a></li>';
+        }
+    }
+    
+    // 次へ
+    if (data.has_next) {
+        html += '<li class="page-item"><a class="page-link overtime-page-link" href="#" data-page="' + (data.current_page + 1) + '">次へ</a></li>';
+    } else {
+        html += '<li class="page-item disabled"><span class="page-link">次へ</span></li>';
+    }
+    
+    html += '</ul></nav>';
+    container.innerHTML = html;
+    
+    // ページネーションクリックイベント
+    container.querySelectorAll('a.overtime-page-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const page = this.getAttribute('data-page');
+            const searchQuery = document.querySelector('#overtime-search-form input[name="q"]').value || '';
+            loadOvertimePatternModal(page, searchQuery);
+        });
+    });
+}
+
+// 時間外算出パターンを選択
+function selectOvertimePattern(pattern) {
+    const hiddenInput = document.getElementById('{{ form.overtime_pattern.id_for_label }}');
+    const displayDiv = document.getElementById('overtime_pattern_display');
+    
+    hiddenInput.value = pattern.id;
+    
+    // 詳細情報を表示（雇用形態マスタと同じ形式）
+    let displayHtml = '<div class="small text-muted">' + pattern.name + '</div>';
+    displayHtml += '<div>';
+    displayHtml += pattern.calculation_type_display + ': <span class="small text-muted">' + pattern.settings + '</span>';
+    displayHtml += '</div>';
+    displayDiv.innerHTML = displayHtml;
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('overtimePatternModal'));
+    modal.hide();
+}
+
+// 時間外算出パターンをクリア
+function clearOvertimePattern() {
+    const hiddenInput = document.getElementById('{{ form.overtime_pattern.id_for_label }}');
+    hiddenInput.value = '';
+    document.getElementById('overtime_pattern_display').innerHTML = '<span class="text-muted">未設定</span>';
+}
+
+// 雇用形態から時間外算出パターンを設定する関数
+function updateOvertimePatternFromEmployment(patternId, patternName) {
+    const hiddenInput = document.getElementById('{{ form.overtime_pattern.id_for_label }}');
+    const displayDiv = document.getElementById('overtime_pattern_display');
+    const selectBtn = document.getElementById('selectOvertimePatternBtn');
+    const clearBtn = document.getElementById('clearOvertimePatternBtn');
+    
+    // 時間外算出パターンを設定
+    hiddenInput.value = patternId;
+    hiddenInput.setAttribute('data-locked-by-employment', 'true');
+    
+    // 詳細情報を取得して表示（雇用形態マスタと同じ形式）
+    fetch(`{% url 'master:overtime_pattern_select_modal' %}?page=1`)
+        .then(response => response.json())
+        .then(data => {
+            const pattern = data.patterns.find(p => p.id == patternId);
+            if (pattern) {
+                let displayHtml = '<div class="small text-muted">' + pattern.name + '</div>';
+                displayHtml += '<div>';
+                displayHtml += pattern.calculation_type_display + ': <span class="small text-muted">' + pattern.settings + '</span>';
+                displayHtml += '</div>';
+                displayDiv.innerHTML = displayHtml;
+            } else {
+                displayDiv.innerHTML = '<div class="small text-muted">' + patternName + '</div>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            displayDiv.innerHTML = '<div class="small text-muted">' + patternName + '</div>';
+        });
+    
+    // ボタンを非表示
+    if (selectBtn) {
+        selectBtn.style.display = 'none';
+    }
+    if (clearBtn) {
+        clearBtn.style.display = 'none';
+    }
+}
+
+// 時間外算出パターンのロックを解除する関数
+function unlockOvertimePattern() {
+    const hiddenInput = document.getElementById('{{ form.overtime_pattern.id_for_label }}');
+    const selectBtn = document.getElementById('selectOvertimePatternBtn');
+    const clearBtn = document.getElementById('clearOvertimePatternBtn');
+    
+    hiddenInput.removeAttribute('data-locked-by-employment');
+    
+    // ボタンを表示
+    if (selectBtn) {
+        selectBtn.style.display = '';
+    }
+    if (clearBtn) {
+        clearBtn.style.display = '';
+    }
+}
+
+// 時間外算出パターン検索フォームのイベントリスナー
+document.getElementById('overtime-search-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const searchQuery = this.querySelector('input[name="q"]').value;
+    loadOvertimePatternModal(1, searchQuery);
+});
+
+// 時間外算出パターン検索クリアボタン
+document.getElementById('clearOvertimeSearchBtn').addEventListener('click', function() {
+    document.querySelector('#overtime-search-form input[name="q"]').value = '';
+    loadOvertimePatternModal(1, '');
+});
+
 
 
 

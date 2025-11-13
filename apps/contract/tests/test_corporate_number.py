@@ -29,8 +29,15 @@ class ContractCorporateNumberTest(TestCase):
         self.staff_pattern = ContractPattern.objects.create(name='Staff Test Pattern', domain='1', is_active=True)
         
         # 就業時間パターン
-        from apps.master.models import WorkTimePattern
+        from apps.master.models import WorkTimePattern, OvertimePattern
         self.worktime_pattern = WorkTimePattern.objects.create(name='標準勤務', is_active=True)
+        
+        # 時間外算出パターン
+        self.overtime_pattern = OvertimePattern.objects.create(
+            name='標準時間外算出',
+            calculation_type='premium',
+            is_active=True
+        )
 
     def test_client_contract_sets_corporate_number(self):
         """ClientContract作成時に法人番号が自動設定されることを確認"""
@@ -60,6 +67,7 @@ class ContractCorporateNumberTest(TestCase):
             'pay_unit': self.pay_unit.value,
             'contract_pattern': self.staff_pattern.pk,
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
         form = StaffContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)

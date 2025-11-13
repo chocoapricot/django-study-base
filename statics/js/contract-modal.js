@@ -56,7 +56,7 @@ async function fetchModalContent(url, modalSelector) {
 }
 
 // スタッフ選択関数
-window.selectStaff = function(staffId, staffName, employmentType, employmentTypeName, badgeClass, worktimePatternId, worktimePatternName) {
+window.selectStaff = function(staffId, staffName, employmentType, employmentTypeName, badgeClass, worktimePatternId, worktimePatternName, overtimePatternId, overtimePatternName) {
     console.log('selectStaff called:', staffId, staffName);
     
     // フィールドに値を設定
@@ -77,9 +77,9 @@ window.selectStaff = function(staffId, staffName, employmentType, employmentType
         displayText.textContent = staffName;
     }
     
-    // 雇用形態バッジを更新（就業時間パターン情報も渡す）
+    // 雇用形態バッジを更新（就業時間パターン・時間外算出パターン情報も渡す）
     if (typeof updateEmploymentTypeBadge === 'function') {
-        updateEmploymentTypeBadge(employmentType, employmentTypeName, badgeClass, worktimePatternId, worktimePatternName);
+        updateEmploymentTypeBadge(employmentType, employmentTypeName, badgeClass, worktimePatternId, worktimePatternName, overtimePatternId, overtimePatternName);
     } else {
         // 従来の処理（後方互換性のため）
         const badgeElement = document.getElementById('staff-employment-type-badge');
