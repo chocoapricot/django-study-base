@@ -175,6 +175,7 @@ class DailyDispatchWarningTestCase(TestCase):
             pay_unit=Constants.PAY_UNIT.HOURLY,
             contract_amount=1500,
             worktime_pattern=self.worktime_pattern,
+            overtime_pattern=self.overtime_pattern,
             created_by=self.user,
             updated_by=self.user
         )
