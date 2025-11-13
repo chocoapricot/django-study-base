@@ -8,6 +8,7 @@ from apps.client.models import Client
 from apps.staff.models import Staff
 from apps.master.models import EmploymentType
 from apps.master.models_worktime import WorkTimePattern
+from apps.master.models_overtime import OvertimePattern
 from apps.common.constants import Constants
 from datetime import date, timedelta
 
@@ -76,6 +77,12 @@ class StaffContractAssignmentTestCase(TestCase):
             is_active=True
         )
         
+        # 時間外算出パターン作成
+        self.overtime_pattern = OvertimePattern.objects.create(
+            name='標準時間外',
+            is_active=True
+        )
+        
         # クライアント作成
         self.client_obj = Client.objects.create(
             name='テストクライアント',
@@ -122,6 +129,7 @@ class StaffContractAssignmentTestCase(TestCase):
             'pay_unit': Constants.PAY_UNIT.HOURLY,
             'contract_amount': '300000',
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
         
         response = self.client.post(url, data)
@@ -146,6 +154,7 @@ class StaffContractAssignmentTestCase(TestCase):
             'pay_unit': Constants.PAY_UNIT.HOURLY,
             'contract_amount': '300000',
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
         
         response = self.client.post(url, data)
@@ -177,6 +186,7 @@ class StaffContractAssignmentTestCase(TestCase):
                 'pay_unit': Constants.PAY_UNIT.HOURLY,
                 'contract_amount': '300000',
                 'worktime_pattern': str(self.worktime_pattern.pk),
+                'overtime_pattern': str(self.overtime_pattern.pk),
             },
             'from_view': 'client'
         }
