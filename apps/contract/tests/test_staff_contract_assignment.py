@@ -8,7 +8,7 @@ from apps.client.models import Client
 from apps.staff.models import Staff
 from apps.master.models import EmploymentType
 from apps.master.models_worktime import WorkTimePattern
-from apps.master.models_overtime import OvertimePattern
+from apps.master.models_contract import OvertimePattern
 from apps.common.constants import Constants
 from datetime import date, timedelta
 

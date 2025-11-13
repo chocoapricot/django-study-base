@@ -102,6 +102,13 @@ class DailyDispatchWarningTestCase(TestCase):
             is_active=True
         )
         
+        # 時間外算出パターン作成
+        from apps.master.models_contract import OvertimePattern
+        self.overtime_pattern = OvertimePattern.objects.create(
+            name='標準時間外',
+            is_active=True
+        )
+        
         # テストクライアント（Djangoのテストクライアント）
         self.client = Client()
         self.client.login(username='testuser', password='testpass123')
@@ -473,6 +480,7 @@ class DailyDispatchWarningTestCase(TestCase):
                 'pay_unit': Constants.PAY_UNIT.HOURLY,
                 'contract_amount': '1500',
                 'worktime_pattern': str(self.worktime_pattern.pk),
+                'overtime_pattern': str(self.overtime_pattern.pk),
             },
             'from_view': 'client'
         }
