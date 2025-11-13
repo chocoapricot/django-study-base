@@ -84,6 +84,13 @@ class StaffContractViewTest(TestCase):
             name='標準勤務',
             is_active=True
         )
+        
+        # 時間外算出パターン作成
+        from apps.master.models import OvertimePattern
+        self.overtime_pattern = OvertimePattern.objects.create(
+            name='標準時間外',
+            is_active=True
+        )
 
         self.client.login(username='testuser', password='testpass123')
 
@@ -250,6 +257,7 @@ class StaffContractViewTest(TestCase):
             'work_location': '本社ビル',
             'business_content': 'プログラミング業務',
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
         response = self.client.post(url, post_data)
 
@@ -272,6 +280,7 @@ class StaffContractViewTest(TestCase):
             work_location='旧就業場所',
             business_content='旧業務内容',
             worktime_pattern=self.worktime_pattern,
+            overtime_pattern=self.overtime_pattern,
         )
 
         url = reverse('contract:staff_contract_update', kwargs={'pk': staff_contract.pk})
@@ -285,6 +294,7 @@ class StaffContractViewTest(TestCase):
             'work_location': '新就業場所',
             'business_content': '新業務内容',
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
 
         response = self.client.post(url, post_data)
