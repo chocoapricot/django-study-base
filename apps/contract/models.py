@@ -79,6 +79,13 @@ class ClientContract(MyModel):
         null=True,
         verbose_name='就業時間'
     )
+    overtime_pattern = models.ForeignKey(
+        'master.OvertimePattern',
+        on_delete=models.SET_NULL,
+        blank=False,
+        null=True,
+        verbose_name='時間外算出'
+    )
     approved_at = models.DateTimeField('承認日時', blank=True, null=True)
     approved_by = models.ForeignKey(
         User,

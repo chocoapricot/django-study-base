@@ -100,7 +100,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         fields = [
             'client', 'client_contract_type_code', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
             'start_date', 'end_date', 'contract_amount', 'bill_unit',
-            'business_content', 'notes', 'memo', 'payment_site', 'worktime_pattern'
+            'business_content', 'notes', 'memo', 'payment_site', 'worktime_pattern', 'overtime_pattern'
         ]
         widgets = {
             'client': forms.HiddenInput(),
@@ -118,6 +118,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'payment_site': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'worktime_pattern': forms.HiddenInput(),
+            'overtime_pattern': forms.HiddenInput(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -139,6 +140,9 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         
         # 就業時間パターンは必須
         self.fields['worktime_pattern'].required = True
+        
+        # 時間外算出パターンは必須
+        self.fields['overtime_pattern'].required = True
 
         contract_type_code = None
         if self.is_bound and 'client_contract_type_code' in self.data:

@@ -88,6 +88,16 @@
                                 </td>
                             </tr>
                             <tr>
+                                <th>時間外算出</th>
+                                <td>
+                                    {% if client_contract.overtime_pattern %}
+                                        {% include 'common/_overtime_pattern_display.html' with overtime_pattern=client_contract.overtime_pattern %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
                                 <th>契約金額</th>
                                 <td>
                                     {% if client_contract.contract_amount %}

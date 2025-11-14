@@ -86,6 +86,7 @@ class ContractFormTest(TestCase):
             'client_contract_type_code': self.client_pattern.contract_type_code,
             'bill_unit': self.bill_unit.value,
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
         form = ClientContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
@@ -240,6 +241,7 @@ class ContractFormTest(TestCase):
             'client_contract_type_code': self.client_pattern.contract_type_code,
             'bill_unit': self.bill_unit.value,
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
         
         form = ClientContractForm(data=form_data)
@@ -267,6 +269,7 @@ class ContractFormTest(TestCase):
             'bill_unit': bill_unit_monthly.value,
             'client_contract_type_code': self.client_pattern.contract_type_code,
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
         form = ClientContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
