@@ -81,8 +81,9 @@ class ContractViewTest(TestCase):
         )
         
         # 就業時間パターン
-        from apps.master.models import WorkTimePattern
+        from apps.master.models import WorkTimePattern, OvertimePattern
         self.worktime_pattern = WorkTimePattern.objects.create(name='標準勤務', is_active=True)
+        self.overtime_pattern = OvertimePattern.objects.create(name='標準時間外')
         
         self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='10', contract_type_code='20')
         self.client_contract = ClientContract.objects.create(
@@ -93,7 +94,8 @@ class ContractViewTest(TestCase):
             contract_pattern=self.contract_pattern,
             client_contract_type_code='20',
             corporate_number=self.company.corporate_number,
-            worktime_pattern=self.worktime_pattern
+            worktime_pattern=self.worktime_pattern,
+            overtime_pattern=self.overtime_pattern
         )
 
         # 抵触日ありの派遣先事業所と契約
@@ -115,7 +117,8 @@ class ContractViewTest(TestCase):
             contract_pattern=self.contract_pattern,
             client_contract_type_code='20',
             corporate_number=self.company.corporate_number,
-            worktime_pattern=self.worktime_pattern
+            worktime_pattern=self.worktime_pattern,
+            overtime_pattern=self.overtime_pattern
         )
         self.haken_office_without_teishokubi = ClientDepartment.objects.create(
             client=self.test_client,
@@ -144,7 +147,8 @@ class ContractViewTest(TestCase):
             client_contract_type_code='10',
             contract_status=Constants.CONTRACT_STATUS.DRAFT, # 編集可能にするためDRAFTに
             corporate_number=self.company.corporate_number,
-            worktime_pattern=self.worktime_pattern
+            worktime_pattern=self.worktime_pattern,
+            overtime_pattern=self.overtime_pattern
         )
 
         self.staff = Staff.objects.create(
@@ -482,6 +486,7 @@ class ContractViewTest(TestCase):
             'business_content': 'これは請負契約の業務内容です。',
             'bill_unit': '10', # 月額
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
         response = self.client.post(url, post_data)
 
@@ -528,8 +533,9 @@ class ClientContractConfirmListViewTest(TestCase):
         self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='10')
         
         # 就業時間パターン
-        from apps.master.models import WorkTimePattern
+        from apps.master.models import WorkTimePattern, OvertimePattern
         self.worktime_pattern = WorkTimePattern.objects.create(name='標準勤務', is_active=True)
+        self.overtime_pattern = OvertimePattern.objects.create(name='標準時間外')
 
         # ①「承認済」の契約を作成
         self.approved_contract = ClientContract.objects.create(
@@ -540,6 +546,7 @@ class ClientContractConfirmListViewTest(TestCase):
             contract_status=Constants.CONTRACT_STATUS.APPROVED,
             corporate_number=self.company.corporate_number,
             worktime_pattern=self.worktime_pattern,
+            overtime_pattern=self.overtime_pattern,
         )
 
         # ②「発行済」の契約を作成
@@ -551,6 +558,7 @@ class ClientContractConfirmListViewTest(TestCase):
             contract_status=Constants.CONTRACT_STATUS.ISSUED,
             corporate_number=self.company.corporate_number,
             worktime_pattern=self.worktime_pattern,
+            overtime_pattern=self.overtime_pattern,
         )
         # 発行済契約には、確認ボタンの表示条件である発行済みPDFが必要
         ClientContractPrint.objects.create(
@@ -568,6 +576,7 @@ class ClientContractConfirmListViewTest(TestCase):
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             corporate_number=self.company.corporate_number,
             worktime_pattern=self.worktime_pattern,
+            overtime_pattern=self.overtime_pattern,
         )
 
     def test_list_contracts_and_button_visibility(self):
@@ -625,8 +634,9 @@ class ClientContractIssueHistoryViewTest(TestCase):
         self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='10')
         
         # 就業時間パターン
-        from apps.master.models import WorkTimePattern
+        from apps.master.models import WorkTimePattern, OvertimePattern
         self.worktime_pattern = WorkTimePattern.objects.create(name='標準勤務', is_active=True)
+        self.overtime_pattern = OvertimePattern.objects.create(name='標準時間外')
 
         # 10件以上の発行履歴を持つ契約
         self.contract_many = ClientContract.objects.create(
@@ -636,6 +646,7 @@ class ClientContractIssueHistoryViewTest(TestCase):
             contract_pattern=self.contract_pattern,
             corporate_number=self.company.corporate_number,
             worktime_pattern=self.worktime_pattern,
+            overtime_pattern=self.overtime_pattern,
         )
         for i in range(12):
             ClientContractPrint.objects.create(
@@ -652,6 +663,7 @@ class ClientContractIssueHistoryViewTest(TestCase):
             contract_pattern=self.contract_pattern,
             corporate_number=self.company.corporate_number,
             worktime_pattern=self.worktime_pattern,
+            overtime_pattern=self.overtime_pattern,
         )
         for i in range(5):
             ClientContractPrint.objects.create(
@@ -751,6 +763,8 @@ class ClientContractTtpViewTest(TestCase):
         self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
         self.test_client_model = TestClient.objects.create(name='Test Client', corporate_number='6000000000001')
         self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='10', contract_type_code='20')
+        from apps.master.models import OvertimePattern
+        self.overtime_pattern = OvertimePattern.objects.create(name='標準時間外')
 
         # ステータスが「作成中」の契約
         self.draft_contract = ClientContract.objects.create(
@@ -760,6 +774,7 @@ class ClientContractTtpViewTest(TestCase):
             contract_pattern=self.contract_pattern,
             client_contract_type_code='20',
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            overtime_pattern=self.overtime_pattern,
         )
         self.draft_haken = ClientContractHaken.objects.create(client_contract=self.draft_contract)
         self.draft_ttp = ClientContractTtp.objects.create(haken=self.draft_haken, business_content='Draft Content')
@@ -772,6 +787,7 @@ class ClientContractTtpViewTest(TestCase):
             contract_pattern=self.contract_pattern,
             client_contract_type_code='20',
             contract_status=Constants.CONTRACT_STATUS.APPROVED,
+            overtime_pattern=self.overtime_pattern,
         )
         self.approved_haken = ClientContractHaken.objects.create(client_contract=self.approved_contract)
         self.approved_ttp = ClientContractTtp.objects.create(haken=self.approved_haken, business_content='Approved Content')
@@ -841,6 +857,7 @@ class ClientContractTtpViewTest(TestCase):
             contract_pattern=self.contract_pattern,
             client_contract_type_code='20',
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            overtime_pattern=self.overtime_pattern,
         )
         ttp_less_haken = ClientContractHaken.objects.create(client_contract=ttp_less_contract)
 
@@ -870,6 +887,7 @@ class ClientContractTtpViewTest(TestCase):
             client_contract_type_code='20',
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             business_content='派遣元の業務内容',
+            overtime_pattern=self.overtime_pattern,
         )
         haken_info = ClientContractHaken.objects.create(
             client_contract=haken_contract,
@@ -920,6 +938,8 @@ class ContractAssignmentViewTest(TestCase):
         # 契約パターン
         self.client_pattern = ContractPattern.objects.create(name='Client Pattern', domain='10')
         self.staff_pattern = ContractPattern.objects.create(name='Staff Pattern', domain='1')
+        from apps.master.models import OvertimePattern
+        self.overtime_pattern = OvertimePattern.objects.create(name='標準時間外')
 
         # --- テストデータ ---
         # 1. ベースとなるクライアント契約（作成中）
@@ -927,36 +947,42 @@ class ContractAssignmentViewTest(TestCase):
             client=self.test_client_model, contract_name='Client Draft',
             start_date=datetime.date(2025, 4, 1), end_date=datetime.date(2025, 6, 30),
             contract_pattern=self.client_pattern, contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            overtime_pattern=self.overtime_pattern,
         )
         # 2. ベースとなるスタッフ契約（作成中）
         self.staff_contract_draft = StaffContract.objects.create(
             staff=self.staff1, contract_name='Staff Draft',
             start_date=datetime.date(2025, 5, 1), end_date=datetime.date(2025, 7, 31),
             contract_pattern=self.staff_pattern, contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            overtime_pattern=self.overtime_pattern,
         )
         # 3. 期間が重複するスタッフ契約（割当可能）
         self.assignable_staff_contract = StaffContract.objects.create(
             staff=self.staff2, contract_name='Assignable Staff',
             start_date=datetime.date(2025, 6, 1), end_date=datetime.date(2025, 8, 31),
             contract_pattern=self.staff_pattern, contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            overtime_pattern=self.overtime_pattern,
         )
         # 4. 期間が重複しないスタッフ契約（割当不可）
         self.non_overlapping_staff_contract = StaffContract.objects.create(
             staff=self.staff2, contract_name='Non Overlapping Staff',
             start_date=datetime.date(2026, 1, 1), end_date=datetime.date(2026, 3, 31),
             contract_pattern=self.staff_pattern, contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            overtime_pattern=self.overtime_pattern,
         )
         # 5. 承認済のクライアント契約（割当不可）
         self.client_contract_approved = ClientContract.objects.create(
             client=self.test_client_model, contract_name='Client Approved',
             start_date=datetime.date(2025, 4, 1), end_date=datetime.date(2025, 6, 30),
             contract_pattern=self.client_pattern, contract_status=Constants.CONTRACT_STATUS.APPROVED,
+            overtime_pattern=self.overtime_pattern,
         )
         # 6. 既に割り当て済みのスタッフ契約
         self.already_assigned_staff_contract = StaffContract.objects.create(
             staff=self.staff1, contract_name='Already Assigned Staff',
             start_date=datetime.date(2025, 4, 15), end_date=datetime.date(2025, 5, 15),
             contract_pattern=self.staff_pattern, contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            overtime_pattern=self.overtime_pattern,
         )
         self.assignment = ContractAssignment.objects.create(
             client_contract=self.client_contract_draft, staff_contract=self.already_assigned_staff_contract
@@ -1051,6 +1077,7 @@ class ContractAssignmentViewTest(TestCase):
             client=self.test_client_model, contract_name='Assignable Client',
             start_date=datetime.date(2025, 7, 1), end_date=datetime.date(2025, 9, 30),
             contract_pattern=self.client_pattern, contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            overtime_pattern=self.overtime_pattern,
         )
 
         initial_assignment_count = ContractAssignment.objects.count()
@@ -1143,13 +1170,15 @@ class ContractAssignmentViewTest(TestCase):
             client=self.test_client_model, contract_name='Client for Sync 1',
             start_date=datetime.date(2025, 1, 1), contract_pattern=self.client_pattern,
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
-            business_content='' # Empty
+            business_content='', # Empty
+            overtime_pattern=self.overtime_pattern,
         )
         staff_contract_1 = StaffContract.objects.create(
             staff=self.staff1, contract_name='Staff for Sync 1',
             start_date=datetime.date(2025, 1, 1), contract_pattern=self.staff_pattern,
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
-            business_content='Staff content' # Not empty
+            business_content='Staff content', # Not empty
+            overtime_pattern=self.overtime_pattern,
         )
 
         url = reverse('contract:create_contract_assignment')
@@ -1172,13 +1201,15 @@ class ContractAssignmentViewTest(TestCase):
             client=self.test_client_model, contract_name='Client for Sync 2',
             start_date=datetime.date(2025, 1, 1), contract_pattern=self.client_pattern,
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
-            business_content='Client content' # Not empty
+            business_content='Client content', # Not empty
+            overtime_pattern=self.overtime_pattern,
         )
         staff_contract_2 = StaffContract.objects.create(
             staff=self.staff1, contract_name='Staff for Sync 2',
             start_date=datetime.date(2025, 1, 1), contract_pattern=self.staff_pattern,
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
-            business_content='' # Empty
+            business_content='', # Empty
+            overtime_pattern=self.overtime_pattern,
         )
 
         post_data_2 = {
@@ -1200,13 +1231,15 @@ class ContractAssignmentViewTest(TestCase):
             client=self.test_client_model, contract_name='Client for Sync 3',
             start_date=datetime.date(2025, 1, 1), contract_pattern=self.client_pattern,
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
-            business_content='Original client content'
+            business_content='Original client content',
+            overtime_pattern=self.overtime_pattern,
         )
         staff_contract_3 = StaffContract.objects.create(
             staff=self.staff1, contract_name='Staff for Sync 3',
             start_date=datetime.date(2025, 1, 1), contract_pattern=self.staff_pattern,
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
-            business_content='Original staff content'
+            business_content='Original staff content',
+            overtime_pattern=self.overtime_pattern,
         )
         post_data_3 = {
             'client_contract_id': client_contract_3.pk,
@@ -1228,13 +1261,15 @@ class ContractAssignmentViewTest(TestCase):
             client=self.test_client_model, contract_name='Client for Sync 4',
             start_date=datetime.date(2025, 1, 1), contract_pattern=self.client_pattern,
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
-            business_content=''
+            business_content='',
+            overtime_pattern=self.overtime_pattern,
         )
         staff_contract_4 = StaffContract.objects.create(
             staff=self.staff1, contract_name='Staff for Sync 4',
             start_date=datetime.date(2025, 1, 1), contract_pattern=self.staff_pattern,
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
-            business_content=''
+            business_content='',
+            overtime_pattern=self.overtime_pattern,
         )
         post_data_4 = {
             'client_contract_id': client_contract_4.pk,
@@ -1258,7 +1293,8 @@ class ContractAssignmentViewTest(TestCase):
         client_contract_1 = ClientContract.objects.create(
             client=self.test_client_model, contract_name='Client for Work Location Sync 1',
             start_date=datetime.date(2025, 1, 1), contract_pattern=self.client_pattern,
-            contract_status=Constants.CONTRACT_STATUS.DRAFT
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            overtime_pattern=self.overtime_pattern,
         )
         haken_info_1 = ClientContractHaken.objects.create(
             client_contract=client_contract_1,
@@ -1268,7 +1304,8 @@ class ContractAssignmentViewTest(TestCase):
             staff=self.staff1, contract_name='Staff for Work Location Sync 1',
             start_date=datetime.date(2025, 1, 1), contract_pattern=self.staff_pattern,
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
-            work_location='Staff Work Location' # Not empty
+            work_location='Staff Work Location', # Not empty
+            overtime_pattern=self.overtime_pattern,
         )
 
         url = reverse('contract:create_contract_assignment')
@@ -1290,7 +1327,8 @@ class ContractAssignmentViewTest(TestCase):
         client_contract_2 = ClientContract.objects.create(
             client=self.test_client_model, contract_name='Client for Work Location Sync 2',
             start_date=datetime.date(2025, 1, 1), contract_pattern=self.client_pattern,
-            contract_status=Constants.CONTRACT_STATUS.DRAFT
+            contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            overtime_pattern=self.overtime_pattern,
         )
         haken_info_2 = ClientContractHaken.objects.create(
             client_contract=client_contract_2,
@@ -1300,7 +1338,8 @@ class ContractAssignmentViewTest(TestCase):
             staff=self.staff1, contract_name='Staff for Work Location Sync 2',
             start_date=datetime.date(2025, 1, 1), contract_pattern=self.staff_pattern,
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
-            work_location='' # Empty
+            work_location='', # Empty
+            overtime_pattern=self.overtime_pattern,
         )
 
         post_data_2 = {
@@ -1344,18 +1383,22 @@ class ContractAssignmentDisplayTest(TestCase):
         # 契約パターン
         self.client_pattern = ContractPattern.objects.create(name='Client Pattern', domain='10')
         self.staff_pattern = ContractPattern.objects.create(name='Staff Pattern', domain='1')
+        from apps.master.models import OvertimePattern
+        self.overtime_pattern = OvertimePattern.objects.create(name='標準時間外')
 
         # --- テストデータ ---
         # 1. 割当済みの契約ペア
         self.assigned_client_contract = ClientContract.objects.create(
             client=self.test_client_model, contract_name='Assigned Client',
             start_date=datetime.date(2025, 1, 1), contract_pattern=self.client_pattern,
-            contract_number='C-ASSIGNED'
+            contract_number='C-ASSIGNED',
+            overtime_pattern=self.overtime_pattern,
         )
         self.assigned_staff_contract = StaffContract.objects.create(
             staff=self.staff, contract_name='Assigned Staff',
             start_date=datetime.date(2025, 1, 1), contract_pattern=self.staff_pattern,
-            contract_number='S-ASSIGNED'
+            contract_number='S-ASSIGNED',
+            overtime_pattern=self.overtime_pattern,
         )
         ContractAssignment.objects.create(
             client_contract=self.assigned_client_contract,
@@ -1366,12 +1409,14 @@ class ContractAssignmentDisplayTest(TestCase):
         self.unassigned_client_contract = ClientContract.objects.create(
             client=self.test_client_model, contract_name='Unassigned Client',
             start_date=datetime.date(2025, 2, 1), contract_pattern=self.client_pattern,
-            contract_number='C-UNASSIGNED'
+            contract_number='C-UNASSIGNED',
+            overtime_pattern=self.overtime_pattern,
         )
         self.unassigned_staff_contract = StaffContract.objects.create(
             staff=self.staff, contract_name='Unassigned Staff',
             start_date=datetime.date(2025, 2, 1), contract_pattern=self.staff_pattern,
-            contract_number='S-UNASSIGNED'
+            contract_number='S-UNASSIGNED',
+            overtime_pattern=self.overtime_pattern,
         )
 
     def test_client_contract_list_assignment_badge(self):
