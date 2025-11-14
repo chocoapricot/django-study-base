@@ -188,6 +188,21 @@
             </div>
 
             <div class="row mb-3 align-items-center">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    <div class="form-check">
+                        {{ form.calculate_midnight_premium }}
+                        <label class="form-check-label" for="{{ form.calculate_midnight_premium.id_for_label }}">
+                            深夜割増を計算する
+                        </label>
+                        {% if form.calculate_midnight_premium.errors %}
+                            <div class="text-danger small">{{ form.calculate_midnight_premium.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
                 <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">メモ</label>
                 <div class="col-sm-10">
                     {{ form.memo }}

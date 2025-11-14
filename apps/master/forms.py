@@ -671,11 +671,12 @@ class OvertimePatternForm(forms.ModelForm):
             'days_29_hours', 'days_29_minutes',
             'days_30_hours', 'days_30_minutes',
             'days_31_hours', 'days_31_minutes',
-            'memo', 'display_order', 'is_active'
+            'calculate_midnight_premium', 'memo', 'display_order', 'is_active'
         ]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'calculation_type': MyRadioSelect(),
+            'calculate_midnight_premium': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'daily_overtime_enabled': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'daily_overtime_hours': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'weekly_overtime_enabled': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
