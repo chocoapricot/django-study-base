@@ -169,6 +169,7 @@
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.overtime_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
                     時間外算出
+                    {% my_help_preset "overtime_pattern_staff" %}
                 </label>
                 <div class="col-sm-10">
                     <input type="hidden" id="{{ form.overtime_pattern.id_for_label }}" name="{{ form.overtime_pattern.name }}" value="{{ form.overtime_pattern.value|default:'' }}">
@@ -927,12 +928,14 @@ function clearOvertimePattern() {
 function updateOvertimePatternFromEmployment(patternId, patternName) {
     const hiddenInput = document.getElementById('{{ form.overtime_pattern.id_for_label }}');
     const displayDiv = document.getElementById('overtime_pattern_display');
+    const selectBtn = document.getElementById('selectOvertimePatternBtn');
+    const clearBtn = document.getElementById('clearOvertimePatternBtn');
     
     // 時間外算出パターンを設定
     hiddenInput.value = patternId;
     hiddenInput.setAttribute('data-locked-by-employment', 'true');
     
-    // 詳細情報を取得して表示（雇用形態マスタと同じ形式）
+    // 詳細情報を取得して表示
     fetch(`{% url 'master:overtime_pattern_select_modal' %}?page=1`)
         .then(response => response.json())
         .then(data => {
@@ -951,12 +954,31 @@ function updateOvertimePatternFromEmployment(patternId, patternName) {
             console.error('Error:', error);
             displayDiv.innerHTML = '<div class="small text-muted">' + patternName + '</div>';
         });
+    
+    // ボタンを非表示
+    if (selectBtn) {
+        selectBtn.style.display = 'none';
+    }
+    if (clearBtn) {
+        clearBtn.style.display = 'none';
+    }
 }
 
 // 時間外算出パターンのロックを解除する関数
 function unlockOvertimePattern() {
     const hiddenInput = document.getElementById('{{ form.overtime_pattern.id_for_label }}');
+    const selectBtn = document.getElementById('selectOvertimePatternBtn');
+    const clearBtn = document.getElementById('clearOvertimePatternBtn');
+    
     hiddenInput.removeAttribute('data-locked-by-employment');
+    
+    // ボタンを表示
+    if (selectBtn) {
+        selectBtn.style.display = '';
+    }
+    if (clearBtn) {
+        clearBtn.style.display = '';
+    }
 }
 
 // 時間外算出パターン検索フォームのイベントリスナー

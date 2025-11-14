@@ -652,3 +652,190 @@ class StaffContractFormMinimumWageValidationTest(TestCase):
 
         form = StaffContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)
+
+
+
+class StaffContractFormOvertimePatternLockTest(TestCase):
+    """スタッフ契約フォームの時間外算出パターンロック機能のテスト"""
+
+    def setUp(self):
+        """テストデータの準備"""
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+        
+        # 時間外算出パターン
+        self.overtime_pattern1 = OvertimePattern.objects.create(
+            name='標準時間外算出',
+            calculation_type='premium',
+            is_active=True
+        )
+        self.overtime_pattern2 = OvertimePattern.objects.create(
+            name='特別時間外算出',
+            calculation_type='fixed',
+            is_active=True
+        )
+        
+        # 就業時間パターン
+        from apps.master.models import WorkTimePattern
+        self.worktime_pattern = WorkTimePattern.objects.create(
+            name='標準勤務',
+            is_active=True
+        )
+        
+        # 雇用形態（時間外算出パターンあり）
+        from apps.master.models import EmploymentType
+        self.employment_type_with_overtime = EmploymentType.objects.create(
+            name='正社員',
+            display_order=10,
+            is_fixed_term=False,
+            overtime_pattern=self.overtime_pattern1
+        )
+        
+        # 雇用形態（時間外算出パターンなし）
+        self.employment_type_without_overtime = EmploymentType.objects.create(
+            name='契約社員',
+            display_order=20,
+            is_fixed_term=True
+        )
+        
+        # スタッフ
+        self.staff_with_overtime = Staff.objects.create(
+            name_last='山田',
+            name_first='太郎',
+            employee_no='EMP001',
+            hire_date=date(2024, 4, 1),
+            employment_type=self.employment_type_with_overtime,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        self.staff_without_overtime = Staff.objects.create(
+            name_last='佐藤',
+            name_first='花子',
+            employee_no='EMP002',
+            hire_date=date(2024, 4, 1),
+            employment_type=self.employment_type_without_overtime,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        # 契約書パターン
+        self.staff_pattern = ContractPattern.objects.create(
+            name='スタッフ向け雇用契約',
+            domain='1',
+            is_active=True
+        )
+        
+        # 支払単位
+        self.pay_unit = Dropdowns.objects.create(
+            category='pay_unit',
+            value='10',
+            name='月給',
+            active=True
+        )
+
+    def test_overtime_pattern_locked_by_employment_type(self):
+        """雇用形態に時間外算出パターンが設定されている場合、フォームでロックされることを確認"""
+        form_data = {
+            'staff': self.staff_with_overtime.pk,
+            'employment_type': self.employment_type_with_overtime.pk,
+            'contract_name': 'テスト契約',
+            'start_date': date(2024, 5, 1),
+            'end_date': date(2024, 12, 31),
+            'contract_amount': 300000,
+            'contract_pattern': self.staff_pattern.pk,
+            'pay_unit': self.pay_unit.value,
+            'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern2.pk,  # 異なるパターンを指定
+        }
+        
+        form = StaffContractForm(data=form_data)
+        self.assertTrue(form.is_valid(), form.errors)
+        
+        # cleanメソッドで雇用形態の時間外算出パターンが強制適用される
+        cleaned_data = form.cleaned_data
+        self.assertEqual(cleaned_data['overtime_pattern'], self.overtime_pattern1)
+        
+        # フォームのウィジェット属性を確認
+        self.assertEqual(
+            form.fields['overtime_pattern'].widget.attrs.get('data-locked-by-employment'),
+            'true'
+        )
+        self.assertIn('雇用形態で設定された時間外算出', form.fields['overtime_pattern'].help_text)
+
+    def test_overtime_pattern_not_locked_without_employment_type_setting(self):
+        """雇用形態に時間外算出パターンが設定されていない場合、ロックされないことを確認"""
+        form_data = {
+            'staff': self.staff_without_overtime.pk,
+            'employment_type': self.employment_type_without_overtime.pk,
+            'contract_name': 'テスト契約',
+            'start_date': date(2024, 5, 1),
+            'end_date': date(2024, 12, 31),
+            'contract_amount': 300000,
+            'contract_pattern': self.staff_pattern.pk,
+            'pay_unit': self.pay_unit.value,
+            'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern2.pk,
+        }
+        
+        form = StaffContractForm(data=form_data)
+        self.assertTrue(form.is_valid(), form.errors)
+        
+        # 指定した時間外算出パターンがそのまま使用される
+        cleaned_data = form.cleaned_data
+        self.assertEqual(cleaned_data['overtime_pattern'], self.overtime_pattern2)
+        
+        # ロック属性が設定されていないことを確認
+        self.assertNotEqual(
+            form.fields['overtime_pattern'].widget.attrs.get('data-locked-by-employment'),
+            'true'
+        )
+
+    def test_overtime_pattern_locked_on_edit(self):
+        """編集時に雇用形態に時間外算出パターンが設定されている場合、ロックされることを確認"""
+        # 既存の契約を作成
+        contract = StaffContract.objects.create(
+            staff=self.staff_with_overtime,
+            employment_type=self.employment_type_with_overtime,
+            contract_name='既存契約',
+            start_date=date(2024, 5, 1),
+            end_date=date(2024, 12, 31),
+            contract_amount=300000,
+            contract_pattern=self.staff_pattern,
+            worktime_pattern=self.worktime_pattern,
+            overtime_pattern=self.overtime_pattern1,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        # 編集用フォームを作成
+        form = StaffContractForm(instance=contract)
+        
+        # ロック属性が設定されていることを確認
+        self.assertEqual(
+            form.fields['overtime_pattern'].widget.attrs.get('data-locked-by-employment'),
+            'true'
+        )
+        self.assertIn('雇用形態で設定された時間外算出', form.fields['overtime_pattern'].help_text)
+
+    def test_overtime_pattern_required_validation(self):
+        """時間外算出パターンが必須であることを確認"""
+        form_data = {
+            'staff': self.staff_without_overtime.pk,
+            'employment_type': self.employment_type_without_overtime.pk,
+            'contract_name': 'テスト契約',
+            'start_date': date(2024, 5, 1),
+            'end_date': date(2024, 12, 31),
+            'contract_amount': 300000,
+            'contract_pattern': self.staff_pattern.pk,
+            'pay_unit': self.pay_unit.value,
+            'worktime_pattern': self.worktime_pattern.pk,
+            # overtime_patternを指定しない
+        }
+        
+        form = StaffContractForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('overtime_pattern', form.errors)
