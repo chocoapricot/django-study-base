@@ -134,3 +134,36 @@ class OvertimePatternFormTest(TestCase):
         self.assertEqual(pattern.calculation_type, 'premium')
         self.assertTrue(pattern.daily_overtime_enabled)
         self.assertEqual(OvertimePattern.objects.count(), 1)
+
+    def test_form_save_with_midnight_premium(self):
+        """深夜割増計算を含むフォーム保存テスト"""
+        form_data = {
+            'name': '深夜割増テスト',
+            'calculation_type': 'premium',
+            'calculate_midnight_premium': True,
+            'daily_overtime_enabled': True,
+            'daily_overtime_hours': 8,
+            'weekly_overtime_enabled': False,
+            'monthly_overtime_enabled': False,
+            'monthly_estimated_enabled': False,
+            'monthly_range_min': 140,
+            'monthly_range_max': 160,
+            'flexible_daily_overtime_enabled': False,
+            'flexible_weekly_overtime_enabled': False,
+            'days_28_hours': 160,
+            'days_28_minutes': 0,
+            'days_29_hours': 165,
+            'days_29_minutes': 42,
+            'days_30_hours': 171,
+            'days_30_minutes': 25,
+            'days_31_hours': 177,
+            'days_31_minutes': 8,
+            'display_order': 1,
+            'is_active': True,
+        }
+        form = OvertimePatternForm(data=form_data)
+        self.assertTrue(form.is_valid())
+        pattern = form.save()
+        self.assertEqual(pattern.name, '深夜割増テスト')
+        self.assertTrue(pattern.calculate_midnight_premium)
+        self.assertEqual(OvertimePattern.objects.count(), 1)

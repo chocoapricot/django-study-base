@@ -179,6 +179,7 @@ class OvertimePattern(MyModel):
     時間外算出パターンマスタ
     """
     name = models.CharField('名称', max_length=100)
+    calculate_midnight_premium = models.BooleanField('深夜割増を計算する', default=False)
     memo = models.TextField('メモ', blank=True, null=True)
     
     # 計算方式選択
