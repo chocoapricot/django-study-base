@@ -51,6 +51,7 @@ class ContractCorporateNumberTest(TestCase):
             'client_contract_type_code': '10',
             'bill_unit': self.bill_unit.value,
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
         form = ClientContractForm(data=form_data)
         self.assertTrue(form.is_valid(), form.errors)

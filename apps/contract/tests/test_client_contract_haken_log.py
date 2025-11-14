@@ -56,8 +56,9 @@ class ClientContractHakenLogTest(TestCase):
         cls.non_haken_pattern = ContractPattern.objects.create(name='Non-Haken Pattern', domain='10', contract_type_code='10')
         
         # 就業時間パターン
-        from apps.master.models import WorkTimePattern
+        from apps.master.models import WorkTimePattern, OvertimePattern
         cls.worktime_pattern = WorkTimePattern.objects.create(name='標準勤務', is_active=True)
+        cls.overtime_pattern = OvertimePattern.objects.create(name='標準時間外')
 
         # 派遣先・派遣元の担当者・部署
         cls.haken_office = ClientDepartment.objects.create(client=cls.client_model, name='Test Office', is_haken_office=True)
@@ -76,6 +77,7 @@ class ClientContractHakenLogTest(TestCase):
             start_date=datetime.date.today(),
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             worktime_pattern=self.worktime_pattern,
+            overtime_pattern=self.overtime_pattern,
         )
         self.client.login(username='logtestuser', password='password')
         self.update_url = reverse('contract:client_contract_update', kwargs={'pk': self.contract.pk})
@@ -96,6 +98,7 @@ class ClientContractHakenLogTest(TestCase):
             'end_date': (self.contract.start_date + datetime.timedelta(days=365)).strftime('%Y-%m-%d'),
             'bill_unit': self.bill_unit.value,
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
             'haken_office': self.haken_office.pk,
             'haken_unit': self.haken_unit.pk,
             'commander': self.client_user.pk,
@@ -150,6 +153,7 @@ class ClientContractHakenLogTest(TestCase):
             'end_date': (self.contract.start_date + datetime.timedelta(days=365)).strftime('%Y-%m-%d'),
             'bill_unit': self.bill_unit.value,
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
             'haken_office': self.haken_office.pk,
             'haken_unit': self.haken_unit.pk,
             'commander': new_client_user.pk, # 更新

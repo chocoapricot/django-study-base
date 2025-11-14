@@ -92,8 +92,9 @@ class PayrollValidationTest(TestCase):
         )
         
         # 就業時間パターン
-        from apps.master.models import WorkTimePattern
+        from apps.master.models import WorkTimePattern, OvertimePattern
         self.worktime_pattern = WorkTimePattern.objects.create(name='標準勤務', is_active=True)
+        self.overtime_pattern = OvertimePattern.objects.create(name='標準時間外')
 
         # クライアント契約作成
         self.client_contract = ClientContract.objects.create(
@@ -105,6 +106,7 @@ class PayrollValidationTest(TestCase):
             end_date=date(2024, 6, 30),  # 6ヶ月以内に修正
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             worktime_pattern=self.worktime_pattern,
+            overtime_pattern=self.overtime_pattern,
             created_by=self.user,
             updated_by=self.user
         )
@@ -118,6 +120,7 @@ class PayrollValidationTest(TestCase):
             start_date=date(2024, 1, 1),
             end_date=date(2024, 6, 30),  # 6ヶ月以内に修正
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
+            overtime_pattern=self.overtime_pattern,
             created_by=self.user,
             updated_by=self.user
         )
@@ -187,6 +190,7 @@ class PayrollValidationTest(TestCase):
             'bill_unit': Constants.BILL_UNIT.HOURLY_RATE,  # 時間単価
             'contract_amount': '2000',
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
             # 派遣情報フィールド（有効な値を設定）
             'haken_office': str(self.client_department.pk),
             'haken_unit': str(self.client_department.pk),
@@ -232,6 +236,7 @@ class PayrollValidationTest(TestCase):
             'bill_unit': Constants.BILL_UNIT.HOURLY_RATE,  # 時間単価
             'contract_amount': '2000',
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
             # 派遣情報フィールド（有効な値を設定）
             'haken_office': str(self.client_department.pk),
             'haken_unit': str(self.client_department.pk),
@@ -322,6 +327,7 @@ class PayrollValidationTest(TestCase):
             end_date=date(2024, 12, 31),
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             worktime_pattern=self.worktime_pattern,
+            overtime_pattern=self.overtime_pattern,
             created_by=self.user,
             updated_by=self.user
         )
@@ -337,6 +343,7 @@ class PayrollValidationTest(TestCase):
             'bill_unit': Constants.BILL_UNIT.HOURLY_RATE,  # 時間単価
             'contract_amount': '2000',
             'worktime_pattern': self.worktime_pattern.pk,
+            'overtime_pattern': self.overtime_pattern.pk,
         }
         
         response = self.client_test.post(
