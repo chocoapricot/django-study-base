@@ -216,6 +216,7 @@ class StaffContractAssignmentTestCase(TestCase):
                 'pay_unit': Constants.PAY_UNIT.HOURLY,
                 'contract_amount': '300000',
                 'worktime_pattern': str(self.worktime_pattern.pk),
+                'overtime_pattern': str(self.overtime_pattern.pk),
             },
             'from_view': 'client'
         }
