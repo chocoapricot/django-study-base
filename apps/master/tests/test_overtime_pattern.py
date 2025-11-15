@@ -74,3 +74,52 @@ class OvertimePatternModelTest(TestCase):
         self.assertEqual(pattern.days_29_hours, 165)
         self.assertEqual(pattern.days_30_hours, 171)
         self.assertEqual(pattern.days_31_hours, 177)
+
+
+from django.urls import reverse
+from apps.accounts.models import MyUser
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
+
+class OvertimePatternListViewTest(TestCase):
+    """時間外算出パターン一覧表示のテスト"""
+
+    @classmethod
+    def setUpTestData(cls):
+        """テストクラス用のデータを一度だけ作成"""
+        cls.user = MyUser.objects.create_user(
+            username='testuser',
+            password='password123',
+            email='testuser@example.com',
+            is_active=True
+        )
+        content_type = ContentType.objects.get_for_model(OvertimePattern)
+        permission, _ = Permission.objects.get_or_create(
+            codename='view_overtimepattern',
+            content_type=content_type,
+        )
+        cls.user.user_permissions.add(permission)
+
+        # テストデータ作成
+        OvertimePattern.objects.create(
+            name="Premium On",
+            calculate_midnight_premium=True,
+        )
+        OvertimePattern.objects.create(
+            name="Premium Off",
+            calculate_midnight_premium=False,
+        )
+
+    def setUp(self):
+        """各テストの前に実行"""
+        self.client.login(username='testuser', password='password123')
+
+    def test_view_renders_midnight_premium_text(self):
+        """深夜割増が有効な場合、「深夜」が表示される"""
+        url = reverse('master:overtime_pattern_list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # "Premium On" のパターンで「深夜」が表示され、
+        # "Premium Off" のパターンでは表示されないため、合計1回表示されるはず
+        self.assertContains(response, '深夜', count=1)
