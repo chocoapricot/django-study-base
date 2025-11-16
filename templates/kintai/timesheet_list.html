@@ -30,8 +30,8 @@
                 <tbody>
                     {% for timesheet in timesheets %}
                     <tr>
-                        <td><a href="{% url 'kintai:timesheet_detail' timesheet.pk %}">{{ timesheet.staff }}</a></td>
-                        <td>{{ timesheet.year }}年{{ timesheet.month }}月</td>
+                        <td>{{ timesheet.staff }}</td>
+                        <td><a href="{% url 'kintai:timesheet_detail' timesheet.pk %}">{{ timesheet.year }}年{{ timesheet.month }}月</a></td>
                         <td>
                             {% if timesheet.status == '10' %}
                                 <span class="badge bg-secondary">作成中</span>
@@ -44,15 +44,14 @@
                             {% endif %}
                         </td>
                         <td class="text-end">{{ timesheet.total_work_days }}日</td>
-                        <td class="text-end">{{ timesheet.total_work_hours }}時間</td>
-                        <td class="text-end">{{ timesheet.total_overtime_hours }}時間</td>
-                        <td class="text-end">{{ timesheet.total_holiday_work_hours }}時間</td>
+                        <td class="text-end">{{ timesheet.total_work_hours_display }}</td>
+                        <td class="text-end">{{ timesheet.total_overtime_hours_display }}</td>
+                        <td class="text-end">{{ timesheet.total_holiday_work_hours_display }}</td>
                         <td class="text-end">{{ timesheet.total_absence_days }}日</td>
                         <td class="text-end">{{ timesheet.total_paid_leave_days }}日</td>
                         <td>
-                            <a href="{% url 'kintai:timesheet_detail' timesheet.pk %}" class="btn btn-primary btn-sm" title="詳細"><i class="bi bi-eye"></i></a>
                             {% if perms.kintai.change_stafftimesheet and timesheet.is_editable %}
-                                <a href="{% url 'kintai:timesheet_edit' timesheet.pk %}" class="btn btn-secondary btn-sm" title="編集"><i class="bi bi-pencil"></i></a>
+                                <a href="{% url 'kintai:timesheet_edit' timesheet.pk %}" class="btn btn-dark btn-sm" title="編集"><i class="bi bi-pencil"></i></a>
                             {% endif %}
                             {% if perms.kintai.delete_stafftimesheet %}
                                 <a href="{% url 'kintai:timesheet_delete' timesheet.pk %}" class="btn btn-dark btn-sm" title="削除"><i class="bi bi-x"></i></a>

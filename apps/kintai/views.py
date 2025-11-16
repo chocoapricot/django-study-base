@@ -200,7 +200,9 @@ def timecard_calendar(request, timesheet_pk):
             # フォームデータを取得
             work_type = request.POST.get(f'work_type_{day}')
             start_time_str = request.POST.get(f'start_time_{day}')
+            start_time_next_day = request.POST.get(f'start_time_next_day_{day}') == 'on'
             end_time_str = request.POST.get(f'end_time_{day}')
+            end_time_next_day = request.POST.get(f'end_time_next_day_{day}') == 'on'
             break_minutes = request.POST.get(f'break_minutes_{day}', 0)
             paid_leave_days = request.POST.get(f'paid_leave_days_{day}', 0)
             
@@ -234,7 +236,9 @@ def timecard_calendar(request, timesheet_pk):
             # データを更新
             timecard.work_type = work_type
             timecard.start_time = start_time
+            timecard.start_time_next_day = start_time_next_day
             timecard.end_time = end_time
+            timecard.end_time_next_day = end_time_next_day
             timecard.break_minutes = int(break_minutes) if break_minutes else 0
             timecard.paid_leave_days = float(paid_leave_days) if paid_leave_days else 0
             timecard.save()

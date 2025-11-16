@@ -20,6 +20,7 @@
                 <table class="table table-sm">
                     <tr><th style="width: 40%;">スタッフ</th><td><a href="{% url 'staff:staff_detail' timesheet.staff.pk %}">{{ timesheet.staff }}</a></td></tr>
                     <tr><th>スタッフ契約</th><td><a href="{% url 'contract:staff_contract_detail' timesheet.staff_contract.pk %}">{{ timesheet.staff_contract }}</a></td></tr>
+                    <tr><th>契約期間</th><td>{{ timesheet.staff_contract.start_date|date:"Y年m月d日" }}　～　{% if timesheet.staff_contract.end_date %}{{ timesheet.staff_contract.end_date|date:"Y年m月d日" }}{% else %}-{% endif %}</td></tr>
                     <tr><th>対象年月</th><td>{{ timesheet.year }}年{{ timesheet.month }}月</td></tr>
                     <tr>
                         <th>ステータス</th>

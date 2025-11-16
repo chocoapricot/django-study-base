@@ -212,7 +212,9 @@ class StaffTimecard(MyModel):
     
     # 勤務時間
     start_time = models.TimeField('出勤時刻', blank=True, null=True)
+    start_time_next_day = models.BooleanField('出勤時刻翌日', default=False)
     end_time = models.TimeField('退勤時刻', blank=True, null=True)
+    end_time_next_day = models.BooleanField('退勤時刻翌日', default=False)
     break_minutes = models.PositiveIntegerField('休憩時間（分）', default=0)
     
     # 計算結果
@@ -250,9 +252,11 @@ class StaffTimecard(MyModel):
             if not self.start_time or not self.end_time:
                 raise ValidationError('出勤の場合は出勤時刻と退勤時刻を入力してください。')
             
-            # 退勤時刻が出勤時刻より前の場合はエラー
-            if self.start_time >= self.end_time:
-                raise ValidationError('退勤時刻は出勤時刻より後の時刻を入力してください。')
+            # 退勤時刻が出勤時刻より前の場合はエラー（翌日フラグを考慮）
+            # 翌日フラグがない場合のみチェック
+            if not self.start_time_next_day and not self.end_time_next_day:
+                if self.start_time >= self.end_time:
+                    raise ValidationError('退勤時刻は出勤時刻より後の時刻を入力してください。')
         
         # 有給休暇の場合は日数が必須
         if self.work_type == '40':  # 有給休暇
@@ -280,8 +284,14 @@ class StaffTimecard(MyModel):
         start_dt = datetime.combine(date.today(), self.start_time)
         end_dt = datetime.combine(date.today(), self.end_time)
         
-        # 日をまたぐ場合の処理
-        if end_dt <= start_dt:
+        # 翌日フラグを考慮
+        if self.start_time_next_day:
+            start_dt += timedelta(days=1)
+        if self.end_time_next_day:
+            end_dt += timedelta(days=1)
+        
+        # 日をまたぐ場合の処理（翌日フラグがない場合）
+        if not self.start_time_next_day and not self.end_time_next_day and end_dt <= start_dt:
             end_dt += timedelta(days=1)
         
         total_minutes = int((end_dt - start_dt).total_seconds() / 60)
