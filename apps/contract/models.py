@@ -377,7 +377,7 @@ class StaffContract(MyModel):
         ]
 
     def __str__(self):
-        return f"{self.staff.name_last} {self.staff.name_first} - {self.contract_name}"
+        return f"{self.staff.name_last} {self.staff.name_first} - {self.contract_name} ({self.contract_period_display})"
 
     @property
     def contract_period_display(self):
