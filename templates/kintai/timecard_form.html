@@ -106,9 +106,9 @@
             </div>
 
             <div class="row mt-4">
-                <div class="col-sm-10 offset-sm-2">
-                    <button type="submit" class="btn btn-sm btn-primary">{% if timecard %}更新{% else %}作成{% endif %}</button>
-                    <a href="{% url 'kintai:timesheet_detail' timesheet.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
+                <div class="col-12 text-start">
+                    <button type="submit" class="btn btn-sm btn-primary me-2">{% if timecard %}更新{% else %}作成{% endif %}</button>
+                    <a href="{% url 'kintai:timesheet_detail' timesheet.pk %}" class="btn btn-sm btn-secondary">戻る</a>
                 </div>
             </div>
         </form>

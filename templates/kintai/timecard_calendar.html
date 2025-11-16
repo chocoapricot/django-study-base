@@ -58,7 +58,7 @@
                         {% for data in calendar_data %}
                         <tr class="{% if data.is_holiday or data.weekday == 6 %}table-sunday{% elif data.weekday == 5 %}table-saturday{% endif %}" data-day="{{ data.day }}" data-is-holiday="{% if data.is_holiday %}true{% else %}false{% endif %}">
                             <td style="{% if data.is_holiday or data.weekday == 6 %}color: #cc0000; font-weight: bold;{% elif data.weekday == 5 %}color: #0066cc; font-weight: bold;{% endif %}">
-                                {{ data.date|date:"m/d (D)" }}
+                                {{ data.date|date:"Y/m/d (D)" }}
                                 {% if data.is_holiday and data.holiday_name %}
                                     {% my_help_icon data.holiday_name %}
                                 {% endif %}
