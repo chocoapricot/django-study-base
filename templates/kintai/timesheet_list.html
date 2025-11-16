@@ -16,33 +16,23 @@
                 <thead>
                     <tr>
                         <th style="width: 15%;">スタッフ</th>
-                        <th style="width: 10%;">対象年月</th>
-                        <th style="width: 10%;">ステータス</th>
-                        <th style="width: 8%;">出勤日数</th>
-                        <th style="width: 10%;">総労働時間</th>
-                        <th style="width: 10%;">残業時間</th>
-                        <th style="width: 10%;">休日労働</th>
-                        <th style="width: 8%;">欠勤日数</th>
-                        <th style="width: 8%;">有給日数</th>
-                        <th style="width: 11%;">操作</th>
+                        <th style="width: 14%;">契約期間</th>
+                        <th style="width: 8%;">対象年月</th>
+                        <th style="width: 7%;">出勤日数</th>
+                        <th style="width: 8%;">総労働時間</th>
+                        <th style="width: 8%;">残業時間</th>
+                        <th style="width: 8%;">休日労働</th>
+                        <th style="width: 7%;">欠勤日数</th>
+                        <th style="width: 7%;">有給日数</th>
+                        <th style="width: 10%;">操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for timesheet in timesheets %}
                     <tr>
                         <td>{{ timesheet.staff }}</td>
+                        <td>{{ timesheet.staff_contract.contract_period_display }}</td>
                         <td><a href="{% url 'kintai:timesheet_detail' timesheet.pk %}">{{ timesheet.year }}年{{ timesheet.month }}月</a></td>
-                        <td>
-                            {% if timesheet.status == '10' %}
-                                <span class="badge bg-secondary">作成中</span>
-                            {% elif timesheet.status == '20' %}
-                                <span class="badge bg-info">提出済み</span>
-                            {% elif timesheet.status == '30' %}
-                                <span class="badge bg-success">承認済み</span>
-                            {% elif timesheet.status == '40' %}
-                                <span class="badge bg-warning">差戻し</span>
-                            {% endif %}
-                        </td>
                         <td class="text-end">{{ timesheet.total_work_days }}日</td>
                         <td class="text-end">{{ timesheet.total_work_hours_display }}</td>
                         <td class="text-end">{{ timesheet.total_overtime_hours_display }}</td>

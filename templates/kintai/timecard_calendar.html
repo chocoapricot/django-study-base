@@ -1,5 +1,35 @@
 {% extends 'common/_base.html' %}
 {% load help_tags %}
+
+{% block extra_css %}
+<style>
+    .table-saturday,
+    .table-saturday > th,
+    .table-saturday > td {
+        background-color: #e6f2ff !important;
+    }
+
+    .table-sunday,
+    .table-sunday > th,
+    .table-sunday > td {
+        background-color: #ffe6e6 !important;
+    }
+
+    /* ホバー時のスタイルも上書き */
+    .table-hover > .table-saturday:hover,
+    .table-hover > .table-saturday:hover > th,
+    .table-hover > .table-saturday:hover > td {
+        background-color: #d0e8ff !important; /* 少し濃い青 */
+    }
+
+    .table-hover > .table-sunday:hover,
+    .table-hover > .table-sunday:hover > th,
+    .table-hover > .table-sunday:hover > td {
+        background-color: #ffdde0 !important; /* 少し濃い赤 */
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">
@@ -26,7 +56,7 @@
                     </thead>
                     <tbody>
                         {% for data in calendar_data %}
-                        <tr style="{% if data.is_holiday or data.weekday == 6 %}background-color: #ffe6e6 !important;{% elif data.weekday == 5 %}background-color: #e6f2ff !important;{% endif %}" data-day="{{ data.day }}" data-is-holiday="{% if data.is_holiday %}true{% else %}false{% endif %}">
+                        <tr class="{% if data.is_holiday or data.weekday == 6 %}table-sunday{% elif data.weekday == 5 %}table-saturday{% endif %}" data-day="{{ data.day }}" data-is-holiday="{% if data.is_holiday %}true{% else %}false{% endif %}">
                             <td style="{% if data.is_holiday or data.weekday == 6 %}color: #cc0000; font-weight: bold;{% elif data.weekday == 5 %}color: #0066cc; font-weight: bold;{% endif %}">
                                 {{ data.date|date:"m/d (D)" }}
                                 {% if data.is_holiday and data.holiday_name %}
@@ -72,9 +102,9 @@
             <div class="row mt-4">
                 <div class="col-12">
                     <button type="submit" class="btn btn-sm btn-primary">一括保存</button>
-                    <a href="{% url 'kintai:timesheet_detail' timesheet.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
-                    <button type="button" class="btn btn-sm btn-info ms-3" id="fill-all-btn">平日出勤・休日稼働無で埋める</button>
-                    <button type="button" class="btn btn-sm btn-warning" id="clear-all-btn">全てクリア</button>
+                    <button type="button" class="btn btn-sm btn-info ms-3" id="fill-all-btn">契約通り</button>
+                    <button type="button" class="btn btn-sm btn-dark" id="clear-all-btn">削除</button>
+                    <a href="{% url 'kintai:timesheet_detail' timesheet.pk %}" class="btn btn-sm btn-secondary">戻る</a>
                 </div>
             </div>
         </form>

@@ -378,6 +378,16 @@ class StaffContract(MyModel):
 
     def __str__(self):
         return f"{self.staff.name_last} {self.staff.name_first} - {self.contract_name}"
+
+    @property
+    def contract_period_display(self):
+        """表示用の契約期間文字列を返す"""
+        start_str = self.start_date.strftime('%Y/%m/%d')
+        if self.end_date:
+            end_str = self.end_date.strftime('%Y/%m/%d')
+        else:
+            end_str = '無期限'
+        return f"{start_str} ～ {end_str}"
     
     def clean(self):
         """バリデーション"""

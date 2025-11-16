@@ -1,18 +1,40 @@
 {% extends 'common/_base.html' %}
 {% load badge_tags %}
 {% load help_tags %}
+
+{% block extra_css %}
+<style>
+    .table-saturday,
+    .table-saturday > th,
+    .table-saturday > td {
+        background-color: #e6f2ff !important;
+    }
+
+    .table-sunday,
+    .table-sunday > th,
+    .table-sunday > td {
+        background-color: #ffe6e6 !important;
+    }
+
+    /* ホバー時のスタイルも上書き */
+    .table-hover > .table-saturday:hover,
+    .table-hover > .table-saturday:hover > th,
+    .table-hover > .table-saturday:hover > td {
+        background-color: #d0e8ff !important; /* 少し濃い青 */
+    }
+
+    .table-hover > .table-sunday:hover,
+    .table-hover > .table-sunday:hover > th,
+    .table-hover > .table-sunday:hover > td {
+        background-color: #ffdde0 !important; /* 少し濃い赤 */
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         月次勤怠詳細
-        <div class="d-flex">
-            {% if perms.kintai.change_stafftimesheet and timesheet.is_editable %}
-                <a href="{% url 'kintai:timesheet_edit' timesheet.pk %}" class="btn btn-sm btn-secondary me-2">編集</a>
-            {% endif %}
-            {% if perms.kintai.delete_stafftimesheet %}
-                <a href="{% url 'kintai:timesheet_delete' timesheet.pk %}" class="btn btn-sm btn-dark">削除</a>
-            {% endif %}
-        </div>
     </div>
     <div class="card-body">
         <div class="row">
@@ -21,7 +43,7 @@
                 <table class="table table-sm">
                     <tr><th style="width: 40%;">スタッフ</th><td><a href="{% url 'staff:staff_detail' timesheet.staff.pk %}">{{ timesheet.staff }}</a></td></tr>
                     <tr><th>スタッフ契約</th><td><a href="{% url 'contract:staff_contract_detail' timesheet.staff_contract.pk %}">{{ timesheet.staff_contract }}</a></td></tr>
-                    <tr><th>契約期間</th><td>{{ timesheet.staff_contract.start_date|date:"Y年m月d日" }}　～　{% if timesheet.staff_contract.end_date %}{{ timesheet.staff_contract.end_date|date:"Y年m月d日" }}{% else %}-{% endif %}</td></tr>
+                    <tr><th>契約期間</th><td>{{ timesheet.staff_contract.contract_period_display }}</td></tr>
                     <tr><th>対象年月</th><td>{{ timesheet.year }}年{{ timesheet.month }}月</td></tr>
                     <tr>
                         <th>ステータス</th>
@@ -78,7 +100,7 @@
                 </thead>
                 <tbody>
                     {% for timecard in timecards %}
-                    <tr style="{% if timecard.is_national_holiday or timecard.weekday == 6 %}background-color: #ffe6e6 !important;{% elif timecard.weekday == 5 %}background-color: #e6f2ff !important;{% endif %}">
+                    <tr class="{% if timecard.is_national_holiday or timecard.weekday == 6 %}table-sunday{% elif timecard.weekday == 5 %}table-saturday{% endif %}">
                         <td style="{% if timecard.is_national_holiday or timecard.weekday == 6 %}color: #cc0000; font-weight: bold;{% elif timecard.weekday == 5 %}color: #0066cc; font-weight: bold;{% endif %}">
                             {{ timecard.work_date|date:"Y/m/d (D)" }}
                             {% if timecard.is_national_holiday and timecard.holiday_name %}
@@ -124,7 +146,13 @@
         {% endif %}
 
         <div class="row mt-3">
-            <div class="col text-left">
+            <div class="col text-start">
+                {% if perms.kintai.change_stafftimesheet and timesheet.is_editable %}
+                    <a href="{% url 'kintai:timesheet_edit' timesheet.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
+                {% endif %}
+                {% if perms.kintai.delete_stafftimesheet %}
+                    <a href="{% url 'kintai:timesheet_delete' timesheet.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+                {% endif %}
                 <a href="{% url 'kintai:timesheet_list' %}" class="btn btn-sm btn-secondary">戻る</a>
             </div>
         </div>
