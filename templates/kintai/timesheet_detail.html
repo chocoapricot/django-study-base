@@ -74,10 +74,7 @@
             </div>
         </div>
 
-        {% if timesheet.memo %}
-        <h5 class="card-title mt-4">メモ</h5>
-        <p>{{ timesheet.memo|linebreaks }}</p>
-        {% endif %}
+
 
         <h5 class="card-title mt-4">日次勤怠一覧</h5>
         {% if perms.kintai.add_stafftimecard and timesheet.is_editable %}
@@ -147,9 +144,7 @@
 
         <div class="row mt-3">
             <div class="col text-start">
-                {% if perms.kintai.change_stafftimesheet and timesheet.is_editable %}
-                    <a href="{% url 'kintai:timesheet_edit' timesheet.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
-                {% endif %}
+
                 {% if perms.kintai.delete_stafftimesheet %}
                     <a href="{% url 'kintai:timesheet_delete' timesheet.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
                 {% endif %}

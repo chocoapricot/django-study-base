@@ -39,7 +39,6 @@ class KintaiViewIntegrationTests(TestCase):
         data = {
             'staff_contract': sc.pk,
             'target_month': '2025-03',  # outside contract
-            'memo': 'test',
         }
 
         resp = self.client.post(url, data)
@@ -64,7 +63,6 @@ class KintaiViewIntegrationTests(TestCase):
         data = {
             'staff_contract': sc.pk,
             'target_month': '2025-04',  # inside
-            'memo': 'ok',
         }
 
         resp = self.client.post(url, data)

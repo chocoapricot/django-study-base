@@ -3,7 +3,7 @@
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">
-        {% if timesheet %}月次勤怠編集{% else %}月次勤怠作成{% endif %}
+        月次勤怠作成
     </div>
     <div class="card-body">
         <form method="post">
@@ -35,20 +35,12 @@
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">メモ</label>
-                <div class="col-sm-8">
-                    {{ form.memo }}
-                    {% if form.memo.errors %}
-                        <div class="text-danger">{{ form.memo.errors }}</div>
-                    {% endif %}
-                </div>
-            </div>
+
 
             <div class="row mt-4">
                 <div class="col-12 text-start">
-                    <button type="submit" class="btn btn-sm btn-primary me-2">{% if timesheet %}更新{% else %}作成{% endif %}</button>
-                    <a href="{% if timesheet %}{% url 'kintai:timesheet_detail' timesheet.pk %}{% else %}{% url 'kintai:timesheet_list' %}{% endif %}" class="btn btn-sm btn-secondary">戻る</a>
+                    <button type="submit" class="btn btn-sm btn-primary me-2">作成</button>
+                    <a href="{% url 'kintai:timesheet_list' %}" class="btn btn-sm btn-secondary">戻る</a>
                 </div>
             </div>
         </form>

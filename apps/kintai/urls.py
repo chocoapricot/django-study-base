@@ -8,7 +8,7 @@ urlpatterns = [
     path('timesheet/', views.timesheet_list, name='timesheet_list'),
     path('timesheet/create/', views.timesheet_create, name='timesheet_create'),
     path('timesheet/<int:pk>/', views.timesheet_detail, name='timesheet_detail'),
-    path('timesheet/<int:pk>/edit/', views.timesheet_edit, name='timesheet_edit'),
+
     path('timesheet/<int:pk>/delete/', views.timesheet_delete, name='timesheet_delete'),
     
     # 日次勤怠

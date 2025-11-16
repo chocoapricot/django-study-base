@@ -40,9 +40,7 @@
                         <td class="text-end">{{ timesheet.total_absence_days }}日</td>
                         <td class="text-end">{{ timesheet.total_paid_leave_days }}日</td>
                         <td>
-                            {% if perms.kintai.change_stafftimesheet and timesheet.is_editable %}
-                                <a href="{% url 'kintai:timesheet_edit' timesheet.pk %}" class="btn btn-dark btn-sm" title="編集"><i class="bi bi-pencil"></i></a>
-                            {% endif %}
+
                             {% if perms.kintai.delete_stafftimesheet %}
                                 <a href="{% url 'kintai:timesheet_delete' timesheet.pk %}" class="btn btn-dark btn-sm" title="削除"><i class="bi bi-x"></i></a>
                             {% endif %}

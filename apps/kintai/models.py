@@ -81,9 +81,6 @@ class StaffTimesheet(MyModel):
         verbose_name='差戻し者'
     )
     rejection_reason = models.TextField('差戻し理由', blank=True, null=True)
-    
-    # 備考
-    memo = models.TextField('メモ', blank=True, null=True)
 
     class Meta:
         db_table = 'apps_kintai_staff_timesheet'

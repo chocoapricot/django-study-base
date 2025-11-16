@@ -77,39 +77,7 @@ def timesheet_detail(request, pk):
     return render(request, 'kintai/timesheet_detail.html', context)
 
 
-@login_required
-def timesheet_edit(request, pk):
-    """月次勤怠編集"""
-    timesheet = get_object_or_404(StaffTimesheet, pk=pk)
-    
-    if not timesheet.is_editable:
-        messages.error(request, 'この月次勤怠は編集できません。')
-        return redirect('kintai:timesheet_detail', pk=pk)
-    
-    if request.method == 'POST':
-        form = StaffTimesheetForm(request.POST, instance=timesheet)
-        if form.is_valid():
-            form.save()
-            messages.success(request, '月次勤怠を更新しました。')
-            return redirect('kintai:timesheet_detail', pk=pk)
-    else:
-        form = StaffTimesheetForm(instance=timesheet)
-    
-    # JavaScriptで日付範囲を制御するために契約情報をJSONで渡す
-    contracts = StaffContract.objects.filter(start_date__isnull=False)
-    contract_data = {
-        c.pk: {
-            'start': c.start_date.strftime('%Y-%m') if c.start_date else None,
-            'end': c.end_date.strftime('%Y-%m') if c.end_date else None,
-        } for c in contracts
-    }
-    
-    context = {
-        'form': form,
-        'timesheet': timesheet,
-        'contract_data_json': json.dumps(contract_data),
-    }
-    return render(request, 'kintai/timesheet_form.html', context)
+
 
 
 @login_required

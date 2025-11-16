@@ -51,7 +51,6 @@ class StaffTimesheetFormTest(TestCase):
         form_data = {
             'staff_contract': self.staff_contract.pk,
             'target_month': '2024-11',
-            'memo': 'テストメモ'
         }
         form = StaffTimesheetForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -72,6 +71,24 @@ class StaffTimesheetFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('staff_contract', form.errors)
         self.assertIn('target_month', form.errors)
+
+    def test_duplicate_timesheet_creation(self):
+        """重複する月次勤怠の作成テスト"""
+        # 最初に月次勤怠を作成
+        StaffTimesheet.objects.create(
+            staff_contract=self.staff_contract,
+            staff=self.staff,
+            target_month=date(2024, 11, 1)
+        )
+
+        # 同じ契約と年月でフォームを送信
+        form_data = {
+            'staff_contract': self.staff_contract.pk,
+            'target_month': '2024-11',
+        }
+        form = StaffTimesheetForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('このスタッフ契約と年月では、既に月次勤怠が作成されています。', form.non_field_errors())
 
 
 class StaffTimecardFormTest(TestCase):

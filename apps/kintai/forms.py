@@ -14,10 +14,9 @@ class StaffTimesheetForm(forms.ModelForm):
     
     class Meta:
         model = StaffTimesheet
-        fields = ['staff_contract', 'memo']
+        fields = ['staff_contract']
         widgets = {
             'staff_contract': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-            'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
     
     def __init__(self, *args, **kwargs):
@@ -51,7 +50,9 @@ class StaffTimesheetForm(forms.ModelForm):
         if staff_contract and target_month:
             from calendar import monthrange
             from datetime import date
+            from django.core.exceptions import ValidationError
 
+            # 契約期間のチェック
             try:
                 _, last_day_num = monthrange(target_month.year, target_month.month)
                 last_day = date(target_month.year, target_month.month, last_day_num)
@@ -67,6 +68,18 @@ class StaffTimesheetForm(forms.ModelForm):
 
                 if sc_end and target_month > sc_end:
                     raise forms.ValidationError('指定した年月はスタッフ契約の契約期間外です。')
+
+            # ユニーク制約のチェック
+            # 同じスタッフ契約と対象年月を持つ月次勤怠が既に存在しないか確認
+            qs = StaffTimesheet.objects.filter(
+                staff_contract=staff_contract,
+                target_month=target_month
+            )
+            if self.instance and self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk) # 編集時は自分自身を除外
+
+            if qs.exists():
+                raise forms.ValidationError('このスタッフ契約と年月では、既に月次勤怠が作成されています。')
 
         return cleaned_data
 
