@@ -73,6 +73,7 @@ django-study-base/
 │   ├── contract/           # 契約管理
 │   ├── csstest/            # CSSテスト・開発
 │   ├── home/               # ホームページ
+│   ├── kintai/             # 勤怠管理
 │   ├── master/             # マスター管理 (資格、スキル、銀行、支払条件)
 │   ├── profile/            # プロフィール管理
 │   ├── staff/              # スタッフ管理
