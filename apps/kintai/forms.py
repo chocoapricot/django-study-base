@@ -17,6 +17,8 @@ class StaffTimesheetForm(forms.ModelForm):
         }
     
     def __init__(self, *args, **kwargs):
+        # Accept optional timesheet kwarg for calendar/bulk edit validation
+        self.timesheet = kwargs.pop('timesheet', None)
         super().__init__(*args, **kwargs)
         # スタッフ契約の選択肢を有効な契約のみに絞る
         self.fields['staff_contract'].queryset = StaffContract.objects.filter(
@@ -26,6 +28,11 @@ class StaffTimesheetForm(forms.ModelForm):
 
 class StaffTimecardForm(forms.ModelForm):
     """日次勤怠フォーム"""
+
+    def __init__(self, *args, **kwargs):
+        # Accept optional timesheet kwarg for calendar/bulk edit validation
+        self.timesheet = kwargs.pop('timesheet', None)
+        super().__init__(*args, **kwargs)
     
     class Meta:
         model = StaffTimecard
@@ -41,3 +48,24 @@ class StaffTimecardForm(forms.ModelForm):
             'paid_leave_days': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': 0, 'max': 1, 'step': 0.5, 'value': 0}),
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
+
+    def clean(self):
+        cleaned = super().clean()
+        work_date = cleaned.get('work_date')
+
+        # Determine timesheet (either passed in or from instance)
+        timesheet = self.timesheet
+        if not timesheet and hasattr(self, 'instance') and getattr(self.instance, 'timesheet', None):
+            timesheet = self.instance.timesheet
+
+        if timesheet and work_date:
+            sc = getattr(timesheet, 'staff_contract', None)
+            if sc:
+                sc_start = sc.start_date
+                sc_end = sc.end_date
+                if sc_start and work_date < sc_start:
+                    raise forms.ValidationError('勤務日はスタッフ契約の契約期間外です。')
+                if sc_end and work_date > sc_end:
+                    raise forms.ValidationError('勤務日はスタッフ契約の契約期間外です。')
+
+        return cleaned

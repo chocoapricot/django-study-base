@@ -45,6 +45,12 @@ def timesheet_detail(request, pk):
     for timecard in timecards:
         timecard.weekday = timecard.work_date.weekday()
         timecard.is_national_holiday = jpholiday.is_holiday(timecard.work_date)
+        # 祝日名が取得できる場合は追加（jpholiday のバージョン依存）
+        try:
+            timecard.holiday_name = jpholiday.is_holiday_name(timecard.work_date)
+        except Exception:
+            # 関数がない場合や他エラーは無視して None のまま
+            timecard.holiday_name = None
     
     context = {
         'timesheet': timesheet,
@@ -102,7 +108,8 @@ def timecard_create(request, timesheet_pk):
         return redirect('kintai:timesheet_detail', pk=timesheet_pk)
     
     if request.method == 'POST':
-        form = StaffTimecardForm(request.POST)
+        # pass timesheet to the form so form-level validation can check contract period
+        form = StaffTimecardForm(request.POST, timesheet=timesheet)
         if form.is_valid():
             timecard = form.save(commit=False)
             timecard.timesheet = timesheet
@@ -132,7 +139,7 @@ def timecard_edit(request, pk):
         return redirect('kintai:timesheet_detail', pk=timesheet.pk)
     
     if request.method == 'POST':
-        form = StaffTimecardForm(request.POST, instance=timecard)
+        form = StaffTimecardForm(request.POST, instance=timecard, timesheet=timesheet)
         if form.is_valid():
             form.save()
             # 月次勤怠の集計を更新
@@ -208,6 +215,16 @@ def timecard_calendar(request, timesheet_pk):
             
             if not work_type:
                 continue
+
+            # スタッフ契約の範囲外の日付は処理しない（カレンダー上にも表示しないため）
+            sc = getattr(timesheet, 'staff_contract', None)
+            if sc:
+                sc_start = sc.start_date
+                sc_end = sc.end_date
+                if sc_start and work_date < sc_start:
+                    continue
+                if sc_end and work_date > sc_end:
+                    continue
             
             # 時刻の変換
             from datetime import time as dt_time
@@ -264,12 +281,26 @@ def timecard_calendar(request, timesheet_pk):
         work_date = date(year, month, day)
         weekday = work_date.weekday()  # 0=月曜, 6=日曜
         is_holiday = jpholiday.is_holiday(work_date)
+        try:
+            holiday_name = jpholiday.is_holiday_name(work_date)
+        except Exception:
+            holiday_name = None
         
         timecard = timecards_dict.get(day)
-        
+        # スタッフ契約の範囲外の日付は表示しない
+        sc = getattr(timesheet, 'staff_contract', None)
+        if sc:
+            sc_start = sc.start_date
+            sc_end = sc.end_date
+            if sc_start and work_date < sc_start:
+                continue
+            if sc_end and work_date > sc_end:
+                continue
+
         calendar_data.append({
             'day': day,
             'date': work_date,
+            'holiday_name': holiday_name,
             'weekday': weekday,
             'weekday_name': ['月', '火', '水', '木', '金', '土', '日'][weekday],
             'is_weekend': weekday >= 5,

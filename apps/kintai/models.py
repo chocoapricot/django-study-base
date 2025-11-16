@@ -5,6 +5,7 @@ from apps.contract.models import StaffContract
 from apps.staff.models import Staff
 from django.contrib.auth import get_user_model
 from datetime import date, time, datetime, timedelta
+from calendar import monthrange
 from decimal import Decimal
 
 User = get_user_model()
@@ -35,8 +36,7 @@ class StaffTimesheet(MyModel):
     total_work_hours = models.DecimalField('総労働時間', max_digits=6, decimal_places=2, default=0)
     total_overtime_hours = models.DecimalField('残業時間', max_digits=6, decimal_places=2, default=0)
     total_holiday_work_hours = models.DecimalField('休日労働時間', max_digits=6, decimal_places=2, default=0)
-    total_late_minutes = models.PositiveIntegerField('遅刻時間（分）', default=0)
-    total_early_leave_minutes = models.PositiveIntegerField('早退時間（分）', default=0)
+    # 遅刻・早退は個別の集計対象から除外
     total_absence_days = models.PositiveIntegerField('欠勤日数', default=0)
     total_paid_leave_days = models.DecimalField('有給休暇日数', max_digits=4, decimal_places=1, default=0)
     
@@ -113,6 +113,31 @@ class StaffTimesheet(MyModel):
             if self.staff_contract.staff_id != self.staff_id:
                 raise ValidationError('スタッフ契約とスタッフが一致しません。')
 
+        # スタッフ契約の契約期間内かチェック（年月単位）
+        # 年月が指定されている場合、当該月の初日〜末日が契約期間と重なっているか確認する
+        if self.staff_contract and self.year and self.month:
+            # 年月から当該月の初日/末日を算出できない場合はスキップ
+            try:
+                first_day = date(self.year, self.month, 1)
+                _, last_day_num = monthrange(self.year, self.month)
+                last_day = date(self.year, self.month, last_day_num)
+            except (ValueError, TypeError):
+                # 日付計算に失敗したらスキップ
+                first_day = None
+                last_day = None
+
+            if first_day and last_day:
+                sc_start = self.staff_contract.start_date
+                sc_end = self.staff_contract.end_date
+
+                # 契約開始日が設定されていれば、当該月の末日が開始日以前であれば範囲外
+                if sc_start and last_day < sc_start:
+                    raise ValidationError('指定した年月はスタッフ契約の契約期間外です。')
+
+                # 契約終了日が設定されていれば、当該月の初日が終了日以降であれば範囲外
+                if sc_end and first_day > sc_end:
+                    raise ValidationError('指定した年月はスタッフ契約の契約期間外です。')
+
     def save(self, *args, **kwargs):
         # スタッフ契約からスタッフを自動設定
         if self.staff_contract:
@@ -131,8 +156,7 @@ class StaffTimesheet(MyModel):
         self.total_work_hours = sum(tc.work_hours or 0 for tc in timecards)
         self.total_overtime_hours = sum(tc.overtime_hours or 0 for tc in timecards)
         self.total_holiday_work_hours = sum(tc.holiday_work_hours or 0 for tc in timecards)
-        self.total_late_minutes = sum(tc.late_minutes or 0 for tc in timecards)
-        self.total_early_leave_minutes = sum(tc.early_leave_minutes or 0 for tc in timecards)
+    # 遅刻・早退の集計は廃止（個別timecardの値は残るが月次の集計フィールドは削除）
         self.total_absence_days = timecards.filter(work_type='30').count()
         self.total_paid_leave_days = sum(tc.paid_leave_days or 0 for tc in timecards)
         
@@ -221,8 +245,7 @@ class StaffTimecard(MyModel):
     work_hours = models.DecimalField('労働時間', max_digits=5, decimal_places=2, default=0, help_text='実労働時間（時間）')
     overtime_hours = models.DecimalField('残業時間', max_digits=5, decimal_places=2, default=0, help_text='残業時間（時間）')
     holiday_work_hours = models.DecimalField('休日労働時間', max_digits=5, decimal_places=2, default=0, help_text='休日労働時間（時間）')
-    late_minutes = models.PositiveIntegerField('遅刻時間（分）', default=0)
-    early_leave_minutes = models.PositiveIntegerField('早退時間（分）', default=0)
+    # 遅刻・早退は個別フィールドとして保持しない（UI/集計上は不要のため削除）
     
     # 有給休暇
     paid_leave_days = models.DecimalField('有給休暇日数', max_digits=3, decimal_places=1, default=0, help_text='0.5（半休）または1.0（全休）')
@@ -263,6 +286,28 @@ class StaffTimecard(MyModel):
             if not self.paid_leave_days or self.paid_leave_days <= 0:
                 raise ValidationError('有給休暇の場合は有給休暇日数を入力してください。')
 
+        # timesheet と staff_contract が有る場合、勤務日が契約期間内かチェック
+        try:
+            if self.timesheet and self.work_date:
+                sc = None
+                try:
+                    sc = self.timesheet.staff_contract
+                except:
+                    sc = None
+
+                if sc:
+                    sc_start = sc.start_date
+                    sc_end = sc.end_date
+                    if sc_start and self.work_date < sc_start:
+                        raise ValidationError('勤務日はスタッフ契約の契約期間外です。')
+                    if sc_end and self.work_date > sc_end:
+                        raise ValidationError('勤務日はスタッフ契約の契約期間外です。')
+        except ValidationError:
+            raise
+        except Exception:
+            # 予期しない例外はバリデーションで無視しておく（他のチェックで捕捉される）
+            pass
+
     def save(self, *args, **kwargs):
         # 労働時間を自動計算
         self.calculate_work_hours()
@@ -275,8 +320,6 @@ class StaffTimecard(MyModel):
             self.work_hours = 0
             self.overtime_hours = 0
             self.holiday_work_hours = 0
-            self.late_minutes = 0
-            self.early_leave_minutes = 0
             return
 
         # 勤務時間を計算（分単位）
@@ -319,13 +362,7 @@ class StaffTimecard(MyModel):
         standard_start = datetime.combine(date.today(), time(9, 0))
         standard_end = datetime.combine(date.today(), time(18, 0))
         
-        if self.start_time > time(9, 0):
-            late_dt = datetime.combine(date.today(), self.start_time)
-            self.late_minutes = int((late_dt - standard_start).total_seconds() / 60)
-        
-        if self.end_time < time(18, 0):
-            early_dt = datetime.combine(date.today(), self.end_time)
-            self.early_leave_minutes = int((standard_end - early_dt).total_seconds() / 60)
+        # 遅刻・早退の計算は表示要件に応じてフロント側で扱うためモデル内計算は行わない
 
     @property
     def is_holiday(self):

@@ -1,4 +1,5 @@
 {% extends 'common/_base.html' %}
+{% load help_tags %}
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">
@@ -26,7 +27,12 @@
                     <tbody>
                         {% for data in calendar_data %}
                         <tr style="{% if data.is_holiday or data.weekday == 6 %}background-color: #ffe6e6 !important;{% elif data.weekday == 5 %}background-color: #e6f2ff !important;{% endif %}" data-day="{{ data.day }}" data-is-holiday="{% if data.is_holiday %}true{% else %}false{% endif %}">
-                            <td style="{% if data.is_holiday or data.weekday == 6 %}color: #cc0000; font-weight: bold;{% elif data.weekday == 5 %}color: #0066cc; font-weight: bold;{% endif %}">{{ data.date|date:"m/d (D)" }}</td>
+                            <td style="{% if data.is_holiday or data.weekday == 6 %}color: #cc0000; font-weight: bold;{% elif data.weekday == 5 %}color: #0066cc; font-weight: bold;{% endif %}">
+                                {{ data.date|date:"m/d (D)" }}
+                                {% if data.is_holiday and data.holiday_name %}
+                                    {% my_help_icon data.holiday_name %}
+                                {% endif %}
+                            </td>
                             <td>
                                 <select name="work_type_{{ data.day }}" class="form-select form-select-sm work-type-select" data-day="{{ data.day }}">
                                     <option value="">-</option>

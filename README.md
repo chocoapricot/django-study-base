@@ -129,6 +129,8 @@ django-study-base/
 | `apps_contract_staff_print` | `StaffContractPrint` | スタッフ契約書発行履歴 |
 | `apps_contract_staff_teishokubi` | `StaffContractTeishokubi` | スタッフの個人抵触日 |
 | `apps_contract_staff_teishokubi_detail` | `StaffContractTeishokubiDetail` | 個人抵触日算出詳細 |
+| `apps_kintai_staff_timesheet` | `StaffTimesheet` | 月次勤怠 |
+| `apps_kintai_staff_timecard` | `StaffTimecard` | 日次勤怠 |
 | `apps_master_bank` | `Bank` | 銀行マスター |
 | `apps_master_bank_branch` | `BankBranch` | 銀行支店マスター |
 | `apps_master_bill_bank` | `BillBank` | 会社銀行マスター |

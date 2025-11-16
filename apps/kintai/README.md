@@ -18,8 +18,6 @@
 - `total_work_hours`: 総労働時間
 - `total_overtime_hours`: 残業時間
 - `total_holiday_work_hours`: 休日労働時間
-- `total_late_minutes`: 遅刻時間（分）
-- `total_early_leave_minutes`: 早退時間（分）
 - `total_absence_days`: 欠勤日数
 - `total_paid_leave_days`: 有給休暇日数
 
@@ -45,8 +43,7 @@
 - `work_hours`: 労働時間（自動計算）
 - `overtime_hours`: 残業時間（自動計算）
 - `holiday_work_hours`: 休日労働時間（自動計算）
-- `late_minutes`: 遅刻時間（分、自動計算）
-- `early_leave_minutes`: 早退時間（分、自動計算）
+<!-- 遅刻・早退は個別の表記に変更されたため、README上の個別フィールド表記は省略します -->
 - `paid_leave_days`: 有給休暇日数（0.5または1.0）
 
 **制約:**

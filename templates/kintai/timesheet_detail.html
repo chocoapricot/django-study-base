@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load badge_tags %}
+{% load help_tags %}
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
@@ -78,7 +79,12 @@
                 <tbody>
                     {% for timecard in timecards %}
                     <tr style="{% if timecard.is_national_holiday or timecard.weekday == 6 %}background-color: #ffe6e6 !important;{% elif timecard.weekday == 5 %}background-color: #e6f2ff !important;{% endif %}">
-                        <td style="{% if timecard.is_national_holiday or timecard.weekday == 6 %}color: #cc0000; font-weight: bold;{% elif timecard.weekday == 5 %}color: #0066cc; font-weight: bold;{% endif %}">{{ timecard.work_date|date:"Y/m/d (D)" }}</td>
+                        <td style="{% if timecard.is_national_holiday or timecard.weekday == 6 %}color: #cc0000; font-weight: bold;{% elif timecard.weekday == 5 %}color: #0066cc; font-weight: bold;{% endif %}">
+                            {{ timecard.work_date|date:"Y/m/d (D)" }}
+                            {% if timecard.is_national_holiday and timecard.holiday_name %}
+                                {% my_help_icon timecard.holiday_name %}
+                            {% endif %}
+                        </td>
                         <td>
                             {% if timecard.work_type == '10' %}
                                 <span class="badge bg-primary">出勤</span>
