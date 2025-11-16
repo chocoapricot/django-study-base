@@ -28,8 +28,7 @@ class StaffTimesheet(MyModel):
         related_name='timesheets',
         verbose_name='スタッフ'
     )
-    year = models.PositiveIntegerField('年', help_text='対象年（例：2025）')
-    month = models.PositiveIntegerField('月', help_text='対象月（1-12）')
+    target_month = models.DateField('対象年月', help_text='対象年月の1日を設定してください。')
     
     # 勤怠集計情報
     total_work_days = models.PositiveIntegerField('出勤日数', default=0)
@@ -90,46 +89,40 @@ class StaffTimesheet(MyModel):
         db_table = 'apps_kintai_staff_timesheet'
         verbose_name = '月次勤怠'
         verbose_name_plural = '月次勤怠'
-        unique_together = ['staff_contract', 'year', 'month']
-        ordering = ['-year', '-month', 'staff__name_last', 'staff__name_first']
+        unique_together = ['staff_contract', 'target_month']
+        ordering = ['-target_month', 'staff__name_last', 'staff__name_first']
         indexes = [
             models.Index(fields=['staff_contract']),
             models.Index(fields=['staff']),
-            models.Index(fields=['year', 'month']),
+            models.Index(fields=['target_month']),
             models.Index(fields=['status']),
         ]
 
     def __str__(self):
-        return f"{self.staff} - {self.year}年{self.month}月"
+        if self.target_month:
+            return f"{self.staff} - {self.target_month.year}年{self.target_month.month}月"
+        return f"{self.staff} - (年月未設定)"
 
     def clean(self):
         """バリデーション"""
-        # 月の範囲チェック
-        if self.month is not None and (self.month < 1 or self.month > 12):
-            raise ValidationError('月は1から12の範囲で入力してください。')
+        # target_month が月の1日であるかチェック
+        if self.target_month and self.target_month.day != 1:
+            raise ValidationError({'target_month': '対象年月は月の1日を設定してください。'})
         
         # スタッフ契約とスタッフの整合性チェック
         if self.staff_contract_id and self.staff_id:
             if self.staff_contract.staff_id != self.staff_id:
                 raise ValidationError('スタッフ契約とスタッフが一致しません。')
 
-        # スタッフ契約の契約期間内かチェック（年月単位）
-        # 年月が指定されている場合、当該月の初日〜末日が契約期間と重なっているか確認する
-        # 注意: 未設定の外部キーを直接参照すると RelatedObjectDoesNotExist が発生するため
-        #       まず staff_contract_id を確認してから関連オブジェクトを安全に取得する。
-        if getattr(self, 'staff_contract_id', None) and self.year and self.month:
-            # 年月から当該月の初日/末日を算出できない場合はスキップ
+        # スタッフ契約の契約期間内かチェック
+        if getattr(self, 'staff_contract_id', None) and self.target_month:
             try:
-                first_day = date(self.year, self.month, 1)
-                _, last_day_num = monthrange(self.year, self.month)
-                last_day = date(self.year, self.month, last_day_num)
+                _, last_day_num = monthrange(self.target_month.year, self.target_month.month)
+                last_day = date(self.target_month.year, self.target_month.month, last_day_num)
             except (ValueError, TypeError):
-                # 日付計算に失敗したらスキップ
-                first_day = None
                 last_day = None
 
-            if first_day and last_day:
-                # 安全に関連オブジェクトを取得
+            if self.target_month and last_day:
                 try:
                     sc = self.staff_contract
                 except Exception:
@@ -139,15 +132,17 @@ class StaffTimesheet(MyModel):
                     sc_start = sc.start_date
                     sc_end = sc.end_date
 
-                    # 契約開始日が設定されていれば、当該月の末日が開始日以前であれば範囲外
                     if sc_start and last_day < sc_start:
                         raise ValidationError('指定した年月はスタッフ契約の契約期間外です。')
 
-                    # 契約終了日が設定されていれば、当該月の初日が終了日以降であれば範囲外
-                    if sc_end and first_day > sc_end:
+                    if sc_end and self.target_month > sc_end:
                         raise ValidationError('指定した年月はスタッフ契約の契約期間外です。')
 
     def save(self, *args, **kwargs):
+        # target_month を常にその月の1日に設定
+        if self.target_month:
+            self.target_month = self.target_month.replace(day=1)
+            
         # スタッフ契約からスタッフを自動設定
         if self.staff_contract:
             try:

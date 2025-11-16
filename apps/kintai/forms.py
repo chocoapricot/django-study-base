@@ -1,29 +1,50 @@
 from django import forms
 from .models import StaffTimesheet, StaffTimecard
 from apps.contract.models import StaffContract
+from datetime import datetime
 
 
 class StaffTimesheetForm(forms.ModelForm):
     """月次勤怠フォーム"""
+    target_month = forms.CharField(
+        label='対象年月',
+        widget=forms.DateInput(attrs={'type': 'month', 'class': 'form-control form-control-sm'}),
+        required=True
+    )
     
     class Meta:
         model = StaffTimesheet
-        fields = ['staff_contract', 'year', 'month', 'memo']
-        widgets = {
-            'staff_contract': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-            'year': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': 2020, 'max': 2099}),
-            'month': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': 1, 'max': 12}),
-            'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
-        }
+        fields = ['staff_contract', 'memo']
     
     def __init__(self, *args, **kwargs):
-        # Accept optional timesheet kwarg for calendar/bulk edit validation
-        self.timesheet = kwargs.pop('timesheet', None)
         super().__init__(*args, **kwargs)
         # スタッフ契約の選択肢を有効な契約のみに絞る
         self.fields['staff_contract'].queryset = StaffContract.objects.filter(
             start_date__isnull=False
         ).select_related('staff').order_by('-start_date')
+
+        # instance が存在する場合、target_month の初期値を設定
+        if self.instance and self.instance.target_month:
+            self.initial['target_month'] = self.instance.target_month.strftime('%Y-%m')
+
+    def clean_target_month(self):
+        target_month_str = self.cleaned_data.get('target_month')
+        if target_month_str:
+            try:
+                # YYYY-MM 形式から datetime.date オブジェクトに変換
+                selected_date = datetime.strptime(target_month_str, '%Y-%m').date()
+                # その月の1日に設定
+                return selected_date.replace(day=1)
+            except ValueError:
+                raise forms.ValidationError('無効な年月形式です。')
+        return None
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.target_month = self.cleaned_data.get('target_month')
+        if commit:
+            instance.save()
+        return instance
 
 
 class StaffTimecardForm(forms.ModelForm):

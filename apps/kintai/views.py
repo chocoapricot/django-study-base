@@ -28,8 +28,7 @@ def timesheet_create(request):
     else:
         today = timezone.now().date()
         initial_data = {
-            'year': today.year,
-            'month': today.month,
+            'target_month': today.strftime('%Y-%m'), # YYYY-MM 形式
         }
         form = StaffTimesheetForm(initial=initial_data)
     
@@ -201,8 +200,8 @@ def timecard_calendar(request, timesheet_pk):
     
     if request.method == 'POST':
         # フォームデータから日次勤怠を一括保存
-        year = timesheet.year
-        month = timesheet.month
+        year = timesheet.target_month.year
+        month = timesheet.target_month.month
         
         # 月の日数を取得
         _, last_day = calendar.monthrange(year, month)
@@ -272,8 +271,8 @@ def timecard_calendar(request, timesheet_pk):
         return redirect('kintai:timesheet_detail', pk=timesheet_pk)
     
     # カレンダーデータを作成
-    year = timesheet.year
-    month = timesheet.month
+    year = timesheet.target_month.year
+    month = timesheet.target_month.month
     _, last_day = calendar.monthrange(year, month)
     
     # 既存の日次勤怠データを取得

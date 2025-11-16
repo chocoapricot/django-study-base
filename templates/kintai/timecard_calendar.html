@@ -34,7 +34,7 @@
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">
         日次勤怠カレンダー入力
-        <span class="text-muted">- {{ timesheet.staff }} ({{ timesheet.year }}年{{ timesheet.month }}月)</span>
+        <span class="text-muted">- {{ timesheet.staff }} ({{ timesheet.target_month|date:"Y年m月" }})</span>
     </div>
     <div class="card-body">
         <form method="post" id="calendar-form">

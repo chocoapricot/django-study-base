@@ -32,7 +32,7 @@
                     <tr>
                         <td>{{ timesheet.staff }}</td>
                         <td>{{ timesheet.staff_contract.contract_period_display }}</td>
-                        <td><a href="{% url 'kintai:timesheet_detail' timesheet.pk %}">{{ timesheet.year }}年{{ timesheet.month }}月</a></td>
+                        <td><a href="{% url 'kintai:timesheet_detail' timesheet.pk %}">{{ timesheet.target_month|date:"Y年m月" }}</a></td>
                         <td class="text-end">{{ timesheet.total_work_days }}日</td>
                         <td class="text-end">{{ timesheet.total_work_hours_display }}</td>
                         <td class="text-end">{{ timesheet.total_overtime_hours_display }}</td>
