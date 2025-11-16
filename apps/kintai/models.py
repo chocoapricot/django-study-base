@@ -115,7 +115,9 @@ class StaffTimesheet(MyModel):
 
         # スタッフ契約の契約期間内かチェック（年月単位）
         # 年月が指定されている場合、当該月の初日〜末日が契約期間と重なっているか確認する
-        if self.staff_contract and self.year and self.month:
+        # 注意: 未設定の外部キーを直接参照すると RelatedObjectDoesNotExist が発生するため
+        #       まず staff_contract_id を確認してから関連オブジェクトを安全に取得する。
+        if getattr(self, 'staff_contract_id', None) and self.year and self.month:
             # 年月から当該月の初日/末日を算出できない場合はスキップ
             try:
                 first_day = date(self.year, self.month, 1)
@@ -127,16 +129,23 @@ class StaffTimesheet(MyModel):
                 last_day = None
 
             if first_day and last_day:
-                sc_start = self.staff_contract.start_date
-                sc_end = self.staff_contract.end_date
+                # 安全に関連オブジェクトを取得
+                try:
+                    sc = self.staff_contract
+                except Exception:
+                    sc = None
 
-                # 契約開始日が設定されていれば、当該月の末日が開始日以前であれば範囲外
-                if sc_start and last_day < sc_start:
-                    raise ValidationError('指定した年月はスタッフ契約の契約期間外です。')
+                if sc:
+                    sc_start = sc.start_date
+                    sc_end = sc.end_date
 
-                # 契約終了日が設定されていれば、当該月の初日が終了日以降であれば範囲外
-                if sc_end and first_day > sc_end:
-                    raise ValidationError('指定した年月はスタッフ契約の契約期間外です。')
+                    # 契約開始日が設定されていれば、当該月の末日が開始日以前であれば範囲外
+                    if sc_start and last_day < sc_start:
+                        raise ValidationError('指定した年月はスタッフ契約の契約期間外です。')
+
+                    # 契約終了日が設定されていれば、当該月の初日が終了日以降であれば範囲外
+                    if sc_end and first_day > sc_end:
+                        raise ValidationError('指定した年月はスタッフ契約の契約期間外です。')
 
     def save(self, *args, **kwargs):
         # スタッフ契約からスタッフを自動設定
