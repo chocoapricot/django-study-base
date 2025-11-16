@@ -1,0 +1,25 @@
+{% extends 'common/_base.html' %}
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">月次勤怠削除確認</div>
+    <div class="card-body">
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            以下の月次勤怠を削除しますか？この操作は取り消せません。
+        </div>
+        
+        <table class="table table-bordered">
+            <tr><th style="width: 20%;">スタッフ</th><td>{{ timesheet.staff }}</td></tr>
+            <tr><th>対象年月</th><td>{{ timesheet.year }}年{{ timesheet.month }}月</td></tr>
+            <tr><th>出勤日数</th><td>{{ timesheet.total_work_days }}日</td></tr>
+            <tr><th>総労働時間</th><td>{{ timesheet.total_work_hours }}時間</td></tr>
+        </table>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-dark">削除する</button>
+            <a href="{% url 'kintai:timesheet_detail' timesheet.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

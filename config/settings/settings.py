@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'apps.master',
     'apps.contract',
     'apps.profile',
+    'apps.kintai',
 ]
 
 # allauth設定

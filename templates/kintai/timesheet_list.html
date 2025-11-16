@@ -1,0 +1,70 @@
+{% extends 'common/_base.html' %}
+{% load badge_tags %}
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        月次勤怠一覧
+        <div class="d-flex">
+            {% if perms.kintai.add_stafftimesheet %}
+                <a href="{% url 'kintai:timesheet_create' %}" class="btn btn-sm btn-primary">新規作成</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card-body">
+        {% if timesheets %}
+            <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+                <thead>
+                    <tr>
+                        <th style="width: 15%;">スタッフ</th>
+                        <th style="width: 10%;">対象年月</th>
+                        <th style="width: 10%;">ステータス</th>
+                        <th style="width: 8%;">出勤日数</th>
+                        <th style="width: 10%;">総労働時間</th>
+                        <th style="width: 10%;">残業時間</th>
+                        <th style="width: 10%;">休日労働</th>
+                        <th style="width: 8%;">欠勤日数</th>
+                        <th style="width: 8%;">有給日数</th>
+                        <th style="width: 11%;">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for timesheet in timesheets %}
+                    <tr>
+                        <td><a href="{% url 'kintai:timesheet_detail' timesheet.pk %}">{{ timesheet.staff }}</a></td>
+                        <td>{{ timesheet.year }}年{{ timesheet.month }}月</td>
+                        <td>
+                            {% if timesheet.status == '10' %}
+                                <span class="badge bg-secondary">作成中</span>
+                            {% elif timesheet.status == '20' %}
+                                <span class="badge bg-info">提出済み</span>
+                            {% elif timesheet.status == '30' %}
+                                <span class="badge bg-success">承認済み</span>
+                            {% elif timesheet.status == '40' %}
+                                <span class="badge bg-warning">差戻し</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">{{ timesheet.total_work_days }}日</td>
+                        <td class="text-end">{{ timesheet.total_work_hours }}時間</td>
+                        <td class="text-end">{{ timesheet.total_overtime_hours }}時間</td>
+                        <td class="text-end">{{ timesheet.total_holiday_work_hours }}時間</td>
+                        <td class="text-end">{{ timesheet.total_absence_days }}日</td>
+                        <td class="text-end">{{ timesheet.total_paid_leave_days }}日</td>
+                        <td>
+                            <a href="{% url 'kintai:timesheet_detail' timesheet.pk %}" class="btn btn-primary btn-sm" title="詳細"><i class="bi bi-eye"></i></a>
+                            {% if perms.kintai.change_stafftimesheet and timesheet.is_editable %}
+                                <a href="{% url 'kintai:timesheet_edit' timesheet.pk %}" class="btn btn-secondary btn-sm" title="編集"><i class="bi bi-pencil"></i></a>
+                            {% endif %}
+                            {% if perms.kintai.delete_stafftimesheet %}
+                                <a href="{% url 'kintai:timesheet_delete' timesheet.pk %}" class="btn btn-dark btn-sm" title="削除"><i class="bi bi-x"></i></a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-muted">月次勤怠データがありません。</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

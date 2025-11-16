@@ -1,0 +1,26 @@
+{% extends 'common/_base.html' %}
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">日次勤怠削除確認</div>
+    <div class="card-body">
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            以下の日次勤怠を削除しますか？この操作は取り消せません。
+        </div>
+        
+        <table class="table table-bordered">
+            <tr><th style="width: 20%;">勤務日</th><td>{{ timecard.work_date|date:"Y年m月d日 (D)" }}</td></tr>
+            <tr><th>勤務区分</th><td>{{ timecard.get_work_type_display }}</td></tr>
+            <tr><th>出勤時刻</th><td>{{ timecard.start_time|default:"-" }}</td></tr>
+            <tr><th>退勤時刻</th><td>{{ timecard.end_time|default:"-" }}</td></tr>
+            <tr><th>労働時間</th><td>{{ timecard.work_hours }}時間</td></tr>
+        </table>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-dark">削除する</button>
+            <a href="{% url 'kintai:timesheet_detail' timecard.timesheet.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

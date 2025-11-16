@@ -1,0 +1,134 @@
+{% extends 'common/_base.html' %}
+{% load help_tags %}
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        {% if timecard %}日次勤怠編集{% else %}日次勤怠作成{% endif %}
+        <span class="text-muted">- {{ timesheet.staff }} ({{ timesheet.year }}年{{ timesheet.month }}月)</span>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.work_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">勤務日 <span class="text-danger">*</span></label>
+                <div class="col-sm-4">
+                    {{ form.work_date }}
+                    {% if form.work_date.errors %}
+                        <div class="text-danger">{{ form.work_date.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.work_type.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">勤務区分 <span class="text-danger">*</span></label>
+                <div class="col-sm-4">
+                    {{ form.work_type }}
+                    {% if form.work_type.errors %}
+                        <div class="text-danger">{{ form.work_type.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.start_time.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">出勤時刻</label>
+                <div class="col-sm-3">
+                    {{ form.start_time }}
+                    {% if form.start_time.errors %}
+                        <div class="text-danger">{{ form.start_time.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.end_time.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">退勤時刻</label>
+                <div class="col-sm-3">
+                    {{ form.end_time }}
+                    {% if form.end_time.errors %}
+                        <div class="text-danger">{{ form.end_time.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.break_minutes.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">休憩時間（分）</label>
+                <div class="col-sm-3">
+                    {{ form.break_minutes }}
+                    {% if form.break_minutes.errors %}
+                        <div class="text-danger">{{ form.break_minutes.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.paid_leave_days.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">有給休暇日数</label>
+                <div class="col-sm-3">
+                    {{ form.paid_leave_days }}
+                    {% if form.paid_leave_days.errors %}
+                        <div class="text-danger">{{ form.paid_leave_days.errors }}</div>
+                    {% endif %}
+                    <small class="form-text text-muted">0.5（半休）または1.0（全休）</small>
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">メモ</label>
+                <div class="col-sm-8">
+                    {{ form.memo }}
+                    {% if form.memo.errors %}
+                        <div class="text-danger">{{ form.memo.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-sm-10 offset-sm-2">
+                    <button type="submit" class="btn btn-sm btn-primary">{% if timecard %}更新{% else %}作成{% endif %}</button>
+                    <a href="{% url 'kintai:timesheet_detail' timesheet.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 勤務区分の変更に応じて入力欄の表示/非表示を切り替え
+    const workTypeSelect = document.getElementById('{{ form.work_type.id_for_label }}');
+    const startTimeRow = document.querySelector('label[for="{{ form.start_time.id_for_label }}"]').closest('.row');
+    const endTimeRow = document.querySelector('label[for="{{ form.end_time.id_for_label }}"]').closest('.row');
+    const breakMinutesRow = document.querySelector('label[for="{{ form.break_minutes.id_for_label }}"]').closest('.row');
+    const paidLeaveDaysRow = document.querySelector('label[for="{{ form.paid_leave_days.id_for_label }}"]').closest('.row');
+    
+    function toggleFields() {
+        const workType = workTypeSelect.value;
+        
+        if (workType === '10') {  // 出勤
+            startTimeRow.style.display = '';
+            endTimeRow.style.display = '';
+            breakMinutesRow.style.display = '';
+            paidLeaveDaysRow.style.display = 'none';
+        } else if (workType === '40') {  // 有給休暇
+            startTimeRow.style.display = 'none';
+            endTimeRow.style.display = 'none';
+            breakMinutesRow.style.display = 'none';
+            paidLeaveDaysRow.style.display = '';
+        } else {  // その他
+            startTimeRow.style.display = 'none';
+            endTimeRow.style.display = 'none';
+            breakMinutesRow.style.display = 'none';
+            paidLeaveDaysRow.style.display = 'none';
+        }
+    }
+    
+    workTypeSelect.addEventListener('change', toggleFields);
+    toggleFields();  // 初期表示
+});
+</script>
+{% endblock %}

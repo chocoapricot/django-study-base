@@ -1,0 +1,67 @@
+{% extends 'common/_base.html' %}
+{% load help_tags %}
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        {% if timesheet %}月次勤怠編集{% else %}月次勤怠作成{% endif %}
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.staff_contract.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">スタッフ契約 <span class="text-danger">*</span></label>
+                <div class="col-sm-8">
+                    {{ form.staff_contract }}
+                    {% if form.staff_contract.errors %}
+                        <div class="text-danger">{{ form.staff_contract.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.year.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">対象年 <span class="text-danger">*</span></label>
+                <div class="col-sm-3">
+                    {{ form.year }}
+                    {% if form.year.errors %}
+                        <div class="text-danger">{{ form.year.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.month.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">対象月 <span class="text-danger">*</span></label>
+                <div class="col-sm-3">
+                    {{ form.month }}
+                    {% if form.month.errors %}
+                        <div class="text-danger">{{ form.month.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">メモ</label>
+                <div class="col-sm-8">
+                    {{ form.memo }}
+                    {% if form.memo.errors %}
+                        <div class="text-danger">{{ form.memo.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-sm-10 offset-sm-2">
+                    <button type="submit" class="btn btn-sm btn-primary">{% if timesheet %}更新{% else %}作成{% endif %}</button>
+                    <a href="{% if timesheet %}{% url 'kintai:timesheet_detail' timesheet.pk %}{% else %}{% url 'kintai:timesheet_list' %}{% endif %}" class="btn btn-sm btn-secondary">キャンセル</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
