@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.utils import timezone
 from .models import StaffTimesheet, StaffTimecard
 from .forms import StaffTimesheetForm, StaffTimecardForm
 
@@ -25,7 +26,12 @@ def timesheet_create(request):
             messages.success(request, '月次勤怠を作成しました。')
             return redirect('kintai:timesheet_detail', pk=timesheet.pk)
     else:
-        form = StaffTimesheetForm()
+        today = timezone.now().date()
+        initial_data = {
+            'year': today.year,
+            'month': today.month,
+        }
+        form = StaffTimesheetForm(initial=initial_data)
     
     context = {
         'form': form,
