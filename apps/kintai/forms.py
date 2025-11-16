@@ -15,6 +15,10 @@ class StaffTimesheetForm(forms.ModelForm):
     class Meta:
         model = StaffTimesheet
         fields = ['staff_contract', 'memo']
+        widgets = {
+            'staff_contract': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+        }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -38,6 +42,34 @@ class StaffTimesheetForm(forms.ModelForm):
             except ValueError:
                 raise forms.ValidationError('無効な年月形式です。')
         return None
+
+    def clean(self):
+        cleaned_data = super().clean()
+        staff_contract = cleaned_data.get('staff_contract')
+        target_month = cleaned_data.get('target_month')
+
+        if staff_contract and target_month:
+            from calendar import monthrange
+            from datetime import date
+
+            try:
+                _, last_day_num = monthrange(target_month.year, target_month.month)
+                last_day = date(target_month.year, target_month.month, last_day_num)
+            except (ValueError, TypeError):
+                last_day = None
+
+            if target_month and last_day:
+                sc_start = staff_contract.start_date
+                sc_end = staff_contract.end_date
+
+                if sc_start and last_day < sc_start:
+                    raise forms.ValidationError('指定した年月はスタッフ契約の契約期間外です。')
+
+                if sc_end and target_month > sc_end:
+                    raise forms.ValidationError('指定した年月はスタッフ契約の契約期間外です。')
+
+        return cleaned_data
+
 
     def save(self, commit=True):
         instance = super().save(commit=False)

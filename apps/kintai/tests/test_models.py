@@ -52,11 +52,9 @@ class StaffTimesheetModelTest(TestCase):
         timesheet = StaffTimesheet.objects.create(
             staff_contract=self.staff_contract,
             staff=self.staff,
-            year=2024,
-            month=11
+            target_month=date(2024, 11, 1)
         )
-        self.assertEqual(timesheet.year, 2024)
-        self.assertEqual(timesheet.month, 11)
+        self.assertEqual(timesheet.target_month, date(2024, 11, 1))
         self.assertEqual(timesheet.status, '10')  # 作成中
         self.assertEqual(timesheet.total_work_days, 0)
 
@@ -73,37 +71,23 @@ class StaffTimesheetModelTest(TestCase):
         )
         timesheet = StaffTimesheet.objects.create(
             staff_contract=new_contract,
-            year=2024,
-            month=12
+            target_month=date(2024, 12, 1)
         )
         self.assertEqual(timesheet.staff, self.staff)
-
-    def test_invalid_month(self):
-        """無効な月のバリデーションテスト"""
-        timesheet = StaffTimesheet(
-            staff_contract=self.staff_contract,
-            staff=self.staff,
-            year=2024,
-            month=13  # 無効な月
-        )
-        with self.assertRaises(ValidationError):
-            timesheet.full_clean()
 
     def test_unique_constraint(self):
         """同一契約・年月の重複制約テスト"""
         StaffTimesheet.objects.create(
             staff_contract=self.staff_contract,
             staff=self.staff,
-            year=2024,
-            month=11
+            target_month=date(2024, 11, 1)
         )
         # 同じ契約・年月で作成しようとするとエラー
         with self.assertRaises(Exception):
             StaffTimesheet.objects.create(
                 staff_contract=self.staff_contract,
                 staff=self.staff,
-                year=2024,
-                month=11
+                target_month=date(2024, 11, 1)
             )
 
     def test_is_editable(self):
@@ -111,8 +95,7 @@ class StaffTimesheetModelTest(TestCase):
         timesheet = StaffTimesheet.objects.create(
             staff_contract=self.staff_contract,
             staff=self.staff,
-            year=2024,
-            month=11,
+            target_month=date(2024, 11, 1),
             status='10'  # 作成中
         )
         self.assertTrue(timesheet.is_editable)
@@ -126,8 +109,7 @@ class StaffTimesheetModelTest(TestCase):
         timesheet = StaffTimesheet.objects.create(
             staff_contract=self.staff_contract,
             staff=self.staff,
-            year=2024,
-            month=11
+            target_month=date(2024, 11, 1)
         )
         # スタッフの__str__は「姓 名」の形式（スペース入り）
         self.assertEqual(str(timesheet), '山田 太郎 - 2024年11月')
@@ -181,8 +163,7 @@ class StaffTimecardModelTest(TestCase):
         self.timesheet = StaffTimesheet.objects.create(
             staff_contract=self.staff_contract,
             staff=self.staff,
-            year=2024,
-            month=11
+            target_month=date(2024, 11, 1)
         )
 
     def test_create_timecard(self):

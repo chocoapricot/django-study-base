@@ -26,11 +26,11 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.month_year.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">対象年月 <span class="text-danger">*</span></label>
+                <label for="{{ form.target_month.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">対象年月 <span class="text-danger">*</span></label>
                 <div class="col-sm-3">
-                    {{ form.month_year }}
-                    {% if form.month_year.errors %}
-                        <div class="text-danger">{{ form.month_year.errors }}</div>
+                    {{ form.target_month }}
+                    {% if form.target_month.errors %}
+                        <div class="text-danger">{{ form.target_month.errors }}</div>
                     {% endif %}
                 </div>
             </div>

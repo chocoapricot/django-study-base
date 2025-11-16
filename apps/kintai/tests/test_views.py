@@ -62,8 +62,7 @@ class TimesheetViewTest(TestCase):
         self.timesheet = StaffTimesheet.objects.create(
             staff_contract=self.staff_contract,
             staff=self.staff,
-            year=2024,
-            month=11
+            target_month=date(2024, 11, 1)
         )
 
     def test_timesheet_list_view(self):
@@ -79,6 +78,15 @@ class TimesheetViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '月次勤怠詳細')
         self.assertContains(response, '2024年11月')
+
+    def test_timesheet_create_view(self):
+        """月次勤怠作成ビューのテスト"""
+        response = self.client.get(reverse('kintai:timesheet_create'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '月次勤怠作成')
+        # テンプレートの修正が正しく反映されているか確認
+        self.assertContains(response, 'name="target_month"')
+        self.assertContains(response, 'type="month"')
 
     def test_timesheet_delete_view_get(self):
         """月次勤怠削除確認画面のテスト"""
@@ -150,8 +158,7 @@ class TimecardViewTest(TestCase):
         self.timesheet = StaffTimesheet.objects.create(
             staff_contract=self.staff_contract,
             staff=self.staff,
-            year=2024,
-            month=11
+            target_month=date(2024, 11, 1)
         )
 
         # 日次勤怠作成

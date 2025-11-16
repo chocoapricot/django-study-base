@@ -36,7 +36,7 @@ class ContractPeriodTests(TestCase):
         )
 
         # Create timesheet for Feb 2025 which is outside the contract
-        ts = StaffTimesheet(staff_contract=sc, staff=self.staff, year=2025, month=2)
+        ts = StaffTimesheet(staff_contract=sc, staff=self.staff, target_month=date(2025, 2, 1))
 
         # call clean() directly to exercise our contract-period validation
         with self.assertRaises(Exception) as cm:
@@ -56,7 +56,7 @@ class ContractPeriodTests(TestCase):
         )
 
         # Create timesheet for April
-        ts = StaffTimesheet.objects.create(staff_contract=sc, year=2025, month=4)
+        ts = StaffTimesheet.objects.create(staff_contract=sc, staff=self.staff, target_month=date(2025, 4, 1))
 
         # Prepare form data for a work_date in March (outside contract)
         data = {
@@ -81,7 +81,7 @@ class ContractPeriodTests(TestCase):
             end_date=date(2025, 4, 25),
         )
 
-        ts = StaffTimesheet.objects.create(staff_contract=sc, year=2025, month=4)
+        ts = StaffTimesheet.objects.create(staff_contract=sc, staff=self.staff, target_month=date(2025, 4, 1))
 
         client = Client()
         logged = client.login(username='tester', password='pass')

@@ -50,30 +50,28 @@ class StaffTimesheetFormTest(TestCase):
         """有効なフォームデータのテスト"""
         form_data = {
             'staff_contract': self.staff_contract.pk,
-            'year': 2024,
-            'month': 11,
+            'target_month': '2024-11',
             'memo': 'テストメモ'
         }
         form = StaffTimesheetForm(data=form_data)
         self.assertTrue(form.is_valid())
 
-    def test_invalid_month(self):
-        """無効な月のテスト"""
+    def test_invalid_month_format(self):
+        """無効な年月フォーマットのテスト"""
         form_data = {
             'staff_contract': self.staff_contract.pk,
-            'year': 2024,
-            'month': 13,  # 無効な月
+            'target_month': '2024-13',  # 無効なフォーマット
         }
         form = StaffTimesheetForm(data=form_data)
         self.assertFalse(form.is_valid())
+        self.assertIn('target_month', form.errors)
 
     def test_required_fields(self):
         """必須フィールドのテスト"""
         form = StaffTimesheetForm(data={})
         self.assertFalse(form.is_valid())
         self.assertIn('staff_contract', form.errors)
-        self.assertIn('year', form.errors)
-        self.assertIn('month', form.errors)
+        self.assertIn('target_month', form.errors)
 
 
 class StaffTimecardFormTest(TestCase):

@@ -38,8 +38,7 @@ class KintaiViewIntegrationTests(TestCase):
         url = reverse('kintai:timesheet_create')
         data = {
             'staff_contract': sc.pk,
-            'year': 2025,
-            'month': 3,  # outside contract
+            'target_month': '2025-03',  # outside contract
             'memo': 'test',
         }
 
@@ -64,8 +63,7 @@ class KintaiViewIntegrationTests(TestCase):
         url = reverse('kintai:timesheet_create')
         data = {
             'staff_contract': sc.pk,
-            'year': 2025,
-            'month': 4,  # inside
+            'target_month': '2025-04',  # inside
             'memo': 'ok',
         }
 
@@ -73,7 +71,7 @@ class KintaiViewIntegrationTests(TestCase):
         # should redirect to detail
         self.assertEqual(resp.status_code, 302)
         # created timesheet exists
-        ts = StaffTimesheet.objects.filter(staff_contract=sc, year=2025, month=4).first()
+        ts = StaffTimesheet.objects.filter(staff_contract=sc, target_month=date(2025, 4, 1)).first()
         self.assertIsNotNone(ts)
 
     def test_timecard_create_post_rejects_outside_date(self):
@@ -86,7 +84,7 @@ class KintaiViewIntegrationTests(TestCase):
             end_date=date(2025, 4, 25),
         )
 
-        ts = StaffTimesheet.objects.create(staff_contract=sc, staff=self.staff, year=2025, month=4)
+        ts = StaffTimesheet.objects.create(staff_contract=sc, staff=self.staff, target_month=date(2025, 4, 1))
 
         url = reverse('kintai:timecard_create', args=[ts.pk])
         data = {
@@ -114,7 +112,7 @@ class KintaiViewIntegrationTests(TestCase):
             end_date=date(2025, 4, 30),
         )
 
-        ts = StaffTimesheet.objects.create(staff_contract=sc, staff=self.staff, year=2025, month=4)
+        ts = StaffTimesheet.objects.create(staff_contract=sc, staff=self.staff, target_month=date(2025, 4, 1))
 
         url = reverse('kintai:timecard_create', args=[ts.pk])
         data = {

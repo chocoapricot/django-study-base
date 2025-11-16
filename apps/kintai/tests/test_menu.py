@@ -5,6 +5,22 @@ from apps.system.settings.models import Menu
 class KintaiMenuTest(TestCase):
     """勤怠管理メニューのテスト"""
 
+    def setUp(self):
+        """テストデータの準備"""
+        self.parent_menu = Menu.objects.create(
+            name='勤怠管理',
+            url='/kintai/',
+            level=0,
+            active=True
+        )
+        self.child_menu = Menu.objects.create(
+            name='月次勤怠一覧',
+            url='/kintai/timesheet/',
+            level=1,
+            parent=self.parent_menu,
+            active=True
+        )
+
     def test_menu_exists(self):
         """勤怠管理メニューが存在することを確認"""
         parent_menu = Menu.objects.filter(name='勤怠管理').first()
