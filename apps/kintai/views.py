@@ -16,6 +16,9 @@ def timesheet_list(request):
     return render(request, 'kintai/timesheet_list.html', context)
 
 
+import json
+from apps.contract.models import StaffContract
+
 @login_required
 def timesheet_create(request):
     """月次勤怠作成"""
@@ -32,8 +35,18 @@ def timesheet_create(request):
         }
         form = StaffTimesheetForm(initial=initial_data)
     
+    # JavaScriptで日付範囲を制御するために契約情報をJSONで渡す
+    contracts = StaffContract.objects.filter(start_date__isnull=False)
+    contract_data = {
+        c.pk: {
+            'start': c.start_date.strftime('%Y-%m') if c.start_date else None,
+            'end': c.end_date.strftime('%Y-%m') if c.end_date else None,
+        } for c in contracts
+    }
+    
     context = {
         'form': form,
+        'contract_data_json': json.dumps(contract_data),
     }
     return render(request, 'kintai/timesheet_form.html', context)
 
@@ -82,9 +95,19 @@ def timesheet_edit(request, pk):
     else:
         form = StaffTimesheetForm(instance=timesheet)
     
+    # JavaScriptで日付範囲を制御するために契約情報をJSONで渡す
+    contracts = StaffContract.objects.filter(start_date__isnull=False)
+    contract_data = {
+        c.pk: {
+            'start': c.start_date.strftime('%Y-%m') if c.start_date else None,
+            'end': c.end_date.strftime('%Y-%m') if c.end_date else None,
+        } for c in contracts
+    }
+    
     context = {
         'form': form,
         'timesheet': timesheet,
+        'contract_data_json': json.dumps(contract_data),
     }
     return render(request, 'kintai/timesheet_form.html', context)
 

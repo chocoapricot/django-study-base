@@ -55,3 +55,41 @@
     </div>
 </div>
 {% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contractSelect = document.getElementById('{{ form.staff_contract.id_for_label }}');
+    const monthInput = document.getElementById('{{ form.target_month.id_for_label }}');
+    const contractData = JSON.parse('{{ contract_data_json|escapejs }}');
+
+    function updateMonthRange() {
+        const selectedContractId = contractSelect.value;
+        if (!selectedContractId || !contractData[selectedContractId]) {
+            monthInput.min = '';
+            monthInput.max = '';
+            return;
+        }
+
+        const contract = contractData[selectedContractId];
+        
+        if (contract.start) {
+            monthInput.min = contract.start;
+        } else {
+            monthInput.min = '';
+        }
+
+        if (contract.end) {
+            monthInput.max = contract.end;
+        } else {
+            monthInput.max = '';
+        }
+    }
+
+    contractSelect.addEventListener('change', updateMonthRange);
+    
+    // 初期表示時にも実行
+    updateMonthRange();
+});
+</script>
+{% endblock %}
