@@ -76,7 +76,23 @@
 
 
 
-        <h5 class="card-title mt-4">日次勤怠一覧</h5>
+        <div class="row mt-3">
+            <div class="col text-start">
+
+                {% if perms.kintai.delete_stafftimesheet %}
+                    <a href="{% url 'kintai:timesheet_delete' timesheet.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+                {% endif %}
+                <a href="{% url 'kintai:timesheet_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        日次勤怠一覧
+    </div>
+    <div class="card-body">
         {% if perms.kintai.add_stafftimecard and timesheet.is_editable %}
             <a href="{% url 'kintai:timecard_create' timesheet.pk %}" class="btn btn-sm btn-primary mb-2">日次勤怠追加</a>
             <a href="{% url 'kintai:timecard_calendar' timesheet.pk %}" class="btn btn-sm btn-success mb-2">カレンダー入力</a>
@@ -141,16 +157,6 @@
         {% else %}
             <p class="text-muted">日次勤怠データがありません。</p>
         {% endif %}
-
-        <div class="row mt-3">
-            <div class="col text-start">
-
-                {% if perms.kintai.delete_stafftimesheet %}
-                    <a href="{% url 'kintai:timesheet_delete' timesheet.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
-                {% endif %}
-                <a href="{% url 'kintai:timesheet_list' %}" class="btn btn-sm btn-secondary">戻る</a>
-            </div>
-        </div>
     </div>
 </div>
 {% endblock %}
