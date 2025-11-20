@@ -94,6 +94,25 @@ class StaffTimesheetFormTest(TestCase):
 class StaffTimecardFormTest(TestCase):
     """日次勤怠フォームのテスト"""
 
+    def setUp(self):
+        """テストデータの準備"""
+        # Staff, EmploymentType, ContractPattern, StaffContract, StaffTimesheet を作成
+        staff = Staff.objects.create(name_last='テスト', name_first='スタッフ')
+        employment_type = EmploymentType.objects.create(name='正社員')
+        contract_pattern = ContractPattern.objects.create(name='標準契約', domain=Constants.DOMAIN.STAFF)
+        staff_contract = StaffContract.objects.create(
+            staff=staff,
+            employment_type=employment_type,
+            contract_pattern=contract_pattern,
+            start_date=date(2024, 1, 1),
+            end_date=date(2024, 12, 31)
+        )
+        self.timesheet = StaffTimesheet.objects.create(
+            staff_contract=staff_contract,
+            staff=staff,
+            target_month=date(2024, 11, 1)
+        )
+
     def test_valid_form_work_day(self):
         """有効な出勤日フォームデータのテスト"""
         form_data = {
@@ -102,9 +121,10 @@ class StaffTimecardFormTest(TestCase):
             'start_time': '09:00',
             'end_time': '18:00',
             'break_minutes': 60,
+            'late_night_break_minutes': 0,
             'paid_leave_days': 0,
         }
-        form = StaffTimecardForm(data=form_data)
+        form = StaffTimecardForm(data=form_data, timesheet=self.timesheet)
         self.assertTrue(form.is_valid())
 
     def test_valid_form_paid_leave(self):
@@ -113,9 +133,10 @@ class StaffTimecardFormTest(TestCase):
             'work_date': '2024-11-01',
             'work_type': '40',  # 有給休暇
             'break_minutes': 0,
+            'late_night_break_minutes': 0,
             'paid_leave_days': 1.0,
         }
-        form = StaffTimecardForm(data=form_data)
+        form = StaffTimecardForm(data=form_data, timesheet=self.timesheet)
         self.assertTrue(form.is_valid())
 
     def test_required_fields(self):

@@ -5,7 +5,7 @@ from decimal import Decimal
 from apps.kintai.models import StaffTimesheet, StaffTimecard
 from apps.contract.models import StaffContract
 from apps.staff.models import Staff
-from apps.master.models import EmploymentType, ContractPattern, WorkTimePattern
+from apps.master.models import EmploymentType, ContractPattern, WorkTimePattern, OvertimePattern
 from apps.common.constants import Constants
 
 
@@ -148,6 +148,14 @@ class StaffTimecardModelTest(TestCase):
             name='標準勤務'
         )
 
+        # 時間外算出パターン作成
+        self.overtime_pattern = OvertimePattern.objects.create(
+            name='テスト用',
+            calculate_midnight_premium=True,
+            daily_overtime_enabled=True,
+            daily_overtime_hours=8,
+        )
+
         # スタッフ契約作成
         self.staff_contract = StaffContract.objects.create(
             staff=self.staff,
@@ -156,7 +164,8 @@ class StaffTimecardModelTest(TestCase):
             contract_pattern=self.contract_pattern,
             start_date=date(2024, 4, 1),
             end_date=date(2025, 3, 31),
-            worktime_pattern=self.worktime_pattern
+            worktime_pattern=self.worktime_pattern,
+            overtime_pattern=self.overtime_pattern,
         )
 
         # 月次勤怠作成
@@ -241,11 +250,18 @@ class StaffTimecardLateNightOvertimeTest(TestCase):
         self.employment_type = EmploymentType.objects.create(name='契約社員')
         self.contract_pattern = ContractPattern.objects.create(name='標準', domain=Constants.DOMAIN.STAFF)
         self.worktime_pattern = WorkTimePattern.objects.create(name='標準勤務')
+        self.overtime_pattern = OvertimePattern.objects.create(
+            name='テスト用',
+            calculate_midnight_premium=True,
+            daily_overtime_enabled=True,
+            daily_overtime_hours=8,
+        )
         self.staff_contract = StaffContract.objects.create(
             staff=self.staff,
             employment_type=self.employment_type,
             contract_pattern=self.contract_pattern,
             worktime_pattern=self.worktime_pattern,
+            overtime_pattern=self.overtime_pattern,
             start_date=date(2024, 1, 1),
             end_date=date(2024, 12, 31)
         )
