@@ -538,15 +538,33 @@ document.addEventListener('DOMContentLoaded', function() {
             const departmentId = this.value;
             const workLocationTextarea = document.getElementById('{{ haken_form.work_location.id_for_label }}');
 
-            if (departmentId && workLocationTextarea && workLocationTextarea.value.trim() === '') {
+            if (departmentId) {
                 fetch(`/api/client_department/${departmentId}/`)
                     .then(response => response.json())
                     .then(data => {
-                        if (data.success && data.data.address) {
-                            workLocationTextarea.value = data.data.address;
+                        if (data.success) {
+                            // 就業場所が空の場合のみ、住所を自動設定
+                            if (workLocationTextarea && workLocationTextarea.value.trim() === '' && data.data.address) {
+                                workLocationTextarea.value = data.data.address;
+                            }
+
+                            // 派遣先指揮命令者、苦情申出先、責任者を設定
+                            const commanderSelect = document.getElementById('{{ haken_form.commander.id_for_label }}');
+                            const complaintOfficerSelect = document.getElementById('{{ haken_form.complaint_officer_client.id_for_label }}');
+                            const responsiblePersonSelect = document.getElementById('{{ haken_form.responsible_person_client.id_for_label }}');
+
+                            if (data.data.commander_id && commanderSelect) {
+                                commanderSelect.value = data.data.commander_id;
+                            }
+                            if (data.data.complaint_officer_id && complaintOfficerSelect) {
+                                complaintOfficerSelect.value = data.data.complaint_officer_id;
+                            }
+                            if (data.data.responsible_person_id && responsiblePersonSelect) {
+                                responsiblePersonSelect.value = data.data.responsible_person_id;
+                            }
                         }
                     })
-                    .catch(error => console.error('Error fetching department address:', error));
+                    .catch(error => console.error('Error fetching department details:', error));
             }
         });
     }

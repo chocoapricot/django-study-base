@@ -113,6 +113,9 @@ def get_client_department_detail(request, department_id):
             'name': department.name,
             'address': department.address or '',
             'postal_code': department.postal_code or '',
+            'commander_id': department.commander_id,
+            'complaint_officer_id': department.complaint_officer_id,
+            'responsible_person_id': department.responsible_person_id,
         }
         return JsonResponse({'success': True, 'data': data})
     except ClientDepartment.DoesNotExist:
