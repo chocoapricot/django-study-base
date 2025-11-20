@@ -357,41 +357,55 @@ class StaffTimecard(MyModel):
         # 労働時間（分単位）
         self.work_minutes = work_minutes
 
-        # 所定労働時間（デフォルト8時間 = 480分）
-        standard_minutes = 8 * 60
+        # --- 契約に紐づく時間外算出パターンを取得 ---
+        overtime_pattern = None
+        if self.timesheet and self.timesheet.staff_contract:
+            overtime_pattern = self.timesheet.staff_contract.overtime_pattern
 
-        # 残業時間を計算
-        if self.work_minutes > standard_minutes:
-            self.overtime_minutes = self.work_minutes - standard_minutes
-        else:
-            self.overtime_minutes = 0
+        # --- 残業時間の計算 ---
+        self.overtime_minutes = 0
+        if overtime_pattern:
+            if (overtime_pattern.calculation_type == 'premium' and
+                    overtime_pattern.daily_overtime_enabled and
+                    overtime_pattern.daily_overtime_hours is not None):
 
-        # 深夜残業時間（22:00-05:00）を計算
-        late_night_start = time(22, 0)
-        late_night_end = time(5, 0)
+                standard_minutes = overtime_pattern.daily_overtime_hours * 60
+                if self.work_minutes > standard_minutes:
+                    self.overtime_minutes = self.work_minutes - standard_minutes
 
-        # 1分ずつチェックする堅牢な方法
-        late_night_minutes = 0
-        current_time = start_dt
-        while current_time < end_dt:
-            # 現在時刻が深夜時間帯かどうか
-            t = current_time.time()
-            if t >= late_night_start or t < late_night_end:
-                late_night_minutes += 1
-            current_time += timedelta(minutes=1)
+        # --- 深夜残業時間の計算 ---
+        self.late_night_overtime_minutes = 0
+        if overtime_pattern and overtime_pattern.calculate_midnight_premium:
+            late_night_start = time(22, 0)
+            late_night_end = time(5, 0)
 
-        # 深夜休憩時間を深夜時間から差し引く
-        late_night_work_minutes = late_night_minutes - (self.late_night_break_minutes or 0)
-        self.late_night_overtime_minutes = late_night_work_minutes if late_night_work_minutes > 0 else 0
+            # 1分ずつチェックする堅牢な方法
+            late_night_minutes = 0
+            current_time = start_dt
+            while current_time < end_dt:
+                t = current_time.time()
+                is_late_night = False
 
-        # 休日労働時間（休日出勤の場合）
+                # 深夜時間帯の判定
+                # 22:00以降、または翌日の00:00から05:00まで
+                if t >= late_night_start or t < late_night_end:
+                    is_late_night = True
+
+                if is_late_night:
+                    late_night_minutes += 1
+                current_time += timedelta(minutes=1)
+
+            # 深夜休憩時間を深夜時間から差し引く
+            late_night_work_minutes = late_night_minutes - (self.late_night_break_minutes or 0)
+            self.late_night_overtime_minutes = late_night_work_minutes if late_night_work_minutes > 0 else 0
+
+
+        # --- 休日労働時間の計算 ---
         # TODO: 会社の休日カレンダーと連携する必要がある
         if self.work_date.weekday() >= 5:  # 土日
             self.holiday_work_minutes = self.work_minutes
         else:
             self.holiday_work_minutes = 0
-
-        # 遅刻・早退の計算は表示要件に応じてフロント側で扱うためモデル内計算は行わない
 
     # --- Display properties ---
     @property
