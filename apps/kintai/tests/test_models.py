@@ -189,9 +189,9 @@ class StaffTimecardModelTest(TestCase):
             end_time=time(18, 0),
             break_minutes=60
         )
-        # 9:00-18:00で休憩60分 = 8時間
-        self.assertEqual(timecard.work_hours, Decimal('8.00'))
-        self.assertEqual(timecard.overtime_hours, Decimal('0.00'))
+        # 9:00-18:00で休憩60分 = 8時間 = 480分
+        self.assertEqual(timecard.work_minutes, 480)
+        self.assertEqual(timecard.overtime_minutes, 0)
 
     def test_calculate_overtime(self):
         """残業時間計算のテスト"""
@@ -203,9 +203,9 @@ class StaffTimecardModelTest(TestCase):
             end_time=time(20, 0),  # 20時まで
             break_minutes=60
         )
-        # 9:00-20:00で休憩60分 = 10時間（残業2時間）
-        self.assertEqual(timecard.work_hours, Decimal('10.00'))
-        self.assertEqual(timecard.overtime_hours, Decimal('2.00'))
+        # 9:00-20:00で休憩60分 = 10時間 = 600分 (残業2時間 = 120分)
+        self.assertEqual(timecard.work_minutes, 600)
+        self.assertEqual(timecard.overtime_minutes, 120)
 
     def test_invalid_time_range(self):
         """無効な時刻範囲のバリデーションテスト"""
@@ -265,7 +265,7 @@ class StaffTimecardLateNightOvertimeTest(TestCase):
             end_time=time(18, 0),
             break_minutes=60
         )
-        self.assertEqual(timecard.late_night_overtime_hours, Decimal('0.00'))
+        self.assertEqual(timecard.late_night_overtime_minutes, 0)
 
     def test_calculate_late_night_overtime_within_one_day(self):
         """日をまたがない深夜残業"""
@@ -280,10 +280,10 @@ class StaffTimecardLateNightOvertimeTest(TestCase):
             break_minutes=60
         )
         # 14:00-24:00 (10時間) - 休憩1時間 = 9時間労働
-        # 深夜時間は 22:00-24:00 の2時間
-        # 休憩按分: 60分 * (2時間 / 10時間) = 12分
-        # 深夜労働時間: 120分 - 12分 = 108分 = 1.8時間
-        self.assertAlmostEqual(timecard.late_night_overtime_hours, Decimal('1.80'), places=2)
+        # 深夜時間は 22:00-24:00 の2時間 = 120分
+        # 休憩按分: 60分 * (120分 / 600分) = 12分
+        # 深夜労働時間: 120分 - 12分 = 108分
+        self.assertEqual(timecard.late_night_overtime_minutes, 108)
 
     def test_calculate_late_night_overtime_across_midnight(self):
         """日をまたぐ深夜残業"""
@@ -298,8 +298,8 @@ class StaffTimecardLateNightOvertimeTest(TestCase):
             break_minutes=0
         )
         # 22:00-06:00 (8時間)
-        # 深夜時間は 22:00-05:00 の7時間
-        self.assertAlmostEqual(timecard.late_night_overtime_hours, Decimal('7.00'), places=2)
+        # 深夜時間は 22:00-05:00 の7時間 = 420分
+        self.assertEqual(timecard.late_night_overtime_minutes, 420)
 
     def test_calculate_late_night_overtime_with_break(self):
         """休憩ありの日をまたぐ深夜残業"""
@@ -312,11 +312,11 @@ class StaffTimecardLateNightOvertimeTest(TestCase):
             end_time_next_day=True,
             break_minutes=60
         )
-        # 20:00-05:00 (9時間) - 休憩1時間 = 8時間労働
-        # 深夜時間は 22:00-05:00 の7時間
-        # 休憩按分: 60分 * (7時間 / 9時間) = 46.66...分
-        # 深夜労働時間: 420分 - 46.66分 = 373.33分 = 6.222...時間
-        self.assertAlmostEqual(timecard.late_night_overtime_hours, Decimal('6.22'), places=2)
+        # 20:00-05:00 (9時間=540分) - 休憩1時間 = 8時間労働
+        # 深夜時間は 22:00-05:00 の7時間 = 420分
+        # 休憩按分: 60分 * (420分 / 540分) = 46.66...分
+        # 深夜労働時間: 420分 - 46.66...分 = 373.33...分
+        self.assertEqual(timecard.late_night_overtime_minutes, 373)
 
     def test_calculate_late_night_overtime_full_night(self):
         """フル深夜勤務"""
@@ -330,5 +330,5 @@ class StaffTimecardLateNightOvertimeTest(TestCase):
             break_minutes=0
         )
         # 22:00-05:00 (7時間) - 休憩0 = 7時間労働
-        # 深夜時間は7時間すべて
-        self.assertAlmostEqual(timecard.late_night_overtime_hours, Decimal('7.00'), places=2)
+        # 深夜時間は7時間すべて = 420分
+        self.assertEqual(timecard.late_night_overtime_minutes, 420)

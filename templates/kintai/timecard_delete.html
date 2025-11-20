@@ -13,7 +13,7 @@
             <tr><th>勤務区分</th><td>{{ timecard.get_work_type_display }}</td></tr>
             <tr><th>出勤時刻</th><td>{{ timecard.start_time|default:"-" }}</td></tr>
             <tr><th>退勤時刻</th><td>{{ timecard.end_time|default:"-" }}</td></tr>
-            <tr><th>労働時間</th><td>{{ timecard.work_hours }}時間</td></tr>
+            <tr><th>労働時間</th><td>{{ timecard.work_hours_display }}</td></tr>
         </table>
 
         <form method="post">
