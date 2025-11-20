@@ -103,14 +103,15 @@
                 <thead>
                     <tr>
                         <th style="width: 12%;">勤務日</th>
-                        <th style="width: 10%;">勤務区分</th>
-                        <th style="width: 10%;">出勤時刻</th>
-                        <th style="width: 10%;">退勤時刻</th>
-                        <th style="width: 8%;">休憩</th>
-                        <th style="width: 12%;">労働時間</th>
-                        <th style="width: 12%;">残業時間</th>
-                        <th style="width: 12%;">深夜時間</th>
-                        <th style="width: 14%;">操作</th>
+                        <th style="width: 8%;">勤務区分</th>
+                        <th style="width: 9%;">出勤時刻</th>
+                        <th style="width: 9%;">退勤時刻</th>
+                        <th style="width: 7%;">休憩(分)</th>
+                        <th style="width: 7%;">深夜休憩(分)</th>
+                        <th style="width: 11%;">労働時間</th>
+                        <th style="width: 11%;">残業時間</th>
+                        <th style="width: 11%;">深夜時間</th>
+                        <th style="width: 15%;">操作</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -141,7 +142,8 @@
                         </td>
                         <td>{{ timecard.start_time|default:"-" }}</td>
                         <td>{{ timecard.end_time|default:"-" }}</td>
-                        <td class="text-end">{% if timecard.break_minutes > 0 %}{{ timecard.break_minutes }}分{% else %}-{% endif %}</td>
+                        <td class="text-end">{% if timecard.break_minutes > 0 %}{{ timecard.break_minutes }}{% else %}-{% endif %}</td>
+                        <td class="text-end">{% if timecard.late_night_break_minutes > 0 %}{{ timecard.late_night_break_minutes }}{% else %}-{% endif %}</td>
                         <td class="text-end">{{ timecard.work_hours_display }}</td>
                         <td class="text-end">{{ timecard.overtime_hours_display }}</td>
                         <td class="text-end">{{ timecard.late_night_overtime_hours_display }}</td>

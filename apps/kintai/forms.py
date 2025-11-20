@@ -102,7 +102,7 @@ class StaffTimecardForm(forms.ModelForm):
     
     class Meta:
         model = StaffTimecard
-        fields = ['work_date', 'work_type', 'start_time', 'start_time_next_day', 'end_time', 'end_time_next_day', 'break_minutes', 'paid_leave_days', 'memo']
+        fields = ['work_date', 'work_type', 'start_time', 'start_time_next_day', 'end_time', 'end_time_next_day', 'break_minutes', 'late_night_break_minutes', 'paid_leave_days', 'memo']
         widgets = {
             'work_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'work_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
@@ -111,6 +111,7 @@ class StaffTimecardForm(forms.ModelForm):
             'end_time': forms.TimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'time'}),
             'end_time_next_day': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'break_minutes': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': 0, 'value': 0}),
+            'late_night_break_minutes': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': 0, 'value': 0}),
             'paid_leave_days': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': 0, 'max': 1, 'step': 0.5, 'value': 0}),
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
