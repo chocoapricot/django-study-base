@@ -89,6 +89,7 @@ class KintaiViewIntegrationTests(TestCase):
             'work_date': '2025-04-01',  # outside contract
             'work_type': '30',
             'break_minutes': 0,
+            'late_night_break_minutes': 0,
             'paid_leave_days': 0,
         }
 
@@ -117,6 +118,7 @@ class KintaiViewIntegrationTests(TestCase):
             'work_date': '2025-04-10',
             'work_type': '30',
             'break_minutes': 0,
+            'late_night_break_minutes': 0,
             'paid_leave_days': 0,
         }
 
