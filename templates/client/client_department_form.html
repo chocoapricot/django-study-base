@@ -111,8 +111,10 @@
                 </div>
             </div>
 
-            <div id="haken-fields" style="display: none;">
-                <div class="row mb-3 align-items-center">
+            <div class="haken-fields">
+                <div class="row mb-1 align-items-center">
+                    <div class="col-sm-3">
+                    </div>
                     <label for="{{ form.commander.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.commander.label }}</label>
                     <div class="col-sm-4">
                         {{ form.commander }}
@@ -122,7 +124,9 @@
                     </div>
                 </div>
 
-                <div class="row mb-3 align-items-center">
+                <div class="row mb-1 align-items-center">
+                    <div class="col-sm-3">
+                    </div>
                     <label for="{{ form.complaint_officer.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.complaint_officer.label }}</label>
                     <div class="col-sm-4">
                         {{ form.complaint_officer }}
@@ -133,6 +137,8 @@
                 </div>
 
                 <div class="row mb-3 align-items-center">
+                    <div class="col-sm-3">
+                    </div>
                     <label for="{{ form.responsible_person.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.responsible_person.label }}</label>
                     <div class="col-sm-4">
                         {{ form.responsible_person }}
@@ -228,20 +234,6 @@ function searchAddress() {
 
 // ページロジック情報を設定
 document.addEventListener('DOMContentLoaded', function() {
-    const isHakenOfficeCheckbox = document.getElementById('{{ form.is_haken_office.id_for_label }}');
-    const hakenFields = document.getElementById('haken-fields');
-
-    function toggleHakenFields() {
-        if (isHakenOfficeCheckbox.checked) {
-            hakenFields.style.display = 'block';
-        } else {
-            hakenFields.style.display = 'none';
-        }
-    }
-
-    isHakenOfficeCheckbox.addEventListener('change', toggleHakenFields);
-    toggleHakenFields(); // 初期表示
-
     // このページにロジック情報があることを通知
     document.body.setAttribute('data-has-logic', 'true');
     

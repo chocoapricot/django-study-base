@@ -96,32 +96,36 @@
                     </div>
                 </div>
 
-                {% if department.is_haken_office %}
-                <div class="row mb-3 align-items-center">
+                <div class="row mb-1 align-items-center">
+                    <div class="col-sm-4">
+                    </div>
                     <div class="col-sm-3 text-start text-md-end">
                         <strong>派遣先指揮命令者</strong>
                     </div>
-                    <div class="col-sm-8">
+                    <div class="col-sm-3">
                         {{ department.commander.name|default:"-" }}
                     </div>
                 </div>
-                <div class="row mb-3 align-items-center">
+                <div class="row mb-1 align-items-center">
+                    <div class="col-sm-4">
+                    </div>
                     <div class="col-sm-3 text-start text-md-end">
                         <strong>派遣先苦情申出先</strong>
                     </div>
-                    <div class="col-sm-8">
+                    <div class="col-sm-3">
                         {{ department.complaint_officer.name|default:"-" }}
                     </div>
                 </div>
                 <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4">
+                    </div>
                     <div class="col-sm-3 text-start text-md-end">
                         <strong>派遣先責任者</strong>
                     </div>
-                    <div class="col-sm-8">
+                    <div class="col-sm-3">
                         {{ department.responsible_person.name|default:"-" }}
                     </div>
                 </div>
-                {% endif %}
 
                 <div class="row mb-3 align-items-center">
                     <div class="col-sm-3 text-start text-md-end">
