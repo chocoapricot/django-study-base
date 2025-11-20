@@ -1,3 +1,4 @@
+from datetime import date
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -63,7 +64,7 @@ class StaffContractConfirmTest(TestCase):
             corporate_number=self.company.corporate_number,
             contract_name='Test Contract',
             contract_status=Constants.CONTRACT_STATUS.ISSUED,
-            start_date='2025-01-01',
+            start_date=date(2025, 1, 1),
             contract_pattern=self.staff_pattern,
             issued_at=timezone.now(),
             issued_by=self.user
