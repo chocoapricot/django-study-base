@@ -249,6 +249,7 @@ class StaffTimecard(MyModel):
     end_time = models.TimeField('退勤時刻', blank=True, null=True)
     end_time_next_day = models.BooleanField('退勤時刻翌日', default=False)
     break_minutes = models.PositiveIntegerField('休憩時間（分）', default=0)
+    late_night_break_minutes = models.PositiveIntegerField('深夜休憩（分）', default=0)
 
     # 計算結果
     work_minutes = models.PositiveIntegerField('労働時間（分）', default=0, help_text='実労働時間（分）')
@@ -349,7 +350,8 @@ class StaffTimecard(MyModel):
             end_dt += timedelta(days=1)
 
         total_minutes = int((end_dt - start_dt).total_seconds() / 60)
-        work_minutes = total_minutes - self.break_minutes
+        total_break_minutes = (self.break_minutes or 0) + (self.late_night_break_minutes or 0)
+        work_minutes = total_minutes - total_break_minutes
         work_minutes = work_minutes if work_minutes > 0 else 0
 
         # 労働時間（分単位）
@@ -378,13 +380,9 @@ class StaffTimecard(MyModel):
                 late_night_minutes += 1
             current_time += timedelta(minutes=1)
 
-        # 休憩時間を深夜時間から差し引く（労働時間に比例して按分）
-        if total_minutes > 0:
-            late_night_work_minutes = late_night_minutes - (self.break_minutes * (late_night_minutes / total_minutes))
-        else:
-            late_night_work_minutes = 0
-
-        self.late_night_overtime_minutes = int(late_night_work_minutes) if late_night_work_minutes > 0 else 0
+        # 深夜休憩時間を深夜時間から差し引く
+        late_night_work_minutes = late_night_minutes - (self.late_night_break_minutes or 0)
+        self.late_night_overtime_minutes = late_night_work_minutes if late_night_work_minutes > 0 else 0
 
         # 休日労働時間（休日出勤の場合）
         # TODO: 会社の休日カレンダーと連携する必要がある
