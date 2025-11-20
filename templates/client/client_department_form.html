@@ -111,6 +111,38 @@
                 </div>
             </div>
 
+            <div id="haken-fields" style="display: none;">
+                <div class="row mb-3 align-items-center">
+                    <label for="{{ form.commander.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.commander.label }}</label>
+                    <div class="col-sm-4">
+                        {{ form.commander }}
+                        {% if form.commander.errors %}
+                            <div class="text-danger">{{ form.commander.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <label for="{{ form.complaint_officer.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.complaint_officer.label }}</label>
+                    <div class="col-sm-4">
+                        {{ form.complaint_officer }}
+                        {% if form.complaint_officer.errors %}
+                            <div class="text-danger">{{ form.complaint_officer.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <label for="{{ form.responsible_person.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.responsible_person.label }}</label>
+                    <div class="col-sm-4">
+                        {{ form.responsible_person }}
+                        {% if form.responsible_person.errors %}
+                            <div class="text-danger">{{ form.responsible_person.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.is_haken_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.is_haken_unit.label }}</label>
                 <div class="col-sm-1">
@@ -196,6 +228,20 @@ function searchAddress() {
 
 // ページロジック情報を設定
 document.addEventListener('DOMContentLoaded', function() {
+    const isHakenOfficeCheckbox = document.getElementById('{{ form.is_haken_office.id_for_label }}');
+    const hakenFields = document.getElementById('haken-fields');
+
+    function toggleHakenFields() {
+        if (isHakenOfficeCheckbox.checked) {
+            hakenFields.style.display = 'block';
+        } else {
+            hakenFields.style.display = 'none';
+        }
+    }
+
+    isHakenOfficeCheckbox.addEventListener('change', toggleHakenFields);
+    toggleHakenFields(); // 初期表示
+
     // このページにロジック情報があることを通知
     document.body.setAttribute('data-has-logic', 'true');
     
