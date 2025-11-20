@@ -413,7 +413,7 @@ def client_delete(request, pk):
 def client_department_create(request, client_pk):
     client = get_object_or_404(Client, pk=client_pk)
     if request.method == 'POST':
-        form = ClientDepartmentForm(request.POST)
+        form = ClientDepartmentForm(request.POST, client=client)
         if form.is_valid():
             department = form.save(commit=False)
             department.client = client
@@ -423,7 +423,7 @@ def client_department_create(request, client_pk):
             log_model_action(request.user, 'create', department)
             return redirect('client:client_detail', pk=client.pk)
     else:
-        form = ClientDepartmentForm()
+        form = ClientDepartmentForm(client=client)
     return render(request, 'client/client_department_form.html', {'form': form, 'client': client, 'show_client_info': True})
 
 @login_required
@@ -536,7 +536,7 @@ def client_department_update(request, pk):
     department = get_object_or_404(ClientDepartment, pk=pk)
     client = department.client
     if request.method == 'POST':
-        form = ClientDepartmentForm(request.POST, instance=department)
+        form = ClientDepartmentForm(request.POST, instance=department, client=client)
         if form.is_valid():
             form.save()
             # 変更履歴を記録
@@ -544,7 +544,7 @@ def client_department_update(request, pk):
             log_model_action(request.user, 'update', department)
             return redirect('client:client_detail', pk=client.pk)
     else:
-        form = ClientDepartmentForm(instance=department)
+        form = ClientDepartmentForm(instance=department, client=client)
     return render(request, 'client/client_department_form.html', {'form': form, 'client': client, 'department': department, 'show_client_info': True})
 
 @login_required
