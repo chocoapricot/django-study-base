@@ -229,3 +229,106 @@ class StaffTimecardModelTest(TestCase):
             end_time=time(18, 0)
         )
         self.assertEqual(str(timecard), '山田 太郎 - 2024-11-01')
+
+
+class StaffTimecardLateNightOvertimeTest(TestCase):
+    """日次勤怠モデルの深夜残業時間テスト"""
+
+    def setUp(self):
+        """テストデータの準備"""
+        # Staff, EmploymentType, ContractPattern, WorkTimePattern, StaffContract, StaffTimesheet
+        self.staff = Staff.objects.create(name_last='テスト', name_first='ユーザー')
+        self.employment_type = EmploymentType.objects.create(name='契約社員')
+        self.contract_pattern = ContractPattern.objects.create(name='標準', domain=Constants.DOMAIN.STAFF)
+        self.worktime_pattern = WorkTimePattern.objects.create(name='標準勤務')
+        self.staff_contract = StaffContract.objects.create(
+            staff=self.staff,
+            employment_type=self.employment_type,
+            contract_pattern=self.contract_pattern,
+            worktime_pattern=self.worktime_pattern,
+            start_date=date(2024, 1, 1),
+            end_date=date(2024, 12, 31)
+        )
+        self.timesheet = StaffTimesheet.objects.create(
+            staff_contract=self.staff_contract,
+            staff=self.staff,
+            target_month=date(2024, 11, 1)
+        )
+
+    def test_calculate_late_night_overtime_no_overtime(self):
+        """深夜残業なし（通常勤務）"""
+        timecard = StaffTimecard.objects.create(
+            timesheet=self.timesheet,
+            work_date=date(2024, 11, 5),
+            work_type='10',
+            start_time=time(9, 0),
+            end_time=time(18, 0),
+            break_minutes=60
+        )
+        self.assertEqual(timecard.late_night_overtime_hours, Decimal('0.00'))
+
+    def test_calculate_late_night_overtime_within_one_day(self):
+        """日をまたがない深夜残業"""
+        # 22:00から24:00(翌0:00)までの2時間が深夜残業
+        timecard = StaffTimecard.objects.create(
+            timesheet=self.timesheet,
+            work_date=date(2024, 11, 5),
+            work_type='10',
+            start_time=time(14, 0),
+            end_time=time(0, 0),
+            end_time_next_day=True,
+            break_minutes=60
+        )
+        # 14:00-24:00 (10時間) - 休憩1時間 = 9時間労働
+        # 深夜時間は 22:00-24:00 の2時間
+        # 休憩按分: 60分 * (2時間 / 10時間) = 12分
+        # 深夜労働時間: 120分 - 12分 = 108分 = 1.8時間
+        self.assertAlmostEqual(timecard.late_night_overtime_hours, Decimal('1.80'), places=2)
+
+    def test_calculate_late_night_overtime_across_midnight(self):
+        """日をまたぐ深夜残業"""
+        # 22:00から翌朝6:00まで勤務
+        timecard = StaffTimecard.objects.create(
+            timesheet=self.timesheet,
+            work_date=date(2024, 11, 5),
+            work_type='10',
+            start_time=time(22, 0),
+            end_time=time(6, 0),
+            end_time_next_day=True,
+            break_minutes=0
+        )
+        # 22:00-06:00 (8時間)
+        # 深夜時間は 22:00-05:00 の7時間
+        self.assertAlmostEqual(timecard.late_night_overtime_hours, Decimal('7.00'), places=2)
+
+    def test_calculate_late_night_overtime_with_break(self):
+        """休憩ありの日をまたぐ深夜残業"""
+        timecard = StaffTimecard.objects.create(
+            timesheet=self.timesheet,
+            work_date=date(2024, 11, 5),
+            work_type='10',
+            start_time=time(20, 0),
+            end_time=time(5, 0), # 翌朝5時
+            end_time_next_day=True,
+            break_minutes=60
+        )
+        # 20:00-05:00 (9時間) - 休憩1時間 = 8時間労働
+        # 深夜時間は 22:00-05:00 の7時間
+        # 休憩按分: 60分 * (7時間 / 9時間) = 46.66...分
+        # 深夜労働時間: 420分 - 46.66分 = 373.33分 = 6.222...時間
+        self.assertAlmostEqual(timecard.late_night_overtime_hours, Decimal('6.22'), places=2)
+
+    def test_calculate_late_night_overtime_full_night(self):
+        """フル深夜勤務"""
+        timecard = StaffTimecard.objects.create(
+            timesheet=self.timesheet,
+            work_date=date(2024, 11, 5),
+            work_type='10',
+            start_time=time(22, 0),
+            end_time=time(5, 0),
+            end_time_next_day=True,
+            break_minutes=0
+        )
+        # 22:00-05:00 (7時間) - 休憩0 = 7時間労働
+        # 深夜時間は7時間すべて
+        self.assertAlmostEqual(timecard.late_night_overtime_hours, Decimal('7.00'), places=2)

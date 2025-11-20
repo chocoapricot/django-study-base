@@ -34,6 +34,7 @@ class StaffTimesheet(MyModel):
     total_work_days = models.PositiveIntegerField('出勤日数', default=0)
     total_work_hours = models.DecimalField('総労働時間', max_digits=6, decimal_places=2, default=0)
     total_overtime_hours = models.DecimalField('残業時間', max_digits=6, decimal_places=2, default=0)
+    total_late_night_overtime_hours = models.DecimalField('深夜時間', max_digits=6, decimal_places=2, default=0)
     total_holiday_work_hours = models.DecimalField('休日労働時間', max_digits=6, decimal_places=2, default=0)
     # 遅刻・早退は個別の集計対象から除外
     total_absence_days = models.PositiveIntegerField('欠勤日数', default=0)
@@ -156,6 +157,7 @@ class StaffTimesheet(MyModel):
         self.total_work_days = timecards.filter(work_type='10').count()
         self.total_work_hours = sum(tc.work_hours or 0 for tc in timecards)
         self.total_overtime_hours = sum(tc.overtime_hours or 0 for tc in timecards)
+        self.total_late_night_overtime_hours = sum(tc.late_night_overtime_hours or 0 for tc in timecards)
         self.total_holiday_work_hours = sum(tc.holiday_work_hours or 0 for tc in timecards)
     # 遅刻・早退の集計は廃止（個別timecardの値は残るが月次の集計フィールドは削除）
         self.total_absence_days = timecards.filter(work_type='30').count()
@@ -193,6 +195,15 @@ class StaffTimesheet(MyModel):
         if self.total_overtime_hours and self.total_overtime_hours > 0:
             hours = int(self.total_overtime_hours)
             minutes = int((self.total_overtime_hours - hours) * 60)
+            return f"{hours}時間{minutes:02d}分"
+        return "-"
+
+    @property
+    def total_late_night_overtime_hours_display(self):
+        """深夜時間の表示用文字列"""
+        if self.total_late_night_overtime_hours and self.total_late_night_overtime_hours > 0:
+            hours = int(self.total_late_night_overtime_hours)
+            minutes = int((self.total_late_night_overtime_hours - hours) * 60)
             return f"{hours}時間{minutes:02d}分"
         return "-"
     
@@ -245,6 +256,7 @@ class StaffTimecard(MyModel):
     # 計算結果
     work_hours = models.DecimalField('労働時間', max_digits=5, decimal_places=2, default=0, help_text='実労働時間（時間）')
     overtime_hours = models.DecimalField('残業時間', max_digits=5, decimal_places=2, default=0, help_text='残業時間（時間）')
+    late_night_overtime_hours = models.DecimalField('深夜時間', max_digits=5, decimal_places=2, default=0, help_text='深夜残業時間（時間）')
     holiday_work_hours = models.DecimalField('休日労働時間', max_digits=5, decimal_places=2, default=0, help_text='休日労働時間（時間）')
     # 遅刻・早退は個別フィールドとして保持しない（UI/集計上は不要のため削除）
     
@@ -320,6 +332,7 @@ class StaffTimecard(MyModel):
             # 出勤以外または時刻未入力の場合は0
             self.work_hours = 0
             self.overtime_hours = 0
+            self.late_night_overtime_hours = 0
             self.holiday_work_hours = 0
             return
 
@@ -353,6 +366,64 @@ class StaffTimecard(MyModel):
         else:
             self.overtime_hours = 0
         
+        # 深夜残業時間（22:00-05:00）を計算
+        late_night_start = time(22, 0)
+        late_night_end = time(5, 0)
+
+        # start_dt と end_dt が datetime オブジェクトであることを確認
+        if isinstance(start_dt, datetime) and isinstance(end_dt, datetime):
+            # 深夜時間帯の開始時刻と終了時刻を計算
+            # パターン1: 勤務開始日の22:00
+            ln_start1 = datetime.combine(start_dt.date(), late_night_start)
+            # パターン2: 勤務終了日の5:00
+            ln_end1 = datetime.combine(end_dt.date(), late_night_end)
+            # パターン3: 勤務開始日の翌日5:00
+            ln_end2 = datetime.combine(start_dt.date() + timedelta(days=1), late_night_end)
+            # パターン4: 勤務終了日の22:00（これは深夜時間帯の開始なので計算には使わない）
+
+            # 深夜時間の重複部分を計算
+            late_night_minutes = 0
+
+            # 勤務時間帯と深夜時間帯の重複を計算
+            # 1. start_dt.date()の22:00から翌5:00まで
+            overlap_start1 = max(start_dt, ln_start1)
+            overlap_end1 = min(end_dt, ln_end2)
+            if overlap_end1 > overlap_start1:
+                late_night_minutes += (overlap_end1 - overlap_start1).total_seconds() / 60
+
+            # 2. end_dt.date()がstart_dt.date()より後の場合、その日の0:00から5:00まで
+            if end_dt.date() > start_dt.date():
+                ln_start2 = datetime.combine(end_dt.date(), time(0, 0))
+                overlap_start2 = max(start_dt, ln_start2)
+                overlap_end2 = min(end_dt, ln_end1)
+                if overlap_end2 > overlap_start2:
+                    # こちらのロジックは複雑になるため、よりシンプルなアプローチを採用
+                    # 1分ずつチェックする方法で堅牢性を担保
+                    pass
+
+        # 1分ずつチェックする堅牢な方法
+        late_night_minutes = 0
+        current_time = start_dt
+        while current_time < end_dt:
+            # 休憩時間は深夜労働に含めない
+            # ただし、休憩時間がいつ取られたかの情報がないため、ここでは考慮しない
+            # 最終的な労働時間から按分するなどの方法もあるが、一旦総労働時間で計算
+
+            # 現在時刻が深夜時間帯かどうか
+            t = current_time.time()
+            if t >= late_night_start or t < late_night_end:
+                late_night_minutes += 1
+
+            current_time += timedelta(minutes=1)
+
+        # 休憩時間を深夜時間から差し引く（労働時間に比例して按分）
+        if total_minutes > 0:
+            late_night_work_minutes = late_night_minutes - (self.break_minutes * (late_night_minutes / total_minutes))
+        else:
+            late_night_work_minutes = 0
+
+        self.late_night_overtime_hours = Decimal(late_night_work_minutes) / Decimal(60)
+
         # 休日労働時間（休日出勤の場合）
         if self.work_date.weekday() >= 5:  # 土日
             self.holiday_work_hours = self.work_hours
@@ -390,6 +461,15 @@ class StaffTimecard(MyModel):
         if self.overtime_hours and self.overtime_hours > 0:
             hours = int(self.overtime_hours)
             minutes = int((self.overtime_hours - hours) * 60)
+            return f"{hours}時間{minutes:02d}分"
+        return "-"
+
+    @property
+    def late_night_overtime_hours_display(self):
+        """深夜時間の表示用文字列"""
+        if self.late_night_overtime_hours and self.late_night_overtime_hours > 0:
+            hours = int(self.late_night_overtime_hours)
+            minutes = int((self.late_night_overtime_hours - hours) * 60)
             return f"{hours}時間{minutes:02d}分"
         return "-"
     

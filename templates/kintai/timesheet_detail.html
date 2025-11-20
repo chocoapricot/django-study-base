@@ -67,6 +67,7 @@
                     <tr><th style="width: 40%;">出勤日数</th><td>{{ timesheet.total_work_days }}日</td></tr>
                     <tr><th>総労働時間</th><td>{{ timesheet.total_work_hours_display }}</td></tr>
                     <tr><th>残業時間</th><td>{{ timesheet.total_overtime_hours_display }}</td></tr>
+                    <tr><th>深夜時間</th><td>{{ timesheet.total_late_night_overtime_hours_display }}</td></tr>
                     <tr><th>休日労働時間</th><td>{{ timesheet.total_holiday_work_hours_display }}</td></tr>
                     <tr><th>欠勤日数</th><td>{% if timesheet.total_absence_days > 0 %}{{ timesheet.total_absence_days }}日{% else %}-{% endif %}</td></tr>
                     <tr><th>有給休暇日数</th><td>{% if timesheet.total_paid_leave_days > 0 %}{{ timesheet.total_paid_leave_days }}日{% else %}-{% endif %}</td></tr>
@@ -108,6 +109,7 @@
                         <th style="width: 8%;">休憩</th>
                         <th style="width: 12%;">労働時間</th>
                         <th style="width: 12%;">残業時間</th>
+                        <th style="width: 12%;">深夜時間</th>
                         <th style="width: 14%;">操作</th>
                     </tr>
                 </thead>
@@ -142,6 +144,7 @@
                         <td class="text-end">{% if timecard.break_minutes > 0 %}{{ timecard.break_minutes }}分{% else %}-{% endif %}</td>
                         <td class="text-end">{{ timecard.work_hours_display }}</td>
                         <td class="text-end">{{ timecard.overtime_hours_display }}</td>
+                        <td class="text-end">{{ timecard.late_night_overtime_hours_display }}</td>
                         <td>
                             {% if perms.kintai.change_stafftimecard and timesheet.is_editable %}
                                 <a href="{% url 'kintai:timecard_edit' timecard.pk %}" class="btn btn-dark btn-sm" title="編集"><i class="bi bi-pencil"></i></a>
