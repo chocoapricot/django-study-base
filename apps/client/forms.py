@@ -134,7 +134,7 @@ class ClientDepartmentForm(forms.ModelForm):
         fields = [
             'name', 'department_code', 'postal_code', 'address', 'phone_number',
             'is_haken_office', 'is_haken_unit', 'haken_unit_manager_title', 'haken_jigyosho_teishokubi',
-            'haken_jigyosho_teishokubi_notice_date', 'display_order', 'valid_from', 'valid_to'
+            'haken_jigyosho_teishokubi_notice_date', 'commander', 'complaint_officer', 'responsible_person', 'display_order', 'valid_from', 'valid_to'
         ]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
@@ -156,7 +156,18 @@ class ClientDepartmentForm(forms.ModelForm):
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
             'valid_from': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'valid_to': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'commander': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'complaint_officer': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'responsible_person': forms.Select(attrs={'class': 'form-select form-select-sm'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        client = kwargs.pop('client', None)
+        super().__init__(*args, **kwargs)
+        if client:
+            self.fields['commander'].queryset = ClientUser.objects.filter(client=client).order_by('display_order', 'name_last', 'name_first')
+            self.fields['complaint_officer'].queryset = ClientUser.objects.filter(client=client).order_by('display_order', 'name_last', 'name_first')
+            self.fields['responsible_person'].queryset = ClientUser.objects.filter(client=client).order_by('display_order', 'name_last', 'name_first')
 
 
 # クライアント担当者フォーム

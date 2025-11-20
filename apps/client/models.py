@@ -90,6 +90,30 @@ class ClientDepartment(MyModel):
     haken_unit_manager_title = models.CharField('派遣組織単位長役職', max_length=100, blank=True, null=True)
     haken_jigyosho_teishokubi = models.DateField('派遣事業所抵触日', blank=True, null=True)
     haken_jigyosho_teishokubi_notice_date = models.DateField('事業所抵触日通知日', blank=True, null=True)
+    commander = models.ForeignKey(
+        'ClientUser',
+        on_delete=models.SET_NULL,
+        related_name='commander_departments',
+        verbose_name='派遣先指揮命令者',
+        blank=True,
+        null=True
+    )
+    complaint_officer = models.ForeignKey(
+        'ClientUser',
+        on_delete=models.SET_NULL,
+        related_name='complaint_officer_departments',
+        verbose_name='派遣先苦情申出先',
+        blank=True,
+        null=True
+    )
+    responsible_person = models.ForeignKey(
+        'ClientUser',
+        on_delete=models.SET_NULL,
+        related_name='responsible_person_departments',
+        verbose_name='派遣先責任者',
+        blank=True,
+        null=True
+    )
     display_order = models.PositiveIntegerField('表示順', default=0)
     # 有効期間フィールドを追加
     valid_from = models.DateField('有効期限開始日', blank=True, null=True, help_text='未入力の場合は無期限')
