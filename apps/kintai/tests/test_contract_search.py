@@ -74,7 +74,8 @@ class ContractSearchViewTest(TestCase):
 
     def test_contract_search_view(self):
         """契約検索画面の表示テスト"""
-        response = self.client.get(reverse('kintai:contract_search'))
+        # 契約期間内の月を指定
+        response = self.client.get(reverse('kintai:contract_search'), {'target_month': '2024-11'})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '契約検索')
         self.assertContains(response, '山田太郎')
@@ -119,7 +120,7 @@ class ContractSearchViewTest(TestCase):
         # GETリクエスト
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '日次勤怠登録')
+        self.assertContains(response, '日次勤怠作成')
 
         # POSTリクエスト（保存と月次勤怠作成の確認）
         post_data = {
@@ -128,6 +129,8 @@ class ContractSearchViewTest(TestCase):
             'start_time': '09:00',
             'end_time': '18:00',
             'break_minutes': '60',
+            'late_night_break_minutes': '0',
+            'paid_leave_days': '0',
         }
         response = self.client.post(url, post_data)
         
