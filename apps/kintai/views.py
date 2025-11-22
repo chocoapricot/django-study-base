@@ -197,6 +197,8 @@ def timesheet_preview(request, contract_pk, target_month):
         'timesheet': timesheet,
         'timecards': [],
         'is_preview': True, # プレビューモードフラグ
+        'contract': contract,
+        'target_date': target_date,
     }
     return render(request, 'kintai/timesheet_detail.html', context)
 
