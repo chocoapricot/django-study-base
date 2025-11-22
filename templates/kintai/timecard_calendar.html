@@ -104,7 +104,11 @@
                     <button type="submit" class="btn btn-sm btn-primary">一括保存</button>
                     <button type="button" class="btn btn-sm btn-info ms-3" id="fill-all-btn">契約通り</button>
                     <button type="button" class="btn btn-sm btn-dark" id="clear-all-btn">削除</button>
-                    <a href="{% url 'kintai:timesheet_detail' timesheet.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% if timesheet.pk %}
+                        <a href="{% url 'kintai:timesheet_detail' timesheet.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% else %}
+                        <a href="{% url 'kintai:timesheet_preview' timesheet.staff_contract.pk timesheet.target_month|date:'Y-m' %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% endif %}
                 </div>
             </div>
         </form>

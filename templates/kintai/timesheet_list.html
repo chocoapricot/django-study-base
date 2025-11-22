@@ -5,6 +5,17 @@
     <div class="card-header d-flex justify-content-between align-items-center">
         月次勤怠一覧
         <div class="d-flex">
+            <ul class="nav nav-pills">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">その他検索</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'kintai:contract_search' %}">
+                            <i class="bi bi-search"></i>
+                            契約検索
+                        </a>
+                    </div>
+                </li>
+            </ul>
             {% if perms.kintai.add_stafftimesheet %}
                 <a href="{% url 'kintai:timesheet_create' %}" class="btn btn-sm btn-primary">新規作成</a>
             {% endif %}

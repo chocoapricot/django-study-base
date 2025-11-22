@@ -1,0 +1,128 @@
+{% extends 'common/_base.html' %}
+{% load badge_tags %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        契約検索
+        <div class="d-flex">
+            <a href="{% url 'kintai:timesheet_create' %}" class="btn btn-sm btn-primary">新規作成</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <form method="get" class="form-inline d-flex mb-3 align-items-center">
+            <div class="input-group me-2" style="width: auto;">
+                <span class="input-group-text">対象年月</span>
+                <input type="month" name="target_month" value="{{ target_date|date:'Y-m' }}" class="form-control form-control-sm" style="max-width: 150px;">
+            </div>
+            <button class="btn btn-primary btn-sm" type="submit">検索</button>
+        </form>
+
+
+        {% if contract_list %}
+            <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+                <thead>
+                    <tr>
+                        <th style="width: 6%;">社員番号</th>
+                        <th style="width: 9%;">スタッフ</th>
+                        <th style="width: 7%;">雇用形態</th>
+                        <th style="width: 12%;">契約期間</th>
+                        <th style="width: 7%;">対象年月</th>
+                        <th style="width: 6%;">出勤日数</th>
+                        <th style="width: 7%;">総労働時間</th>
+                        <th style="width: 7%;">残業時間</th>
+                        <th style="width: 7%;">休日労働</th>
+                        <th style="width: 6%;">欠勤日数</th>
+                        <th style="width: 6%;">有給日数</th>
+                        <th style="width: 8%;">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in contract_list %}
+                    <tr>
+                        <td>
+                            {{ item.contract.staff.employee_no|default:"-" }}
+                        </td>
+                        <td>
+                            {{ item.contract.staff.name }}
+                        </td>
+                        <td>
+                            {% if item.contract.employment_type %}
+                                <span class="badge {{ item.contract.employment_type.display_order|badge_class }}">{{ item.contract.employment_type.name }}</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ item.contract.contract_period_display }}</td>
+                        <td>
+                            {% if item.timesheet %}
+                                <a href="{% url 'kintai:timesheet_detail' item.timesheet.pk %}">{{ target_date|date:"Y年m月" }}</a>
+                            {% else %}
+                                {{ target_date|date:"Y年m月" }}
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if item.timesheet %}
+                                {{ item.timesheet.total_work_days }}日
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if item.timesheet %}
+                                {{ item.timesheet.total_work_hours_display }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if item.timesheet %}
+                                {{ item.timesheet.total_overtime_hours_display }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if item.timesheet %}
+                                {{ item.timesheet.total_holiday_work_hours_display }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if item.timesheet %}
+                                {{ item.timesheet.total_absence_days }}日
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if item.timesheet %}
+                                {{ item.timesheet.total_paid_leave_days }}日
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not item.timesheet %}
+                                {% if perms.kintai.add_stafftimesheet %}
+                                    <a href="{% url 'kintai:timesheet_preview' item.contract.pk target_date|date:'Y-m' %}" class="btn btn-sm btn-primary">
+                                        新規作成
+                                    </a>
+                                {% endif %}
+                            {% else %}
+                                {% if perms.kintai.delete_stafftimesheet %}
+                                    <a href="{% url 'kintai:timesheet_delete' item.timesheet.pk %}" class="btn btn-dark btn-sm" title="削除"><i class="bi bi-x"></i></a>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-muted">該当する契約が見つかりませんでした。</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

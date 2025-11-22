@@ -118,7 +118,11 @@
             <div class="row mt-4">
                 <div class="col-12 text-start">
                     <button type="submit" class="btn btn-sm btn-primary me-2">{% if timecard %}更新{% else %}作成{% endif %}</button>
-                    <a href="{% url 'kintai:timesheet_detail' timesheet.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% if timesheet.pk %}
+                        <a href="{% url 'kintai:timesheet_detail' timesheet.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% else %}
+                        <a href="{% url 'kintai:timesheet_preview' timesheet.staff_contract.pk timesheet.target_month|date:'Y-m' %}" class="btn btn-sm btn-secondary">戻る</a>
+                    {% endif %}
                 </div>
             </div>
         </form>
