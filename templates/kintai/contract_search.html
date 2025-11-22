@@ -24,17 +24,16 @@
                 <thead>
                     <tr>
                         <th style="width: 6%;">社員番号</th>
-                        <th style="width: 9%;">スタッフ</th>
-                        <th style="width: 7%;">雇用形態</th>
-                        <th style="width: 12%;">契約期間</th>
-                        <th style="width: 7%;">対象年月</th>
-                        <th style="width: 6%;">出勤日数</th>
-                        <th style="width: 7%;">総労働時間</th>
-                        <th style="width: 7%;">残業時間</th>
-                        <th style="width: 7%;">休日労働</th>
-                        <th style="width: 6%;">欠勤日数</th>
-                        <th style="width: 6%;">有給日数</th>
-                        <th style="width: 8%;">操作</th>
+                        <th style="width: 10%;">スタッフ</th>
+                        <th style="width: 8%;">雇用形態</th>
+                        <th style="width: 13%;">契約期間</th>
+                        <th style="width: 8%;">対象年月</th>
+                        <th style="width: 7%;">出勤日数</th>
+                        <th style="width: 8%;">総労働時間</th>
+                        <th style="width: 8%;">残業時間</th>
+                        <th style="width: 7%;">欠勤日数</th>
+                        <th style="width: 7%;">有給日数</th>
+                        <th style="width: 10%;">操作</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -78,13 +77,6 @@
                         <td class="text-end">
                             {% if item.timesheet %}
                                 {{ item.timesheet.total_overtime_hours_display }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-                        <td class="text-end">
-                            {% if item.timesheet %}
-                                {{ item.timesheet.total_holiday_work_hours_display }}
                             {% else %}
                                 -
                             {% endif %}
