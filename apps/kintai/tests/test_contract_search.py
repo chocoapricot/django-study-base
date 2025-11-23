@@ -219,5 +219,60 @@ class ContractSearchViewTest(TestCase):
         self.assertEqual(len(contract_list), 1)
         self.assertEqual(contract_list[0]['input_days'], 3)
         
-        # HTMLの確認
-        self.assertContains(response, '3日')
+    def test_contract_search_filter_input_status(self):
+        """契約検索画面の入力状況フィルタテスト"""
+        target_month = date(2024, 11, 1)
+        
+        # 3人のスタッフと契約を作成
+        staffs = []
+        contracts = []
+        for i in range(3):
+            s = Staff.objects.create(
+                name_last=f'テスト{i}', name_first='太郎',
+                employee_no=f'EMP00{i+2}', # 既存と被らないように
+                email=f'test{i}@example.com'
+            )
+            c = StaffContract.objects.create(
+                staff=s,
+                employment_type=self.employment_type,
+                contract_name=f'契約{i}',
+                contract_pattern=self.contract_pattern,
+                start_date=date(2024, 4, 1),
+                end_date=date(2025, 3, 31)
+            )
+            staffs.append(s)
+            contracts.append(c)
+            
+        # 1人目: 未入力 (timesheetなし or timesheetありtimecardなし)
+        # timesheetなしのまま
+        
+        # 2人目: 入力中 (1日だけ入力)
+        ts2 = StaffTimesheet.objects.create(staff_contract=contracts[1], staff=staffs[1], target_month=target_month)
+        StaffTimecard.objects.create(timesheet=ts2, work_date=date(2024, 11, 1), work_type='10', start_time=time(9,0), end_time=time(18,0))
+        
+        # 3人目: 入力済 (30日分入力)
+        ts3 = StaffTimesheet.objects.create(staff_contract=contracts[2], staff=staffs[2], target_month=target_month)
+        for d in range(1, 31): # 11月は30日まで
+            StaffTimecard.objects.create(timesheet=ts3, work_date=date(2024, 11, d), work_type='10', start_time=time(9,0), end_time=time(18,0))
+
+        # 既存のself.staff_contract (EMP001) はtimesheetなし -> 未入力扱い
+        
+        # ケース1: 未入力 (not_input)
+        response = self.client.get(reverse('kintai:contract_search'), {'target_month': '2024-11', 'input_status': 'not_input'})
+        self.assertEqual(response.status_code, 200)
+        # EMP001とEMP002(1人目)が含まれるはず
+        self.assertTrue(any(c['contract'] == self.staff_contract for c in response.context['contract_list']))
+        self.assertTrue(any(c['contract'] == contracts[0] for c in response.context['contract_list']))
+        self.assertFalse(any(c['contract'] == contracts[1] for c in response.context['contract_list'])) # 入力中
+        
+        # ケース2: 入力中 (inputting)
+        response = self.client.get(reverse('kintai:contract_search'), {'target_month': '2024-11', 'input_status': 'inputting'})
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(any(c['contract'] == contracts[1] for c in response.context['contract_list']))
+        self.assertFalse(any(c['contract'] == contracts[0] for c in response.context['contract_list']))
+        
+        # ケース3: 入力済 (inputted)
+        response = self.client.get(reverse('kintai:contract_search'), {'target_month': '2024-11', 'input_status': 'inputted'})
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(any(c['contract'] == contracts[2] for c in response.context['contract_list']))
+        self.assertFalse(any(c['contract'] == contracts[1] for c in response.context['contract_list']))

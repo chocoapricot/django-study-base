@@ -55,6 +55,9 @@ def contract_search(request):
         Q(end_date__gte=target_date) | Q(end_date__isnull=True)
     ).order_by('staff__employee_no')
 
+    # フィルタリング条件の取得
+    input_status = request.GET.get('input_status')
+
     # 各契約に対して、指定月の勤怠が存在するかチェック
     contract_list = []
     for contract in contracts:
@@ -67,10 +70,45 @@ def contract_search(request):
         if timesheet:
             input_days = timesheet.timecards.count()
 
+        # 契約期間と対象月の重なる日数を計算（カレンダー日）
+        # start_date <= month_end AND (end_date >= month_start OR end_date IS NULL)
+        # 重なり開始日 = max(month_start, start_date)
+        # 重なり終了日 = min(month_end, end_date) if end_date else month_end
+        
+        c_start = contract.start_date
+        c_end = contract.end_date
+        
+        overlap_start = max(target_date, c_start) if c_start else target_date
+        overlap_end = min(month_end, c_end) if c_end else month_end
+        
+        # 日数計算（inclusive）
+        if overlap_start <= overlap_end:
+            required_days = (overlap_end - overlap_start).days + 1
+        else:
+            required_days = 0
+
+        # ステータス判定
+        status = 'not_input' # 未入力
+        if input_days > 0:
+            if input_days >= required_days:
+                status = 'inputted' # 入力済
+            else:
+                status = 'inputting' # 入力中
+        
+        # フィルタリング
+        if input_status:
+            if input_status == 'not_input' and status != 'not_input':
+                continue
+            if input_status == 'inputting' and status != 'inputting':
+                continue
+            if input_status == 'inputted' and status != 'inputted':
+                continue
+
         contract_list.append({
             'contract': contract,
             'timesheet': timesheet,
             'input_days': input_days,
+            'required_days': required_days, # デバッグ表示用などに持たせておく
         })
 
     context = {
@@ -78,6 +116,7 @@ def contract_search(request):
         'year': year,
         'month': month,
         'target_date': target_date,
+        'input_status': input_status,
     }
     return render(request, 'kintai/contract_search.html', context)
 
