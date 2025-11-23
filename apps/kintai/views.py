@@ -63,9 +63,14 @@ def contract_search(request):
             target_month=target_date
         ).first()
         
+        input_days = 0
+        if timesheet:
+            input_days = timesheet.timecards.count()
+
         contract_list.append({
             'contract': contract,
             'timesheet': timesheet,
+            'input_days': input_days,
         })
 
     context = {

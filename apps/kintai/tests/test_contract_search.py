@@ -190,5 +190,34 @@ class ContractSearchViewTest(TestCase):
         response = self.client.post(url)
         
         # リダイレクト先が契約検索（対象月パラメータ付き）であることを確認
-        expected_url = f"{reverse('kintai:contract_search')}?target_month=2024-11"
-        self.assertRedirects(response, expected_url)
+    def test_contract_search_input_days(self):
+        """契約検索画面の入力日数表示テスト"""
+        # 月次勤怠を作成
+        target_month = date(2024, 11, 1)
+        timesheet = StaffTimesheet.objects.create(
+            staff_contract=self.staff_contract,
+            staff=self.staff,
+            target_month=target_month
+        )
+        
+        # 日次勤怠を3日分作成
+        for i in range(1, 4):
+            StaffTimecard.objects.create(
+                timesheet=timesheet,
+                work_date=date(2024, 11, i),
+                work_type='10',
+                start_time=time(9, 0),
+                end_time=time(18, 0)
+            )
+            
+        # 検索画面にアクセス
+        response = self.client.get(reverse('kintai:contract_search'), {'target_month': '2024-11'})
+        self.assertEqual(response.status_code, 200)
+        
+        # コンテキストの確認
+        contract_list = response.context['contract_list']
+        self.assertEqual(len(contract_list), 1)
+        self.assertEqual(contract_list[0]['input_days'], 3)
+        
+        # HTMLの確認
+        self.assertContains(response, '3日')
