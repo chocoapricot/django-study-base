@@ -9,6 +9,7 @@ This is a Django-based web application called "django-study-base", a business ma
 - **Staff Management**: Manage and track employee data
 - **Client Management**: Customer relationship management functionality
 - **Contract Management**: Manage and track client and staff contracts
+- **Attendance Management**: Manage daily and monthly attendance, calculate work hours and overtime
 - **Company/Department Management**: Systematic management of company information and departments
 - **Connection Management**: Connection request/approval function with staff and client representatives
 - **Profile Management**: User profiles, "My Number" management
@@ -23,6 +24,7 @@ This application is designed for Japanese users (ja-JP locale, Asia/Tokyo timezo
 - Staff management and contact tracking, qualification/skill management
 - Client relationship management, department/contact person management
 - Contract management (creation, update, deletion, status tracking of client and staff contracts)
+- Attendance management (daily/monthly timesheets, overtime calculation, approval workflow)
 - Company/Department management (corporate number search, postal code search, change history tracking)
 - Connection management (connection requests/approvals with staff/client representatives, automatic permission granting)
 - Profile management (`StaffProfile`, `StaffProfileMynumber`)
