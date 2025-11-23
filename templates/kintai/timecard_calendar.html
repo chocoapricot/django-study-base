@@ -31,10 +31,18 @@
 {% endblock %}
 
 {% block content %}
+{% include 'kintai/_timesheet_summary_card.html' with timesheet=timesheet %}
+
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header">
-        日次勤怠カレンダー入力
-        <span class="text-muted">- {{ timesheet.staff }} ({{ timesheet.target_month|date:"Y年m月" }})</span>
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            日次勤怠カレンダー入力
+            <span class="text-muted">- {{ timesheet.staff }} ({{ timesheet.target_month|date:"Y年m月" }})</span>
+        </div>
+        <div>
+            <button type="button" class="btn btn-sm btn-info" id="fill-all-btn">契約通り</button>
+            <button type="button" class="btn btn-sm btn-secondary" id="clear-all-btn">クリア</button>
+        </div>
     </div>
     <div class="card-body">
         <form method="post" id="calendar-form">
@@ -102,8 +110,6 @@
             <div class="row mt-4">
                 <div class="col-12">
                     <button type="submit" class="btn btn-sm btn-primary">一括保存</button>
-                    <button type="button" class="btn btn-sm btn-info ms-3" id="fill-all-btn">契約通り</button>
-                    <button type="button" class="btn btn-sm btn-dark" id="clear-all-btn">削除</button>
                     {% if timesheet.pk %}
                         <a href="{% url 'kintai:timesheet_detail' timesheet.pk %}" class="btn btn-sm btn-secondary">戻る</a>
                     {% else %}
@@ -164,8 +170,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 平日出勤・休日稼働無で埋める
     document.getElementById('fill-all-btn').addEventListener('click', function() {
-        if (!confirm('平日を出勤（9:00-18:00、休憩60分）、土日祝日を稼働無しで埋めますか？')) return;
+        if (!confirm('平日に対して契約の就業時間で一括設定しますか？')) return;
         
+        const defaultStartTime = "{{ default_start_time }}";
+        const defaultEndTime = "{{ default_end_time }}";
+        const defaultBreakMinutes = "{{ default_break_minutes }}";
+
         document.querySelectorAll('tr[data-day]').forEach(row => {
             const day = row.dataset.day;
             const dateText = row.querySelector('td:nth-child(1)').textContent.trim();
@@ -183,9 +193,9 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 // 平日
                 row.querySelector('.work-type-select').value = '10';
-                row.querySelector('.start-time').value = '09:00';
-                row.querySelector('.end-time').value = '18:00';
-                row.querySelector('.break-minutes').value = '60';
+                row.querySelector('.start-time').value = defaultStartTime;
+                row.querySelector('.end-time').value = defaultEndTime;
+                row.querySelector('.break-minutes').value = defaultBreakMinutes;
                 row.querySelector('.paid-leave').value = '0';
                 toggleFields(day);
             }
@@ -203,6 +213,11 @@ document.addEventListener('DOMContentLoaded', function() {
             row.querySelector('.end-time').value = '';
             row.querySelector('.break-minutes').value = '0';
             row.querySelector('.paid-leave').value = '0';
+            // 翌日チェックボックスもクリア
+            const startNextDay = row.querySelector('.start-time-next-day');
+            const endNextDay = row.querySelector('.end-time-next-day');
+            if (startNextDay) startNextDay.checked = false;
+            if (endNextDay) endNextDay.checked = false;
             toggleFields(day);
         });
     });

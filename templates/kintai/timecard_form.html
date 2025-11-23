@@ -1,6 +1,8 @@
 {% extends 'common/_base.html' %}
 {% load help_tags %}
 {% block content %}
+{% include 'kintai/_timesheet_summary_card.html' with timesheet=timesheet %}
+
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">
         {% if timecard %}日次勤怠編集{% else %}日次勤怠作成{% endif %}
@@ -18,7 +20,7 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.work_date.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">勤務日 <span class="text-danger">*</span></label>
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     {{ form.work_date }}
                     {% if form.work_date.errors %}
                         <div class="text-danger">{{ form.work_date.errors }}</div>
@@ -28,7 +30,7 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.work_type.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">勤務区分 <span class="text-danger">*</span></label>
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     {{ form.work_type }}
                     {% if form.work_type.errors %}
                         <div class="text-danger">{{ form.work_type.errors }}</div>
@@ -38,13 +40,13 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.start_time.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">出勤時刻</label>
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                     {{ form.start_time }}
                     {% if form.start_time.errors %}
                         <div class="text-danger">{{ form.start_time.errors }}</div>
                     {% endif %}
                 </div>
-                <div class="col-sm-3">
+                <div class="col-sm-1">
                     <div class="form-check">
                         {{ form.start_time_next_day }}
                         <label class="form-check-label" for="{{ form.start_time_next_day.id_for_label }}">翌日</label>
@@ -53,17 +55,14 @@
                         <div class="text-danger">{{ form.start_time_next_day.errors }}</div>
                     {% endif %}
                 </div>
-            </div>
-
-            <div class="row mb-3 align-items-center">
                 <label for="{{ form.end_time.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">退勤時刻</label>
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                     {{ form.end_time }}
                     {% if form.end_time.errors %}
                         <div class="text-danger">{{ form.end_time.errors }}</div>
                     {% endif %}
                 </div>
-                <div class="col-sm-3">
+                <div class="col-sm-1">
                     <div class="form-check">
                         {{ form.end_time_next_day }}
                         <label class="form-check-label" for="{{ form.end_time_next_day.id_for_label }}">翌日</label>
@@ -72,21 +71,23 @@
                         <div class="text-danger">{{ form.end_time_next_day.errors }}</div>
                     {% endif %}
                 </div>
+
             </div>
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.break_minutes.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">休憩（分）</label>
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                     {{ form.break_minutes }}
                     {% if form.break_minutes.errors %}
                         <div class="text-danger">{{ form.break_minutes.errors }}</div>
                     {% endif %}
                 </div>
-            </div>
 
-            <div class="row mb-3 align-items-center">
+                <div class="col-sm-1">
+                </div>
+
                 <label for="{{ form.late_night_break_minutes.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">深夜休憩（分）</label>
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                     {{ form.late_night_break_minutes }}
                     {% if form.late_night_break_minutes.errors %}
                         <div class="text-danger">{{ form.late_night_break_minutes.errors }}</div>

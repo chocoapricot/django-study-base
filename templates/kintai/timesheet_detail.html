@@ -43,6 +43,17 @@
                 <table class="table table-sm">
                     <tr><th style="width: 40%;">スタッフ</th><td><a href="{% url 'staff:staff_detail' timesheet.staff.pk %}">{{ timesheet.staff }}</a></td></tr>
                     <tr><th>スタッフ契約</th><td><a href="{% url 'contract:staff_contract_detail' timesheet.staff_contract.pk %}">{{ timesheet.staff_contract }}</a></td></tr>
+                    <tr><th>契約期間</th><td>{{ timesheet.staff_contract.contract_period_display }}</td></tr>
+                    <tr>
+                        <th>就業時間</th>
+                        <td>
+                            {% if timesheet.staff_contract.worktime_pattern %}
+                                {% include 'common/_worktime_pattern_display.html' with worktime_pattern=timesheet.staff_contract.worktime_pattern %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
                     <tr>
                         <th>時間外算出</th>
                         <td>
@@ -53,8 +64,6 @@
                             {% endif %}
                         </td>
                     </tr>
-                    <tr><th>契約期間</th><td>{{ timesheet.staff_contract.contract_period_display }}</td></tr>
-                    <tr><th>対象年月</th><td>{{ timesheet.target_month|date:"Y年m月" }}</td></tr>
                     <tr>
                         <th>ステータス</th>
                         <td>
@@ -76,7 +85,8 @@
             <div class="col-md-6">
                 <h6 class="text-muted mb-3">勤怠集計</h6>
                 <table class="table table-sm">
-                    <tr><th style="width: 40%;">出勤日数</th><td>{% if timesheet.total_work_days is not None %}{{ timesheet.total_work_days }}日{% else %}-{% endif %}</td></tr>
+                    <tr><th style="width: 40%;">対象年月</th><td>{{ timesheet.target_month|date:"Y年m月" }}</td></tr>
+                    <tr><th>出勤日数</th><td>{% if timesheet.total_work_days is not None %}{{ timesheet.total_work_days }}日{% else %}-{% endif %}</td></tr>
                     <tr><th>総労働時間</th><td>{% if timesheet.total_work_hours_display %}{{ timesheet.total_work_hours_display }}{% else %}-{% endif %}</td></tr>
                     <tr><th>残業時間</th><td>{% if timesheet.total_overtime_hours_display %}{{ timesheet.total_overtime_hours_display }}{% else %}-{% endif %}</td></tr>
                     <tr><th>深夜時間</th><td>{% if timesheet.total_late_night_overtime_hours_display %}{{ timesheet.total_late_night_overtime_hours_display }}{% else %}-{% endif %}</td></tr>

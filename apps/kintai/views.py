@@ -513,9 +513,15 @@ def timecard_calendar(request, timesheet_pk):
             'timecard': timecard,
         })
     
+    # 契約情報のデフォルト値を取得
+    default_values = _get_contract_work_time(timesheet.staff_contract)
+
     context = {
         'timesheet': timesheet,
         'calendar_data': calendar_data,
+        'default_start_time': default_values['start_time'],
+        'default_end_time': default_values['end_time'],
+        'default_break_minutes': default_values['break_minutes'],
     }
     return render(request, 'kintai/timecard_calendar.html', context)
 
@@ -651,8 +657,61 @@ def timecard_calendar_initial(request, contract_pk, target_month):
             'timecard': None, # 初回なのでtimecardは無し
         })
     
+    # 契約情報のデフォルト値を取得
+    default_values = _get_contract_work_time(contract)
+
     context = {
         'timesheet': virtual_timesheet,
         'calendar_data': calendar_data,
+        'default_start_time': default_values['start_time'],
+        'default_end_time': default_values['end_time'],
+        'default_break_minutes': default_values['break_minutes'],
     }
     return render(request, 'kintai/timecard_calendar.html', context)
+
+
+def _get_contract_work_time(contract):
+    """
+    契約情報からデフォルトの就業時間（開始、終了、休憩）を取得するヘルパー関数
+    """
+    default_values = {
+        'start_time': '09:00',
+        'end_time': '18:00',
+        'break_minutes': '60',
+    }
+    
+    if not contract or not contract.worktime_pattern:
+        return default_values
+
+    # 就業時間パターンから最初の勤務時間を取得
+    # 表示順が一番早いものを採用
+    work_time = contract.worktime_pattern.work_times.filter(
+        time_name__is_active=True
+    ).order_by('display_order').first()
+
+    if work_time:
+        default_values['start_time'] = work_time.start_time.strftime('%H:%M')
+        default_values['end_time'] = work_time.end_time.strftime('%H:%M')
+        
+        # 休憩時間の合計を計算
+        total_break_minutes = 0
+        for break_time in work_time.break_times.all():
+            # datetime.time オブジェクト同士の差分計算はできないため、datetime.datetime に変換
+            from datetime import datetime, timedelta
+            dummy_date = datetime(2000, 1, 1)
+            start_dt = datetime.combine(dummy_date, break_time.start_time)
+            end_dt = datetime.combine(dummy_date, break_time.end_time)
+            
+            # 日を跨ぐ場合の考慮（簡易的）
+            if break_time.end_time_next_day:
+                end_dt += timedelta(days=1)
+            elif end_dt < start_dt:
+                # フラグがなくても終了時刻が開始時刻より前の場合は翌日とみなす
+                 end_dt += timedelta(days=1)
+
+            diff = end_dt - start_dt
+            total_break_minutes += int(diff.total_seconds() / 60)
+        
+        default_values['break_minutes'] = str(total_break_minutes)
+            
+    return default_values
