@@ -16,9 +16,8 @@
                 <input type="month" name="target_month" value="{{ target_date|date:'Y-m' }}" class="form-control form-control-sm" style="max-width: 150px;">
             </div>
             <div class="input-group me-2" style="width: auto;">
-                <span class="input-group-text">入力状況</span>
                 <select name="input_status" class="form-select form-select-sm">
-                    <option value="" {% if not input_status %}selected{% endif %}>未選択</option>
+                    <option value="" {% if not input_status %}selected{% endif %}>入力状況（全て）</option>
                     <option value="not_input" {% if input_status == 'not_input' %}selected{% endif %}>未入力</option>
                     <option value="inputting" {% if input_status == 'inputting' %}selected{% endif %}>入力中</option>
                     <option value="inputted" {% if input_status == 'inputted' %}selected{% endif %}>入力済</option>
