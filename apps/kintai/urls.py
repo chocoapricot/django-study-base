@@ -15,6 +15,10 @@ urlpatterns = [
     path('contract/search/', views.contract_search, name='contract_search'),
     path('timesheet/preview/<int:contract_pk>/<str:target_month>/', views.timesheet_preview, name='timesheet_preview'),
 
+    # スタッフ検索
+    path('staff/search/', views.staff_search, name='staff_search'),
+    path('staff/<int:staff_pk>/calendar/<str:target_month>/', views.staff_timecard_calendar, name='staff_timecard_calendar'),
+
     
     # 日次勤怠
     path('timecard/<int:timesheet_pk>/create/', views.timecard_create, name='timecard_create'),

@@ -121,6 +121,255 @@ def contract_search(request):
     return render(request, 'kintai/contract_search.html', context)
 
 
+@login_required
+def staff_search(request):
+    """スタッフ検索"""
+    from datetime import date
+    from django.db.models import Q
+    from apps.contract.models import StaffContract
+    from apps.staff.models import Staff
+    
+    # 年月の取得（デフォルトは当月）
+    today = timezone.now().date()
+    target_month_str = request.GET.get('target_month')
+    
+    if target_month_str:
+        try:
+            year, month = map(int, target_month_str.split('-'))
+            target_date = date(year, month, 1)
+        except ValueError:
+            year = today.year
+            month = today.month
+            target_date = date(year, month, 1)
+    else:
+        year = today.year
+        month = today.month
+        target_date = date(year, month, 1)
+
+    # 月末日を計算
+    import calendar
+    _, last_day = calendar.monthrange(year, month)
+    month_end = date(year, month, last_day)
+
+    # 指定月に有効な契約を持つスタッフを取得
+    # 契約期間が指定月と重なるスタッフを抽出
+    staff_with_contracts = Staff.objects.filter(
+        contracts__start_date__lte=month_end
+    ).filter(
+        Q(contracts__end_date__gte=target_date) | Q(contracts__end_date__isnull=True)
+    ).distinct().order_by('employee_no')
+
+    # 各スタッフの情報を集計
+    staff_list = []
+    for staff in staff_with_contracts:
+        # このスタッフの指定月に有効な契約を取得
+        contracts = StaffContract.objects.filter(
+            staff=staff,
+            start_date__lte=month_end
+        ).filter(
+            Q(end_date__gte=target_date) | Q(end_date__isnull=True)
+        )
+        
+        contract_count = contracts.count()
+        
+        # このスタッフの指定月の日次勤怠を取得（全契約分）
+        timecards = StaffTimecard.objects.filter(
+            staff_contract__staff=staff,
+            work_date__year=year,
+            work_date__month=month
+        )
+        
+        input_days = timecards.values('work_date').distinct().count()
+        
+        staff_list.append({
+            'staff': staff,
+            'contract_count': contract_count,
+            'input_days': input_days,
+        })
+
+    context = {
+        'staff_list': staff_list,
+        'year': year,
+        'month': month,
+        'target_date': target_date,
+    }
+    return render(request, 'kintai/staff_search.html', context)
+
+
+@login_required
+def staff_timecard_calendar(request, staff_pk, target_month):
+    """スタッフ別日次勤怠カレンダー入力"""
+    from datetime import date, time as dt_time
+    import calendar
+    import jpholiday
+    from apps.contract.models import StaffContract
+    from apps.staff.models import Staff
+    from django.db.models import Q
+    from django.core.exceptions import ValidationError
+    
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    try:
+        year, month = map(int, target_month.split('-'))
+        target_date = date(year, month, 1)
+    except ValueError:
+        return redirect('kintai:staff_search')
+
+    # 月末日を計算
+    _, last_day = calendar.monthrange(year, month)
+    month_end = date(year, month, last_day)
+
+    # このスタッフの指定月に有効な契約を取得
+    contracts = StaffContract.objects.filter(
+        staff=staff,
+        start_date__lte=month_end
+    ).filter(
+        Q(end_date__gte=target_date) | Q(end_date__isnull=True)
+    ).select_related('employment_type', 'worktime_pattern')
+
+    if request.method == 'POST':
+        # フォームデータから日次勤怠を一括保存
+        for day in range(1, last_day + 1):
+            work_date = date(year, month, day)
+            
+            # フォームデータを取得
+            contract_id = request.POST.get(f'contract_{day}')
+            work_type = request.POST.get(f'work_type_{day}')
+            start_time_str = request.POST.get(f'start_time_{day}')
+            start_time_next_day = request.POST.get(f'start_time_next_day_{day}') == 'on'
+            end_time_str = request.POST.get(f'end_time_{day}')
+            end_time_next_day = request.POST.get(f'end_time_next_day_{day}') == 'on'
+            break_minutes = request.POST.get(f'break_minutes_{day}', 0)
+            paid_leave_days = request.POST.get(f'paid_leave_days_{day}', 0)
+            
+            if not work_type or not contract_id:
+                continue
+
+            # 契約を取得
+            try:
+                contract = StaffContract.objects.get(pk=contract_id, staff=staff)
+            except StaffContract.DoesNotExist:
+                continue
+
+            # 契約期間外の日付は処理しない
+            if contract.start_date and work_date < contract.start_date:
+                continue
+            if contract.end_date and work_date > contract.end_date:
+                continue
+            
+            # 時刻の変換
+            start_time = None
+            end_time = None
+            if start_time_str:
+                try:
+                    hour, minute = map(int, start_time_str.split(':'))
+                    start_time = dt_time(hour, minute)
+                except:
+                    pass
+            if end_time_str:
+                try:
+                    hour, minute = map(int, end_time_str.split(':'))
+                    end_time = dt_time(hour, minute)
+                except:
+                    pass
+            
+            # 既存のデータを取得または新規作成
+            timecard = StaffTimecard.objects.filter(
+                staff_contract=contract,
+                work_date=work_date
+            ).first()
+            
+            if not timecard:
+                timecard = StaffTimecard(
+                    staff_contract=contract,
+                    work_date=work_date,
+                    work_type=work_type
+                )
+            
+            # データを更新
+            timecard.work_type = work_type
+            timecard.start_time = start_time
+            timecard.start_time_next_day = start_time_next_day
+            timecard.end_time = end_time
+            timecard.end_time_next_day = end_time_next_day
+            timecard.break_minutes = int(break_minutes) if break_minutes else 0
+            timecard.paid_leave_days = float(paid_leave_days) if paid_leave_days else 0
+            
+            try:
+                timecard.full_clean()
+                timecard.save()
+            except ValidationError as e:
+                # エラーメッセージを作成
+                error_messages = []
+                for field, errors in e.message_dict.items():
+                    for error in errors:
+                        error_messages.append(f"{work_date.day}日: {error}")
+                messages.error(request, " / ".join(error_messages))
+        
+        if not messages.get_messages(request):
+            messages.success(request, '日次勤怠を一括保存しました。')
+        return redirect('kintai:staff_timecard_calendar', staff_pk=staff_pk, target_month=target_month)
+    
+    # カレンダーデータを作成
+    # 既存の日次勤怠データを取得
+    timecards_dict = {}
+    for timecard in StaffTimecard.objects.filter(
+        staff_contract__staff=staff,
+        work_date__year=year,
+        work_date__month=month
+    ).select_related('staff_contract'):
+        timecards_dict[timecard.work_date.day] = timecard
+    
+    # カレンダーデータを作成
+    calendar_data = []
+    for day in range(1, last_day + 1):
+        work_date = date(year, month, day)
+        weekday = work_date.weekday()
+        is_holiday = jpholiday.is_holiday(work_date)
+        try:
+            holiday_name = jpholiday.is_holiday_name(work_date)
+        except Exception:
+            holiday_name = None
+        
+        timecard = timecards_dict.get(day)
+        
+        # この日に有効な契約を取得
+        valid_contracts = []
+        for contract in contracts:
+            if contract.start_date and work_date < contract.start_date:
+                continue
+            if contract.end_date and work_date > contract.end_date:
+                continue
+            valid_contracts.append(contract)
+
+        calendar_data.append({
+            'day': day,
+            'date': work_date,
+            'holiday_name': holiday_name,
+            'weekday': weekday,
+            'weekday_name': ['月', '火', '水', '木', '金', '土', '日'][weekday],
+            'is_weekend': weekday >= 5,
+            'is_holiday': is_holiday,
+            'timecard': timecard,
+            'valid_contracts': valid_contracts,
+        })
+    
+    # デフォルト値を取得（最初の契約から）
+    default_values = {'start_time': '09:00', 'end_time': '18:00', 'break_minutes': '60'}
+    if contracts.exists():
+        default_values = _get_contract_work_time(contracts.first())
+
+    context = {
+        'staff': staff,
+        'calendar_data': calendar_data,
+        'year': year,
+        'month': month,
+        'target_date': target_date,
+        'default_start_time': default_values['start_time'],
+        'default_end_time': default_values['end_time'],
+        'default_break_minutes': default_values['break_minutes'],
+    }
+    return render(request, 'kintai/staff_timecard_calendar.html', context)
+
 import json
 from apps.contract.models import StaffContract
 
@@ -391,6 +640,7 @@ def timecard_calendar(request, timesheet_pk):
     from datetime import date, timedelta
     import calendar
     import jpholiday
+    from django.core.exceptions import ValidationError
     
     timesheet = get_object_or_404(StaffTimesheet, pk=timesheet_pk)
     
@@ -449,11 +699,17 @@ def timecard_calendar(request, timesheet_pk):
                     pass
             
             # 既存のデータを取得または新規作成
-            timecard, created = StaffTimecard.objects.get_or_create(
+            timecard = StaffTimecard.objects.filter(
                 timesheet=timesheet,
-                work_date=work_date,
-                defaults={'work_type': work_type}
-            )
+                work_date=work_date
+            ).first()
+            
+            if not timecard:
+                timecard = StaffTimecard(
+                    timesheet=timesheet,
+                    work_date=work_date,
+                    work_type=work_type
+                )
             
             # データを更新
             timecard.work_type = work_type
@@ -463,7 +719,17 @@ def timecard_calendar(request, timesheet_pk):
             timecard.end_time_next_day = end_time_next_day
             timecard.break_minutes = int(break_minutes) if break_minutes else 0
             timecard.paid_leave_days = float(paid_leave_days) if paid_leave_days else 0
-            timecard.save()
+            
+            try:
+                timecard.full_clean()
+                timecard.save()
+            except ValidationError as e:
+                # エラーメッセージを作成
+                error_messages = []
+                for field, errors in e.message_dict.items():
+                    for error in errors:
+                        error_messages.append(f"{work_date.day}日: {error}")
+                messages.error(request, " / ".join(error_messages))
         
         # 月次勤怠の集計を更新
         timesheet.calculate_totals()

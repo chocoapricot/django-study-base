@@ -223,7 +223,15 @@ class StaffTimecard(MyModel):
         StaffTimesheet,
         on_delete=models.CASCADE,
         related_name='timecards',
-        verbose_name='月次勤怠'
+        verbose_name='月次勤怠',
+        null=True,
+        blank=True
+    )
+    staff_contract = models.ForeignKey(
+        StaffContract,
+        on_delete=models.CASCADE,
+        related_name='timecards_direct',
+        verbose_name='スタッフ契約'
     )
     work_date = models.DateField('勤務日')
 
@@ -268,10 +276,11 @@ class StaffTimecard(MyModel):
         db_table = 'apps_kintai_staff_timecard'
         verbose_name = '日次勤怠'
         verbose_name_plural = '日次勤怠'
-        unique_together = ['timesheet', 'work_date']
+        unique_together = [['staff_contract', 'work_date']]
         ordering = ['work_date']
         indexes = [
             models.Index(fields=['timesheet']),
+            models.Index(fields=['staff_contract']),
             models.Index(fields=['work_date']),
             models.Index(fields=['work_type']),
         ]
@@ -297,32 +306,54 @@ class StaffTimecard(MyModel):
             if not self.paid_leave_days or self.paid_leave_days <= 0:
                 raise ValidationError('有給休暇の場合は有給休暇日数を入力してください。')
 
-        # timesheet と staff_contract が有る場合、勤務日が契約期間内かチェック
-        try:
-            if self.timesheet and self.work_date:
-                sc = None
-                try:
-                    sc = self.timesheet.staff_contract
-                except:
-                    sc = None
+        # staff_contract が指定されている場合、勤務日が契約期間内かチェック
+        if self.staff_contract_id and self.work_date:
+            try:
+                sc = self.staff_contract
+                sc_start = sc.start_date
+                sc_end = sc.end_date
+                if sc_start and self.work_date < sc_start:
+                    raise ValidationError('勤務日はスタッフ契約の契約期間外です。')
+                if sc_end and self.work_date > sc_end:
+                    raise ValidationError('勤務日はスタッフ契約の契約期間外です。')
+            except ValidationError:
+                raise
+            except Exception:
+                pass
 
-                if sc:
-                    sc_start = sc.start_date
-                    sc_end = sc.end_date
-                    if sc_start and self.work_date < sc_start:
-                        raise ValidationError('勤務日はスタッフ契約の契約期間外です。')
-                    if sc_end and self.work_date > sc_end:
-                        raise ValidationError('勤務日はスタッフ契約の契約期間外です。')
-        except ValidationError:
-            raise
-        except Exception:
-            # 予期しない例外はバリデーションで無視しておく（他のチェックで捕捉される）
-            pass
+        # timesheet と staff_contract の整合性チェック
+        if self.timesheet_id and self.staff_contract_id:
+            try:
+                if self.timesheet.staff_contract_id != self.staff_contract_id:
+                    raise ValidationError('月次勤怠のスタッフ契約と日次勤怠のスタッフ契約が一致しません。')
+            except ValidationError:
+                raise
+            except Exception:
+                pass
 
     def save(self, *args, **kwargs):
+        # staff_contract が指定されている場合、対応する月次勤怠を自動作成または取得
+        if self.staff_contract_id and self.work_date:
+            # 対象年月を計算（work_dateの月の1日）
+            target_month = self.work_date.replace(day=1)
+            
+            # 月次勤怠を取得または作成
+            timesheet, created = StaffTimesheet.objects.get_or_create(
+                staff_contract=self.staff_contract,
+                target_month=target_month,
+                defaults={
+                    'staff': self.staff_contract.staff,
+                }
+            )
+            self.timesheet = timesheet
+        
         # 労働時間を自動計算
         self.calculate_work_hours()
         super().save(*args, **kwargs)
+        
+        # 月次勤怠の集計を更新
+        if self.timesheet:
+            self.timesheet.calculate_totals()
 
     def calculate_work_hours(self):
         """労働時間を計算する"""

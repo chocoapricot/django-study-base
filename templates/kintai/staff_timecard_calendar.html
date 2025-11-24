@@ -1,0 +1,292 @@
+{% extends 'common/_base.html' %}
+{% load help_tags %}
+
+{% block extra_css %}
+<style>
+    .table-saturday,
+    .table-saturday > th,
+    .table-saturday > td {
+        background-color: #e6f2ff !important;
+    }
+
+    .table-sunday,
+    .table-sunday > th,
+    .table-sunday > td {
+        background-color: #ffe6e6 !important;
+    }
+
+    /* ホバー時のスタイルも上書き */
+    .table-hover > .table-saturday:hover,
+    .table-hover > .table-saturday:hover > th,
+    .table-hover > .table-saturday:hover > td {
+        background-color: #d0e8ff !important; /* 少し濃い青 */
+    }
+
+    .table-hover > .table-sunday:hover,
+    .table-hover > .table-sunday:hover > th,
+    .table-hover > .table-sunday:hover > td {
+        background-color: #ffdde0 !important; /* 少し濃い赤 */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            スタッフ別日次勤怠カレンダー入力
+            <span class="text-muted">- {{ staff.name }} ({{ target_date|date:"Y年m月" }})</span>
+        </div>
+        <div>
+            <button type="button" class="btn btn-sm btn-info" id="fill-all-btn">契約通り</button>
+            <button type="button" class="btn btn-sm btn-secondary" id="clear-all-btn">クリア</button>
+        </div>
+    </div>
+    <div class="card-body">
+        <form method="post" id="calendar-form">
+            {% csrf_token %}
+            
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 8%;">勤務日</th>
+                            <th style="width: 15%;">スタッフ契約</th>
+                            <th style="width: 12%;">勤務区分</th>
+                            <th style="width: 8%;">出勤時刻</th>
+                            <th style="width: 4%;">翌日</th>
+                            <th style="width: 8%;">退勤時刻</th>
+                            <th style="width: 4%;">翌日</th>
+                            <th style="width: 7%;">休憩(分)</th>
+                            <th style="width: 7%;">有給日数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data in calendar_data %}
+                        <tr class="{% if data.is_holiday or data.weekday == 6 %}table-sunday{% elif data.weekday == 5 %}table-saturday{% endif %}" data-day="{{ data.day }}" data-is-holiday="{% if data.is_holiday %}true{% else %}false{% endif %}">
+                            <td style="{% if data.is_holiday or data.weekday == 6 %}color: #cc0000; font-weight: bold;{% elif data.weekday == 5 %}color: #0066cc; font-weight: bold;{% endif %}">
+                                {{ data.date|date:"Y/m/d (D)" }}
+                                {% if data.is_holiday and data.holiday_name %}
+                                    {% my_help_icon data.holiday_name %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <select name="contract_{{ data.day }}" class="form-select form-select-sm contract-select" data-day="{{ data.day }}">
+                                    <option value="">-</option>
+                                    {% for contract in data.valid_contracts %}
+                                        <option value="{{ contract.pk }}" {% if data.timecard and data.timecard.staff_contract.pk == contract.pk %}selected{% endif %}>
+                                            {{ contract.employment_type.name|default:"契約" }} ({{ contract.contract_period_display }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <select name="work_type_{{ data.day }}" class="form-select form-select-sm work-type-select" data-day="{{ data.day }}">
+                                    <option value="">-</option>
+                                    <option value="10" {% if data.timecard and data.timecard.work_type == '10' %}selected{% endif %}>出勤</option>
+                                    <option value="20" {% if data.timecard and data.timecard.work_type == '20' %}selected{% endif %}>休日</option>
+                                    <option value="30" {% if data.timecard and data.timecard.work_type == '30' %}selected{% endif %}>欠勤</option>
+                                    <option value="40" {% if data.timecard and data.timecard.work_type == '40' %}selected{% endif %}>有給休暇</option>
+                                    <option value="50" {% if data.timecard and data.timecard.work_type == '50' %}selected{% endif %}>特別休暇</option>
+                                    <option value="60" {% if data.timecard and data.timecard.work_type == '60' %}selected{% endif %}>代休</option>
+                                    <option value="70" {% if data.timecard and data.timecard.work_type == '70' %}selected{% endif %}>稼働無し</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="time" name="start_time_{{ data.day }}" class="form-control form-control-sm start-time" data-day="{{ data.day }}" value="{% if data.timecard and data.timecard.start_time %}{{ data.timecard.start_time|time:'H:i' }}{% endif %}">
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" name="start_time_next_day_{{ data.day }}" class="form-check-input start-time-next-day" data-day="{{ data.day }}" {% if data.timecard and data.timecard.start_time_next_day %}checked{% endif %}>
+                            </td>
+                            <td>
+                                <input type="time" name="end_time_{{ data.day }}" class="form-control form-control-sm end-time" data-day="{{ data.day }}" value="{% if data.timecard and data.timecard.end_time %}{{ data.timecard.end_time|time:'H:i' }}{% endif %}">
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" name="end_time_next_day_{{ data.day }}" class="form-check-input end-time-next-day" data-day="{{ data.day }}" {% if data.timecard and data.timecard.end_time_next_day %}checked{% endif %}>
+                            </td>
+                            <td>
+                                <input type="number" name="break_minutes_{{ data.day }}" class="form-control form-control-sm text-end break-minutes" data-day="{{ data.day }}" min="0" value="{% if data.timecard %}{{ data.timecard.break_minutes }}{% else %}0{% endif %}">
+                            </td>
+                            <td>
+                                <input type="number" name="paid_leave_days_{{ data.day }}" class="form-control form-control-sm text-end paid-leave" data-day="{{ data.day }}" min="0" max="1" step="0.5" value="{% if data.timecard %}{{ data.timecard.paid_leave_days }}{% else %}0{% endif %}">
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12">
+                    <button type="submit" class="btn btn-sm btn-primary">一括保存</button>
+                    <a href="{% url 'kintai:staff_search' %}?target_month={{ target_date|date:'Y-m' }}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // フォーム送信時のバリデーション
+    document.getElementById('calendar-form').addEventListener('submit', function(e) {
+        let hasError = false;
+        let errorMessages = [];
+        
+        document.querySelectorAll('tr[data-day]').forEach(row => {
+            const day = row.dataset.day;
+            const workType = row.querySelector('.work-type-select').value;
+            const startTime = row.querySelector('.start-time').value;
+            const endTime = row.querySelector('.end-time').value;
+            
+            if (workType === '10') { // 出勤
+                if (!startTime || !endTime) {
+                    hasError = true;
+                    errorMessages.push(`${day}日: 出勤の場合は出勤・退勤時刻を入力してください。`);
+                    row.style.backgroundColor = '#fff3cd'; // 警告色
+                } else if (startTime >= endTime) {
+                    // 翌日フラグのチェック
+                    const startNext = row.querySelector('.start-time-next-day').checked;
+                    const endNext = row.querySelector('.end-time-next-day').checked;
+                    
+                    if (!startNext && !endNext) {
+                        hasError = true;
+                        errorMessages.push(`${day}日: 退勤時刻は出勤時刻より後の時刻を入力してください。`);
+                        row.style.backgroundColor = '#fff3cd';
+                    }
+                }
+            }
+        });
+        
+        if (hasError) {
+            e.preventDefault();
+            alert('入力エラーがあります。\n\n' + errorMessages.slice(0, 5).join('\n') + (errorMessages.length > 5 ? '\n...' : ''));
+        }
+    });
+
+    // 勤務区分の変更に応じて入力欄の表示/非表示を切り替え
+    function toggleFields(day) {
+        const row = document.querySelector(`tr[data-day="${day}"]`);
+        const workType = row.querySelector('.work-type-select').value;
+        const startTime = row.querySelector('.start-time');
+        const endTime = row.querySelector('.end-time');
+        const breakMinutes = row.querySelector('.break-minutes');
+        const paidLeave = row.querySelector('.paid-leave');
+        
+        if (workType === '10') {  // 出勤
+            startTime.disabled = false;
+            endTime.disabled = false;
+            breakMinutes.disabled = false;
+            paidLeave.disabled = true;
+            paidLeave.value = 0;
+        } else if (workType === '40') {  // 有給休暇
+            startTime.disabled = true;
+            endTime.disabled = true;
+            breakMinutes.disabled = true;
+            paidLeave.disabled = false;
+            startTime.value = '';
+            endTime.value = '';
+            breakMinutes.value = 0;
+        } else {  // その他
+            startTime.disabled = true;
+            endTime.disabled = true;
+            breakMinutes.disabled = true;
+            paidLeave.disabled = true;
+            startTime.value = '';
+            endTime.value = '';
+            breakMinutes.value = 0;
+            paidLeave.value = 0;
+        }
+    }
+    
+    // 全ての行に対して初期化
+    document.querySelectorAll('.work-type-select').forEach(select => {
+        const day = select.dataset.day;
+        toggleFields(day);
+        
+        select.addEventListener('change', function() {
+            toggleFields(day);
+        });
+    });
+    
+    // 平日出勤・休日稼働無で埋める
+    document.getElementById('fill-all-btn').addEventListener('click', function() {
+        if (!confirm('平日に対して契約の就業時間で一括設定しますか？\n※最初の有効な契約が自動選択されます。')) return;
+        
+        const defaultStartTime = "{{ default_start_time }}";
+        const defaultEndTime = "{{ default_end_time }}";
+        const defaultBreakMinutes = "{{ default_break_minutes }}";
+
+        document.querySelectorAll('tr[data-day]').forEach(row => {
+            const day = row.dataset.day;
+            const dateText = row.querySelector('td:nth-child(1)').textContent.trim();
+            const weekdayName = dateText.match(/\((.)\ )/)[1];
+            const isHoliday = row.dataset.isHoliday === 'true';
+            
+            // 契約を選択（最初の有効な契約）
+            const contractSelect = row.querySelector('.contract-select');
+            if (contractSelect.options.length > 1) {
+                contractSelect.selectedIndex = 1;  // 最初の契約を選択
+            }
+            
+            // 土日祝日
+            if (weekdayName === '土' || weekdayName === '日' || isHoliday) {
+                row.querySelector('.work-type-select').value = '70';
+                row.querySelector('.start-time').value = '';
+                row.querySelector('.end-time').value = '';
+                row.querySelector('.break-minutes').value = '0';
+                row.querySelector('.paid-leave').value = '0';
+                toggleFields(day);
+            } else {
+                // 平日
+                row.querySelector('.work-type-select').value = '10';
+                row.querySelector('.start-time').value = defaultStartTime;
+                row.querySelector('.end-time').value = defaultEndTime;
+                row.querySelector('.break-minutes').value = defaultBreakMinutes;
+                row.querySelector('.paid-leave').value = '0';
+                toggleFields(day);
+            }
+        });
+    });
+    
+    // 全てクリア
+    document.getElementById('clear-all-btn').addEventListener('click', function() {
+        if (!confirm('全ての入力をクリアしますか？')) return;
+        
+        document.querySelectorAll('tr[data-day]').forEach(row => {
+            const day = row.dataset.day;
+            row.querySelector('.contract-select').value = '';
+            row.querySelector('.work-type-select').value = '';
+            row.querySelector('.start-time').value = '';
+            row.querySelector('.end-time').value = '';
+            row.querySelector('.break-minutes').value = '0';
+            row.querySelector('.paid-leave').value = '0';
+            // 翌日チェックボックスもクリア
+            const startNextDay = row.querySelector('.start-time-next-day');
+            const endNextDay = row.querySelector('.end-time-next-day');
+            if (startNextDay) startNextDay.checked = false;
+            if (endNextDay) endNextDay.checked = false;
+            toggleFields(day);
+        });
+    });
+});
+</script>
+
+<style>
+.table-responsive {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 10;
+}
+
+input:disabled, select:disabled {
+    background-color: #e9ecef;
+}
+</style>
+{% endblock %}

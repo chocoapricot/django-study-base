@@ -1,0 +1,59 @@
+{% extends 'common/_base.html' %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        スタッフ検索
+    </div>
+    <div class="card-body">
+        <form method="get" class="form-inline d-flex mb-3 align-items-center">
+            <div class="input-group me-2" style="width: auto;">
+                <input type="month" name="target_month" value="{{ target_date|date:'Y-m' }}" class="form-control form-control-sm" style="max-width: 130px;">
+            </div>
+            <button class="btn btn-primary btn-sm" type="submit">検索</button>
+        </form>
+
+
+        {% if staff_list %}
+            <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">社員番号</th>
+                        <th style="width: 15%;">スタッフ</th>
+                        <th style="width: 10%;">契約数</th>
+                        <th style="width: 10%;">入力日数</th>
+                        <th style="width: 10%;">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in staff_list %}
+                    <tr>
+                        <td>
+                            {{ item.staff.employee_no|default:"-" }}
+                        </td>
+                        <td>
+                            {{ item.staff.name }}
+                        </td>
+                        <td class="text-end">
+                            {{ item.contract_count }}件
+                        </td>
+                        <td class="text-end">
+                            {{ item.input_days }}日
+                        </td>
+                        <td>
+                            {% if perms.kintai.add_stafftimecard %}
+                                <a href="{% url 'kintai:staff_timecard_calendar' item.staff.pk target_date|date:'Y-m' %}" class="btn btn-sm btn-primary">
+                                    勤怠入力
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-muted">該当するスタッフが見つかりませんでした。</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
