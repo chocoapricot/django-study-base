@@ -203,6 +203,7 @@ class ContractSearchViewTest(TestCase):
         # 日次勤怠を3日分作成
         for i in range(1, 4):
             StaffTimecard.objects.create(
+                staff_contract=self.staff_contract,
                 timesheet=timesheet,
                 work_date=date(2024, 11, i),
                 work_type='10',
@@ -248,12 +249,12 @@ class ContractSearchViewTest(TestCase):
         
         # 2人目: 入力中 (1日だけ入力)
         ts2 = StaffTimesheet.objects.create(staff_contract=contracts[1], staff=staffs[1], target_month=target_month)
-        StaffTimecard.objects.create(timesheet=ts2, work_date=date(2024, 11, 1), work_type='10', start_time=time(9,0), end_time=time(18,0))
+        StaffTimecard.objects.create(staff_contract=contracts[1], timesheet=ts2, work_date=date(2024, 11, 1), work_type='10', start_time=time(9,0), end_time=time(18,0))
         
         # 3人目: 入力済 (30日分入力)
         ts3 = StaffTimesheet.objects.create(staff_contract=contracts[2], staff=staffs[2], target_month=target_month)
         for d in range(1, 31): # 11月は30日まで
-            StaffTimecard.objects.create(timesheet=ts3, work_date=date(2024, 11, d), work_type='10', start_time=time(9,0), end_time=time(18,0))
+            StaffTimecard.objects.create(staff_contract=contracts[2], timesheet=ts3, work_date=date(2024, 11, d), work_type='10', start_time=time(9,0), end_time=time(18,0))
 
         # 既存のself.staff_contract (EMP001) はtimesheetなし -> 未入力扱い
         

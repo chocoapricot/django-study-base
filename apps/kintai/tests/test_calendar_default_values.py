@@ -58,9 +58,9 @@ class TestCalendarDefaultValues(TestCase):
             )
             
             # マスタデータ作成
-            self.employment_type = EmploymentType.objects.create(name='正社員', code='01')
-            self.contract_pattern = ContractPattern.objects.create(name='標準契約', code='01', domain='staff')
-            self.overtime_pattern = OvertimePattern.objects.create(name='標準', code='01')
+            self.employment_type = EmploymentType.objects.create(name='正社員')
+            self.contract_pattern = ContractPattern.objects.create(name='標準契約', domain='staff')
+            self.overtime_pattern = OvertimePattern.objects.create(name='標準')
 
             # スタッフ契約作成
             self.contract = StaffContract.objects.create(
