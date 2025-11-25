@@ -179,6 +179,7 @@ class StaffTimecardModelTest(TestCase):
         """日次勤怠の作成テスト"""
         timecard = StaffTimecard.objects.create(
             timesheet=self.timesheet,
+            staff_contract=self.staff_contract,
             work_date=date(2024, 11, 1),
             work_type='10',  # 出勤
             start_time=time(9, 0),
@@ -192,6 +193,7 @@ class StaffTimecardModelTest(TestCase):
         """労働時間計算のテスト"""
         timecard = StaffTimecard.objects.create(
             timesheet=self.timesheet,
+            staff_contract=self.staff_contract,
             work_date=date(2024, 11, 1),
             work_type='10',  # 出勤
             start_time=time(9, 0),
@@ -206,6 +208,7 @@ class StaffTimecardModelTest(TestCase):
         """残業時間計算のテスト"""
         timecard = StaffTimecard.objects.create(
             timesheet=self.timesheet,
+            staff_contract=self.staff_contract,
             work_date=date(2024, 11, 1),
             work_type='10',  # 出勤
             start_time=time(9, 0),
@@ -220,6 +223,7 @@ class StaffTimecardModelTest(TestCase):
         """無効な時刻範囲のバリデーションテスト"""
         timecard = StaffTimecard(
             timesheet=self.timesheet,
+            staff_contract=self.staff_contract,
             work_date=date(2024, 11, 1),
             work_type='10',  # 出勤
             start_time=time(18, 0),
@@ -232,6 +236,7 @@ class StaffTimecardModelTest(TestCase):
         """文字列表現のテスト"""
         timecard = StaffTimecard.objects.create(
             timesheet=self.timesheet,
+            staff_contract=self.staff_contract,
             work_date=date(2024, 11, 1),
             work_type='10',
             start_time=time(9, 0),
