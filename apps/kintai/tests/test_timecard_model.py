@@ -73,6 +73,7 @@ class StaffTimecardModelTest(TestCase):
         self.staff_contract.save()
 
         timecard = StaffTimecard(
+            staff_contract=self.staff_contract,
             timesheet=self.timesheet,
             work_date=date(2023, 1, 10),
             work_type='10',
