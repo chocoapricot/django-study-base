@@ -275,6 +275,7 @@ class StaffTimecardLateNightOvertimeTest(TestCase):
         """深夜残業なし（通常勤務）"""
         timecard = StaffTimecard.objects.create(
             timesheet=self.timesheet,
+            staff_contract=self.staff_contract,
             work_date=date(2024, 11, 5),
             work_type='10',
             start_time=time(9, 0),
@@ -288,6 +289,7 @@ class StaffTimecardLateNightOvertimeTest(TestCase):
         # 22:00から24:00(翌0:00)までの2時間が深夜残業
         timecard = StaffTimecard.objects.create(
             timesheet=self.timesheet,
+            staff_contract=self.staff_contract,
             work_date=date(2024, 11, 5),
             work_type='10',
             start_time=time(14, 0),
@@ -305,6 +307,7 @@ class StaffTimecardLateNightOvertimeTest(TestCase):
         # 22:00から翌朝6:00まで勤務
         timecard = StaffTimecard.objects.create(
             timesheet=self.timesheet,
+            staff_contract=self.staff_contract,
             work_date=date(2024, 11, 5),
             work_type='10',
             start_time=time(22, 0),
@@ -320,6 +323,7 @@ class StaffTimecardLateNightOvertimeTest(TestCase):
         """休憩ありの日をまたぐ深夜残業"""
         timecard = StaffTimecard.objects.create(
             timesheet=self.timesheet,
+            staff_contract=self.staff_contract,
             work_date=date(2024, 11, 5),
             work_type='10',
             start_time=time(20, 0),
@@ -336,6 +340,7 @@ class StaffTimecardLateNightOvertimeTest(TestCase):
         """フル深夜勤務"""
         timecard = StaffTimecard.objects.create(
             timesheet=self.timesheet,
+            staff_contract=self.staff_contract,
             work_date=date(2024, 11, 5),
             work_type='10',
             start_time=time(22, 0),
@@ -351,6 +356,7 @@ class StaffTimecardLateNightOvertimeTest(TestCase):
         """深夜休憩ありの深夜残業"""
         timecard = StaffTimecard.objects.create(
             timesheet=self.timesheet,
+            staff_contract=self.staff_contract,
             work_date=date(2024, 11, 5),
             work_type='10',
             start_time=time(22, 0),
@@ -367,6 +373,7 @@ class StaffTimecardLateNightOvertimeTest(TestCase):
         """通常休憩と深夜休憩ありの深夜残業"""
         timecard = StaffTimecard.objects.create(
             timesheet=self.timesheet,
+            staff_contract=self.staff_contract,
             work_date=date(2024, 11, 5),
             work_type='10',
             start_time=time(20, 0),
@@ -386,6 +393,7 @@ class StaffTimecardLateNightOvertimeTest(TestCase):
         """日をまたがない深夜残業（深夜休憩あり）"""
         timecard = StaffTimecard.objects.create(
             timesheet=self.timesheet,
+            staff_contract=self.staff_contract,
             work_date=date(2024, 11, 5),
             work_type='10',
             start_time=time(18, 0),
