@@ -241,19 +241,28 @@ def staff_timecard_calendar(request, staff_pk, target_month):
             break_minutes = request.POST.get(f'break_minutes_{day}', 0)
             paid_leave_days = request.POST.get(f'paid_leave_days_{day}', 0)
             
-            if not work_type or not contract_id:
+            # 勤務区分が入力されていない場合はスキップ
+            if not work_type:
+                continue
+            
+            # 勤務区分が入力されている場合は契約が必須
+            if not contract_id:
+                messages.error(request, f'{work_date.day}日: 勤務区分を入力する場合はスタッフ契約を選択してください。')
                 continue
 
             # 契約を取得
             try:
                 contract = StaffContract.objects.get(pk=contract_id, staff=staff)
             except StaffContract.DoesNotExist:
+                messages.error(request, f'{work_date.day}日: 選択されたスタッフ契約が見つかりません。')
                 continue
 
             # 契約期間外の日付は処理しない
             if contract.start_date and work_date < contract.start_date:
+                messages.error(request, f'{work_date.day}日: 契約開始日({contract.start_date.strftime("%Y/%m/%d")})より前の日付です。')
                 continue
             if contract.end_date and work_date > contract.end_date:
+                messages.error(request, f'{work_date.day}日: 契約終了日({contract.end_date.strftime("%Y/%m/%d")})より後の日付です。')
                 continue
             
             # 時刻の変換
@@ -437,12 +446,18 @@ def timesheet_detail(request, pk):
 @login_required
 def timesheet_delete(request, pk):
     """月次勤怠削除"""
-    timesheet = get_object_or_404(StaffTimesheet, pk=pk)
+    # select_relatedでテンプレート表示用に関連オブジェクトを事前ロード
+    timesheet = get_object_or_404(
+        StaffTimesheet.objects.select_related('staff', 'staff_contract'),
+        pk=pk
+    )
+    
     if request.method == 'POST':
         target_month = timesheet.target_month.strftime('%Y-%m')
         timesheet.delete()
         messages.success(request, '月次勤怠を削除しました。')
         return redirect(f"{reverse('kintai:contract_search')}?target_month={target_month}")
+    
     context = {
         'timesheet': timesheet,
     }
@@ -702,6 +717,7 @@ def timecard_calendar(request, timesheet_pk):
             if not timecard:
                 timecard = StaffTimecard(
                     timesheet=timesheet,
+                    staff_contract=timesheet.staff_contract,
                     work_date=work_date,
                     work_type=work_type
                 )

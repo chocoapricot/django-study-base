@@ -286,7 +286,18 @@ class StaffTimecard(MyModel):
         ]
 
     def __str__(self):
-        return f"{self.timesheet.staff} - {self.work_date}"
+        try:
+            if self.timesheet and self.timesheet.staff:
+                return f"{self.timesheet.staff} - {self.work_date}"
+        except:
+            pass
+        # timesheetが利用できない場合はstaff_contractから取得
+        try:
+            if self.staff_contract and self.staff_contract.staff:
+                return f"{self.staff_contract.staff} - {self.work_date}"
+        except:
+            pass
+        return f"日次勤怠 - {self.work_date}"
 
     def clean(self):
         """バリデーション"""
