@@ -123,6 +123,42 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // フォーム送信時のバリデーション
+    document.getElementById('calendar-form').addEventListener('submit', function(e) {
+        let hasError = false;
+        let errorMessages = [];
+        
+        document.querySelectorAll('tr[data-day]').forEach(row => {
+            const day = row.dataset.day;
+            const workType = row.querySelector('.work-type-select').value;
+            const startTime = row.querySelector('.start-time').value;
+            const endTime = row.querySelector('.end-time').value;
+            
+            if (workType === '10') { // 出勤
+                if (!startTime || !endTime) {
+                    hasError = true;
+                    errorMessages.push(`${day}日: 出勤の場合は出勤・退勤時刻を入力してください。`);
+                    row.style.backgroundColor = '#fff3cd'; // 警告色
+                } else if (startTime >= endTime) {
+                    // 翌日フラグのチェック
+                    const startNext = row.querySelector('.start-time-next-day').checked;
+                    const endNext = row.querySelector('.end-time-next-day').checked;
+                    
+                    if (!startNext && !endNext) {
+                        hasError = true;
+                        errorMessages.push(`${day}日: 退勤時刻は出勤時刻より後の時刻を入力してください。`);
+                        row.style.backgroundColor = '#fff3cd';
+                    }
+                }
+            }
+        });
+        
+        if (hasError) {
+            e.preventDefault();
+            alert('入力エラーがあります。\n\n' + errorMessages.slice(0, 5).join('\n') + (errorMessages.length > 5 ? '\n...' : ''));
+        }
+    });
+
     // 勤務区分の変更に応じて入力欄の表示/非表示を切り替え
     function toggleFields(day) {
         const row = document.querySelector(`tr[data-day="${day}"]`);

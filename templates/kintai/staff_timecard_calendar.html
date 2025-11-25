@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('tr[data-day]').forEach(row => {
             const day = row.dataset.day;
             const dateText = row.querySelector('td:nth-child(1)').textContent.trim();
-            const weekdayName = dateText.match(/\((.)\ )/)[1];
+            const weekdayName = dateText.match(/\((.)\)/)[1];
             const isHoliday = row.dataset.isHoliday === 'true';
             
             // 契約を選択（最初の有効な契約）

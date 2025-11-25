@@ -165,6 +165,7 @@ class TimecardViewTest(TestCase):
         from datetime import time
         self.timecard = StaffTimecard.objects.create(
             timesheet=self.timesheet,
+            staff_contract=self.staff_contract,
             work_date=date(2024, 11, 1),
             work_type='10',
             start_time=time(9, 0),

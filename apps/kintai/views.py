@@ -511,9 +511,8 @@ def timecard_create(request, timesheet_pk):
         if form.is_valid():
             timecard = form.save(commit=False)
             timecard.timesheet = timesheet
+            timecard.staff_contract = timesheet.staff_contract
             timecard.save()
-            # 月次勤怠の集計を更新
-            timesheet.calculate_totals()
             messages.success(request, '日次勤怠を作成しました。')
             return redirect('kintai:timesheet_detail', pk=timesheet_pk)
     else:
@@ -564,10 +563,8 @@ def timecard_create_initial(request, contract_pk, target_month):
             # 日次勤怠を保存
             timecard = form.save(commit=False)
             timecard.timesheet = timesheet
+            timecard.staff_contract = timesheet.staff_contract
             timecard.save()
-            
-            # 集計更新
-            timesheet.calculate_totals()
             
             messages.success(request, '月次勤怠と日次勤怠を作成しました。')
             return redirect('kintai:timesheet_detail', pk=timesheet.pk)
@@ -596,8 +593,6 @@ def timecard_edit(request, pk):
         form = StaffTimecardForm(request.POST, instance=timecard, timesheet=timesheet)
         if form.is_valid():
             form.save()
-            # 月次勤怠の集計を更新
-            timesheet.calculate_totals()
             messages.success(request, '日次勤怠を更新しました。')
             return redirect('kintai:timesheet_detail', pk=timesheet.pk)
     else:
@@ -731,9 +726,8 @@ def timecard_calendar(request, timesheet_pk):
                         error_messages.append(f"{work_date.day}日: {error}")
                 messages.error(request, " / ".join(error_messages))
         
-        # 月次勤怠の集計を更新
-        timesheet.calculate_totals()
-        messages.success(request, '日次勤怠を一括保存しました。')
+        if not messages.get_messages(request):
+            messages.success(request, '日次勤怠を一括保存しました。')
         return redirect('kintai:timesheet_detail', pk=timesheet_pk)
     
     # カレンダーデータを作成
@@ -875,6 +869,7 @@ def timecard_calendar_initial(request, contract_pk, target_month):
             # 新規作成
             timecard = StaffTimecard(
                 timesheet=timesheet,
+                staff_contract=contract,
                 work_date=work_date,
                 work_type=work_type,
                 start_time=start_time,
@@ -884,10 +879,18 @@ def timecard_calendar_initial(request, contract_pk, target_month):
                 break_minutes=int(break_minutes) if break_minutes else 0,
                 paid_leave_days=float(paid_leave_days) if paid_leave_days else 0
             )
-            timecard.save()
+            
+            try:
+                timecard.full_clean()
+                timecard.save()
+            except ValidationError as e:
+                # エラーメッセージを作成
+                error_messages = []
+                for field, errors in e.message_dict.items():
+                    for error in errors:
+                        error_messages.append(f"{work_date.day}日: {error}")
+                messages.error(request, " / ".join(error_messages))
         
-        # 月次勤怠の集計を更新
-        timesheet.calculate_totals()
         messages.success(request, '月次勤怠と日次勤怠を作成しました。')
         return redirect('kintai:timesheet_detail', pk=timesheet.pk)
 
