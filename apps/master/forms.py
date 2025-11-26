@@ -15,6 +15,7 @@ from .models import (
     ContractTerms,
     MinimumPay,
     DefaultValue,
+    UserParameter,
     EmploymentType,
     StaffRegistStatus,
     ClientRegistStatus,
@@ -703,3 +704,68 @@ class OvertimePatternForm(forms.ModelForm):
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
+
+class UserParameterForm(forms.ModelForm):
+    """設定値マスタフォーム"""
+    class Meta:
+        model = UserParameter
+        fields = ['target_item', 'format', 'value']
+        widgets = {
+            'target_item': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'readonly': 'readonly'}),
+            'format': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'value': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            # 編集時は形式を読み取り専用にする（disabledではなくreadonlyを使用）
+            self.fields['format'].widget.attrs['readonly'] = True
+            self.fields['format'].widget.attrs['style'] = 'pointer-events: none; background-color: #e9ecef;'
+            
+            if self.instance.format == 'text':
+                self.fields['value'].widget.attrs.update({
+                    'rows': '1',
+                    'style': 'resize: none;'
+                })
+            elif self.instance.format == 'boolean':
+                # boolean形式の場合はラジオボタンに変更
+                self.fields['value'] = forms.ChoiceField(
+                    choices=[('true', 'True'), ('false', 'False')],
+                    widget=MyRadioSelect(),
+                    initial=self.instance.value.lower() if self.instance.value else 'false'
+                )
+            elif self.instance.format == 'number':
+                # number形式の場合は数値入力フィールドに変更
+                self.fields['value'] = forms.CharField(
+                    widget=forms.NumberInput(attrs={
+                        'class': 'form-control form-control-sm',
+                        'step': 'any'  # 整数・小数両方対応
+                    }),
+                    initial=self.instance.value
+                )
+
+    def clean_value(self):
+        """値のバリデーション"""
+        value = self.cleaned_data.get('value')
+        format_type = self.cleaned_data.get('format')
+        
+        if format_type == 'boolean':
+            # boolean形式の場合、true/falseのみ許可
+            if value not in ['true', 'false']:
+                raise ValidationError('真偽値は "true" または "false" で入力してください。')
+        elif format_type == 'number':
+            # number形式の場合、数値のバリデーション
+            if value:
+                try:
+                    # 小数点が含まれている場合はfloat、そうでなければint
+                    if '.' in value:
+                        float(value)
+                    else:
+                        int(value)
+                except (ValueError, TypeError):
+                    raise ValidationError('数値を入力してください。')
+        
+        return value
+

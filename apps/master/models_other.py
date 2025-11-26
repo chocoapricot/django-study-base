@@ -160,3 +160,63 @@ class DefaultValue(MyModel):
         elif self.format == 'number':
             return self.get_number_value()
         return self.value
+
+
+class UserParameter(MyModel):
+    """
+    ユーザーごとの設定値を管理するマスターデータ。
+    """
+    FORMAT_CHOICES = [
+        ('text', 'テキスト'),
+        ('textarea', 'テキストエリア'),
+        ('boolean', '真偽値'),
+        ('number', '数値'),
+    ]
+
+    key = models.CharField('キー', max_length=255, primary_key=True)
+    target_item = models.CharField('対象項目', max_length=255)
+    format = models.CharField('形式', max_length=10, choices=FORMAT_CHOICES, default='text')
+    value = models.TextField('値', blank=True)
+    display_order = models.IntegerField('表示順', default=0)
+
+    class Meta:
+        db_table = 'apps_master_user_parameter'
+        verbose_name = '設定値マスタ'
+        verbose_name_plural = '設定値マスタ'
+        ordering = ['display_order', 'target_item']
+
+    def __str__(self):
+        return self.target_item
+
+    def get_boolean_value(self):
+        """
+        boolean形式の値をPythonのbool型で取得
+        """
+        if self.format == 'boolean':
+            return self.value.lower() == 'true'
+        return None
+
+    def get_number_value(self):
+        """
+        number形式の値をPythonの数値型で取得
+        """
+        if self.format == 'number':
+            try:
+                # 小数点が含まれている場合はfloat、そうでなければint
+                if '.' in self.value:
+                    return float(self.value)
+                else:
+                    return int(self.value)
+            except (ValueError, TypeError):
+                return None
+        return None
+
+    def get_formatted_value(self):
+        """
+        形式に応じて適切にフォーマットされた値を取得
+        """
+        if self.format == 'boolean':
+            return self.get_boolean_value()
+        elif self.format == 'number':
+            return self.get_number_value()
+        return self.value

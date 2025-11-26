@@ -9,11 +9,13 @@ from .models import (
     InformationFile,
     MailTemplate,
     DefaultValue,
+    UserParameter,
 )
 from .forms import (
     InformationForm,
     MailTemplateForm,
     DefaultValueForm,
+    UserParameterForm,
 )
 from apps.system.logs.models import AppLog
 from apps.company.models import Company
@@ -347,3 +349,75 @@ def default_value_change_history_list(request):
             "model_name": "DefaultValue",
         },
     )
+
+
+@login_required
+@permission_required("master.view_userparameter", raise_exception=True)
+def user_parameter_list(request):
+    """設定値マスタ一覧"""
+    search_query = request.GET.get("search", "")
+    items = UserParameter.objects.all()
+    if search_query:
+        items = items.filter(
+            Q(target_item__icontains=search_query) | Q(value__icontains=search_query)
+        )
+
+    paginator = Paginator(items, 20)
+    page = request.GET.get("page")
+    items_page = paginator.get_page(page)
+
+    change_logs = AppLog.objects.filter(model_name="UserParameter", action__in=["update"]).order_by("-timestamp")[:5]
+    change_logs_count = AppLog.objects.filter(model_name="UserParameter", action__in=["update"]).count()
+
+    context = {
+        "items": items_page,
+        "search_query": search_query,
+        "change_logs": change_logs,
+        "change_logs_count": change_logs_count,
+        "history_url_name": "master:user_parameter_change_history_list",
+        "title": "設定値マスタ",
+    }
+    return render(request, "master/user_parameter_list.html", context)
+
+
+@login_required
+@permission_required("master.change_userparameter", raise_exception=True)
+def user_parameter_update(request, pk):
+    """設定値マスタ編集"""
+    item = get_object_or_404(UserParameter, pk=pk)
+    if request.method == "POST":
+        form = UserParameterForm(request.POST, instance=item)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"設定値「{item.target_item}」を更新しました。")
+            return redirect("master:user_parameter_list")
+    else:
+        form = UserParameterForm(instance=item)
+
+    context = {
+        "form": form,
+        "item": item,
+        "title": f"設定値編集 - {item.target_item}",
+    }
+    return render(request, "master/user_parameter_form.html", context)
+
+
+@login_required
+@permission_required("master.view_userparameter", raise_exception=True)
+def user_parameter_change_history_list(request):
+    """設定値マスタ変更履歴一覧"""
+    logs = AppLog.objects.filter(model_name="UserParameter", action__in=["update"]).order_by("-timestamp")
+    paginator = Paginator(logs, 20)
+    page = request.GET.get("page")
+    logs_page = paginator.get_page(page)
+    return render(
+        request,
+        "common/common_change_history_list.html",
+        {
+            "change_logs": logs_page,
+            "page_title": "設定値マスタ変更履歴",
+            "back_url_name": "master:user_parameter_list",
+            "model_name": "UserParameter",
+        },
+    )
+

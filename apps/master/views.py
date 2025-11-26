@@ -154,6 +154,14 @@ MASTER_CONFIGS = [
     },
     {
         "category": "その他",
+        "name": "設定値マスタ",
+        "description": "ユーザーごとの設定値を管理します",
+        "model": "master.UserParameter",
+        "url_name": "master:user_parameter_list",
+        "permission": "master.view_userparameter",
+    },
+    {
+        "category": "その他",
         "name": "汎用文言テンプレート",
         "description": "画面に入力する定型文を管理します",
         "model": "master.PhraseTemplate",
