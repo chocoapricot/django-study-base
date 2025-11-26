@@ -366,6 +366,12 @@ def staff_timecard_calendar(request, staff_pk, target_month):
     default_values = {'start_time': '09:00', 'end_time': '18:00', 'break_minutes': '60'}
     if contracts.exists():
         default_values = _get_contract_work_time(contracts.first())
+    
+    # 各契約の就業時間パターンデータを取得
+    import json
+    contracts_work_times = {}
+    for contract in contracts:
+        contracts_work_times[contract.pk] = _get_work_times_data(contract)
 
     context = {
         'staff': staff,
@@ -376,6 +382,7 @@ def staff_timecard_calendar(request, staff_pk, target_month):
         'default_start_time': default_values['start_time'],
         'default_end_time': default_values['end_time'],
         'default_break_minutes': default_values['break_minutes'],
+        'contracts_work_times_json': json.dumps(contracts_work_times),
     }
     return render(request, 'kintai/staff_timecard_calendar.html', context)
 
@@ -791,6 +798,9 @@ def timecard_calendar(request, timesheet_pk):
     
     # 契約情報のデフォルト値を取得
     default_values = _get_contract_work_time(timesheet.staff_contract)
+    
+    # 就業時間パターンから勤務時間一覧を取得
+    work_times_data = _get_work_times_data(timesheet.staff_contract)
 
     context = {
         'timesheet': timesheet,
@@ -798,6 +808,7 @@ def timecard_calendar(request, timesheet_pk):
         'default_start_time': default_values['start_time'],
         'default_end_time': default_values['end_time'],
         'default_break_minutes': default_values['break_minutes'],
+        'work_times_data': work_times_data,
     }
     return render(request, 'kintai/timecard_calendar.html', context)
 
@@ -944,6 +955,9 @@ def timecard_calendar_initial(request, contract_pk, target_month):
     
     # 契約情報のデフォルト値を取得
     default_values = _get_contract_work_time(contract)
+    
+    # 就業時間パターンから勤務時間一覧を取得
+    work_times_data = _get_work_times_data(contract)
 
     context = {
         'timesheet': virtual_timesheet,
@@ -951,6 +965,7 @@ def timecard_calendar_initial(request, contract_pk, target_month):
         'default_start_time': default_values['start_time'],
         'default_end_time': default_values['end_time'],
         'default_break_minutes': default_values['break_minutes'],
+        'work_times_data': work_times_data,
     }
     return render(request, 'kintai/timecard_calendar.html', context)
 
@@ -1000,3 +1015,48 @@ def _get_contract_work_time(contract):
         default_values['break_minutes'] = str(total_break_minutes)
             
     return default_values
+
+
+def _get_work_times_data(contract):
+    """
+    契約の就業時間パターンから勤務時間一覧を取得し、JavaScript用のデータを返す
+    """
+    work_times_data = []
+    
+    if not contract or not contract.worktime_pattern:
+        return work_times_data
+    
+    # 就業時間パターンから勤務時間一覧を取得
+    work_times = contract.worktime_pattern.work_times.filter(
+        time_name__is_active=True
+    ).order_by('display_order').prefetch_related('break_times')
+    
+    for work_time in work_times:
+        # 休憩時間の合計を計算
+        total_break_minutes = 0
+        for break_time in work_time.break_times.all():
+            from datetime import datetime, timedelta
+            dummy_date = datetime(2000, 1, 1)
+            start_dt = datetime.combine(dummy_date, break_time.start_time)
+            end_dt = datetime.combine(dummy_date, break_time.end_time)
+            
+            # 日を跨ぐ場合の考慮
+            if break_time.end_time_next_day:
+                end_dt += timedelta(days=1)
+            elif end_dt < start_dt:
+                end_dt += timedelta(days=1)
+            
+            diff = end_dt - start_dt
+            total_break_minutes += int(diff.total_seconds() / 60)
+        
+        work_times_data.append({
+            'id': work_time.id,
+            'name': work_time.time_name.content if work_time.time_name else '未設定',
+            'start_time': work_time.start_time.strftime('%H:%M'),
+            'end_time': work_time.end_time.strftime('%H:%M'),
+            'start_time_next_day': work_time.start_time_next_day,
+            'end_time_next_day': work_time.end_time_next_day,
+            'break_minutes': total_break_minutes,
+        })
+    
+    return work_times_data

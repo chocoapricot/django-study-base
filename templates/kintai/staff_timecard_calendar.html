@@ -52,7 +52,8 @@
                         <tr>
                             <th style="width: 8%;">勤務日</th>
                             <th style="width: 15%;">スタッフ契約</th>
-                            <th style="width: 12%;">勤務区分</th>
+                            <th style="width: 5%;">就業時間</th>
+                            <th style="width: 5%;">勤務区分</th>
                             <th style="width: 8%;">出勤時刻</th>
                             <th style="width: 4%;">翌日</th>
                             <th style="width: 8%;">退勤時刻</th>
@@ -78,6 +79,11 @@
                                             {{ contract.employment_type.name|default:"契約" }} ({{ contract.contract_period_display }})
                                         </option>
                                     {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <select name="work_time_{{ data.day }}" class="form-select form-select-sm work-time-select" data-day="{{ data.day }}" disabled>
+                                    <option value="">-</option>
                                 </select>
                             </td>
                             <td>
@@ -206,6 +212,82 @@ document.addEventListener('DOMContentLoaded', function() {
         
         select.addEventListener('change', function() {
             toggleFields(day);
+        });
+    });
+    
+    // 契約ごとの就業時間データ
+    const contractsWorkTimes = {{ contracts_work_times_json|safe }};
+    
+    // 契約選択時に就業時間プルダウンを更新
+    document.querySelectorAll('.contract-select').forEach(select => {
+        const day = select.dataset.day;
+        
+        // 初期化時に既に契約が選択されている場合は就業時間プルダウンを更新
+        if (select.value) {
+            updateWorkTimeOptions(day, select.value);
+        }
+        
+        select.addEventListener('change', function() {
+            const contractId = this.value;
+            updateWorkTimeOptions(day, contractId);
+        });
+    });
+    
+    // 就業時間プルダウンの選択肢を更新
+    function updateWorkTimeOptions(day, contractId) {
+        const workTimeSelect = document.querySelector(`select[name="work_time_${day}"]`);
+        
+        // 既存の選択肢をクリア
+        workTimeSelect.innerHTML = '<option value="">-</option>';
+        
+        if (contractId && contractsWorkTimes[contractId]) {
+            // 契約が選択されている場合は有効化
+            workTimeSelect.disabled = false;
+            
+            // 就業時間の選択肢を追加
+            contractsWorkTimes[contractId].forEach(workTime => {
+                const option = document.createElement('option');
+                option.value = workTime.id;
+                option.textContent = workTime.name;
+                option.dataset.startTime = workTime.start_time;
+                option.dataset.endTime = workTime.end_time;
+                option.dataset.startNextDay = workTime.start_time_next_day;
+                option.dataset.endNextDay = workTime.end_time_next_day;
+                option.dataset.breakMinutes = workTime.break_minutes;
+                workTimeSelect.appendChild(option);
+            });
+        } else {
+            // 契約が選択されていない場合は無効化
+            workTimeSelect.disabled = true;
+        }
+    }
+    
+    // 就業時間プルダウンの変更イベント
+    document.querySelectorAll('.work-time-select').forEach(select => {
+        select.addEventListener('change', function() {
+            const day = this.dataset.day;
+            const selectedOption = this.options[this.selectedIndex];
+            
+            if (selectedOption.value) {
+                const row = document.querySelector(`tr[data-day="${day}"]`);
+                
+                // 勤務区分を「出勤」に設定
+                row.querySelector('.work-type-select').value = '10';
+                
+                // 時刻を設定
+                row.querySelector('.start-time').value = selectedOption.dataset.startTime;
+                row.querySelector('.end-time').value = selectedOption.dataset.endTime;
+                
+                // 翌日フラグを設定
+                row.querySelector('.start-time-next-day').checked = selectedOption.dataset.startNextDay === 'true';
+                row.querySelector('.end-time-next-day').checked = selectedOption.dataset.endNextDay === 'true';
+                
+                // 休憩時間を設定
+                row.querySelector('.break-minutes').value = selectedOption.dataset.breakMinutes;
+                
+                // 入力欄を有効化
+                toggleFields(day);
+            }
         });
     });
     

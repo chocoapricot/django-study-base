@@ -53,6 +53,7 @@
                     <thead class="table-light">
                         <tr>
                             <th style="width: 10%;">勤務日</th>
+                            <th style="width: 15%;">就業時間</th>
                             <th style="width: 15%;">勤務区分</th>
                             <th style="width: 10%;">出勤時刻</th>
                             <th style="width: 5%;">翌日</th>
@@ -70,6 +71,21 @@
                                 {% if data.is_holiday and data.holiday_name %}
                                     {% my_help_icon data.holiday_name %}
                                 {% endif %}
+                            </td>
+                            <td>
+                                <select name="work_time_{{ data.day }}" class="form-select form-select-sm work-time-select" data-day="{{ data.day }}">
+                                    <option value="">-</option>
+                                    {% for wt in work_times_data %}
+                                    <option value="{{ wt.id }}" 
+                                            data-start-time="{{ wt.start_time }}" 
+                                            data-end-time="{{ wt.end_time }}" 
+                                            data-start-next-day="{{ wt.start_time_next_day|yesno:'true,false' }}"
+                                            data-end-next-day="{{ wt.end_time_next_day|yesno:'true,false' }}"
+                                            data-break-minutes="{{ wt.break_minutes }}">
+                                        {{ wt.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
                             </td>
                             <td>
                                 <select name="work_type_{{ data.day }}" class="form-select form-select-sm work-type-select" data-day="{{ data.day }}">
@@ -201,6 +217,35 @@ document.addEventListener('DOMContentLoaded', function() {
         
         select.addEventListener('change', function() {
             toggleFields(day);
+        });
+    });
+    
+    // 就業時間プルダウンの変更イベント
+    document.querySelectorAll('.work-time-select').forEach(select => {
+        select.addEventListener('change', function() {
+            const day = this.dataset.day;
+            const selectedOption = this.options[this.selectedIndex];
+            
+            if (selectedOption.value) {
+                const row = document.querySelector(`tr[data-day="${day}"]`);
+                
+                // 勤務区分を「出勤」に設定
+                row.querySelector('.work-type-select').value = '10';
+                
+                // 時刻を設定
+                row.querySelector('.start-time').value = selectedOption.dataset.startTime;
+                row.querySelector('.end-time').value = selectedOption.dataset.endTime;
+                
+                // 翌日フラグを設定
+                row.querySelector('.start-time-next-day').checked = selectedOption.dataset.startNextDay === 'true';
+                row.querySelector('.end-time-next-day').checked = selectedOption.dataset.endNextDay === 'true';
+                
+                // 休憩時間を設定
+                row.querySelector('.break-minutes').value = selectedOption.dataset.breakMinutes;
+                
+                // 入力欄を有効化
+                toggleFields(day);
+            }
         });
     });
     

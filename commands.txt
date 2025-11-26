@@ -97,6 +97,7 @@ python manage.py dbshell
 # テスト実施
 python manage.py test 
 python manage.py test apps.api.tests
+python manage.py test apps.kintai.tests
 
 # サーバ起動
 .venv\Scripts\Activate 
