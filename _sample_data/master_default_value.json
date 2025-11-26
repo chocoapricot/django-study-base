@@ -166,21 +166,6 @@
 },
 {
     "model": "master.defaultvalue",
-    "pk": "ContractAssignment.alertdays",
-    "fields": {
-        "version": 1761587244453174,
-        "created_at": "2025-10-27T17:57:09.195Z",
-        "created_by": 1,
-        "updated_at": "2025-10-27T18:03:11.105Z",
-        "updated_by": 1,
-        "target_item": "スタッフ契約延長確認＞要注意表示日数",
-        "format": "number",
-        "value": "45",
-        "display_order": 13
-    }
-},
-{
-    "model": "master.defaultvalue",
     "pk": "StaffContract.contract_name",
     "fields": {
         "version": 1761582182406731,

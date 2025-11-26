@@ -1285,11 +1285,14 @@ def staff_contract_expire_list(request):
     assignments_page = paginator.get_page(page)
     
     # 警告日数を初期値マスタから取得
-    from apps.master.models import DefaultValue
+    # 警告日数を設定値マスタから取得
+    from apps.master.models import UserParameter
     try:
-        default_value = DefaultValue.objects.get(key='ContractAssignment.alertdays')
-        alert_days = int(default_value.value)
-    except (DefaultValue.DoesNotExist, ValueError, TypeError):
+        user_param = UserParameter.objects.get(key='ContractAssignment.alertdays')
+        alert_days = user_param.get_number_value()
+        if alert_days is None:
+            alert_days = 30
+    except UserParameter.DoesNotExist:
         alert_days = 30  # デフォルト30日
     
     # 各アサインメントに追加情報を設定
