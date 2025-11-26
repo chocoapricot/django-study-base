@@ -154,6 +154,7 @@ django-study-base/
 | `apps_master_skill` | `Skill` | 技能マスター |
 | `apps_master_staff_agreement` | `StaffAgreement` | スタッフ同意書マスター |
 | `apps_master_staff_regist_status` | `StaffRegistStatus` | スタッフ登録状況 |
+| `apps_master_user_parameter` | `UserParameter` | 設定値マスター |
 | `apps_master_worktime_pattern` | `WorktimePattern` | 勤務時間パターンマスター |
 | `apps_master_worktime_pattern_break` | `WorktimePatternBreak` | 勤務時間パターン休憩 |
 | `apps_master_worktime_pattern_work` | `WorktimePatternWork` | 勤務時間パターン勤務 |
