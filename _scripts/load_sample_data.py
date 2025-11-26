@@ -31,7 +31,8 @@ def main():
     # サンプルデータファイルの存在確認
     sample_files = [
         "_sample_data/dropdowns.json",
-        "_sample_data/parameters.json", 
+        "_sample_data/parameters.json",
+        "_sample_data/master_user_parameter.json",
         "_sample_data/menus.json",
         "_sample_data/master_qualifications.json",
         "_sample_data/master_skills.json",
@@ -93,6 +94,7 @@ def main():
         ("python manage.py loaddata _sample_data/company_user.json", "自社担当者データ"),
         ("python manage.py loaddata _sample_data/dropdowns.json", "ドロップダウンデータ"),
         ("python manage.py loaddata _sample_data/parameters.json", "パラメータデータ"),
+        ("python manage.py loaddata _sample_data/master_user_parameter.json", "ユーザーパラメータマスタデータ"),
         ("python manage.py loaddata _sample_data/menus.json", "メニューデータ"),
         ("python manage.py loaddata _sample_data/master_qualifications.json", "資格マスタデータ"),
         ("python manage.py loaddata _sample_data/master_skills.json", "技能マスタデータ"),
@@ -148,6 +150,7 @@ def main():
     print("\n📈 インポートされたデータ:")
     print("- ドロップダウン選択肢")
     print("- システムパラメータ")
+    print("- ユーザーパラメータマスタ")
     print("- メニュー設定")
     print("- 資格マスタ")
     print("- 技能マスタ")
