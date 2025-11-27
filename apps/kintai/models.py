@@ -407,15 +407,27 @@ class StaffTimecard(MyModel):
         # --- 残業時間の計算 ---
         self.overtime_minutes = 0
         if overtime_pattern:
-            if (overtime_pattern.calculation_type == 'premium' and
-                    overtime_pattern.daily_overtime_enabled and
-                    overtime_pattern.daily_overtime_hours is not None):
+            # 計算方式に応じた残業時間の算出
+            if overtime_pattern.calculation_type == 'premium':
+                # 割増方式: 日単位の基準時間を超えた分を残業とする
+                if (overtime_pattern.daily_overtime_enabled and
+                        overtime_pattern.daily_overtime_hours is not None):
+                    standard_minutes = overtime_pattern.daily_overtime_hours * 60
+                    if self.work_minutes > standard_minutes:
+                        self.overtime_minutes = self.work_minutes - standard_minutes
+            
+            elif overtime_pattern.calculation_type == 'monthly_range':
+                # 月単位時間範囲方式: 日次では残業計算を行わない（月次集計時に計算）
+                # ここでは残業時間は0のまま
+                pass
+            
+            elif overtime_pattern.calculation_type == 'flexible':
+                # 1ヶ月単位変形労働方式: 日次では残業計算を行わない（月次集計時に計算）
+                # ここでは残業時間は0のまま
+                pass
 
-                standard_minutes = overtime_pattern.daily_overtime_hours * 60
-                if self.work_minutes > standard_minutes:
-                    self.overtime_minutes = self.work_minutes - standard_minutes
-
-        # --- 深夜残業時間の計算 ---
+        # --- 深夜時間の計算 ---
+        # 深夜時間は全ての計算方式で共通して計算される（22:00～5:00）
         self.late_night_overtime_minutes = 0
         if overtime_pattern and overtime_pattern.calculate_midnight_premium:
             late_night_start = time(22, 0)

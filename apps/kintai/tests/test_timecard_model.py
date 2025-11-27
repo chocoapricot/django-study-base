@@ -135,6 +135,53 @@ class StaffTimecardModelTest(TestCase):
         # Late night should be 0 as there are no late night hours
         self._create_and_test_timecard(self.pattern_calc_type_not_premium, time(9, 0), time(19, 0), 60, 540, 0, 0)
 
+    def test_monthly_range_with_late_night(self):
+        """月単位時間範囲方式でも深夜時間が計算されることをテスト"""
+        # 月単位時間範囲パターンを作成
+        pattern_monthly_range = OvertimePattern.objects.create(
+            name='月単位時間範囲（深夜あり）',
+            calculate_midnight_premium=True,
+            calculation_type='monthly_range',
+            monthly_range_min=140,
+            monthly_range_max=160,
+        )
+        # start: 18:00, end: 23:00, break: 0 -> work: 5h = 300min
+        # Overtime: 0 (月単位時間範囲方式では日次で残業計算しない)
+        # Late night: 22:00-23:00 = 60min
+        self._create_and_test_timecard(pattern_monthly_range, time(18, 0), time(23, 0), 0, 300, 0, 60)
+
+    def test_flexible_with_late_night(self):
+        """1ヶ月単位変形労働方式でも深夜時間が計算されることをテスト"""
+        # 1ヶ月単位変形労働パターンを作成
+        pattern_flexible = OvertimePattern.objects.create(
+            name='1ヶ月単位変形労働（深夜あり）',
+            calculate_midnight_premium=True,
+            calculation_type='flexible',
+            flexible_daily_overtime_enabled=True,
+            flexible_daily_overtime_hours=8,
+        )
+        # start: 20:00, end: 翌2:00, break: 60min -> work: 5h = 300min
+        # Overtime: 0 (1ヶ月単位変形労働方式では日次で残業計算しない)
+        # Late night: 22:00-翌2:00 = 4h = 240min
+        timecard = StaffTimecard(
+            staff_contract=self.staff_contract,
+            timesheet=self.timesheet,
+            work_date=date(2023, 1, 10),
+            work_type='10',
+            start_time=time(20, 0),
+            end_time=time(2, 0),
+            end_time_next_day=True,
+            break_minutes=60,
+        )
+        self.staff_contract.overtime_pattern = pattern_flexible
+        self.staff_contract.save()
+        timecard.save()
+        
+        self.assertEqual(timecard.work_minutes, 300)
+        self.assertEqual(timecard.overtime_minutes, 0)
+        self.assertEqual(timecard.late_night_overtime_minutes, 240)
+
+
     def test_combined_overtime_and_late_night(self):
         """時間外と深夜の両方が有効な場合をテスト"""
         # start: 13:00, end: 23:00, break: 60min -> work: 9h = 540min
