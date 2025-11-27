@@ -87,6 +87,24 @@
 - **`forms.py`**: 契約データ用のフォーム。
 - **`urls.py`**: contractアプリケーションのURLルーティング。
 
+### `csstest/`
+- **`views.py`**: CSSコンポーネントの表示テスト用のビュー。
+- **`urls.py`**: csstestアプリケーションのURLルーティング。
+- **Note**: このアプリケーションは、`templates/common/simplex_list.html`という共通テンプレートを使用しており、独自のテンプレートは持ちません。
+
+### `home/`
+- **`views.py`**: ログイン後のホームページ/ダッシュボードを表示するビュー。
+- **`urls.py`**: homeアプリケーションのURLルーティング。
+
+### `kintai/`
+- **`models.py`**: 勤怠関連モデル。
+  - `StaffTimesheet`: スタッフの月次勤怠情報を管理するモデル。
+  - `StaffTimecard`: 日々の勤怠情報を管理するモデル。労働時間や残業時間の自動計算機能を持つ。
+- **`views.py`**: 月次・日次勤怠のCRUD操作、カレンダー形式での一括入力などを処理するビュー。
+- **`forms.py`**: 月次勤怠および日次勤怠データ用のフォーム。
+- **`urls.py`**: kintaiアプリケーションのURLルーティング。
+- **Note**: スタッフの日々の勤怠と月次勤怠を管理するアプリケーションです。詳細は`apps/kintai/README.md`を参照。
+
 ### `master/`
 - **`models.py`**: マスターデータモデル。
   - `Qualification`: 資格情報を管理するマスターデータモデル（階層構造対応）。
@@ -218,8 +236,20 @@
 - `staff_contract_list.html`: スタッフ契約の一覧ページ。
 - `staff_select.html`: 契約対象スタッフの選択ページ。
 
+### `excels/`
+- このディレクトリには、Excelファイルのエクスポート機能などで使用されるテンプレートファイルが格納されています。
+
 ### `home/`
 - `home.html`: ログイン後のホームページ/ダッシュボード。
+
+### `kintai/`
+- `timecard_calendar.html`: カレンダー形式の勤怠入力ページ。
+- `timecard_confirm_delete.html`: 日次勤怠削除の確認ページ。
+- `timecard_form.html`: 日次勤怠の作成・編集フォームページ。
+- `timesheet_confirm_delete.html`: 月次勤怠削除の確認ページ。
+- `timesheet_detail.html`: 月次勤怠の詳細ページ。
+- `timesheet_form.html`: 月次勤怠の作成・編集フォームページ。
+- `timesheet_list.html`: 月次勤怠の一覧ページ。
 
 ### `logs/`
 - `app_log_list.html`: アプリケーション操作ログの一覧ページ。
@@ -251,6 +281,9 @@
 - `skill_detail.html`: スキルの詳細ページ。
 - `skill_form.html`: スキルの作成・編集フォームページ。
 - `skill_list.html`: スキルの一覧ページ。
+
+### `pdfs/`
+- このディレクトリには、PDFファイルのエクスポート機能などで使用されるテンプレートファイルが格納されています。
 
 ### `profile/`
 - `mynumber_delete.html`: マイナンバー情報削除の確認ページ。
