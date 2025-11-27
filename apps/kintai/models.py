@@ -36,6 +36,8 @@ class StaffTimesheet(MyModel):
     total_overtime_minutes = models.PositiveIntegerField('残業時間（分）', default=0)
     total_late_night_overtime_minutes = models.PositiveIntegerField('深夜時間（分）', default=0)
     total_holiday_work_minutes = models.PositiveIntegerField('休日労働時間（分）', default=0)
+    total_premium_minutes = models.PositiveIntegerField('割増時間（分）', default=0, help_text='月単位時間範囲での割増時間')
+    total_deduction_minutes = models.PositiveIntegerField('控除時間（分）', default=0, help_text='月単位時間範囲での控除時間')
     # 遅刻・早退は個別の集計対象から除外
     total_absence_days = models.PositiveIntegerField('欠勤日数', default=0)
     total_paid_leave_days = models.DecimalField('有給休暇日数', max_digits=4, decimal_places=1, default=0)
@@ -163,6 +165,26 @@ class StaffTimesheet(MyModel):
         self.total_absence_days = timecards.filter(work_type='30').count()
         self.total_paid_leave_days = sum(tc.paid_leave_days or 0 for tc in timecards)
 
+        # --- 月単位時間範囲方式の割増・控除時間計算 ---
+        self.total_premium_minutes = 0
+        self.total_deduction_minutes = 0
+        
+        if self.staff_contract and self.staff_contract.overtime_pattern:
+            overtime_pattern = self.staff_contract.overtime_pattern
+            
+            if overtime_pattern.calculation_type == 'monthly_range':
+                # 月単位時間範囲方式の場合
+                monthly_range_min = overtime_pattern.monthly_range_min or 0
+                monthly_range_max = overtime_pattern.monthly_range_max or 0
+                
+                if monthly_range_min > 0 and self.total_work_minutes < monthly_range_min * 60:
+                    # 最小時間に満たない場合は控除時間を計算
+                    self.total_deduction_minutes = (monthly_range_min * 60) - self.total_work_minutes
+                
+                if monthly_range_max > 0 and self.total_work_minutes > monthly_range_max * 60:
+                    # 最大時間を超える場合は割増時間を計算
+                    self.total_premium_minutes = self.total_work_minutes - (monthly_range_max * 60)
+
         self.save()
 
     @property
@@ -210,6 +232,22 @@ class StaffTimesheet(MyModel):
         """休日労働時間の表示用文字列"""
         if self.total_holiday_work_minutes and self.total_holiday_work_minutes > 0:
             hours, minutes = divmod(self.total_holiday_work_minutes, 60)
+            return f"{hours}時間{minutes:02d}分"
+        return "-"
+
+    @property
+    def total_premium_hours_display(self):
+        """割増時間の表示用文字列"""
+        if self.total_premium_minutes and self.total_premium_minutes > 0:
+            hours, minutes = divmod(self.total_premium_minutes, 60)
+            return f"{hours}時間{minutes:02d}分"
+        return "-"
+
+    @property
+    def total_deduction_hours_display(self):
+        """控除時間の表示用文字列"""
+        if self.total_deduction_minutes and self.total_deduction_minutes > 0:
+            hours, minutes = divmod(self.total_deduction_minutes, 60)
             return f"{hours}時間{minutes:02d}分"
         return "-"
 
