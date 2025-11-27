@@ -243,6 +243,12 @@ def staff_timecard_calendar(request, staff_pk, target_month):
             
             # 勤務区分が入力されていない場合はスキップ
             if not work_type:
+                # 勤務区分が空の場合、既存のデータがあれば削除する
+                # このスタッフのこの日のデータを全て削除（契約に関わらず）
+                StaffTimecard.objects.filter(
+                    staff_contract__staff=staff,
+                    work_date=work_date
+                ).delete()
                 continue
             
             # 勤務区分が入力されている場合は契約が必須
@@ -686,6 +692,15 @@ def timecard_calendar(request, timesheet_pk):
             paid_leave_days = request.POST.get(f'paid_leave_days_{day}', 0)
             
             if not work_type:
+                with open('debug_log.txt', 'a') as f:
+                    f.write(f"DEBUG: work_type is empty for day {day}\n")
+                # 勤務区分が空の場合、既存のデータがあれば削除する
+                deleted_count, _ = StaffTimecard.objects.filter(
+                    timesheet=timesheet,
+                    work_date=work_date
+                ).delete()
+                with open('debug_log.txt', 'a') as f:
+                    f.write(f"DEBUG: Deleted {deleted_count} records\n")
                 continue
 
             # スタッフ契約の範囲外の日付は処理しない（カレンダー上にも表示しないため）
@@ -864,6 +879,11 @@ def timecard_calendar_initial(request, contract_pk, target_month):
             paid_leave_days = request.POST.get(f'paid_leave_days_{day}', 0)
             
             if not work_type:
+                # 勤務区分が空の場合、既存のデータがあれば削除する
+                StaffTimecard.objects.filter(
+                    timesheet=timesheet,
+                    work_date=work_date
+                ).delete()
                 continue
 
             # スタッフ契約の範囲外の日付は処理しない
