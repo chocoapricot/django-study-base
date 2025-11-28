@@ -212,9 +212,11 @@ class OvertimePattern(MyModel):
     # 1ヶ月単位変形労働の設定
     flexible_daily_overtime_enabled = models.BooleanField('変形労働日単位時間外計算', default=False)
     flexible_daily_overtime_hours = models.IntegerField('変形労働日単位時間外時間', default=8, blank=True, null=True)
+    flexible_daily_overtime_minutes = models.IntegerField('変形労働日単位時間外分', default=0, blank=True, null=True)
     
     flexible_weekly_overtime_enabled = models.BooleanField('変形労働週単位時間外計算', default=False)
     flexible_weekly_overtime_hours = models.IntegerField('変形労働週単位時間外時間', default=40, blank=True, null=True)
+    flexible_weekly_overtime_minutes = models.IntegerField('変形労働週単位時間外分', default=0, blank=True, null=True)
     
     # 28日～31日の設定
     days_28_hours = models.IntegerField('28日時間', default=160)

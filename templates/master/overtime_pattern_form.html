@@ -123,10 +123,14 @@
                             {{ form.flexible_daily_overtime_enabled }}
                             <label class="form-check-label" for="{{ form.flexible_daily_overtime_enabled.id_for_label }}">日単位時間外計算</label>
                         </div>
-                        <div class="d-inline-block ms-2" style="width: 100px;">
+                        <div class="d-inline-block ms-2" style="width: 80px;">
                             {{ form.flexible_daily_overtime_hours }}
                         </div>
-                        <span class="ms-1">時間</span>
+                        <span class="ms-1 me-2">時間</span>
+                        <div class="d-inline-block" style="width: 80px;">
+                            {{ form.flexible_daily_overtime_minutes }}
+                        </div>
+                        <span class="ms-1">分</span>
                     </div>
                 </div>
 
@@ -137,10 +141,14 @@
                             {{ form.flexible_weekly_overtime_enabled }}
                             <label class="form-check-label" for="{{ form.flexible_weekly_overtime_enabled.id_for_label }}">週単位時間外計算</label>
                         </div>
-                        <div class="d-inline-block ms-2" style="width: 100px;">
+                        <div class="d-inline-block ms-2" style="width: 80px;">
                             {{ form.flexible_weekly_overtime_hours }}
                         </div>
-                        <span class="ms-1">時間</span>
+                        <span class="ms-1 me-2">時間</span>
+                        <div class="d-inline-block" style="width: 80px;">
+                            {{ form.flexible_weekly_overtime_minutes }}
+                        </div>
+                        <span class="ms-1">分</span>
                     </div>
                 </div>
 

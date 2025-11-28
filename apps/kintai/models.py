@@ -472,9 +472,15 @@ class StaffTimecard(MyModel):
                 pass
             
             elif overtime_pattern.calculation_type == 'flexible':
-                # 1ヶ月単位変形労働方式: 日次では残業計算を行わない（月次集計時に計算）
-                # ここでは残業時間は0のまま
-                pass
+                # 1ヶ月単位変形労働方式
+                if (overtime_pattern.flexible_daily_overtime_enabled and
+                        overtime_pattern.flexible_daily_overtime_hours is not None):
+                    # 日単位時間外計算が有効な場合、基準時間を超えた分を残業とする
+                    standard_hours = overtime_pattern.flexible_daily_overtime_hours or 0
+                    standard_mins = overtime_pattern.flexible_daily_overtime_minutes or 0
+                    standard_minutes = standard_hours * 60 + standard_mins
+                    if self.work_minutes > standard_minutes:
+                        self.overtime_minutes = self.work_minutes - standard_minutes
 
         # --- 深夜時間の計算 ---
         # 深夜時間は全ての計算方式で共通して計算される（22:00～5:00）
