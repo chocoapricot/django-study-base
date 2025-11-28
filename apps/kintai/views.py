@@ -228,6 +228,8 @@ def staff_timecard_calendar(request, staff_pk, target_month):
 
     if request.method == 'POST':
         # フォームデータから日次勤怠を一括保存
+        updated_timesheets = set()  # 更新された月次勤怠を記録
+        
         for day in range(1, last_day + 1):
             work_date = date(year, month, day)
             
@@ -245,10 +247,15 @@ def staff_timecard_calendar(request, staff_pk, target_month):
             if not work_type:
                 # 勤務区分が空の場合、既存のデータがあれば削除する
                 # このスタッフのこの日のデータを全て削除（契約に関わらず）
-                StaffTimecard.objects.filter(
+                deleted_timecards = StaffTimecard.objects.filter(
                     staff_contract__staff=staff,
                     work_date=work_date
-                ).delete()
+                )
+                # 削除前に影響を受ける月次勤怠を記録
+                for tc in deleted_timecards:
+                    if tc.timesheet:
+                        updated_timesheets.add(tc.timesheet)
+                deleted_timecards.delete()
                 continue
             
             # 勤務区分が入力されている場合は契約が必須
@@ -311,7 +318,10 @@ def staff_timecard_calendar(request, staff_pk, target_month):
             
             try:
                 timecard.full_clean()
-                timecard.save()
+                timecard.save(skip_timesheet_update=True)  # 集計更新をスキップ
+                # 保存後に影響を受ける月次勤怠を記録
+                if timecard.timesheet:
+                    updated_timesheets.add(timecard.timesheet)
             except ValidationError as e:
                 # エラーメッセージを作成
                 error_messages = []
@@ -319,6 +329,10 @@ def staff_timecard_calendar(request, staff_pk, target_month):
                     for error in errors:
                         error_messages.append(f"{work_date.day}日: {error}")
                 messages.error(request, " / ".join(error_messages))
+        
+        # すべての保存が完了した後、影響を受けた月次勤怠の集計を一度だけ更新
+        for timesheet in updated_timesheets:
+            timesheet.calculate_totals()
         
         if not messages.get_messages(request):
             messages.success(request, '日次勤怠を一括保存しました。')
@@ -755,7 +769,7 @@ def timecard_calendar(request, timesheet_pk):
             
             try:
                 timecard.full_clean()
-                timecard.save()
+                timecard.save(skip_timesheet_update=True)  # 集計更新をスキップ
             except ValidationError as e:
                 # エラーメッセージを作成
                 error_messages = []
@@ -763,6 +777,9 @@ def timecard_calendar(request, timesheet_pk):
                     for error in errors:
                         error_messages.append(f"{work_date.day}日: {error}")
                 messages.error(request, " / ".join(error_messages))
+        
+        # すべての保存が完了した後、月次勤怠の集計を一度だけ更新
+        timesheet.calculate_totals()
         
         if not messages.get_messages(request):
             messages.success(request, '日次勤怠を一括保存しました。')
@@ -929,7 +946,7 @@ def timecard_calendar_initial(request, contract_pk, target_month):
             
             try:
                 timecard.full_clean()
-                timecard.save()
+                timecard.save(skip_timesheet_update=True)  # 集計更新をスキップ
             except ValidationError as e:
                 # エラーメッセージを作成
                 error_messages = []
@@ -937,6 +954,9 @@ def timecard_calendar_initial(request, contract_pk, target_month):
                     for error in errors:
                         error_messages.append(f"{work_date.day}日: {error}")
                 messages.error(request, " / ".join(error_messages))
+        
+        # すべての保存が完了した後、月次勤怠の集計を一度だけ更新
+        timesheet.calculate_totals()
         
         messages.success(request, '月次勤怠と日次勤怠を作成しました。')
         return redirect('kintai:timesheet_detail', pk=timesheet.pk)

@@ -380,7 +380,7 @@ class StaffTimecard(MyModel):
             except Exception:
                 pass
 
-    def save(self, *args, **kwargs):
+    def save(self, skip_timesheet_update=False, *args, **kwargs):
         # staff_contract が指定されている場合、対応する月次勤怠を自動作成または取得
         if self.staff_contract_id and self.work_date:
             # 対象年月を計算（work_dateの月の1日）
@@ -400,8 +400,8 @@ class StaffTimecard(MyModel):
         self.calculate_work_hours()
         super().save(*args, **kwargs)
         
-        # 月次勤怠の集計を更新
-        if self.timesheet:
+        # 月次勤怠の集計を更新（skip_timesheet_updateがTrueの場合はスキップ）
+        if not skip_timesheet_update and self.timesheet:
             self.timesheet.calculate_totals()
 
     def calculate_work_hours(self):
