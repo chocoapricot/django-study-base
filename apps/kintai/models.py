@@ -459,7 +459,10 @@ class StaffTimecard(MyModel):
                 # 割増方式: 日単位の基準時間を超えた分を残業とする
                 if (overtime_pattern.daily_overtime_enabled and
                         overtime_pattern.daily_overtime_hours is not None):
-                    standard_minutes = overtime_pattern.daily_overtime_hours * 60
+                    # 時間と分を合計して総分数を計算
+                    standard_hours = overtime_pattern.daily_overtime_hours or 0
+                    standard_mins = overtime_pattern.daily_overtime_minutes or 0
+                    standard_minutes = standard_hours * 60 + standard_mins
                     if self.work_minutes > standard_minutes:
                         self.overtime_minutes = self.work_minutes - standard_minutes
             

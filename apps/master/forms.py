@@ -661,8 +661,8 @@ class OvertimePatternForm(forms.ModelForm):
         model = OvertimePattern
         fields = [
             'name', 'calculation_type',
-            'daily_overtime_enabled', 'daily_overtime_hours',
-            'weekly_overtime_enabled', 'weekly_overtime_hours',
+            'daily_overtime_enabled', 'daily_overtime_hours', 'daily_overtime_minutes',
+            'weekly_overtime_enabled', 'weekly_overtime_hours', 'weekly_overtime_minutes',
             'monthly_overtime_enabled', 'monthly_overtime_hours',
             'monthly_estimated_enabled', 'monthly_estimated_hours',
             'monthly_range_min', 'monthly_range_max',
@@ -680,8 +680,10 @@ class OvertimePatternForm(forms.ModelForm):
             'calculate_midnight_premium': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'daily_overtime_enabled': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'daily_overtime_hours': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'daily_overtime_minutes': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0', 'max': '59'}),
             'weekly_overtime_enabled': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'weekly_overtime_hours': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'weekly_overtime_minutes': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0', 'max': '59'}),
             'monthly_overtime_enabled': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'monthly_overtime_hours': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'monthly_estimated_enabled': forms.CheckboxInput(attrs={'class': 'form-check-input'}),

@@ -193,9 +193,11 @@ class OvertimePattern(MyModel):
     # 割増方式の設定
     daily_overtime_enabled = models.BooleanField('日単位時間外計算', default=False)
     daily_overtime_hours = models.IntegerField('日単位時間外時間', default=8, blank=True, null=True)
+    daily_overtime_minutes = models.IntegerField('日単位時間外分', default=0, blank=True, null=True)
     
     weekly_overtime_enabled = models.BooleanField('週単位時間外計算', default=False)
     weekly_overtime_hours = models.IntegerField('週単位時間外時間', default=40, blank=True, null=True)
+    weekly_overtime_minutes = models.IntegerField('週単位時間外分', default=0, blank=True, null=True)
     
     monthly_overtime_enabled = models.BooleanField('月単位時間外割増', default=False)
     monthly_overtime_hours = models.IntegerField('月単位時間外割増時間', default=60, blank=True, null=True)
