@@ -744,9 +744,15 @@ def overtime_pattern_select_modal(request):
         settings = []
         if pattern.calculation_type == 'premium':
             if pattern.daily_overtime_enabled:
-                settings.append(f"日{pattern.daily_overtime_hours}h")
+                if pattern.daily_overtime_minutes:
+                    settings.append(f"日{pattern.daily_overtime_hours}:{pattern.daily_overtime_minutes:02d}")
+                else:
+                    settings.append(f"日{pattern.daily_overtime_hours}h")
             if pattern.weekly_overtime_enabled:
-                settings.append(f"週{pattern.weekly_overtime_hours}h")
+                if pattern.weekly_overtime_minutes:
+                    settings.append(f"週{pattern.weekly_overtime_hours}:{pattern.weekly_overtime_minutes:02d}")
+                else:
+                    settings.append(f"週{pattern.weekly_overtime_hours}h")
             if pattern.monthly_overtime_enabled:
                 settings.append(f"月{pattern.monthly_overtime_hours}h")
             if pattern.monthly_estimated_enabled:
@@ -755,20 +761,22 @@ def overtime_pattern_select_modal(request):
             settings.append(f"{pattern.monthly_range_min}～{pattern.monthly_range_max}h")
         elif pattern.calculation_type == 'flexible':
             if pattern.flexible_daily_overtime_enabled:
-                settings.append(f"日{pattern.flexible_daily_overtime_hours}h")
+                if pattern.flexible_daily_overtime_minutes:
+                    settings.append(f"日{pattern.flexible_daily_overtime_hours}:{pattern.flexible_daily_overtime_minutes:02d}")
+                else:
+                    settings.append(f"日{pattern.flexible_daily_overtime_hours}h")
             if pattern.flexible_weekly_overtime_enabled:
-                settings.append(f"週{pattern.flexible_weekly_overtime_hours}h")
-            settings.append(f"28日:{pattern.days_28_hours}h{pattern.days_28_minutes}m")
-            settings.append(f"29日:{pattern.days_29_hours}h{pattern.days_29_minutes}m")
-            settings.append(f"30日:{pattern.days_30_hours}h{pattern.days_30_minutes}m")
-            settings.append(f"31日:{pattern.days_31_hours}h{pattern.days_31_minutes}m")
+                if pattern.flexible_weekly_overtime_minutes:
+                    settings.append(f"週{pattern.flexible_weekly_overtime_hours}:{pattern.flexible_weekly_overtime_minutes:02d}")
+                else:
+                    settings.append(f"週{pattern.flexible_weekly_overtime_hours}h")
         
         data['patterns'].append({
             'id': pattern.id,
             'name': pattern.name,
             'calculation_type': pattern.calculation_type,
             'calculation_type_display': calculation_type_display,
-            'settings': ', '.join(settings) if settings else '未設定',
+            'settings': ' '.join(settings) if settings else '未設定',
             'memo': pattern.memo or '',
         })
     

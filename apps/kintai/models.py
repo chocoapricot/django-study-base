@@ -193,6 +193,40 @@ class StaffTimesheet(MyModel):
                     if self.total_overtime_minutes > monthly_overtime_threshold:
                         self.total_premium_minutes = self.total_overtime_minutes - monthly_overtime_threshold
 
+            elif overtime_pattern.calculation_type == 'flexible':
+                # 1ヶ月単位変形労働方式の場合
+                # 対象月の日数を取得
+                year = self.target_month.year
+                month = self.target_month.month
+                _, days_in_month = monthrange(year, month)
+                
+                # 日数に応じた基準時間を取得
+                standard_hours = 0
+                standard_minutes = 0
+                
+                if days_in_month == 28:
+                    standard_hours = overtime_pattern.days_28_hours
+                    standard_minutes = overtime_pattern.days_28_minutes
+                elif days_in_month == 29:
+                    standard_hours = overtime_pattern.days_29_hours
+                    standard_minutes = overtime_pattern.days_29_minutes
+                elif days_in_month == 30:
+                    standard_hours = overtime_pattern.days_30_hours
+                    standard_minutes = overtime_pattern.days_30_minutes
+                elif days_in_month == 31:
+                    standard_hours = overtime_pattern.days_31_hours
+                    standard_minutes = overtime_pattern.days_31_minutes
+                
+                # 基準時間を分単位に変換
+                standard_total_minutes = (standard_hours * 60) + standard_minutes
+                
+                # 実労働時間（総労働時間 - 残業時間）を計算
+                actual_work_minutes = self.total_work_minutes - self.total_overtime_minutes
+                
+                # 基準時間を超えている場合は割増時間を計算
+                if actual_work_minutes > standard_total_minutes:
+                    self.total_premium_minutes = actual_work_minutes - standard_total_minutes
+
 
         self.save()
 
