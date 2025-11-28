@@ -17,12 +17,12 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='overtimepattern',
-            name='flexible_daily_overtime_hours',
+            name='variable_daily_overtime_hours',
             field=models.IntegerField(blank=True, default=8, null=True, verbose_name='変形労働日単位時間外時間'),
         ),
         migrations.AlterField(
             model_name='overtimepattern',
-            name='flexible_weekly_overtime_hours',
+            name='variable_weekly_overtime_hours',
             field=models.IntegerField(blank=True, default=40, null=True, verbose_name='変形労働週単位時間外時間'),
         ),
         migrations.AlterField(

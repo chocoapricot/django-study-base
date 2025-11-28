@@ -17,6 +17,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='overtimepattern',
             name='calculation_type',
-            field=models.CharField(choices=[('premium', '割増'), ('monthly_range', '月単位時間範囲'), ('flexible', '1ヶ月単位変形労働')], default='premium', max_length=20, verbose_name='計算方式'),
+            field=models.CharField(choices=[('premium', '割増'), ('monthly_range', '月単位時間範囲'), ('variable', '1ヶ月単位変形労働')], default='premium', max_length=20, verbose_name='計算方式'),
         ),
     ]

@@ -150,15 +150,15 @@ class StaffTimecardModelTest(TestCase):
         # Late night: 22:00-23:00 = 60min
         self._create_and_test_timecard(pattern_monthly_range, time(18, 0), time(23, 0), 0, 300, 0, 60)
 
-    def test_flexible_with_late_night(self):
+    def test_variable_with_late_night(self):
         """1ヶ月単位変形労働方式でも深夜時間が計算されることをテスト"""
         # 1ヶ月単位変形労働パターンを作成
-        pattern_flexible = OvertimePattern.objects.create(
+        pattern_variable = OvertimePattern.objects.create(
             name='1ヶ月単位変形労働（深夜あり）',
             calculate_midnight_premium=True,
-            calculation_type='flexible',
-            flexible_daily_overtime_enabled=True,
-            flexible_daily_overtime_hours=8,
+            calculation_type='variable',
+            variable_daily_overtime_enabled=True,
+            variable_daily_overtime_hours=8,
         )
         # start: 20:00, end: 翌2:00, break: 60min -> work: 5h = 300min
         # Overtime: 0 (1ヶ月単位変形労働方式では日次で残業計算しない)
@@ -173,7 +173,7 @@ class StaffTimecardModelTest(TestCase):
             end_time_next_day=True,
             break_minutes=60,
         )
-        self.staff_contract.overtime_pattern = pattern_flexible
+        self.staff_contract.overtime_pattern = pattern_variable
         self.staff_contract.save()
         timecard.save()
         

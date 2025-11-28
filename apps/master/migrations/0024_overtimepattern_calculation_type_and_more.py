@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='overtimepattern',
             name='calculation_type',
-            field=models.CharField(choices=[('premium', '割増'), ('flexible', '1ヶ月単位変形労働')], default='premium', max_length=20, verbose_name='計算方式'),
+            field=models.CharField(choices=[('premium', '割増'), ('variable', '1ヶ月単位変形労働')], default='premium', max_length=20, verbose_name='計算方式'),
         ),
         migrations.AddField(
             model_name='overtimepattern',
@@ -67,22 +67,22 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='overtimepattern',
-            name='flexible_daily_overtime_enabled',
+            name='variable_daily_overtime_enabled',
             field=models.BooleanField(default=False, verbose_name='変形労働日単位時間外計算'),
         ),
         migrations.AddField(
             model_name='overtimepattern',
-            name='flexible_daily_overtime_hours',
+            name='variable_daily_overtime_hours',
             field=models.DecimalField(blank=True, decimal_places=2, default=8.0, max_digits=5, null=True, verbose_name='変形労働日単位時間外時間'),
         ),
         migrations.AddField(
             model_name='overtimepattern',
-            name='flexible_weekly_overtime_enabled',
+            name='variable_weekly_overtime_enabled',
             field=models.BooleanField(default=False, verbose_name='変形労働週単位時間外計算'),
         ),
         migrations.AddField(
             model_name='overtimepattern',
-            name='flexible_weekly_overtime_hours',
+            name='variable_weekly_overtime_hours',
             field=models.DecimalField(blank=True, decimal_places=2, default=40.0, max_digits=5, null=True, verbose_name='変形労働週単位時間外時間'),
         ),
         migrations.AddField(

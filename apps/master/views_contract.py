@@ -759,17 +759,17 @@ def overtime_pattern_select_modal(request):
                 settings.append(f"見込{pattern.monthly_estimated_hours}h")
         elif pattern.calculation_type == 'monthly_range':
             settings.append(f"{pattern.monthly_range_min}～{pattern.monthly_range_max}h")
-        elif pattern.calculation_type == 'flexible':
-            if pattern.flexible_daily_overtime_enabled:
-                if pattern.flexible_daily_overtime_minutes:
-                    settings.append(f"日{pattern.flexible_daily_overtime_hours}:{pattern.flexible_daily_overtime_minutes:02d}")
+        elif pattern.calculation_type == 'variable':
+            if pattern.variable_daily_overtime_enabled:
+                if pattern.variable_daily_overtime_minutes:
+                    settings.append(f"日{pattern.variable_daily_overtime_hours}:{pattern.variable_daily_overtime_minutes:02d}")
                 else:
-                    settings.append(f"日{pattern.flexible_daily_overtime_hours}h")
-            if pattern.flexible_weekly_overtime_enabled:
-                if pattern.flexible_weekly_overtime_minutes:
-                    settings.append(f"週{pattern.flexible_weekly_overtime_hours}:{pattern.flexible_weekly_overtime_minutes:02d}")
+                    settings.append(f"日{pattern.variable_daily_overtime_hours}h")
+            if pattern.variable_weekly_overtime_enabled:
+                if pattern.variable_weekly_overtime_minutes:
+                    settings.append(f"週{pattern.variable_weekly_overtime_hours}:{pattern.variable_weekly_overtime_minutes:02d}")
                 else:
-                    settings.append(f"週{pattern.flexible_weekly_overtime_hours}h")
+                    settings.append(f"週{pattern.variable_weekly_overtime_hours}h")
         
         data['patterns'].append({
             'id': pattern.id,

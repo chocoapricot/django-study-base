@@ -12,12 +12,12 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='overtimepattern',
-            name='flexible_daily_overtime_minutes',
+            name='variable_daily_overtime_minutes',
             field=models.IntegerField(blank=True, default=0, null=True, verbose_name='変形労働日単位時間外分'),
         ),
         migrations.AddField(
             model_name='overtimepattern',
-            name='flexible_weekly_overtime_minutes',
+            name='variable_weekly_overtime_minutes',
             field=models.IntegerField(blank=True, default=0, null=True, verbose_name='変形労働週単位時間外分'),
         ),
     ]

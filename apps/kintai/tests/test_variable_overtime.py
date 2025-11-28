@@ -5,7 +5,7 @@ from apps.staff.models import Staff
 from apps.master.models_contract import OvertimePattern, ContractPattern, EmploymentType
 from datetime import date, time, timedelta
 
-class StaffTimesheetFlexibleOvertimeTest(TestCase):
+class StaffTimesheetVariableOvertimeTest(TestCase):
     """1ヶ月単位変形労働制の計算ロジックテスト"""
 
     @classmethod
@@ -15,14 +15,14 @@ class StaffTimesheetFlexibleOvertimeTest(TestCase):
         cls.contract_pattern = ContractPattern.objects.create(name="test", domain='1')
 
         # --- Overtime Pattern (変形労働) ---
-        cls.pattern_flexible = OvertimePattern.objects.create(
+        cls.pattern_variable = OvertimePattern.objects.create(
             name='変形労働',
             calculate_midnight_premium=False,
-            calculation_type='flexible',
+            calculation_type='variable',
             # 日単位設定: 8時間30分
-            flexible_daily_overtime_enabled=True,
-            flexible_daily_overtime_hours=8,
-            flexible_daily_overtime_minutes=30,
+            variable_daily_overtime_enabled=True,
+            variable_daily_overtime_hours=8,
+            variable_daily_overtime_minutes=30,
             # 月次基準時間設定
             days_28_hours=160, days_28_minutes=0,
             days_29_hours=165, days_29_minutes=0,
@@ -39,7 +39,7 @@ class StaffTimesheetFlexibleOvertimeTest(TestCase):
             contract_name='Test Contract',
             start_date=date(2023, 1, 1),
             contract_pattern=cls.contract_pattern,
-            overtime_pattern=cls.pattern_flexible,
+            overtime_pattern=cls.pattern_variable,
         )
 
     def _create_timecard(self, timesheet, work_date, start_time, end_time, break_minutes):
