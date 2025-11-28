@@ -184,6 +184,15 @@ class StaffTimesheet(MyModel):
                 if monthly_range_max > 0 and self.total_work_minutes > monthly_range_max * 60:
                     # 最大時間を超える場合は割増時間を計算
                     self.total_premium_minutes = self.total_work_minutes - (monthly_range_max * 60)
+            
+            elif overtime_pattern.calculation_type == 'premium':
+                # 割増方式で月単位時間外割増が有効な場合
+                if overtime_pattern.monthly_overtime_enabled and overtime_pattern.monthly_overtime_hours:
+                    # 月単位時間外割増時間を超えた残業時間を割増時間として計算
+                    monthly_overtime_threshold = overtime_pattern.monthly_overtime_hours * 60
+                    if self.total_overtime_minutes > monthly_overtime_threshold:
+                        self.total_premium_minutes = self.total_overtime_minutes - monthly_overtime_threshold
+
 
         self.save()
 
