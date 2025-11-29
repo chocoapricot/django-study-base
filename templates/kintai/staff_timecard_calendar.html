@@ -64,7 +64,7 @@
                     </thead>
                     <tbody>
                         {% for data in calendar_data %}
-                        <tr class="{% if data.is_holiday or data.weekday == 6 %}table-sunday{% elif data.weekday == 5 %}table-saturday{% endif %}" data-day="{{ data.day }}" data-is-holiday="{% if data.is_holiday %}true{% else %}false{% endif %}">
+                        <tr class="{% if data.is_holiday or data.weekday == 6 %}table-sunday{% elif data.weekday == 5 %}table-saturday{% endif %}" data-day="{{ data.day }}" data-is-holiday="{% if data.is_holiday %}true{% else %}false{% endif %}" data-saved-work-time-id="{% if data.timecard and data.timecard.work_time_pattern_work_id %}{{ data.timecard.work_time_pattern_work_id }}{% endif %}">
                             <td style="{% if data.is_holiday or data.weekday == 6 %}color: #cc0000; font-weight: bold;{% elif data.weekday == 5 %}color: #0066cc; font-weight: bold;{% endif %}">
                                 {{ data.date|date:"Y/m/d (D)" }}
                                 {% if data.is_holiday and data.holiday_name %}
@@ -82,7 +82,7 @@
                                 </select>
                             </td>
                             <td>
-                                <select name="work_time_{{ data.day }}" class="form-select form-select-sm work-time-select" data-day="{{ data.day }}" disabled>
+                                <select name="work_time_pattern_work_{{ data.day }}" class="form-select form-select-sm work-time-select" data-day="{{ data.day }}" disabled>
                                     <option value="">-</option>
                                 </select>
                             </td>
@@ -139,8 +139,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const contractsWorkTimes = {{ contracts_work_times_json|safe }};
 
     // 契約選択時に就業時間プルダウンを更新
-    function updateWorkTimeOptions(day, contractId) {
-        const workTimeSelect = document.querySelector(`select[name="work_time_${day}"]`);
+    function updateWorkTimeOptions(day, contractId, savedWorkTimeId) {
+        const workTimeSelect = document.querySelector(`select[name="work_time_pattern_work_${day}"]`);
         
         // 既存の選択肢をクリア
         workTimeSelect.innerHTML = '<option value="">-</option>';
@@ -159,6 +159,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 option.dataset.startNextDay = workTime.start_time_next_day;
                 option.dataset.endNextDay = workTime.end_time_next_day;
                 option.dataset.breakMinutes = workTime.break_minutes;
+                
+                // 保存済みの値を選択
+                if (savedWorkTimeId && workTime.id == savedWorkTimeId) {
+                    option.selected = true;
+                }
+                
                 workTimeSelect.appendChild(option);
             });
         } else {
@@ -169,10 +175,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.querySelectorAll('.contract-select').forEach(select => {
         const day = select.dataset.day;
+        const row = select.closest('tr');
+        
+        // 保存済みの就業時間パターンIDを取得（data属性から）
+        const savedWorkTimeId = row.dataset.savedWorkTimeId;
         
         // 初期化時に既に契約が選択されている場合は就業時間プルダウンを更新
         if (select.value) {
-            updateWorkTimeOptions(day, select.value);
+            updateWorkTimeOptions(day, select.value, savedWorkTimeId);
         }
         
         select.addEventListener('change', function() {

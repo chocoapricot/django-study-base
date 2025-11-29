@@ -73,10 +73,11 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <select name="work_time_{{ data.day }}" class="form-select form-select-sm work-time-select" data-day="{{ data.day }}">
+                                <select name="work_time_pattern_work_{{ data.day }}" class="form-select form-select-sm work-time-select" data-day="{{ data.day }}">
                                     <option value="">-</option>
                                     {% for wt in work_times_data %}
                                     <option value="{{ wt.id }}" 
+                                            {% if data.timecard and data.timecard.work_time_pattern_work_id == wt.id %}selected{% endif %}
                                             data-start-time="{{ wt.start_time }}" 
                                             data-end-time="{{ wt.end_time }}" 
                                             data-start-next-day="{{ wt.start_time_next_day|yesno:'true,false' }}"

@@ -315,6 +315,14 @@ class StaffTimecard(MyModel):
         verbose_name='スタッフ契約'
     )
     work_date = models.DateField('勤務日')
+    work_time_pattern_work = models.ForeignKey(
+        'master.WorkTimePatternWork',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='就業時間パターン',
+        related_name='timecards'
+    )
 
     # 勤務区分
     work_type = models.CharField(

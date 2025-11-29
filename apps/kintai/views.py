@@ -236,6 +236,7 @@ def staff_timecard_calendar(request, staff_pk, target_month):
             # フォームデータを取得
             contract_id = request.POST.get(f'contract_{day}')
             work_type = request.POST.get(f'work_type_{day}')
+            work_time_pattern_work_id = request.POST.get(f'work_time_pattern_work_{day}')
             start_time_str = request.POST.get(f'start_time_{day}')
             start_time_next_day = request.POST.get(f'start_time_next_day_{day}') == 'on'
             end_time_str = request.POST.get(f'end_time_{day}')
@@ -309,6 +310,17 @@ def staff_timecard_calendar(request, staff_pk, target_month):
             
             # データを更新
             timecard.work_type = work_type
+            
+            # work_time_pattern_workを設定
+            if work_time_pattern_work_id:
+                try:
+                    from apps.master.models import WorkTimePatternWork
+                    timecard.work_time_pattern_work = WorkTimePatternWork.objects.get(pk=work_time_pattern_work_id)
+                except WorkTimePatternWork.DoesNotExist:
+                    timecard.work_time_pattern_work = None
+            else:
+                timecard.work_time_pattern_work = None
+            
             timecard.start_time = start_time
             timecard.start_time_next_day = start_time_next_day
             timecard.end_time = end_time
@@ -558,11 +570,19 @@ def timecard_create(request, timesheet_pk):
             messages.success(request, '日次勤怠を作成しました。')
             return redirect('kintai:timesheet_detail', pk=timesheet_pk)
     else:
-        form = StaffTimecardForm()
+        form = StaffTimecardForm(timesheet=timesheet)
+    
+    # 就業時間パターンから勤務時間一覧を取得
+    work_times_data = _get_work_times_data(timesheet.staff_contract)
+    
+    # JSONに変換してテンプレートに渡す
+    import json
+    work_times_data_json = json.dumps(work_times_data)
     
     context = {
         'form': form,
         'timesheet': timesheet,
+        'work_times_data_json': work_times_data_json,
     }
     return render(request, 'kintai/timecard_form.html', context)
 
@@ -611,12 +631,20 @@ def timecard_create_initial(request, contract_pk, target_month):
             messages.success(request, '月次勤怠と日次勤怠を作成しました。')
             return redirect('kintai:timesheet_detail', pk=timesheet.pk)
     else:
-        form = StaffTimecardForm()
+        form = StaffTimecardForm(timesheet=virtual_timesheet)
+
+    # 就業時間パターンから勤務時間一覧を取得
+    work_times_data = _get_work_times_data(contract)
+    
+    # JSONに変換してテンプレートに渡す
+    import json
+    work_times_data_json = json.dumps(work_times_data)
 
     context = {
         'form': form,
         'timesheet': virtual_timesheet,
         'is_preview': True,
+        'work_times_data_json': work_times_data_json,
     }
     return render(request, 'kintai/timecard_form.html', context)
 
@@ -638,12 +666,20 @@ def timecard_edit(request, pk):
             messages.success(request, '日次勤怠を更新しました。')
             return redirect('kintai:timesheet_detail', pk=timesheet.pk)
     else:
-        form = StaffTimecardForm(instance=timecard)
+        form = StaffTimecardForm(instance=timecard, timesheet=timesheet)
+    
+    # 就業時間パターンから勤務時間一覧を取得
+    work_times_data = _get_work_times_data(timesheet.staff_contract)
+    
+    # JSONに変換してテンプレートに渡す
+    import json
+    work_times_data_json = json.dumps(work_times_data)
     
     context = {
         'form': form,
         'timecard': timecard,
         'timesheet': timesheet,
+        'work_times_data_json': work_times_data_json,
     }
     return render(request, 'kintai/timecard_form.html', context)
 
@@ -698,6 +734,7 @@ def timecard_calendar(request, timesheet_pk):
             
             # フォームデータを取得
             work_type = request.POST.get(f'work_type_{day}')
+            work_time_pattern_work_id = request.POST.get(f'work_time_pattern_work_{day}')
             start_time_str = request.POST.get(f'start_time_{day}')
             start_time_next_day = request.POST.get(f'start_time_next_day_{day}') == 'on'
             end_time_str = request.POST.get(f'end_time_{day}')
@@ -760,6 +797,17 @@ def timecard_calendar(request, timesheet_pk):
             
             # データを更新
             timecard.work_type = work_type
+            
+            # work_time_pattern_workを設定
+            if work_time_pattern_work_id:
+                try:
+                    from apps.master.models import WorkTimePatternWork
+                    timecard.work_time_pattern_work = WorkTimePatternWork.objects.get(pk=work_time_pattern_work_id)
+                except WorkTimePatternWork.DoesNotExist:
+                    timecard.work_time_pattern_work = None
+            else:
+                timecard.work_time_pattern_work = None
+            
             timecard.start_time = start_time
             timecard.start_time_next_day = start_time_next_day
             timecard.end_time = end_time
@@ -888,6 +936,7 @@ def timecard_calendar_initial(request, contract_pk, target_month):
             
             # フォームデータを取得
             work_type = request.POST.get(f'work_type_{day}')
+            work_time_pattern_work_id = request.POST.get(f'work_time_pattern_work_{day}')
             start_time_str = request.POST.get(f'start_time_{day}')
             start_time_next_day = request.POST.get(f'start_time_next_day_{day}') == 'on'
             end_time_str = request.POST.get(f'end_time_{day}')
@@ -943,6 +992,14 @@ def timecard_calendar_initial(request, contract_pk, target_month):
                 break_minutes=int(break_minutes) if break_minutes else 0,
                 paid_leave_days=float(paid_leave_days) if paid_leave_days else 0
             )
+            
+            # work_time_pattern_workを設定
+            if work_time_pattern_work_id:
+                try:
+                    from apps.master.models import WorkTimePatternWork
+                    timecard.work_time_pattern_work = WorkTimePatternWork.objects.get(pk=work_time_pattern_work_id)
+                except WorkTimePatternWork.DoesNotExist:
+                    timecard.work_time_pattern_work = None
             
             try:
                 timecard.full_clean()

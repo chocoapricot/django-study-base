@@ -99,13 +99,24 @@ class StaffTimecardForm(forms.ModelForm):
         # Accept optional timesheet kwarg for calendar/bulk edit validation
         self.timesheet = kwargs.pop('timesheet', None)
         super().__init__(*args, **kwargs)
+        
+        # work_time_pattern_workの選択肢を契約の就業時間パターンに絞る
+        if self.timesheet and self.timesheet.staff_contract and self.timesheet.staff_contract.worktime_pattern:
+            self.fields['work_time_pattern_work'].queryset = self.timesheet.staff_contract.worktime_pattern.work_times.filter(
+                time_name__is_active=True
+            ).order_by('display_order')
+        else:
+            # timesheetがない場合は空のクエリセット
+            from apps.master.models import WorkTimePatternWork
+            self.fields['work_time_pattern_work'].queryset = WorkTimePatternWork.objects.none()
     
     class Meta:
         model = StaffTimecard
-        fields = ['work_date', 'work_type', 'start_time', 'start_time_next_day', 'end_time', 'end_time_next_day', 'break_minutes', 'late_night_break_minutes', 'paid_leave_days', 'memo']
+        fields = ['work_date', 'work_type', 'work_time_pattern_work', 'start_time', 'start_time_next_day', 'end_time', 'end_time_next_day', 'break_minutes', 'late_night_break_minutes', 'paid_leave_days', 'memo']
         widgets = {
             'work_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'work_type': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'work_time_pattern_work': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'start_time': forms.TimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'time'}),
             'start_time_next_day': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'end_time': forms.TimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'time'}),
