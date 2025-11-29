@@ -20,9 +20,9 @@ class StaffTimesheetVariableOvertimeTest(TestCase):
             calculate_midnight_premium=False,
             calculation_type='variable',
             # 日単位設定: 8時間30分
-            variable_daily_overtime_enabled=True,
-            variable_daily_overtime_hours=8,
-            variable_daily_overtime_minutes=30,
+            daily_overtime_enabled=True,
+            daily_overtime_hours=8,
+            daily_overtime_minutes=30,
             # 月次基準時間設定
             days_28_hours=160, days_28_minutes=0,
             days_29_hours=165, days_29_minutes=0,

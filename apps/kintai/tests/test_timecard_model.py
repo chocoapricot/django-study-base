@@ -157,8 +157,8 @@ class StaffTimecardModelTest(TestCase):
             name='1ヶ月単位変形労働（深夜あり）',
             calculate_midnight_premium=True,
             calculation_type='variable',
-            variable_daily_overtime_enabled=True,
-            variable_daily_overtime_hours=8,
+            daily_overtime_enabled=True,
+            daily_overtime_hours=8,
         )
         # start: 20:00, end: 翌2:00, break: 60min -> work: 5h = 300min
         # Overtime: 0 (1ヶ月単位変形労働方式では日次で残業計算しない)

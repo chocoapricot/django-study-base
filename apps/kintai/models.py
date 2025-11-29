@@ -515,11 +515,11 @@ class StaffTimecard(MyModel):
             
             elif overtime_pattern.calculation_type == 'variable':
                 # 1ヶ月単位変形労働方式
-                if (overtime_pattern.variable_daily_overtime_enabled and
-                        overtime_pattern.variable_daily_overtime_hours is not None):
+                if (overtime_pattern.daily_overtime_enabled and
+                        overtime_pattern.daily_overtime_hours is not None):
                     # 日単位時間外計算が有効な場合、基準時間を超えた分を残業とする
-                    standard_hours = overtime_pattern.variable_daily_overtime_hours or 0
-                    standard_mins = overtime_pattern.variable_daily_overtime_minutes or 0
+                    standard_hours = overtime_pattern.daily_overtime_hours or 0
+                    standard_mins = overtime_pattern.daily_overtime_minutes or 0
                     standard_minutes = standard_hours * 60 + standard_mins
                     if self.work_minutes > standard_minutes:
                         self.overtime_minutes = self.work_minutes - standard_minutes

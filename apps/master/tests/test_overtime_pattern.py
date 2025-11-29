@@ -42,10 +42,10 @@ class OvertimePatternModelTest(TestCase):
         pattern = OvertimePattern.objects.create(
             name="変形労働パターン1",
             calculation_type="variable",
-            variable_daily_overtime_enabled=True,
-            variable_daily_overtime_hours=8,
-            variable_weekly_overtime_enabled=True,
-            variable_weekly_overtime_hours=40,
+            daily_overtime_enabled=True,
+            daily_overtime_hours=8,
+            weekly_overtime_enabled=True,
+            weekly_overtime_hours=40,
             days_28_hours=160,
             days_28_minutes=0,
             days_29_hours=165,
@@ -58,7 +58,7 @@ class OvertimePatternModelTest(TestCase):
         )
         self.assertEqual(pattern.name, "変形労働パターン1")
         self.assertEqual(pattern.calculation_type, "variable")
-        self.assertTrue(pattern.variable_daily_overtime_enabled)
+        self.assertTrue(pattern.daily_overtime_enabled)
         self.assertEqual(pattern.days_28_hours, 160)
         self.assertEqual(pattern.days_29_minutes, 42)
 
