@@ -770,6 +770,10 @@ def overtime_pattern_select_modal(request):
                     settings.append(f"週{pattern.weekly_overtime_hours}:{pattern.weekly_overtime_minutes:02d}")
                 else:
                     settings.append(f"週{pattern.weekly_overtime_hours}h")
+            if pattern.monthly_overtime_enabled:
+                settings.append(f"月{pattern.monthly_overtime_hours}h")
+            if pattern.monthly_estimated_enabled:
+                settings.append(f"見込{pattern.monthly_estimated_hours}h")
         
         data['patterns'].append({
             'id': pattern.id,

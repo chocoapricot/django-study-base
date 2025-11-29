@@ -65,6 +65,10 @@ class OvertimePatternFormTest(TestCase):
         form_data = {
             'name': '変形労働パターン',
             'calculation_type': 'variable',
+            'monthly_overtime_enabled': True,
+            'monthly_overtime_hours': 60,
+            'monthly_estimated_enabled': True,
+            'monthly_estimated_hours': 20,
             'monthly_range_min': 140,
             'monthly_range_max': 160,
             'daily_overtime_enabled': True,
