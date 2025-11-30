@@ -187,6 +187,7 @@ class OvertimePattern(MyModel):
         ('premium', '割増'),
         ('monthly_range', '月単位時間範囲'),
         ('variable', '1ヶ月単位変形労働'),
+        ('flextime', '1ヶ月単位フレックス'),
     ]
     calculation_type = models.CharField('計算方式', max_length=20, choices=CALCULATION_TYPE_CHOICES, default='premium')
     
