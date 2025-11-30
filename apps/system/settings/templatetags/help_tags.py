@@ -58,6 +58,11 @@ HELP_TEXTS = {
     'staff_hire_date': '契約開始日は入社日以降である必要があります',
     'client_basic_contract': '契約開始日は基本契約締結日以降である必要があります',
     
+    # 勤怠関連
+    'daily_overtime_enabled': '１日にこの時間を超えると、残業時間として集計されます。',
+    'monthly_overtime_enabled': '１月の残業時間がこの時間を超えると、割増時間として集計されます。',
+    'calculate_midnight_premium': '22時から5時までの勤務時間が、深夜時間として集計されます。',
+
     # 銀行・支払い関連
     'bank_code': '4桁の数字で入力（必須）',
     'branch_code': '3桁の数字で入力（必須）',

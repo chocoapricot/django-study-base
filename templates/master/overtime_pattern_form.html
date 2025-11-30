@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load static %}
+{% load help_tags %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -37,7 +38,9 @@
                     <div class="col-sm-10">
                         <div class="form-check form-check-inline">
                             {{ form.daily_overtime_enabled }}
-                            <label class="form-check-label" for="{{ form.daily_overtime_enabled.id_for_label }}">日単位時間外計算</label>
+                            <label class="form-check-label" for="{{ form.daily_overtime_enabled.id_for_label }}">
+                                日単位時間外計算 {% my_help_preset "daily_overtime_enabled" %}
+                            </label>
                         </div>
                         <div class="d-inline-block ms-2" style="width: 80px;">
                             {{ form.daily_overtime_hours }}
@@ -73,7 +76,9 @@
                     <div class="col-sm-10">
                         <div class="form-check form-check-inline">
                             {{ form.monthly_overtime_enabled }}
-                            <label class="form-check-label" for="{{ form.monthly_overtime_enabled.id_for_label }}">月単位時間外割増</label>
+                            <label class="form-check-label" for="{{ form.monthly_overtime_enabled.id_for_label }}">
+                                月単位時間外割増 {% my_help_preset "monthly_overtime_enabled" %}
+                            </label>
                         </div>
                         <div class="d-inline-block ms-2" style="width: 100px;">
                             {{ form.monthly_overtime_hours }}
@@ -121,7 +126,10 @@
                     <div class="col-sm-10">
                         <div class="form-check form-check-inline">
                             {{ form.daily_overtime_enabled }}
-                            <label class="form-check-label" for="{{ form.daily_overtime_enabled.id_for_label }}">日単位時間外計算</label>
+                            <label class="form-check-label" for="{{ form.daily_overtime_enabled.id_for_label }}">
+                                日単位時間外計算
+                                <i class="fas fa-question-circle text-muted small ms-1" data-bs-toggle="tooltip" title="１日にこの時間を超えると、残業時間として集計されます。"></i>
+                            </label>
                         </div>
                         <div class="d-inline-block ms-2" style="width: 80px;">
                             {{ form.daily_overtime_hours }}
@@ -157,7 +165,9 @@
                     <div class="col-sm-10">
                         <div class="form-check form-check-inline">
                             {{ form.monthly_overtime_enabled }}
-                            <label class="form-check-label" for="{{ form.monthly_overtime_enabled.id_for_label }}">月単位時間外割増</label>
+                            <label class="form-check-label" for="{{ form.monthly_overtime_enabled.id_for_label }}">
+                                月単位時間外割増 {% my_help_preset "monthly_overtime_enabled" %}
+                            </label>
                         </div>
                         <div class="d-inline-block ms-2" style="width: 100px;">
                             {{ form.monthly_overtime_hours }}
@@ -237,7 +247,7 @@
                     <div class="form-check">
                         {{ form.calculate_midnight_premium }}
                         <label class="form-check-label" for="{{ form.calculate_midnight_premium.id_for_label }}">
-                            深夜割増を計算する
+                            深夜割増を計算する {% my_help_preset "calculate_midnight_premium" %}
                         </label>
                         {% if form.calculate_midnight_premium.errors %}
                             <div class="text-danger small">{{ form.calculate_midnight_premium.errors.0 }}</div>
