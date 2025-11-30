@@ -21,13 +21,33 @@
                 </div>
             </div>
 
-            <div class="row mb-3 align-items-center">
+            <div class="row mb-3 align-items-start">
                 <label class="col-sm-2 col-form-label text-start text-md-end">計算方式</label>
                 <div class="col-sm-10">
                     {{ form.calculation_type }}
                     {% if form.calculation_type.errors %}
                         <div class="text-danger small">{{ form.calculation_type.errors.0 }}</div>
                     {% endif %}
+                    
+                    <!-- 計算方式の説明 -->
+                    <div id="calculation-info-premium" class="alert alert-info mt-2 calculation-info" style="display: none;">
+                        ・日単位・週単位で設定した時間を超えた分を残業時間として計算します。<br>
+                        ・月単位時間外割増が有効な場合、残業時間が設定時間を超えた分を割増時間として計算します。<br>
+                        ・深夜割増が有効な場合、22時～5時の勤務時間を深夜時間として計算します。
+                    </div>
+                    
+                    <div id="calculation-info-monthly_range" class="alert alert-info mt-2 calculation-info" style="display: none;">
+                        ・月の総労働時間が最小時間に満たない場合、不足分を控除時間として計算します。<br>
+                        ・月の総労働時間が最大時間を超えた場合、超過分を割増時間として計算します。<br>
+                        ・深夜割増が有効な場合、22時～5時の勤務時間を深夜時間として計算します。
+                    </div>
+                    
+                    <div id="calculation-info-variable" class="alert alert-info mt-2 calculation-info" style="display: none;">
+                        ・日単位・週単位で設定した時間を超えた分を残業時間として計算します。<br>
+                        ・月の実労働時間（総労働時間 - 日次・週次残業時間）が月の法定労働時間（28日→160時間など）を超えた分を変形時間として計算します。<br>
+                        ・月単位時間外割増が有効な場合、残業時間+変形時間が設定時間を超えた分を割増時間として計算します。<br>
+                        ・深夜割増が有効な場合、22時～5時の勤務時間を深夜時間として計算します。
+                    </div>
                 </div>
             </div>
 
@@ -313,12 +333,18 @@ document.addEventListener('DOMContentLoaded', function() {
         monthlyRangeSection.style.display = 'none';
         variableSection.style.display = 'none';
         
+        // 説明文の非表示
+        document.querySelectorAll('.calculation-info').forEach(el => el.style.display = 'none');
+        
         if (selectedType === 'premium') {
             premiumSection.style.display = 'block';
+            document.getElementById('calculation-info-premium').style.display = 'block';
         } else if (selectedType === 'monthly_range') {
             monthlyRangeSection.style.display = 'block';
+            document.getElementById('calculation-info-monthly_range').style.display = 'block';
         } else if (selectedType === 'variable') {
             variableSection.style.display = 'block';
+            document.getElementById('calculation-info-variable').style.display = 'block';
         }
     }
 

@@ -228,6 +228,13 @@ class StaffTimesheet(MyModel):
                 # 基準時間を超えている場合は変形時間として計算
                 if actual_work_minutes > standard_total_minutes:
                     self.total_variable_minutes = actual_work_minutes - standard_total_minutes
+                
+                # 月単位時間外割増が有効な場合、残業時間+変形時間が閾値を超えた分を割増時間として計算
+                if overtime_pattern.monthly_overtime_enabled and overtime_pattern.monthly_overtime_hours:
+                    monthly_overtime_threshold = overtime_pattern.monthly_overtime_hours * 60
+                    total_overtime_and_variable = self.total_overtime_minutes + self.total_variable_minutes
+                    if total_overtime_and_variable > monthly_overtime_threshold:
+                        self.total_premium_minutes = total_overtime_and_variable - monthly_overtime_threshold
 
 
         self.save()
