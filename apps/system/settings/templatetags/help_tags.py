@@ -66,6 +66,7 @@ HELP_TEXTS = {
     'late_night_overtime': '22時から5時までの勤務時間が、深夜時間として集計されます。',
     'monthly_range_premium': '1ヶ月の勤務時間が特定時間を超える場合',
     'monthly_range_deduction': '1ヶ月の勤務時間が特定時間を下回る場合',
+    'flextime_deduction': '1ヶ月の勤務時間が法定労働時間を下回る場合',
 
     # 銀行・支払い関連
     'bank_code': '4桁の数字で入力（必須）',

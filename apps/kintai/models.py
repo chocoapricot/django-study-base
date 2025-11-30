@@ -236,6 +236,47 @@ class StaffTimesheet(MyModel):
                     if total_overtime_and_variable > monthly_overtime_threshold:
                         self.total_premium_minutes = total_overtime_and_variable - monthly_overtime_threshold
 
+            elif overtime_pattern.calculation_type == 'flextime':
+                # 1ヶ月単位フレックス方式の場合
+                # 対象月の日数を取得
+                year = self.target_month.year
+                month = self.target_month.month
+                _, days_in_month = monthrange(year, month)
+                
+                # 日数に応じた法定労働時間を取得
+                standard_hours = 0
+                standard_minutes = 0
+                
+                if days_in_month == 28:
+                    standard_hours = overtime_pattern.days_28_hours
+                    standard_minutes = overtime_pattern.days_28_minutes
+                elif days_in_month == 29:
+                    standard_hours = overtime_pattern.days_29_hours
+                    standard_minutes = overtime_pattern.days_29_minutes
+                elif days_in_month == 30:
+                    standard_hours = overtime_pattern.days_30_hours
+                    standard_minutes = overtime_pattern.days_30_minutes
+                elif days_in_month == 31:
+                    standard_hours = overtime_pattern.days_31_hours
+                    standard_minutes = overtime_pattern.days_31_minutes
+                
+                # 法定労働時間を分単位に変換
+                standard_total_minutes = (standard_hours * 60) + standard_minutes
+                
+                # 総労働時間と法定労働時間を比較
+                if self.total_work_minutes > standard_total_minutes:
+                    # 総労働時間が法定労働時間を超えた分を残業時間として計算
+                    self.total_overtime_minutes = self.total_work_minutes - standard_total_minutes
+                    
+                    # 月単位時間外割増が有効な場合、残業時間が閾値を超えた分を割増時間として計算
+                    if overtime_pattern.monthly_overtime_enabled and overtime_pattern.monthly_overtime_hours:
+                        monthly_overtime_threshold = overtime_pattern.monthly_overtime_hours * 60
+                        if self.total_overtime_minutes > monthly_overtime_threshold:
+                            self.total_premium_minutes = self.total_overtime_minutes - monthly_overtime_threshold
+                elif self.total_work_minutes < standard_total_minutes:
+                    # 総労働時間が法定労働時間未満の場合、不足分を控除時間として計算
+                    self.total_deduction_minutes = standard_total_minutes - self.total_work_minutes
+
 
         self.save()
 
@@ -253,6 +294,27 @@ class StaffTimesheet(MyModel):
     def is_approved(self):
         """承認済みかどうか"""
         return self.status == '30'
+
+    @property
+    def monthly_standard_hours(self):
+        """その月の基準時間（法定労働時間）を取得"""
+        if not self.staff_contract or not self.staff_contract.overtime_pattern:
+            return 0
+            
+        overtime_pattern = self.staff_contract.overtime_pattern
+        year = self.target_month.year
+        month = self.target_month.month
+        _, days_in_month = monthrange(year, month)
+        
+        if days_in_month == 28:
+            return overtime_pattern.days_28_hours
+        elif days_in_month == 29:
+            return overtime_pattern.days_29_hours
+        elif days_in_month == 30:
+            return overtime_pattern.days_30_hours
+        elif days_in_month == 31:
+            return overtime_pattern.days_31_hours
+        return 0
 
     # --- Display properties ---
     @property
