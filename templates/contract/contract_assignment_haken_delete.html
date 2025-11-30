@@ -107,7 +107,7 @@
                     {% csrf_token %}
                     <div class="row mt-4">
                         <div class="col text-left">
-                            <button type="submit" class="btn btn-sm btn-dark me-2">削除する</button>
+                            <button type="submit" class="btn btn-sm btn-dark me-2">削除</button>
                             {% if from_param == 'client' %}
                                 <a href="{% url 'contract:client_contract_detail' assignment.client_contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
                             {% elif from_param == 'staff' %}

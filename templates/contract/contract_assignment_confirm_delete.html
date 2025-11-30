@@ -71,7 +71,7 @@
                     {% csrf_token %}
                     <div class="row mt-3">
                         <div class="col text-left">
-                            <button type="submit" class="btn btn-sm btn-dark me-2">削除する</button>
+                            <button type="submit" class="btn btn-sm btn-dark me-2">削除</button>
                             <a href="{% url 'contract:contract_assignment_detail' assignment_pk=assignment.pk %}{% if from_param %}?from={{ from_param }}{% endif %}" class="btn btn-sm btn-secondary">戻る</a>
                         </div>
                     </div>
