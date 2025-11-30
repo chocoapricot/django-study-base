@@ -92,8 +92,12 @@
                         {# 月単位時間範囲方式の場合 #}
                         <tr><th>割増時間</th><td>{% if timesheet.total_premium_hours_display %}{{ timesheet.total_premium_hours_display }}{% else %}-{% endif %}</td></tr>
                         <tr><th>控除時間</th><td>{% if timesheet.total_deduction_hours_display %}{{ timesheet.total_deduction_hours_display }}{% else %}-{% endif %}</td></tr>
+                    {% elif timesheet.staff_contract.overtime_pattern and timesheet.staff_contract.overtime_pattern.calculation_type == 'variable' %}
+                        {# 1ヶ月単位変形労働方式の場合 #}
+                        <tr><th>残業時間</th><td>{% if timesheet.total_overtime_hours_display %}{{ timesheet.total_overtime_hours_display }}{% else %}-{% endif %}</td></tr>
+                        <tr><th>変形時間</th><td>{% if timesheet.total_variable_hours_display %}{{ timesheet.total_variable_hours_display }}{% else %}-{% endif %}</td></tr>
                     {% else %}
-                        {# 割増方式または変形労働方式の場合 #}
+                        {# 割増方式の場合 #}
                         <tr><th>残業時間</th><td>{% if timesheet.total_overtime_hours_display %}{{ timesheet.total_overtime_hours_display }}{% else %}-{% endif %}</td></tr>
                         <tr><th>割増時間</th><td>{% if timesheet.total_premium_hours_display %}{{ timesheet.total_premium_hours_display }}{% else %}-{% endif %}</td></tr>
                     {% endif %}

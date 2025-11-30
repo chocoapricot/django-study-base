@@ -38,6 +38,7 @@ class StaffTimesheet(MyModel):
     total_holiday_work_minutes = models.PositiveIntegerField('休日労働時間（分）', default=0)
     total_premium_minutes = models.PositiveIntegerField('割増時間（分）', default=0, help_text='月単位時間範囲での割増時間')
     total_deduction_minutes = models.PositiveIntegerField('控除時間（分）', default=0, help_text='月単位時間範囲での控除時間')
+    total_variable_minutes = models.PositiveIntegerField('変形時間（分）', default=0, help_text='1ヶ月単位変形労働での月次法定超過時間')
     # 遅刻・早退は個別の集計対象から除外
     total_absence_days = models.PositiveIntegerField('欠勤日数', default=0)
     total_paid_leave_days = models.DecimalField('有給休暇日数', max_digits=4, decimal_places=1, default=0)
@@ -168,6 +169,7 @@ class StaffTimesheet(MyModel):
         # --- 月単位時間範囲方式の割増・控除時間計算 ---
         self.total_premium_minutes = 0
         self.total_deduction_minutes = 0
+        self.total_variable_minutes = 0
         
         if self.staff_contract and self.staff_contract.overtime_pattern:
             overtime_pattern = self.staff_contract.overtime_pattern
@@ -220,12 +222,12 @@ class StaffTimesheet(MyModel):
                 # 基準時間を分単位に変換
                 standard_total_minutes = (standard_hours * 60) + standard_minutes
                 
-                # 実労働時間（総労働時間 - 残業時間）を計算
+                # 実労働時間（総労働時間 - 日次・週次残業時間）を計算
                 actual_work_minutes = self.total_work_minutes - self.total_overtime_minutes
                 
-                # 基準時間を超えている場合は割増時間を計算
+                # 基準時間を超えている場合は変形時間として計算
                 if actual_work_minutes > standard_total_minutes:
-                    self.total_premium_minutes = actual_work_minutes - standard_total_minutes
+                    self.total_variable_minutes = actual_work_minutes - standard_total_minutes
 
 
         self.save()
@@ -291,6 +293,14 @@ class StaffTimesheet(MyModel):
         """控除時間の表示用文字列"""
         if self.total_deduction_minutes and self.total_deduction_minutes > 0:
             hours, minutes = divmod(self.total_deduction_minutes, 60)
+            return f"{hours}時間{minutes:02d}分"
+        return "-"
+
+    @property
+    def total_variable_hours_display(self):
+        """変形時間の表示用文字列"""
+        if self.total_variable_minutes and self.total_variable_minutes > 0:
+            hours, minutes = divmod(self.total_variable_minutes, 60)
             return f"{hours}時間{minutes:02d}分"
         return "-"
 

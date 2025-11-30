@@ -127,8 +127,7 @@
                         <div class="form-check form-check-inline">
                             {{ form.daily_overtime_enabled }}
                             <label class="form-check-label" for="{{ form.daily_overtime_enabled.id_for_label }}">
-                                日単位時間外計算
-                                <i class="fas fa-question-circle text-muted small ms-1" data-bs-toggle="tooltip" title="１日にこの時間を超えると、残業時間として集計されます。"></i>
+                                日単位時間外計算 {% my_help_preset "daily_overtime_enabled" %}
                             </label>
                         </div>
                         <div class="d-inline-block ms-2" style="width: 80px;">

@@ -83,7 +83,7 @@ class StaffTimesheetVariableOvertimeTest(TestCase):
         self.assertEqual(tc2.overtime_minutes, 0)
 
     def test_monthly_premium_calculation_28_days(self):
-        """28日の月での割増計算テスト（基準160時間）"""
+        """28日の月での変形時間計算テスト（基準160時間）"""
         # 2023年2月（28日）
         timesheet = StaffTimesheet.objects.create(
             staff_contract=self.staff_contract,
@@ -118,22 +118,22 @@ class StaffTimesheetVariableOvertimeTest(TestCase):
         # 集計
         # 総労働時間 = 95h + 80h = 175h = 10500分
         # 総残業時間 = 10h = 600分
-        # 実労働時間（割増判定用） = 175h - 10h = 165h = 9900分
+        # 実労働時間（変形時間判定用） = 175h - 10h = 165h = 9900分
         
         # 基準時間(160h)との差分
-        # 165h - 160h = 5h = 300分 -> これが割増時間になるはず
+        # 165h - 160h = 5h = 300分 -> これが変形時間になるはず
 
         timesheet.refresh_from_db()
         
         self.assertEqual(timesheet.total_work_minutes, 10500)
         self.assertEqual(timesheet.total_overtime_minutes, 600)
         
-        # 割増時間の検証
-        expected_premium = (165 - 160) * 60
-        self.assertEqual(timesheet.total_premium_minutes, expected_premium)
+        # 変形時間の検証
+        expected_variable = (165 - 160) * 60
+        self.assertEqual(timesheet.total_variable_minutes, expected_variable)
 
     def test_monthly_premium_calculation_31_days(self):
-        """31日の月での割増計算テスト（基準177時間）"""
+        """31日の月での変形時間計算テスト（基準177時間）"""
         # 2023年1月（31日）
         timesheet = StaffTimesheet.objects.create(
             staff_contract=self.staff_contract,
@@ -166,16 +166,16 @@ class StaffTimesheetVariableOvertimeTest(TestCase):
         # 集計
         # 総労働時間 = 180h + 8h = 188h = 11280分
         # 総残業時間 = 10h = 600分
-        # 実労働時間（割増判定用） = 188h - 10h = 178h = 10680分
+        # 実労働時間（変形時間判定用） = 188h - 10h = 178h = 10680分
         
         # 基準時間(177h)との差分
-        # 178h - 177h = 1h = 60分 -> これが割増時間になるはず
+        # 178h - 177h = 1h = 60分 -> これが変形時間になるはず
 
         timesheet.refresh_from_db()
         
         self.assertEqual(timesheet.total_work_minutes, 11280)
         self.assertEqual(timesheet.total_overtime_minutes, 600)
         
-        # 割増時間の検証
-        expected_premium = (178 - 177) * 60
-        self.assertEqual(timesheet.total_premium_minutes, expected_premium)
+        # 変形時間の検証
+        expected_variable = (178 - 177) * 60
+        self.assertEqual(timesheet.total_variable_minutes, expected_variable)
