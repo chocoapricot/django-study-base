@@ -64,6 +64,8 @@ HELP_TEXTS = {
     'calculate_midnight_premium': '22時から5時までの勤務時間が、深夜時間として集計されます。',
     'premium_overtime': '1ヶ月の残業時間が特定時間を超える場合',
     'late_night_overtime': '22時から5時までの勤務時間が、深夜時間として集計されます。',
+    'monthly_range_premium': '1ヶ月の勤務時間が特定時間を超える場合',
+    'monthly_range_deduction': '1ヶ月の勤務時間が特定時間を下回る場合',
 
     # 銀行・支払い関連
     'bank_code': '4桁の数字で入力（必須）',

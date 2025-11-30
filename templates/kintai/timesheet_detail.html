@@ -90,8 +90,32 @@
                     <tr><th>総労働時間</th><td>{% if timesheet.total_work_hours_display %}{{ timesheet.total_work_hours_display }}{% else %}-{% endif %}</td></tr>
                     {% if timesheet.staff_contract.overtime_pattern and timesheet.staff_contract.overtime_pattern.calculation_type == 'monthly_range' %}
                         {# 月単位時間範囲方式の場合 #}
-                        <tr><th>割増時間 {% my_help_preset "premium_overtime" %}</th><td>{% if timesheet.total_premium_hours_display %}{{ timesheet.total_premium_hours_display }}{% else %}-{% endif %}</td></tr>
-                        <tr><th>控除時間</th><td>{% if timesheet.total_deduction_hours_display %}{{ timesheet.total_deduction_hours_display }}{% else %}-{% endif %}</td></tr>
+                        <tr>
+                            <th>割増時間 {% my_help_preset "monthly_range_premium" %}</th>
+                            <td>
+                                {% if timesheet.total_premium_hours_display %}
+                                    {{ timesheet.total_premium_hours_display }}
+                                    {% if timesheet.total_premium_minutes > 0 %}
+                                        <span class="text-muted small">(月{{ timesheet.staff_contract.overtime_pattern.monthly_range_max }}時間超過の勤務時間は割増)</span>
+                                    {% endif %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>控除時間 {% my_help_preset "monthly_range_deduction" %}</th>
+                            <td>
+                                {% if timesheet.total_deduction_hours_display %}
+                                    {{ timesheet.total_deduction_hours_display }}
+                                    {% if timesheet.total_deduction_minutes > 0 %}
+                                        <span class="text-muted small">(月{{ timesheet.staff_contract.overtime_pattern.monthly_range_min }}時間未満の勤務時間は控除)</span>
+                                    {% endif %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
                     {% elif timesheet.staff_contract.overtime_pattern and timesheet.staff_contract.overtime_pattern.calculation_type == 'variable' %}
                         {# 1ヶ月単位変形労働方式の場合 #}
                         <tr><th>残業時間</th><td>{% if timesheet.total_overtime_hours_display %}{{ timesheet.total_overtime_hours_display }}{% else %}-{% endif %}</td></tr>
@@ -102,7 +126,9 @@
                                 <td>
                                     {% if timesheet.total_premium_hours_display %}
                                         {{ timesheet.total_premium_hours_display }}
-                                        <span class="text-muted small">(月{{ timesheet.staff_contract.overtime_pattern.monthly_overtime_hours }}時間以上の残業時間は割増)</span>
+                                        {% if timesheet.total_premium_minutes > 0 %}
+                                            <span class="text-muted small">(月{{ timesheet.staff_contract.overtime_pattern.monthly_overtime_hours }}時間以上の残業時間は割増)</span>
+                                        {% endif %}
                                     {% else %}
                                         -
                                     {% endif %}
@@ -118,7 +144,9 @@
                                 <td>
                                     {% if timesheet.total_premium_hours_display %}
                                         {{ timesheet.total_premium_hours_display }}
-                                        <span class="text-muted small">(月{{ timesheet.staff_contract.overtime_pattern.monthly_overtime_hours }}時間以上の残業時間は割増)</span>
+                                        {% if timesheet.total_premium_minutes > 0 %}
+                                            <span class="text-muted small">(月{{ timesheet.staff_contract.overtime_pattern.monthly_overtime_hours }}時間以上の残業時間は割増)</span>
+                                        {% endif %}
                                     {% else %}
                                         -
                                     {% endif %}
