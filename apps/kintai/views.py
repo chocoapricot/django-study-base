@@ -743,15 +743,11 @@ def timecard_calendar(request, timesheet_pk):
             paid_leave_days = request.POST.get(f'paid_leave_days_{day}', 0)
             
             if not work_type:
-                with open('debug_log.txt', 'a') as f:
-                    f.write(f"DEBUG: work_type is empty for day {day}\n")
                 # 勤務区分が空の場合、既存のデータがあれば削除する
                 deleted_count, _ = StaffTimecard.objects.filter(
                     timesheet=timesheet,
                     work_date=work_date
                 ).delete()
-                with open('debug_log.txt', 'a') as f:
-                    f.write(f"DEBUG: Deleted {deleted_count} records\n")
                 continue
 
             # スタッフ契約の範囲外の日付は処理しない（カレンダー上にも表示しないため）
