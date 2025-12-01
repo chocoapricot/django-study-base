@@ -1,0 +1,46 @@
+{% extends 'common/_base.html' %}
+
+{% block title %}スタートページ{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="content-box card bg-light mt-2 mb-4">
+        <div class="card-header">
+            <h3>ようこそ！</h3>
+        </div>
+        <div class="card-body">
+            <p>このシステムは、サンプルデータを使って自由に機能を試すことができます。</p>
+            <p>以下の手順でサンプルデータを読み込み、管理者アカウントでログインしてください。</p>
+
+            <h4>1. サンプルデータの読み込み</h4>
+            <p>まず、システムの初期設定とサンプルデータの読み込みを行います。ターミナルで以下のコマンドを実行してください。</p>
+            <pre><code>python manage.py load_sample_data</code></pre>
+            <div class="alert alert-info">
+                <strong>Note:</strong> このコマンドは、データベースを初期化し、あらかじめ用意されたサンプルデータを登録します。既存のデータはすべて削除されるのでご注意ください。
+            </div>
+
+            <h4>2. スーパーユーザーでのログイン</h4>
+            <p>サンプルデータには、システムを管理するためのスーパーユーザーアカウントが含まれています。以下の情報でログインしてください。</p>
+            <ul>
+                <li><strong>メールアドレス:</strong> <code>admin@example.com</code></li>
+                <li><strong>パスワード:</strong> <code>password</code></li>
+            </ul>
+            <a href="{% url 'account_login' %}" class="btn btn-primary">ログインページへ</a>
+
+            <h4 class="mt-4">3. 一般ユーザー（スタッフ）でのログイン</h4>
+            <p>スタッフとしてログインし、スタッフ側の機能を確認することもできます。</p>
+            <ul>
+                <li><strong>メールアドレス:</strong> <code>staff@example.com</code></li>
+                <li><strong>パスワード:</strong> <code>password</code></li>
+            </ul>
+
+            <h4 class="mt-4">4. 一般ユーザー（クライアント）でのログイン</h4>
+            <p>クライアント（顧客企業の担当者）としてログインし、クライアント側の機能を確認することもできます。</p>
+            <ul>
+                <li><strong>メールアドレス:</strong> <code>client@example.com</code></li>
+                <li><strong>パスワード:</strong> <code>password</code></li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
