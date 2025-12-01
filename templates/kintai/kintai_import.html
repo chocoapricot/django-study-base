@@ -1,0 +1,209 @@
+{% extends 'common/_base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        {{ title }}
+    </div>
+    <div class="card-body">
+
+        <form id="import-form" method="post" enctype="multipart/form-data" class="form-horizontal">
+            {% csrf_token %}
+            
+            <div class="mb-3 row">
+                <label for="{{ form.csv_file.id_for_label }}" class="col-sm-2 col-form-label">{{ form.csv_file.label }}</label>
+                <div class="col-sm-9">
+                    {{ form.csv_file }}
+                    <div class="form-text">{{ form.csv_file.help_text }}</div>
+                    {% if form.csv_file.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.csv_file.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-sm btn-primary">取込</button>
+                <a href="{% url 'kintai:contract_search' %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </form>
+
+        <div id="progress-container" class="mt-4" style="display: none;">
+            <div class="progress">
+                <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="d-flex justify-content-between">
+                <div id="progress-text" class="mt-1"></div>
+                <div id="elapsed-time" class="mt-1"></div>
+                <div id="estimated-time" class="mt-1"></div>
+            </div>
+        </div>
+
+        <div id="result-container" class="mt-4"></div>
+
+        <div class="card border-dark mb-4">
+            <div class="card-header">
+                CSVフォーマットの説明
+            </div>
+            <div class="card-body">
+                <p>CSVファイルは以下の形式で作成してください。文字コードは <strong>UTF-8</strong> を使用してください。</p>
+                <ul>
+                    <li><strong>1列目:</strong> 社員番号 (必須)</li>
+                    <li><strong>2列目:</strong> 契約番号 (必須)</li>
+                    <li><strong>3列目:</strong> 勤務日 (必須, YYYY-MM-DD形式)</li>
+                    <li><strong>4列目:</strong> 勤務区分 (必須, 10:出勤, 20:休日, 30:欠勤, 40:有給休暇, 50:特別休暇, 60:代休, 70:稼働無し)</li>
+                    <li><strong>5列目:</strong> 勤務時間名称 (参考値、システムでは使用されません)</li>
+                    <li><strong>6列目:</strong> 開始時刻 (勤務区分が出勤の場合必須, HH:MM形式)</li>
+                    <li><strong>7列目:</strong> 開始翌日フラグ (0:当日, 1:翌日)</li>
+                    <li><strong>8列目:</strong> 終了時刻 (勤務区分が出勤の場合必須, HH:MM形式)</li>
+                    <li><strong>9列目:</strong> 終了翌日フラグ (0:当日, 1:翌日)</li>
+                    <li><strong>10列目:</strong> 休憩時間（分） (数値、デフォルト:0)</li>
+                    <li><strong>11列目:</strong> 有給休暇日数 (数値、デフォルト:0)</li>
+                    <li><strong>12列目:</strong> 備考 (任意)</li>
+                </ul>
+                <p><strong>サンプル:</strong></p>
+                <pre><code>社員番号,契約番号,勤務日,勤務区分,勤務時間名称,開始時刻,開始翌日フラグ,終了時刻,終了翌日フラグ,休憩時間（分）,有給休暇日数,備考
+EMP001,C2024001,2024-12-01,10,通常勤務,09:00,0,18:00,0,60,0,
+EMP001,C2024001,2024-12-02,10,通常勤務,09:00,0,20:00,0,60,0,残業
+EMP001,C2024001,2024-12-03,40,,,,,,0,1.0,有給休暇取得
+EMP001,C2024001,2024-12-04,20,,,,,,0,0,休日</code></pre>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('import-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const formData = new FormData(form);
+        const fileInput = form.querySelector('input[type="file"]');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const elapsedTimeEl = document.getElementById('elapsed-time');
+        const estimatedTimeEl = document.getElementById('estimated-time');
+        const resultContainer = document.getElementById('result-container');
+
+        if (!fileInput.files || fileInput.files.length === 0) {
+            resultContainer.innerHTML = '<div class="alert alert-danger">ファイルを選択してください。</div>';
+            return;
+        }
+
+        progressContainer.style.display = 'block';
+        progressBar.style.width = '0%';
+        progressBar.setAttribute('aria-valuenow', 0);
+        progressText.textContent = '';
+        elapsedTimeEl.textContent = '';
+        estimatedTimeEl.textContent = '';
+        resultContainer.innerHTML = '';
+
+        let taskId;
+
+        // 1. ファイルをアップロード
+        fetch("{% url 'kintai:timecard_import_upload' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            taskId = data.task_id;
+            progressText.textContent = 'アップロード完了。処理を開始します...';
+
+            // 2. 処理を開始 (非同期で呼び出し、完了を待たない)
+            fetch(`/kintai/timecard/import/process/${taskId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            }).then(response => response.json())
+              .then(data => {
+                  // この時点では処理はバックグラウンドで実行中
+                  // 最終的な結果はポーリングで取得するため、ここでは特別な処理は不要
+              })
+              .catch(error => {
+                  // process自体の呼び出しエラー
+                  console.error('Import process initiation failed:', error);
+                  // ポーリングがエラーをハンドルするので、ここではUIへの通知は限定的にする
+              });
+
+            // 3. 進捗のポーリングを開始
+            const interval = setInterval(() => {
+                fetch(`/kintai/timecard/import/progress/${taskId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        // タスクIDが無効などのバックエンドエラー
+                        throw new Error(data.error);
+                    }
+
+                    function formatTime(seconds) {
+                        if (typeof seconds !== 'number' || seconds < 0) {
+                            return '00:00:00';
+                        }
+                        const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+                        const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+                        const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+                        return `${h}:${m}:${s}`;
+                    }
+
+                    if (data.total > 0) {
+                        const percentage = Math.round((data.progress / data.total) * 100);
+                        progressBar.style.width = percentage + '%';
+                        progressBar.setAttribute('aria-valuenow', percentage);
+                        progressText.textContent = `進捗: ${data.progress.toLocaleString()} / ${data.total.toLocaleString()}件 (${percentage}%)`;
+                    }
+
+                    elapsedTimeEl.textContent = `経過時間: ${formatTime(data.elapsed_time_seconds)}`;
+                    estimatedTimeEl.textContent = `予想残り時間: ${formatTime(data.estimated_time_remaining_seconds)}`;
+
+                    if (data.status === 'completed' || data.status === 'failed') {
+                        clearInterval(interval);
+                        // 少し待ってから結果を表示（DB反映のラグを考慮）
+                        setTimeout(() => {
+                            progressContainer.style.display = 'none';
+                            let resultMessage = '';
+                            if (data.status === 'completed') {
+                                resultMessage = `<div class="alert alert-success">インポートが完了しました。${data.imported_count}件のデータが登録されました。</div>`;
+                            } else {
+                                resultMessage = `<div class="alert alert-danger">インポート中にエラーが発生しました。</div>`;
+                            }
+
+                            if (data.errors && data.errors.length > 0) {
+                                resultMessage += '<h5>エラー詳細:</h5><ul>';
+                                data.errors.forEach(error => {
+                                    resultMessage += `<li>${error}</li>`;
+                                });
+                                resultMessage += '</ul>';
+                            }
+                            resultContainer.innerHTML = resultMessage;
+                        }, 500);
+                    }
+                })
+                .catch(error => {
+                    clearInterval(interval);
+                    progressContainer.style.display = 'none';
+                    resultContainer.innerHTML = `<div class="alert alert-danger">進捗の取得中にエラーが発生しました: ${error.message}</div>`;
+                });
+            }, 2000);
+        })
+        .catch(error => {
+            progressContainer.style.display = 'none';
+            resultContainer.innerHTML = `<div class="alert alert-danger">エラーが発生しました: ${error.message}</div>`;
+        });
+    });
+});
+</script>
+{% endblock %}

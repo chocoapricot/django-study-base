@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.utils import timezone
 from .models import StaffTimesheet, StaffTimecard
@@ -1157,3 +1157,333 @@ def _get_work_times_data(contract):
         })
     
     return work_times_data
+
+
+# 勤怠CSV取込機能
+@login_required
+@permission_required('kintai.add_stafftimecard', raise_exception=True)
+def timecard_import(request):
+    """勤怠CSV取込ページを表示"""
+    from apps.master.forms import CSVImportForm
+    form = CSVImportForm()
+    context = {
+        'form': form,
+        'title': '勤怠CSV取込',
+    }
+    return render(request, 'kintai/kintai_import.html', context)
+
+
+@login_required
+@permission_required('kintai.add_stafftimecard', raise_exception=True)
+def timecard_import_upload(request):
+    """CSVファイルをアップロードしてタスクIDを返す"""
+    from django.views.decorators.http import require_POST
+    from django.http import JsonResponse
+    from apps.master.forms import CSVImportForm
+    from django.core.cache import cache
+    from datetime import datetime, timezone
+    import uuid
+    import os
+    from django.conf import settings
+    
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POSTメソッドが必要です。'}, status=405)
+    
+    form = CSVImportForm(request.POST, request.FILES)
+    if form.is_valid():
+        csv_file = request.FILES['csv_file']
+        
+        # 一時保存ディレクトリを作成
+        temp_dir = os.path.join(settings.MEDIA_ROOT, 'temp_uploads')
+        os.makedirs(temp_dir, exist_ok=True)
+        
+        # ユニークなファイル名を生成
+        task_id = str(uuid.uuid4())
+        temp_file_path = os.path.join(temp_dir, f'{task_id}.csv')
+        
+        # ファイルを一時保存
+        with open(temp_file_path, 'wb+') as f:
+            for chunk in csv_file.chunks():
+                f.write(chunk)
+        
+        # キャッシュにタスク情報を保存
+        cache.set(
+            f'import_task_{task_id}',
+            {
+                'file_path': temp_file_path,
+                'status': 'uploaded',
+                'progress': 0,
+                'total': 0,
+                'errors': [],
+                'start_time': datetime.now(timezone.utc).isoformat(),
+                'elapsed_time_seconds': 0,
+                'estimated_time_remaining_seconds': 0,
+            },
+            timeout=3600,
+        )
+        
+        return JsonResponse({'task_id': task_id})
+    
+    return JsonResponse({'error': 'CSVファイルのアップロードに失敗しました。'}, status=400)
+
+
+@login_required
+@permission_required('kintai.add_stafftimecard', raise_exception=True)
+def timecard_import_process(request, task_id):
+    """CSVファイルのインポート処理を実行"""
+    from django.views.decorators.http import require_POST
+    from django.http import JsonResponse
+    from django.core.cache import cache
+    from django.db import transaction
+    from datetime import datetime, timezone, time as dt_time
+    from apps.staff.models import Staff
+    from apps.contract.models import StaffContract
+    import csv
+    import os
+    
+    from django.core.exceptions import ValidationError
+    
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POSTメソッドが必要です。'}, status=405)
+    
+    task_info = cache.get(f'import_task_{task_id}')
+    if not task_info or task_info['status'] != 'uploaded':
+        return JsonResponse({'error': '無効なタスクIDです。'}, status=400)
+    
+    file_path = task_info['file_path']
+    task_start_time = datetime.fromisoformat(task_info['start_time'])
+    
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            rows = list(reader)
+            
+            # ヘッダー行をスキップ
+            if rows and rows[0][0] == '社員番号':
+                rows = rows[1:]
+            
+            total_rows = len(rows)
+        
+        task_info['total'] = total_rows
+        cache.set(f'import_task_{task_id}', task_info, timeout=3600)
+        
+        imported_count = 0
+        errors = []
+        updated_timesheets = set()  # 更新された月次勤怠を記録
+        
+        for i, row in enumerate(rows):
+            progress = i + 1
+            try:
+                # 空行をスキップ
+                if not row or not any(row):
+                    continue
+                
+                with transaction.atomic():
+                    # CSVデータを取得
+                    employee_no = row[0].strip() if len(row) > 0 else ''
+                    contract_number = row[1].strip() if len(row) > 1 else ''
+                    work_date_str = row[2].strip() if len(row) > 2 else ''
+                    work_type = row[3].strip() if len(row) > 3 else ''
+                    # work_time_name = row[4].strip() if len(row) > 4 else ''  # 未使用
+                    start_time_str = row[5].strip() if len(row) > 5 else ''
+                    start_time_next_day = row[6].strip() if len(row) > 6 else '0'
+                    end_time_str = row[7].strip() if len(row) > 7 else ''
+                    end_time_next_day = row[8].strip() if len(row) > 8 else '0'
+                    break_minutes_str = row[9].strip() if len(row) > 9 else '0'
+                    paid_leave_days_str = row[10].strip() if len(row) > 10 else '0'
+                    memo = row[11].strip() if len(row) > 11 else ''
+                    
+                    # 必須項目のチェック
+                    if not employee_no:
+                        errors.append(f'{progress}行目: 社員番号が入力されていません。')
+                        continue
+                    if not contract_number:
+                        errors.append(f'{progress}行目: 契約番号が入力されていません。')
+                        continue
+                    if not work_date_str:
+                        errors.append(f'{progress}行目: 勤務日が入力されていません。')
+                        continue
+                    if not work_type:
+                        errors.append(f'{progress}行目: 勤務区分が入力されていません。')
+                        continue
+                    
+                    # スタッフを検索
+                    try:
+                        staff = Staff.objects.get(employee_no=employee_no)
+                    except Staff.DoesNotExist:
+                        errors.append(f'{progress}行目: 社員番号 {employee_no} が見つかりません。')
+                        continue
+                    
+                    # スタッフ契約を検索
+                    try:
+                        staff_contract = StaffContract.objects.get(
+                            contract_number=contract_number,
+                            staff=staff
+                        )
+                    except StaffContract.DoesNotExist:
+                        errors.append(f'{progress}行目: 契約番号 {contract_number} が見つかりません。')
+                        continue
+                    
+                    # 勤務日をパース
+                    try:
+                        from datetime import datetime as dt
+                        work_date = dt.strptime(work_date_str, '%Y-%m-%d').date()
+                    except ValueError:
+                        errors.append(f'{progress}行目: 勤務日の形式が不正です（YYYY-MM-DD形式で入力してください）。')
+                        continue
+                    
+                    # 契約期間内かチェック
+                    if staff_contract.start_date and work_date < staff_contract.start_date:
+                        errors.append(f'{progress}行目: 勤務日が契約開始日より前です。')
+                        continue
+                    if staff_contract.end_date and work_date > staff_contract.end_date:
+                        errors.append(f'{progress}行目: 勤務日が契約終了日より後です。')
+                        continue
+                    
+                    # 時刻をパース
+                    parsed_start_time = None
+                    parsed_end_time = None
+                    if start_time_str:
+                        try:
+                            hour, minute = map(int, start_time_str.split(':'))
+                            parsed_start_time = dt_time(hour, minute)
+                        except:
+                            errors.append(f'{progress}行目: 開始時刻の形式が不正です（HH:MM形式で入力してください）。')
+                            continue
+                    if end_time_str:
+                        try:
+                            hour, minute = map(int, end_time_str.split(':'))
+                            parsed_end_time = dt_time(hour, minute)
+                        except:
+                            errors.append(f'{progress}行目: 終了時刻の形式が不正です（HH:MM形式で入力してください）。')
+                            continue
+                    
+                    # 出勤の場合は時刻が必須
+                    if work_type == '10':  # 出勤
+                        if not parsed_start_time or not parsed_end_time:
+                            errors.append(f'{progress}行目: 出勤の場合は開始時刻と終了時刻が必須です。')
+                            continue
+                    
+                    # 休憩時間と有給休暇日数をパース
+                    try:
+                        break_minutes = int(break_minutes_str) if break_minutes_str else 0
+                    except ValueError:
+                        break_minutes = 0
+                    
+                    try:
+                        paid_leave_days = float(paid_leave_days_str) if paid_leave_days_str else 0
+                    except ValueError:
+                        paid_leave_days = 0
+                    
+                    # 翌日フラグを変換
+                    start_next_day = start_time_next_day == '1'
+                    end_next_day = end_time_next_day == '1'
+                    
+                    # 月次勤怠を取得または作成
+                    target_month = work_date.replace(day=1)
+                    timesheet, created = StaffTimesheet.objects.get_or_create(
+                        staff_contract=staff_contract,
+                        target_month=target_month,
+                        defaults={'staff': staff}
+                    )
+                    
+                    # 日次勤怠を作成・更新
+                    timecard, created = StaffTimecard.objects.update_or_create(
+                        timesheet=timesheet,
+                        work_date=work_date,
+                        defaults={
+                            'staff_contract': staff_contract,
+                            'work_type': work_type,
+                            'start_time': parsed_start_time,
+                            'start_time_next_day': start_next_day,
+                            'end_time': parsed_end_time,
+                            'end_time_next_day': end_next_day,
+                            'break_minutes': break_minutes,
+                            'paid_leave_days': paid_leave_days,
+                            'memo': memo,
+                        }
+                    )
+                    
+                    # ここで full_clean() を呼び出す
+                    try:
+                        timecard.full_clean()
+                        timecard.save(skip_timesheet_update=True) # full_clean() が通過した場合のみ保存
+                    except ValidationError as e:
+                        error_messages = []
+                        for field, field_errors in e.message_dict.items():
+                            for error in field_errors:
+                                error_messages.append(f'{progress}行目 {field}: {error}')
+                        errors.extend(error_messages)
+                        # トランザクションをロールバックするために例外を再発生させる
+                        raise
+                    
+                    # 更新された月次勤怠を記録
+                    updated_timesheets.add(timesheet)
+                    imported_count += 1
+            
+            except Exception as e:
+                # ValidationError は既にerrorsリストに追加済み
+                if not isinstance(e, ValidationError):
+                    errors.append(f'{progress}行目: {str(e)}')
+            
+            # 進捗と時間を更新
+            now = datetime.now(timezone.utc)
+            elapsed_time = now - task_start_time
+            
+            if progress > 0 and total_rows > progress:
+                estimated_time_remaining = (elapsed_time / progress) * (total_rows - progress)
+                task_info['estimated_time_remaining_seconds'] = int(estimated_time_remaining.total_seconds())
+            else:
+                task_info['estimated_time_remaining_seconds'] = 0
+            
+            task_info['progress'] = progress
+            task_info['elapsed_time_seconds'] = int(elapsed_time.total_seconds())
+            cache.set(f'import_task_{task_id}', task_info, timeout=3600)
+        
+        # すべての保存が完了した後、影響を受けた月次勤怠の集計を一度だけ更新
+        for timesheet in updated_timesheets:
+            timesheet.refresh_from_db() # 最新の状態にリロード
+            timesheet.calculate_totals()
+        
+        task_info['status'] = 'completed'
+        task_info['errors'] = errors
+        task_info['imported_count'] = imported_count
+        cache.set(f'import_task_{task_id}', task_info, timeout=3600)
+        
+        return JsonResponse({
+            'status': 'completed',
+            'imported_count': imported_count,
+            'errors': errors
+        })
+    
+    except Exception as e:
+        task_info['status'] = 'failed'
+        
+        # ValidationError の場合は400 Bad Requestを返す
+        if isinstance(e, ValidationError):
+            error_message = f'バリデーションエラー: {e.message}' if hasattr(e, 'message') else str(e)
+            task_info['errors'] = [error_message]
+            cache.set(f'import_task_{task_id}', task_info, timeout=3600)
+            return JsonResponse({'error': error_message, 'errors': task_info['errors']}, status=400)
+        else:
+            task_info['errors'] = [f'処理中に予期せぬエラーが発生しました: {str(e)}']
+            cache.set(f'import_task_{task_id}', task_info, timeout=3600)
+            return JsonResponse({'error': str(e)}, status=500)
+    finally:
+        # 一時ファイルを削除
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+
+@login_required
+@permission_required('kintai.add_stafftimecard', raise_exception=True)
+def timecard_import_progress(request, task_id):
+    """インポートの進捗状況を返す"""
+    from django.http import JsonResponse
+    from django.core.cache import cache
+    
+    task_info = cache.get(f'import_task_{task_id}')
+    if not task_info:
+        return JsonResponse({'error': '無効なタスクIDです。'}, status=404)
+    
+    return JsonResponse(task_info)

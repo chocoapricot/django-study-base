@@ -27,4 +27,10 @@ urlpatterns = [
     path('timecard/<int:timesheet_pk>/calendar/', views.timecard_calendar, name='timecard_calendar'),
     path('timecard/<int:pk>/edit/', views.timecard_edit, name='timecard_edit'),
     path('timecard/<int:pk>/delete/', views.timecard_delete, name='timecard_delete'),
+    
+    # 勤怠CSV取込
+    path('timecard/import/', views.timecard_import, name='timecard_import'),
+    path('timecard/import/upload/', views.timecard_import_upload, name='timecard_import_upload'),
+    path('timecard/import/process/<str:task_id>/', views.timecard_import_process, name='timecard_import_process'),
+    path('timecard/import/progress/<str:task_id>/', views.timecard_import_progress, name='timecard_import_progress'),
 ]

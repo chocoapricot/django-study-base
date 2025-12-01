@@ -5,7 +5,8 @@
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         契約検索
-        <div class="d-flex">
+        <div class="d-flex align-items-center">
+            <a href="{% url 'kintai:timecard_import' %}" class="me-3">CSV取込</a>
             <a href="{% url 'kintai:timesheet_create' %}" class="btn btn-sm btn-primary">新規作成</a>
         </div>
     </div>
