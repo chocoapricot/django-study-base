@@ -85,7 +85,7 @@ EMP001,C2024001,2024-12-01,10,通常勤務,09:00,0,18:00,0,60,0,テスト"""
         
         csv_file = SimpleUploadedFile(
             "test.csv",
-            csv_content.encode('utf-8'),
+            csv_content.encode('cp932'),
             content_type="text/csv"
         )
         
@@ -110,7 +110,7 @@ EMP001,C2024001,2024-12-01,10,通常勤務,09:00,0,18:00,0,60,0,テスト
 EMP001,C2024001,2024-12-02,10,通常勤務,09:00,0,20:00,0,60,0,残業"""
         
         # 一時ファイルを作成
-        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.csv', encoding='utf-8') as f:
+        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.csv', encoding='cp932') as f:
             f.write(csv_content)
             temp_file_path = f.name
         
@@ -167,7 +167,7 @@ EMP001,C2024001,2024-12-02,10,通常勤務,09:00,0,20:00,0,60,0,残業"""
         csv_content = """社員番号,契約番号,勤務日,勤務区分,勤務時間名称,開始時刻,開始翌日フラグ,終了時刻,終了翌日フラグ,休憩時間（分）,有給休暇日数,備考
 EMP999,C2024001,2024-12-01,10,通常勤務,09:00,0,18:00,0,60,0,"""
         
-        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.csv', encoding='utf-8') as f:
+        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.csv', encoding='cp932') as f:
             f.write(csv_content)
             temp_file_path = f.name
         
@@ -212,7 +212,7 @@ EMP999,C2024001,2024-12-01,10,通常勤務,09:00,0,18:00,0,60,0,"""
         csv_content = """社員番号,契約番号,勤務日,勤務区分,勤務時間名称,開始時刻,開始翌日フラグ,終了時刻,終了翌日フラグ,休憩時間（分）,有給休暇日数,備考
 EMP001,C9999999,2024-12-01,10,通常勤務,09:00,0,18:00,0,60,0,"""
         
-        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.csv', encoding='utf-8') as f:
+        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.csv', encoding='cp932') as f:
             f.write(csv_content)
             temp_file_path = f.name
         
@@ -283,7 +283,7 @@ EMP001,C9999999,2024-12-01,10,通常勤務,09:00,0,18:00,0,60,0,"""
         csv_content = """社員番号,契約番号,勤務日,勤務区分,勤務時間名称,開始時刻,開始翌日フラグ,終了時刻,終了翌日フラグ,休憩時間（分）,有給休暇日数,備考
 EMP001,C2024001,2024-12-03,40,,,,,,0,1.0,有給休暇取得"""
         
-        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.csv', encoding='utf-8') as f:
+        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.csv', encoding='cp932') as f:
             f.write(csv_content)
             temp_file_path = f.name
         
