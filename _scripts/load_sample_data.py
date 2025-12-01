@@ -141,9 +141,9 @@ def main():
             sys.exit(1)
 
     # スーパーユーザーの姓名を更新
-    update_superuser_command = "python manage.py update_superuser_name"
-    if not run_command(update_superuser_command, "スーパーユーザーの姓名を更新"):
-        print("❌ スーパーユーザーの姓名更新でエラーが発生しました")
+    update_superuser_command = "python manage.py update_superuser_info"
+    if not run_command(update_superuser_command, "スーパーユーザーの姓名、メールアドレスを更新"):
+        print("❌ スーパーユーザーの更新でエラーが発生しました")
         sys.exit(1)
     
     print("\n🎉 サンプルデータのインポートが完了しました！")
