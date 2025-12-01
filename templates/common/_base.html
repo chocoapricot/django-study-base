@@ -7,7 +7,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% parameter 'SYSTEM_NAME' %}</title>
+    <title>{% block title %}{% endblock %} | {% parameter 'SYSTEM_NAME' %}</title>
     <!-- Bootstrap CSS -->
     <link href="{% static 'css/' %}{% parameter 'GLOBAL_CSS_THEME' %}/bootstrap.min.css" rel="stylesheet">
     <!-- BootswatchのCSS -->
@@ -294,6 +294,7 @@ body.no-transition #sidebar {
             {% endfor %}
         </div>
         <div class="icons">
+            {% if user.is_authenticated %}
             <span id="window-breakpoint">-</span> (横幅：<span id="window-width">0</span> px)
             <i class="bi bi-search"></i> <!-- 検索アイコン -->
             <i class="bi bi-bell"></i> <!-- 通知アイコン -->
@@ -311,10 +312,14 @@ body.no-transition #sidebar {
                     <i class="bi bi-box-arrow-right"></i>
                 </button>
             </form>
+            {% else %}
+            <a href="{% url 'account_login' %}" class="btn btn-sm btn-primary">ログイン</a>
+            {% endif %}
         </div>
     </div>
 
 <!-- Sidebar for large screens -->
+{% if user.is_authenticated %}
 <div id="sidebar" class="col-md-3 col-lg-2 d-none d-md-block bg-light sidebar">
   <div class="position-sticky">
     <ul class="nav flex-column">
@@ -343,8 +348,10 @@ body.no-transition #sidebar {
     </ul>
   </div>
 </div>
+{% endif %}
 
 <!-- Offcanvas Menu for small screens -->
+{% if user.is_authenticated %}
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
   <div class="offcanvas-header">
     <button class="btn d-md-none" type="button"  data-bs-dismiss="offcanvas" aria-label="Close">
@@ -379,12 +386,13 @@ body.no-transition #sidebar {
     </ul>
   </div>
 </div>
+{% endif %}
 
 <!-- Main Content -->
 <div class="container-fluid mt-1 mb-3" style="padding-top: 80px;">
   <div class="row">
     <!-- Add id to main content area -->
-    <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <main id="mainContent" class="{% if user.is_authenticated %}col-md-9 ms-sm-auto col-lg-10{% else %}col-md-12{% endif %} px-md-4">
             <!-- メッセージ表示 -->
         {% if messages %}
             {% for message in messages %}

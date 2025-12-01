@@ -150,3 +150,9 @@ def information_detail(request, pk):
         'next': request.GET.get('next', ''),
     }
     return render(request, 'home/information_detail.html', context)
+
+def start_page(request):
+    """
+    ログイン不要なスタートページ
+    """
+    return render(request, 'home/start_page.html')
