@@ -56,3 +56,61 @@ DEBUG: work_type is empty for day 29
 DEBUG: Deleted 0 records
 DEBUG: work_type is empty for day 30
 DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 2
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 3
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 4
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 5
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 6
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 7
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 8
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 9
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 10
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 11
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 12
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 13
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 14
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 15
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 16
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 17
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 18
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 19
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 20
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 21
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 22
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 23
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 24
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 25
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 26
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 27
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 28
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 29
+DEBUG: Deleted 0 records
+DEBUG: work_type is empty for day 30
+DEBUG: Deleted 0 records
