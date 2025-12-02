@@ -6,7 +6,7 @@ class AccessLogMiddleware:
 
     def __call__(self, request):
         # /admin/ へのアクセスはログに記録しない
-        if request.path.startswith('/admin/'):
+        if request.path.startswith('/admin/') or request.path.startswith('/start/'):
             return self.get_response(request)
 
         response = self.get_response(request)
