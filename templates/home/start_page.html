@@ -4,12 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ようこそ！ | {% parameter 'SYSTEM_NAME' %}</title>
-  <link href="/static/css/{% parameter 'GLOBAL_CSS_THEME' %}/bootstrap.min.css" rel="stylesheet">
+  <title>ようこそ！ | {% parameter 'SYSTEM_NAME' default='django study base' %}</title>
+  <link href="/static/css/{% parameter 'GLOBAL_CSS_THEME' default='simplex' %}/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.0/font/bootstrap-icons.min.css" rel="stylesheet">
   <style>
     body {
-      background-color: var(--bs-body-bg);
+      background: #f0f0f0;
       font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
       min-height: 100vh;
       display: flex;
@@ -18,18 +18,25 @@
     }
     .main-card {
       width: 100%;
-      max-width: 600px;
+      max-width: 800px;
       border: none;
-      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+      background: #fff;
+      overflow: hidden;
     }
     .card-header {
-      background-color: transparent;
-      border-bottom: 1px solid var(--bs-border-color);
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      border-radius: 16px 16px 0 0;
       padding: 1.5rem;
       text-align: center;
     }
     .card-body {
       padding: 2rem;
+    }
+    .card-footer {
+      border-radius: 0 0 16px 16px;
     }
     .step-badge {
       display: inline-flex;
@@ -68,7 +75,7 @@
       <div class="col-12">
         <div class="card main-card mx-auto">
           <div class="card-header">
-            <h1 class="h4 mb-0 fw-bold">{% parameter 'SYSTEM_NAME' %}</h1>
+            <h1 class="h4 mb-0 fw-bold">{% parameter 'SYSTEM_NAME' default='django study base' %}</h1>
           </div>
           <div class="card-body">
             <p class="text-muted text-center mb-4">
@@ -81,14 +88,25 @@
                 <span class="step-badge">1</span>初期セットアップ
               </h5>
               <div class="ps-4">
-                <p class="small text-muted mb-2">ターミナルで以下のコマンドを実行してください。</p>
-                <div class="command-box">
-                  python manage.py load_sample_data
+                <p class="small text-muted mb-2">ボタンをクリックして初期セットアップを実行してください。</p>
+                <button id="setup-button" class="btn btn-warning btn-sm mb-2">
+                  <i class="bi bi-play-circle me-1"></i>初期セットアップを実行
+                </button>
+                
+                <!-- 進捗バー -->
+                <div id="progress-container" class="mt-3" style="display: none;">
+                  <div class="progress">
+                    <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <div id="progress-text" class="mt-1 small"></div>
+                    <div id="elapsed-time" class="mt-1 small"></div>
+                    <div id="estimated-time" class="mt-1 small"></div>
+                  </div>
                 </div>
-                <div class="text-danger small">
-                  <i class="bi bi-exclamation-circle me-1"></i>
-                  既存のデータはすべて削除されます。
-                </div>
+                
+                <!-- 結果表示 -->
+                <div id="result-container" class="mt-3"></div>
               </div>
             </div>
 
@@ -101,7 +119,7 @@
               </h5>
               <div class="ps-4">
                 <p class="small text-muted mb-3">以下のアカウントでログインできます。</p>
-                <div class="table-responsive">
+                <div class="table-responsive" style="max-width: 500px;">
                   <table class="table table-bordered table-sm small mb-0 credentials-table">
                     <tbody>
                       <tr>
@@ -131,20 +149,156 @@
               </div>
             </div>
 
-            <div class="d-grid mt-5">
-              <a href="{% url 'account_login' %}" class="btn btn-primary">
+            <div class="mt-5">
+              <a href="{% url 'account_login' %}" class="btn btn-primary btn-sm">
                 ログイン画面へ
               </a>
             </div>
 
           </div>
           <div class="card-footer bg-transparent text-center border-0 py-3">
-            <small class="text-muted">&copy; 2025 {% parameter 'SYSTEM_NAME' %}</small>
+            <small class="text-muted">&copy; 2025 {% parameter 'SYSTEM_NAME' default='django study base' %}</small>
           </div>
         </div>
       </div>
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const setupButton = document.getElementById('setup-button');
+    const progressContainer = document.getElementById('progress-container');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const elapsedTimeEl = document.getElementById('elapsed-time');
+    const estimatedTimeEl = document.getElementById('estimated-time');
+    const resultContainer = document.getElementById('result-container');
+
+    setupButton.addEventListener('click', function() {
+      // 確認ダイアログを表示
+      if (!confirm('既存のデータはすべてクリアされます。\n初期セットアップを実行してもよろしいですか？')) {
+        return;
+      }
+      
+      // ボタンを無効化
+      setupButton.disabled = true;
+      setupButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>処理中...';
+      
+      // 進捗バーを表示
+      progressContainer.style.display = 'block';
+      progressBar.style.width = '0%';
+      progressBar.setAttribute('aria-valuenow', 0);
+      progressText.textContent = '';
+      elapsedTimeEl.textContent = '';
+      estimatedTimeEl.textContent = '';
+      resultContainer.innerHTML = '';
+
+      let taskId;
+
+      // 1. セットアップ開始
+      fetch("{% url 'home:setup_start' %}", {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        taskId = data.task_id;
+        progressText.textContent = 'セットアップを開始します...';
+
+        // 2. セットアップ処理を開始（非同期）
+        fetch(`/setup/process/${taskId}/`, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+          }
+        }).then(response => response.json())
+          .then(data => {
+            // バックグラウンドで実行中
+          })
+          .catch(error => {
+            console.error('Setup process initiation failed:', error);
+          });
+
+        // 3. 進捗のポーリングを開始
+        const interval = setInterval(() => {
+          fetch(`/setup/progress/${taskId}/`)
+          .then(response => response.json())
+          .then(data => {
+            if (data.error) {
+              throw new Error(data.error);
+            }
+
+            function formatTime(seconds) {
+              if (typeof seconds !== 'number' || seconds < 0) {
+                return '00:00:00';
+              }
+              const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+              const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+              const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+              return `${h}:${m}:${s}`;
+            }
+
+            // 進捗率の更新
+            if (data.total > 0) {
+              const percentage = Math.round((data.progress / data.total) * 100);
+              progressBar.style.width = percentage + '%';
+              progressBar.setAttribute('aria-valuenow', percentage);
+              progressText.textContent = `${data.current_step} (${data.progress} / ${data.total})`;
+            } else {
+              progressText.textContent = data.current_step;
+            }
+
+            elapsedTimeEl.textContent = `経過時間: ${formatTime(data.elapsed_time_seconds)}`;
+            estimatedTimeEl.textContent = `予想残り時間: ${formatTime(data.estimated_time_remaining_seconds)}`;
+
+            // 完了またはエラー
+            if (data.status === 'completed' || data.status === 'failed') {
+              clearInterval(interval);
+              setTimeout(() => {
+                progressContainer.style.display = 'none';
+                setupButton.disabled = false;
+                setupButton.innerHTML = '<i class="bi bi-play-circle me-1"></i>初期セットアップを実行';
+                
+                let resultMessage = '';
+                if (data.status === 'completed') {
+                  resultMessage = `<div class="alert alert-success">初期セットアップが完了しました！<br>ログイン画面からログインしてください。</div>`;
+                } else {
+                  resultMessage = `<div class="alert alert-danger">セットアップ中にエラーが発生しました。</div>`;
+                }
+
+                if (data.errors && data.errors.length > 0) {
+                  resultMessage += '<h6 class="mt-3">エラー詳細:</h6><ul class="small">';
+                  data.errors.forEach(error => {
+                    resultMessage += `<li>${error}</li>`;
+                  });
+                  resultMessage += '</ul>';
+                }
+                resultContainer.innerHTML = resultMessage;
+              }, 500);
+            }
+          })
+          .catch(error => {
+            clearInterval(interval);
+            progressContainer.style.display = 'none';
+            setupButton.disabled = false;
+            setupButton.innerHTML = '<i class="bi bi-play-circle me-1"></i>初期セットアップを実行';
+            resultContainer.innerHTML = `<div class="alert alert-danger">進捗の取得中にエラーが発生しました: ${error.message}</div>`;
+          });
+        }, 2000);
+      })
+      .catch(error => {
+        progressContainer.style.display = 'none';
+        setupButton.disabled = false;
+        setupButton.innerHTML = '<i class="bi bi-play-circle me-1"></i>初期セットアップを実行';
+        resultContainer.innerHTML = `<div class="alert alert-danger">エラーが発生しました: ${error.message}</div>`;
+      });
+    });
+  });
+  </script>
 </body>
 </html>

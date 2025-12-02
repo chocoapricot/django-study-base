@@ -156,3 +156,44 @@ def start_page(request):
     ログイン不要なスタートページ
     """
     return render(request, 'home/start_page.html')
+
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from .setup_utils import create_setup_task, get_setup_task, start_setup_async
+
+
+@require_http_methods(["POST"])
+def setup_start(request):
+    """
+    セットアップを開始し、タスクIDを返す
+    """
+    task_id = create_setup_task()
+    return JsonResponse({'task_id': task_id})
+
+
+@require_http_methods(["POST"])
+def setup_process(request, task_id):
+    """
+    セットアップ処理を非同期で実行
+    """
+    task = get_setup_task(task_id)
+    if not task:
+        return JsonResponse({'error': '無効なタスクIDです'}, status=400)
+    
+    # 非同期でセットアップを開始
+    start_setup_async(task_id)
+    
+    return JsonResponse({'status': 'started'})
+
+
+@require_http_methods(["GET"])
+def setup_progress(request, task_id):
+    """
+    セットアップの進捗状況を返す
+    """
+    task = get_setup_task(task_id)
+    if not task:
+        return JsonResponse({'error': '無効なタスクIDです'}, status=400)
+    
+    return JsonResponse(task.to_dict())
