@@ -135,6 +135,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'apps.system.settings.context_processors.menu_items',
                 'apps.system.settings.context_processors.constants',
+                'apps.system.settings.context_processors.ui_settings',
             ],
         },
     },
@@ -235,3 +236,6 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'danger',
 }
+
+# UI設定（カスタマイズ）
+BASE_FONT_SIZE = '14px'  # 全体のベースフォントサイズ

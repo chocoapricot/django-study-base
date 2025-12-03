@@ -10,6 +10,9 @@
   <link href="/static/css/{% parameter 'GLOBAL_CSS_THEME' %}/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.0/font/bootstrap-icons.min.css" rel="stylesheet">
   <style>
+    html {
+      font-size: {{ BASE_FONT_SIZE }}; /* settings.pyで管理 */
+    }
     body {
       background: #f0f0f0;
       font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
