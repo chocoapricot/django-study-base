@@ -161,6 +161,24 @@ def load_sample_data(task: SetupTask) -> bool:
     return True
 
 
+def import_sample_users(task: SetupTask) -> bool:
+    """サンプルユーザーをインポート"""
+    task.current_step = 'サンプルユーザーをインポート中...'
+
+    csv_file_path = os.path.join(os.path.dirname(__file__), '..', '..', '_sample_data', 'users.csv')
+    if not os.path.exists(csv_file_path):
+        error_msg = f"サンプルユーザーファイルが見つかりません: {csv_file_path}"
+        print(f"❌ {error_msg}")
+        task.errors.append(error_msg)
+        return False
+
+    command = f"python manage.py import_users {csv_file_path}"
+    if not run_command(command, "サンプルユーザーのインポート", task):
+        return False
+
+    return True
+
+
 def execute_setup(task_id: str):
     """セットアップ処理を実行（別スレッドで実行される）"""
     task = get_setup_task(task_id)
@@ -192,6 +210,12 @@ def execute_setup(task_id: str):
         
         # 4. サンプルデータ読み込み
         if not load_sample_data(task):
+            task.status = 'failed'
+            task.end_time = datetime.now()
+            return
+
+        # 5. サンプルユーザーのインポート
+        if not import_sample_users(task):
             task.status = 'failed'
             task.end_time = datetime.now()
             return
