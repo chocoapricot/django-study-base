@@ -13,6 +13,10 @@ import threading
 from datetime import datetime
 from typing import Dict, Any, Optional
 
+# 共通設定をインポート
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '_scripts'))
+from sample_data_config import SAMPLE_DATA_FILES
+
 
 # タスク管理用のグローバル辞書（本番環境ではRedisなどを使用すべき）
 SETUP_TASKS: Dict[str, Dict[str, Any]] = {}
@@ -128,57 +132,9 @@ def load_sample_data(task: SetupTask) -> bool:
     """サンプルデータを読み込む"""
     task.current_step = 'サンプルデータを読み込み中...'
     
-    # サンプルデータファイルのリスト
-    sample_files = [
-        ("_sample_data/dropdowns.json", "ドロップダウンデータ"),
-        ("_sample_data/parameters.json", "パラメータデータ"),
-        ("_sample_data/master_user_parameter.json", "ユーザーパラメータマスタデータ"),
-        ("_sample_data/menus.json", "メニューデータ"),
-        ("_sample_data/master_qualifications.json", "資格マスタデータ"),
-        ("_sample_data/master_skills.json", "技能マスタデータ"),
-        ("_sample_data/master_bill_payment.json", "支払いサイトマスタデータ"),
-        ("_sample_data/master_bill_bank.json", "会社銀行マスタデータ"),
-        ("_sample_data/master_bank.json", "銀行マスタデータ"),
-        ("_sample_data/master_bank_branch.json", "銀行支店マスタデータ"),
-        ("_sample_data/master_staff_agreement.json", "スタッフ同意文言マスタデータ"),
-        ("_sample_data/master_information.json", "お知らせマスタデータ"),
-        ("_sample_data/master_mail_template.json", "メールテンプレートマスタデータ"),
-        ("_sample_data/master_job_category.json", "職種マスタデータ"),
-        ("_sample_data/master_minimum_pay.json", "最低賃金マスタデータ"),
-        ("_sample_data/master_phrase_template_title.json", "汎用文言タイトルマスタデータ"),
-        ("_sample_data/master_phrase_template.json", "汎用文言テンプレートマスタデータ"),
-        ("_sample_data/master_default_value.json", "初期値マスタデータ"),
-        ("_sample_data/master_client_regist_status.json", "クライアント登録ステータスマスタデータ"),
-        ("_sample_data/master_staff_regist_status.json", "スタッフ登録ステータスマスタデータ"),
-        ("_sample_data/master_worktime_pattern.json", "就業時間パターンマスタデータ"),
-        ("_sample_data/master_worktime_pattern_work.json", "就業時間パターン勤務時間マスタデータ"),
-        ("_sample_data/master_worktime_pattern_break.json", "就業時間パターン休憩時間マスタデータ"),
-        ("_sample_data/master_overtime_pattern.json", "時間外算出パターンマスタデータ"),
-        ("_sample_data/master_employment_type.json", "雇用形態マスタデータ"),
-        ("_sample_data/master_contract_pattern.json", "契約書パターンマスタデータ"),
-        ("_sample_data/master_contract_terms.json", "契約文言マスタデータ"),
-        ("_sample_data/company.json", "会社データ"),
-        ("_sample_data/company_department.json", "部署データ"),
-        ("_sample_data/company_user.json", "自社担当者データ"),
-        ("_sample_data/staff.json", "スタッフデータ"),
-        ("_sample_data/staff_international.json", "スタッフ外国籍情報データ"),
-        ("_sample_data/staff_disability.json", "スタッフ障害者情報データ"),
-        ("_sample_data/staff_contacted.json", "スタッフ連絡履歴データ"),
-        ("_sample_data/client.json", "クライアントデータ"),
-        ("_sample_data/client_department.json", "クライアント組織データ"),
-        ("_sample_data/client_user.json", "クライアント担当者データ"),
-        ("_sample_data/client_contacted.json", "クライアント連絡履歴データ"),
-        ("_sample_data/connect_client.json", "クライアント接続データ"),
-        ("_sample_data/connect_staff.json", "スタッフ接続データ"),
-        ("_sample_data/contract_client.json", "クライアント契約データ"),
-        ("_sample_data/contract_client_haken.json", "クライアント契約派遣データ"),
-        ("_sample_data/contract_staff.json", "スタッフ契約データ"),
-        ("_sample_data/contract_assignment.json", "契約アサインメントデータ"),
-    ]
-    
     # ファイルの存在確認
     missing_files = []
-    for file_path, _ in sample_files:
+    for file_path, _ in SAMPLE_DATA_FILES:
         if not os.path.exists(file_path):
             missing_files.append(file_path)
     
@@ -189,11 +145,11 @@ def load_sample_data(task: SetupTask) -> bool:
         return False
     
     # 総ステップ数を設定（各ファイルのみ）
-    task.total = len(sample_files)
+    task.total = len(SAMPLE_DATA_FILES)
     task.progress = 0
     
     # サンプルデータを順次読み込み
-    for file_path, description in sample_files:
+    for file_path, description in SAMPLE_DATA_FILES:
         command = f"python manage.py loaddata {file_path}"
         if not run_command(command, description, task):
             return False

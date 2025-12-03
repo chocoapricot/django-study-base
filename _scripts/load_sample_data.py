@@ -8,6 +8,10 @@ import os
 import sys
 import subprocess
 
+# 共通設定をインポート
+from sample_data_config import SAMPLE_DATA_FILES
+
+
 def run_command(command, description):
     """コマンドを実行し、結果を表示"""
     print(f"\n{description}")
@@ -25,59 +29,13 @@ def run_command(command, description):
         return False
     return True
 
+
 def main():
     print("📊 サンプルデータのインポートを開始します...")
     
     # サンプルデータファイルの存在確認
-    sample_files = [
-        "_sample_data/dropdowns.json",
-        "_sample_data/parameters.json",
-        "_sample_data/master_user_parameter.json",
-        "_sample_data/menus.json",
-        "_sample_data/master_qualifications.json",
-        "_sample_data/master_skills.json",
-        "_sample_data/master_employment_type.json",
-        "_sample_data/master_bill_payment.json",
-        "_sample_data/master_bill_bank.json",
-        "_sample_data/master_bank.json",
-        "_sample_data/master_bank_branch.json",
-        "_sample_data/master_staff_agreement.json",
-        "_sample_data/master_information.json",
-        "_sample_data/master_mail_template.json",
-        "_sample_data/master_job_category.json",
-        "_sample_data/master_minimum_pay.json",
-        "_sample_data/master_contract_pattern.json",
-        "_sample_data/master_contract_terms.json",
-        "_sample_data/master_phrase_template_title.json",
-        "_sample_data/master_phrase_template.json",
-        "_sample_data/master_default_value.json",
-        "_sample_data/master_client_regist_status.json",
-        "_sample_data/master_staff_regist_status.json",
-        "_sample_data/master_worktime_pattern.json",
-        "_sample_data/master_worktime_pattern_work.json",
-        "_sample_data/master_worktime_pattern_break.json",
-        "_sample_data/master_overtime_pattern.json",
-        "_sample_data/company.json",
-        "_sample_data/company_department.json",
-        "_sample_data/company_user.json",
-        "_sample_data/staff.json",
-        "_sample_data/staff_international.json",
-        "_sample_data/staff_disability.json",
-        "_sample_data/staff_contacted.json",
-        "_sample_data/client.json",
-        "_sample_data/client_department.json",
-        "_sample_data/client_user.json",
-        "_sample_data/client_contacted.json",
-        "_sample_data/connect_client.json",
-        "_sample_data/connect_staff.json",
-        "_sample_data/contract_client.json",
-        "_sample_data/contract_staff.json",
-        "_sample_data/contract_client_haken.json",
-        "_sample_data/contract_assignment.json"
-    ]
-    
     missing_files = []
-    for file_path in sample_files:
+    for file_path, _ in SAMPLE_DATA_FILES:
         if not os.path.exists(file_path):
             missing_files.append(file_path)
     
@@ -87,55 +45,9 @@ def main():
             print(f"  - {file_path}")
         sys.exit(1)
     
-    # インポート順序（依存関係を考慮）
-    import_commands = [
-        ("python manage.py loaddata _sample_data/company.json", "会社データ"),
-        ("python manage.py loaddata _sample_data/company_department.json", "部署データ"),
-        ("python manage.py loaddata _sample_data/company_user.json", "自社担当者データ"),
-        ("python manage.py loaddata _sample_data/dropdowns.json", "ドロップダウンデータ"),
-        ("python manage.py loaddata _sample_data/parameters.json", "パラメータデータ"),
-        ("python manage.py loaddata _sample_data/master_user_parameter.json", "ユーザーパラメータマスタデータ"),
-        ("python manage.py loaddata _sample_data/menus.json", "メニューデータ"),
-        ("python manage.py loaddata _sample_data/master_qualifications.json", "資格マスタデータ"),
-        ("python manage.py loaddata _sample_data/master_skills.json", "技能マスタデータ"),
-        ("python manage.py loaddata _sample_data/master_bill_payment.json", "支払いサイトマスタデータ"),
-        ("python manage.py loaddata _sample_data/master_bill_bank.json", "会社銀行マスタデータ"),
-        ("python manage.py loaddata _sample_data/master_bank.json", "銀行マスタデータ"),
-        ("python manage.py loaddata _sample_data/master_bank_branch.json", "銀行支店マスタデータ"),
-        ("python manage.py loaddata _sample_data/master_staff_agreement.json", "スタッフ同意文言マスタデータ"),
-        ("python manage.py loaddata _sample_data/master_information.json", "お知らせマスタデータ"),
-        ("python manage.py loaddata _sample_data/master_mail_template.json", "メールテンプレートマスタデータ"),
-        ("python manage.py loaddata _sample_data/master_job_category.json", "職種マスタデータ"),
-        ("python manage.py loaddata _sample_data/master_minimum_pay.json", "最低賃金マスタデータ"),
-        ("python manage.py loaddata _sample_data/master_phrase_template_title.json", "汎用文言タイトルマスタデータ"),
-        ("python manage.py loaddata _sample_data/master_phrase_template.json", "汎用文言テンプレートマスタデータ"),
-        ("python manage.py loaddata _sample_data/master_default_value.json", "初期値マスタデータ"),
-        ("python manage.py loaddata _sample_data/master_client_regist_status.json", "クライアント登録ステータスマスタデータ"),
-        ("python manage.py loaddata _sample_data/master_staff_regist_status.json", "スタッフ登録ステータスマスタデータ"),
-        ("python manage.py loaddata _sample_data/master_worktime_pattern.json", "就業時間パターンマスタデータ"),
-        ("python manage.py loaddata _sample_data/master_worktime_pattern_work.json", "就業時間パターン勤務時間マスタデータ"),
-        ("python manage.py loaddata _sample_data/master_worktime_pattern_break.json", "就業時間パターン休憩時間マスタデータ"),
-        ("python manage.py loaddata _sample_data/master_overtime_pattern.json", "時間外算出パターンマスタデータ"),
-        ("python manage.py loaddata _sample_data/master_employment_type.json", "雇用形態マスタデータ"),
-        ("python manage.py loaddata _sample_data/master_contract_pattern.json", "契約書パターンマスタデータ"),
-        ("python manage.py loaddata _sample_data/master_contract_terms.json", "契約文言マスタデータ"),
-        ("python manage.py loaddata _sample_data/staff.json", "スタッフデータ"),
-        ("python manage.py loaddata _sample_data/staff_international.json", "スタッフ外国籍情報データ"),
-        ("python manage.py loaddata _sample_data/staff_disability.json", "スタッフ障害者情報データ"),
-        ("python manage.py loaddata _sample_data/staff_contacted.json", "スタッフ連絡履歴データ"),
-        ("python manage.py loaddata _sample_data/client.json", "クライアントデータ"),
-        ("python manage.py loaddata _sample_data/client_department.json", "クライアント組織データ"),
-        ("python manage.py loaddata _sample_data/client_user.json", "クライアント担当者データ"),
-        ("python manage.py loaddata _sample_data/client_contacted.json", "クライアント連絡履歴データ"),
-        ("python manage.py loaddata _sample_data/connect_client.json", "クライアント接続データ"),
-        ("python manage.py loaddata _sample_data/connect_staff.json", "スタッフ接続データ"),
-        ("python manage.py loaddata _sample_data/contract_client.json", "クライアント契約データ"),
-        ("python manage.py loaddata _sample_data/contract_client_haken.json", "クライアント契約派遣データ"),
-        ("python manage.py loaddata _sample_data/contract_staff.json", "スタッフ契約データ"),
-        ("python manage.py loaddata _sample_data/contract_assignment.json", "契約アサインメントデータ")
-    ]
-    
-    for command, description in import_commands:
+    # サンプルデータを順次読み込み
+    for file_path, description in SAMPLE_DATA_FILES:
+        command = f"python manage.py loaddata {file_path}"
         if not run_command(command, description):
             print(f"❌ {description}のインポートでエラーが発生しました")
             sys.exit(1)
@@ -148,47 +60,9 @@ def main():
     
     print("\n🎉 サンプルデータのインポートが完了しました！")
     print("\n📈 インポートされたデータ:")
-    print("- ドロップダウン選択肢")
-    print("- システムパラメータ")
-    print("- ユーザーパラメータマスタ")
-    print("- メニュー設定")
-    print("- 資格マスタ")
-    print("- 技能マスタ")
-    print("- 雇用形態マスタ")
-    print("- 支払いサイトマスタ")
-    print("- 会社銀行マスタ")
-    print("- 銀行マスタ")
-    print("- 銀行支店マスタ")
-    print("- お知らせマスタ")
-    print("- メールテンプレートマスタ")
-    print("- 職種マスタ")
-    print("- 最低賃金マスタ")
-    print("- 契約書パターンマスタ")
-    print("- 契約文言マスタ")
-    print("- 汎用文言タイトルマスタ")
-    print("- 汎用文言テンプレートマスタ")
-    print("- 初期値マスタ")
-    print("- クライアント登録ステータスマスタ")
-    print("- スタッフ登録ステータスマスタ")
-    print("- 就業時間パターンマスタ")
-    print("- 時間外算出パターンマスタ")
-    print("- 会社データ")
-    print("- 部署データ")
-    print("- 自社担当者データ")
-    print("- スタッフデータ")
-    print("- スタッフ外国籍情報")
-    print("- スタッフ障害者情報")
-    print("- スタッフ連絡履歴")
-    print("- クライアントデータ")
-    print("- クライアント組織データ")
-    print("- クライアント担当者データ")
-    print("- クライアント連絡履歴")
-    print("- クライアント接続データ")
-    print("- スタッフ接続データ")
-    print("- クライアント契約データ")
-    print("- クライアント契約派遣データ")
-    print("- スタッフ契約データ")
-    print("- 契約アサインメントデータ")
+    for _, description in SAMPLE_DATA_FILES:
+        print(f"- {description}")
+
 
 if __name__ == "__main__":
     main()
