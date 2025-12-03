@@ -11,7 +11,7 @@ if %errorlevel% neq 0 (
 echo [SUCCESS] Database reset successfully.
 
 echo [STEP 2/4] Setting up superuser credentials...
-set DJANGO_SUPERUSER_PASSWORD=admin!test!com
+set DJANGO_SUPERUSER_PASSWORD=passwordforstudybase!
 echo [SUCCESS] Superuser password set as environment variable.
 
 echo [STEP 3/4] Creating superuser (admin / admin@test.com)...

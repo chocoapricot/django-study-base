@@ -115,7 +115,7 @@ def create_superuser(task: SetupTask) -> bool:
     task.current_step = 'スーパーユーザーを作成中...'
     
     # 環境変数を設定
-    os.environ['DJANGO_SUPERUSER_PASSWORD'] = 'admin'
+    os.environ['DJANGO_SUPERUSER_PASSWORD'] = 'passwordforstudybase!'
     
     command = 'python manage.py createsuperuser --noinput --username admin --email admin@test.com'
     if not run_command(command, "スーパーユーザーの作成", task):
@@ -188,8 +188,8 @@ def load_sample_data(task: SetupTask) -> bool:
         task.errors.append(error_msg)
         return False
     
-    # 総ステップ数を設定（各ファイル + スーパーユーザー更新）
-    task.total = len(sample_files) + 1
+    # 総ステップ数を設定（各ファイルのみ）
+    task.total = len(sample_files)
     task.progress = 0
     
     # サンプルデータを順次読み込み
@@ -201,12 +201,6 @@ def load_sample_data(task: SetupTask) -> bool:
         task.imported_count += 1
         # データベースロックを軽減するため、短い待機時間を追加
         time.sleep(0.1)
-    
-    # スーパーユーザーの姓名を更新
-    command = "python manage.py update_superuser_info"
-    if not run_command(command, "スーパーユーザーの姓名、メールアドレスを更新", task):
-        return False
-    task.progress += 1
     
     return True
 
@@ -233,7 +227,14 @@ def execute_setup(task_id: str):
             task.end_time = datetime.now()
             return
         
-        # 3. サンプルデータ読み込み
+        # 3. スーパーユーザーの姓名、メールアドレスを更新
+        command = "python manage.py update_superuser_info"
+        if not run_command(command, "スーパーユーザーの姓名、メールアドレスを更新", task):
+            task.status = 'failed'
+            task.end_time = datetime.now()
+            return
+        
+        # 4. サンプルデータ読み込み
         if not load_sample_data(task):
             task.status = 'failed'
             task.end_time = datetime.now()

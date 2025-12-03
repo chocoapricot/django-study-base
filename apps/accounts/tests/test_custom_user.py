@@ -15,12 +15,12 @@ class MyUserModelTest(TestCase):
         """スーパーユーザー作成のテスト"""
         admin_user = MyUser.objects.create_superuser(
             username='admin',
-            email='admin@example.com',
+            email='admin@test.com',
             password='adminpass123'
         )
         
         self.assertEqual(admin_user.username, 'admin')
-        self.assertEqual(admin_user.email, 'admin@example.com')
+        self.assertEqual(admin_user.email, 'admin@test.com')
         self.assertTrue(admin_user.check_password('adminpass123'))
         self.assertTrue(admin_user.is_active)
         self.assertTrue(admin_user.is_staff)
@@ -57,7 +57,7 @@ class MyUserViewTest(TestCase):
         """テストデータの準備"""
         self.superuser = MyUser.objects.create_superuser(
             username='admin',
-            email='admin@example.com',
+            email='admin@test.com',
             password='adminpass123'
         )
         self.user = MyUser.objects.create_user(
