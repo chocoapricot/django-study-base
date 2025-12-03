@@ -32,3 +32,10 @@ class AccessLogMiddlewareTest(TestCase):
         """
         self.client.get('/admin/')
         self.assertEqual(AccessLog.objects.count(), 0)
+
+    def test_setup_page_is_not_logged(self):
+        """
+        /setup/へのアクセスがログに記録されないことを確認する
+        """
+        self.client.get(reverse('home:setup_start'))
+        self.assertEqual(AccessLog.objects.count(), 0)
