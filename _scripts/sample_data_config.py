@@ -41,6 +41,7 @@ SAMPLE_DATA_FILES = [
     ("_sample_data/staff_international.json", "スタッフ外国籍情報データ"),
     ("_sample_data/staff_disability.json", "スタッフ障害者情報データ"),
     ("_sample_data/staff_contacted.json", "スタッフ連絡履歴データ"),
+    ("_sample_data/staff_payroll.json", "スタッフ給与データ"),
     ("_sample_data/client.json", "クライアントデータ"),
     ("_sample_data/client_department.json", "クライアント組織データ"),
     ("_sample_data/client_user.json", "クライアント担当者データ"),

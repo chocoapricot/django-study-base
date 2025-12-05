@@ -1484,12 +1484,16 @@ def staff_contract_teishokubi_detail_create(request, pk):
     return render(request, 'contract/staff_teishokubi_detail_form.html', context)
 
 @login_required
-@permission_required('contract.view_staffcontract', raise_exception=True)
+@permission_required('contract.confirm_staffcontract', raise_exception=True)
 def view_staff_contract_pdf(request, pk):
     """
     スタッフ契約印刷履歴のPDFをブラウザで表示する
     """
     print_history = get_object_or_404(StaffContractPrint, pk=pk)
+    
+    # セキュリティチェック: ログインユーザー自身の契約のPDFのみ表示可能
+    if print_history.staff_contract.staff.email != request.user.email:
+        raise Http404("このPDFにアクセスする権限がありません")
     
     if not print_history.pdf_file:
         raise Http404("PDFファイルが見つかりません")
@@ -1503,10 +1507,14 @@ def view_staff_contract_pdf(request, pk):
 
 
 @login_required
-@permission_required('contract.view_staffcontract', raise_exception=True)
+@permission_required('contract.confirm_staffcontract', raise_exception=True)
 def download_staff_contract_pdf(request, pk):
     """Downloads a previously generated staff contract PDF."""
     print_history = get_object_or_404(StaffContractPrint, pk=pk)
+
+    # セキュリティチェック: ログインユーザー自身の契約のPDFのみダウンロード可能
+    if print_history.staff_contract.staff.email != request.user.email:
+        raise Http404("このPDFにアクセスする権限がありません")
 
     if not print_history.pdf_file:
         raise Http404("PDFファイルが見つかりません")

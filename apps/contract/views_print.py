@@ -243,12 +243,21 @@ def client_contract_draft_dispatch_ledger(request, pk):
         return redirect('contract:client_contract_detail', pk=pk)
 
 @login_required
-@permission_required('contract.view_clientcontract', raise_exception=True)
+@permission_required('contract.confirm_clientcontract', raise_exception=True)
 def view_client_contract_pdf(request, pk):
     """
     クライアント契約印刷履歴のPDFをブラウザで表示する
     """
     print_history = get_object_or_404(ClientContractPrint, pk=pk)
+    
+    # セキュリティチェック: ログインユーザーが所属するクライアントの契約のPDFのみ表示可能
+    try:
+        from apps.client.models import ClientUser
+        client_user = ClientUser.objects.get(email=request.user.email)
+        if print_history.client_contract.client != client_user.client:
+            raise Http404("このPDFにアクセスする権限がありません")
+    except ClientUser.DoesNotExist:
+        raise Http404("このPDFにアクセスする権限がありません")
     
     if not print_history.pdf_file:
         raise Http404("PDFファイルが見つかりません")
@@ -261,10 +270,19 @@ def view_client_contract_pdf(request, pk):
         raise Http404(f"PDFファイルの読み込みに失敗しました: {str(e)}")
 
 @login_required
-@permission_required('contract.view_clientcontract', raise_exception=True)
+@permission_required('contract.confirm_clientcontract', raise_exception=True)
 def download_client_contract_pdf(request, pk):
     """Downloads a previously generated client contract PDF."""
     print_history = get_object_or_404(ClientContractPrint, pk=pk)
+
+    # セキュリティチェック: ログインユーザーが所属するクライアントの契約のPDFのみダウンロード可能
+    try:
+        from apps.client.models import ClientUser
+        client_user = ClientUser.objects.get(email=request.user.email)
+        if print_history.client_contract.client != client_user.client:
+            raise Http404("このPDFにアクセスする権限がありません")
+    except ClientUser.DoesNotExist:
+        raise Http404("このPDFにアクセスする権限がありません")
 
     if not print_history.pdf_file:
         raise Http404("PDFファイルが見つかりません")
