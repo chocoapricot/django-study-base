@@ -4,7 +4,11 @@ from io import StringIO
 from django.core.management import call_command
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 from allauth.account.models import EmailAddress
+from apps.profile.models import StaffProfile
+from apps.contract.models import StaffContract, ClientContract
 
 User = get_user_model()
 
@@ -48,3 +52,101 @@ class ImportUsersCommandTest(TestCase):
         email1 = EmailAddress.objects.get(user=user1)
         self.assertTrue(email1.primary)
         self.assertTrue(email1.verified)
+
+    def test_import_staff_user_with_permissions(self):
+        """
+        Test that staff users are imported with correct permissions.
+        """
+        csv_data = [
+            ['staffuser', 'password123', 'staff@example.com', 'Staff', 'User', 'staff'],
+        ]
+
+        with open(self.csv_file_path, 'w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            writer.writerows(csv_data)
+
+        out = StringIO()
+        call_command('import_users', self.csv_file_path, stdout=out)
+
+        self.assertIn('Successfully created staff user "staffuser" with permissions', out.getvalue())
+
+        user = User.objects.get(username='staffuser')
+        
+        # プロファイル関連の権限を確認
+        content_type = ContentType.objects.get_for_model(StaffProfile)
+        profile_permissions = Permission.objects.filter(content_type=content_type)
+        for perm in profile_permissions:
+            self.assertTrue(
+                user.has_perm(f'{content_type.app_label}.{perm.codename}'),
+                f'User should have permission: {perm.codename}'
+            )
+        
+        # スタッフ契約確認権限を確認
+        content_type = ContentType.objects.get_for_model(StaffContract)
+        confirm_perm = Permission.objects.get(
+            content_type=content_type,
+            codename='confirm_staffcontract'
+        )
+        self.assertTrue(
+            user.has_perm(f'{content_type.app_label}.confirm_staffcontract'),
+            'User should have staff contract confirmation permission'
+        )
+
+    def test_import_client_user_with_permissions(self):
+        """
+        Test that client users are imported with correct permissions.
+        """
+        csv_data = [
+            ['clientuser', 'password123', 'client@example.com', 'Client', 'User', 'client'],
+        ]
+
+        with open(self.csv_file_path, 'w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            writer.writerows(csv_data)
+
+        out = StringIO()
+        call_command('import_users', self.csv_file_path, stdout=out)
+
+        self.assertIn('Successfully created client user "clientuser" with permissions', out.getvalue())
+
+        user = User.objects.get(username='clientuser')
+        
+        # クライアント契約確認権限を確認
+        content_type = ContentType.objects.get_for_model(ClientContract)
+        confirm_perm = Permission.objects.get(
+            content_type=content_type,
+            codename='confirm_clientcontract'
+        )
+        self.assertTrue(
+            user.has_perm(f'{content_type.app_label}.confirm_clientcontract'),
+            'User should have client contract confirmation permission'
+        )
+
+    def test_import_users_backward_compatibility(self):
+        """
+        Test that the command still works with 5-column CSV (backward compatibility).
+        """
+        csv_data = [
+            ['olduser', 'password123', 'old@example.com', 'Old', 'User'],
+        ]
+
+        with open(self.csv_file_path, 'w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            writer.writerows(csv_data)
+
+        out = StringIO()
+        call_command('import_users', self.csv_file_path, stdout=out)
+
+        self.assertIn('Successfully created user "olduser"', out.getvalue())
+
+        user = User.objects.get(username='olduser')
+        self.assertEqual(user.email, 'old@example.com')
+        
+        # 特別な権限が付与されていないことを確認
+        # （スタッフ契約確認権限がないことを確認）
+        content_type = ContentType.objects.get_for_model(StaffContract)
+        self.assertFalse(
+            user.has_perm(f'{content_type.app_label}.confirm_staffcontract'),
+            'User should not have staff contract confirmation permission'
+        )
+
