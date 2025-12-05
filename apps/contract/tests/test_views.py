@@ -252,6 +252,14 @@ class ContractViewTest(TestCase):
         import os
         from django.conf import settings
 
+        # テストユーザーをClientUserとして登録（セキュリティチェックのため）
+        ClientUser.objects.create(
+            client=self.test_client,
+            email=self.user.email,
+            name_last='Test',
+            name_first='User'
+        )
+
         # クライアント契約のテスト
         self.client_contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
         self.client_contract.save()
