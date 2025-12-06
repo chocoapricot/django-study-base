@@ -1,0 +1,108 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        通知詳細
+        <div class="d-flex">
+            <a href="{% url 'system_notifications:notification_list' %}" class="btn btn-sm btn-secondary">
+                <i class="bi bi-arrow-left me-1"></i>一覧に戻る
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- 通知ステータス -->
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-4 text-start text-md-end">
+                <strong>状態</strong>
+            </div>
+            <div class="col-sm">
+                {% if notification.is_read %}
+                    <span class="badge bg-secondary">既読</span>
+                {% else %}
+                    <span class="badge bg-warning text-dark">未読</span>
+                {% endif %}
+                
+                {% if notification.notification_type == 'alert' %}
+                    <span class="badge bg-danger ms-2">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>アラート
+                    </span>
+                {% elif notification.notification_type == 'warning' %}
+                    <span class="badge bg-warning text-dark ms-2">
+                        <i class="bi bi-exclamation-circle-fill me-1"></i>警告
+                    </span>
+                {% elif notification.notification_type == 'info' %}
+                    <span class="badge bg-info ms-2">
+                        <i class="bi bi-info-circle-fill me-1"></i>情報
+                    </span>
+                {% else %}
+                    <span class="badge bg-primary ms-2">
+                        <i class="bi bi-bell-fill me-1"></i>一般
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- タイトル -->
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-4 text-start text-md-end">
+                <strong>タイトル</strong>
+            </div>
+            <div class="col-sm">
+                <h5 class="mb-0">{{ notification.title }}</h5>
+            </div>
+        </div>
+
+        <!-- メッセージ -->
+        <div class="row mb-3 align-items-top">
+            <div class="col-sm-4 text-start text-md-end">
+                <strong>メッセージ</strong>
+            </div>
+            <div class="col-sm">
+                <div class="p-3 bg-white rounded border">
+                    {{ notification.message|linebreaks }}
+                </div>
+            </div>
+        </div>
+
+        <!-- リンクURL -->
+        {% if notification.link_url %}
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-4 text-start text-md-end">
+                <strong>関連リンク</strong>
+            </div>
+            <div class="col-sm">
+                <a href="{{ notification.link_url }}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>詳細を確認
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 作成日時 -->
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-4 text-start text-md-end">
+                <strong>作成日時</strong>
+            </div>
+            <div class="col-sm">
+                <i class="bi bi-clock me-1"></i>
+                {{ notification.created_at|date:"Y/m/d H:i:s" }}
+            </div>
+        </div>
+
+        <!-- 既読日時 -->
+        {% if notification.is_read and notification.read_at %}
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-4 text-start text-md-end">
+                <strong>既読日時</strong>
+            </div>
+            <div class="col-sm">
+                <i class="bi bi-check2 me-1"></i>
+                {{ notification.read_at|date:"Y/m/d H:i:s" }}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

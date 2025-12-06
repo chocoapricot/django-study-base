@@ -300,7 +300,12 @@ body.no-transition #sidebar {
         <div class="icons">
             <span id="window-breakpoint">-</span> (横幅：<span id="window-width">0</span> px)
             <i class="bi bi-search"></i> <!-- 検索アイコン -->
-            <i class="bi bi-bell"></i> <!-- 通知アイコン -->
+            <a href="{% url 'system_notifications:notification_list' %}" style="position: relative; text-decoration: none; color: inherit;">
+                <i class="bi bi-bell"></i> <!-- 通知アイコン -->
+                <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none; font-size: 0.6rem;">
+                    0
+                </span>
+            </a>
             <i class="bi bi-cup" id="logic-info-btn" data-bs-toggle="modal" data-bs-target="#logicInfoModal" title="ページロジック情報"></i>
             <!--
             <i class="bi bi-gear"></i>
@@ -581,6 +586,30 @@ document.addEventListener("DOMContentLoaded", function () {
   var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl)
   })
+</script>
+<script>
+    // 通知未読数を更新する関数
+    function updateNotificationCount() {
+        fetch('{% url "system_notifications:notification_count" %}')
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.getElementById('notification-badge');
+                if (data.unread_count > 0) {
+                    badge.textContent = data.unread_count;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            })
+            .catch(error => console.error('通知数の取得に失敗しました:', error));
+    }
+    
+    // ページ読み込み時に実行
+    document.addEventListener('DOMContentLoaded', function() {
+        updateNotificationCount();
+        // 30秒ごとに更新
+        setInterval(updateNotificationCount, 30000);
+    });
 </script>
 {% block extra_js %}{% endblock %}
 </body>
