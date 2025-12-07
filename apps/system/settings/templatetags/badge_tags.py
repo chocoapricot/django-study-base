@@ -2,6 +2,7 @@
 バッジ用テンプレートフィルタ
 """
 from django import template
+from apps.common.constants import Constants
 
 register = template.Library()
 
@@ -32,3 +33,29 @@ def badge_class(value):
     except (ValueError, TypeError):
         # 整数に変換できない場合はデフォルト
         return "bg-secondary"
+
+# 通知種別に応じてバッジのクラス名を返すフィルタ
+@register.filter
+def notification_type_badge_class(notification_type):
+    """通知種別に応じたバッジクラスを返す"""
+    if notification_type == Constants.NOTIFICATION_TYPE.ALERT:
+        return 'bg-danger'
+    elif notification_type == Constants.NOTIFICATION_TYPE.WARNING:
+        return 'bg-warning text-dark'
+    elif notification_type == Constants.NOTIFICATION_TYPE.INFO:
+        return 'bg-info'
+    else:  # GENERAL
+        return 'bg-primary'
+
+# 通知種別に応じてアイコンクラスを返すフィルタ
+@register.filter
+def notification_type_icon(notification_type):
+    """通知種別に応じたアイコンクラスを返す"""
+    if notification_type == Constants.NOTIFICATION_TYPE.ALERT:
+        return 'bi-exclamation-triangle-fill'
+    elif notification_type == Constants.NOTIFICATION_TYPE.WARNING:
+        return 'bi-exclamation-circle-fill'
+    elif notification_type == Constants.NOTIFICATION_TYPE.INFO:
+        return 'bi-info-circle-fill'
+    else:  # GENERAL
+        return 'bi-bell-fill'

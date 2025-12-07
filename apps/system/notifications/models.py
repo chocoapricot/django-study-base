@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from apps.common.models import MyModel
-from apps.common.constants import Constants
+from apps.common.constants import Constants, get_notification_type_choices
 
 User = get_user_model()
 
@@ -11,13 +11,6 @@ class Notification(MyModel):
     ユーザーへの通知を管理するモデル。
     システムからユーザーへの各種通知（お知らせ、アラート等）を記録する。
     """
-    
-    NOTIFICATION_TYPE_CHOICES = [
-        ('general', '一般'),
-        ('alert', 'アラート'),
-        ('info', '情報'),
-        ('warning', '警告'),
-    ]
     
     user = models.ForeignKey(
         User,
@@ -41,8 +34,8 @@ class Notification(MyModel):
     notification_type = models.CharField(
         '通知種別',
         max_length=20,
-        choices=NOTIFICATION_TYPE_CHOICES,
-        default='general',
+        choices=get_notification_type_choices(),
+        default=Constants.NOTIFICATION_TYPE.GENERAL,
         help_text='通知の種類'
     )
     
@@ -85,7 +78,7 @@ class Notification(MyModel):
     @property
     def notification_type_display_name(self):
         """通知種別の表示名"""
-        return dict(self.NOTIFICATION_TYPE_CHOICES).get(self.notification_type, self.notification_type)
+        return dict(get_notification_type_choices()).get(self.notification_type, self.notification_type)
     
     def mark_as_read(self):
         """通知を既読にする"""

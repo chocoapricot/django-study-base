@@ -116,8 +116,15 @@ class Constants:
         BANK = '1'   # 銀行
         BRANCH = '2' # 支店
 
+    # 通知種別 (notification_type)
+    class NOTIFICATION_TYPE:
+        GENERAL = 'general'  # 一般
+        ALERT = 'alert'      # アラート
+        INFO = 'info'        # 情報
+        WARNING = 'warning'  # 警告
 
-# CHOICESリスト生成ヘルパー（モデルで使用）
+
+# CHOICESリスト生成ヘルパー(モデルで使用)
 def get_mail_type_choices():
     """メール種別の選択肢リストを返す"""
     return [
@@ -168,6 +175,15 @@ def get_dispatch_treatment_method_choices():
     return [
         (Constants.DISPATCH_TREATMENT_METHOD.AGREEMENT, '労使協定方式'),
         (Constants.DISPATCH_TREATMENT_METHOD.EQUAL_BALANCE, '派遣先均等・均衡方式'),
+    ]
+
+def get_notification_type_choices():
+    """通知種別の選択肢リストを返す"""
+    return [
+        (Constants.NOTIFICATION_TYPE.GENERAL, '一般'),
+        (Constants.NOTIFICATION_TYPE.ALERT, 'アラート'),
+        (Constants.NOTIFICATION_TYPE.INFO, '情報'),
+        (Constants.NOTIFICATION_TYPE.WARNING, '警告'),
     ]
 
 

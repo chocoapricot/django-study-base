@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load static %}
+{% load badge_tags %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
@@ -38,7 +39,7 @@
             </thead>
             <tbody>
                 {% for notification in page_obj %}
-                <tr {% if not notification.is_read %}class="table-warning"{% endif %}>
+                <tr class="{% if not notification.is_read %}fw-bold{% endif %}">
                     <td>
                         {% if not notification.is_read %}
                             <span class="badge bg-warning text-dark">未読</span>
@@ -47,29 +48,19 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if notification.notification_type == 'alert' %}
-                            <i class="bi bi-exclamation-triangle-fill text-danger me-1"></i>
-                            <span class="text-danger">アラート</span>
-                        {% elif notification.notification_type == 'warning' %}
-                            <i class="bi bi-exclamation-circle-fill text-warning me-1"></i>
-                            <span class="text-warning">警告</span>
-                        {% elif notification.notification_type == 'info' %}
-                            <i class="bi bi-info-circle-fill text-info me-1"></i>
-                            <span class="text-info">情報</span>
-                        {% else %}
-                            <i class="bi bi-bell-fill text-primary me-1"></i>
-                            <span class="text-primary">一般</span>
-                        {% endif %}
+                        <span class="badge {{ notification.notification_type|notification_type_badge_class }}">
+                            <i class="bi {{ notification.notification_type|notification_type_icon }} me-1"></i>{{ notification.notification_type_display_name }}
+                        </span>
                     </td>
                     <td>
-                        <a href="{% url 'system_notifications:notification_detail' notification.pk %}">
+                        <a href="{% url 'system_notifications:notification_detail' notification.pk %}" class="{% if not notification.is_read %}fw-bold{% endif %}">
                             {{ notification.title }}
                         </a>
                     </td>
                     <td style="max-width:400px;word-break:break-all;">
                         {{ notification.message|truncatewords:15 }}
                     </td>
-                    <td>{{ notification.created_at|date:"Y/m/d H:i:s" }}</td>
+                    <td class="text-nowrap">{{ notification.created_at|date:"Y/m/d H:i:s" }}</td>
                 </tr>
                 {% empty %}
                 <tr>
