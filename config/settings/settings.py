@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'apps.contract',
     'apps.profile',
     'apps.kintai',
+    'apps.system.notification',
 ]
 
 # allauth設定
@@ -136,6 +137,7 @@ TEMPLATES = [
                 'apps.system.settings.context_processors.menu_items',
                 'apps.system.settings.context_processors.constants',
                 'apps.system.settings.context_processors.ui_settings',
+                'apps.system.notification.context_processors.unread_notifications',
             ],
         },
     },

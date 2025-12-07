@@ -300,7 +300,15 @@ body.no-transition #sidebar {
         <div class="icons">
             <span id="window-breakpoint">-</span> (横幅：<span id="window-width">0</span> px)
             <i class="bi bi-search"></i> <!-- 検索アイコン -->
-            <i class="bi bi-bell"></i> <!-- 通知アイコン -->
+            <a href="{% url 'notification:notification_list' %}" class="btn position-relative" title="通知">
+                <i class="bi bi-bell"></i>
+                {% if unread_notification_count > 0 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        {{ unread_notification_count }}
+                        <span class="visually-hidden">unread messages</span>
+                    </span>
+                {% endif %}
+            </a>
             <i class="bi bi-cup" id="logic-info-btn" data-bs-toggle="modal" data-bs-target="#logicInfoModal" title="ページロジック情報"></i>
             <!--
             <i class="bi bi-gear"></i>
