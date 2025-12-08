@@ -4,18 +4,13 @@
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="card-header">
         通知詳細
-        <div class="d-flex">
-            <a href="{% url 'system_notifications:notification_list' %}" class="btn btn-sm btn-secondary">
-                <i class="bi bi-arrow-left me-1"></i>一覧に戻る
-            </a>
-        </div>
     </div>
     <div class="card-body">
         <!-- 通知ステータス -->
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-4 text-start text-md-end">
+            <div class="col-sm-2 text-start text-md-end">
                 <strong>状態</strong>
             </div>
             <div class="col-sm">
@@ -33,7 +28,7 @@
 
         <!-- タイトル -->
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-4 text-start text-md-end">
+            <div class="col-sm-2 text-start text-md-end">
                 <strong>タイトル</strong>
             </div>
             <div class="col-sm">
@@ -43,11 +38,11 @@
 
         <!-- メッセージ -->
         <div class="row mb-3 align-items-top">
-            <div class="col-sm-4 text-start text-md-end">
+            <div class="col-sm-2 text-start text-md-end">
                 <strong>メッセージ</strong>
             </div>
             <div class="col-sm">
-                <div class="p-3 bg-white rounded border">
+                <div>
                     {{ notification.message|linebreaks }}
                 </div>
             </div>
@@ -56,7 +51,7 @@
         <!-- リンクURL -->
         {% if notification.link_url %}
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-4 text-start text-md-end">
+            <div class="col-sm-2 text-start text-md-end">
                 <strong>関連リンク</strong>
             </div>
             <div class="col-sm">
@@ -69,7 +64,7 @@
 
         <!-- 作成日時 -->
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-4 text-start text-md-end">
+            <div class="col-sm-2 text-start text-md-end">
                 <strong>作成日時</strong>
             </div>
             <div class="col-sm">
@@ -81,7 +76,7 @@
         <!-- 既読日時 -->
         {% if notification.is_read and notification.read_at %}
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-4 text-start text-md-end">
+            <div class="col-sm-2 text-start text-md-end">
                 <strong>既読日時</strong>
             </div>
             <div class="col-sm">
@@ -90,6 +85,9 @@
             </div>
         </div>
         {% endif %}
+        <div class="mt-4">
+            <a href="{% url 'system_notifications:notification_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+        </div>
     </div>
 </div>
 {% endblock %}
