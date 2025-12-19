@@ -101,7 +101,7 @@
                 <tr>
                     <td>{{ history.timestamp|date:"Y/m/d H:i:s" }}</td>
                     <td>
-                        <span class="badge bg-success">{{ history.action_display_name }}</span>
+                        <span class="badge {% if history.action == 'login' %}bg-success{% elif history.action == 'login_failed' %}bg-danger{% else %}bg-secondary{% endif %}">{{ history.action_display_name }}</span>
                     </td>
                     <td>{{ history.object_repr|default:"-" }}</td>
                 </tr>
