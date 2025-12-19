@@ -6,6 +6,8 @@ from ..models import Staff, StaffContacted
 from ...master.models import StaffRegistStatus, EmploymentType
 from ...system.logs.models import MailLog
 from ..forms_mail import StaffMailForm
+from ...system.notifications.models import Notification
+from ...system.settings.models import Dropdowns
 
 User = get_user_model()
 
@@ -39,18 +41,29 @@ class StaffMailTest(TestCase):
             updated_by=self.user
         )
         
+        # 連絡種別のドロップダウンを作成（StaffMailForm内部で使用）
+        Dropdowns.objects.get_or_create(category='contact_type', value='50', defaults={'name': 'メール', 'active': True, 'disp_seq': 1})
+
+        self.staff_email = 'tanaka@example.com'
         self.staff = Staff.objects.create(
             name_last='田中',
             name_first='太郎',
             name_kana_last='タナカ',
             name_kana_first='タロウ',
-            email='tanaka@example.com',
+            email=self.staff_email,
             regist_status=self.regist_status,
             employment_type=self.employment_type,
             created_by=self.user,
             updated_by=self.user
         )
         
+        # スタッフに対応するユーザーを作成
+        self.staff_user = User.objects.create_user(
+            username='staff_user_login',
+            email=self.staff_email,
+            password='password'
+        )
+
         self.staff_no_email = Staff.objects.create(
             name_last='佐藤',
             name_first='花子',
@@ -88,6 +101,7 @@ class StaffMailTest(TestCase):
             'to_email': 'tanaka@example.com',
             'subject': 'テストメール',
             'body': 'これはテストメールです。',
+            'send_notification': True,
         }
         
         form = StaffMailForm(staff=self.staff, user=self.user, data=form_data)
@@ -99,6 +113,7 @@ class StaffMailTest(TestCase):
             'to_email': 'wrong@example.com',  # スタッフのメールアドレスと異なる
             'subject': 'テストメール',
             'body': 'これはテストメールです。',
+            'send_notification': True,
         }
         
         form = StaffMailForm(staff=self.staff, user=self.user, data=form_data)
@@ -111,6 +126,7 @@ class StaffMailTest(TestCase):
             'to_email': 'tanaka@example.com',
             'subject': 'テストメール',
             'body': 'これはテストメールです。',
+            'send_notification': True,
         }
         
         form = StaffMailForm(staff=self.staff, user=self.user, data=form_data)
@@ -136,6 +152,9 @@ class StaffMailTest(TestCase):
         contact_history = StaffContacted.objects.filter(staff=self.staff).first()
         self.assertIsNotNone(contact_history)
         self.assertIn('メール送信: テストメール', contact_history.content)
+
+        # 通知が作成されたかチェック（新規追加分）
+        self.assertEqual(Notification.objects.filter(user=self.staff_user).count(), 1)
     
     def test_mail_send_without_contact_history(self):
         """連絡履歴保存なしのメール送信テスト（現在は常に保存されるため、保存されることを確認）"""
@@ -143,6 +162,7 @@ class StaffMailTest(TestCase):
             'to_email': 'tanaka@example.com',
             'subject': 'テストメール',
             'body': 'これはテストメールです。',
+            'send_notification': False,
         }
         
         form = StaffMailForm(staff=self.staff, user=self.user, data=form_data)
@@ -158,6 +178,9 @@ class StaffMailTest(TestCase):
         # 連絡履歴は常に作成される（仕様変更）
         contact_history = StaffContacted.objects.filter(staff=self.staff).first()
         self.assertIsNotNone(contact_history)
+
+        # 通知は作成されない（send_notification=Falseのため）
+        self.assertEqual(Notification.objects.filter(user=self.staff_user).count(), 0)
     
     def test_staff_mail_send_post(self):
         """メール送信POSTリクエストテスト"""
@@ -167,6 +190,7 @@ class StaffMailTest(TestCase):
             'to_email': 'tanaka@example.com',
             'subject': 'テストメール',
             'body': 'これはテストメールです。',
+            'send_notification': True,
         }
         
         response = self.client.post(url, post_data)
@@ -183,3 +207,41 @@ class StaffMailTest(TestCase):
         
         # 連絡履歴が作成されたかチェック
         self.assertTrue(StaffContacted.objects.filter(staff=self.staff).exists())
+
+        # 通知が作成されたかチェック
+        self.assertEqual(Notification.objects.filter(user=self.staff_user).count(), 1)
+
+    def test_mail_send_page_renders_notification_checkbox(self):
+        """メール送信ページに通知チェックボックスが表示されることを確認"""
+        url = reverse('staff:staff_mail_send', args=[self.staff.pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'name="send_notification"')
+        self.assertContains(response, '通知を送る')
+
+    def test_mail_send_does_not_fail_if_user_not_exists(self):
+        """ユーザーが存在しない場合でもエラーにならず、通知だけ作成されないことを確認"""
+        # ユーザーが存在しない別のスタッフを作成
+        other_staff = Staff.objects.create(
+            name_last='山田',
+            name_first='二郎',
+            email='no_user@example.com',
+            regist_status=self.regist_status,
+            employment_type=self.employment_type,
+            created_by=self.user,
+            updated_by=self.user
+        )
+        
+        url = reverse('staff:staff_mail_send', args=[other_staff.pk])
+        data = {
+            'to_email': 'no_user@example.com',
+            'subject': 'ユーザーなし',
+            'body': '本文',
+            'send_notification': True
+        }
+        
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        
+        # 通知が作成されていないことを確認（ユーザーがいないので）
+        self.assertEqual(Notification.objects.filter(title='ユーザーなし').count(), 0)

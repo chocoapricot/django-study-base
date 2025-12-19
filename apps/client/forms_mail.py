@@ -4,6 +4,8 @@ from django.conf import settings
 from apps.system.logs.models import MailLog
 from apps.client.models import ClientContacted
 from django.utils import timezone
+from django.contrib.auth import get_user_model
+from apps.system.notifications.models import Notification
 
 
 class ClientUserMailForm(forms.Form):
@@ -33,6 +35,16 @@ class ClientUserMailForm(forms.Form):
             'rows': 10,
             'placeholder': 'メール本文を入力してください'
         })
+    )
+    
+    send_notification = forms.BooleanField(
+        label='通知を送る',
+        required=False,
+        initial=True,
+        widget=forms.CheckboxInput(attrs={
+            'class': 'form-check-input'
+        }),
+        help_text='チェックを入れると、クライアントのマイページに通知を表示します。'
     )
     
     def __init__(self, client_user=None, user=None, *args, **kwargs):
@@ -99,6 +111,21 @@ class ClientUserMailForm(forms.Form):
                     created_by=self.user,
                     updated_by=self.user
                 )
+            
+            
+            # 通知を作成（チェックされている場合）
+            if self.cleaned_data.get('send_notification'):
+                User = get_user_model()
+                # 担当者のメールアドレスに紐づくユーザーを探す
+                client_user_obj = User.objects.filter(email=self.client_user.email).first()
+                if client_user_obj:
+                    Notification.objects.create(
+                        user=client_user_obj,
+                        title=subject,
+                        message=body,
+                        notification_type='general', # 一般
+                        link_url=None, # 必要があれば詳細画面へのリンクを入れる
+                    )
             
             return True, "メールを送信しました。"
             

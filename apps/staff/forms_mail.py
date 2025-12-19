@@ -9,6 +9,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from apps.company.models import Company
 from apps.master.models import MailTemplate
+from apps.system.notifications.models import Notification
 
 
 class StaffMailForm(forms.Form):
@@ -45,6 +46,16 @@ class StaffMailForm(forms.Form):
             'rows': 10,
             'placeholder': 'メール本文を入力してください'
         })
+    )
+    
+    send_notification = forms.BooleanField(
+        label='通知を送る',
+        required=False,
+        initial=True,
+        widget=forms.CheckboxInput(attrs={
+            'class': 'form-check-input'
+        }),
+        help_text='チェックを入れると、スタッフのマイページに通知を表示します。'
     )
     
 
@@ -111,6 +122,21 @@ class StaffMailForm(forms.Form):
                     created_by=self.user,
                     updated_by=self.user
                 )
+            
+            
+            # 通知を作成（チェックされている場合）
+            if self.cleaned_data.get('send_notification'):
+                User = get_user_model()
+                # スタッフのメールアドレスに紐づくユーザーを探す
+                staff_user = User.objects.filter(email=self.staff.email).first()
+                if staff_user:
+                    Notification.objects.create(
+                        user=staff_user,
+                        title=subject,
+                        message=body,
+                        notification_type='general', # 一般
+                        link_url=None, # 必要があれば詳細画面へのリンクを入れる
+                    )
             
             return True, "メールを送信しました。"
             
