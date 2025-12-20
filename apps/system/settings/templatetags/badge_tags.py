@@ -46,16 +46,3 @@ def notification_type_badge_class(notification_type):
         return 'bg-info'
     else:  # GENERAL
         return 'bg-primary'
-
-# 通知種別に応じてアイコンクラスを返すフィルタ
-@register.filter
-def notification_type_icon(notification_type):
-    """通知種別に応じたアイコンクラスを返す"""
-    if notification_type == Constants.NOTIFICATION_TYPE.ALERT:
-        return 'bi-exclamation-triangle-fill'
-    elif notification_type == Constants.NOTIFICATION_TYPE.WARNING:
-        return 'bi-exclamation-circle-fill'
-    elif notification_type == Constants.NOTIFICATION_TYPE.INFO:
-        return 'bi-info-circle-fill'
-    else:  # GENERAL
-        return 'bi-bell-fill'

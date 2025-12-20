@@ -21,7 +21,7 @@
                 {% endif %}
                 
                 <span class="badge {{ notification.notification_type|notification_type_badge_class }} ms-2">
-                    <i class="bi {{ notification.notification_type|notification_type_icon }} me-1"></i>{{ notification.notification_type_display_name }}
+                    {{ notification.notification_type_display_name }}
                 </span>
             </div>
         </div>
