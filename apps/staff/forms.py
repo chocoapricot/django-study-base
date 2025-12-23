@@ -623,3 +623,15 @@ class StaffDisabilityForm(forms.ModelForm):
         ]
         self.fields['disability_grade'].required = True
         self.fields['disability_severity'].required = True
+
+from .models_evaluation import StaffEvaluation
+class StaffEvaluationForm(forms.ModelForm):
+    """スタッフ評価フォーム"""
+    class Meta:
+        model = StaffEvaluation
+        fields = ['evaluation_date', 'rating', 'comment']
+        widgets = {
+            'evaluation_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'rating': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'comment': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+        }

@@ -496,6 +496,36 @@ def staff_detail(request, pk):
     skills = staff.skills.select_related('skill').order_by('-acquired_date')[:5]
     # ファイル情報（最新5件）
     files = staff.files.order_by('-uploaded_at')[:5]
+    # 評価情報（最新5件）
+    evaluations = staff.evaluations.order_by('-evaluation_date')[:5]
+    from django.db.models import Avg, Count
+    avg_rating = staff.evaluations.aggregate(Avg('rating'))['rating__avg']
+    if avg_rating:
+        avg_rating = round(avg_rating, 2)
+    
+    # 評価分布の計算
+    rating_distribution = []
+    total_evaluations = staff.evaluations.count()
+    if total_evaluations > 0:
+        # 1〜5の各評価について集計
+        for i in range(5, 0, -1):
+            count = staff.evaluations.filter(rating=i).count()
+            percentage = (count / total_evaluations) * 100
+            rating_distribution.append({
+                'rating': i,
+                'count': count,
+                'percentage': round(percentage, 1)
+            })
+    else:
+        # データがない場合も空枠を表示するためにリストを作成
+        for i in range(5, 0, -1):
+            rating_distribution.append({
+                'rating': i,
+                'count': 0,
+                'percentage': 0
+            })
+
+
     # AppLogに詳細画面アクセスを記録
     from apps.system.logs.utils import log_view_detail
     log_view_detail(request.user, staff)
@@ -635,6 +665,10 @@ def staff_detail(request, pk):
         'bank_request': bank_request,
         'disability_request': disability_request,
         'contact_request': contact_request,
+        'evaluations': evaluations,
+        'avg_rating': avg_rating,
+        'rating_distribution': rating_distribution,
+        'total_evaluations': total_evaluations,
         'last_login': last_login,
     })
 
