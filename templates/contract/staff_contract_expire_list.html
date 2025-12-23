@@ -12,20 +12,19 @@
             <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span>スタッフ契約延長確認</span>
-                    <small class="text-muted">本日（{{ today|date:"Y/m/d" }}）が割当期間内のアサインメント一覧</small>
+                    <small class="text-muted">指定年月（{{ target_date|date:"Y/m/d" }}）が割当期間内のアサインメント一覧</small>
                 </div>
                 <div class="card-body">
-                    <!-- 検索フォーム -->
-                    <form method="get" class="mb-3">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-sm" placeholder="クライアント名、スタッフ名、契約名、メールアドレス、法人番号で検索">
-                            </div>
-                            <div class="col-md-4">
-                                <button type="submit" class="btn btn-sm btn-primary me-2">検索</button>
-                                <a href="{% url 'contract:staff_contract_expire_list' %}" class="btn btn-sm btn-secondary">リセット</a>
-                            </div>
+                    <!-- 年月選択・検索フォーム -->
+                    <form method="get" class="form-inline d-flex mb-3 align-items-center">
+                        <div class="input-group me-2" style="width: auto;">
+                            <input type="month" name="target_month" value="{{ target_date|date:'Y-m' }}" class="form-control form-control-sm" style="max-width: 130px;">
                         </div>
+                        <div class="input-group me-2" style="width: auto;">
+                            <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-sm" placeholder="クライアント名、スタッフ名で検索" style="min-width: 300px;">
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-primary me-2">検索</button>
+                        <a href="{% url 'contract:staff_contract_expire_list' %}" class="btn btn-sm btn-secondary">リセット</a>
                     </form>
 
                     <!-- 統計情報 -->
@@ -111,7 +110,7 @@
                         <ul class="pagination pagination-sm justify-content-center">
                             {% if assignments.has_previous %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ assignments.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}">前へ</a>
+                                    <a class="page-link" href="?page={{ assignments.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if target_date %}&target_month={{ target_date|date:'Y-m' }}{% endif %}">前へ</a>
                                 </li>
                             {% endif %}
                             
@@ -122,14 +121,14 @@
                                     </li>
                                 {% elif num > assignments.number|add:'-3' and num < assignments.number|add:'3' %}
                                     <li class="page-item">
-                                        <a class="page-link" href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}">{{ num }}</a>
+                                        <a class="page-link" href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if target_date %}&target_month={{ target_date|date:'Y-m' }}{% endif %}">{{ num }}</a>
                                     </li>
                                 {% endif %}
                             {% endfor %}
                             
                             {% if assignments.has_next %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ assignments.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}">次へ</a>
+                                    <a class="page-link" href="?page={{ assignments.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if target_date %}&target_month={{ target_date|date:'Y-m' }}{% endif %}">次へ</a>
                                 </li>
                             {% endif %}
                         </ul>

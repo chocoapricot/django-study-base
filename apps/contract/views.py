@@ -1247,7 +1247,7 @@ def client_teishokubi_list(request):
 @login_required
 @permission_required('contract.view_contractassignment', raise_exception=True)
 def staff_contract_expire_list(request):
-    """スタッフ契約延長確認一覧（本日が割当期間内のアサインメント一覧）"""
+    """スタッフ契約延長確認一覧(指定年月が割当期間内のアサインメント一覧)"""
     from datetime import date, timedelta
     from django.db.models import Q
     from calendar import monthrange
@@ -1255,10 +1255,28 @@ def staff_contract_expire_list(request):
     today = date.today()
     search_query = request.GET.get('q', '')
     
-    # 本日が割当開始日～割当終了日に入るContractAssignmentを取得
+    # 年月指定を取得(デフォルトは本日)
+    target_month = request.GET.get('target_month')
+    
+    if target_month:
+        try:
+            # YYYY-MM形式から年と月を取得
+            year_str, month_str = target_month.split('-')
+            target_year = int(year_str)
+            target_month_int = int(month_str)
+            # 指定された年月の1日を基準日とする
+            target_date = date(target_year, target_month_int, 1)
+        except (ValueError, TypeError, AttributeError):
+            # パラメータが不正な場合は本日を使用
+            target_date = today
+    else:
+        # パラメータがない場合は本日を使用
+        target_date = today
+    
+    # 基準日が割当開始日～割当終了日に入るContractAssignmentを取得
     assignments = ContractAssignment.objects.filter(
-        assignment_start_date__lte=today,
-        assignment_end_date__gte=today
+        assignment_start_date__lte=target_date,
+        assignment_end_date__gte=target_date
     ).select_related(
         'client_contract__client',
         'staff_contract__staff',
@@ -1297,9 +1315,9 @@ def staff_contract_expire_list(request):
     
     # 各アサインメントに追加情報を設定
     for assignment in assignments_page:
-        # 割当終了日までの残り日数を計算
+        # 割当終了日までの残り日数を計算(基準日から)
         if assignment.assignment_end_date:
-            delta = assignment.assignment_end_date - today
+            delta = assignment.assignment_end_date - target_date
             assignment.days_remaining = delta.days
             assignment.is_expiring_soon = delta.days <= alert_days  # 設定された日数以内は要注意
             assignment.is_expired = delta.days < 0
@@ -1323,7 +1341,7 @@ def staff_contract_expire_list(request):
                 'contract_status', assignment.staff_contract.contract_status
             )
     
-    # 契約期間イメージ用データを準備（全てのアサインメントを取得）
+    # 契約期間イメージ用データを準備(全てのアサインメントを取得)
     all_assignments = ContractAssignment.objects.select_related(
         'client_contract__client',
         'staff_contract__staff',
@@ -1332,12 +1350,13 @@ def staff_contract_expire_list(request):
         'assignment_confirm'
     ).order_by('assignment_start_date')
     
-    contract_timeline_data = _prepare_contract_timeline_data(all_assignments, today, search_query)
+    contract_timeline_data = _prepare_contract_timeline_data(all_assignments, target_date, search_query)
     
     context = {
         'assignments': assignments_page,
         'search_query': search_query,
         'today': today,
+        'target_date': target_date,
         'total_count': assignments.count(),
         'contract_timeline': contract_timeline_data,
     }
