@@ -1491,8 +1491,9 @@ def view_staff_contract_pdf(request, pk):
     """
     print_history = get_object_or_404(StaffContractPrint, pk=pk)
     
-    # セキュリティチェック: ログインユーザー自身の契約のPDFのみ表示可能
-    if print_history.staff_contract.staff.email != request.user.email:
+    # セキュリティチェック: 管理者またはログインユーザー自身の契約のPDFのみ表示可能
+    is_admin = request.user.is_superuser or request.user.has_perm('contract.confirm_staffcontract')
+    if not is_admin and print_history.staff_contract.staff.email != request.user.email:
         raise Http404("このPDFにアクセスする権限がありません")
     
     if not print_history.pdf_file:
