@@ -20,6 +20,7 @@
                     <th>評価</th>
                     <th>コメント</th>
                     <th>評価者</th>
+                    <th>操作</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,12 +29,24 @@
                     <td>{{ eval.evaluation_date }}</td>
                     <td><span class="badge bg-warning text-dark">{{ eval.rating }}</span></td>
                     <td>
-                        <a href="{% url 'staff:staff_evaluation_update' eval.pk %}">{{ eval.comment|default:"-"|truncatechars:30 }}</a>
+                        {{ eval.comment|default:"-"|truncatechars:30 }}
                     </td>
                     <td>{{ eval.evaluator|default:"-" }}</td>
+                    <td>
+                        {% if perms.staff.change_staffevaluation %}
+                        <a href="{% url 'staff:staff_evaluation_update' eval.pk %}" class="btn btn-dark btn-sm me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="編集">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        {% endif %}
+                        {% if perms.staff.delete_staffevaluation %}
+                        <a href="{% url 'staff:staff_evaluation_delete' eval.pk %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="削除">
+                            <i class="bi bi-x"></i>
+                        </a>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="4">履歴なし</td></tr>
+                <tr><td colspan="5">履歴なし</td></tr>
                 {% endfor %}
             </tbody>
         </table>
