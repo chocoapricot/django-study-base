@@ -250,14 +250,16 @@ def view_client_contract_pdf(request, pk):
     """
     print_history = get_object_or_404(ClientContractPrint, pk=pk)
     
-    # セキュリティチェック: ログインユーザーが所属するクライアントの契約のPDFのみ表示可能
-    try:
-        from apps.client.models import ClientUser
-        client_user = ClientUser.objects.get(email=request.user.email)
-        if print_history.client_contract.client != client_user.client:
+    # セキュリティチェック: 管理者またはログインユーザーが所属するクライアントの契約のPDFのみ表示可能
+    is_admin = request.user.is_superuser or request.user.has_perm('contract.confirm_clientcontract')
+    if not is_admin:
+        try:
+            from apps.client.models import ClientUser
+            client_user = ClientUser.objects.get(email=request.user.email)
+            if print_history.client_contract.client != client_user.client:
+                raise Http404("このPDFにアクセスする権限がありません")
+        except ClientUser.DoesNotExist:
             raise Http404("このPDFにアクセスする権限がありません")
-    except ClientUser.DoesNotExist:
-        raise Http404("このPDFにアクセスする権限がありません")
     
     if not print_history.pdf_file:
         raise Http404("PDFファイルが見つかりません")
@@ -275,14 +277,16 @@ def download_client_contract_pdf(request, pk):
     """Downloads a previously generated client contract PDF."""
     print_history = get_object_or_404(ClientContractPrint, pk=pk)
 
-    # セキュリティチェック: ログインユーザーが所属するクライアントの契約のPDFのみダウンロード可能
-    try:
-        from apps.client.models import ClientUser
-        client_user = ClientUser.objects.get(email=request.user.email)
-        if print_history.client_contract.client != client_user.client:
+    # セキュリティチェック: 管理者またはログインユーザーが所属するクライアントの契約のPDFのみダウンロード可能
+    is_admin = request.user.is_superuser or request.user.has_perm('contract.view_clientcontract')
+    if not is_admin:
+        try:
+            from apps.client.models import ClientUser
+            client_user = ClientUser.objects.get(email=request.user.email)
+            if print_history.client_contract.client != client_user.client:
+                raise Http404("このPDFにアクセスする権限がありません")
+        except ClientUser.DoesNotExist:
             raise Http404("このPDFにアクセスする権限がありません")
-    except ClientUser.DoesNotExist:
-        raise Http404("このPDFにアクセスする権限がありません")
 
     if not print_history.pdf_file:
         raise Http404("PDFファイルが見つかりません")

@@ -11,5 +11,5 @@ pillow==12.0.0
 pypdfium2==5.2.0
 python-stdnum==2.1
 python-dateutil==2.9.0.post0
-reportlab==4.4.6
+reportlab==4.4.7
 requests==2.32.5
