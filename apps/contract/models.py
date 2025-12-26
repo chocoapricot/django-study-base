@@ -168,12 +168,30 @@ class ClientContract(MyModel):
             int: 割当パーセンテージ（0-100）、未割当の場合は0
         """
         from datetime import date, timedelta
+        from apps.master.models import UserParameter
         
         # クライアント契約期間の総日数を計算
         if not self.start_date:
             return 0
+        
+        # 関連するContractAssignmentを取得
+        assignments = self.contractassignment_set.all()
+        
+        if not assignments.exists():
+            return 0
+        
+        # 無期限契約の場合は、ユーザーパラメータから日数を取得して計算
+        if not self.end_date:
+            try:
+                param = UserParameter.objects.get(key='Contract.unlimited_calculation_days')
+                calculation_days = param.get_number_value() or 365  # デフォルト365日
+            except UserParameter.DoesNotExist:
+                calculation_days = 365  # パラメータが存在しない場合のデフォルト値
             
-        contract_end_date = self.end_date or date.today()
+            contract_end_date = date.today() + timedelta(days=calculation_days)
+        else:
+            contract_end_date = self.end_date
+            
         contract_start_date = self.start_date
         
         # 契約期間の総日数
@@ -184,12 +202,6 @@ class ClientContract(MyModel):
         
         # 割当済み日数を計算
         assigned_days = 0
-        
-        # 関連するContractAssignmentを取得
-        assignments = self.contractassignment_set.all()
-        
-        if not assignments.exists():
-            return 0
         
         # 各割当の期間を計算し、重複を考慮して合計する
         assigned_periods = []
@@ -242,6 +254,12 @@ class ClientContract(MyModel):
             # マージされた期間の日数を合計
             for start, end in merged_periods:
                 assigned_days += (end - start).days + 1
+        
+        # パーセンテージを計算（小数点以下切り捨て）
+        percentage = int((assigned_days / total_contract_days) * 100)
+        
+        # 100%を超える場合は100%に制限
+        return min(percentage, 100)
         
         # パーセンテージを計算（小数点以下切り捨て）
         percentage = int((assigned_days / total_contract_days) * 100)
@@ -486,12 +504,30 @@ class StaffContract(MyModel):
             int: 割当パーセンテージ（0-100）、未割当の場合は0
         """
         from datetime import date, timedelta
+        from apps.master.models import UserParameter
         
         # スタッフ契約期間の総日数を計算
         if not self.start_date:
             return 0
+        
+        # 関連するContractAssignmentを取得
+        assignments = self.contractassignment_set.all()
+        
+        if not assignments.exists():
+            return 0
+        
+        # 無期限契約の場合は、ユーザーパラメータから日数を取得して計算
+        if not self.end_date:
+            try:
+                param = UserParameter.objects.get(key='Contract.unlimited_calculation_days')
+                calculation_days = param.get_number_value() or 365  # デフォルト365日
+            except UserParameter.DoesNotExist:
+                calculation_days = 365  # パラメータが存在しない場合のデフォルト値
             
-        contract_end_date = self.end_date or date.today()
+            contract_end_date = date.today() + timedelta(days=calculation_days)
+        else:
+            contract_end_date = self.end_date
+            
         contract_start_date = self.start_date
         
         # 契約期間の総日数
@@ -502,12 +538,6 @@ class StaffContract(MyModel):
         
         # 割当済み日数を計算
         assigned_days = 0
-        
-        # 関連するContractAssignmentを取得
-        assignments = self.contractassignment_set.all()
-        
-        if not assignments.exists():
-            return 0
         
         # 各割当の期間を計算し、重複を考慮して合計する
         assigned_periods = []
