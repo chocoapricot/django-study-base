@@ -587,6 +587,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return new bootstrap.Tooltip(tooltipTriggerEl)
   })
 </script>
+{% load parameters %}
 <script>
     // 通知未読数を更新する関数
     function updateNotificationCount() {
@@ -606,9 +607,24 @@ document.addEventListener("DOMContentLoaded", function () {
     
     // ページ読み込み時に実行
     document.addEventListener('DOMContentLoaded', function() {
+        // パラメータから通知カウント間隔を取得（デフォルト30秒）
+        let intervalSeconds = parseInt('{% parameter "NOTIFICATION_COUNT_INTERVAL" "30" %}');
+        
+        // 値の妥当性チェック（最小5秒、最大300秒）
+        if (isNaN(intervalSeconds) || intervalSeconds < 5) {
+            intervalSeconds = 5;
+        } else if (intervalSeconds > 300) {
+            intervalSeconds = 300;
+        }
+        
+        // 初回実行
         updateNotificationCount();
-        // 30秒ごとに更新
-        setInterval(updateNotificationCount, 30000);
+        
+        // 設定された間隔で定期更新（ミリ秒に変換）
+        const intervalMs = intervalSeconds * 1000;
+        setInterval(updateNotificationCount, intervalMs);
+        
+        console.log(`通知カウント更新間隔: ${intervalSeconds}秒`);
     });
 </script>
 {% block extra_js %}{% endblock %}
