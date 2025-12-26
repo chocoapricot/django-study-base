@@ -145,7 +145,7 @@
         "updated_by": 1,
         "category": "notification",
         "key": "NOTIFICATION_COUNT_INTERVAL",
-        "value": "30",
+        "value": "300",
         "default_value": "30",
         "note": "通知カウントの更新間隔（秒）",
         "disp_seq": 1,
