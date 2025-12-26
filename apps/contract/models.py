@@ -160,6 +160,95 @@ class ClientContract(MyModel):
     def __str__(self):
         return f"{self.client.name} - {self.contract_name}"
     
+    def get_assignment_percentage(self):
+        """
+        クライアント契約期間に対する割当済み日数のパーセンテージを計算する
+        
+        Returns:
+            int: 割当パーセンテージ（0-100）、未割当の場合は0
+        """
+        from datetime import date, timedelta
+        
+        # クライアント契約期間の総日数を計算
+        if not self.start_date:
+            return 0
+            
+        contract_end_date = self.end_date or date.today()
+        contract_start_date = self.start_date
+        
+        # 契約期間の総日数
+        total_contract_days = (contract_end_date - contract_start_date).days + 1
+        
+        if total_contract_days <= 0:
+            return 0
+        
+        # 割当済み日数を計算
+        assigned_days = 0
+        
+        # 関連するContractAssignmentを取得
+        assignments = self.contractassignment_set.all()
+        
+        if not assignments.exists():
+            return 0
+        
+        # 各割当の期間を計算し、重複を考慮して合計する
+        assigned_periods = []
+        
+        for assignment in assignments:
+            # 割当開始日と終了日を取得
+            assignment_start = assignment.assignment_start_date
+            assignment_end = assignment.assignment_end_date
+            
+            # 割当開始日が設定されていない場合は、契約期間の重複部分を使用
+            if not assignment_start:
+                staff_start = assignment.staff_contract.start_date
+                assignment_start = max(contract_start_date, staff_start) if staff_start else contract_start_date
+            
+            # 割当終了日が設定されていない場合は、契約期間の重複部分を使用
+            if not assignment_end:
+                staff_end = assignment.staff_contract.end_date
+                if staff_end:
+                    assignment_end = min(contract_end_date, staff_end)
+                else:
+                    assignment_end = contract_end_date
+            
+            # クライアント契約期間内の割当期間のみを対象とする
+            period_start = max(assignment_start, contract_start_date)
+            period_end = min(assignment_end, contract_end_date)
+            
+            if period_start <= period_end:
+                assigned_periods.append((period_start, period_end))
+        
+        # 重複する期間をマージして実際の割当日数を計算
+        if assigned_periods:
+            # 期間を開始日でソート
+            assigned_periods.sort(key=lambda x: x[0])
+            
+            merged_periods = []
+            current_start, current_end = assigned_periods[0]
+            
+            for start, end in assigned_periods[1:]:
+                if start <= current_end + timedelta(days=1):
+                    # 重複または連続する期間をマージ
+                    current_end = max(current_end, end)
+                else:
+                    # 新しい期間として追加
+                    merged_periods.append((current_start, current_end))
+                    current_start, current_end = start, end
+            
+            # 最後の期間を追加
+            merged_periods.append((current_start, current_end))
+            
+            # マージされた期間の日数を合計
+            for start, end in merged_periods:
+                assigned_days += (end - start).days + 1
+        
+        # パーセンテージを計算（小数点以下切り捨て）
+        percentage = int((assigned_days / total_contract_days) * 100)
+        
+        # 100%を超える場合は100%に制限
+        return min(percentage, 100)
+    
     @property
     def is_approved_or_later(self):
         """承認済、またはそれ以降のステータスかどうかを判定する"""
@@ -388,6 +477,95 @@ class StaffContract(MyModel):
         else:
             end_str = '無期限'
         return f"{start_str} ～ {end_str}"
+    
+    def get_assignment_percentage(self):
+        """
+        スタッフ契約期間に対する割当済み日数のパーセンテージを計算する
+        
+        Returns:
+            int: 割当パーセンテージ（0-100）、未割当の場合は0
+        """
+        from datetime import date, timedelta
+        
+        # スタッフ契約期間の総日数を計算
+        if not self.start_date:
+            return 0
+            
+        contract_end_date = self.end_date or date.today()
+        contract_start_date = self.start_date
+        
+        # 契約期間の総日数
+        total_contract_days = (contract_end_date - contract_start_date).days + 1
+        
+        if total_contract_days <= 0:
+            return 0
+        
+        # 割当済み日数を計算
+        assigned_days = 0
+        
+        # 関連するContractAssignmentを取得
+        assignments = self.contractassignment_set.all()
+        
+        if not assignments.exists():
+            return 0
+        
+        # 各割当の期間を計算し、重複を考慮して合計する
+        assigned_periods = []
+        
+        for assignment in assignments:
+            # 割当開始日と終了日を取得
+            assignment_start = assignment.assignment_start_date
+            assignment_end = assignment.assignment_end_date
+            
+            # 割当開始日が設定されていない場合は、契約期間の重複部分を使用
+            if not assignment_start:
+                client_start = assignment.client_contract.start_date
+                assignment_start = max(contract_start_date, client_start) if client_start else contract_start_date
+            
+            # 割当終了日が設定されていない場合は、契約期間の重複部分を使用
+            if not assignment_end:
+                client_end = assignment.client_contract.end_date
+                if client_end:
+                    assignment_end = min(contract_end_date, client_end)
+                else:
+                    assignment_end = contract_end_date
+            
+            # スタッフ契約期間内の割当期間のみを対象とする
+            period_start = max(assignment_start, contract_start_date)
+            period_end = min(assignment_end, contract_end_date)
+            
+            if period_start <= period_end:
+                assigned_periods.append((period_start, period_end))
+        
+        # 重複する期間をマージして実際の割当日数を計算
+        if assigned_periods:
+            # 期間を開始日でソート
+            assigned_periods.sort(key=lambda x: x[0])
+            
+            merged_periods = []
+            current_start, current_end = assigned_periods[0]
+            
+            for start, end in assigned_periods[1:]:
+                if start <= current_end + timedelta(days=1):
+                    # 重複または連続する期間をマージ
+                    current_end = max(current_end, end)
+                else:
+                    # 新しい期間として追加
+                    merged_periods.append((current_start, current_end))
+                    current_start, current_end = start, end
+            
+            # 最後の期間を追加
+            merged_periods.append((current_start, current_end))
+            
+            # マージされた期間の日数を合計
+            for start, end in merged_periods:
+                assigned_days += (end - start).days + 1
+        
+        # パーセンテージを計算（小数点以下切り捨て）
+        percentage = int((assigned_days / total_contract_days) * 100)
+        
+        # 100%を超える場合は100%に制限
+        return min(percentage, 100)
     
     def clean(self):
         """バリデーション"""

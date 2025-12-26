@@ -207,11 +207,15 @@
                                         {{ contract.contract_number|default:"-" }}
                                     </td>
                                     <td>
-                                        {% if contract.staff_contract_count > 0 %}
-                                            <span class="badge bg-success">割当済</span>
-                                        {% else %}
-                                            -
-                                        {% endif %}
+                                        {% with percentage=contract.get_assignment_percentage %}
+                                            {% if percentage == 0 %}
+                                                -
+                                            {% elif percentage == 100 %}
+                                                <span class="badge bg-success">割当済</span>
+                                            {% else %}
+                                                <span class="badge bg-info">{{ percentage }}%</span>
+                                            {% endif %}
+                                        {% endwith %}
                                     </td>
                                     <td>
                                         {% if not client_filter %}
