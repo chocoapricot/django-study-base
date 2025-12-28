@@ -35,7 +35,7 @@ urlpatterns = [
     path('timecard/import/progress/<str:task_id>/', views.timecard_import_progress, name='timecard_import_progress'),
     
     # スタッフ向けタイムカード登録
-    path('staff/dashboard/', views.staff_dashboard, name='staff_dashboard'),
+
     path('staff/timecard/register/', views.staff_timecard_register, name='staff_timecard_register'),
     path('staff/timecard/register/<int:contract_pk>/<str:target_month>/', views.staff_timecard_register_detail, name='staff_timecard_register_detail'),
 ]

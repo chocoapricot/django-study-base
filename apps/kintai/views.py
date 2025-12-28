@@ -1484,50 +1484,7 @@ def timecard_import_progress(request, task_id):
     
     return JsonResponse(task_info)
 
-@login_required
-def staff_dashboard(request):
-    """スタッフ向けダッシュボード - 自分の勤怠状況を表示"""
-    from datetime import date, datetime
-    from django.db.models import Q
-    from apps.contract.models import StaffContract
-    from apps.staff.models import Staff
-    
-    # ログインユーザーに紐づくスタッフを取得
-    try:
-        # ユーザーのメールアドレスでスタッフを検索
-        staff = Staff.objects.get(email=request.user.email)
-    except Staff.DoesNotExist:
-        messages.error(request, 'スタッフ情報が見つかりません。管理者にお問い合わせください。')
-        return redirect('/')
-    
-    # 現在有効な契約を取得
-    today = date.today()
-    active_contracts = StaffContract.objects.filter(
-        staff=staff,
-        start_date__lte=today
-    ).filter(
-        Q(end_date__gte=today) | Q(end_date__isnull=True)
-    ).order_by('-start_date')
-    
-    # 各契約の最近の勤怠状況を取得
-    contract_data = []
-    for contract in active_contracts:
-        # 最近3ヶ月の勤怠を取得
-        recent_timesheets = StaffTimesheet.objects.filter(
-            staff_contract=contract
-        ).order_by('-target_month')[:3]
-        
-        contract_data.append({
-            'contract': contract,
-            'recent_timesheets': recent_timesheets,
-        })
-    
-    context = {
-        'staff': staff,
-        'contract_data': contract_data,
-        'today': today,
-    }
-    return render(request, 'kintai/staff_dashboard.html', context)
+
 
 
 @login_required

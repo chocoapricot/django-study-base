@@ -59,30 +59,11 @@ class StaffViewsTest(TestCase):
         # テスト用クライアントを作成
         self.test_client = Client()
         
-    def test_staff_dashboard_requires_login(self):
-        """ダッシュボードはログインが必要"""
-        response = self.test_client.get(reverse('kintai:staff_dashboard'))
-        self.assertEqual(response.status_code, 302)  # リダイレクト
+
         
-    def test_staff_dashboard_with_valid_staff(self):
-        """有効なスタッフでダッシュボードにアクセス"""
-        self.test_client.login(username='test_staff', password='testpass123')
-        response = self.test_client.get(reverse('kintai:staff_dashboard'))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'テスト 太郎')
-        self.assertContains(response, 'テスト契約')
+
         
-    def test_staff_dashboard_without_staff_record(self):
-        """スタッフレコードがない場合はリダイレクト"""
-        # 別のユーザーを作成（スタッフレコードなし）
-        user2 = User.objects.create_user(
-            username='no_staff',
-            email='no_staff@example.com',
-            password='testpass123'
-        )
-        self.test_client.login(username='no_staff', password='testpass123')
-        response = self.test_client.get(reverse('kintai:staff_dashboard'))
-        self.assertEqual(response.status_code, 302)  # リダイレクト
+
         
     def test_staff_timecard_register_requires_login(self):
         """タイムカード登録はログインが必要"""

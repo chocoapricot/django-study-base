@@ -57,14 +57,6 @@ def get_filtered_informations(user):
 
 @login_required
 def home(request):
-    # スタッフ接続の承認状態を確認し、承認済みならスタッフダッシュボードへリダイレクト
-    # ただし、スーパーユーザーは除外
-    # 無限ループ防止のため、Staffレコードが存在することも確認する
-    if not request.user.is_superuser:
-        if ConnectStaff.objects.filter(email=request.user.email, status=Constants.CONNECT_STATUS.APPROVED).exists():
-            if Staff.objects.filter(email=request.user.email).exists():
-                return redirect('kintai:staff_dashboard')
-
     all_informations = get_filtered_informations(request.user).order_by('-start_date')
     information_list = all_informations[:5]
     information_count = all_informations.count()

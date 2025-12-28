@@ -5,6 +5,7 @@ from apps.accounts.models import MyUser
 from apps.staff.models import Staff
 from apps.connect.models import ConnectStaff, MynumberRequest
 from apps.profile.models import StaffProfile, StaffProfileMynumber
+from apps.common.constants import Constants
 
 
 class HomeViewTest(TestCase):
@@ -155,28 +156,7 @@ class HomeViewTest(TestCase):
         self.assertEqual(response.context['staff_request_count'], 0)
         self.assertNotContains(response, f'href="{reverse("staff:staff_list")}?has_request=true"')
 
-    def test_home_view_redirects_for_approved_staff(self):
-        """
-        承認済みスタッフはスタッフダッシュボードへリダイレクトされることをテスト
-        """
-        # 一般ユーザーとしてログイン
-        staff_user = MyUser.objects.create_user(
-            username='staff_test@example.com',
-            email='staff_test@example.com',
-            password='password'
-        )
-        self.client.login(email='staff_test@example.com', password='password')
-        
-        # Staffが存在し、ConnectStaffが承認済み
-        Staff.objects.create(email='staff_test@example.com', name_last='Test', name_first='Staff')
-        ConnectStaff.objects.create(
-            email='staff_test@example.com',
-            corporate_number='1111111111111',
-            status=Constants.CONNECT_STATUS.APPROVED
-        )
-        
-        response = self.client.get(self.home_url)
-        self.assertRedirects(response, reverse('kintai:staff_dashboard'))
+
 
     def test_home_view_does_not_redirect_for_superuser_staff(self):
         """
