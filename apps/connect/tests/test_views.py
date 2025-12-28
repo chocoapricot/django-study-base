@@ -82,3 +82,13 @@ class StaffAgreeViewTest(TestCase):
         # 接続ステータスが 'approved' になっていることを確認
         self.connection.refresh_from_db()
         self.assertEqual(self.connection.status, 'approved')
+
+    def test_staff_agree_view_contains_company_name(self):
+        """同意画面に会社名が含まれていることをテスト"""
+        self.client.login(email='approver@example.com', password='TestPass123!')
+        
+        agree_url = reverse('connect:staff_agree', kwargs={'pk': self.connection.pk})
+        response = self.client.get(agree_url)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f'{self.company.name} - 同意確認')

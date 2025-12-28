@@ -132,6 +132,13 @@ def staff_agree(request, pk):
     """スタッフの同意取得画面"""
     connection = get_object_or_404(ConnectStaff, pk=pk)
 
+    # 会社情報を取得
+    from apps.company.models import Company
+    try:
+        company = Company.objects.get(corporate_number=connection.corporate_number)
+    except Company.DoesNotExist:
+        company = None
+
     required_agreements = StaffAgreement.objects.filter(
         corporation_number=connection.corporate_number,
         is_active=True
@@ -171,6 +178,7 @@ def staff_agree(request, pk):
     return render(request, 'connect/staff_agree.html', {
         'form': form,
         'connection': connection,
+        'company': company,
         'unagreed_agreements': unagreed_agreements,
     })
 
