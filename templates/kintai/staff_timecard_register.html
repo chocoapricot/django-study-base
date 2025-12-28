@@ -1,0 +1,108 @@
+{% extends 'common/_base.html' %}
+{% load help_tags %}
+
+{% block title %}タイムカード登録{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        タイムカード登録
+        <a href="{% url 'kintai:staff_dashboard' %}" class="btn btn-sm btn-secondary">
+            <i class="bi bi-arrow-left"></i> ダッシュボードに戻る
+        </a>
+    </div>
+    <div class="card-body">
+        <!-- 年月選択 -->
+        <div class="mb-4">
+            <form method="get" class="row align-items-end">
+                <div class="col-md-3">
+                    <label for="target_month" class="form-label"><strong>対象年月</strong></label>
+                    <input type="month" id="target_month" name="target_month" 
+                           value="{{ year }}-{{ month|stringformat:'02d' }}" 
+                           class="form-control form-control-sm">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-sm btn-primary">検索</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- スタッフ情報 -->
+        <div class="mb-4">
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-4 text-start text-md-end">
+                    <strong>対象年月</strong>
+                </div>
+                <div class="col-sm">
+                    {{ year }}年{{ month }}月
+                </div>
+            </div>
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-4 text-start text-md-end">
+                    <strong>スタッフ</strong>
+                </div>
+                <div class="col-sm">
+                    {{ staff.name_last }} {{ staff.name_first }} ({{ staff.employee_no|default:"社員番号未設定" }})
+                </div>
+            </div>
+        </div>
+
+        <!-- 契約一覧 -->
+        {% if contract_list %}
+        <div class="table-responsive">
+            <table class="table table-hover" style="border-top: 1px solid #ddd;">
+                <thead>
+                    <tr>
+                        <th>クライアント</th>
+                        <th>契約期間</th>
+                        <th>入力状況</th>
+                        <th>入力日数</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in contract_list %}
+                    <tr>
+                        <td>{{ data.contract.contract_name }}</td>
+                        <td>
+                            {{ data.contract.start_date|date:'Y/m/d' }}
+                            ～
+                            {{ data.contract.end_date|date:'Y/m/d'|default:"継続中" }}
+                        </td>
+                        <td>
+                            {% if data.status == 'not_input' %}
+                                <span class="badge bg-secondary">未入力</span>
+                            {% elif data.status == 'inputting' %}
+                                <span class="badge bg-warning">入力中</span>
+                            {% elif data.status == 'inputted' %}
+                                <span class="badge bg-success">入力済</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ data.input_days }} / {{ data.required_days }}日</td>
+                        <td>
+                            {% if data.timesheet %}
+                                <a href="{% url 'kintai:timecard_calendar' timesheet_pk=data.timesheet.pk %}" 
+                                   class="btn btn-sm btn-primary">
+                                    <i class="bi bi-calendar"></i> 編集
+                                </a>
+                            {% else %}
+                                <a href="{% url 'kintai:staff_timecard_register_detail' contract_pk=data.contract.pk target_month=target_date|date:'Y-m' %}" 
+                                   class="btn btn-sm btn-success">
+                                    <i class="bi bi-plus-circle"></i> 新規作成
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            {{ year }}年{{ month }}月に有効な契約がありません。
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

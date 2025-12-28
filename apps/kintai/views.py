@@ -1483,3 +1483,184 @@ def timecard_import_progress(request, task_id):
         return JsonResponse({'error': '無効なタスクIDです。'}, status=404)
     
     return JsonResponse(task_info)
+
+@login_required
+def staff_dashboard(request):
+    """スタッフ向けダッシュボード - 自分の勤怠状況を表示"""
+    from datetime import date, datetime
+    from django.db.models import Q
+    from apps.contract.models import StaffContract
+    from apps.staff.models import Staff
+    
+    # ログインユーザーに紐づくスタッフを取得
+    try:
+        # ユーザーのメールアドレスでスタッフを検索
+        staff = Staff.objects.get(email=request.user.email)
+    except Staff.DoesNotExist:
+        messages.error(request, 'スタッフ情報が見つかりません。管理者にお問い合わせください。')
+        return redirect('/')
+    
+    # 現在有効な契約を取得
+    today = date.today()
+    active_contracts = StaffContract.objects.filter(
+        staff=staff,
+        start_date__lte=today
+    ).filter(
+        Q(end_date__gte=today) | Q(end_date__isnull=True)
+    ).order_by('-start_date')
+    
+    # 各契約の最近の勤怠状況を取得
+    contract_data = []
+    for contract in active_contracts:
+        # 最近3ヶ月の勤怠を取得
+        recent_timesheets = StaffTimesheet.objects.filter(
+            staff_contract=contract
+        ).order_by('-target_month')[:3]
+        
+        contract_data.append({
+            'contract': contract,
+            'recent_timesheets': recent_timesheets,
+        })
+    
+    context = {
+        'staff': staff,
+        'contract_data': contract_data,
+        'today': today,
+    }
+    return render(request, 'kintai/staff_dashboard.html', context)
+
+
+@login_required
+def staff_timecard_register(request):
+    """スタッフ向けタイムカード登録 - 契約選択画面"""
+    from datetime import date
+    from django.db.models import Q
+    from apps.contract.models import StaffContract
+    from apps.staff.models import Staff
+    
+    # ログインユーザーに紐づくスタッフを取得
+    try:
+        staff = Staff.objects.get(email=request.user.email)
+    except Staff.DoesNotExist:
+        messages.error(request, 'スタッフ情報が見つかりません。管理者にお問い合わせください。')
+        return redirect('/')
+    
+    # 年月の取得（デフォルトは当月）
+    today = date.today()
+    target_month_str = request.GET.get('target_month')
+    
+    if target_month_str:
+        try:
+            year, month = map(int, target_month_str.split('-'))
+            target_date = date(year, month, 1)
+        except ValueError:
+            year = today.year
+            month = today.month
+            target_date = date(year, month, 1)
+    else:
+        year = today.year
+        month = today.month
+        target_date = date(year, month, 1)
+    
+    # 月末日を計算
+    import calendar
+    _, last_day = calendar.monthrange(year, month)
+    month_end = date(year, month, last_day)
+    
+    # 指定月に有効な契約を取得
+    contracts = StaffContract.objects.filter(
+        staff=staff,
+        start_date__lte=month_end
+    ).filter(
+        Q(end_date__gte=target_date) | Q(end_date__isnull=True)
+    ).order_by('-start_date')
+    
+    # 各契約の勤怠状況を確認
+    contract_list = []
+    for contract in contracts:
+        timesheet = StaffTimesheet.objects.filter(
+            staff_contract=contract,
+            target_month=target_date
+        ).first()
+        
+        input_days = 0
+        if timesheet:
+            input_days = timesheet.timecards.count()
+        
+        # 契約期間と対象月の重なる日数を計算
+        c_start = contract.start_date
+        c_end = contract.end_date
+        
+        overlap_start = max(target_date, c_start) if c_start else target_date
+        overlap_end = min(month_end, c_end) if c_end else month_end
+        
+        if overlap_start <= overlap_end:
+            required_days = (overlap_end - overlap_start).days + 1
+        else:
+            required_days = 0
+        
+        # ステータス判定
+        status = 'not_input'  # 未入力
+        if input_days > 0:
+            if input_days >= required_days:
+                status = 'inputted'  # 入力済
+            else:
+                status = 'inputting'  # 入力中
+        
+        contract_list.append({
+            'contract': contract,
+            'timesheet': timesheet,
+            'input_days': input_days,
+            'required_days': required_days,
+            'status': status,
+        })
+    
+    context = {
+        'staff': staff,
+        'contract_list': contract_list,
+        'year': year,
+        'month': month,
+        'target_date': target_date,
+    }
+    return render(request, 'kintai/staff_timecard_register.html', context)
+
+
+@login_required
+def staff_timecard_register_detail(request, contract_pk, target_month):
+    """スタッフ向けタイムカード登録 - 詳細入力画面"""
+    from datetime import date, datetime
+    from apps.contract.models import StaffContract
+    from apps.staff.models import Staff
+    
+    # ログインユーザーに紐づくスタッフを取得
+    try:
+        staff = Staff.objects.get(email=request.user.email)
+    except Staff.DoesNotExist:
+        messages.error(request, 'スタッフ情報が見つかりません。管理者にお問い合わせください。')
+        return redirect('/')
+    
+    # 契約を取得（自分の契約のみ）
+    contract = get_object_or_404(StaffContract, pk=contract_pk, staff=staff)
+    
+    # 対象年月をパース
+    try:
+        year, month = map(int, target_month.split('-'))
+        target_date = date(year, month, 1)
+    except ValueError:
+        messages.error(request, '無効な年月形式です。')
+        return redirect('kintai:staff_timecard_register')
+    
+    # 月次勤怠を取得または作成
+    timesheet, created = StaffTimesheet.objects.get_or_create(
+        staff_contract=contract,
+        target_month=target_date,
+        defaults={
+            'staff': staff,
+        }
+    )
+    
+    if created:
+        messages.success(request, f'{year}年{month}月の月次勤怠を作成しました。')
+    
+    # カレンダー入力画面にリダイレクト
+    return redirect('kintai:timecard_calendar', timesheet_pk=timesheet.pk)

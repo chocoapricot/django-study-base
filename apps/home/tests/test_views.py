@@ -154,3 +154,72 @@ class HomeViewTest(TestCase):
         self.assertIn('staff_request_count', response.context)
         self.assertEqual(response.context['staff_request_count'], 0)
         self.assertNotContains(response, f'href="{reverse("staff:staff_list")}?has_request=true"')
+
+    def test_home_view_redirects_for_approved_staff(self):
+        """
+        承認済みスタッフはスタッフダッシュボードへリダイレクトされることをテスト
+        """
+        # 一般ユーザーとしてログイン
+        staff_user = MyUser.objects.create_user(
+            username='staff_test@example.com',
+            email='staff_test@example.com',
+            password='password'
+        )
+        self.client.login(email='staff_test@example.com', password='password')
+        
+        # Staffが存在し、ConnectStaffが承認済み
+        Staff.objects.create(email='staff_test@example.com', name_last='Test', name_first='Staff')
+        ConnectStaff.objects.create(
+            email='staff_test@example.com',
+            corporate_number='1111111111111',
+            status=Constants.CONNECT_STATUS.APPROVED
+        )
+        
+        response = self.client.get(self.home_url)
+        self.assertRedirects(response, reverse('kintai:staff_dashboard'))
+
+    def test_home_view_does_not_redirect_for_superuser_staff(self):
+        """
+        承認済みスタッフであってもスーパーユーザーはリダイレクトされないことをテスト
+        """
+        # スーパーユーザーとしてログイン
+        superuser = MyUser.objects.create_superuser(
+            username='super_staff@example.com',
+            email='super_staff@example.com',
+            password='password'
+        )
+        self.client.login(email='super_staff@example.com', password='password')
+        
+        # Staffが存在し、ConnectStaffが承認済み
+        Staff.objects.create(email='super_staff@example.com', name_last='Super', name_first='Staff')
+        ConnectStaff.objects.create(
+            email='super_staff@example.com',
+            corporate_number='2222222222222',
+            status=Constants.CONNECT_STATUS.APPROVED
+        )
+        
+        response = self.client.get(self.home_url)
+        self.assertEqual(response.status_code, 200) # リダイレクトされずホーム画面が表示される
+
+    def test_home_view_does_not_redirect_when_staff_model_missing(self):
+        """
+        ConnectStaffが承認済みでもStaffモデルが存在しない場合はリダイレクトされないことをテスト（無限ループ防止）
+        """
+        # 一般ユーザーとしてログイン
+        user = MyUser.objects.create_user(
+            username='missing_staff@example.com',
+            email='missing_staff@example.com',
+            password='password'
+        )
+        self.client.login(email='missing_staff@example.com', password='password')
+        
+        # ConnectStaffは承認済みだが、Staffが存在しない
+        ConnectStaff.objects.create(
+            email='missing_staff@example.com',
+            corporate_number='3333333333333',
+            status=Constants.CONNECT_STATUS.APPROVED
+        )
+        # Staff.objects.create(...) はしない
+        
+        response = self.client.get(self.home_url)
+        self.assertEqual(response.status_code, 200) # リダイレクトされない

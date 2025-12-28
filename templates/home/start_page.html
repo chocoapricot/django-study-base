@@ -246,10 +246,24 @@
           });
 
         // 3. 進捗のポーリングを開始
+        let errorCount = 0;
+        const maxErrors = 10; // エラー許容回数（DBロック待機用）
+
         const interval = setInterval(() => {
           fetch(`/setup/progress/${taskId}/`)
-          .then(response => response.json())
+          .then(response => {
+            if (!response.ok) {
+              // サーバーエラー（500など）の場合はテキストとして取得し、エラーを投げる
+              return response.text().then(text => {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              });
+            }
+            return response.json();
+          })
           .then(data => {
+            // 成功した場合はエラーカウントをリセット
+            errorCount = 0;
+
             if (data.error) {
               throw new Error(data.error);
             }
@@ -304,11 +318,17 @@
             }
           })
           .catch(error => {
-            clearInterval(interval);
-            progressContainer.style.display = 'none';
-            setupButton.disabled = false;
-            setupButton.innerHTML = '<i class="bi bi-play-circle me-1"></i>初期セットアップを実行';
-            resultContainer.innerHTML = `<div class="alert alert-danger">進捗の取得中にエラーが発生しました: ${error.message}</div>`;
+            console.warn('Progress fetch error:', error);
+            errorCount++;
+            
+            // エラー許容回数を超えた場合のみ中断
+            if (errorCount > maxErrors) {
+              clearInterval(interval);
+              progressContainer.style.display = 'none';
+              setupButton.disabled = false;
+              setupButton.innerHTML = '<i class="bi bi-play-circle me-1"></i>初期セットアップを実行';
+              resultContainer.innerHTML = `<div class="alert alert-danger">通信エラーが続いたため中断しました: ${error.message}</div>`;
+            }
           });
         }, 2000);
       })

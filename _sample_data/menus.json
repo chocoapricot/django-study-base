@@ -649,5 +649,47 @@
         "disp_seq": 72,
         "active": true
     }
+},
+{
+    "model": "settings.menu",
+    "pk": 33,
+    "fields": {
+        "version": 2,
+        "created_at": "2025-12-27T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-12-28T11:25:00Z",
+        "updated_by": 1,
+        "name": "勤怠ダッシュボード",
+        "url": "/kintai/staff/dashboard/",
+        "icon": "bi-speedometer2",
+        "icon_style": "color:#28a745;",
+        "parent": null,
+        "level": 0,
+        "exact_match": false,
+        "required_permission": null,
+        "disp_seq": 80,
+        "active": true
+    }
+},
+{
+    "model": "settings.menu",
+    "pk": 34,
+    "fields": {
+        "version": 2,
+        "created_at": "2025-12-27T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-12-28T11:25:00Z",
+        "updated_by": 1,
+        "name": "タイムカード登録",
+        "url": "/kintai/staff/timecard/register/",
+        "icon": "bi-clock",
+        "icon_style": "color:#28a745;",
+        "parent": 33,
+        "level": 1,
+        "exact_match": false,
+        "required_permission": null,
+        "disp_seq": 81,
+        "active": true
+    }
 }
 ]

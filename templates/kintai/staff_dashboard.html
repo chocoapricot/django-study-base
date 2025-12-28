@@ -1,0 +1,122 @@
+{% extends 'common/_base.html' %}
+{% load help_tags %}
+
+{% block title %}勤怠ダッシュボード{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        勤怠ダッシュボード
+        <a href="{% url 'kintai:staff_timecard_register' %}" class="btn btn-sm btn-primary">
+            <i class="bi bi-plus-circle"></i> タイムカード登録
+        </a>
+    </div>
+    <div class="card-body">
+        <!-- スタッフ情報 -->
+        <div class="mb-4">
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-4 text-start text-md-end">
+                    <strong>氏名</strong>
+                </div>
+                <div class="col-sm">
+                    {{ staff.name_last }} {{ staff.name_first }}
+                </div>
+            </div>
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-4 text-start text-md-end">
+                    <strong>社員番号</strong>
+                </div>
+                <div class="col-sm">
+                    {{ staff.employee_no|default:"未設定" }}
+                </div>
+            </div>
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-4 text-start text-md-end">
+                    <strong>入社日</strong>
+                </div>
+                <div class="col-sm">
+                    {{ staff.hire_date|date:'Y/m/d'|default:"未設定" }}
+                </div>
+            </div>
+            <div class="row mb-3 align-items-center">
+                <div class="col-sm-4 text-start text-md-end">
+                    <strong>雇用形態</strong>
+                </div>
+                <div class="col-sm">
+                    {{ staff.employment_type|default:"未設定" }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 契約別勤怠状況 -->
+{% for data in contract_data %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        {{ data.contract.contract_name }}
+        <span class="text-muted" style="font-size: 0.9em;">
+            ({{ data.contract.start_date|date:'Y/m/d' }} ～ {{ data.contract.end_date|date:'Y/m/d'|default:"継続中" }})
+        </span>
+        <a href="{% url 'kintai:staff_timecard_register' %}" class="btn btn-sm btn-primary">
+            勤怠登録
+        </a>
+    </div>
+    <div class="card-body">
+        {% if data.recent_timesheets %}
+        <div class="table-responsive">
+            <table class="table table-hover" style="border-top: 1px solid #ddd;">
+                <thead>
+                    <tr>
+                        <th>対象年月</th>
+                        <th>ステータス</th>
+                        <th>出勤日数</th>
+                        <th>総労働時間</th>
+                        <th>残業時間</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for timesheet in data.recent_timesheets %}
+                    <tr>
+                        <td>{{ timesheet.target_month|date:"Y年n月" }}</td>
+                        <td>
+                            {% if timesheet.status == '10' %}
+                                <span class="badge bg-secondary">作成中</span>
+                            {% elif timesheet.status == '20' %}
+                                <span class="badge bg-info">提出済み</span>
+                            {% elif timesheet.status == '30' %}
+                                <span class="badge bg-success">承認済み</span>
+                            {% elif timesheet.status == '40' %}
+                                <span class="badge bg-warning">差戻し</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ timesheet.total_work_days }}日</td>
+                        <td>{{ timesheet.total_work_minutes|floatformat:0 }}分</td>
+                        <td>{{ timesheet.total_overtime_minutes|floatformat:0 }}分</td>
+                        <td>
+                            <a href="{% url 'kintai:timecard_calendar' timesheet_pk=timesheet.pk %}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-calendar"></i> 編集
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted">勤怠データがありません。</p>
+        {% endif %}
+    </div>
+</div>
+{% empty %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-body">
+        <div class="alert alert-info mb-0">
+            <i class="bi bi-info-circle"></i>
+            現在有効な契約がありません。管理者にお問い合わせください。
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
