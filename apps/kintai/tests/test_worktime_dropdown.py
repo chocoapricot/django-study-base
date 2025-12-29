@@ -12,6 +12,7 @@ from apps.master.models import (
     WorkTimePatternWork, WorkTimePatternBreak, PhraseTemplate, PhraseTemplateTitle
 )
 from apps.kintai.models import StaffTimesheet
+from apps.common.constants import Constants
 
 
 class WorkTimeDropdownTest(TestCase):
@@ -138,7 +139,8 @@ class WorkTimeDropdownTest(TestCase):
             contract_pattern=self.contract_pattern,
             start_date=date(2025, 11, 1),
             end_date=date(2025, 11, 30),
-            worktime_pattern=self.worktime_pattern
+            worktime_pattern=self.worktime_pattern,
+            contract_status=Constants.CONTRACT_STATUS.CONFIRMED
         )
 
     def test_timecard_calendar_initial_has_work_times_data(self):
@@ -209,7 +211,8 @@ class WorkTimeDropdownTest(TestCase):
             contract_pattern=self.contract_pattern,
             start_date=date(2025, 12, 1),
             end_date=date(2025, 12, 31),
-            worktime_pattern=None
+            worktime_pattern=None,
+            contract_status=Constants.CONTRACT_STATUS.CONFIRMED
         )
         
         url = reverse('kintai:timecard_calendar_initial', kwargs={

@@ -55,7 +55,8 @@ class TimesheetViewTest(TestCase):
             contract_name='2024年度契約',
             contract_pattern=self.contract_pattern,
             start_date=date(2024, 4, 1),
-            end_date=date(2025, 3, 31)
+            end_date=date(2025, 3, 31),
+            contract_status=Constants.CONTRACT_STATUS.CONFIRMED
         )
 
         # 月次勤怠作成
@@ -151,7 +152,8 @@ class TimecardViewTest(TestCase):
             contract_name='2024年度契約',
             contract_pattern=self.contract_pattern,
             start_date=date(2024, 4, 1),
-            end_date=date(2025, 3, 31)
+            end_date=date(2025, 3, 31),
+            contract_status=Constants.CONTRACT_STATUS.CONFIRMED
         )
 
         # 月次勤怠作成
