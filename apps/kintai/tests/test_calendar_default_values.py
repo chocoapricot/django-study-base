@@ -6,6 +6,7 @@ from apps.staff.models import Staff
 from apps.contract.models import StaffContract
 from apps.master.models import WorkTimePattern, WorkTimePatternWork, WorkTimePatternBreak, PhraseTemplate, PhraseTemplateTitle, EmploymentType, ContractPattern, OvertimePattern
 from apps.kintai.models import StaffTimesheet
+from apps.common.constants import Constants
 from datetime import date, time, datetime
 
 class TestCalendarDefaultValues(TestCase):
@@ -70,7 +71,8 @@ class TestCalendarDefaultValues(TestCase):
                 worktime_pattern=self.work_pattern,
                 employment_type=self.employment_type,
                 contract_pattern=self.contract_pattern,
-                overtime_pattern=self.overtime_pattern
+                overtime_pattern=self.overtime_pattern,
+                contract_status=Constants.CONTRACT_STATUS.CONFIRMED
             )
             print("DEBUG: setUp completed successfully")
         except Exception as e:

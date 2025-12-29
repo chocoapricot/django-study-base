@@ -69,7 +69,8 @@ class ContractSearchViewTest(TestCase):
             contract_name='2024年度契約',
             contract_pattern=self.contract_pattern,
             start_date=date(2024, 4, 1),
-            end_date=date(2025, 3, 31)
+            end_date=date(2025, 3, 31),
+            contract_status=Constants.CONTRACT_STATUS.CONFIRMED
         )
 
     def test_contract_search_view(self):
@@ -239,7 +240,8 @@ class ContractSearchViewTest(TestCase):
                 contract_name=f'契約{i}',
                 contract_pattern=self.contract_pattern,
                 start_date=date(2024, 4, 1),
-                end_date=date(2025, 3, 31)
+                end_date=date(2025, 3, 31),
+                contract_status=Constants.CONTRACT_STATUS.CONFIRMED
             )
             staffs.append(s)
             contracts.append(c)

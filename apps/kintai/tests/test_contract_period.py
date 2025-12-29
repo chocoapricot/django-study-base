@@ -7,6 +7,7 @@ from apps.contract.models import StaffContract
 from apps.kintai.models import StaffTimesheet
 from apps.kintai.forms import StaffTimecardForm
 from apps.master.models_contract import ContractPattern
+from apps.common.constants import Constants
 
 
 class ContractPeriodTests(TestCase):
@@ -33,6 +34,7 @@ class ContractPeriodTests(TestCase):
             contract_pattern=cp,
             start_date=date(2025, 3, 1),
             end_date=date(2025, 6, 30),
+            contract_status=Constants.CONTRACT_STATUS.CONFIRMED,
         )
 
         # Create timesheet for Feb 2025 which is outside the contract
@@ -53,6 +55,7 @@ class ContractPeriodTests(TestCase):
             contract_pattern=cp,
             start_date=date(2025, 4, 1),
             end_date=date(2025, 4, 30),
+            contract_status=Constants.CONTRACT_STATUS.CONFIRMED,
         )
 
         # Create timesheet for April
@@ -79,6 +82,7 @@ class ContractPeriodTests(TestCase):
             contract_pattern=cp,
             start_date=date(2025, 4, 5),
             end_date=date(2025, 4, 25),
+            contract_status=Constants.CONTRACT_STATUS.CONFIRMED,
         )
 
         ts = StaffTimesheet.objects.create(staff_contract=sc, staff=self.staff, target_month=date(2025, 4, 1))
