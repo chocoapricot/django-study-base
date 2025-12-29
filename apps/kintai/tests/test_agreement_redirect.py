@@ -72,6 +72,71 @@ class KintaiAgreementRedirectTest(TestCase):
             status='approved',
         )
 
+    def test_only_confirmed_contracts_are_listed(self):
+        """確認済み契約のみがリストに表示されるか"""
+        # 同意済み状態にする
+        ConnectStaffAgree.objects.create(
+            email=self.email,
+            corporate_number=self.corporate_number,
+            staff_agreement=self.agreement,
+            is_agreed=True,
+        )
+        
+        # 承認済み（未確認）の契約を追加
+        unconfirmed_contract = StaffContract.objects.create(
+            staff=self.staff,
+            corporate_number=self.corporate_number,
+            start_date=date(2025, 1, 1),
+            contract_pattern=self.pattern,
+            overtime_pattern=self.overtime,
+            contract_name='Unconfirmed Contract',
+            contract_status='10', # 承認済み (Constants.CONTRACT_STATUS.APPROVED)
+        )
+        
+        # 確認済みの契約を明示的に設定
+        self.contract.contract_status = '30' # Constants.CONTRACT_STATUS.CONFIRMED
+        self.contract.save()
+        
+        self.client.login(email=self.email, password=self.password)
+        
+        url = reverse('kintai:staff_timecard_register')
+        response = self.client.get(url)
+        
+        # 確認済みの契約のみが含まれていることを確認
+        self.assertContains(response, 'Test Contract')
+        self.assertNotContains(response, 'Unconfirmed Contract')
+
+    def test_cannot_access_unconfirmed_contract_detail(self):
+        """未確認の契約詳細（登録開始）にアクセスした際に404になるか"""
+        # 同意済み状態にする
+        ConnectStaffAgree.objects.create(
+            email=self.email,
+            corporate_number=self.corporate_number,
+            staff_agreement=self.agreement,
+            is_agreed=True,
+        )
+
+        unconfirmed_contract = StaffContract.objects.create(
+            staff=self.staff,
+            corporate_number=self.corporate_number,
+            start_date=date(2025, 1, 1),
+            contract_pattern=self.pattern,
+            overtime_pattern=self.overtime,
+            contract_name='Unconfirmed Contract',
+            contract_status='10',
+        )
+        
+        self.client.login(email=self.email, password=self.password)
+        
+        url = reverse('kintai:staff_timecard_register_detail', kwargs={
+            'contract_pk': unconfirmed_contract.pk,
+            'target_month': '2025-01'
+        })
+        response = self.client.get(url)
+        
+        # 404 Not Found (get_object_or_404で落ちるはず)
+        self.assertEqual(response.status_code, 404)
+
     def test_redirect_to_agree_page_from_register_list(self):
         """契約選択画面にアクセスした際に同意画面にリダイレクトされるか"""
         self.client.login(email=self.email, password=self.password)

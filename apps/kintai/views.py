@@ -6,6 +6,7 @@ from django.utils import timezone
 from .models import StaffTimesheet, StaffTimecard
 from .forms import StaffTimesheetForm, StaffTimecardForm
 from apps.profile.decorators import check_staff_agreement
+from apps.common.constants import Constants
 
 
 @login_required
@@ -719,6 +720,12 @@ def timecard_calendar(request, timesheet_pk):
     
     timesheet = get_object_or_404(StaffTimesheet, pk=timesheet_pk)
     
+    # スタッフの場合、確認済みの契約のみ編集可能
+    if not request.user.is_staff:
+        if timesheet.staff_contract and timesheet.staff_contract.contract_status != Constants.CONTRACT_STATUS.CONFIRMED:
+            messages.error(request, '確認済みの契約ではないため、このタイムカードは編集できません。')
+            return redirect('kintai:staff_timecard_register')
+
     if not timesheet.is_editable:
         messages.error(request, 'この月次勤怠は編集できません。')
         return redirect('kintai:timesheet_detail', pk=timesheet_pk)
@@ -901,6 +908,12 @@ def timecard_calendar_initial(request, contract_pk, target_month):
     from apps.contract.models import StaffContract
     
     contract = get_object_or_404(StaffContract, pk=contract_pk)
+
+    # スタッフの場合、確認済みの契約のみ登録可能
+    if not request.user.is_staff:
+        if contract.contract_status != Constants.CONTRACT_STATUS.CONFIRMED:
+            messages.error(request, '確認済みの契約ではないため、このタイムカードは登録できません。')
+            return redirect('kintai:staff_timecard_register')
     try:
         year, month = map(int, target_month.split('-'))
         target_date = date(year, month, 1)
@@ -1531,6 +1544,7 @@ def staff_timecard_register(request):
     # 指定月に有効な契約を取得
     contracts = StaffContract.objects.filter(
         staff=staff,
+        contract_status=Constants.CONTRACT_STATUS.CONFIRMED,
         start_date__lte=month_end
     ).filter(
         Q(end_date__gte=target_date) | Q(end_date__isnull=True)
@@ -1601,8 +1615,8 @@ def staff_timecard_register_detail(request, contract_pk, target_month):
         messages.error(request, 'スタッフ情報が見つかりません。管理者にお問い合わせください。')
         return redirect('/')
     
-    # 契約を取得（自分の契約のみ）
-    contract = get_object_or_404(StaffContract, pk=contract_pk, staff=staff)
+    # 契約を取得（自分の契約かつ確認済みのみ）
+    contract = get_object_or_404(StaffContract, pk=contract_pk, staff=staff, contract_status=Constants.CONTRACT_STATUS.CONFIRMED)
     
     # 対象年月をパース
     try:
