@@ -8,6 +8,7 @@ from apps.staff.models_staff import Staff
 from apps.contract.models import StaffContract
 from apps.kintai.models import StaffTimesheet, StaffTimecard
 from apps.master.models_contract import ContractPattern
+from apps.common.constants import Constants
 
 
 class KintaiViewIntegrationTests(TestCase):
@@ -33,6 +34,7 @@ class KintaiViewIntegrationTests(TestCase):
             contract_pattern=cp,
             start_date=date(2025, 4, 1),
             end_date=date(2025, 4, 30),
+            contract_status=Constants.CONTRACT_STATUS.CONFIRMED,
         )
 
         url = reverse('kintai:timesheet_create')
@@ -57,6 +59,7 @@ class KintaiViewIntegrationTests(TestCase):
             contract_pattern=cp,
             start_date=date(2025, 4, 1),
             end_date=date(2025, 4, 30),
+            contract_status=Constants.CONTRACT_STATUS.CONFIRMED,
         )
 
         url = reverse('kintai:timesheet_create')
@@ -80,6 +83,7 @@ class KintaiViewIntegrationTests(TestCase):
             contract_pattern=cp,
             start_date=date(2025, 4, 5),
             end_date=date(2025, 4, 25),
+            contract_status=Constants.CONTRACT_STATUS.CONFIRMED,
         )
 
         ts = StaffTimesheet.objects.create(staff_contract=sc, staff=self.staff, target_month=date(2025, 4, 1))
@@ -109,6 +113,7 @@ class KintaiViewIntegrationTests(TestCase):
             contract_pattern=cp,
             start_date=date(2025, 4, 1),
             end_date=date(2025, 4, 30),
+            contract_status=Constants.CONTRACT_STATUS.CONFIRMED,
         )
 
         ts = StaffTimesheet.objects.create(staff_contract=sc, staff=self.staff, target_month=date(2025, 4, 1))

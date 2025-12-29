@@ -53,7 +53,8 @@ class StaffViewsTest(TestCase):
             contract_name='テスト契約',
             contract_pattern=self.contract_pattern,
             start_date=date(2020, 1, 1),  # 長期間有効な契約
-            end_date=date(2030, 12, 31)   # 長期間有効な契約
+            end_date=date(2030, 12, 31),   # 長期間有効な契約
+            contract_status=Constants.CONTRACT_STATUS.CONFIRMED
         )
         
         # テスト用クライアントを作成
