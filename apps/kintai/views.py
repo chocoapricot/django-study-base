@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.utils import timezone
 from .models import StaffTimesheet, StaffTimecard
 from .forms import StaffTimesheetForm, StaffTimecardForm
+from apps.profile.decorators import check_staff_agreement
 
 
 @login_required
@@ -708,6 +709,7 @@ def timecard_delete(request, pk):
 
 
 @login_required
+@check_staff_agreement
 def timecard_calendar(request, timesheet_pk):
     """日次勤怠カレンダー入力"""
     from datetime import date, timedelta
@@ -890,6 +892,7 @@ def timecard_calendar(request, timesheet_pk):
 
 
 @login_required
+@check_staff_agreement
 def timecard_calendar_initial(request, contract_pk, target_month):
     """初回日次勤怠カレンダー入力（同時に月次勤怠も作成）"""
     from datetime import date, timedelta
@@ -1488,6 +1491,7 @@ def timecard_import_progress(request, task_id):
 
 
 @login_required
+@check_staff_agreement
 def staff_timecard_register(request):
     """スタッフ向けタイムカード登録 - 契約選択画面"""
     from datetime import date
@@ -1583,6 +1587,7 @@ def staff_timecard_register(request):
 
 
 @login_required
+@check_staff_agreement
 def staff_timecard_register_detail(request, contract_pk, target_month):
     """スタッフ向けタイムカード登録 - 詳細入力画面"""
     from datetime import date, datetime
