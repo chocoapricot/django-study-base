@@ -680,3 +680,173 @@ class StaffTimecard(MyModel):
             hours, minutes = divmod(self.holiday_work_minutes, 60)
             return f"{hours}時間{minutes:02d}分"
         return "-"
+
+
+class StaffTimerecord(MyModel):
+    """
+    勤怠打刻情報を管理するモデル。
+    スタッフが実際に打刻した時刻を記録する。
+    StaffTimecard、StaffTimesheetとは独立したモデル。
+    """
+    staff_contract = models.ForeignKey(
+        StaffContract,
+        on_delete=models.CASCADE,
+        related_name='timerecords',
+        verbose_name='スタッフ契約',
+        null=True,
+        blank=True
+    )
+    staff = models.ForeignKey(
+        Staff,
+        on_delete=models.CASCADE,
+        related_name='timerecords',
+        verbose_name='スタッフ'
+    )
+    work_date = models.DateField('勤務日')
+    
+    # 打刻時刻
+    start_time = models.DateTimeField('開始時刻', blank=True, null=True)
+    end_time = models.DateTimeField('終了時刻', blank=True, null=True)
+    
+    # 位置情報（緯度・経度）
+    start_latitude = models.DecimalField('開始位置（緯度）', max_digits=20, decimal_places=15, blank=True, null=True)
+    start_longitude = models.DecimalField('開始位置（経度）', max_digits=20, decimal_places=15, blank=True, null=True)
+    end_latitude = models.DecimalField('終了位置（緯度）', max_digits=20, decimal_places=15, blank=True, null=True)
+    end_longitude = models.DecimalField('終了位置（経度）', max_digits=20, decimal_places=15, blank=True, null=True)
+    
+    # 備考
+    memo = models.TextField('メモ', blank=True, null=True)
+    
+    class Meta:
+        db_table = 'apps_kintai_staff_timerecord'
+        verbose_name = '勤怠打刻'
+        verbose_name_plural = '勤怠打刻'
+        unique_together = [['staff_contract', 'work_date']]
+        ordering = ['-work_date', 'staff__name_last', 'staff__name_first']
+        indexes = [
+            models.Index(fields=['staff_contract']),
+            models.Index(fields=['staff']),
+            models.Index(fields=['work_date']),
+            models.Index(fields=['start_time']),
+            models.Index(fields=['end_time']),
+        ]
+    
+    def __str__(self):
+        return f"{self.staff} - {self.work_date}"
+    
+    def clean(self):
+        """バリデーション"""
+        # 終了時刻が開始時刻より前の場合はエラー
+        if self.start_time and self.end_time:
+            if self.end_time <= self.start_time:
+                raise ValidationError('終了時刻は開始時刻より後の時刻を入力してください。')
+        
+        # スタッフ契約からスタッフを自動設定（saveメソッドが呼ばれる前にも検証が必要なため）
+        if self.staff_contract and not self.staff_id:
+            self.staff = self.staff_contract.staff
+
+        # スタッフ契約とスタッフの整合性チェック
+        if self.staff_contract and self.staff_id:
+            if self.staff_contract.staff_id != self.staff_id:
+                raise ValidationError('スタッフ契約とスタッフが一致しません。')
+
+    def save(self, *args, **kwargs):
+        # スタッフ契約からスタッフを自動設定
+        if self.staff_contract and not self.staff_id:
+            self.staff = self.staff_contract.staff
+        super().save(*args, **kwargs)
+    
+    @property
+    def total_work_minutes(self):
+        """総労働時間（分）を計算"""
+        if not self.start_time or not self.end_time:
+            return 0
+        
+        # 休憩時間の合計を計算
+        total_break_minutes = sum(
+            break_record.break_minutes for break_record in self.breaks.all()
+        )
+        
+        # 労働時間を計算
+        work_duration = self.end_time - self.start_time
+        work_minutes = int(work_duration.total_seconds() / 60)
+        
+        # 休憩時間を引く
+        net_work_minutes = work_minutes - total_break_minutes
+        return net_work_minutes if net_work_minutes > 0 else 0
+    
+    @property
+    def work_hours_display(self):
+        """労働時間の表示用文字列"""
+        minutes = self.total_work_minutes
+        if minutes:
+            hours, mins = divmod(minutes, 60)
+            return f"{hours}時間{mins:02d}分"
+        return "-"
+
+
+class StaffTimerecordBreak(MyModel):
+    """
+    勤怠打刻の休憩時間を管理するモデル。
+    1つの勤怠打刻に対して複数の休憩時間を登録できる。
+    """
+    timerecord = models.ForeignKey(
+        StaffTimerecord,
+        on_delete=models.CASCADE,
+        related_name='breaks',
+        verbose_name='勤怠打刻'
+    )
+    break_start = models.DateTimeField('休憩開始時刻')
+    break_end = models.DateTimeField('休憩終了時刻')
+    
+    # 位置情報（緯度・経度）
+    start_latitude = models.DecimalField('開始位置（緯度）', max_digits=20, decimal_places=15, blank=True, null=True)
+    start_longitude = models.DecimalField('開始位置（経度）', max_digits=20, decimal_places=15, blank=True, null=True)
+    end_latitude = models.DecimalField('終了位置（緯度）', max_digits=20, decimal_places=15, blank=True, null=True)
+    end_longitude = models.DecimalField('終了位置（経度）', max_digits=20, decimal_places=15, blank=True, null=True)
+    
+    class Meta:
+        db_table = 'apps_kintai_staff_timerecord_break'
+        verbose_name = '休憩時間'
+        verbose_name_plural = '休憩時間'
+        ordering = ['break_start']
+        indexes = [
+            models.Index(fields=['timerecord']),
+            models.Index(fields=['break_start']),
+            models.Index(fields=['break_end']),
+        ]
+    
+    def __str__(self):
+        return f"{self.timerecord} - 休憩 {self.break_start.strftime('%H:%M')}～{self.break_end.strftime('%H:%M')}"
+    
+    def clean(self):
+        """バリデーション"""
+        # 休憩終了時刻が休憩開始時刻より前の場合はエラー
+        if self.break_end <= self.break_start:
+            raise ValidationError('休憩終了時刻は休憩開始時刻より後の時刻を入力してください。')
+        
+        # 休憩時間が勤怠打刻の時間範囲内かチェック
+        if self.timerecord_id:
+            try:
+                tr = self.timerecord
+                if tr.start_time and self.break_start < tr.start_time:
+                    raise ValidationError('休憩開始時刻は勤務開始時刻より後の時刻を入力してください。')
+                if tr.end_time and self.break_end > tr.end_time:
+                    raise ValidationError('休憩終了時刻は勤務終了時刻より前の時刻を入力してください。')
+            except ValidationError:
+                raise
+            except Exception:
+                pass
+    
+    @property
+    def break_minutes(self):
+        """休憩時間（分）を計算"""
+        duration = self.break_end - self.break_start
+        return int(duration.total_seconds() / 60)
+    
+    @property
+    def break_hours_display(self):
+        """休憩時間の表示用文字列"""
+        minutes = self.break_minutes
+        hours, mins = divmod(minutes, 60)
+        return f"{hours}時間{mins:02d}分"

@@ -1,0 +1,121 @@
+{% extends 'common/_base.html' %}
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 1000px;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        勤怠打刻詳細
+        <div>
+            <a href="{% url 'kintai:timerecord_update' timerecord.pk %}" class="btn btn-sm btn-warning">編集</a>
+            <a href="{% url 'kintai:timerecord_delete' timerecord.pk %}" class="btn btn-sm btn-dark">削除</a>
+            <a href="{% url 'kintai:timerecord_list' %}" class="btn btn-sm btn-secondary">一覧に戻る</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <h5>基本情報</h5>
+        <table class="table table-bordered">
+            <tr>
+                <th style="width: 20%;">スタッフ</th>
+                <td>{{ timerecord.staff }}</td>
+            </tr>
+            <tr>
+                <th>勤務日</th>
+                <td>{{ timerecord.work_date|date:"Y/m/d" }}</td>
+            </tr>
+            <tr>
+                <th>開始時刻</th>
+                <td>{% if timerecord.start_time %}{{ timerecord.start_time|date:"Y/m/d H:i:s" }}{% else %}-{% endif %}</td>
+            </tr>
+            <tr>
+                <th>終了時刻</th>
+                <td>{% if timerecord.end_time %}{{ timerecord.end_time|date:"Y/m/d H:i:s" }}{% else %}-{% endif %}</td>
+            </tr>
+            <tr>
+                <th>労働時間</th>
+                <td>{{ timerecord.work_hours_display }}</td>
+            </tr>
+            <tr>
+                <th>メモ</th>
+                <td>{{ timerecord.memo|linebreaksbr|default:"-" }}</td>
+            </tr>
+        </table>
+
+        <h5 class="mt-4">位置情報</h5>
+        <table class="table table-bordered">
+            <tr>
+                <th style="width: 20%;">開始位置（緯度）</th>
+                <td>{{ timerecord.start_latitude|default:"-" }}</td>
+            </tr>
+            <tr>
+                <th>開始位置（経度）</th>
+                <td>{{ timerecord.start_longitude|default:"-" }}</td>
+            </tr>
+            <tr>
+                <th>終了位置（緯度）</th>
+                <td>{{ timerecord.end_latitude|default:"-" }}</td>
+            </tr>
+            <tr>
+                <th>終了位置（経度）</th>
+                <td>{{ timerecord.end_longitude|default:"-" }}</td>
+            </tr>
+        </table>
+
+        <h5 class="mt-4">休憩時間
+            <a href="{% url 'kintai:timerecord_break_create' timerecord.pk %}" class="btn btn-sm btn-primary">休憩時間追加</a>
+        </h5>
+        {% if breaks %}
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th style="width: 20%;">休憩開始</th>
+                        <th style="width: 20%;">休憩終了</th>
+                        <th style="width: 15%;">休憩時間</th>
+                        <th style="width: 15%;">開始位置</th>
+                        <th style="width: 15%;">終了位置</th>
+                        <th style="width: 15%;">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for break in breaks %}
+                    <tr>
+                        <td>{{ break.break_start|date:"Y/m/d H:i:s" }}</td>
+                        <td>{{ break.break_end|date:"Y/m/d H:i:s" }}</td>
+                        <td>{{ break.break_hours_display }}</td>
+                        <td>
+                            {% if break.start_latitude and break.start_longitude %}
+                                {{ break.start_latitude }}, {{ break.start_longitude }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if break.end_latitude and break.end_longitude %}
+                                {{ break.end_latitude }}, {{ break.end_longitude }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'kintai:timerecord_break_update' break.pk %}" class="btn btn-warning btn-sm" title="編集"><i class="bi bi-pencil"></i></a>
+                            <a href="{% url 'kintai:timerecord_break_delete' break.pk %}" class="btn btn-dark btn-sm" title="削除"><i class="bi bi-x"></i></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-muted">休憩時間が登録されていません。</p>
+        {% endif %}
+
+        <h5 class="mt-4">登録情報</h5>
+        <table class="table table-bordered">
+            <tr>
+                <th style="width: 20%;">登録日時</th>
+                <td>{{ timerecord.created_at|date:"Y/m/d H:i:s" }}</td>
+            </tr>
+            <tr>
+                <th>更新日時</th>
+                <td>{{ timerecord.updated_at|date:"Y/m/d H:i:s" }}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+{% endblock %}

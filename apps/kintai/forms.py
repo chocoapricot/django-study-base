@@ -147,3 +147,72 @@ class StaffTimecardForm(forms.ModelForm):
                     raise forms.ValidationError('勤務日はスタッフ契約の契約期間外です。')
 
         return cleaned
+
+
+class StaffTimerecordForm(forms.ModelForm):
+    """勤怠打刻フォーム"""
+    
+    class Meta:
+        from .models import StaffTimerecord
+        model = StaffTimerecord
+        fields = ['staff_contract', 'work_date', 'start_time', 'end_time', 
+                  'start_latitude', 'start_longitude', 'end_latitude', 'end_longitude', 'memo']
+        widgets = {
+            'staff_contract': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'work_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'start_time': forms.DateTimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'datetime-local'}),
+            'end_time': forms.DateTimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'datetime-local'}),
+            'start_latitude': forms.HiddenInput(),
+            'start_longitude': forms.HiddenInput(),
+            'end_latitude': forms.HiddenInput(),
+            'end_longitude': forms.HiddenInput(),
+            'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        
+        # ユーザーがスタッフの場合、自分の有効な契約のみ選択可能
+        if self.user and self.user.email:
+            from apps.staff.models import Staff
+            from apps.contract.models import StaffContract
+            try:
+                # メールアドレスでスタッフを特定
+                staff = Staff.objects.get(email=self.user.email)
+                
+                # 有効な契約（開始日が設定されているもの）
+                self.fields['staff_contract'].queryset = StaffContract.objects.filter(
+                    staff=staff,
+                    start_date__isnull=False
+                ).select_related('staff').order_by('-start_date')
+                
+                # 選択肢が一つしかない場合は自動選択
+                if self.fields['staff_contract'].queryset.count() == 1:
+                    self.fields['staff_contract'].initial = self.fields['staff_contract'].queryset.first()
+            except Staff.DoesNotExist:
+                # スタッフが見つからない場合は選択肢を空にする
+                self.fields['staff_contract'].queryset = StaffContract.objects.none()
+        elif self.user:
+             # メールアドレスがない場合なども空にする
+             from apps.contract.models import StaffContract
+             self.fields['staff_contract'].queryset = StaffContract.objects.none()
+
+
+class StaffTimerecordBreakForm(forms.ModelForm):
+    """休憩時間フォーム"""
+    
+    class Meta:
+        from .models import StaffTimerecordBreak
+        model = StaffTimerecordBreak
+        fields = ['break_start', 'break_end', 
+                  'start_latitude', 'start_longitude', 'end_latitude', 'end_longitude']
+        widgets = {
+            'break_start': forms.DateTimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'datetime-local'}),
+            'break_end': forms.DateTimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'datetime-local'}),
+            'start_latitude': forms.HiddenInput(),
+            'start_longitude': forms.HiddenInput(),
+            'end_latitude': forms.HiddenInput(),
+            'end_longitude': forms.HiddenInput(),
+        }
+

@@ -1,0 +1,89 @@
+{% extends 'common/_base.html' %}
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 800px;">
+    <div class="card-header">
+        {% if break_record %}休憩時間編集{% else %}休憩時間登録{% endif %}
+    </div>
+    <div class="card-body">
+        <p>勤怠打刻: {{ timerecord.staff }} - {{ timerecord.work_date|date:"Y/m/d" }}</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="{{ form.break_start.id_for_label }}" class="form-label">休憩開始時刻</label>
+                    <div class="input-group">
+                        {{ form.break_start }}
+                        <button type="button" class="btn btn-outline-secondary" onclick="setNow('id_break_start', 'start')">現在時刻</button>
+                    </div>
+                    {% if form.break_start.errors %}
+                        <div class="text-danger">{{ form.break_start.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label for="{{ form.break_end.id_for_label }}" class="form-label">休憩終了時刻</label>
+                    <div class="input-group">
+                        {{ form.break_end }}
+                        <button type="button" class="btn btn-outline-secondary" onclick="setNow('id_break_end', 'end')">現在時刻</button>
+                    </div>
+                    {% if form.break_end.errors %}
+                        <div class="text-danger">{{ form.break_end.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 位置情報（Hidden） -->
+            {{ form.start_latitude }}
+            {{ form.start_longitude }}
+            {{ form.end_latitude }}
+            {{ form.end_longitude }}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'kintai:timerecord_detail' timerecord.pk %}" class="btn btn-secondary">キャンセル</a>
+                <button type="submit" class="btn btn-primary">{% if break_record %}更新{% else %}登録{% endif %}</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function setNow(fieldId, type) {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    
+    document.getElementById(fieldId).value = `${year}-${month}-${day}T${hours}:${minutes}`;
+    
+    // 位置情報取得
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                if (type === 'start') {
+                    document.getElementById('id_start_latitude').value = lat;
+                    document.getElementById('id_start_longitude').value = lng;
+                } else if (type === 'end') {
+                    document.getElementById('id_end_latitude').value = lat;
+                    document.getElementById('id_end_longitude').value = lng;
+                }
+            },
+            (error) => {
+                console.error("位置情報の取得に失敗しました: ", error);
+                // 休憩の場合はアラートうるさいかもしれないのでコンソールのみ
+            }
+        );
+    }
+}
+</script>
+{% endblock %}

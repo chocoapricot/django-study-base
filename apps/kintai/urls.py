@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import views_timerecord
 
 app_name = 'kintai'
 
@@ -35,7 +36,19 @@ urlpatterns = [
     path('timecard/import/progress/<str:task_id>/', views.timecard_import_progress, name='timecard_import_progress'),
     
     # スタッフ向けタイムカード登録
-
     path('staff/timecard/register/', views.staff_timecard_register, name='staff_timecard_register'),
     path('staff/timecard/register/<int:contract_pk>/<str:target_month>/', views.staff_timecard_register_detail, name='staff_timecard_register_detail'),
+    
+    # 勤怠打刻
+    path('timerecord/', views_timerecord.timerecord_list, name='timerecord_list'),
+    path('timerecord/create/', views_timerecord.timerecord_create, name='timerecord_create'),
+    path('timerecord/<int:pk>/', views_timerecord.timerecord_detail, name='timerecord_detail'),
+    path('timerecord/<int:pk>/update/', views_timerecord.timerecord_update, name='timerecord_update'),
+    path('timerecord/<int:pk>/delete/', views_timerecord.timerecord_delete, name='timerecord_delete'),
+    
+    # 休憩時間
+    path('timerecord/<int:timerecord_pk>/break/create/', views_timerecord.timerecord_break_create, name='timerecord_break_create'),
+    path('timerecord/break/<int:pk>/update/', views_timerecord.timerecord_break_update, name='timerecord_break_update'),
+    path('timerecord/break/<int:pk>/delete/', views_timerecord.timerecord_break_delete, name='timerecord_break_delete'),
 ]
+
