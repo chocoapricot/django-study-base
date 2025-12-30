@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.utils import timezone
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from apps.staff.models import Staff
@@ -29,7 +30,8 @@ class StaffTimerecordModelTests(TestCase):
             staff=self.staff,
             start_date=date(2025, 4, 1),
             contract_name='テスト契約',  # 必須フィールドを追加
-            contract_pattern=self.contract_pattern
+            contract_pattern=self.contract_pattern,
+            confirmed_at=timezone.now()
         )
 
     def test_timerecord_creation(self):
@@ -37,8 +39,8 @@ class StaffTimerecordModelTests(TestCase):
         record = StaffTimerecord(
             staff_contract=self.contract,
             work_date=date(2025, 4, 1),
-            start_time=datetime(2025, 4, 1, 9, 0),
-            end_time=datetime(2025, 4, 1, 18, 0)
+            start_time=timezone.make_aware(datetime(2025, 4, 1, 9, 0)),
+            end_time=timezone.make_aware(datetime(2025, 4, 1, 18, 0))
         )
         record.save()
         
@@ -50,15 +52,15 @@ class StaffTimerecordModelTests(TestCase):
         record = StaffTimerecord.objects.create(
             staff_contract=self.contract,
             work_date=date(2025, 4, 1),
-            start_time=datetime(2025, 4, 1, 9, 0),
-            end_time=datetime(2025, 4, 1, 18, 0)
+            start_time=timezone.make_aware(datetime(2025, 4, 1, 9, 0)),
+            end_time=timezone.make_aware(datetime(2025, 4, 1, 18, 0))
         )
         
         # 休憩時間を追加 (12:00-13:00, 60分)
         StaffTimerecordBreak.objects.create(
             timerecord=record,
-            break_start=datetime(2025, 4, 1, 12, 0),
-            break_end=datetime(2025, 4, 1, 13, 0)
+            break_start=timezone.make_aware(datetime(2025, 4, 1, 12, 0)),
+            break_end=timezone.make_aware(datetime(2025, 4, 1, 13, 0))
         )
         
         # 労働時間: 9時間(540分) - 休憩1時間(60分) = 8時間(480分)
@@ -69,8 +71,8 @@ class StaffTimerecordModelTests(TestCase):
         record = StaffTimerecord(
             staff_contract=self.contract,
             work_date=date(2025, 4, 1),
-            start_time=datetime(2025, 4, 1, 18, 0),
-            end_time=datetime(2025, 4, 1, 9, 0)  # 逆転
+            start_time=timezone.make_aware(datetime(2025, 4, 1, 18, 0)),
+            end_time=timezone.make_aware(datetime(2025, 4, 1, 9, 0))  # 逆転
         )
         from django.core.exceptions import ValidationError
         with self.assertRaises(ValidationError):
@@ -97,7 +99,8 @@ class StaffTimerecordViewTests(TestCase):
             staff=self.staff,
             start_date=date(2025, 4, 1),
             contract_name='テスト契約',  # 必須フィールドを追加
-            contract_pattern=self.contract_pattern
+            contract_pattern=self.contract_pattern,
+            confirmed_at=timezone.now()
         )
 
     def test_timerecord_list_view(self):
@@ -129,4 +132,4 @@ class StaffTimerecordViewTests(TestCase):
         self.assertTrue(StaffTimerecord.objects.filter(work_date='2025-04-02').exists())
         record = StaffTimerecord.objects.get(work_date='2025-04-02')
         self.assertEqual(record.staff, self.staff)  # スタッフが自動設定されていること
-        self.assertEqual(str(record.start_latitude), '35.689500')
+        self.assertEqual(str(record.start_latitude), '35.689500000000000')

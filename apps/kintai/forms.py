@@ -181,10 +181,11 @@ class StaffTimerecordForm(forms.ModelForm):
                 # メールアドレスでスタッフを特定
                 staff = Staff.objects.get(email=self.user.email)
                 
-                # 有効な契約（開始日が設定されているもの）
+                # 有効な契約（開始日が設定されているもの）かつスタッフ確認済み
                 self.fields['staff_contract'].queryset = StaffContract.objects.filter(
                     staff=staff,
-                    start_date__isnull=False
+                    start_date__isnull=False,
+                    confirmed_at__isnull=False
                 ).select_related('staff').order_by('-start_date')
                 
                 # 選択肢が一つしかない場合は自動選択
