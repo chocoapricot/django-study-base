@@ -72,9 +72,16 @@
         transform: translateY(0);
     }
     .btn-start { background-color: #28a745; color: white; }
+    .btn-start:hover { background-color: #28a745; color: white; outline: 3px solid #1e7e34; outline-offset: -3px; }
+    
     .btn-end { background-color: #dc3545; color: white; }
+    .btn-end:hover { background-color: #dc3545; color: white; outline: 3px solid #bd2130; outline-offset: -3px; }
+    
     .btn-break { background-color: #ffc107; color: #333; }
+    .btn-break:hover { background-color: #ffc107; color: #333; outline: 3px solid #d39e00; outline-offset: -3px; }
+    
     .btn-resume { background-color: #17a2b8; color: white; }
+    .btn-resume:hover { background-color: #17a2b8; color: white; outline: 3px solid #117a8b; outline-offset: -3px; }
     
     .punch-btn:disabled {
         background-color: #e9ecef !important;
@@ -123,7 +130,7 @@
 
             <div class="status-area">
                 <span class="status-badge-lg 
-                    {% if status == 'not_started' %}bg-secondary text-white
+                    {% if status == 'not_started' %}bg-light text-dark border
                     {% elif status == 'working' %}bg-success text-white
                     {% elif status == 'on_break' %}bg-warning text-dark
                     {% elif status == 'finished' %}bg-dark text-white
@@ -168,6 +175,17 @@
                     </button>
                 </form>
             </div>
+
+            {% if can_cancel %}
+            <div class="mt-2 mb-3">
+                <form action="{% url 'kintai:timerecord_action' %}" method="POST" onsubmit="return confirm('直近の打刻を取り消しますか？');">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="cancel" class="btn btn-link text-danger text-decoration-none">
+                        <i class="bi bi-arrow-counterclockwise"></i> 直近の打刻を取り消す (5分以内)
+                    </button>
+                </form>
+            </div>
+            {% endif %}
         </div>
     </div>
 

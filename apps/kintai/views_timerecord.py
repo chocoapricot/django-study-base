@@ -293,12 +293,33 @@ def timerecord_punch(request):
             else:
                 status = 'working'  # 勤務中
     
+    # 取り消し可能判定（直近5分以内）
+    can_cancel = False
+    now = timezone.now()
+    if timerecord:
+        # 判定順序：退勤 -> 休憩完了 -> 休憩開始 -> 出勤
+        if timerecord.end_time:
+            if (now - timerecord.end_time).total_seconds() < 300:
+                can_cancel = True
+        else:
+            last_break = timerecord.breaks.order_by('-id').last()
+            if last_break:
+                if last_break.break_end:
+                    if (now - last_break.break_end).total_seconds() < 300:
+                        can_cancel = True
+                elif (now - last_break.break_start).total_seconds() < 300:
+                    can_cancel = True
+            
+            if not can_cancel and (now - timerecord.start_time).total_seconds() < 300:
+                can_cancel = True
+
     context = {
         'staff': staff,
         'timerecord': timerecord,
         'status': status,
         'current_break': current_break,
         'today': today,
+        'can_cancel': can_cancel,
     }
     return render(request, 'kintai/timerecord_punch.html', context)
 
@@ -401,5 +422,48 @@ def timerecord_action(request):
                 messages.warning(request, '休憩中ではありません。')
         else:
             messages.error(request, '出勤打刻が見つかりません。')
+            
+    elif action == 'cancel':
+        # 打刻の取り消し（5分以内）
+        timerecord = StaffTimerecord.objects.filter(staff=staff).order_by('-work_date', '-start_time').first()
+        if not timerecord:
+            messages.error(request, '取り消し可能な打刻が見つかりません。')
+            return redirect('kintai:timerecord_punch')
+
+        cancelled = False
+        msg = ""
+        
+        # 1. 退勤の取り消し
+        if timerecord.end_time and (now - timerecord.end_time).total_seconds() < 300:
+            timerecord.end_time = None
+            timerecord.save()
+            cancelled = True
+            msg = "退勤打刻を取り消しました。"
+        
+        # 2. 休憩の取り消し
+        if not cancelled:
+            last_break = timerecord.breaks.order_by('-id').last()
+            if last_break:
+                if last_break.break_end and (now - last_break.break_end).total_seconds() < 300:
+                    last_break.break_end = None
+                    last_break.save()
+                    cancelled = True
+                    msg = "休憩終了を取り消しました。"
+                elif not last_break.break_end and (now - last_break.break_start).total_seconds() < 300:
+                    last_break.delete()
+                    cancelled = True
+                    msg = "休憩開始を取り消しました。"
+        
+        # 3. 出勤の取り消し
+        if not cancelled and not timerecord.end_time:
+            if (now - timerecord.start_time).total_seconds() < 300:
+                timerecord.delete()
+                cancelled = True
+                msg = "出勤打刻を取り消しました。"
+        
+        if cancelled:
+            messages.success(request, msg)
+        else:
+            messages.error(request, '直近5分以内の打刻が見つからないため、取り消しできません。')
             
     return redirect('kintai:timerecord_punch')
