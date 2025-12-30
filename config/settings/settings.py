@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 
     'apps.system.logs',
     'apps.system.notifications',
+    'apps.system.apicache',
     'apps.system.tables',
     'apps.api',
     'apps.staff',
