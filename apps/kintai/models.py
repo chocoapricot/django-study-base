@@ -797,7 +797,7 @@ class StaffTimerecordBreak(MyModel):
         verbose_name='勤怠打刻'
     )
     break_start = models.DateTimeField('休憩開始時刻')
-    break_end = models.DateTimeField('休憩終了時刻')
+    break_end = models.DateTimeField('休憩終了時刻', blank=True, null=True)
     
     # 位置情報（緯度・経度）
     start_latitude = models.DecimalField('開始位置（緯度）', max_digits=20, decimal_places=15, blank=True, null=True)
@@ -817,12 +817,13 @@ class StaffTimerecordBreak(MyModel):
         ]
     
     def __str__(self):
-        return f"{self.timerecord} - 休憩 {self.break_start.strftime('%H:%M')}～{self.break_end.strftime('%H:%M')}"
+        end_str = self.break_end.strftime('%H:%M') if self.break_end else '休憩中'
+        return f"{self.timerecord} - 休憩 {self.break_start.strftime('%H:%M')}～{end_str}"
     
     def clean(self):
         """バリデーション"""
         # 休憩終了時刻が休憩開始時刻より前の場合はエラー
-        if self.break_end <= self.break_start:
+        if self.break_end and self.break_end <= self.break_start:
             raise ValidationError('休憩終了時刻は休憩開始時刻より後の時刻を入力してください。')
         
         # 休憩時間が勤怠打刻の時間範囲内かチェック
@@ -831,7 +832,7 @@ class StaffTimerecordBreak(MyModel):
                 tr = self.timerecord
                 if tr.start_time and self.break_start < tr.start_time:
                     raise ValidationError('休憩開始時刻は勤務開始時刻より後の時刻を入力してください。')
-                if tr.end_time and self.break_end > tr.end_time:
+                if tr.end_time and self.break_end and self.break_end > tr.end_time:
                     raise ValidationError('休憩終了時刻は勤務終了時刻より前の時刻を入力してください。')
             except ValidationError:
                 raise
@@ -841,6 +842,8 @@ class StaffTimerecordBreak(MyModel):
     @property
     def break_minutes(self):
         """休憩時間（分）を計算"""
+        if not self.break_end:
+            return 0
         duration = self.break_end - self.break_start
         return int(duration.total_seconds() / 60)
     

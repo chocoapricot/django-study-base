@@ -4,9 +4,11 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
 from datetime import date, datetime
+from django.utils import timezone
 from .models import StaffTimerecord, StaffTimerecordBreak
 from .forms import StaffTimerecordForm, StaffTimerecordBreakForm
 from apps.staff.models import Staff
+from apps.contract.models import StaffContract
 
 
 @login_required
@@ -251,3 +253,153 @@ def timerecord_break_delete(request, pk):
         'timerecord': timerecord,
     }
     return render(request, 'kintai/timerecord_break_confirm_delete.html', context)
+
+
+@login_required
+def timerecord_punch(request):
+    """勤怠打刻画面（ダッシュボード形式）"""
+    # スタッフ特定
+    staff = None
+    if request.user.email:
+        staff = Staff.objects.filter(email=request.user.email).first()
+    
+    if not staff:
+        messages.error(request, 'スタッフ情報が見つかりません。')
+        return redirect('/')
+    
+    # 日本時間の今日を取得
+    now_jst = timezone.localtime(timezone.now())
+    today = now_jst.date()
+    
+    # 進行中の打刻（退勤していないもの）を優先的に取得
+    timerecord = StaffTimerecord.objects.filter(staff=staff, end_time__isnull=True).order_by('-work_date', '-start_time').first()
+    
+    # 進行中のものがなければ、今日の完了済み打刻を取得
+    if not timerecord:
+        timerecord = StaffTimerecord.objects.filter(staff=staff, work_date=today).first()
+    
+    # 状態判定
+    status = 'not_started'  # 未出勤
+    current_break = None
+    
+    if timerecord:
+        if timerecord.end_time:
+            status = 'finished'  # 退勤済み
+        else:
+            # 休憩中かどうか確認
+            current_break = timerecord.breaks.filter(break_end__isnull=True).first()
+            if current_break:
+                status = 'on_break'  # 休憩中
+            else:
+                status = 'working'  # 勤務中
+    
+    context = {
+        'staff': staff,
+        'timerecord': timerecord,
+        'status': status,
+        'current_break': current_break,
+        'today': today,
+    }
+    return render(request, 'kintai/timerecord_punch.html', context)
+
+
+@login_required
+def timerecord_action(request):
+    """打刻アクション（出勤・退勤・休憩開始・休憩終了）"""
+    if request.method != 'POST':
+        return redirect('kintai:timerecord_punch')
+    
+    action = request.POST.get('action')
+    now = timezone.now()
+    now_jst = timezone.localtime(now)
+    today = now_jst.date()
+    
+    # スタッフ特定
+    staff = Staff.objects.filter(email=request.user.email).first()
+    if not staff:
+        messages.error(request, 'スタッフ情報が見つかりません。')
+        return redirect('/')
+    
+    # 位置情報
+    lat = request.POST.get('latitude')
+    lng = request.POST.get('longitude')
+    
+    if action == 'start':
+        # 出勤打刻
+        # 進行中の打刻があるかチェック
+        if StaffTimerecord.objects.filter(staff=staff, end_time__isnull=True).exists():
+            messages.warning(request, '既に勤務中（出勤打刻済み）です。')
+        elif StaffTimerecord.objects.filter(staff=staff, work_date=today).exists():
+            messages.warning(request, '本日は既に打刻（勤務完了）されています。')
+        else:
+            # 有効な契約を取得
+            contract = StaffContract.objects.filter(
+                staff=staff, 
+                start_date__lte=today
+            ).filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True)
+            ).first()
+            
+            StaffTimerecord.objects.create(
+                staff=staff,
+                staff_contract=contract,
+                work_date=today,
+                start_time=now,
+                start_latitude=lat if lat else None,
+                start_longitude=lng if lng else None
+            )
+            messages.success(request, f'{timezone.localtime(now).strftime("%H:%M")} に出勤打刻しました。')
+            
+    elif action == 'end':
+        # 退勤打刻
+        # 日付を問わず、未完了の最新の打刻を取得（日またぎ対応）
+        timerecord = StaffTimerecord.objects.filter(staff=staff, end_time__isnull=True).order_by('-work_date', '-start_time').first()
+        if timerecord:
+            # 休憩中の場合はエラー
+            if timerecord.breaks.filter(break_end__isnull=True).exists():
+                messages.error(request, '休憩を終了してから退勤打刻してください。')
+            else:
+                timerecord.end_time = now
+                timerecord.end_latitude = lat if lat else None
+                timerecord.end_longitude = lng if lng else None
+                timerecord.save()
+                messages.success(request, f'{timezone.localtime(now).strftime("%H:%M")} に退勤打刻しました。')
+        else:
+            messages.error(request, '出勤打刻が見つかりません。')
+            
+    elif action == 'break_start':
+        # 休憩開始
+        # 日付を問わず、未完了の最新の打刻を取得
+        timerecord = StaffTimerecord.objects.filter(staff=staff, end_time__isnull=True).order_by('-work_date', '-start_time').first()
+        if timerecord:
+            if timerecord.breaks.filter(break_end__isnull=True).exists():
+                messages.warning(request, '既に休憩中です。')
+            else:
+                StaffTimerecordBreak.objects.create(
+                    timerecord=timerecord,
+                    break_start=now,
+                    start_latitude=lat if lat else None,
+                    start_longitude=lng if lng else None
+                )
+                messages.success(request, f'{timezone.localtime(now).strftime("%H:%M")} に休憩開始しました。')
+        else:
+            messages.error(request, '出勤打刻が見つかりません。')
+            
+    elif action == 'break_end':
+        # 休憩終了
+        # 日付を問わず、未完了の最新の打刻を取得
+        timerecord = StaffTimerecord.objects.filter(staff=staff, end_time__isnull=True).order_by('-work_date', '-start_time').first()
+        if timerecord:
+            current_break = timerecord.breaks.filter(break_end__isnull=True).first()
+            if current_break:
+                current_break.break_end = now
+                current_break.end_latitude = lat if lat else None
+                current_break.end_longitude = lng if lng else None
+                current_break.save()
+                messages.success(request, f'{timezone.localtime(now).strftime("%H:%M")} に休憩終了しました。')
+            else:
+                messages.warning(request, '休憩中ではありません。')
+        else:
+            messages.error(request, '出勤打刻が見つかりません。')
+            
+    return redirect('kintai:timerecord_punch')

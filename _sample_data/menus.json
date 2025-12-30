@@ -661,7 +661,7 @@
         "updated_at": "2025-12-31T00:00:00Z",
         "updated_by": 1,
         "name": "勤怠打刻",
-        "url": "/kintai/timerecord/",
+        "url": "/kintai/timerecord/punch/",
         "icon": "bi-clock",
         "icon_style": "color:#28a745;",
         "parent": null,

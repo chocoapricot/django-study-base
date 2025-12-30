@@ -50,12 +50,12 @@
                 <tbody>
                     {% for timerecord in page_obj %}
                     <tr>
+                        <td>{{ timerecord.staff }}</td>
                         <td>
                             <a href="{% url 'kintai:timerecord_detail' timerecord.pk %}">
-                                {{ timerecord.staff }}
+                                {{ timerecord.work_date|date:"Y/m/d" }}
                             </a>
                         </td>
-                        <td>{{ timerecord.work_date|date:"Y/m/d" }}</td>
                         <td>{% if timerecord.start_time %}{{ timerecord.start_time|date:"Y/m/d H:i:s" }}{% else %}-{% endif %}</td>
                         <td>{% if timerecord.end_time %}{{ timerecord.end_time|date:"Y/m/d H:i:s" }}{% else %}-{% endif %}</td>
                         <td class="text-end">{{ timerecord.work_hours_display }}</td>
