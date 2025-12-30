@@ -92,7 +92,7 @@ django-study-base/
 | `apps_master_skill` | 技能マスター（カテゴリと技能） |
 | `apps_profile_staff` | スタッフプロフィール |
 | `apps_profile_staff_bank` | プロフィール銀行口座 |
-| `apps_profile_staff_contact` | プロフィール連絡先 |
+| `apps_profile_staff_contacts` | プロフィール連絡先 |
 | `apps_profile_staff_disability` | プロフィール障害者情報 |
 | `apps_profile_staff_international` | プロフィール外国籍情報 |
 | `apps_profile_staff_mynumber` | プロフィールマイナンバー |
@@ -101,8 +101,9 @@ django-study-base/
 | `apps_staff` | スタッフ基本情報 |
 | `apps_staff_bank` | スタッフ銀行口座 |
 | `apps_staff_contacted` | スタッフ連絡履歴 |
-| `apps_staff_contact` | スタッフ連絡先 |
+| `apps_staff_contacts` | スタッフ連絡先 |
 | `apps_staff_disability` | スタッフ障害者情報 |
+| `apps_staff_evaluation` | スタッフ評価 |
 | `apps_staff_file` | スタッフファイル |
 | `apps_staff_international` | スタッフ外国籍情報 |
 | `apps_staff_mynumber` | スタッフマイナンバー |
@@ -112,6 +113,7 @@ django-study-base/
 | `apps_system_dropdowns` | ドロップダウン設定 |
 | `apps_system_mail_log` | メール送信ログ |
 | `apps_system_menu` | メニュー設定 |
+| `apps_system_notification` | 通知 |
 | `apps_system_parameter` | パラメータ設定 |
 
 ### django-allauth関連テーブル

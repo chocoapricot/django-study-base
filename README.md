@@ -92,9 +92,9 @@ django-study-base/
 └── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（101テーブル）
+## データベーステーブル一覧（106テーブル）
 
-### 本アプリケーション独自テーブル（83テーブル）
+### 本アプリケーション独自テーブル（89テーブル）
 
 | テーブル名 | モデル名 | 説明 |
 | --- | --- | --- |
@@ -173,6 +173,7 @@ django-study-base/
 | `apps_staff_contacted` | `StaffContacted` | スタッフ連絡履歴 |
 | `apps_staff_contacts` | `StaffContacts` | スタッフ連絡先 |
 | `apps_staff_disability` | `StaffDisability` | スタッフ障害者情報 |
+| `apps_staff_evaluation` | `StaffEvaluation` | スタッフ評価 |
 | `apps_staff_file` | `StaffFile` | スタッフファイル |
 | `apps_staff_international` | `StaffInternational` | スタッフ外国籍情報 |
 | `apps_staff_mynumber` | `StaffMynumber` | スタッフマイナンバー |
@@ -184,6 +185,7 @@ django-study-base/
 | `apps_system_dropdowns` | `Dropdowns` | ドロップダウン設定 |
 | `apps_system_mail_log` | `MailLog` | メール送信ログ |
 | `apps_system_menu` | `Menu` | メニュー設定 |
+| `apps_system_notification` | `Notification` | 通知 |
 | `apps_system_parameter` | `Parameter` | パラメータ設定 |
 
 ### django-allauth関連テーブル（6テーブル）
