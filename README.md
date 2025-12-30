@@ -92,9 +92,9 @@ django-study-base/
 └── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（99テーブル）
+## データベーステーブル一覧（101テーブル）
 
-### 本アプリケーション独自テーブル（81テーブル）
+### 本アプリケーション独自テーブル（83テーブル）
 
 | テーブル名 | モデル名 | 説明 |
 | --- | --- | --- |
@@ -133,6 +133,8 @@ django-study-base/
 | `apps_contract_staff_teishokubi_detail` | `StaffContractTeishokubiDetail` | 個人抵触日算出詳細 |
 | `apps_kintai_staff_timesheet` | `StaffTimesheet` | 月次勤怠 |
 | `apps_kintai_staff_timecard` | `StaffTimecard` | 日次勤怠 |
+| `apps_kintai_staff_timerecord` | `StaffTimerecord` | 勤怠打刻 |
+| `apps_kintai_staff_timerecord_break` | `StaffTimerecordBreak` | 勤怠打刻休憩 |
 | `apps_master_bank` | `Bank` | 銀行マスター |
 | `apps_master_bank_branch` | `BankBranch` | 銀行支店マスター |
 | `apps_master_bill_bank` | `BillBank` | 会社銀行マスター |
