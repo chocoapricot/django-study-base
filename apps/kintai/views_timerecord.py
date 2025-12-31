@@ -303,7 +303,8 @@ def timerecord_punch(request):
             if (now - timerecord.end_time).total_seconds() < 300:
                 can_cancel = True
         else:
-            last_break = timerecord.breaks.order_by('-id').last()
+            # 最新の休憩（休憩開始時刻順で最後のもの）を取得
+            last_break = timerecord.breaks.order_by('-break_start').first()
             if last_break:
                 if last_break.break_end:
                     if (now - last_break.break_end).total_seconds() < 300:
@@ -443,7 +444,8 @@ def timerecord_action(request):
         
         # 2. 休憩の取り消し
         if not cancelled:
-            last_break = timerecord.breaks.order_by('-id').last()
+            # 最新の休憩（休憩開始時刻順で最後のもの）を取得
+            last_break = timerecord.breaks.order_by('-break_start').first()
             if last_break:
                 if last_break.break_end and (now - last_break.break_end).total_seconds() < 300:
                     last_break.break_end = None

@@ -187,5 +187,77 @@ class TimerecordPunchViewTest(TestCase):
         response = self.client.get(self.punch_url)
         self.assertRedirects(response, '/')
 
+    def test_cancel_action_order(self):
+        """取り消し機能で正しい順序で取り消されるかテスト"""
+        from datetime import timedelta
+        
+        # 出勤
+        self.client.post(self.action_url, {'action': 'start'})
+        record = StaffTimerecord.objects.get(staff=self.staff)
+        
+        # 複数の休憩を時系列順で追加
+        now = timezone.now()
+        
+        # 1回目の休憩（古い・完了済み）
+        StaffTimerecordBreak.objects.create(
+            timerecord=record,
+            break_start=now - timedelta(hours=2),
+            break_end=now - timedelta(hours=1, minutes=30)
+        )
+        
+        # 2回目の休憩（新しい）- 現在進行中（2分前に開始、取り消し可能）
+        latest_break = StaffTimerecordBreak.objects.create(
+            timerecord=record,
+            break_start=now - timedelta(minutes=2)
+        )
+        
+        # 取り消し実行
+        response = self.client.post(self.action_url, {'action': 'cancel'})
+        self.assertRedirects(response, self.punch_url)
+        
+        # 最新の休憩（2回目）が削除されているか確認
+        self.assertFalse(StaffTimerecordBreak.objects.filter(id=latest_break.id).exists())
+        
+        # 古い休憩（1回目）は残っているか確認
+        self.assertEqual(record.breaks.count(), 1)
+        remaining_break = record.breaks.first()
+        self.assertIsNotNone(remaining_break.break_end)  # 完了した休憩が残っている
+
+    def test_cancel_break_end_order(self):
+        """休憩終了の取り消しで正しい順序で取り消されるかテスト"""
+        from datetime import timedelta
+        
+        # 出勤
+        self.client.post(self.action_url, {'action': 'start'})
+        record = StaffTimerecord.objects.get(staff=self.staff)
+        
+        now = timezone.now()
+        
+        # 1回目の休憩（古い・完了済み）
+        StaffTimerecordBreak.objects.create(
+            timerecord=record,
+            break_start=now - timedelta(hours=3),
+            break_end=now - timedelta(hours=2, minutes=30)
+        )
+        
+        # 2回目の休憩（新しい・完了済み）
+        latest_break = StaffTimerecordBreak.objects.create(
+            timerecord=record,
+            break_start=now - timedelta(minutes=30),
+            break_end=now - timedelta(minutes=1)  # 1分前に終了（取り消し可能）
+        )
+        
+        # 取り消し実行
+        response = self.client.post(self.action_url, {'action': 'cancel'})
+        self.assertRedirects(response, self.punch_url)
+        
+        # 最新の休憩の終了時刻が取り消されているか確認
+        latest_break.refresh_from_db()
+        self.assertIsNone(latest_break.break_end)
+        
+        # 古い休憩は影響を受けていないか確認
+        old_break = record.breaks.exclude(id=latest_break.id).first()
+        self.assertIsNotNone(old_break.break_end)
+
 # 必要なインポートを追加
 from datetime import datetime, time
