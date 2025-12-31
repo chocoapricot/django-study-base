@@ -46,8 +46,8 @@
             {% endif %}
 
             <div class="d-flex justify-content-between">
-                <a href="{% url 'kintai:timerecord_detail' timerecord.pk %}" class="btn btn-secondary">キャンセル</a>
-                <button type="submit" class="btn btn-primary">{% if break_record %}更新{% else %}登録{% endif %}</button>
+                <a href="{% url 'kintai:timerecord_detail' timerecord.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
+                <button type="submit" class="btn btn-sm btn-primary">{% if break_record %}更新{% else %}登録{% endif %}</button>
             </div>
         </form>
     </div>
