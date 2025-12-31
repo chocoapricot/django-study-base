@@ -126,8 +126,10 @@
             </div>
         </div>
         <div class="card-body text-center p-5">
-            <div class="clock-date mb-1">{{ today|date:"Y年m月d日" }} ({{ today|date:"D" }})</div>
-            <div class="clock-display" id="current-time">00:00:00</div>
+            {% if available_contracts.count > 0 %}
+                <div class="clock-date mb-1">{{ today|date:"Y年m月d日" }} ({{ today|date:"D" }})</div>
+                <div class="clock-display" id="current-time">00:00:00</div>
+            {% endif %}
 
             <div class="status-area">
                 <span class="status-badge-lg 
@@ -368,6 +370,7 @@
 </div>
 
 <script>
+    {% if available_contracts.count > 0 %}
     function updateClock() {
         const now = new Date();
         const hours = String(now.getHours()).padStart(2, '0');
@@ -377,6 +380,7 @@
     }
     setInterval(updateClock, 1000);
     updateClock();
+    {% endif %}
 
     // 打刻ボタン押下時の処理（このタイミングでのみ位置情報を取得）
     const punchForm = document.getElementById('punch-form');

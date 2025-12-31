@@ -298,6 +298,8 @@ class TimerecordPunchViewTest(TestCase):
         # 打刻ボタンが非表示になることを確認
         self.assertNotContains(response, 'name="action" value="start"')
         self.assertNotContains(response, 'name="action" value="end"')
+        # 時計表示が非表示になることを確認
+        self.assertNotContains(response, 'id="current-time"')
         
         # 出勤を試行
         response = self.client.post(self.action_url, {'action': 'start'})
@@ -319,6 +321,8 @@ class TimerecordPunchViewTest(TestCase):
         # 打刻ボタンが非表示になることを確認
         self.assertNotContains(response, 'name="action" value="start"')
         self.assertNotContains(response, 'name="action" value="end"')
+        # 時計表示が非表示になることを確認
+        self.assertNotContains(response, 'id="current-time"')
         
         # 出勤を試行
         response = self.client.post(self.action_url, {'action': 'start'})

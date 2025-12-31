@@ -106,6 +106,9 @@ class StaffAgreementKintaiTest(TestCase):
         # 打刻ボタンが表示されることを確認
         self.assertContains(response, '出勤')
         self.assertContains(response, '退勤')
+        # 時計表示が表示されることを確認
+        self.assertContains(response, 'id="current-time"')
+        self.assertContains(response, 'clock-date')
 
     def test_no_contract_hides_punch_buttons(self):
         """契約がない場合、打刻ボタンが非表示になることをテスト"""
@@ -133,6 +136,9 @@ class StaffAgreementKintaiTest(TestCase):
         # 打刻ボタンが非表示になることを確認
         self.assertNotContains(response, 'name="action" value="start"')
         self.assertNotContains(response, 'name="action" value="end"')
+        # 時計表示が非表示になることを確認
+        self.assertNotContains(response, 'id="current-time"')
+        self.assertNotContains(response, 'clock-date')
 
     def test_timerecord_list_with_unagreed_agreement_redirects(self):
         """未同意文言がある場合、勤怠一覧画面が同意画面にリダイレクトされることをテスト"""
