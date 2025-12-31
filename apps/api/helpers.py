@@ -1,7 +1,10 @@
 # helpers.py
 import requests
-from apps.system.settings.utils import my_parameter
+import datetime
+import re
+from django.utils import timezone
 from apps.system.apicache.utils import get_api_cache, set_api_cache
+from apps.system.settings.utils import my_parameter
 
 def fetch_company_info(corporate_number):
     # キャッシュをチェック
@@ -55,3 +58,77 @@ def fetch_zipcode(zipcode):
         else:
             return None  # 'results' がない場合やNoneの場合は None を返す
     return None  # APIリクエストが失敗した場合
+
+def fetch_municipality_name(muni_code):
+    """muniCdから市区町村名を取得する。muni.jsをフェッチしてキャッシュする。"""
+    if not muni_code:
+        return ""
+    
+    cache_key = "gsi_muni_map"
+    muni_map = get_api_cache(cache_key)
+    
+    if not muni_map:
+        url = "https://maps.gsi.go.jp/js/muni.js"
+        try:
+            response = requests.get(url, timeout=10)
+            if response.status_code == 200:
+                response.encoding = 'utf-8'
+                text = response.text
+                # GSI.MUNI_ARRAY["13101"] = '13,東京都,13101,千代田区'; のような形式をパース
+                pattern = r'GSI\.MUNI_ARRAY\["(\d+)"\]\s*=\s*\'(.+?)\';'
+                matches = re.findall(pattern, text)
+                muni_map = {m[0]: m[1].split(',')[-1] for m in matches}
+                
+                # キャッシュに保存（1ヶ月）
+                set_api_cache(cache_key, muni_map, 2592000)
+        except Exception as e:
+            print(f"Error fetching muni.js: {e}")
+            return ""
+            
+    if muni_map:
+        return muni_map.get(muni_code, "")
+    return ""
+
+def fetch_gsi_address(lat, lon):
+    """国土地理院の逆ジオコーディングAPIを使用して緯度経度から住所を取得する"""
+    from apps.system.settings.models import Dropdowns
+    if not lat or not lon:
+        return None
+        
+    # キャッシュをチェック (小数点以下4位程度で丸めてキーにする)
+    try:
+        flat = round(float(lat), 4)
+        flon = round(float(lon), 4)
+    except (ValueError, TypeError):
+        return None
+        
+    cache_key = f"gsi_address_{flat}_{flon}"
+    cached_data = get_api_cache(cache_key)
+    if cached_data:
+        return cached_data
+
+    base_url = my_parameter("GSI_REVERSE_GEOCODER_API_PATH", "https://mreversegeocoder.gsi.go.jp/reverse-geocoder/LonLatToAddress")
+    url = f"{base_url}?lon={lon}&lat={lat}"
+    try:
+        response = requests.get(url, timeout=5)
+        if response.status_code == 200:
+            data = response.json()
+            if "results" in data:
+                muni_code = data["results"].get("muniCd")
+                lv01_nm = data["results"].get("lv01Nm", "")
+                
+                pref_code = muni_code[:2] if muni_code else None
+                pref_name = Dropdowns.get_display_name('pref', pref_code) if pref_code else ""
+                
+                muni_name = fetch_municipality_name(muni_code)
+                
+                address = f"{pref_name}{muni_name}{lv01_nm}"
+                
+                # キャッシュに保存
+                validity_period = int(my_parameter("API_CACHE_VALIDITY_PERIOD", 2592000)) # デフォルト1ヶ月
+                set_api_cache(cache_key, address, validity_period)
+                return address
+    except Exception as e:
+        print(f"GSI API Error: {e}")
+        
+    return None

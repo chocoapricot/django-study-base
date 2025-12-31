@@ -168,5 +168,22 @@
         "disp_seq": 5,
         "active": true
     }
+},
+{
+    "model": "settings.parameter",
+    "pk": 12,
+    "fields": {
+        "created_at": "2025-12-31T09:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2025-12-31T09:00:00.000Z",
+        "updated_by": 1,
+        "category": "api",
+        "key": "GSI_REVERSE_GEOCODER_API_PATH",
+        "value": "https://mreversegeocoder.gsi.go.jp/reverse-geocoder/LonLatToAddress",
+        "default_value": "https://mreversegeocoder.gsi.go.jp/reverse-geocoder/LonLatToAddress",
+        "note": "国土地理院 逆ジオコーディングAPI",
+        "disp_seq": 6,
+        "active": true
+    }
 }
 ]

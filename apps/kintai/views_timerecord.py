@@ -9,6 +9,7 @@ from .models import StaffTimerecord, StaffTimerecordBreak
 from .forms import StaffTimerecordForm, StaffTimerecordBreakForm
 from apps.staff.models import Staff
 from apps.contract.models import StaffContract
+from apps.api.helpers import fetch_gsi_address
 
 
 @login_required

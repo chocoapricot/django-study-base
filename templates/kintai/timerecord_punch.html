@@ -145,7 +145,7 @@
             </div>
 
             <div class="action-grid">
-                <form action="{% url 'kintai:timerecord_action' %}" method="POST" class="punch-form">
+                <form action="{% url 'kintai:timerecord_action' %}" method="POST" id="punch-form" class="punch-form">
                     {% csrf_token %}
                     <input type="hidden" name="latitude" id="latitude">
                     <input type="hidden" name="longitude" id="longitude">
@@ -212,7 +212,12 @@
                             <td class="fw-bold">{{ timerecord.start_time|date:"H:i:s" }}</td>
                             <td class="small">
                                 {% if timerecord.start_latitude %}
-                                    <i class="bi bi-geo-alt"></i> {{ timerecord.start_latitude|floatformat:4 }}, {{ timerecord.start_longitude|floatformat:4 }}
+                                    <i class="bi bi-geo-alt"></i> 
+                                    {% if timerecord.start_address %}
+                                        {{ timerecord.start_address }}
+                                    {% else %}
+                                        {{ timerecord.start_latitude|floatformat:4 }}, {{ timerecord.start_longitude|floatformat:4 }}
+                                    {% endif %}
                                 {% else %}
                                     -
                                 {% endif %}
@@ -233,8 +238,29 @@
                                 {% endif %}
                             </td>
                             <td class="small">
-                                {% if break.start_latitude %}
-                                    <i class="bi bi-geo-alt"></i> {{ break.start_latitude|floatformat:4 }}, {{ break.start_longitude|floatformat:4 }}
+                                <div class="mb-1">
+                                    {% if break.start_latitude %}
+                                        <span class="badge bg-secondary me-1">開始</span>
+                                        <i class="bi bi-geo-alt"></i> 
+                                        {% if break.start_address %}
+                                            {{ break.start_address }}
+                                        {% else %}
+                                            {{ break.start_latitude|floatformat:4 }}, {{ break.start_longitude|floatformat:4 }}
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                                {% if break.break_end %}
+                                    <div>
+                                        {% if break.end_latitude %}
+                                            <span class="badge bg-secondary me-1">終了</span>
+                                            <i class="bi bi-geo-alt"></i> 
+                                            {% if break.end_address %}
+                                                {{ break.end_address }}
+                                            {% else %}
+                                                {{ break.end_latitude|floatformat:4 }}, {{ break.end_longitude|floatformat:4 }}
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
                                 {% endif %}
                             </td>
                             <td class="small">
@@ -254,7 +280,12 @@
                             <td class="fw-bold">{{ timerecord.end_time|date:"H:i:s" }}</td>
                             <td class="small">
                                 {% if timerecord.end_latitude %}
-                                    <i class="bi bi-geo-alt"></i> {{ timerecord.end_latitude|floatformat:4 }}, {{ timerecord.end_longitude|floatformat:4 }}
+                                    <i class="bi bi-geo-alt"></i> 
+                                    {% if timerecord.end_address %}
+                                        {{ timerecord.end_address }}
+                                    {% else %}
+                                        {{ timerecord.end_latitude|floatformat:4 }}, {{ timerecord.end_longitude|floatformat:4 }}
+                                    {% endif %}
                                 {% else %}
                                     -
                                 {% endif %}
@@ -286,12 +317,46 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            document.getElementById('latitude').value = position.coords.latitude;
-            document.getElementById('longitude').value = position.coords.longitude;
-        }, function(error) {
-            console.error("位置情報の取得に失敗しました:", error);
+    // 打刻ボタン押下時の処理（このタイミングでのみ位置情報を取得）
+    const punchForm = document.getElementById('punch-form');
+    if (punchForm) {
+        punchForm.addEventListener('submit', function(e) {
+            const action = e.submitter ? e.submitter.value : null;
+            // 取り消し時は位置情報不要
+            if (!action || action === 'cancel') return;
+
+            e.preventDefault();
+            const btn = e.submitter;
+
+            // 二重送信防止（ボタンを無効化）
+            document.querySelectorAll('.punch-btn').forEach(b => b.disabled = true);
+
+            const finalizeSubmission = () => {
+                const hiddenAction = document.createElement('input');
+                hiddenAction.type = 'hidden';
+                hiddenAction.name = 'action';
+                hiddenAction.value = action;
+                punchForm.appendChild(hiddenAction);
+                punchForm.submit();
+            };
+
+            if (navigator.geolocation) {
+                // ボタンを押した瞬間に位置情報を取得
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        document.getElementById('latitude').value = position.coords.latitude;
+                        document.getElementById('longitude').value = position.coords.longitude;
+                        finalizeSubmission();
+                    },
+                    function(error) {
+                        console.warn("位置情報の取得をスキップして打刻します:", error.message);
+                        finalizeSubmission();
+                    },
+                    { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
+                );
+            } else {
+                finalizeSubmission();
+            }
         });
     }
 </script>

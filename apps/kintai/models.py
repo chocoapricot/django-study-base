@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from datetime import date, time, datetime, timedelta
 from calendar import monthrange
 from decimal import Decimal
+from apps.api.helpers import fetch_gsi_address
 
 User = get_user_model()
 
@@ -783,6 +784,16 @@ class StaffTimerecord(MyModel):
             hours, mins = divmod(minutes, 60)
             return f"{hours}時間{mins:02d}分"
         return "-"
+    
+    @property
+    def start_address(self):
+        """開始位置の住所を取得（表示用）"""
+        return fetch_gsi_address(self.start_latitude, self.start_longitude)
+
+    @property
+    def end_address(self):
+        """終了位置の住所を取得（表示用）"""
+        return fetch_gsi_address(self.end_latitude, self.end_longitude)
 
 
 class StaffTimerecordBreak(MyModel):
@@ -853,3 +864,13 @@ class StaffTimerecordBreak(MyModel):
         minutes = self.break_minutes
         hours, mins = divmod(minutes, 60)
         return f"{hours}時間{mins:02d}分"
+    
+    @property
+    def start_address(self):
+        """休憩開始位置の住所を取得（表示用）"""
+        return fetch_gsi_address(self.start_latitude, self.start_longitude)
+
+    @property
+    def end_address(self):
+        """休憩終了位置の住所を取得（表示用）"""
+        return fetch_gsi_address(self.end_latitude, self.end_longitude)
