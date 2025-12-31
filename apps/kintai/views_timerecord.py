@@ -10,6 +10,7 @@ from .forms import StaffTimerecordForm, StaffTimerecordBreakForm
 from apps.staff.models import Staff
 from apps.contract.models import StaffContract
 from apps.api.helpers import fetch_gsi_address
+from apps.common.constants import Constants
 
 
 @login_required
@@ -272,6 +273,18 @@ def timerecord_punch(request):
     now_jst = timezone.localtime(timezone.now())
     today = now_jst.date()
     
+    # 今日の有効かつ確認済みの契約を取得（複数の場合もある）
+    available_contracts = StaffContract.objects.filter(
+        staff=staff, 
+        start_date__lte=today,
+        contract_status=Constants.CONTRACT_STATUS.CONFIRMED
+    ).filter(
+        Q(end_date__gte=today) | Q(end_date__isnull=True)
+    ).order_by('start_date')
+    
+    # 単一契約の場合は current_contract に設定
+    current_contract = available_contracts.first() if available_contracts.count() == 1 else None
+    
     # 進行中の打刻（退勤していないもの）を優先的に取得
     timerecord = StaffTimerecord.objects.filter(staff=staff, end_time__isnull=True).order_by('-work_date', '-start_time').first()
     
@@ -318,6 +331,8 @@ def timerecord_punch(request):
     context = {
         'staff': staff,
         'timerecord': timerecord,
+        'current_contract': current_contract,
+        'available_contracts': available_contracts,
         'status': status,
         'current_break': current_break,
         'today': today,
@@ -355,23 +370,43 @@ def timerecord_action(request):
         elif StaffTimerecord.objects.filter(staff=staff, work_date=today).exists():
             messages.warning(request, '本日は既に打刻（勤務完了）されています。')
         else:
-            # 有効な契約を取得
-            contract = StaffContract.objects.filter(
-                staff=staff, 
-                start_date__lte=today
-            ).filter(
-                Q(end_date__gte=today) | Q(end_date__isnull=True)
-            ).first()
+            # 契約IDが指定されている場合はそれを使用、なければ有効かつ確認済みの契約を取得
+            contract_id = request.POST.get('contract_id')
+            if contract_id:
+                try:
+                    contract = StaffContract.objects.get(
+                        id=contract_id,
+                        staff=staff,
+                        start_date__lte=today,
+                        contract_status=Constants.CONTRACT_STATUS.CONFIRMED
+                    )
+                    # 契約の有効性を再確認
+                    if contract.end_date and contract.end_date < today:
+                        contract = None
+                except StaffContract.DoesNotExist:
+                    contract = None
+            else:
+                # 有効かつ確認済みの契約を取得
+                contract = StaffContract.objects.filter(
+                    staff=staff, 
+                    start_date__lte=today,
+                    contract_status=Constants.CONTRACT_STATUS.CONFIRMED
+                ).filter(
+                    Q(end_date__gte=today) | Q(end_date__isnull=True)
+                ).first()
             
-            StaffTimerecord.objects.create(
-                staff=staff,
-                staff_contract=contract,
-                work_date=today,
-                start_time=now,
-                start_latitude=lat if lat else None,
-                start_longitude=lng if lng else None
-            )
-            messages.success(request, f'{timezone.localtime(now).strftime("%H:%M")} に出勤打刻しました。')
+            if not contract:
+                messages.error(request, f'{today.strftime("%Y/%m/%d")} に有効で確認済みのスタッフ契約がありません。打刻できません。')
+            else:
+                StaffTimerecord.objects.create(
+                    staff=staff,
+                    staff_contract=contract,
+                    work_date=today,
+                    start_time=now,
+                    start_latitude=lat if lat else None,
+                    start_longitude=lng if lng else None
+                )
+                messages.success(request, f'{timezone.localtime(now).strftime("%H:%M")} に出勤打刻しました。')
             
     elif action == 'end':
         # 退勤打刻

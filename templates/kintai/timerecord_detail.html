@@ -13,6 +13,19 @@
             <div class="col-sm-10">{{ timerecord.staff }}</div>
         </div>
 
+        <!-- 契約 -->
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end"><strong>契約</strong></div>
+            <div class="col-sm-10">
+                {% if timerecord.staff_contract %}
+                    {{ timerecord.staff_contract.contract_name }} 
+                    ({{ timerecord.staff_contract.start_date|date:"Y/m/d" }}〜{% if timerecord.staff_contract.end_date %}{{ timerecord.staff_contract.end_date|date:"Y/m/d" }}{% else %}継続中{% endif %})
+                {% else %}
+                    <span class="text-muted">契約情報なし</span>
+                {% endif %}
+            </div>
+        </div>
+
         <!-- 勤務日 -->
         <div class="row mb-3 align-items-center">
             <div class="col-sm-2 text-start text-md-end"><strong>勤務日</strong></div>

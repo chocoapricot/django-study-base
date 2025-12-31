@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from datetime import date
+from datetime import date, datetime, time
 from apps.kintai.models import StaffTimerecord, StaffTimerecordBreak
 from apps.contract.models import StaffContract
 from apps.staff.models import Staff
@@ -259,5 +259,93 @@ class TimerecordPunchViewTest(TestCase):
         old_break = record.breaks.exclude(id=latest_break.id).first()
         self.assertIsNotNone(old_break.break_end)
 
-# 必要なインポートを追加
-from datetime import datetime, time
+    def test_multiple_contracts_selection(self):
+        """複数契約がある場合の契約選択テスト"""
+        # 追加のスタッフ契約を作成（確認済み）
+        contract2 = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name="テスト契約2",
+            start_date=timezone.localtime().date(),
+            contract_pattern=self.contract_pattern,
+            contract_status=Constants.CONTRACT_STATUS.CONFIRMED
+        )
+        
+        # 打刻画面にアクセス
+        response = self.client.get(self.punch_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '2件の有効で確認済みの契約があります')
+        
+        # 契約を指定して出勤
+        response = self.client.post(self.action_url, {
+            'action': 'start',
+            'contract_id': contract2.id
+        })
+        self.assertRedirects(response, self.punch_url)
+        
+        # 指定した契約で打刻が作成されているか確認
+        record = StaffTimerecord.objects.get(staff=self.staff)
+        self.assertEqual(record.staff_contract, contract2)
+
+    def test_no_contract_punch_disabled(self):
+        """契約がない場合の打刻無効化テスト"""
+        # 契約を削除
+        StaffContract.objects.filter(staff=self.staff).delete()
+        
+        # 打刻画面にアクセス
+        response = self.client.get(self.punch_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '有効で確認済みのスタッフ契約がありません')
+        
+        # 出勤を試行
+        response = self.client.post(self.action_url, {'action': 'start'})
+        self.assertRedirects(response, self.punch_url)
+        
+        # 打刻が作成されていないことを確認
+        self.assertEqual(StaffTimerecord.objects.count(), 0)
+
+    def test_unconfirmed_contract_punch_disabled(self):
+        """未確認契約の場合の打刻無効化テスト"""
+        # 既存の契約を未確認状態に変更
+        self.staff_contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
+        self.staff_contract.save()
+        
+        # 打刻画面にアクセス
+        response = self.client.get(self.punch_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '有効で確認済みのスタッフ契約がありません')
+        
+        # 出勤を試行
+        response = self.client.post(self.action_url, {'action': 'start'})
+        self.assertRedirects(response, self.punch_url)
+        
+        # 打刻が作成されていないことを確認
+        self.assertEqual(StaffTimerecord.objects.count(), 0)
+
+    def test_mixed_contract_status_selection(self):
+        """確認済みと未確認の契約が混在する場合のテスト"""
+        # 未確認の契約を追加
+        unconfirmed_contract = StaffContract.objects.create(
+            staff=self.staff,
+            contract_name="未確認契約",
+            start_date=timezone.localtime().date(),
+            contract_pattern=self.contract_pattern,
+            contract_status=Constants.CONTRACT_STATUS.ISSUED  # 未確認
+        )
+        
+        # 打刻画面にアクセス
+        response = self.client.get(self.punch_url)
+        self.assertEqual(response.status_code, 200)
+        
+        # 確認済み契約のみが表示されることを確認（1件のみ）
+        self.assertContains(response, '契約情報:')
+        self.assertNotContains(response, '2件の有効で確認済みの契約があります')
+        
+        # 未確認契約での出勤を試行（直接POSTで送信）
+        response = self.client.post(self.action_url, {
+            'action': 'start',
+            'contract_id': unconfirmed_contract.id
+        })
+        self.assertRedirects(response, self.punch_url)
+        
+        # 打刻が作成されていないことを確認
+        self.assertEqual(StaffTimerecord.objects.count(), 0)
