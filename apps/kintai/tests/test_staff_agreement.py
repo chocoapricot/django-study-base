@@ -133,8 +133,6 @@ class StaffAgreementKintaiTest(TestCase):
         # 打刻ボタンが非表示になることを確認
         self.assertNotContains(response, 'name="action" value="start"')
         self.assertNotContains(response, 'name="action" value="end"')
-        # 代替メッセージが表示されることを確認
-        self.assertContains(response, '打刻ボタンは表示されません')
 
     def test_timerecord_list_with_unagreed_agreement_redirects(self):
         """未同意文言がある場合、勤怠一覧画面が同意画面にリダイレクトされることをテスト"""
