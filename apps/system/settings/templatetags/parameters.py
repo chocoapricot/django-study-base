@@ -7,5 +7,8 @@ register = template.Library()
 # {% parameter 'SYSTEM_NAME' %}のように利用する。
 # 
 @register.simple_tag
-def parameter(key, default=None):
-    return my_parameter(key, default)
+def parameter(key, default=None, **kwargs):
+    val = my_parameter(key, default)
+    if val and kwargs:
+        return val.format(**kwargs)
+    return val

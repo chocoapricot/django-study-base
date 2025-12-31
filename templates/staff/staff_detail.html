@@ -3,6 +3,7 @@
 {% load humanize %}
 {% load dropdowns %}
 {% load badge_tags %}
+{% load parameters %}
 {% block content %}
 
 <div class="row" style="max-width: 100%;">
@@ -164,7 +165,7 @@
                             {{ staff.address2 }}<br/>
                             {{ staff.address3 }}
                             {% if staff.full_address %}
-                            <a href="https://www.google.com/maps/search/?api=1&query={{ staff.full_address | urlencode }}" target="_blank" class="text-decoration-none" style="color:green;margin-left: 5px;" aria-label="Googleマップで開く">
+                            <a href="{% parameter 'GOOGLE_MAPS_SEARCH_URL_TEMPLATE' query=staff.full_address|urlencode %}" target="_blank" class="text-decoration-none" style="color:green;margin-left: 5px;" aria-label="Googleマップで開く">
                                 <i class="bi bi-box-arrow-up-right"></i>
                             </a>
                             {% endif %}
