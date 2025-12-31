@@ -1,5 +1,14 @@
 # 変更履歴
 
+## 2025-12-31
+
+### Changed
+- 企業情報取得API（gBizINFO）と住所取得API（ZipCloud）において、APIリクエスト結果を`ApiCache`モデルにキャッシュするように修正しました。これにより、同じリクエストに対するAPI呼び出し回数を削減し、パフォーマンスを向上させました。
+- キャッシュの有効期間はパラメータ `API_CACHE_VALIDITY_PERIOD` (デフォルト: 86400秒) で設定可能です。
+
+### Added
+- APIヘルパーのキャッシュ動作を検証するためのテストコード (`apps/api/tests/test_helpers_cache.py`) を追加しました。
+
 ## 2025-12-29
 
 ### Added
