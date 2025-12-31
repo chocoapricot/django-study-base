@@ -212,12 +212,15 @@
                             <td class="fw-bold">{{ timerecord.start_time|date:"H:i:s" }}</td>
                             <td class="small">
                                 {% if timerecord.start_latitude %}
-                                    <i class="bi bi-geo-alt"></i> 
                                     {% if timerecord.start_address %}
                                         {{ timerecord.start_address }}
                                     {% else %}
+                                        <i class="bi bi-geo-alt"></i> 
                                         {{ timerecord.start_latitude|floatformat:4 }}, {{ timerecord.start_longitude|floatformat:4 }}
                                     {% endif %}
+                                    <a href="https://www.google.com/maps?q={{ timerecord.start_latitude }},{{ timerecord.start_longitude }}" target="_blank" class="ms-1 text-primary" title="Google Mapで開く">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                    </a>
                                 {% else %}
                                     -
                                 {% endif %}
@@ -241,24 +244,30 @@
                                 <div class="mb-1">
                                     {% if break.start_latitude %}
                                         <span class="badge bg-secondary me-1">開始</span>
-                                        <i class="bi bi-geo-alt"></i> 
                                         {% if break.start_address %}
                                             {{ break.start_address }}
                                         {% else %}
+                                            <i class="bi bi-geo-alt"></i> 
                                             {{ break.start_latitude|floatformat:4 }}, {{ break.start_longitude|floatformat:4 }}
                                         {% endif %}
+                                        <a href="https://www.google.com/maps?q={{ break.start_latitude }},{{ break.start_longitude }}" target="_blank" class="ms-1 text-primary" title="Google Mapで開く">
+                                            <i class="bi bi-box-arrow-up-right"></i>
+                                        </a>
                                     {% endif %}
                                 </div>
                                 {% if break.break_end %}
                                     <div>
                                         {% if break.end_latitude %}
                                             <span class="badge bg-secondary me-1">終了</span>
-                                            <i class="bi bi-geo-alt"></i> 
                                             {% if break.end_address %}
                                                 {{ break.end_address }}
                                             {% else %}
+                                                <i class="bi bi-geo-alt"></i> 
                                                 {{ break.end_latitude|floatformat:4 }}, {{ break.end_longitude|floatformat:4 }}
                                             {% endif %}
+                                            <a href="https://www.google.com/maps?q={{ break.end_latitude }},{{ break.end_longitude }}" target="_blank" class="ms-1 text-primary" title="Google Mapで開く">
+                                                <i class="bi bi-box-arrow-up-right"></i>
+                                            </a>
                                         {% endif %}
                                     </div>
                                 {% endif %}
@@ -280,12 +289,15 @@
                             <td class="fw-bold">{{ timerecord.end_time|date:"H:i:s" }}</td>
                             <td class="small">
                                 {% if timerecord.end_latitude %}
-                                    <i class="bi bi-geo-alt"></i> 
                                     {% if timerecord.end_address %}
                                         {{ timerecord.end_address }}
                                     {% else %}
+                                        <i class="bi bi-geo-alt"></i> 
                                         {{ timerecord.end_latitude|floatformat:4 }}, {{ timerecord.end_longitude|floatformat:4 }}
                                     {% endif %}
+                                    <a href="https://www.google.com/maps?q={{ timerecord.end_latitude }},{{ timerecord.end_longitude }}" target="_blank" class="ms-1 text-primary" title="Google Mapで開く">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                    </a>
                                 {% else %}
                                     -
                                 {% endif %}

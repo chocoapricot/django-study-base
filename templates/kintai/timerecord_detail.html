@@ -49,13 +49,37 @@
         <div class="row mb-3 align-items-center">
             <div class="col-sm-2 text-start text-md-end"><strong>開始位置</strong></div>
             <div class="col-sm-10">
-                緯度: {{ timerecord.start_latitude|default:"-" }}, 経度: {{ timerecord.start_longitude|default:"-" }}
+                {% if timerecord.start_latitude %}
+                    {% if timerecord.start_address %}
+                        {{ timerecord.start_address }}
+                    {% else %}
+                        <i class="bi bi-geo-alt"></i> 
+                        {{ timerecord.start_latitude|floatformat:4 }}, {{ timerecord.start_longitude|floatformat:4 }}
+                    {% endif %}
+                    <a href="https://www.google.com/maps?q={{ timerecord.start_latitude }},{{ timerecord.start_longitude }}" target="_blank" class="ms-1 text-primary" title="Google Mapで開く">
+                        <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                {% else %}
+                    -
+                {% endif %}
             </div>
         </div>
         <div class="row mb-3 align-items-center">
             <div class="col-sm-2 text-start text-md-end"><strong>終了位置</strong></div>
             <div class="col-sm-10">
-                緯度: {{ timerecord.end_latitude|default:"-" }}, 経度: {{ timerecord.end_longitude|default:"-" }}
+                {% if timerecord.end_latitude %}
+                    {% if timerecord.end_address %}
+                        {{ timerecord.end_address }}
+                    {% else %}
+                        <i class="bi bi-geo-alt"></i> 
+                        {{ timerecord.end_latitude|floatformat:4 }}, {{ timerecord.end_longitude|floatformat:4 }}
+                    {% endif %}
+                    <a href="https://www.google.com/maps?q={{ timerecord.end_latitude }},{{ timerecord.end_longitude }}" target="_blank" class="ms-1 text-primary" title="Google Mapで開く">
+                        <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                {% else %}
+                    -
+                {% endif %}
             </div>
         </div>
         
@@ -108,15 +132,31 @@
                         <td>{{ break.break_end|date:"Y/m/d H:i:s" }}</td>
                         <td>{{ break.break_hours_display }}</td>
                         <td>
-                            {% if break.start_latitude and break.start_longitude %}
-                                {{ break.start_latitude|floatformat:6 }}, {{ break.start_longitude|floatformat:6 }}
+                            {% if break.start_latitude %}
+                                {% if break.start_address %}
+                                    {{ break.start_address }}
+                                {% else %}
+                                    <i class="bi bi-geo-alt"></i> 
+                                    {{ break.start_latitude|floatformat:4 }}, {{ break.start_longitude|floatformat:4 }}
+                                {% endif %}
+                                <a href="https://www.google.com/maps?q={{ break.start_latitude }},{{ break.start_longitude }}" target="_blank" class="ms-1 text-primary" title="Google Mapで開く">
+                                    <i class="bi bi-box-arrow-up-right"></i>
+                                </a>
                             {% else %}
                                 -
                             {% endif %}
                         </td>
                         <td>
-                            {% if break.end_latitude and break.end_longitude %}
-                                {{ break.end_latitude|floatformat:6 }}, {{ break.end_longitude|floatformat:6 }}
+                            {% if break.end_latitude %}
+                                {% if break.end_address %}
+                                    {{ break.end_address }}
+                                {% else %}
+                                    <i class="bi bi-geo-alt"></i> 
+                                    {{ break.end_latitude|floatformat:4 }}, {{ break.end_longitude|floatformat:4 }}
+                                {% endif %}
+                                <a href="https://www.google.com/maps?q={{ break.end_latitude }},{{ break.end_longitude }}" target="_blank" class="ms-1 text-primary" title="Google Mapで開く">
+                                    <i class="bi bi-box-arrow-up-right"></i>
+                                </a>
                             {% else %}
                                 -
                             {% endif %}
