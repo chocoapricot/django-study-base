@@ -349,12 +349,29 @@
                         finalizeSubmission();
                     },
                     function(error) {
-                        console.warn("位置情報の取得をスキップして打刻します:", error.message);
-                        finalizeSubmission();
+                        let errorMsg = "不明なエラー";
+                        switch(error.code) {
+                            case 1: errorMsg = "位置情報の利用が許可されていません"; break;
+                            case 2: errorMsg = "位置情報を特定できませんでした"; break;
+                            case 3: errorMsg = "位置情報の取得がタイムアウトしました"; break;
+                        }
+                        // ユーザーに確認する
+                        if (confirm(`位置情報の取得に失敗しました。\n理由: ${errorMsg}\n\nこのまま位置情報なしで打刻しますか？`)) {
+                            finalizeSubmission();
+                        } else {
+                            // キャンセルした場合はボタンを再度有効化して戻る
+                            document.querySelectorAll('.punch-btn').forEach(b => b.disabled = false);
+                            btn.innerHTML = originalHtml; // ボタンの表示を元に戻す処理が必要だが、submitterからは取れないので...
+                            // 簡易的にリロードを促すか、ボタンの状態のみ戻す
+                            // btn自体は直前の処理で書き換えていない（disabledにしただけ）のでOKのはずだが、
+                            // もしローディング表示を入れている場合はここで戻す必要がある。
+                            // 今回のコードでは btn.innerHTML書き換えはしていないのでdisabled解除だけでOK。
+                        }
                     },
-                    { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
+                    { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }
                 );
             } else {
+                alert("お使いのブラウザは位置情報をサポートしていません。");
                 finalizeSubmission();
             }
         });
