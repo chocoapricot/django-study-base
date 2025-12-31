@@ -1,31 +1,34 @@
 {% extends 'common/_base.html' %}
 {% block content %}
-<div class="content-box card bg-light mt-2 mb-4" style="max-width: 800px;">
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">
         {% if break_record %}休憩時間編集{% else %}休憩時間登録{% endif %}
     </div>
     <div class="card-body">
-        <p>勤怠打刻: {{ timerecord.staff }} - {{ timerecord.work_date|date:"Y/m/d" }}</p>
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end"><strong>勤怠打刻</strong></div>
+            <div class="col-sm-10">{{ timerecord.staff }} - {{ timerecord.work_date|date:"Y/m/d" }}</div>
+        </div>
         
         <form method="post">
             {% csrf_token %}
             
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="{{ form.break_start.id_for_label }}" class="form-label">休憩開始時刻</label>
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.break_start.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">休憩開始時刻</label>
+                <div class="col-sm-4">
                     <div class="input-group">
                         {{ form.break_start }}
-                        <button type="button" class="btn btn-outline-secondary" onclick="setNow('id_break_start', 'start')">現在時刻</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setNow('id_break_start', 'start')">現在時刻</button>
                     </div>
                     {% if form.break_start.errors %}
                         <div class="text-danger">{{ form.break_start.errors }}</div>
                     {% endif %}
                 </div>
-                <div class="col-md-6">
-                    <label for="{{ form.break_end.id_for_label }}" class="form-label">休憩終了時刻</label>
+                <label for="{{ form.break_end.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">休憩終了時刻</label>
+                <div class="col-sm-4">
                     <div class="input-group">
                         {{ form.break_end }}
-                        <button type="button" class="btn btn-outline-secondary" onclick="setNow('id_break_end', 'end')">現在時刻</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setNow('id_break_end', 'end')">現在時刻</button>
                     </div>
                     {% if form.break_end.errors %}
                         <div class="text-danger">{{ form.break_end.errors }}</div>
@@ -45,9 +48,9 @@
                 </div>
             {% endif %}
 
-            <div class="d-flex justify-content-between">
-                <a href="{% url 'kintai:timerecord_detail' timerecord.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
-                <button type="submit" class="btn btn-sm btn-primary">{% if break_record %}更新{% else %}登録{% endif %}</button>
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-primary me-2">{% if break_record %}更新{% else %}登録{% endif %}</button>
+                <a href="{% url 'kintai:timerecord_detail' timerecord.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
             </div>
         </form>
     </div>

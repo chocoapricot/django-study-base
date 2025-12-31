@@ -1,6 +1,6 @@
 {% extends 'common/_base.html' %}
 {% block content %}
-<div class="content-box card bg-light mt-2 mb-4" style="max-width: 800px;">
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">
         {% if timerecord %}勤怠打刻編集{% else %}勤怠打刻登録{% endif %}
     </div>
@@ -8,38 +8,42 @@
         <form method="post">
             {% csrf_token %}
             
-            <div class="mb-3">
-                <label for="{{ form.staff_contract.id_for_label }}" class="form-label">契約</label>
-                {{ form.staff_contract }}
-                {% if form.staff_contract.errors %}
-                    <div class="text-danger">{{ form.staff_contract.errors }}</div>
-                {% endif %}
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.staff_contract.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約</label>
+                <div class="col-sm-6">
+                    {{ form.staff_contract }}
+                    {% if form.staff_contract.errors %}
+                        <div class="text-danger">{{ form.staff_contract.errors }}</div>
+                    {% endif %}
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label for="{{ form.work_date.id_for_label }}" class="form-label">勤務日</label>
-                {{ form.work_date }}
-                {% if form.work_date.errors %}
-                    <div class="text-danger">{{ form.work_date.errors }}</div>
-                {% endif %}
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.work_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">勤務日</label>
+                <div class="col-sm-4">
+                    {{ form.work_date }}
+                    {% if form.work_date.errors %}
+                        <div class="text-danger">{{ form.work_date.errors }}</div>
+                    {% endif %}
+                </div>
             </div>
 
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="{{ form.start_time.id_for_label }}" class="form-label">開始時刻</label>
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.start_time.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">開始時刻</label>
+                <div class="col-sm-4">
                     <div class="input-group">
                         {{ form.start_time }}
-                        <button type="button" class="btn btn-outline-secondary" onclick="setNow('id_start_time', 'start')">現在時刻</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setNow('id_start_time', 'start')">現在時刻</button>
                     </div>
                     {% if form.start_time.errors %}
                         <div class="text-danger">{{ form.start_time.errors }}</div>
                     {% endif %}
                 </div>
-                <div class="col-md-6">
-                    <label for="{{ form.end_time.id_for_label }}" class="form-label">終了時刻</label>
+                <label for="{{ form.end_time.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">終了時刻</label>
+                <div class="col-sm-4">
                     <div class="input-group">
                         {{ form.end_time }}
-                        <button type="button" class="btn btn-outline-secondary" onclick="setNow('id_end_time', 'end')">現在時刻</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setNow('id_end_time', 'end')">現在時刻</button>
                     </div>
                     {% if form.end_time.errors %}
                         <div class="text-danger">{{ form.end_time.errors }}</div>
@@ -53,12 +57,14 @@
             {{ form.end_latitude }}
             {{ form.end_longitude }}
 
-            <div class="mb-3">
-                <label for="{{ form.memo.id_for_label }}" class="form-label">メモ</label>
-                {{ form.memo }}
-                {% if form.memo.errors %}
-                    <div class="text-danger">{{ form.memo.errors }}</div>
-                {% endif %}
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">メモ</label>
+                <div class="col-sm-10">
+                    {{ form.memo }}
+                    {% if form.memo.errors %}
+                        <div class="text-danger">{{ form.memo.errors }}</div>
+                    {% endif %}
+                </div>
             </div>
 
             {% if form.non_field_errors %}
@@ -67,9 +73,9 @@
                 </div>
             {% endif %}
 
-            <div class="d-flex justify-content-between">
-                <a href="{% if timerecord %}{% url 'kintai:timerecord_detail' timerecord.pk %}{% else %}{% url 'kintai:timerecord_list' %}{% endif %}" class="btn btn-sm btn-secondary">キャンセル</a>
-                <button type="submit" class="btn btn-sm btn-primary">{% if timerecord %}更新{% else %}登録{% endif %}</button>
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-primary me-2">{% if timerecord %}更新{% else %}登録{% endif %}</button>
+                <a href="{% if timerecord %}{% url 'kintai:timerecord_detail' timerecord.pk %}{% else %}{% url 'kintai:timerecord_list' %}{% endif %}" class="btn btn-sm btn-secondary me-2">戻る</a>
             </div>
         </form>
     </div>

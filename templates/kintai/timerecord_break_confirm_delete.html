@@ -1,6 +1,6 @@
 {% extends 'common/_base.html' %}
 {% block content %}
-<div class="content-box card bg-light mt-2 mb-4" style="max-width: 600px;">
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">
         休憩時間削除確認
     </div>
@@ -10,30 +10,28 @@
             以下の休憩時間を削除しますか？この操作は取り消せません。
         </div>
         
-        <table class="table table-bordered">
-            <tr>
-                <th style="width: 30%;">勤怠打刻</th>
-                <td>{{ timerecord.staff }} - {{ timerecord.work_date|date:"Y/m/d" }}</td>
-            </tr>
-            <tr>
-                <th>休憩開始時刻</th>
-                <td>{{ break_record.break_start|date:"Y/m/d H:i:s" }}</td>
-            </tr>
-            <tr>
-                <th>休憩終了時刻</th>
-                <td>{{ break_record.break_end|date:"Y/m/d H:i:s" }}</td>
-            </tr>
-            <tr>
-                <th>休憩時間</th>
-                <td>{{ break_record.break_hours_display }}</td>
-            </tr>
-        </table>
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end"><strong>勤怠打刻</strong></div>
+            <div class="col-sm-10">{{ timerecord.staff }} - {{ timerecord.work_date|date:"Y/m/d" }}</div>
+        </div>
+        
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end"><strong>休憩開始時刻</strong></div>
+            <div class="col-sm-4">{{ break_record.break_start|date:"Y/m/d H:i:s" }}</div>
+            <div class="col-sm-2 text-start text-md-end"><strong>休憩終了時刻</strong></div>
+            <div class="col-sm-4">{{ break_record.break_end|date:"Y/m/d H:i:s" }}</div>
+        </div>
+        
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end"><strong>休憩時間</strong></div>
+            <div class="col-sm-4">{{ break_record.break_hours_display }}</div>
+        </div>
 
         <form method="post">
             {% csrf_token %}
-            <div class="d-flex justify-content-between">
-                <a href="{% url 'kintai:timerecord_detail' timerecord.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
-                <button type="submit" class="btn btn-sm btn-dark">削除</button>
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-dark me-2">削除</button>
+                <a href="{% url 'kintai:timerecord_detail' timerecord.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
             </div>
         </form>
     </div>
