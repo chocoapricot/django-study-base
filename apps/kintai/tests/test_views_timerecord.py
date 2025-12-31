@@ -295,6 +295,11 @@ class TimerecordPunchViewTest(TestCase):
         response = self.client.get(self.punch_url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '有効で確認済みのスタッフ契約がありません')
+        # 打刻ボタンが非表示になることを確認
+        self.assertNotContains(response, 'name="action" value="start"')
+        self.assertNotContains(response, 'name="action" value="end"')
+        # 代替メッセージが表示されることを確認
+        self.assertContains(response, '打刻ボタンは表示されません')
         
         # 出勤を試行
         response = self.client.post(self.action_url, {'action': 'start'})
@@ -313,6 +318,11 @@ class TimerecordPunchViewTest(TestCase):
         response = self.client.get(self.punch_url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '有効で確認済みのスタッフ契約がありません')
+        # 打刻ボタンが非表示になることを確認
+        self.assertNotContains(response, 'name="action" value="start"')
+        self.assertNotContains(response, 'name="action" value="end"')
+        # 代替メッセージが表示されることを確認
+        self.assertContains(response, '打刻ボタンは表示されません')
         
         # 出勤を試行
         response = self.client.post(self.action_url, {'action': 'start'})

@@ -11,9 +11,11 @@ from apps.staff.models import Staff
 from apps.contract.models import StaffContract
 from apps.api.helpers import fetch_gsi_address
 from apps.common.constants import Constants
+from apps.profile.decorators import check_staff_agreement
 
 
 @login_required
+@check_staff_agreement
 def timerecord_list(request):
     """勤怠打刻一覧"""
     # スタッフ特定（メールアドレス連携）
@@ -60,6 +62,7 @@ def timerecord_list(request):
 
 
 @login_required
+@check_staff_agreement
 def timerecord_create(request):
     """勤怠打刻作成"""
     if request.method == 'POST':
@@ -82,6 +85,7 @@ def timerecord_create(request):
 
 
 @login_required
+@check_staff_agreement
 def timerecord_detail(request, pk):
     """勤怠打刻詳細"""
     timerecord = get_object_or_404(StaffTimerecord, pk=pk)
@@ -107,6 +111,7 @@ def timerecord_detail(request, pk):
 
 
 @login_required
+@check_staff_agreement
 def timerecord_update(request, pk):
     """勤怠打刻編集"""
     timerecord = get_object_or_404(StaffTimerecord, pk=pk)
@@ -138,6 +143,7 @@ def timerecord_update(request, pk):
 
 
 @login_required
+@check_staff_agreement
 def timerecord_delete(request, pk):
     """勤怠打刻削除"""
     timerecord = get_object_or_404(StaffTimerecord, pk=pk)
@@ -164,6 +170,7 @@ def timerecord_delete(request, pk):
 
 
 @login_required
+@check_staff_agreement
 def timerecord_break_create(request, timerecord_pk):
     """休憩時間作成"""
     timerecord = get_object_or_404(StaffTimerecord, pk=timerecord_pk)
@@ -197,6 +204,7 @@ def timerecord_break_create(request, timerecord_pk):
 
 
 @login_required
+@check_staff_agreement
 def timerecord_break_update(request, pk):
     """休憩時間編集"""
     break_record = get_object_or_404(StaffTimerecordBreak, pk=pk)
@@ -230,6 +238,7 @@ def timerecord_break_update(request, pk):
 
 
 @login_required
+@check_staff_agreement
 def timerecord_break_delete(request, pk):
     """休憩時間削除"""
     break_record = get_object_or_404(StaffTimerecordBreak, pk=pk)
@@ -258,6 +267,7 @@ def timerecord_break_delete(request, pk):
 
 
 @login_required
+@check_staff_agreement
 def timerecord_punch(request):
     """勤怠打刻画面（ダッシュボード形式）"""
     # スタッフ特定
@@ -342,6 +352,7 @@ def timerecord_punch(request):
 
 
 @login_required
+@check_staff_agreement
 def timerecord_action(request):
     """打刻アクション（出勤・退勤・休憩開始・休憩終了）"""
     if request.method != 'POST':

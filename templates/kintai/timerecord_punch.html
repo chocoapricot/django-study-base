@@ -189,39 +189,46 @@
             </div>
 
             <div class="action-grid">
-                <form action="{% url 'kintai:timerecord_action' %}" method="POST" id="punch-form" class="punch-form">
-                    {% csrf_token %}
-                    <input type="hidden" name="latitude" id="latitude">
-                    <input type="hidden" name="longitude" id="longitude">
-                    <input type="hidden" name="contract_id" id="contract_id">
-                    
-                    <button type="submit" name="action" value="start" class="btn punch-btn btn-start" id="start-btn"
-                        {% if status != 'not_started' or available_contracts.count == 0 %}disabled{% endif %}>
-                        <i class="bi bi-box-arrow-in-right"></i>
-                        出勤
-                    </button>
-                    
-                    <button type="submit" name="action" value="end" class="btn punch-btn btn-end" 
-                        {% if status != 'working' %}disabled{% endif %}>
-                        <i class="bi bi-box-arrow-left"></i>
-                        退勤
-                    </button>
-                    
-                    <button type="submit" name="action" value="break_start" class="btn punch-btn btn-break" 
-                        {% if status != 'working' %}disabled{% endif %}>
-                        <i class="bi bi-pause-circle"></i>
-                        休憩開始
-                    </button>
-                    
-                    <button type="submit" name="action" value="break_end" class="btn punch-btn btn-resume" 
-                        {% if status != 'on_break' %}disabled{% endif %}>
-                        <i class="bi bi-play-circle"></i>
-                        休憩終了
-                    </button>
-                </form>
+                {% if available_contracts.count > 0 %}
+                    <form action="{% url 'kintai:timerecord_action' %}" method="POST" id="punch-form" class="punch-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="latitude" id="latitude">
+                        <input type="hidden" name="longitude" id="longitude">
+                        <input type="hidden" name="contract_id" id="contract_id">
+                        
+                        <button type="submit" name="action" value="start" class="btn punch-btn btn-start" id="start-btn"
+                            {% if status != 'not_started' %}disabled{% endif %}>
+                            <i class="bi bi-box-arrow-in-right"></i>
+                            出勤
+                        </button>
+                        
+                        <button type="submit" name="action" value="end" class="btn punch-btn btn-end" 
+                            {% if status != 'working' %}disabled{% endif %}>
+                            <i class="bi bi-box-arrow-left"></i>
+                            退勤
+                        </button>
+                        
+                        <button type="submit" name="action" value="break_start" class="btn punch-btn btn-break" 
+                            {% if status != 'working' %}disabled{% endif %}>
+                            <i class="bi bi-pause-circle"></i>
+                            休憩開始
+                        </button>
+                        
+                        <button type="submit" name="action" value="break_end" class="btn punch-btn btn-resume" 
+                            {% if status != 'on_break' %}disabled{% endif %}>
+                            <i class="bi bi-play-circle"></i>
+                            休憩終了
+                        </button>
+                    </form>
+                {% else %}
+                    <!-- 契約がない場合はボタンを非表示 -->
+                    <div class="text-center" style="padding: 2rem;">
+                        <p class="text-muted">有効で確認済みのスタッフ契約がないため、打刻ボタンは表示されません。</p>
+                    </div>
+                {% endif %}
             </div>
 
-            {% if can_cancel %}
+            {% if can_cancel and available_contracts.count > 0 %}
             <div class="mt-2 mb-3">
                 <form action="{% url 'kintai:timerecord_action' %}" method="POST" onsubmit="return confirm('直近の打刻を取り消しますか？');">
                     {% csrf_token %}
@@ -376,6 +383,7 @@
 
     // 打刻ボタン押下時の処理（このタイミングでのみ位置情報を取得）
     const punchForm = document.getElementById('punch-form');
+    {% if available_contracts.count > 0 %}
     if (punchForm) {
         punchForm.addEventListener('submit', function(e) {
             const action = e.submitter ? e.submitter.value : null;
@@ -459,5 +467,6 @@
             }
         });
     }
+    {% endif %}
 </script>
 {% endblock %}
