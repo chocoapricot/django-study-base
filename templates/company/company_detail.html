@@ -1,6 +1,7 @@
 {% extends 'common/_base.html' %}
 {% load static %}
 {% load help_tags %}
+{% load parameters %}
 {% block content %}
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
@@ -43,7 +44,7 @@
                 {% if company.postal_code %}〒 {{ company.postal_code }}<br/>{% endif %}
                 {{ company.address }}
                 {% if company.address %}
-                <a href="https://www.google.com/maps/search/?api=1&query={{ company.address | urlencode }}" target="_blank" class="text-decoration-none" style="color:green;margin-left: 5px;" aria-label="Googleマップで開く">
+                <a href="{% parameter 'GOOGLE_MAPS_SEARCH_URL_BASE' %}{{ company.address|urlencode }}" target="_blank" class="text-decoration-none" style="color:green;margin-left: 5px;" aria-label="Googleマップで開く">
                     <i class="bi bi-box-arrow-up-right"></i>
                 </a>
                 {% endif %}

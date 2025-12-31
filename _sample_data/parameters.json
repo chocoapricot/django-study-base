@@ -195,28 +195,11 @@
         "updated_at": "2025-12-31T09:00:00.000Z",
         "updated_by": 1,
         "category": "system",
-        "key": "GOOGLE_MAPS_URL_TEMPLATE",
-        "value": "https://www.google.com/maps?q={lat},{lon}",
-        "default_value": "https://www.google.com/maps?q={lat},{lon}",
-        "note": "Google MapsのURLテンプレート",
+        "key": "GOOGLE_MAPS_URL_BASE",
+        "value": "https://www.google.com/maps?q=",
+        "default_value": "https://www.google.com/maps?q=",
+        "note": "Google MapsのベースURL（固定部分）",
         "disp_seq": 7,
-        "active": true
-    }
-},
-{
-    "model": "settings.parameter",
-    "pk": 14,
-    "fields": {
-        "created_at": "2025-12-31T09:00:00.000Z",
-        "created_by": 1,
-        "updated_at": "2025-12-31T09:00:00.000Z",
-        "updated_by": 1,
-        "category": "system",
-        "key": "GOOGLE_MAPS_SEARCH_URL_TEMPLATE",
-        "value": "https://www.google.com/maps/search/?api=1&query={query}",
-        "default_value": "https://www.google.com/maps/search/?api=1&query={query}",
-        "note": "Google Mapsの検索URLテンプレート",
-        "disp_seq": 8,
         "active": true
     }
 }

@@ -3,6 +3,7 @@
 {% load dropdowns %}
 {% load help_tags %}
 {% load badge_tags %}
+{% load parameters %}
 {% block content %}
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
@@ -48,7 +49,7 @@
                     〒 {{ client.postal_code }}<br/>
                     {{ client.address }}
                     {% if client.address %}
-                    <a href="https://www.google.com/maps/search/?api=1&query={{ client.address | urlencode }}" target="_blank" class="text-decoration-none" style="color:green;margin-left: 5px;" aria-label="Googleマップで開く">
+                    <a href="{% parameter 'GOOGLE_MAPS_SEARCH_URL_BASE' %}{{ client.address|urlencode }}" target="_blank" class="text-decoration-none" style="color:green;margin-left: 5px;" aria-label="Googleマップで開く">
                         <i class="bi bi-box-arrow-up-right"></i>
                     </a>
                 {% endif %}

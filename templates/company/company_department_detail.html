@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load static %}
+{% load parameters %}
 {% block content %}
 
 {% include 'company/_company_info_card.html' %}
@@ -58,7 +59,7 @@
                 {% if department.postal_code %}〒 {{ department.postal_code }}<br/>{% endif %}
                 {{ department.address }}
                 {% if department.address %}
-                <a href="https://www.google.com/maps/search/?api=1&query={{ department.address | urlencode }}" target="_blank" class="text-decoration-none" style="color:green;margin-left: 5px;" aria-label="Googleマップで開く">
+                <a href="{% parameter 'GOOGLE_MAPS_SEARCH_URL_BASE' %}{{ department.address|urlencode }}" target="_blank" class="text-decoration-none" style="color:green;margin-left: 5px;" aria-label="Googleマップで開く">
                     <i class="bi bi-box-arrow-up-right"></i>
                 </a>
                 {% endif %}
