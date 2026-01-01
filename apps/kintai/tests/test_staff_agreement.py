@@ -136,9 +136,10 @@ class StaffAgreementKintaiTest(TestCase):
         # 打刻ボタンが非表示になることを確認
         self.assertNotContains(response, 'name="action" value="start"')
         self.assertNotContains(response, 'name="action" value="end"')
-        # 時計表示が非表示になることを確認（実際のHTML要素をチェック）
+        # 時計表示（時刻）が非表示になることを確認
         self.assertNotContains(response, 'id="current-time"')
-        self.assertNotContains(response, 'class="clock-date mb-1"')
+        # 日付表示は表示されることを確認
+        self.assertContains(response, 'class="clock-date mb-1"')
 
     def test_timerecord_list_with_unagreed_agreement_redirects(self):
         """未同意文言がある場合、勤怠一覧画面が同意画面にリダイレクトされることをテスト"""

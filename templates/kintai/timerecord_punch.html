@@ -126,8 +126,8 @@
             </div>
         </div>
         <div class="card-body text-center p-5">
+            <div class="clock-date mb-1">{{ today|date:"Y年m月d日" }} ({{ today|date:"D" }})</div>
             {% if available_contracts.count > 0 %}
-                <div class="clock-date mb-1">{{ today|date:"Y年m月d日" }} ({{ today|date:"D" }})</div>
                 <div class="clock-display" id="current-time">00:00:00</div>
             {% endif %}
 
