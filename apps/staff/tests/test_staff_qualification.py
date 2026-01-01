@@ -90,18 +90,21 @@ class StaffQualificationModelTest(TestCase):
 
     def test_is_expired_property(self):
         """資格期限切れ判定のテスト"""
-        # 期限切れの資格
+        from django.utils import timezone
+        today = timezone.now().date()
+        
+        # 期限切れの資格（昨日が期限）
         expired_qual = StaffQualification.objects.create(
             staff=self.staff,
             qualification=self.qualification,
-            acquired_date=date(2020, 1, 1),
-            expiry_date=date(2023, 12, 31),
+            acquired_date=today - timedelta(days=365),
+            expiry_date=today - timedelta(days=1),
             created_by=self.user,
             updated_by=self.user
         )
         self.assertTrue(expired_qual.is_expired)
         
-        # 有効な資格
+        # 有効な資格（来年が期限）
         valid_qual = StaffQualification.objects.create(
             staff=self.staff,
             qualification=Qualification.objects.create(
@@ -111,8 +114,8 @@ class StaffQualificationModelTest(TestCase):
                 created_by=self.user,
                 updated_by=self.user
             ),
-            acquired_date=date(2024, 1, 1),
-            expiry_date=date(2025, 12, 31),
+            acquired_date=today - timedelta(days=30),
+            expiry_date=today + timedelta(days=365),
             created_by=self.user,
             updated_by=self.user
         )
@@ -120,12 +123,15 @@ class StaffQualificationModelTest(TestCase):
 
     def test_is_expiring_soon_property(self):
         """資格期限間近判定のテスト"""
+        from django.utils import timezone
+        today = timezone.now().date()
+        
         # 30日以内に期限切れ
         expiring_soon_qual = StaffQualification.objects.create(
             staff=self.staff,
             qualification=self.qualification,
-            acquired_date=date(2024, 1, 1),
-            expiry_date=date.today() + timedelta(days=15),
+            acquired_date=today - timedelta(days=30),
+            expiry_date=today + timedelta(days=15),
             created_by=self.user,
             updated_by=self.user
         )
@@ -141,8 +147,8 @@ class StaffQualificationModelTest(TestCase):
                 created_by=self.user,
                 updated_by=self.user
             ),
-            acquired_date=date(2024, 1, 1),
-            expiry_date=date.today() + timedelta(days=60),
+            acquired_date=today - timedelta(days=30),
+            expiry_date=today + timedelta(days=60),
             created_by=self.user,
             updated_by=self.user
         )
