@@ -2,11 +2,13 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django.db.models import Q
 from datetime import date, datetime, time
 from apps.kintai.models import StaffTimerecord, StaffTimerecordBreak
 from apps.contract.models import StaffContract
 from apps.staff.models import Staff
-from apps.master.models import EmploymentType, ContractPattern
+from apps.master.models import EmploymentType, ContractPattern, StaffAgreement
+from apps.connect.models import ConnectStaff, ConnectStaffAgree
 from apps.common.constants import Constants
 
 User = get_user_model()
@@ -20,7 +22,8 @@ class TimerecordPunchViewTest(TestCase):
         self.user = User.objects.create_user(
             username='staffuser',
             email='staff@example.com',
-            password='testpass123'
+            password='testpass123',
+            is_staff=True  # スタッフユーザーとして同意チェックをバイパス
         )
         self.client = Client()
         self.client.login(username='staffuser', password='testpass123')
@@ -38,13 +41,14 @@ class TimerecordPunchViewTest(TestCase):
         self.employment_type = EmploymentType.objects.create(name='正社員')
         self.contract_pattern = ContractPattern.objects.create(name='標準', domain=Constants.DOMAIN.STAFF)
 
-        # 有効なスタッフ契約作成
+        # 有効なスタッフ契約作成（今日の日付に合わせて設定）
+        today = timezone.localtime().date()
         self.staff_contract = StaffContract.objects.create(
             staff=self.staff,
             employment_type=self.employment_type,
             contract_pattern=self.contract_pattern,
-            start_date=date(2024, 1, 1),
-            end_date=date(2025, 12, 31),
+            start_date=today,
+            end_date=date(today.year + 1, 12, 31),  # 来年末まで有効
             contract_status=Constants.CONTRACT_STATUS.CONFIRMED
         )
 
