@@ -146,6 +146,23 @@ class TimeRoundingUtilsTest(TestCase):
                 result = round_time(input_time, 10, Constants.TIME_ROUNDING_METHOD.ROUND)
                 self.assertEqual(result, expected_time)
 
+    def test_round_time_1min_truncate(self):
+        """1分単位の丸めが秒の切り捨てとして機能することを確認するテスト"""
+        input_time = datetime(2024, 1, 1, 9, 0, 30)
+        expected_time = datetime(2024, 1, 1, 9, 0, 0)
+
+        # 切り上げ、切り捨て、四捨五入のいずれの方法でも秒が切り捨てられることを確認
+        methods = [
+            Constants.TIME_ROUNDING_METHOD.CEIL,
+            Constants.TIME_ROUNDING_METHOD.FLOOR,
+            Constants.TIME_ROUNDING_METHOD.ROUND,
+        ]
+
+        for method in methods:
+            with self.subTest(method=method):
+                result = round_time(input_time, 1, method)
+                self.assertEqual(result, expected_time)
+
 
 class StaffTimerecordRoundingTest(TestCase):
     """StaffTimerecordモデルの時間丸め機能のテスト"""
@@ -222,11 +239,11 @@ class StaffTimerecordRoundingTest(TestCase):
             staff_contract=staff_contract_no_rounding,
             staff=self.staff,
             work_date=date(2024, 1, 1),
-            start_time=datetime(2024, 1, 1, 9, 3, 0),  # 9:03
-            end_time=datetime(2024, 1, 1, 18, 7, 0)    # 18:07
+            start_time=datetime(2024, 1, 1, 9, 3, 30),  # 9:03:30
+            end_time=datetime(2024, 1, 1, 18, 7, 59)    # 18:07:59
         )
         
-        # 丸め設定がない場合は元の時刻と同じ
+        # 丸め設定がない場合は秒が切り捨てられる
         self.assertEqual(timerecord.rounded_start_time, datetime(2024, 1, 1, 9, 3, 0))
         self.assertEqual(timerecord.rounded_end_time, datetime(2024, 1, 1, 18, 7, 0))
     
@@ -244,13 +261,13 @@ class StaffTimerecordRoundingTest(TestCase):
         # 休憩時間を作成
         break_record = StaffTimerecordBreak.objects.create(
             timerecord=timerecord,
-            break_start=datetime(2024, 1, 1, 12, 2, 0),  # 12:02
-            break_end=datetime(2024, 1, 1, 13, 8, 0)     # 13:08
+            break_start=datetime(2024, 1, 1, 12, 2, 30),  # 12:02:30
+            break_end=datetime(2024, 1, 1, 13, 8, 59)     # 13:08:59
         )
         
         # 休憩時間の丸め結果を確認
-        # 休憩開始: 12:02 → 12:00（5分単位四捨五入）
-        # 休憩終了: 13:08 → 13:10（5分単位四捨五入）
+        # 休憩開始: 12:02:30 → 12:02:00 (秒切り捨て) → 12:00:00 (5分単位四捨五入)
+        # 休憩終了: 13:08:59 → 13:08:00 (秒切り捨て) → 13:10:00 (5分単位四捨五入)
         self.assertEqual(break_record.rounded_break_start, datetime(2024, 1, 1, 12, 0, 0))
         self.assertEqual(break_record.rounded_break_end, datetime(2024, 1, 1, 13, 10, 0))
     

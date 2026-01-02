@@ -759,20 +759,22 @@ class StaffTimerecord(MyModel):
         # スタッフ契約からスタッフを自動設定
         if self.staff_contract and not self.staff_id:
             self.staff = self.staff_contract.staff
-        
-        # 時間丸め設定を適用
+
+        # 常に秒を切り捨てて保存
+        if self.start_time:
+            self.rounded_start_time = self.start_time.replace(second=0, microsecond=0)
+        if self.end_time:
+            self.rounded_end_time = self.end_time.replace(second=0, microsecond=0)
+
+        # 時間丸め設定があれば適用
         if self.staff_contract and self.staff_contract.time_rounding:
             from .utils import apply_time_rounding
-            rounded_start, rounded_end = apply_time_rounding(self, self.staff_contract.time_rounding)
+            rounded_start, rounded_end = apply_time_rounding(
+                self.rounded_start_time, self.rounded_end_time, self.staff_contract.time_rounding
+            )
             self.rounded_start_time = rounded_start
             self.rounded_end_time = rounded_end
-        else:
-            # 丸め設定がない場合は秒を切り捨てて時分のみで保存
-            if self.start_time:
-                self.rounded_start_time = self.start_time.replace(second=0, microsecond=0)
-            if self.end_time:
-                self.rounded_end_time = self.end_time.replace(second=0, microsecond=0)
-            
+
         super().save(*args, **kwargs)
     
     @property
@@ -921,23 +923,23 @@ class StaffTimerecordBreak(MyModel):
                 pass
     
     def save(self, *args, **kwargs):
-        # 時間丸め設定を適用
-        if (self.timerecord and 
-            self.timerecord.staff_contract and 
-            self.timerecord.staff_contract.time_rounding):
+        # 常に秒を切り捨てて保存
+        if self.break_start:
+            self.rounded_break_start = self.break_start.replace(second=0, microsecond=0)
+        if self.break_end:
+            self.rounded_break_end = self.break_end.replace(second=0, microsecond=0)
+
+        # 時間丸め設定があれば適用
+        if (self.timerecord and
+                self.timerecord.staff_contract and
+                self.timerecord.staff_contract.time_rounding):
             from .utils import apply_break_time_rounding
             rounded_start, rounded_end = apply_break_time_rounding(
-                self, self.timerecord.staff_contract.time_rounding
+                self.rounded_break_start, self.rounded_break_end, self.timerecord.staff_contract.time_rounding
             )
             self.rounded_break_start = rounded_start
             self.rounded_break_end = rounded_end
-        else:
-            # 丸め設定がない場合は秒を切り捨てて時分のみで保存
-            if self.break_start:
-                self.rounded_break_start = self.break_start.replace(second=0, microsecond=0)
-            if self.break_end:
-                self.rounded_break_end = self.break_end.replace(second=0, microsecond=0)
-            
+
         super().save(*args, **kwargs)
     
     @property

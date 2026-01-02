@@ -15,8 +15,12 @@ def round_time(dt, unit_minutes, method):
     Returns:
         datetime: 丸められた時刻
     """
-    if not dt or unit_minutes <= 0:
+    if not dt:
         return dt
+
+    # 1分単位、または未設定の場合は秒を切り捨てる
+    if unit_minutes <= 1:
+        return dt.replace(second=0, microsecond=0)
     
     # 分単位での現在の分数を取得
     current_minutes = dt.minute
@@ -59,36 +63,37 @@ def round_time(dt, unit_minutes, method):
     return new_dt
 
 
-def apply_time_rounding(timerecord, time_rounding_config):
+def apply_time_rounding(start_time, end_time, time_rounding_config):
     """
     勤怠打刻に時間丸め設定を適用する
     
     Args:
-        timerecord (StaffTimerecord): 勤怠打刻オブジェクト
+        start_time (datetime): 開始時刻
+        end_time (datetime): 終了時刻
         time_rounding_config (TimeRounding): 時間丸め設定
     
     Returns:
         tuple: (rounded_start_time, rounded_end_time)
     """
-    rounded_start_time = None
-    rounded_end_time = None
+    rounded_start_time = start_time
+    rounded_end_time = end_time
     
     if not time_rounding_config:
         # 設定がない場合は元の時刻をそのまま返す
-        return timerecord.start_time, timerecord.end_time
+        return rounded_start_time, rounded_end_time
     
     # 開始時刻の丸め
-    if timerecord.start_time:
+    if start_time:
         rounded_start_time = round_time(
-            timerecord.start_time,
+            start_time,
             time_rounding_config.start_time_unit,
             time_rounding_config.start_time_method
         )
     
     # 終了時刻の丸め
-    if timerecord.end_time:
+    if end_time:
         rounded_end_time = round_time(
-            timerecord.end_time,
+            end_time,
             time_rounding_config.end_time_unit,
             time_rounding_config.end_time_method
         )
@@ -96,36 +101,37 @@ def apply_time_rounding(timerecord, time_rounding_config):
     return rounded_start_time, rounded_end_time
 
 
-def apply_break_time_rounding(break_record, time_rounding_config):
+def apply_break_time_rounding(break_start, break_end, time_rounding_config):
     """
     休憩時間に時間丸め設定を適用する
     
     Args:
-        break_record (StaffTimerecordBreak): 休憩時間オブジェクト
+        break_start (datetime): 休憩開始時刻
+        break_end (datetime): 休憩終了時刻
         time_rounding_config (TimeRounding): 時間丸め設定
     
     Returns:
         tuple: (rounded_break_start, rounded_break_end)
     """
-    rounded_break_start = None
-    rounded_break_end = None
+    rounded_break_start = break_start
+    rounded_break_end = break_end
     
     if not time_rounding_config or not time_rounding_config.break_input:
         # 設定がない場合や休憩入力が無効な場合は元の時刻をそのまま返す
-        return break_record.break_start, break_record.break_end
+        return rounded_break_start, rounded_break_end
     
     # 休憩開始時刻の丸め
-    if break_record.break_start:
+    if break_start:
         rounded_break_start = round_time(
-            break_record.break_start,
+            break_start,
             time_rounding_config.break_start_unit,
             time_rounding_config.break_start_method
         )
     
     # 休憩終了時刻の丸め
-    if break_record.break_end:
+    if break_end:
         rounded_break_end = round_time(
-            break_record.break_end,
+            break_end,
             time_rounding_config.break_end_unit,
             time_rounding_config.break_end_method
         )
