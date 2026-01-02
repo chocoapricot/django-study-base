@@ -7,6 +7,9 @@ from django.http import JsonResponse
 from .models import (
     OvertimePattern,
 )
+from .models_kintai import (
+    TimeRounding,
+)
 from .forms_kintai import (
     OvertimePatternForm,
 )

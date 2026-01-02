@@ -118,12 +118,27 @@ class TimeRounding(MyModel):
     def get_rounding_summary(self):
         """丸め設定の概要を返す"""
         summary = []
-        summary.append(f"開始: {self.start_time_unit}分{self.get_start_time_method_display()}")
-        summary.append(f"終了: {self.end_time_unit}分{self.get_end_time_method_display()}")
+        
+        # 開始・終了時刻の設定を比較
+        if (self.start_time_unit == self.end_time_unit and 
+            self.start_time_method == self.end_time_method):
+            # 同じ設定の場合はまとめて表示
+            summary.append(f"開始終了: {self.start_time_unit}分{self.get_start_time_method_display()}")
+        else:
+            # 異なる設定の場合は個別に表示
+            summary.append(f"開始: {self.start_time_unit}分{self.get_start_time_method_display()}")
+            summary.append(f"終了: {self.end_time_unit}分{self.get_end_time_method_display()}")
         
         if self.break_input:
-            summary.append(f"休憩開始: {self.break_start_unit}分{self.get_break_start_method_display()}")
-            summary.append(f"休憩終了: {self.break_end_unit}分{self.get_break_end_method_display()}")
+            # 休憩開始・終了時刻の設定を比較
+            if (self.break_start_unit == self.break_end_unit and 
+                self.break_start_method == self.break_end_method):
+                # 同じ設定の場合はまとめて表示
+                summary.append(f"休憩: {self.break_start_unit}分{self.get_break_start_method_display()}")
+            else:
+                # 異なる設定の場合は個別に表示
+                summary.append(f"休憩開始: {self.break_start_unit}分{self.get_break_start_method_display()}")
+                summary.append(f"休憩終了: {self.break_end_unit}分{self.get_break_end_method_display()}")
         else:
             summary.append("休憩: 入力なし")
         

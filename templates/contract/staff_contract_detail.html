@@ -128,6 +128,17 @@
                                 </td>
                             </tr>
                             <tr>
+                                <th>時間丸め</th>
+                                <td>
+                                    {% if contract.time_rounding %}
+                                        {{ contract.time_rounding.name }}
+                                        <small class="text-muted">（{{ contract.time_rounding.get_rounding_summary }}）</small>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
                                 <th>契約種別</th>
                                 <td>
                                     {% if contract.employment_type %}
