@@ -298,7 +298,7 @@ body.no-transition #sidebar {
             {% endfor %}
         </div>
         <div class="icons">
-            <span id="window-breakpoint">-</span> (横幅：<span id="window-width">0</span> px)
+            <span id="window-breakpoint">-</span>(横幅：<span id="window-width">0</span> px)
             <i class="bi bi-search"></i> <!-- 検索アイコン -->
             <a href="{% url 'system_notifications:notification_list' %}" style="position: relative; text-decoration: none; color: inherit;">
                 <i class="bi bi-bell"></i> <!-- 通知アイコン -->
@@ -306,13 +306,15 @@ body.no-transition #sidebar {
                     0
                 </span>
             </a>
-            <i class="bi bi-cup" id="logic-info-btn" data-bs-toggle="modal" data-bs-target="#logicInfoModal" title="ページロジック情報"></i>
+            <span class="d-none d-lg-inline-block">
+                <i class="bi bi-cup" id="logic-info-btn" data-bs-toggle="modal" data-bs-target="#logicInfoModal" title="ページロジック情報"></i>
+            </span>
             <!--
             <i class="bi bi-gear"></i>
             -->
             <a href="{% url 'accounts:profile' %}" title="アカウント編集" style="text-decoration:none;color:inherit;display:flex;align-items:center;font-weight:bold;margin-right:8px;">
                 <i class="bi bi-person-circle" style="font-size: 1.25rem; margin-right: 4px;"></i>
-                {{ request.user.username }}
+                <span class="d-none d-lg-inline">{{ request.user.username }}</span>
             </a>
             <form action="/accounts/logout/" method="post" style="display:inline;" onsubmit="return confirm('ログアウトしますか？');">
                 {% csrf_token %}
