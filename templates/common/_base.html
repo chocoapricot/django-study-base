@@ -287,10 +287,10 @@ body.no-transition #sidebar {
       <button class="btn d-none d-md-block" id="toggleSidebar" type="button">
         <i class="bi bi-list"></i> 
       </button>
-            <div class="logo"><a href="{% url 'home:home' %}" class="no-link-style">{% parameter 'SYSTEM_NAME' %}</a></div>
+            <div class="logo d-none d-sm-block"><a href="{% url 'home:home' %}" class="no-link-style">{% parameter 'SYSTEM_NAME' %}</a></div>
             {% for menu in menus %}
             {% if menu|my_menu_active:request.path and menu|has_menu_permission:user %}
-            <div class="current-menu">
+            <div class="current-menu d-none d-md-block">
                 <i class="bi {{ menu.icon }}" style="{{ menu.icon_style }}"></i>
                 {{ menu.name }}
             </div>
@@ -298,7 +298,10 @@ body.no-transition #sidebar {
             {% endfor %}
         </div>
         <div class="icons">
-            <span id="window-breakpoint">-</span>(横幅：<span id="window-width">0</span> px)
+            <span style="font-size:0.8rem; line-height: 1.2;">
+                <span id="window-breakpoint">-</span><br>
+                (横幅：<span id="window-width">0</span>px)
+            </span>
             <i class="bi bi-search"></i> <!-- 検索アイコン -->
             <a href="{% url 'system_notifications:notification_list' %}" style="position: relative; text-decoration: none; color: inherit;">
                 <i class="bi bi-bell"></i> <!-- 通知アイコン -->
