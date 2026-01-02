@@ -1,0 +1,74 @@
+[
+{
+    "model": "master.timerounding",
+    "pk": 1,
+    "fields": {
+        "version": 0,
+        "created_at": "2026-01-02T10:23:15.983Z",
+        "created_by": null,
+        "updated_at": "2026-01-02T10:23:15.983Z",
+        "updated_by": null,
+        "name": "5分単位",
+        "description": "5分単位での時間丸め設定",
+        "start_time_unit": 5,
+        "start_time_method": "round",
+        "end_time_unit": 5,
+        "end_time_method": "round",
+        "break_input": true,
+        "break_start_unit": 5,
+        "break_start_method": "round",
+        "break_end_unit": 5,
+        "break_end_method": "round",
+        "is_active": true,
+        "sort_order": 5
+    }
+},
+{
+    "model": "master.timerounding",
+    "pk": 2,
+    "fields": {
+        "version": 0,
+        "created_at": "2026-01-02T10:23:15.983Z",
+        "created_by": null,
+        "updated_at": "2026-01-02T10:23:15.983Z",
+        "updated_by": null,
+        "name": "15分単位",
+        "description": "15分単位での時間丸め設定",
+        "start_time_unit": 15,
+        "start_time_method": "round",
+        "end_time_unit": 15,
+        "end_time_method": "round",
+        "break_input": true,
+        "break_start_unit": 15,
+        "break_start_method": "round",
+        "break_end_unit": 15,
+        "break_end_method": "round",
+        "is_active": true,
+        "sort_order": 15
+    }
+},
+{
+    "model": "master.timerounding",
+    "pk": 3,
+    "fields": {
+        "version": 0,
+        "created_at": "2026-01-02T10:23:15.983Z",
+        "created_by": null,
+        "updated_at": "2026-01-02T10:23:15.983Z",
+        "updated_by": null,
+        "name": "30分単位",
+        "description": "30分単位での時間丸め設定",
+        "start_time_unit": 30,
+        "start_time_method": "round",
+        "end_time_unit": 30,
+        "end_time_method": "round",
+        "break_input": true,
+        "break_start_unit": 30,
+        "break_start_method": "round",
+        "break_end_unit": 30,
+        "break_end_method": "round",
+        "is_active": true,
+        "sort_order": 30
+    }
+}
+]

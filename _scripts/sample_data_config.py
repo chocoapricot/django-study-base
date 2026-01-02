@@ -31,6 +31,7 @@ SAMPLE_DATA_FILES = [
     ("_sample_data/master_worktime_pattern_work.json", "就業時間パターン勤務時間マスタデータ"),
     ("_sample_data/master_worktime_pattern_break.json", "就業時間パターン休憩時間マスタデータ"),
     ("_sample_data/master_overtime_pattern.json", "時間外算出パターンマスタデータ"),
+    ("_sample_data/master_time_rounding.json", "時間丸めマスタデータ"),
     ("_sample_data/master_employment_type.json", "雇用形態マスタデータ"),
     ("_sample_data/master_contract_pattern.json", "契約書パターンマスタデータ"),
     ("_sample_data/master_contract_terms.json", "契約文言マスタデータ"),
