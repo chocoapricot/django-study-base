@@ -2,7 +2,7 @@ from django.test import TestCase
 from apps.kintai.models import StaffTimecard, StaffTimesheet
 from apps.contract.models import StaffContract
 from apps.staff.models import Staff
-from apps.master.models_contract import OvertimePattern, ContractPattern, EmploymentType
+from apps.master.models import OvertimePattern, ContractPattern, EmploymentType
 from datetime import date, time
 
 class StaffTimesheetPremiumOvertimeTest(TestCase):

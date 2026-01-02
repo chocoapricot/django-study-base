@@ -1,5 +1,5 @@
 from django.test import TestCase
-from apps.master.forms import OvertimePatternForm
+from apps.master.forms_kintai import OvertimePatternForm
 from apps.master.models import OvertimePattern
 
 

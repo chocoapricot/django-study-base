@@ -16,6 +16,7 @@ from .views_billing import *
 from .views_other import *
 from .views_phrase import *
 from .views_worktime import *
+from .views_kintai import *
 
 # マスタ設定データ
 MASTER_CONFIGS = [

@@ -103,7 +103,7 @@ class DailyDispatchWarningTestCase(TestCase):
         )
         
         # 時間外算出パターン作成
-        from apps.master.models_contract import OvertimePattern
+        from apps.master.models import OvertimePattern
         self.overtime_pattern = OvertimePattern.objects.create(
             name='標準時間外',
             is_active=True
