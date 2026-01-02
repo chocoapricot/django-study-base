@@ -27,7 +27,7 @@ class TimeRounding(MyModel):
     # 開始時刻丸め設定
     start_time_unit = models.IntegerField(
         choices=get_time_rounding_unit_choices(),
-        default=Constants.TIME_ROUNDING_UNIT.FIFTEEN_MINUTES,
+        default=Constants.TIME_ROUNDING_UNIT.ONE_MINUTE,
         verbose_name='開始時刻丸め単位',
         help_text='開始時刻の丸め単位（分）'
     )
@@ -43,7 +43,7 @@ class TimeRounding(MyModel):
     # 終了時刻丸め設定
     end_time_unit = models.IntegerField(
         choices=get_time_rounding_unit_choices(),
-        default=Constants.TIME_ROUNDING_UNIT.FIFTEEN_MINUTES,
+        default=Constants.TIME_ROUNDING_UNIT.ONE_MINUTE,
         verbose_name='終了時刻丸め単位',
         help_text='終了時刻の丸め単位（分）'
     )
@@ -66,7 +66,7 @@ class TimeRounding(MyModel):
     # 休憩開始時刻丸め設定
     break_start_unit = models.IntegerField(
         choices=get_time_rounding_unit_choices(),
-        default=Constants.TIME_ROUNDING_UNIT.FIFTEEN_MINUTES,
+        default=Constants.TIME_ROUNDING_UNIT.ONE_MINUTE,
         verbose_name='休憩開始時刻丸め単位',
         help_text='休憩開始時刻の丸め単位（分）'
     )
@@ -82,7 +82,7 @@ class TimeRounding(MyModel):
     # 休憩終了時刻丸め設定
     break_end_unit = models.IntegerField(
         choices=get_time_rounding_unit_choices(),
-        default=Constants.TIME_ROUNDING_UNIT.FIFTEEN_MINUTES,
+        default=Constants.TIME_ROUNDING_UNIT.ONE_MINUTE,
         verbose_name='休憩終了時刻丸め単位',
         help_text='休憩終了時刻の丸め単位（分）'
     )
