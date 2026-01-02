@@ -100,7 +100,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
         fields = [
             'client', 'client_contract_type_code', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
             'start_date', 'end_date', 'contract_amount', 'bill_unit',
-            'business_content', 'notes', 'memo', 'payment_site', 'worktime_pattern', 'overtime_pattern'
+            'business_content', 'notes', 'memo', 'payment_site', 'worktime_pattern', 'overtime_pattern', 'time_rounding'
         ]
         widgets = {
             'client': forms.HiddenInput(),
@@ -119,6 +119,7 @@ class ClientContractForm(CorporateNumberMixin, forms.ModelForm):
             'payment_site': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'worktime_pattern': forms.HiddenInput(),
             'overtime_pattern': forms.HiddenInput(),
+            'time_rounding': forms.HiddenInput(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -497,7 +498,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
         fields = [
             'staff', 'employment_type', 'contract_name', 'job_category', 'contract_pattern', 'contract_number', 'contract_status',
             'start_date', 'end_date', 'contract_amount', 'pay_unit',
-            'work_location', 'business_content', 'notes', 'memo', 'worktime_pattern', 'overtime_pattern'
+            'work_location', 'business_content', 'notes', 'memo', 'worktime_pattern', 'overtime_pattern', 'time_rounding'
         ]
         widgets = {
             'staff': forms.HiddenInput(),
@@ -516,6 +517,7 @@ class StaffContractForm(CorporateNumberMixin, forms.ModelForm):
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'worktime_pattern': forms.HiddenInput(),
             'overtime_pattern': forms.HiddenInput(),
+            'time_rounding': forms.HiddenInput(),
         }
 
     def __init__(self, *args, **kwargs):

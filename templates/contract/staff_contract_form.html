@@ -189,6 +189,25 @@
             </div>
 
             <div class="row mb-3 align-items-center">
+                <label for="{{ form.time_rounding.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">時間丸め</label>
+                <div class="col-sm-10">
+                    <input type="hidden" id="{{ form.time_rounding.id_for_label }}" name="{{ form.time_rounding.name }}" value="{{ form.time_rounding.value|default:'' }}">
+                    <div class="d-flex align-items-center">
+                        <div id="time_rounding_display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057; flex: 0 0 auto;">
+                            {% include 'common/_time_rounding_display.html' with time_rounding=form.instance.time_rounding %}
+                        </div>
+                        <div style="margin-left: 10px;">
+                            <button type="button" class="btn btn-sm btn-secondary me-1" id="selectTimeRoundingBtn">参照</button>
+                            <button type="button" class="btn btn-sm btn-secondary" id="clearTimeRoundingBtn">クリア</button>
+                        </div>
+                    </div>
+                    {% if form.time_rounding.errors %}
+                        <div class="text-danger small">{{ form.time_rounding.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
                 <label for="{{ form.work_location.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">就業場所</label>
                 <div class="col-sm-10">
                     {{ form.work_location }}
@@ -313,6 +332,24 @@
             </div>
             <div class="modal-body">
                 {% include 'common/_overtime_pattern_select_modal_body.html' %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 時間丸めパターン選択モーダル -->
+<div class="modal fade" id="timeRoundingModal" tabindex="-1" aria-labelledby="timeRoundingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="timeRoundingModalLabel">時間丸めパターン選択</div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% include 'common/_time_rounding_select_modal_body.html' %}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">閉じる</button>
@@ -992,6 +1029,149 @@ document.getElementById('overtime-search-form').addEventListener('submit', funct
 document.getElementById('clearOvertimeSearchBtn').addEventListener('click', function() {
     document.querySelector('#overtime-search-form input[name="q"]').value = '';
     loadOvertimePatternModal(1, '');
+});
+
+// 時間丸めパターン選択ボタン
+const selectTimeRoundingBtn = document.getElementById('selectTimeRoundingBtn');
+if (selectTimeRoundingBtn) {
+    selectTimeRoundingBtn.addEventListener('click', function() {
+        loadTimeRoundingModal();
+    });
+}
+
+// 時間丸めパターンクリアボタン
+const clearTimeRoundingBtn = document.getElementById('clearTimeRoundingBtn');
+if (clearTimeRoundingBtn) {
+    clearTimeRoundingBtn.addEventListener('click', function() {
+        clearTimeRounding();
+    });
+}
+
+// 時間丸めパターン選択モーダルを読み込む
+function loadTimeRoundingModal(page = 1, searchQuery = '') {
+    const modal = new bootstrap.Modal(document.getElementById('timeRoundingModal'));
+    modal.show();
+    
+    // モーダル内容を読み込む
+    fetch(`/master/time-rounding/modal/?page=${page}&q=${encodeURIComponent(searchQuery)}`)
+        .then(response => response.json())
+        .then(data => {
+            renderTimeRoundings(data.time_roundings);
+            renderTimeRoundingPagination(data);
+        })
+        .catch(error => {
+            console.error('Error loading time rounding patterns:', error);
+        });
+}
+
+// 時間丸めパターン一覧表示
+function renderTimeRoundings(patterns) {
+    const container = document.getElementById('time-rounding-list');
+    let html = '';
+    
+    if (patterns.length === 0) {
+        html = '<div class="text-center text-muted py-4">該当する時間丸めパターンがありません</div>';
+    } else {
+        patterns.forEach(pattern => {
+            html += `
+                <div class="card mb-2">
+                    <div class="card-body py-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-bold">${pattern.name}</div>
+                                <div class="small text-muted">${pattern.rounding_summary}</div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-primary" onclick="selectTimeRounding(${JSON.stringify(pattern).replace(/"/g, '&quot;')})">
+                                選択
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+    
+    container.innerHTML = html;
+}
+
+// 時間丸めパターンページネーション表示
+function renderTimeRoundingPagination(data) {
+    const container = document.getElementById('time-rounding-pagination-container');
+    let html = '<nav aria-label="時間丸めパターンページネーション"><ul class="pagination pagination-sm justify-content-center">';
+    
+    // 前へボタン
+    if (data.has_previous) {
+        html += `<li class="page-item"><a class="page-link time-rounding-page-link" href="#" data-page="${data.previous_page_number}">前へ</a></li>`;
+    } else {
+        html += '<li class="page-item disabled"><span class="page-link">前へ</span></li>';
+    }
+    
+    // ページ番号
+    for (let i = 1; i <= data.num_pages; i++) {
+        if (i === data.page_number) {
+            html += `<li class="page-item active"><span class="page-link">${i}</span></li>`;
+        } else {
+            html += `<li class="page-item"><a class="page-link time-rounding-page-link" href="#" data-page="${i}">${i}</a></li>`;
+        }
+    }
+    
+    // 次へボタン
+    if (data.has_next) {
+        html += `<li class="page-item"><a class="page-link time-rounding-page-link" href="#" data-page="${data.next_page_number}">次へ</a></li>`;
+    } else {
+        html += '<li class="page-item disabled"><span class="page-link">次へ</span></li>';
+    }
+    
+    html += '</ul></nav>';
+    container.innerHTML = html;
+    
+    // ページネーションクリックイベント
+    container.querySelectorAll('a.time-rounding-page-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const page = this.getAttribute('data-page');
+            const searchQuery = document.querySelector('#time-rounding-search-form input[name="q"]').value || '';
+            loadTimeRoundingModal(page, searchQuery);
+        });
+    });
+}
+
+// 時間丸めパターンを選択
+function selectTimeRounding(pattern) {
+    const hiddenInput = document.getElementById('{{ form.time_rounding.id_for_label }}');
+    const displayDiv = document.getElementById('time_rounding_display');
+    
+    hiddenInput.value = pattern.id;
+    
+    // 詳細情報を表示
+    let displayHtml = '<div class="small text-muted">' + pattern.name + '</div>';
+    displayHtml += '<div class="small text-muted">' + pattern.rounding_summary + '</div>';
+    displayDiv.innerHTML = displayHtml;
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('timeRoundingModal'));
+    modal.hide();
+}
+
+// 時間丸めパターンをクリア
+function clearTimeRounding() {
+    const hiddenInput = document.getElementById('{{ form.time_rounding.id_for_label }}');
+    const displayDiv = document.getElementById('time_rounding_display');
+    
+    hiddenInput.value = '';
+    displayDiv.innerHTML = '<span class="text-muted">未選択</span>';
+}
+
+// 時間丸めパターン検索フォームのイベントリスナー
+document.getElementById('time-rounding-search-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const searchQuery = this.querySelector('input[name="q"]').value;
+    loadTimeRoundingModal(1, searchQuery);
+});
+
+// 時間丸めパターン検索クリアボタン
+document.getElementById('clearTimeRoundingSearchBtn').addEventListener('click', function() {
+    document.querySelector('#time-rounding-search-form input[name="q"]').value = '';
+    loadTimeRoundingModal(1, '');
 });
 
 

@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import views_kintai
 
 app_name = 'master'
 
@@ -179,5 +180,6 @@ urlpatterns = [
     path('time-rounding/<int:pk>/edit/', views.time_rounding_edit, name='time_rounding_edit'),
     path('time-rounding/<int:pk>/delete-confirm/', views.time_rounding_delete_confirm, name='time_rounding_delete_confirm'),
     path('time-rounding/<int:pk>/delete/', views.time_rounding_delete, name='time_rounding_delete'),
+    path('time-rounding/modal/', views_kintai.time_rounding_select_modal, name='time_rounding_select_modal'),
 ]
 

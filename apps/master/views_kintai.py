@@ -179,3 +179,42 @@ def overtime_pattern_select_modal(request):
         })
 
     return JsonResponse(data)
+
+
+@login_required
+@permission_required("master.view_timerounding", raise_exception=True)
+def time_rounding_select_modal(request):
+    """時間丸めパターン選択モーダル用API"""
+    search_query = request.GET.get("q", "")
+    patterns = TimeRounding.objects.filter(is_active=True)
+
+    if search_query:
+        patterns = patterns.filter(name__icontains=search_query)
+
+    patterns = patterns.order_by('sort_order', 'name')
+
+    # ページネーション
+    paginator = Paginator(patterns, 10)
+    page = request.GET.get("page", 1)
+    patterns_page = paginator.get_page(page)
+
+    # JSON形式でデータを返す
+    data = {
+        'time_roundings': [],
+        'has_previous': patterns_page.has_previous(),
+        'has_next': patterns_page.has_next(),
+        'previous_page_number': patterns_page.previous_page_number() if patterns_page.has_previous() else None,
+        'next_page_number': patterns_page.next_page_number() if patterns_page.has_next() else None,
+        'page_number': patterns_page.number,
+        'num_pages': paginator.num_pages,
+    }
+
+    for pattern in patterns_page:
+        data['time_roundings'].append({
+            'id': pattern.id,
+            'name': pattern.name,
+            'rounding_summary': pattern.get_rounding_summary(),
+            'description': pattern.description or '',
+        })
+
+    return JsonResponse(data)
