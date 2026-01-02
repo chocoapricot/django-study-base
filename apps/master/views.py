@@ -100,7 +100,7 @@ MASTER_CONFIGS = [
         "permission": "master.view_worktimepattern",
     },
     {
-        "category": "契約",
+        "category": "勤怠",
         "name": "時間外算出パターン管理",
         "description": "時間外労働の算出パターンを管理",
         "model": "master.OvertimePattern",
