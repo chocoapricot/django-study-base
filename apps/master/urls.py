@@ -176,10 +176,10 @@ urlpatterns = [
     # 時間丸めマスタ管理
     path('time-rounding/', views.time_rounding_list, name='time_rounding_list'),
     path('time-rounding/create/', views.time_rounding_create, name='time_rounding_create'),
-    path('time-rounding/<int:pk>/', views.time_rounding_detail, name='time_rounding_detail'),
     path('time-rounding/<int:pk>/edit/', views.time_rounding_edit, name='time_rounding_edit'),
     path('time-rounding/<int:pk>/delete-confirm/', views.time_rounding_delete_confirm, name='time_rounding_delete_confirm'),
     path('time-rounding/<int:pk>/delete/', views.time_rounding_delete, name='time_rounding_delete'),
+    path('time-rounding/history/', views.time_rounding_change_history_list, name='time_rounding_change_history_list'),
     path('time-rounding/modal/', views_kintai.time_rounding_select_modal, name='time_rounding_select_modal'),
 ]
 

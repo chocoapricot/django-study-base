@@ -265,6 +265,7 @@ def master_index_list(request):
 
 
 @login_required
+@login_required
 def time_rounding_list(request):
     """時間丸めマスタ一覧"""
     search_query = request.GET.get('search', '')
@@ -284,33 +285,31 @@ def time_rounding_list(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
+    # 変更履歴を取得（最新5件）
+    change_logs = AppLog.objects.filter(
+        model_name='TimeRounding',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')[:5]
+    
+    # 変更履歴の総件数
+    change_logs_count = AppLog.objects.filter(
+        model_name='TimeRounding',
+        action__in=['create', 'update', 'delete']
+    ).count()
+    
     context = {
         'page_obj': page_obj,
         'search_query': search_query,
         'total_count': queryset.count(),
+        'change_logs': change_logs,
+        'change_logs_count': change_logs_count,
+        'history_url_name': 'master:time_rounding_change_history_list',
     }
     
     return render(request, 'master/time_rounding_list.html', context)
 
 
-@login_required
-def time_rounding_detail(request, pk):
-    """時間丸めマスタ詳細"""
-    time_rounding = get_object_or_404(TimeRounding, pk=pk)
-    
-    # 変更履歴を取得（最新5件）
-    change_logs = AppLog.objects.filter(
-        model_name='TimeRounding',
-        object_id=str(pk),
-        action__in=['create', 'update', 'delete']
-    ).order_by('-timestamp')[:5]
-    
-    context = {
-        'time_rounding': time_rounding,
-        'change_logs': change_logs,
-    }
-    
-    return render(request, 'master/time_rounding_detail.html', context)
+
 
 
 @login_required
@@ -321,7 +320,7 @@ def time_rounding_create(request):
         if form.is_valid():
             time_rounding = form.save()
             messages.success(request, f'時間丸めマスタ「{time_rounding.name}」を作成しました。')
-            return redirect('master:time_rounding_detail', pk=time_rounding.pk)
+            return redirect('master:time_rounding_list')
     else:
         form = TimeRoundingForm()
     
@@ -343,7 +342,7 @@ def time_rounding_edit(request, pk):
         if form.is_valid():
             time_rounding = form.save()
             messages.success(request, f'時間丸めマスタ「{time_rounding.name}」を更新しました。')
-            return redirect('master:time_rounding_detail', pk=time_rounding.pk)
+            return redirect('master:time_rounding_list')
     else:
         form = TimeRoundingForm(instance=time_rounding)
     
@@ -379,4 +378,24 @@ def time_rounding_delete(request, pk):
         messages.success(request, f'時間丸めマスタ「{name}」を削除しました。')
         return redirect('master:time_rounding_list')
     
-    return redirect('master:time_rounding_detail', pk=pk)
+    return redirect('master:time_rounding_list')
+
+
+@login_required
+def time_rounding_change_history_list(request):
+    """時間丸めマスタ変更履歴一覧"""
+    logs = AppLog.objects.filter(
+        model_name='TimeRounding',
+        action__in=['create', 'update', 'delete']
+    ).order_by('-timestamp')
+    
+    paginator = Paginator(logs, 20)
+    page = request.GET.get('page')
+    logs_page = paginator.get_page(page)
+    
+    return render(request, 'common/common_change_history_list.html', {
+        'change_logs': logs_page,
+        'page_title': '時間丸めマスタ変更履歴',
+        'back_url_name': 'master:time_rounding_list',
+        'model_name': 'TimeRounding',
+    })

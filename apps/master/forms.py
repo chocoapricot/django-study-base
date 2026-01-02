@@ -742,9 +742,9 @@ class TimeRoundingForm(forms.ModelForm):
             'start_time_method': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'end_time_unit': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'end_time_method': forms.Select(attrs={'class': 'form-control form-control-sm'}),
-            'break_input': forms.Select(
+            'break_input': forms.RadioSelect(
                 choices=get_break_input_choices(),
-                attrs={'class': 'form-control form-control-sm', 'id': 'id_break_input'}
+                attrs={'class': 'form-check-input'}
             ),
             'break_start_unit': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'break_start_method': forms.Select(attrs={'class': 'form-control form-control-sm'}),

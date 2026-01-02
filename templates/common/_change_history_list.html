@@ -120,6 +120,8 @@
                             <span class="badge bg-success">休憩時間</span>
                         {% elif log.model_name == 'OvertimePattern' %}
                             <span class="badge bg-primary">時間外算出パターン</span>
+                        {% elif log.model_name == 'TimeRounding' %}
+                            <span class="badge bg-primary">時間丸めマスタ</span>
                         {% elif log.model_name %}
                             <span class="badge bg-primary">{{ log.model_name }}</span>
                         {% else %}
