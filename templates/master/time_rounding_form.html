@@ -4,190 +4,169 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="content-box card bg-light" style="max-width: 100%;">
-                <div class="card-header">
-                    {{ title }}
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        
-                        <!-- 基本情報 -->
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.name.label }}</label>
-                            <div class="col-sm-6">
-                                {{ form.name }}
-                                {% if form.name.errors %}
-                                    <div class="text-danger small">{{ form.name.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">{{ title }}</div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
 
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.description.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.description.label }}</label>
-                            <div class="col-sm-8">
-                                {{ form.description }}
-                                {% if form.description.errors %}
-                                    <div class="text-danger small">{{ form.description.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <!-- 開始時刻丸め設定 -->
-                        <h6 class="mt-4 mb-3 text-primary">開始時刻丸め設定</h6>
-                        
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.start_time_unit.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.start_time_unit.label }}</label>
-                            <div class="col-sm-3">
-                                {{ form.start_time_unit }}
-                                {% if form.start_time_unit.errors %}
-                                    <div class="text-danger small">{{ form.start_time_unit.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.start_time_method.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.start_time_method.label }}</label>
-                            <div class="col-sm-3">
-                                {{ form.start_time_method }}
-                                {% if form.start_time_method.errors %}
-                                    <div class="text-danger small">{{ form.start_time_method.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <!-- 終了時刻丸め設定 -->
-                        <h6 class="mt-4 mb-3 text-primary">終了時刻丸め設定</h6>
-                        
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.end_time_unit.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.end_time_unit.label }}</label>
-                            <div class="col-sm-3">
-                                {{ form.end_time_unit }}
-                                {% if form.end_time_unit.errors %}
-                                    <div class="text-danger small">{{ form.end_time_unit.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.end_time_method.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.end_time_method.label }}</label>
-                            <div class="col-sm-3">
-                                {{ form.end_time_method }}
-                                {% if form.end_time_method.errors %}
-                                    <div class="text-danger small">{{ form.end_time_method.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <!-- 休憩設定 -->
-                        <h6 class="mt-4 mb-3 text-primary">休憩設定</h6>
-                        
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.break_input.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.break_input.label }}</label>
-                            <div class="col-sm-3">
-                                {{ form.break_input }}
-                                {% if form.break_input.errors %}
-                                    <div class="text-danger small">{{ form.break_input.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <!-- 休憩時刻丸め設定（休憩入力がTrueの場合のみ表示） -->
-                        <div id="break-rounding-settings">
-                            <h6 class="mt-4 mb-3 text-success">休憩時刻丸め設定</h6>
-                            
-                            <div class="row mb-3 align-items-center">
-                                <label for="{{ form.break_start_unit.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.break_start_unit.label }}</label>
-                                <div class="col-sm-3">
-                                    {{ form.break_start_unit }}
-                                    {% if form.break_start_unit.errors %}
-                                        <div class="text-danger small">{{ form.break_start_unit.errors.0 }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <div class="row mb-3 align-items-center">
-                                <label for="{{ form.break_start_method.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.break_start_method.label }}</label>
-                                <div class="col-sm-3">
-                                    {{ form.break_start_method }}
-                                    {% if form.break_start_method.errors %}
-                                        <div class="text-danger small">{{ form.break_start_method.errors.0 }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <div class="row mb-3 align-items-center">
-                                <label for="{{ form.break_end_unit.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.break_end_unit.label }}</label>
-                                <div class="col-sm-3">
-                                    {{ form.break_end_unit }}
-                                    {% if form.break_end_unit.errors %}
-                                        <div class="text-danger small">{{ form.break_end_unit.errors.0 }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <div class="row mb-3 align-items-center">
-                                <label for="{{ form.break_end_method.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.break_end_method.label }}</label>
-                                <div class="col-sm-3">
-                                    {{ form.break_end_method }}
-                                    {% if form.break_end_method.errors %}
-                                        <div class="text-danger small">{{ form.break_end_method.errors.0 }}</div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- その他の設定 -->
-                        <h6 class="mt-4 mb-3 text-primary">その他の設定</h6>
-                        
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.is_active.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.is_active.label }}</label>
-                            <div class="col-sm-3">
-                                <div class="form-check">
-                                    {{ form.is_active }}
-                                </div>
-                                {% if form.is_active.errors %}
-                                    <div class="text-danger small">{{ form.is_active.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <div class="row mb-3 align-items-center">
-                            <label for="{{ form.sort_order.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">{{ form.sort_order.label }}</label>
-                            <div class="col-sm-3">
-                                {{ form.sort_order }}
-                                {% if form.sort_order.errors %}
-                                    <div class="text-danger small">{{ form.sort_order.errors.0 }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <!-- ボタン -->
-                        <div class="row mt-3">
-                            <div class="col text-left">
-                                <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
-                                {% if time_rounding %}
-                                    <a href="{% url 'master:time_rounding_detail' time_rounding.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
-                                {% else %}
-                                    <a href="{% url 'master:time_rounding_list' %}" class="btn btn-sm btn-secondary">キャンセル</a>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </form>
+            <!-- 基本情報 -->
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.name.label }}</label>
+                <div class="col-sm-6">
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                    {% endif %}
                 </div>
             </div>
 
-            <!-- 戻るボタン -->
-            <div class="d-flex justify-content-start">
-                {% if time_rounding %}
-                    <a href="{% url 'master:time_rounding_detail' time_rounding.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
-                {% else %}
-                    <a href="{% url 'master:time_rounding_list' %}" class="btn btn-sm btn-secondary me-2">戻る</a>
-                {% endif %}
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.description.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.description.label }}</label>
+                <div class="col-sm-8">
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                    {% endif %}
+                </div>
             </div>
-        </div>
+
+            <!-- 開始時刻丸め設定 -->
+            <h6 class="mt-4 mb-3 text-primary">開始時刻丸め設定</h6>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.start_time_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.start_time_unit.label }}</label>
+                <div class="col-sm-3">
+                    {{ form.start_time_unit }}
+                    {% if form.start_time_unit.errors %}
+                        <div class="text-danger small">{{ form.start_time_unit.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.start_time_method.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.start_time_method.label }}</label>
+                <div class="col-sm-3">
+                    {{ form.start_time_method }}
+                    {% if form.start_time_method.errors %}
+                        <div class="text-danger small">{{ form.start_time_method.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 終了時刻丸め設定 -->
+            <h6 class="mt-4 mb-3 text-primary">終了時刻丸め設定</h6>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.end_time_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.end_time_unit.label }}</label>
+                <div class="col-sm-3">
+                    {{ form.end_time_unit }}
+                    {% if form.end_time_unit.errors %}
+                        <div class="text-danger small">{{ form.end_time_unit.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.end_time_method.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.end_time_method.label }}</label>
+                <div class="col-sm-3">
+                    {{ form.end_time_method }}
+                    {% if form.end_time_method.errors %}
+                        <div class="text-danger small">{{ form.end_time_method.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- 休憩設定 -->
+            <h6 class="mt-4 mb-3 text-primary">休憩設定</h6>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.break_input.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.break_input.label }}</label>
+                <div class="col-sm-3">
+                    {{ form.break_input }}
+                    {% if form.break_input.errors %}
+                        <div class="text-danger small">{{ form.break_input.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 休憩時刻丸め設定（休憩入力がTrueの場合のみ表示） -->
+            <div id="break-rounding-settings">
+                <h6 class="mt-4 mb-3 text-success">休憩時刻丸め設定</h6>
+
+                <div class="row mb-3 align-items-center">
+                    <label for="{{ form.break_start_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.break_start_unit.label }}</label>
+                    <div class="col-sm-3">
+                        {{ form.break_start_unit }}
+                        {% if form.break_start_unit.errors %}
+                            <div class="text-danger small">{{ form.break_start_unit.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <label for="{{ form.break_start_method.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.break_start_method.label }}</label>
+                    <div class="col-sm-3">
+                        {{ form.break_start_method }}
+                        {% if form.break_start_method.errors %}
+                            <div class="text-danger small">{{ form.break_start_method.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <label for="{{ form.break_end_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.break_end_unit.label }}</label>
+                    <div class="col-sm-3">
+                        {{ form.break_end_unit }}
+                        {% if form.break_end_unit.errors %}
+                            <div class="text-danger small">{{ form.break_end_unit.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <label for="{{ form.break_end_method.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.break_end_method.label }}</label>
+                    <div class="col-sm-3">
+                        {{ form.break_end_method }}
+                        {% if form.break_end_method.errors %}
+                            <div class="text-danger small">{{ form.break_end_method.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- その他の設定 -->
+            <h6 class="mt-4 mb-3 text-primary">その他の設定</h6>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.is_active.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.is_active.label }}</label>
+                <div class="col-sm-3">
+                    <div class="form-check">
+                        {{ form.is_active }}
+                    </div>
+                    {% if form.is_active.errors %}
+                        <div class="text-danger small">{{ form.is_active.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.sort_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.sort_order.label }}</label>
+                <div class="col-sm-3">
+                    {{ form.sort_order }}
+                    {% if form.sort_order.errors %}
+                        <div class="text-danger small">{{ form.sort_order.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- ボタン -->
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
+                    <a href="{% url 'master:time_rounding_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -210,53 +189,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 変更時の処理
     breakInputSelect.addEventListener('change', toggleBreakSettings);
-    
-    // ページロジック情報を設定
-    document.body.setAttribute('data-has-logic', 'true');
-    
-    const logicContent = document.getElementById('logic-info-content');
-    if (logicContent) {
-        logicContent.innerHTML = `
-            <div class="card shadow-sm mb-3">
-                <div class="card-header bg-info text-white">
-                    <h6 class="mb-0"><i class="bi bi-check-circle"></i> 単項目チェック</h6>
-                </div>
-                <div class="card-body">
-                    <ul class="mb-0">
-                        <li><strong>名称</strong>: 必須入力、最大100文字</li>
-                        <li><strong>説明</strong>: 任意入力、改行可能</li>
-                        <li><strong>丸め単位</strong>: 1/5/10/15/30分から選択</li>
-                        <li><strong>端数処理</strong>: 四捨五入/切り捨て/切り上げから選択</li>
-                        <li><strong>表示順</strong>: 数値入力（一覧での表示順序）</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card shadow-sm mb-3">
-                <div class="card-header bg-warning text-dark">
-                    <h6 class="mb-0"><i class="bi bi-link-45deg"></i> 相関チェック</h6>
-                </div>
-                <div class="card-body">
-                    <ul class="mb-0">
-                        <li><strong>休憩設定連動</strong>: 休憩入力が「入力しない」の場合、休憩時刻丸め設定は非表示</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card shadow-sm">
-                <div class="card-header bg-success text-white">
-                    <h6 class="mb-0"><i class="bi bi-gear"></i> 自動処理</h6>
-                </div>
-                <div class="card-body">
-                    <ul class="mb-0">
-                        <li><strong>表示制御</strong>: 休憩入力の選択に応じて休憩時刻丸め設定の表示/非表示を自動切り替え</li>
-                        <li><strong>デフォルト値</strong>: 新規作成時は15分単位・四捨五入・有効状態で初期化</li>
-                    </ul>
-                </div>
-            </div>
-        `;
-    }
-    
-    // ロジック情報設定完了を通知
-    document.dispatchEvent(new Event('logicInfoSet'));
 });
 </script>
 {% endblock %}

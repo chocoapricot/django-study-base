@@ -3,81 +3,70 @@
 {% block title %}時間丸めマスタ削除確認{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="content-box card bg-light" style="max-width: 100%;">
-                <div class="card-header">
-                    時間丸めマスタ削除確認
-                </div>
-                <div class="card-body">
-                    <!-- 警告アラート -->
-                    <div class="alert alert-warning" role="alert">
-                        <i class="bi bi-exclamation-triangle-fill"></i>
-                        時間丸めマスタ「{{ time_rounding.name }}」を削除しますか？この操作は取り消せません。
-                    </div>
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        時間丸めマスタ削除確認
+    </div>
+    <div class="card-body">
+        <!-- 警告アラート -->
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            時間丸めマスタ「{{ time_rounding.name }}」を削除しますか？この操作は取り消せません。
+        </div>
 
-                    <!-- 削除対象の詳細情報 -->
-                    <div class="row mb-3">
-                        <div class="col-sm-2">
-                            <strong>名称:</strong>
-                        </div>
-                        <div class="col-sm-10">
-                            {{ time_rounding.name }}
-                        </div>
-                    </div>
-
-                    {% if time_rounding.description %}
-                    <div class="row mb-3">
-                        <div class="col-sm-2">
-                            <strong>説明:</strong>
-                        </div>
-                        <div class="col-sm-10">
-                            {{ time_rounding.description|linebreaks }}
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <div class="row mb-3">
-                        <div class="col-sm-2">
-                            <strong>丸め設定:</strong>
-                        </div>
-                        <div class="col-sm-10">
-                            {{ time_rounding.get_rounding_summary }}
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-sm-2">
-                            <strong>有効:</strong>
-                        </div>
-                        <div class="col-sm-10">
-                            {% if time_rounding.is_active %}
-                                <span class="badge bg-success">有効</span>
-                            {% else %}
-                                <span class="badge bg-secondary">無効</span>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- 削除ボタン -->
-                    <div class="row mt-3">
-                        <div class="col text-left">
-                            <form method="post" action="{% url 'master:time_rounding_delete' time_rounding.pk %}" style="display: inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-dark me-2">削除する</button>
-                            </form>
-                            <a href="{% url 'master:time_rounding_detail' time_rounding.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
-                        </div>
-                    </div>
-                </div>
+        <!-- 削除対象の詳細情報 -->
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-3 text-start text-md-end">
+                <strong>名称</strong>
             </div>
-
-            <!-- 戻るボタン -->
-            <div class="d-flex justify-content-start">
-                <a href="{% url 'master:time_rounding_detail' time_rounding.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+            <div class="col-sm-9">
+                {{ time_rounding.name }}
             </div>
         </div>
+
+        {% if time_rounding.description %}
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-3 text-start text-md-end">
+                <strong>説明</strong>
+            </div>
+            <div class="col-sm-9">
+                {{ time_rounding.description|linebreaks }}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-3 text-start text-md-end">
+                <strong>丸め設定</strong>
+            </div>
+            <div class="col-sm-9">
+                {{ time_rounding.get_rounding_summary }}
+            </div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-3 text-start text-md-end">
+                <strong>状態</strong>
+            </div>
+            <div class="col-sm-9">
+                {% if time_rounding.is_active %}
+                    <span class="badge bg-success">有効</span>
+                {% else %}
+                    <span class="badge bg-secondary">無効</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 削除ボタン -->
+        <form method="post" action="{% url 'master:time_rounding_delete' time_rounding.pk %}">
+            {% csrf_token %}
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <button type="submit" class="btn btn-sm btn-dark me-2">削除</button>
+                    <a href="{% url 'master:time_rounding_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}
