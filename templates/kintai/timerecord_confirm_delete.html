@@ -20,9 +20,12 @@
             <div class="col-sm-4">{{ timerecord.work_date|date:"Y/m/d" }}</div>
         </div>
         
-        <div class="row mb-3 align-items-center">
+        <div class="row mb-1 align-items-center">
             <div class="col-sm-2 text-start text-md-end"><strong>開始時刻</strong></div>
             <div class="col-sm-4">{% if timerecord.start_time %}{{ timerecord.start_time|date:"Y/m/d H:i:s" }}{% else %}-{% endif %}</div>
+        </div>
+
+        <div class="row mb-3 align-items-center">
             <div class="col-sm-2 text-start text-md-end"><strong>終了時刻</strong></div>
             <div class="col-sm-4">{% if timerecord.end_time %}{{ timerecord.end_time|date:"Y/m/d H:i:s" }}{% else %}-{% endif %}</div>
         </div>
