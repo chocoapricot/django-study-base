@@ -1,7 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.paginator import Paginator
+from django.db.models import Q
 from django.urls import reverse
 from django.apps import apps
+from apps.system.logs.models import AppLog
+from .models import TimeRounding
+from .forms import TimeRoundingForm
 
 from .views_staff import *
 from .views_client import *
@@ -100,6 +106,14 @@ MASTER_CONFIGS = [
         "model": "master.OvertimePattern",
         "url_name": "master:overtime_pattern_list",
         "permission": "master.view_overtimepattern",
+    },
+    {
+        "category": "勤怠",
+        "name": "時間丸めマスタ",
+        "description": "勤怠時刻の丸め処理設定を管理",
+        "model": "master.TimeRounding",
+        "url_name": "master:time_rounding_list",
+        "permission": "master.view_timerounding",
     },
 
 
@@ -247,3 +261,121 @@ def master_index_list(request):
         "masters_by_category": masters_by_category,
     }
     return render(request, "master/master_index_list.html", context)
+
+
+@login_required
+def time_rounding_list(request):
+    """時間丸めマスタ一覧"""
+    search_query = request.GET.get('search', '')
+    
+    # 基本クエリ
+    queryset = TimeRounding.objects.all()
+    
+    # 検索処理
+    if search_query:
+        queryset = queryset.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+    
+    # ページネーション
+    paginator = Paginator(queryset, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'page_obj': page_obj,
+        'search_query': search_query,
+        'total_count': queryset.count(),
+    }
+    
+    return render(request, 'master/time_rounding_list.html', context)
+
+
+@login_required
+def time_rounding_detail(request, pk):
+    """時間丸めマスタ詳細"""
+    time_rounding = get_object_or_404(TimeRounding, pk=pk)
+    
+    # 変更履歴を取得（最新5件）
+    change_logs = AppLog.objects.filter(
+        model_name='TimeRounding',
+        object_id=str(pk),
+        action__in=['create', 'update', 'delete']
+    ).order_by('-created_at')[:5]
+    
+    context = {
+        'time_rounding': time_rounding,
+        'change_logs': change_logs,
+    }
+    
+    return render(request, 'master/time_rounding_detail.html', context)
+
+
+@login_required
+def time_rounding_create(request):
+    """時間丸めマスタ作成"""
+    if request.method == 'POST':
+        form = TimeRoundingForm(request.POST)
+        if form.is_valid():
+            time_rounding = form.save()
+            messages.success(request, f'時間丸めマスタ「{time_rounding.name}」を作成しました。')
+            return redirect('master:time_rounding_detail', pk=time_rounding.pk)
+    else:
+        form = TimeRoundingForm()
+    
+    context = {
+        'form': form,
+        'title': '時間丸めマスタ作成',
+    }
+    
+    return render(request, 'master/time_rounding_form.html', context)
+
+
+@login_required
+def time_rounding_edit(request, pk):
+    """時間丸めマスタ編集"""
+    time_rounding = get_object_or_404(TimeRounding, pk=pk)
+    
+    if request.method == 'POST':
+        form = TimeRoundingForm(request.POST, instance=time_rounding)
+        if form.is_valid():
+            time_rounding = form.save()
+            messages.success(request, f'時間丸めマスタ「{time_rounding.name}」を更新しました。')
+            return redirect('master:time_rounding_detail', pk=time_rounding.pk)
+    else:
+        form = TimeRoundingForm(instance=time_rounding)
+    
+    context = {
+        'form': form,
+        'time_rounding': time_rounding,
+        'title': '時間丸めマスタ編集',
+    }
+    
+    return render(request, 'master/time_rounding_form.html', context)
+
+
+@login_required
+def time_rounding_delete_confirm(request, pk):
+    """時間丸めマスタ削除確認"""
+    time_rounding = get_object_or_404(TimeRounding, pk=pk)
+    
+    context = {
+        'time_rounding': time_rounding,
+    }
+    
+    return render(request, 'master/time_rounding_delete_confirm.html', context)
+
+
+@login_required
+def time_rounding_delete(request, pk):
+    """時間丸めマスタ削除"""
+    time_rounding = get_object_or_404(TimeRounding, pk=pk)
+    
+    if request.method == 'POST':
+        name = time_rounding.name
+        time_rounding.delete()
+        messages.success(request, f'時間丸めマスタ「{name}」を削除しました。')
+        return redirect('master:time_rounding_list')
+    
+    return redirect('master:time_rounding_detail', pk=pk)

@@ -102,10 +102,6 @@ urlpatterns = [
     path('minimum-pay/<int:pk>/delete/', views.minimum_pay_delete, name='minimum_pay_delete'),
     path('minimum-pay/history/', views.minimum_pay_change_history_list, name='minimum_pay_change_history_list'),
 
-
-
-
-
     # 雇用形態管理
     path('employment-type/', views.employment_type_list, name='employment_type_list'),
     path('employment-type/create/', views.employment_type_create, name='employment_type_create'),
@@ -143,8 +139,6 @@ urlpatterns = [
     path('client-regist-status/<int:pk>/delete/', views.client_regist_status_delete, name='client_regist_status_delete'),
     path('client-regist-status/history/', views.client_regist_status_change_history_list, name='client_regist_status_change_history_list'),
 
-
-
     # 汎用文言テンプレート管理
     path('phrase-template/', views.phrase_template_list, name='phrase_template_list'),
     path('phrase-template/create/', views.phrase_template_create, name='phrase_template_create'),
@@ -177,4 +171,13 @@ urlpatterns = [
     path('overtime-pattern/<int:pk>/delete/', views.overtime_pattern_delete, name='overtime_pattern_delete'),
     path('overtime-pattern/history/', views.overtime_pattern_change_history_list, name='overtime_pattern_change_history_list'),
     path('overtime-pattern/select-modal/', views.overtime_pattern_select_modal, name='overtime_pattern_select_modal'),
+
+    # 時間丸めマスタ管理
+    path('time-rounding/', views.time_rounding_list, name='time_rounding_list'),
+    path('time-rounding/create/', views.time_rounding_create, name='time_rounding_create'),
+    path('time-rounding/<int:pk>/', views.time_rounding_detail, name='time_rounding_detail'),
+    path('time-rounding/<int:pk>/edit/', views.time_rounding_edit, name='time_rounding_edit'),
+    path('time-rounding/<int:pk>/delete-confirm/', views.time_rounding_delete_confirm, name='time_rounding_delete_confirm'),
+    path('time-rounding/<int:pk>/delete/', views.time_rounding_delete, name='time_rounding_delete'),
 ]
+

@@ -123,6 +123,20 @@ class Constants:
         INFO = 'info'        # 情報
         WARNING = 'warning'  # 警告
 
+    # 時間丸め単位 (time_rounding_unit)
+    class TIME_ROUNDING_UNIT:
+        ONE_MINUTE = 1      # 1分
+        FIVE_MINUTES = 5    # 5分
+        TEN_MINUTES = 10    # 10分
+        FIFTEEN_MINUTES = 15 # 15分
+        THIRTY_MINUTES = 30  # 30分
+
+    # 時間丸め方法 (time_rounding_method)
+    class TIME_ROUNDING_METHOD:
+        ROUND = 'round'  # 四捨五入
+        FLOOR = 'floor'  # 切り捨て
+        CEIL = 'ceil'    # 切り上げ
+
 
 # CHOICESリスト生成ヘルパー(モデルで使用)
 def get_mail_type_choices():
@@ -187,6 +201,34 @@ def get_notification_type_choices():
     ]
 
 
+def get_time_rounding_unit_choices():
+    """時間丸め単位の選択肢リストを返す"""
+    return [
+        (Constants.TIME_ROUNDING_UNIT.ONE_MINUTE, '1分'),
+        (Constants.TIME_ROUNDING_UNIT.FIVE_MINUTES, '5分'),
+        (Constants.TIME_ROUNDING_UNIT.TEN_MINUTES, '10分'),
+        (Constants.TIME_ROUNDING_UNIT.FIFTEEN_MINUTES, '15分'),
+        (Constants.TIME_ROUNDING_UNIT.THIRTY_MINUTES, '30分'),
+    ]
+
+
+def get_time_rounding_method_choices():
+    """時間丸め方法の選択肢リストを返す"""
+    return [
+        (Constants.TIME_ROUNDING_METHOD.ROUND, '四捨五入'),
+        (Constants.TIME_ROUNDING_METHOD.FLOOR, '切り捨て'),
+        (Constants.TIME_ROUNDING_METHOD.CEIL, '切り上げ'),
+    ]
+
+
+def get_break_input_choices():
+    """休憩入力の選択肢リストを返す"""
+    return [
+        (True, '入力する'),
+        (False, '入力しない'),
+    ]
+
+
 # 使用例
 """
 使用例:
@@ -209,14 +251,40 @@ def get_notification_type_choices():
     # 銀行レコード種別
     if record_type == Constants.BANK_RECORD_TYPE.BANK:
         print("銀行レコード")
+    
+    # 時間丸め設定
+    if time_rounding.start_time_unit == Constants.TIME_ROUNDING_UNIT.FIFTEEN_MINUTES:
+        print("15分単位で丸め")
+    
+    if time_rounding.start_time_method == Constants.TIME_ROUNDING_METHOD.ROUND:
+        print("四捨五入で処理")
 
 モデルでの使用:
-    from apps.common.constants import get_mail_type_choices
+    from apps.common.constants import (
+        Constants,
+        get_mail_type_choices,
+        get_time_rounding_unit_choices,
+        get_time_rounding_method_choices,
+        get_break_input_choices
+    )
     
     mail_type = models.CharField(
         'メール種別',
         max_length=20,
         choices=get_mail_type_choices(),
         default=Constants.MAIL_TYPE.GENERAL
+    )
+    
+    start_time_unit = models.IntegerField(
+        choices=get_time_rounding_unit_choices(),
+        default=Constants.TIME_ROUNDING_UNIT.FIFTEEN_MINUTES,
+        verbose_name='開始時刻丸め単位'
+    )
+    
+    start_time_method = models.CharField(
+        max_length=10,
+        choices=get_time_rounding_method_choices(),
+        default=Constants.TIME_ROUNDING_METHOD.ROUND,
+        verbose_name='開始時刻端数処理'
     )
 """

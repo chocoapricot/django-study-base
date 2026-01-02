@@ -20,9 +20,13 @@ from .models import (
     StaffRegistStatus,
     ClientRegistStatus,
     OvertimePattern,
+    TimeRounding,
 )
 from apps.system.settings.models import Dropdowns
-from apps.common.constants import Constants
+from apps.common.constants import (
+    Constants,
+    get_break_input_choices
+)
 from apps.common.forms import MyRadioSelect
 
 
@@ -764,4 +768,45 @@ class UserParameterForm(forms.ModelForm):
                     raise ValidationError('数値を入力してください。')
         
         return value
+
+class TimeRoundingForm(forms.ModelForm):
+    """時間丸めマスタフォーム"""
+    
+    class Meta:
+        model = TimeRounding
+        fields = [
+            'name', 'description', 'start_time_unit', 'start_time_method',
+            'end_time_unit', 'end_time_method', 'break_input',
+            'break_start_unit', 'break_start_method',
+            'break_end_unit', 'break_end_method',
+            'is_active', 'sort_order'
+        ]
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'start_time_unit': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'start_time_method': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'end_time_unit': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'end_time_method': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'break_input': forms.Select(
+                choices=get_break_input_choices(),
+                attrs={'class': 'form-control form-control-sm', 'id': 'id_break_input'}
+            ),
+            'break_start_unit': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'break_start_method': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'break_end_unit': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'break_end_method': forms.Select(attrs={'class': 'form-control form-control-sm'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'sort_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # 必須フィールドのラベルにアスタリスクを追加
+        required_fields = ['name', 'start_time_unit', 'start_time_method', 
+                          'end_time_unit', 'end_time_method']
+        for field_name in required_fields:
+            if field_name in self.fields:
+                self.fields[field_name].label = f"{self.fields[field_name].label} *"
 
