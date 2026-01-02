@@ -295,6 +295,18 @@ def timerecord_punch(request):
     # 単一契約の場合は current_contract に設定
     current_contract = available_contracts.first() if available_contracts.count() == 1 else None
     
+    # 時間丸め設定による休憩入力可否の判定
+    show_break_buttons = True  # デフォルトは表示
+    if current_contract and current_contract.time_rounding:
+        # 時間丸め設定で休憩入力が無効の場合は非表示
+        show_break_buttons = current_contract.time_rounding.break_input
+    elif available_contracts.count() > 1:
+        # 複数契約がある場合は、すべての契約で休憩入力が無効の場合のみ非表示
+        show_break_buttons = any(
+            contract.time_rounding is None or contract.time_rounding.break_input 
+            for contract in available_contracts
+        )
+    
     # 進行中の打刻（退勤していないもの）を優先的に取得
     timerecord = StaffTimerecord.objects.filter(staff=staff, end_time__isnull=True).order_by('-work_date', '-start_time').first()
     
@@ -347,6 +359,7 @@ def timerecord_punch(request):
         'current_break': current_break,
         'today': today,
         'can_cancel': can_cancel,
+        'show_break_buttons': show_break_buttons,
     }
     return render(request, 'kintai/timerecord_punch.html', context)
 

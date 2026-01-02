@@ -39,6 +39,10 @@
         margin-left: auto;
         margin-right: auto;
     }
+    .action-grid.break-disabled {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 600px;
+    }
     .punch-form {
         display: contents;
     }
@@ -190,7 +194,7 @@
                 {% endif %}
             </div>
 
-            <div class="action-grid">
+            <div class="action-grid{% if not show_break_buttons %} break-disabled{% endif %}">
                 {% if available_contracts.count > 0 %}
                     <form action="{% url 'kintai:timerecord_action' %}" method="POST" id="punch-form" class="punch-form">
                         {% csrf_token %}
@@ -210,6 +214,7 @@
                             退勤
                         </button>
                         
+                        {% if show_break_buttons %}
                         <button type="submit" name="action" value="break_start" class="btn punch-btn btn-break" 
                             {% if status != 'working' %}disabled{% endif %}>
                             <i class="bi bi-pause-circle"></i>
@@ -221,6 +226,7 @@
                             <i class="bi bi-play-circle"></i>
                             休憩終了
                         </button>
+                        {% endif %}
                     </form>
                 {% else %}
                     <!-- 契約がない場合はボタンを非表示 -->
