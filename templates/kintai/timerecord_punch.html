@@ -64,10 +64,17 @@
         transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         border: none;
         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        line-height: 1.2;
     }
     .punch-btn i {
         font-size: 2.5rem;
         margin-bottom: 0.75rem;
+    }
+    .punch-btn small {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-top: 0.25rem;
+        opacity: 0.9;
     }
     .punch-btn:hover:not(:disabled) {
         transform: translateY(-6px);
@@ -205,13 +212,21 @@
                         <button type="submit" name="action" value="start" class="btn punch-btn btn-start" id="start-btn"
                             {% if status != 'not_started' %}disabled{% endif %}>
                             <i class="bi bi-box-arrow-in-right"></i>
-                            出勤
+                            {% if status == 'not_started' %}
+                                出勤
+                            {% else %}
+                                出勤<br><small>{{ timerecord.start_time|date:"H:i" }}</small>
+                            {% endif %}
                         </button>
                         
                         <button type="submit" name="action" value="end" class="btn punch-btn btn-end" 
                             {% if status != 'working' %}disabled{% endif %}>
                             <i class="bi bi-box-arrow-left"></i>
-                            退勤
+                            {% if status == 'finished' %}
+                                退勤<br><small>{{ timerecord.end_time|date:"H:i" }}</small>
+                            {% else %}
+                                退勤
+                            {% endif %}
                         </button>
                         
                         {% if show_break_buttons %}
