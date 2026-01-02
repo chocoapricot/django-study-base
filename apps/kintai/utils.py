@@ -15,8 +15,12 @@ def round_time(dt, unit_minutes, method):
     Returns:
         datetime: 丸められた時刻
     """
-    if not dt or unit_minutes <= 0:
+    if not dt:
         return dt
+
+    # 1分単位、または未設定の場合は秒を切り捨てる
+    if unit_minutes <= 1:
+        return dt.replace(second=0, microsecond=0)
     
     # 分単位での現在の分数を取得
     current_minutes = dt.minute
