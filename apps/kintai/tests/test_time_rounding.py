@@ -261,13 +261,13 @@ class StaffTimerecordRoundingTest(TestCase):
         # 休憩時間を作成
         break_record = StaffTimerecordBreak.objects.create(
             timerecord=timerecord,
-            break_start=datetime(2024, 1, 1, 12, 2, 0),  # 12:02
-            break_end=datetime(2024, 1, 1, 13, 8, 0)     # 13:08
+            break_start=datetime(2024, 1, 1, 12, 2, 30),  # 12:02:30
+            break_end=datetime(2024, 1, 1, 13, 8, 59)     # 13:08:59
         )
         
         # 休憩時間の丸め結果を確認
-        # 休憩開始: 12:02 → 12:00（5分単位四捨五入）
-        # 休憩終了: 13:08 → 13:10（5分単位四捨五入）
+        # 休憩開始: 12:02:30 → 12:02:00 (秒切り捨て) → 12:00:00 (5分単位四捨五入)
+        # 休憩終了: 13:08:59 → 13:08:00 (秒切り捨て) → 13:10:00 (5分単位四捨五入)
         self.assertEqual(break_record.rounded_break_start, datetime(2024, 1, 1, 12, 0, 0))
         self.assertEqual(break_record.rounded_break_end, datetime(2024, 1, 1, 13, 10, 0))
     
