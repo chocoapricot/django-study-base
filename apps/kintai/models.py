@@ -709,6 +709,10 @@ class StaffTimerecord(MyModel):
     start_time = models.DateTimeField('開始時刻', blank=True, null=True)
     end_time = models.DateTimeField('終了時刻', blank=True, null=True)
     
+    # 丸め時刻
+    rounded_start_time = models.DateTimeField('丸め開始時刻', blank=True, null=True)
+    rounded_end_time = models.DateTimeField('丸め終了時刻', blank=True, null=True)
+    
     # 位置情報（緯度・経度）
     start_latitude = models.DecimalField('開始位置（緯度）', max_digits=20, decimal_places=15, blank=True, null=True)
     start_longitude = models.DecimalField('開始位置（経度）', max_digits=20, decimal_places=15, blank=True, null=True)
@@ -755,21 +759,62 @@ class StaffTimerecord(MyModel):
         # スタッフ契約からスタッフを自動設定
         if self.staff_contract and not self.staff_id:
             self.staff = self.staff_contract.staff
+        
+        # 時間丸め設定を適用
+        if self.staff_contract and self.staff_contract.time_rounding:
+            from .utils import apply_time_rounding
+            rounded_start, rounded_end = apply_time_rounding(self, self.staff_contract.time_rounding)
+            self.rounded_start_time = rounded_start
+            self.rounded_end_time = rounded_end
+        else:
+            # 丸め設定がない場合は秒を切り捨てて時分のみで保存
+            if self.start_time:
+                self.rounded_start_time = self.start_time.replace(second=0, microsecond=0)
+            if self.end_time:
+                self.rounded_end_time = self.end_time.replace(second=0, microsecond=0)
+            
         super().save(*args, **kwargs)
     
     @property
     def total_work_minutes(self):
-        """総労働時間（分）を計算"""
-        if not self.start_time or not self.end_time:
+        """総労働時間（分）を計算（丸め時刻を使用）"""
+        # 丸め時刻がある場合はそれを使用、ない場合は元の時刻を使用
+        start_time = self.rounded_start_time if self.rounded_start_time else self.start_time
+        end_time = self.rounded_end_time if self.rounded_end_time else self.end_time
+        
+        if not start_time or not end_time:
             return 0
         
-        # 休憩時間の合計を計算
+        # 休憩時間の合計を計算（丸め時刻を使用）
         total_break_minutes = sum(
             break_record.break_minutes for break_record in self.breaks.all()
         )
         
         # 労働時間を計算
-        work_duration = self.end_time - self.start_time
+        work_duration = end_time - start_time
+        work_minutes = int(work_duration.total_seconds() / 60)
+        
+        # 休憩時間を引く
+        net_work_minutes = work_minutes - total_break_minutes
+        return net_work_minutes if net_work_minutes > 0 else 0
+    
+    @property
+    def rounded_work_minutes(self):
+        """丸め時刻を使った総労働時間（分）を計算"""
+        # 丸め時刻がある場合はそれを使用、ない場合は元の時刻を使用
+        start_time = self.rounded_start_time if self.rounded_start_time else self.start_time
+        end_time = self.rounded_end_time if self.rounded_end_time else self.end_time
+        
+        if not start_time or not end_time:
+            return 0
+        
+        # 休憩時間の合計を計算（丸め時刻を使用）
+        total_break_minutes = sum(
+            break_record.rounded_break_minutes for break_record in self.breaks.all()
+        )
+        
+        # 労働時間を計算
+        work_duration = end_time - start_time
         work_minutes = int(work_duration.total_seconds() / 60)
         
         # 休憩時間を引く
@@ -778,7 +823,7 @@ class StaffTimerecord(MyModel):
     
     @property
     def work_hours_display(self):
-        """労働時間の表示用文字列"""
+        """労働時間の表示用文字列（丸め時刻を使用）"""
         minutes = self.total_work_minutes
         if minutes:
             hours, mins = divmod(minutes, 60)
@@ -794,6 +839,27 @@ class StaffTimerecord(MyModel):
     def end_address(self):
         """終了位置の住所を取得（表示用）"""
         return fetch_gsi_address(self.end_latitude, self.end_longitude)
+    
+    @property
+    def rounded_start_time_display(self):
+        """丸め開始時刻の表示用文字列"""
+        if self.rounded_start_time:
+            return self.rounded_start_time.strftime('%Y/%m/%d %H:%M:%S')
+        return "-"
+    
+    @property
+    def rounded_end_time_display(self):
+        """丸め終了時刻の表示用文字列"""
+        if self.rounded_end_time:
+            return self.rounded_end_time.strftime('%Y/%m/%d %H:%M:%S')
+        return "-"
+    
+    @property
+    def has_rounding_difference(self):
+        """丸め処理により時刻が変更されているかどうか"""
+        start_diff = (self.rounded_start_time != self.start_time) if (self.rounded_start_time and self.start_time) else False
+        end_diff = (self.rounded_end_time != self.end_time) if (self.rounded_end_time and self.end_time) else False
+        return start_diff or end_diff
 
 
 class StaffTimerecordBreak(MyModel):
@@ -809,6 +875,10 @@ class StaffTimerecordBreak(MyModel):
     )
     break_start = models.DateTimeField('休憩開始時刻')
     break_end = models.DateTimeField('休憩終了時刻', blank=True, null=True)
+    
+    # 丸め時刻
+    rounded_break_start = models.DateTimeField('丸め休憩開始時刻', blank=True, null=True)
+    rounded_break_end = models.DateTimeField('丸め休憩終了時刻', blank=True, null=True)
     
     # 位置情報（緯度・経度）
     start_latitude = models.DecimalField('開始位置（緯度）', max_digits=20, decimal_places=15, blank=True, null=True)
@@ -850,12 +920,36 @@ class StaffTimerecordBreak(MyModel):
             except Exception:
                 pass
     
+    def save(self, *args, **kwargs):
+        # 時間丸め設定を適用
+        if (self.timerecord and 
+            self.timerecord.staff_contract and 
+            self.timerecord.staff_contract.time_rounding):
+            from .utils import apply_break_time_rounding
+            rounded_start, rounded_end = apply_break_time_rounding(
+                self, self.timerecord.staff_contract.time_rounding
+            )
+            self.rounded_break_start = rounded_start
+            self.rounded_break_end = rounded_end
+        else:
+            # 丸め設定がない場合は秒を切り捨てて時分のみで保存
+            if self.break_start:
+                self.rounded_break_start = self.break_start.replace(second=0, microsecond=0)
+            if self.break_end:
+                self.rounded_break_end = self.break_end.replace(second=0, microsecond=0)
+            
+        super().save(*args, **kwargs)
+    
     @property
     def break_minutes(self):
-        """休憩時間（分）を計算"""
-        if not self.break_end:
+        """休憩時間（分）を計算（丸め時刻を使用）"""
+        # 丸め時刻がある場合はそれを使用、ない場合は元の時刻を使用
+        start_time = self.rounded_break_start if self.rounded_break_start else self.break_start
+        end_time = self.rounded_break_end if self.rounded_break_end else self.break_end
+        
+        if not end_time:
             return 0
-        duration = self.break_end - self.break_start
+        duration = end_time - start_time
         return int(duration.total_seconds() / 60)
     
     @property
@@ -874,3 +968,24 @@ class StaffTimerecordBreak(MyModel):
     def end_address(self):
         """休憩終了位置の住所を取得（表示用）"""
         return fetch_gsi_address(self.end_latitude, self.end_longitude)
+    
+    @property
+    def rounded_break_start_display(self):
+        """丸め休憩開始時刻の表示用文字列"""
+        if self.rounded_break_start:
+            return self.rounded_break_start.strftime('%Y/%m/%d %H:%M:%S')
+        return "-"
+    
+    @property
+    def rounded_break_end_display(self):
+        """丸め休憩終了時刻の表示用文字列"""
+        if self.rounded_break_end:
+            return self.rounded_break_end.strftime('%Y/%m/%d %H:%M:%S')
+        return "-"
+    
+    @property
+    def has_rounding_difference(self):
+        """丸め処理により時刻が変更されているかどうか"""
+        start_diff = (self.rounded_break_start != self.break_start) if (self.rounded_break_start and self.break_start) else False
+        end_diff = (self.rounded_break_end != self.break_end) if (self.rounded_break_end and self.break_end) else False
+        return start_diff or end_diff

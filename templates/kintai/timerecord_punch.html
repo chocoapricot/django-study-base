@@ -215,7 +215,13 @@
                             {% if status == 'not_started' %}
                                 出勤
                             {% else %}
-                                出勤<br><small>{{ timerecord.start_time|date:"H:i" }}</small>
+                                出勤<br><small>
+                                    {% if timerecord.rounded_start_time %}
+                                        {{ timerecord.rounded_start_time|date:"H:i" }}
+                                    {% else %}
+                                        {{ timerecord.start_time|date:"H:i" }}
+                                    {% endif %}
+                                </small>
                             {% endif %}
                         </button>
                         
@@ -223,7 +229,13 @@
                             {% if status != 'working' %}disabled{% endif %}>
                             <i class="bi bi-box-arrow-left"></i>
                             {% if status == 'finished' %}
-                                退勤<br><small>{{ timerecord.end_time|date:"H:i" }}</small>
+                                退勤<br><small>
+                                    {% if timerecord.rounded_end_time %}
+                                        {{ timerecord.rounded_end_time|date:"H:i" }}
+                                    {% else %}
+                                        {{ timerecord.end_time|date:"H:i" }}
+                                    {% endif %}
+                                </small>
                             {% else %}
                                 退勤
                             {% endif %}
@@ -281,7 +293,13 @@
                         <!-- 出勤 -->
                         <tr>
                             <td><span class="badge bg-success">出勤</span></td>
-                            <td class="fw-bold">{{ timerecord.start_time|date:"H:i:s" }}</td>
+                            <td class="fw-bold">
+                                {% if timerecord.rounded_start_time and timerecord.rounded_start_time != timerecord.start_time %}
+                                    {{ timerecord.start_time|date:"H:i:s" }}<span class="fw-normal">（{{ timerecord.rounded_start_time|date:"H:i" }}扱い）</span>
+                                {% else %}
+                                    {{ timerecord.start_time|date:"H:i:s" }}
+                                {% endif %}
+                            </td>
                             <td class="small">
                                 {% if timerecord.start_latitude %}
                                     {% if timerecord.start_address %}
@@ -305,9 +323,18 @@
                         <tr>
                             <td><span class="badge bg-warning text-dark">休憩 {{ forloop.counter }}</span></td>
                             <td>
-                                {{ break.break_start|date:"H:i:s" }} 〜 
+                                {% if break.rounded_break_start and break.rounded_break_start != break.break_start %}
+                                    {{ break.break_start|date:"H:i:s" }}（{{ break.rounded_break_start|date:"H:i" }}扱い）
+                                {% else %}
+                                    {{ break.break_start|date:"H:i:s" }}
+                                {% endif %}
+                                 〜 
                                 {% if break.break_end %}
-                                    {{ break.break_end|date:"H:i:s" }}
+                                    {% if break.rounded_break_end and break.rounded_break_end != break.break_end %}
+                                        {{ break.break_end|date:"H:i:s" }}（{{ break.rounded_break_end|date:"H:i" }}扱い）
+                                    {% else %}
+                                        {{ break.break_end|date:"H:i:s" }}
+                                    {% endif %}
                                 {% else %}
                                     <span class="text-danger small">休憩中</span>
                                 {% endif %}
@@ -358,7 +385,13 @@
                         {% if timerecord.end_time %}
                         <tr>
                             <td><span class="badge bg-danger">退勤</span></td>
-                            <td class="fw-bold">{{ timerecord.end_time|date:"H:i:s" }}</td>
+                            <td class="fw-bold">
+                                {% if timerecord.rounded_end_time and timerecord.rounded_end_time != timerecord.end_time %}
+                                    {{ timerecord.end_time|date:"H:i:s" }}<span class="fw-normal">（{{ timerecord.rounded_end_time|date:"H:i" }}扱い）</span>
+                                {% else %}
+                                    {{ timerecord.end_time|date:"H:i:s" }}
+                                {% endif %}
+                            </td>
                             <td class="small">
                                 {% if timerecord.end_latitude %}
                                     {% if timerecord.end_address %}
