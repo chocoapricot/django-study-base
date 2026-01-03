@@ -155,13 +155,13 @@ class StaffTimerecordForm(forms.ModelForm):
     class Meta:
         from .models import StaffTimerecord
         model = StaffTimerecord
-        fields = ['staff_contract', 'work_date', 'start_time', 'end_time', 
+        fields = ['staff_contract', 'work_date', 'rounded_start_time', 'rounded_end_time',
                   'start_latitude', 'start_longitude', 'end_latitude', 'end_longitude', 'memo']
         widgets = {
             'staff_contract': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'work_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
-            'start_time': forms.DateTimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'datetime-local'}),
-            'end_time': forms.DateTimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'datetime-local'}),
+            'rounded_start_time': forms.DateTimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'datetime-local'}),
+            'rounded_end_time': forms.DateTimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'datetime-local'}),
             'start_latitude': forms.HiddenInput(),
             'start_longitude': forms.HiddenInput(),
             'end_latitude': forms.HiddenInput(),
