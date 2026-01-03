@@ -28,25 +28,44 @@
                 </div>
             </div>
 
+            {% if timerecord and timerecord.start_time %}
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.start_time.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">開始時刻</label>
+                <label class="col-sm-2 col-form-label text-start text-md-end">打刻 開始時刻</label>
+                <div class="col-sm-4">
+                    <p class="form-control-plaintext">{{ timerecord.start_time|date:"Y/m/d H:i" }}</p>
+                </div>
+                {% if timerecord.end_time %}
+                <label class="col-sm-2 col-form-label text-start text-md-end">打刻 終了時刻</label>
+                <div class="col-sm-4">
+                    <p class="form-control-plaintext">{{ timerecord.end_time|date:"Y/m/d H:i" }}</p>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.rounded_start_time.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                    {% if timerecord %}修正 開始時刻{% else %}開始時刻{% endif %}
+                </label>
                 <div class="col-sm-4">
                     <div class="input-group">
-                        {{ form.start_time }}
-                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setNow('id_start_time', 'start')">現在時刻</button>
+                        {{ form.rounded_start_time }}
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setNow('id_rounded_start_time', 'start')">現在時刻</button>
                     </div>
-                    {% if form.start_time.errors %}
-                        <div class="text-danger">{{ form.start_time.errors }}</div>
+                    {% if form.rounded_start_time.errors %}
+                        <div class="text-danger">{{ form.rounded_start_time.errors }}</div>
                     {% endif %}
                 </div>
-                <label for="{{ form.end_time.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">終了時刻</label>
+                <label for="{{ form.rounded_end_time.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                    {% if timerecord %}修正 終了時刻{% else %}終了時刻{% endif %}
+                </label>
                 <div class="col-sm-4">
                     <div class="input-group">
-                        {{ form.end_time }}
-                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setNow('id_end_time', 'end')">現在時刻</button>
+                        {{ form.rounded_end_time }}
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setNow('id_rounded_end_time', 'end')">現在時刻</button>
                     </div>
-                    {% if form.end_time.errors %}
-                        <div class="text-danger">{{ form.end_time.errors }}</div>
+                    {% if form.rounded_end_time.errors %}
+                        <div class="text-danger">{{ form.rounded_end_time.errors }}</div>
                     {% endif %}
                 </div>
             </div>
