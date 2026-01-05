@@ -173,13 +173,13 @@ urlpatterns = [
     path('overtime-pattern/history/', views.overtime_pattern_change_history_list, name='overtime_pattern_change_history_list'),
     path('overtime-pattern/select-modal/', views.overtime_pattern_select_modal, name='overtime_pattern_select_modal'),
 
-    # 時間丸めマスタ管理
-    path('time-punch/', views.time_rounding_list, name='time_rounding_list'),
-    path('time-punch/create/', views.time_rounding_create, name='time_rounding_create'),
-    path('time-punch/<int:pk>/edit/', views.time_rounding_edit, name='time_rounding_edit'),
-    path('time-punch/<int:pk>/delete-confirm/', views.time_rounding_delete_confirm, name='time_rounding_delete_confirm'),
-    path('time-punch/<int:pk>/delete/', views.time_rounding_delete, name='time_rounding_delete'),
-    path('time-punch/history/', views.time_rounding_change_history_list, name='time_rounding_change_history_list'),
-    path('time-punch/modal/', views_kintai.time_rounding_select_modal, name='time_rounding_select_modal'),
+    # 勤怠打刻マスタ管理
+    path('time-punch/', views.time_punch_list, name='time_punch_list'),
+    path('time-punch/create/', views.time_punch_create, name='time_punch_create'),
+    path('time-punch/<int:pk>/edit/', views.time_punch_edit, name='time_punch_edit'),
+    path('time-punch/<int:pk>/delete-confirm/', views.time_punch_delete_confirm, name='time_punch_delete_confirm'),
+    path('time-punch/<int:pk>/delete/', views.time_punch_delete, name='time_punch_delete'),
+    path('time-punch/history/', views.time_punch_change_history_list, name='time_punch_change_history_list'),
+    path('time-punch/modal/', views_kintai.time_punch_select_modal, name='time_punch_select_modal'),
 ]
 

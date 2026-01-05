@@ -128,11 +128,11 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th>時間丸め</th>
+                                <th>勤怠打刻</th>
                                 <td>
-                                    {% if contract.time_rounding %}
-                                        {{ contract.time_rounding.name }}
-                                        <small class="text-muted">（{{ contract.time_rounding.get_rounding_summary }}）</small>
+                                    {% if contract.time_punch %}
+                                        {{ contract.time_punch.name }}
+                                        <small class="text-muted">（{{ contract.time_punch.get_rounding_summary }}）</small>
                                     {% else %}
                                         -
                                     {% endif %}

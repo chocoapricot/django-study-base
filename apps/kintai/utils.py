@@ -63,77 +63,67 @@ def round_time(dt, unit_minutes, method):
     return new_dt
 
 
-def apply_time_rounding(start_time, end_time, time_rounding_config):
+def apply_time_rounding(start_time, end_time, time_punch):
     """
-    勤怠打刻に時間丸め設定を適用する
+    打刻時刻に丸め設定を適用する
     
     Args:
         start_time (datetime): 開始時刻
         end_time (datetime): 終了時刻
-        time_rounding_config (TimePunch): 時間丸め設定
-    
+        time_punch (TimePunch): 時間丸め設定オブジェクト
+        
     Returns:
-        tuple: (rounded_start_time, rounded_end_time)
+        tuple: (rounded_start, rounded_end)
     """
-    rounded_start_time = start_time
-    rounded_end_time = end_time
-    
-    if not time_rounding_config:
-        # 設定がない場合は元の時刻をそのまま返す
-        return rounded_start_time, rounded_end_time
-    
+    rounded_start = start_time
+    rounded_end = end_time
+
+    if not time_punch:
+        return rounded_start, rounded_end
+
     # 開始時刻の丸め
-    if start_time:
-        rounded_start_time = round_time(
-            start_time,
-            time_rounding_config.start_time_unit,
-            time_rounding_config.start_time_method
+    if start_time and time_punch.start_time_unit > 1:
+        rounded_start = round_time(
+            start_time, 
+            time_punch.start_time_unit, 
+            time_punch.start_time_method
         )
-    
+
     # 終了時刻の丸め
-    if end_time:
-        rounded_end_time = round_time(
-            end_time,
-            time_rounding_config.end_time_unit,
-            time_rounding_config.end_time_method
+    if end_time and time_punch.end_time_unit > 1:
+        rounded_end = round_time(
+            end_time, 
+            time_punch.end_time_unit, 
+            time_punch.end_time_method
         )
-    
-    return rounded_start_time, rounded_end_time
+
+    return rounded_start, rounded_end
 
 
-def apply_break_time_rounding(break_start, break_end, time_rounding_config):
+def apply_break_time_rounding(break_start, break_end, time_punch):
     """
-    休憩時間に時間丸め設定を適用する
-    
-    Args:
-        break_start (datetime): 休憩開始時刻
-        break_end (datetime): 休憩終了時刻
-        time_rounding_config (TimePunch): 時間丸め設定
-    
-    Returns:
-        tuple: (rounded_break_start, rounded_break_end)
+    休憩時刻に丸め設定を適用する
     """
-    rounded_break_start = break_start
-    rounded_break_end = break_end
-    
-    if not time_rounding_config or not time_rounding_config.break_input:
-        # 設定がない場合や休憩入力が無効な場合は元の時刻をそのまま返す
-        return rounded_break_start, rounded_break_end
-    
+    rounded_start = break_start
+    rounded_end = break_end
+
+    if not time_punch:
+        return rounded_start, rounded_end
+
     # 休憩開始時刻の丸め
-    if break_start:
-        rounded_break_start = round_time(
-            break_start,
-            time_rounding_config.break_start_unit,
-            time_rounding_config.break_start_method
+    if break_start and time_punch.break_start_unit > 1:
+        rounded_start = round_time(
+            break_start, 
+            time_punch.break_start_unit, 
+            time_punch.break_start_method
         )
-    
+
     # 休憩終了時刻の丸め
-    if break_end:
-        rounded_break_end = round_time(
-            break_end,
-            time_rounding_config.break_end_unit,
-            time_rounding_config.break_end_method
+    if break_end and time_punch.break_end_unit > 1:
+        rounded_end = round_time(
+            break_end, 
+            time_punch.break_end_unit, 
+            time_punch.break_end_method
         )
-    
-    return rounded_break_start, rounded_break_end
+
+    return rounded_start, rounded_end

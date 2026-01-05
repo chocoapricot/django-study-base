@@ -186,8 +186,8 @@ def overtime_pattern_select_modal(request):
 
 @login_required
 @permission_required("master.view_timepunch", raise_exception=True)
-def time_rounding_select_modal(request):
-    """時間丸めパターン選択モーダル用API"""
+def time_punch_select_modal(request):
+    """勤怠打刻キーワード選択モーダル用API"""
     search_query = request.GET.get("q", "")
     patterns = TimePunch.objects.filter(is_active=True)
 
@@ -203,7 +203,7 @@ def time_rounding_select_modal(request):
 
     # JSON形式でデータを返す
     data = {
-        'time_roundings': [],
+        'time_punches': [],
         'has_previous': patterns_page.has_previous(),
         'has_next': patterns_page.has_next(),
         'previous_page_number': patterns_page.previous_page_number() if patterns_page.has_previous() else None,
@@ -213,7 +213,7 @@ def time_rounding_select_modal(request):
     }
 
     for pattern in patterns_page:
-        data['time_roundings'].append({
+        data['time_punches'].append({
             'id': pattern.id,
             'name': pattern.name,
             'rounding_summary': pattern.get_rounding_summary(),

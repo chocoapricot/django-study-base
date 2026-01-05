@@ -1,14 +1,14 @@
 {% extends 'common/_base.html' %}
 {% load static %}
 
-{% block title %}時間丸めマスタ一覧{% endblock %}
+{% block title %}勤怠打刻マスタ一覧{% endblock %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        時間丸めマスタ一覧
+        勤怠打刻マスタ一覧
         <div>
-            <a href="{% url 'master:time_rounding_create' %}" class="btn btn-sm btn-primary">
+            <a href="{% url 'master:time_punch_create' %}" class="btn btn-sm btn-primary">
                 新規作成
             </a>
         </div>
@@ -43,7 +43,7 @@
                     {% for item in page_obj %}
                     <tr>
                         <td>
-                            <a href="{% url 'master:time_rounding_edit' item.pk %}">{{ item.name|truncatechars:100 }}</a>
+                            <a href="{% url 'master:time_punch_edit' item.pk %}">{{ item.name|truncatechars:100 }}</a>
                         </td>
                         <td>
                             <small class="text-muted">{{ item.get_rounding_summary }}</small>
@@ -57,10 +57,10 @@
                         </td>
                         <td>{{ item.sort_order }}</td>
                         <td>
-                            <a href="{% url 'master:time_rounding_edit' item.pk %}" class="btn btn-dark btn-sm" title="編集">
+                            <a href="{% url 'master:time_punch_edit' item.pk %}" class="btn btn-dark btn-sm" title="編集">
                                 <i class="bi bi-pencil"></i>
                             </a>
-                            <a href="{% url 'master:time_rounding_delete_confirm' item.pk %}" class="btn btn-dark btn-sm" title="削除">
+                            <a href="{% url 'master:time_punch_delete_confirm' item.pk %}" class="btn btn-dark btn-sm" title="削除">
                                 <i class="bi bi-x"></i>
                             </a>
                         </td>
@@ -84,7 +84,7 @@
 </div>
 
 <!-- 変更履歴一覧 -->
-{% url 'master:time_rounding_change_history_list' as history_url %}
+{% url 'master:time_punch_change_history_list' as history_url %}
 {% with change_logs=change_logs change_logs_count=change_logs_count history_url=history_url show_full_content=False %}
     {% include 'common/_change_history_list.html' %}
 {% endwith %}
@@ -93,7 +93,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('resetBtn').addEventListener('click', function() {
-        window.location.href = '{% url "master:time_rounding_list" %}';
+        window.location.href = '{% url "master:time_punch_list" %}';
     });
 });
 </script>

@@ -86,12 +86,12 @@ class ClientContract(MyModel):
         null=True,
         verbose_name='時間外算出'
     )
-    time_rounding = models.ForeignKey(
+    time_punch = models.ForeignKey(
         'master.TimePunch',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        verbose_name='時間丸め'
+        verbose_name='勤怠打刻'
     )
     approved_at = models.DateTimeField('承認日時', blank=True, null=True)
     approved_by = models.ForeignKey(
@@ -457,12 +457,12 @@ class StaffContract(MyModel):
         null=True,
         verbose_name='時間外算出'
     )
-    time_rounding = models.ForeignKey(
+    time_punch = models.ForeignKey(
         'master.TimePunch',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        verbose_name='時間丸め'
+        verbose_name='勤怠打刻'
     )
     approved_at = models.DateTimeField('承認日時', blank=True, null=True)
     approved_by = models.ForeignKey(

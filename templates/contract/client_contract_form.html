@@ -171,20 +171,20 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.time_rounding.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">時間丸め</label>
+                <label for="{{ form.time_punch.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">勤怠打刻</label>
                 <div class="col-sm-10">
-                    <input type="hidden" id="{{ form.time_rounding.id_for_label }}" name="{{ form.time_rounding.name }}" value="{{ form.time_rounding.value|default:'' }}">
+                    <input type="hidden" id="{{ form.time_punch.id_for_label }}" name="{{ form.time_punch.name }}" value="{{ form.time_punch.value|default:'' }}">
                     <div class="d-flex align-items-center">
-                        <div id="time_rounding_display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057; flex: 0 0 auto;">
-                            {% include 'common/_time_rounding_display.html' with time_rounding=form.instance.time_rounding %}
+                        <div id="time_punch_display" style="padding: 6px 0; min-height: 31px; line-height: 1.5; color: #495057; flex: 0 0 auto;">
+                            {% include 'common/_time_punch_display.html' with time_punch=form.instance.time_punch %}
                         </div>
                         <div style="margin-left: 10px;">
                             <button type="button" class="btn btn-sm btn-secondary me-1" id="selectTimePunchBtn">参照</button>
                             <button type="button" class="btn btn-sm btn-secondary" id="clearTimePunchBtn">クリア</button>
                         </div>
                     </div>
-                    {% if form.time_rounding.errors %}
-                        <div class="text-danger small">{{ form.time_rounding.errors.0 }}</div>
+                    {% if form.time_punch.errors %}
+                        <div class="text-danger small">{{ form.time_punch.errors.0 }}</div>
                     {% endif %}
                 </div>
             </div>
@@ -480,16 +480,16 @@
     </div>
 </div>
 
-<!-- 時間丸めパターン選択モーダル -->
-<div class="modal fade" id="timeRoundingModal" tabindex="-1" aria-labelledby="timeRoundingModalLabel" aria-hidden="true">
+<!-- 勤怠打刻パターン選択モーダル -->
+<div class="modal fade" id="timePunchModal" tabindex="-1" aria-labelledby="timePunchModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title" id="timeRoundingModalLabel">時間丸めパターン選択</div>
+                <div class="modal-title" id="timePunchModalLabel">勤怠打刻パターン選択</div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                {% include 'common/_time_rounding_select_modal_body.html' %}
+                {% include 'common/_time_punch_select_modal_body.html' %}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">閉じる</button>
@@ -1299,20 +1299,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// 時間丸めパターン選択モーダルを読み込む
+// 勤怠打刻パターン選択モーダルを読み込む
 function loadTimePunchModal(page = 1, searchQuery = '') {
-    const modal = new bootstrap.Modal(document.getElementById('timeRoundingModal'));
+    const modal = new bootstrap.Modal(document.getElementById('timePunchModal'));
     modal.show();
     
     // モーダル内容を読み込む
     fetch(`/master/time-punch/modal/?page=${page}&q=${encodeURIComponent(searchQuery)}`)
         .then(response => response.json())
         .then(data => {
-            renderTimePunchs(data.time_roundings);
+            renderTimePunchs(data.time_punches);
             renderTimePunchPagination(data);
         })
         .catch(error => {
-            console.error('Error loading time rounding patterns:', error);
+            console.error('Error loading time punch patterns:', error);
         });
 }
 
@@ -1322,7 +1322,7 @@ function renderTimePunchs(patterns) {
     let html = '';
     
     if (patterns.length === 0) {
-        html = '<div class="text-center text-muted py-4">該当する時間丸めパターンがありません</div>';
+        html = '<div class="text-center text-muted py-4">該当する勤怠打刻パターンがありません</div>';
     } else {
         patterns.forEach(pattern => {
             html += `
@@ -1346,10 +1346,10 @@ function renderTimePunchs(patterns) {
     container.innerHTML = html;
 }
 
-// 時間丸めパターンページネーション表示
+// 勤怠打刻パターンページネーション表示
 function renderTimePunchPagination(data) {
     const container = document.getElementById('time-punch-pagination-container');
-    let html = '<nav aria-label="時間丸めパターンページネーション"><ul class="pagination pagination-sm justify-content-center">';
+    let html = '<nav aria-label="勤怠打刻パターンページネーション"><ul class="pagination pagination-sm justify-content-center">';
     
     // 前へボタン
     if (data.has_previous) {
@@ -1388,10 +1388,10 @@ function renderTimePunchPagination(data) {
     });
 }
 
-// 時間丸めパターンを選択
+// 勤怠打刻パターンを選択
 function selectTimePunch(pattern) {
-    const hiddenInput = document.getElementById('{{ form.time_rounding.id_for_label }}');
-    const displayDiv = document.getElementById('time_rounding_display');
+    const hiddenInput = document.getElementById('{{ form.time_punch.id_for_label }}');
+    const displayDiv = document.getElementById('time_punch_display');
     
     hiddenInput.value = pattern.id;
     
@@ -1400,14 +1400,14 @@ function selectTimePunch(pattern) {
     displayHtml += '<div class="small text-muted">' + pattern.rounding_summary + '</div>';
     displayDiv.innerHTML = displayHtml;
     
-    const modal = bootstrap.Modal.getInstance(document.getElementById('timeRoundingModal'));
+    const modal = bootstrap.Modal.getInstance(document.getElementById('timePunchModal'));
     modal.hide();
 }
 
-// 時間丸めパターンをクリア
+// 勤怠打刻パターンをクリア
 function clearTimePunch() {
-    const hiddenInput = document.getElementById('{{ form.time_rounding.id_for_label }}');
-    const displayDiv = document.getElementById('time_rounding_display');
+    const hiddenInput = document.getElementById('{{ form.time_punch.id_for_label }}');
+    const displayDiv = document.getElementById('time_punch_display');
     
     hiddenInput.value = '';
     displayDiv.innerHTML = '<span class="text-muted">未選択</span>';

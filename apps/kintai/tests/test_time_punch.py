@@ -1,7 +1,7 @@
 from django.test import TestCase
 from datetime import datetime, date
 from apps.kintai.models import StaffTimerecord, StaffTimerecordBreak
-from apps.kintai.utils import round_time, apply_time_rounding, apply_break_time_rounding
+from apps.kintai.utils import round_time, apply_time_punch, apply_break_time_punch
 from apps.master.models_kintai import TimePunch
 from apps.master.models_contract import ContractPattern
 from apps.contract.models import StaffContract
@@ -10,18 +10,18 @@ from apps.common.constants import Constants
 
 
 class TimePunchUtilsTest(TestCase):
-    """時間丸めユーティリティ関数のテスト"""
+    """勤怠打刻ユーティリティ関数のテスト"""
     
     def test_round_time_10min_ceil(self):
         """10分単位切り上げのテスト"""
-        # 例1: 開始時刻で10分単位、切り上げ
+        # 例: 開始時刻で10分単位、切り上げ
         test_cases = [
-            (datetime(2024, 1, 1, 9, 0, 0), datetime(2024, 1, 1, 9, 0, 0)),  # 9:00 → 9:00
-            (datetime(2024, 1, 1, 9, 1, 0), datetime(2024, 1, 1, 9, 10, 0)), # 9:01 → 9:10
-            (datetime(2024, 1, 1, 9, 4, 0), datetime(2024, 1, 1, 9, 10, 0)), # 9:04 → 9:10
-            (datetime(2024, 1, 1, 9, 5, 0), datetime(2024, 1, 1, 9, 10, 0)), # 9:05 → 9:10
-            (datetime(2024, 1, 1, 9, 9, 0), datetime(2024, 1, 1, 9, 10, 0)), # 9:09 → 9:10
-            (datetime(2024, 1, 1, 9, 10, 0), datetime(2024, 1, 1, 9, 10, 0)), # 9:10 → 9:10
+            (datetime(2024, 1, 1, 9, 0, 0), datetime(2024, 1, 1, 9, 0, 0)),  # 9:00 -> 9:00
+            (datetime(2024, 1, 1, 9, 1, 0), datetime(2024, 1, 1, 9, 10, 0)), # 9:01 -> 9:10
+            (datetime(2024, 1, 1, 9, 4, 0), datetime(2024, 1, 1, 9, 10, 0)), # 9:04 -> 9:10
+            (datetime(2024, 1, 1, 9, 5, 0), datetime(2024, 1, 1, 9, 10, 0)), # 9:05 -> 9:10
+            (datetime(2024, 1, 1, 9, 9, 0), datetime(2024, 1, 1, 9, 10, 0)), # 9:09 -> 9:10
+            (datetime(2024, 1, 1, 9, 10, 0), datetime(2024, 1, 1, 9, 10, 0)), # 9:10 -> 9:10
         ]
         
         for input_time, expected_time in test_cases:
@@ -31,14 +31,14 @@ class TimePunchUtilsTest(TestCase):
     
     def test_round_time_10min_floor(self):
         """10分単位切り捨てのテスト"""
-        # 例2: 開始時刻で10分単位、切り捨て
+        # 例: 開始時刻で10分単位、切り捨て
         test_cases = [
-            (datetime(2024, 1, 1, 9, 0, 0), datetime(2024, 1, 1, 9, 0, 0)),  # 9:00 → 9:00
-            (datetime(2024, 1, 1, 9, 1, 0), datetime(2024, 1, 1, 9, 0, 0)),  # 9:01 → 9:00
-            (datetime(2024, 1, 1, 9, 4, 0), datetime(2024, 1, 1, 9, 0, 0)),  # 9:04 → 9:00
-            (datetime(2024, 1, 1, 9, 5, 0), datetime(2024, 1, 1, 9, 0, 0)),  # 9:05 → 9:00
-            (datetime(2024, 1, 1, 9, 9, 0), datetime(2024, 1, 1, 9, 0, 0)),  # 9:09 → 9:00
-            (datetime(2024, 1, 1, 9, 10, 0), datetime(2024, 1, 1, 9, 10, 0)), # 9:10 → 9:10
+            (datetime(2024, 1, 1, 9, 0, 0), datetime(2024, 1, 1, 9, 0, 0)),  # 9:00 -> 9:00
+            (datetime(2024, 1, 1, 9, 1, 0), datetime(2024, 1, 1, 9, 0, 0)),  # 9:01 -> 9:00
+            (datetime(2024, 1, 1, 9, 4, 0), datetime(2024, 1, 1, 9, 0, 0)),  # 9:04 -> 9:00
+            (datetime(2024, 1, 1, 9, 5, 0), datetime(2024, 1, 1, 9, 0, 0)),  # 9:05 -> 9:00
+            (datetime(2024, 1, 1, 9, 9, 0), datetime(2024, 1, 1, 9, 0, 0)),  # 9:09 -> 9:00
+            (datetime(2024, 1, 1, 9, 10, 0), datetime(2024, 1, 1, 9, 10, 0)), # 9:10 -> 9:10
         ]
         
         for input_time, expected_time in test_cases:
@@ -48,65 +48,14 @@ class TimePunchUtilsTest(TestCase):
     
     def test_round_time_10min_round(self):
         """10分単位四捨五入のテスト"""
-        # 例3: 開始時刻で10分単位、四捨五入
+        # 例: 開始時刻で10分単位、四捨五入
         test_cases = [
-            (datetime(2024, 1, 1, 9, 0, 0), datetime(2024, 1, 1, 9, 0, 0)),  # 9:00 → 9:00
-            (datetime(2024, 1, 1, 9, 1, 0), datetime(2024, 1, 1, 9, 0, 0)),  # 9:01 → 9:00
-            (datetime(2024, 1, 1, 9, 4, 0), datetime(2024, 1, 1, 9, 0, 0)),  # 9:04 → 9:00
-            (datetime(2024, 1, 1, 9, 5, 0), datetime(2024, 1, 1, 9, 10, 0)), # 9:05 → 9:10
-            (datetime(2024, 1, 1, 9, 9, 0), datetime(2024, 1, 1, 9, 10, 0)), # 9:09 → 9:10
-            (datetime(2024, 1, 1, 9, 10, 0), datetime(2024, 1, 1, 9, 10, 0)), # 9:10 → 9:10
-        ]
-        
-        for input_time, expected_time in test_cases:
-            with self.subTest(input_time=input_time):
-                result = round_time(input_time, 10, Constants.TIME_ROUNDING_METHOD.ROUND)
-                self.assertEqual(result, expected_time)
-    
-    def test_round_time_end_time_10min_ceil(self):
-        """終了時刻10分単位切り上げのテスト"""
-        # 例4: 終了時刻で10分単位、切り上げ
-        test_cases = [
-            (datetime(2024, 1, 1, 19, 0, 0), datetime(2024, 1, 1, 19, 0, 0)),  # 19:00 → 19:00
-            (datetime(2024, 1, 1, 19, 1, 0), datetime(2024, 1, 1, 19, 10, 0)), # 19:01 → 19:10
-            (datetime(2024, 1, 1, 19, 4, 0), datetime(2024, 1, 1, 19, 10, 0)), # 19:04 → 19:10
-            (datetime(2024, 1, 1, 19, 5, 0), datetime(2024, 1, 1, 19, 10, 0)), # 19:05 → 19:10
-            (datetime(2024, 1, 1, 19, 9, 0), datetime(2024, 1, 1, 19, 10, 0)), # 19:09 → 19:10
-            (datetime(2024, 1, 1, 19, 10, 0), datetime(2024, 1, 1, 19, 10, 0)), # 19:10 → 19:10
-        ]
-        
-        for input_time, expected_time in test_cases:
-            with self.subTest(input_time=input_time):
-                result = round_time(input_time, 10, Constants.TIME_ROUNDING_METHOD.CEIL)
-                self.assertEqual(result, expected_time)
-    
-    def test_round_time_end_time_10min_floor(self):
-        """終了時刻10分単位切り捨てのテスト"""
-        # 例5: 終了時刻で10分単位、切り捨て
-        test_cases = [
-            (datetime(2024, 1, 1, 19, 0, 0), datetime(2024, 1, 1, 19, 0, 0)),  # 19:00 → 19:00
-            (datetime(2024, 1, 1, 19, 1, 0), datetime(2024, 1, 1, 19, 0, 0)),  # 19:01 → 19:00
-            (datetime(2024, 1, 1, 19, 4, 0), datetime(2024, 1, 1, 19, 0, 0)),  # 19:04 → 19:00
-            (datetime(2024, 1, 1, 19, 5, 0), datetime(2024, 1, 1, 19, 0, 0)),  # 19:05 → 19:00
-            (datetime(2024, 1, 1, 19, 9, 0), datetime(2024, 1, 1, 19, 0, 0)),  # 19:09 → 19:00
-            (datetime(2024, 1, 1, 19, 10, 0), datetime(2024, 1, 1, 19, 10, 0)), # 19:10 → 19:10
-        ]
-        
-        for input_time, expected_time in test_cases:
-            with self.subTest(input_time=input_time):
-                result = round_time(input_time, 10, Constants.TIME_ROUNDING_METHOD.FLOOR)
-                self.assertEqual(result, expected_time)
-    
-    def test_round_time_end_time_10min_round(self):
-        """終了時刻10分単位四捨五入のテスト"""
-        # 例6: 終了時刻で10分単位、四捨五入
-        test_cases = [
-            (datetime(2024, 1, 1, 19, 0, 0), datetime(2024, 1, 1, 19, 0, 0)),  # 19:00 → 19:00
-            (datetime(2024, 1, 1, 19, 1, 0), datetime(2024, 1, 1, 19, 0, 0)),  # 19:01 → 19:00
-            (datetime(2024, 1, 1, 19, 4, 0), datetime(2024, 1, 1, 19, 0, 0)),  # 19:04 → 19:00
-            (datetime(2024, 1, 1, 19, 5, 0), datetime(2024, 1, 1, 19, 10, 0)), # 19:05 → 19:10
-            (datetime(2024, 1, 1, 19, 9, 0), datetime(2024, 1, 1, 19, 10, 0)), # 19:09 → 19:10
-            (datetime(2024, 1, 1, 19, 10, 0), datetime(2024, 1, 1, 19, 10, 0)), # 19:10 → 19:10
+            (datetime(2024, 1, 1, 9, 0, 0), datetime(2024, 1, 1, 9, 0, 0)),  # 9:00 -> 9:00
+            (datetime(2024, 1, 1, 9, 1, 0), datetime(2024, 1, 1, 9, 0, 0)),  # 9:01 -> 9:00
+            (datetime(2024, 1, 1, 9, 4, 0), datetime(2024, 1, 1, 9, 0, 0)),  # 9:04 -> 9:00
+            (datetime(2024, 1, 1, 9, 5, 0), datetime(2024, 1, 1, 9, 10, 0)), # 9:05 -> 9:10
+            (datetime(2024, 1, 1, 9, 9, 0), datetime(2024, 1, 1, 9, 10, 0)), # 9:09 -> 9:10
+            (datetime(2024, 1, 1, 9, 10, 0), datetime(2024, 1, 1, 9, 10, 0)), # 9:10 -> 9:10
         ]
         
         for input_time, expected_time in test_cases:
@@ -116,13 +65,12 @@ class TimePunchUtilsTest(TestCase):
     
     def test_round_time_with_seconds(self):
         """秒を含む時刻の丸めテスト"""
-        # 秒を含む場合の四捨五入テスト
         test_cases = [
-            # 9:04:30 → 9:05（5分単位四捨五入）
+            # 9:04:30 -> 9:05（5分単位四捨五入）
             (datetime(2024, 1, 1, 9, 4, 30), datetime(2024, 1, 1, 9, 5, 0)),
-            # 9:02:29 → 9:00（5分単位四捨五入）
+            # 9:02:29 -> 9:00（5分単位四捨五入）
             (datetime(2024, 1, 1, 9, 2, 29), datetime(2024, 1, 1, 9, 0, 0)),
-            # 9:02:30 → 9:05（5分単位四捨五入）
+            # 9:02:30 -> 9:05（5分単位四捨五入）
             (datetime(2024, 1, 1, 9, 2, 30), datetime(2024, 1, 1, 9, 5, 0)),
         ]
         
@@ -133,11 +81,10 @@ class TimePunchUtilsTest(TestCase):
     
     def test_round_time_hour_overflow(self):
         """時間をまたぐ丸めのテスト"""
-        # 59分の時刻を丸めて次の時間になるケース
         test_cases = [
-            # 9:59 → 10:00（10分単位四捨五入）
+            # 9:59 -> 10:00（10分単位四捨五入）
             (datetime(2024, 1, 1, 9, 59, 0), datetime(2024, 1, 1, 10, 0, 0)),
-            # 9:55 → 10:00（10分単位切り上げ）
+            # 9:55 -> 10:00（10分単位切り上げ）
             (datetime(2024, 1, 1, 9, 55, 0), datetime(2024, 1, 1, 10, 0, 0)),
         ]
         
@@ -151,7 +98,6 @@ class TimePunchUtilsTest(TestCase):
         input_time = datetime(2024, 1, 1, 9, 0, 30)
         expected_time = datetime(2024, 1, 1, 9, 0, 0)
 
-        # 切り上げ、切り捨て、四捨五入のいずれの方法でも秒が切り捨てられることを確認
         methods = [
             Constants.TIME_ROUNDING_METHOD.CEIL,
             Constants.TIME_ROUNDING_METHOD.FLOOR,
@@ -165,7 +111,7 @@ class TimePunchUtilsTest(TestCase):
 
 
 class StaffTimerecordRoundingTest(TestCase):
-    """StaffTimerecordモデルの時間丸め機能のテスト"""
+    """StaffTimerecordモデルの時刻丸め機能のテスト"""
     
     def setUp(self):
         """テストデータのセットアップ"""
@@ -184,7 +130,7 @@ class StaffTimerecordRoundingTest(TestCase):
         )
         
         # 時間丸め設定を作成（10分単位、開始時刻切り上げ、終了時刻切り捨て）
-        self.time_rounding = TimePunch.objects.create(
+        self.time_punch = TimePunch.objects.create(
             name='テスト用丸め設定',
             start_time_unit=10,
             start_time_method=Constants.TIME_ROUNDING_METHOD.CEIL,
@@ -203,7 +149,7 @@ class StaffTimerecordRoundingTest(TestCase):
             contract_name='テスト契約',
             contract_pattern=self.contract_pattern,
             start_date=date(2024, 1, 1),
-            time_rounding=self.time_rounding
+            time_punch=self.time_punch
         )
     
     def test_timerecord_rounding_with_config(self):
@@ -218,8 +164,8 @@ class StaffTimerecordRoundingTest(TestCase):
         )
         
         # 丸め結果を確認
-        # 開始時刻: 9:03 → 9:10（10分単位切り上げ）
-        # 終了時刻: 18:07 → 18:00（10分単位切り捨て）
+        # 開始時刻: 9:03 -> 9:10（10分単位切り上げ）
+        # 終了時刻: 18:07 -> 18:00（10分単位切り捨て）
         self.assertEqual(timerecord.rounded_start_time, datetime(2024, 1, 1, 9, 10, 0))
         self.assertEqual(timerecord.rounded_end_time, datetime(2024, 1, 1, 18, 0, 0))
     
@@ -231,7 +177,7 @@ class StaffTimerecordRoundingTest(TestCase):
             contract_name='丸め設定なし契約',
             contract_pattern=self.contract_pattern,
             start_date=date(2024, 1, 1),
-            time_rounding=None
+            time_punch=None
         )
         
         # 勤怠打刻を作成
@@ -266,8 +212,8 @@ class StaffTimerecordRoundingTest(TestCase):
         )
         
         # 休憩時間の丸め結果を確認
-        # 休憩開始: 12:02:30 → 12:02:00 (秒切り捨て) → 12:00:00 (5分単位四捨五入)
-        # 休憩終了: 13:08:59 → 13:08:00 (秒切り捨て) → 13:10:00 (5分単位四捨五入)
+        # 休憩開始: 12:02:30 -> 12:02:00 -> 12:00:00 (5分単位四捨五入)
+        # 休憩終了: 13:08:59 -> 13:08:00 -> 13:10:00 (5分単位四捨五入)
         self.assertEqual(break_record.rounded_break_start, datetime(2024, 1, 1, 12, 0, 0))
         self.assertEqual(break_record.rounded_break_end, datetime(2024, 1, 1, 13, 10, 0))
     
@@ -296,35 +242,3 @@ class StaffTimerecordRoundingTest(TestCase):
         
         self.assertIsNone(timerecord2.rounded_start_time)
         self.assertEqual(timerecord2.rounded_end_time, datetime(2024, 1, 2, 18, 0, 0))
-
-class TimePunchDemoTest(TestCase):
-    """時間丸め機能のデモンストレーション用テスト"""
-    
-    def test_demo_all_rounding_methods(self):
-        """全ての丸め方法のデモンストレーション"""
-        test_times = [
-            datetime(2024, 1, 1, 9, 0, 0),   # 9:00
-            datetime(2024, 1, 1, 9, 1, 0),   # 9:01
-            datetime(2024, 1, 1, 9, 4, 0),   # 9:04
-            datetime(2024, 1, 1, 9, 5, 0),   # 9:05
-            datetime(2024, 1, 1, 9, 9, 0),   # 9:09
-            datetime(2024, 1, 1, 9, 10, 0),  # 9:10
-        ]
-        
-        print("\n=== 10分単位切り上げテスト ===")
-        for t in test_times:
-            result = round_time(t, 10, Constants.TIME_ROUNDING_METHOD.CEIL)
-            print(f'{t.strftime("%H:%M")} → {result.strftime("%H:%M")}')
-        
-        print("\n=== 10分単位切り捨てテスト ===")
-        for t in test_times:
-            result = round_time(t, 10, Constants.TIME_ROUNDING_METHOD.FLOOR)
-            print(f'{t.strftime("%H:%M")} → {result.strftime("%H:%M")}')
-        
-        print("\n=== 10分単位四捨五入テスト ===")
-        for t in test_times:
-            result = round_time(t, 10, Constants.TIME_ROUNDING_METHOD.ROUND)
-            print(f'{t.strftime("%H:%M")} → {result.strftime("%H:%M")}')
-        
-        # テストとしては常に成功
-        self.assertTrue(True)

@@ -1,0 +1,6 @@
+{% if time_punch %}
+    <div class="small text-muted">{{ time_punch.name }}</div>
+    <div class="small text-muted">{{ time_punch.get_rounding_summary }}</div>
+{% else %}
+    <span class="text-muted">未選択</span>
+{% endif %}

@@ -1,17 +1,17 @@
 {% extends 'common/_base.html' %}
 
-{% block title %}時間丸めマスタ削除確認{% endblock %}
+{% block title %}勤怠打刻マスタ削除確認{% endblock %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">
-        時間丸めマスタ削除確認
+        勤怠打刻マスタ削除確認
     </div>
     <div class="card-body">
         <!-- 警告アラート -->
         <div class="alert alert-warning" role="alert">
             <i class="bi bi-exclamation-triangle-fill"></i>
-            時間丸めマスタ「{{ time_rounding.name }}」を削除しますか？この操作は取り消せません。
+            勤怠打刻マスタ「{{ time_punch.name }}」を削除しますか？この操作は取り消せません。
         </div>
 
         <!-- 削除対象の詳細情報 -->
@@ -20,17 +20,17 @@
                 <strong>名称</strong>
             </div>
             <div class="col-sm-9">
-                {{ time_rounding.name }}
+                {{ time_punch.name }}
             </div>
         </div>
 
-        {% if time_rounding.description %}
+        {% if time_punch.description %}
         <div class="row mb-3 align-items-center">
             <div class="col-sm-3 text-start text-md-end">
                 <strong>説明</strong>
             </div>
             <div class="col-sm-9">
-                {{ time_rounding.description|linebreaks }}
+                {{ time_punch.description|linebreaks }}
             </div>
         </div>
         {% endif %}
@@ -40,7 +40,7 @@
                 <strong>丸め設定</strong>
             </div>
             <div class="col-sm-9">
-                {{ time_rounding.get_rounding_summary }}
+                {{ time_punch.get_rounding_summary }}
             </div>
         </div>
 
@@ -49,7 +49,7 @@
                 <strong>状態</strong>
             </div>
             <div class="col-sm-9">
-                {% if time_rounding.is_active %}
+                {% if time_punch.is_active %}
                     <span class="badge bg-success">有効</span>
                 {% else %}
                     <span class="badge bg-secondary">無効</span>
@@ -58,12 +58,12 @@
         </div>
 
         <!-- 削除ボタン -->
-        <form method="post" action="{% url 'master:time_rounding_delete' time_rounding.pk %}">
+        <form method="post" action="{% url 'master:time_punch_delete' time_punch.pk %}">
             {% csrf_token %}
             <div class="row mt-3">
                 <div class="col text-left">
                     <button type="submit" class="btn btn-sm btn-dark me-2">削除</button>
-                    <a href="{% url 'master:time_rounding_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                    <a href="{% url 'master:time_punch_list' %}" class="btn btn-sm btn-secondary">戻る</a>
                 </div>
             </div>
         </form>

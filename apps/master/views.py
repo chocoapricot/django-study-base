@@ -110,10 +110,10 @@ MASTER_CONFIGS = [
     },
     {
         "category": "勤怠",
-        "name": "時間丸めマスタ",
+        "name": "勤怠打刻マスタ",
         "description": "勤怠時刻の丸め処理設定を管理",
         "model": "master.TimePunch",
-        "url_name": "master:time_rounding_list",
+        "url_name": "master:time_punch_list",
         "permission": "master.view_timepunch",
     },
 
@@ -265,9 +265,8 @@ def master_index_list(request):
 
 
 @login_required
-@login_required
-def time_rounding_list(request):
-    """時間丸めマスタ一覧"""
+def time_punch_list(request):
+    """勤怠打刻マスタ一覧"""
     search_query = request.GET.get('search', '')
     
     # 基本クエリ
@@ -303,87 +302,87 @@ def time_rounding_list(request):
         'total_count': queryset.count(),
         'change_logs': change_logs,
         'change_logs_count': change_logs_count,
-        'history_url_name': 'master:time_rounding_change_history_list',
+        'history_url_name': 'master:time_punch_change_history_list',
     }
     
-    return render(request, 'master/time_rounding_list.html', context)
+    return render(request, 'master/time_punch_list.html', context)
 
 
 
 
 
 @login_required
-def time_rounding_create(request):
-    """時間丸めマスタ作成"""
+def time_punch_create(request):
+    """勤怠打刻マスタ作成"""
     if request.method == 'POST':
         form = TimePunchForm(request.POST)
         if form.is_valid():
-            time_rounding = form.save()
-            messages.success(request, f'時間丸めマスタ「{time_rounding.name}」を作成しました。')
-            return redirect('master:time_rounding_list')
+            time_punch = form.save()
+            messages.success(request, f'勤怠打刻マスタ「{time_punch.name}」を作成しました。')
+            return redirect('master:time_punch_list')
     else:
         form = TimePunchForm()
     
     context = {
         'form': form,
-        'title': '時間丸めマスタ作成',
+        'title': '勤怠打刻マスタ作成',
     }
     
-    return render(request, 'master/time_rounding_form.html', context)
+    return render(request, 'master/time_punch_form.html', context)
 
 
 @login_required
-def time_rounding_edit(request, pk):
-    """時間丸めマスタ編集"""
-    time_rounding = get_object_or_404(TimePunch, pk=pk)
+def time_punch_edit(request, pk):
+    """勤怠打刻マスタ編集"""
+    time_punch = get_object_or_404(TimePunch, pk=pk)
     
     if request.method == 'POST':
-        form = TimePunchForm(request.POST, instance=time_rounding)
+        form = TimePunchForm(request.POST, instance=time_punch)
         if form.is_valid():
-            time_rounding = form.save()
-            messages.success(request, f'時間丸めマスタ「{time_rounding.name}」を更新しました。')
-            return redirect('master:time_rounding_list')
+            time_punch = form.save()
+            messages.success(request, f'勤怠打刻マスタ「{time_punch.name}」を更新しました。')
+            return redirect('master:time_punch_list')
     else:
-        form = TimePunchForm(instance=time_rounding)
+        form = TimePunchForm(instance=time_punch)
     
     context = {
         'form': form,
-        'time_rounding': time_rounding,
-        'title': '時間丸めマスタ編集',
+        'time_punch': time_punch,
+        'title': '勤怠打刻マスタ編集',
     }
     
-    return render(request, 'master/time_rounding_form.html', context)
+    return render(request, 'master/time_punch_form.html', context)
 
 
 @login_required
-def time_rounding_delete_confirm(request, pk):
-    """時間丸めマスタ削除確認"""
-    time_rounding = get_object_or_404(TimePunch, pk=pk)
+def time_punch_delete_confirm(request, pk):
+    """勤怠打刻マスタ削除確認"""
+    time_punch = get_object_or_404(TimePunch, pk=pk)
     
     context = {
-        'time_rounding': time_rounding,
+        'time_punch': time_punch,
     }
     
-    return render(request, 'master/time_rounding_delete_confirm.html', context)
+    return render(request, 'master/time_punch_delete_confirm.html', context)
 
 
 @login_required
-def time_rounding_delete(request, pk):
-    """時間丸めマスタ削除"""
-    time_rounding = get_object_or_404(TimePunch, pk=pk)
+def time_punch_delete(request, pk):
+    """勤怠打刻マスタ削除"""
+    time_punch = get_object_or_404(TimePunch, pk=pk)
     
     if request.method == 'POST':
-        name = time_rounding.name
-        time_rounding.delete()
-        messages.success(request, f'時間丸めマスタ「{name}」を削除しました。')
-        return redirect('master:time_rounding_list')
+        name = time_punch.name
+        time_punch.delete()
+        messages.success(request, f'勤怠打刻マスタ「{name}」を削除しました。')
+        return redirect('master:time_punch_list')
     
-    return redirect('master:time_rounding_list')
+    return redirect('master:time_punch_list')
 
 
 @login_required
-def time_rounding_change_history_list(request):
-    """時間丸めマスタ変更履歴一覧"""
+def time_punch_change_history_list(request):
+    """勤怠打刻マスタ変更履歴一覧"""
     logs = AppLog.objects.filter(
         model_name='TimePunch',
         action__in=['create', 'update', 'delete']
@@ -395,7 +394,7 @@ def time_rounding_change_history_list(request):
     
     return render(request, 'common/common_change_history_list.html', {
         'change_logs': logs_page,
-        'page_title': '時間丸めマスタ変更履歴',
-        'back_url_name': 'master:time_rounding_list',
+        'page_title': '勤怠打刻マスタ変更履歴',
+        'back_url_name': 'master:time_punch_list',
         'model_name': 'TimePunch',
     })

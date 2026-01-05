@@ -10,12 +10,12 @@ from apps.common.constants import (
 
 
 class TimePunch(MyModel):
-    """時間丸めマスタ"""
+    """勤怠打刻マスタ"""
     
     name = models.CharField(
         max_length=100,
         verbose_name='名称',
-        help_text='時間丸め設定の名称'
+        help_text='勤怠打刻設定の名称'
     )
     
     description = models.TextField(
@@ -108,9 +108,9 @@ class TimePunch(MyModel):
     )
     
     class Meta:
-        db_table = 'apps_master_time_rounding'
-        verbose_name = '時間丸めマスタ'
-        verbose_name_plural = '時間丸めマスタ'
+        db_table = 'apps_master_time_punch'
+        verbose_name = '勤怠打刻マスタ'
+        verbose_name_plural = '勤怠打刻マスタ'
         ordering = ['sort_order', 'name']
     
     def __str__(self):

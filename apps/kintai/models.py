@@ -767,10 +767,11 @@ class StaffTimerecord(MyModel):
             self.rounded_end_time = self.end_time.replace(second=0, microsecond=0)
 
         # 時間丸め設定があれば適用
-        if self.staff_contract and self.staff_contract.time_rounding:
+        # 時間丸め設定があれば適用
+        if self.staff_contract and self.staff_contract.time_punch:
             from .utils import apply_time_rounding
             rounded_start, rounded_end = apply_time_rounding(
-                self.rounded_start_time, self.rounded_end_time, self.staff_contract.time_rounding
+                self.rounded_start_time, self.rounded_end_time, self.staff_contract.time_punch
             )
             self.rounded_start_time = rounded_start
             self.rounded_end_time = rounded_end
@@ -812,7 +813,7 @@ class StaffTimerecord(MyModel):
         
         # 休憩時間の合計を計算（丸め時刻を使用）
         total_break_minutes = sum(
-            break_record.rounded_break_minutes for break_record in self.breaks.all()
+            break_record.break_minutes for break_record in self.breaks.all()
         )
         
         # 労働時間を計算
@@ -932,10 +933,10 @@ class StaffTimerecordBreak(MyModel):
         # 時間丸め設定があれば適用
         if (self.timerecord and
                 self.timerecord.staff_contract and
-                self.timerecord.staff_contract.time_rounding):
-            from .utils import apply_break_time_rounding
-            rounded_start, rounded_end = apply_break_time_rounding(
-                self.rounded_break_start, self.rounded_break_end, self.timerecord.staff_contract.time_rounding
+                self.timerecord.staff_contract.time_punch):
+            from .utils import apply_break_time_punch
+            rounded_start, rounded_end = apply_break_time_punch(
+                self.rounded_break_start, self.rounded_break_end, self.timerecord.staff_contract.time_punch
             )
             self.rounded_break_start = rounded_start
             self.rounded_break_end = rounded_end

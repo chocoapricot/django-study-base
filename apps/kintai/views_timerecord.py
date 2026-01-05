@@ -297,13 +297,13 @@ def timerecord_punch(request):
     
     # 時間丸め設定による休憩入力可否の判定
     show_break_buttons = True  # デフォルトは表示
-    if current_contract and current_contract.time_rounding:
+    if current_contract and current_contract.time_punch:
         # 時間丸め設定で休憩入力が無効の場合は非表示
-        show_break_buttons = current_contract.time_rounding.break_input
+        show_break_buttons = current_contract.time_punch.break_input
     elif available_contracts.count() > 1:
         # 複数契約がある場合は、すべての契約で休憩入力が無効の場合のみ非表示
         show_break_buttons = any(
-            contract.time_rounding is None or contract.time_rounding.break_input 
+            contract.time_punch is None or contract.time_punch.break_input 
             for contract in available_contracts
         )
     
