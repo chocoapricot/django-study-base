@@ -1,7 +1,7 @@
 from django.test import TestCase
 from datetime import datetime, date
 from apps.kintai.models import StaffTimerecord, StaffTimerecordBreak
-from apps.kintai.utils import round_time, apply_time_punch, apply_break_time_punch
+from apps.kintai.utils import round_time, apply_time_rounding, apply_break_time_rounding
 from apps.master.models_kintai import TimePunch
 from apps.master.models_contract import ContractPattern
 from apps.contract.models import StaffContract

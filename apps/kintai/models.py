@@ -767,7 +767,6 @@ class StaffTimerecord(MyModel):
             self.rounded_end_time = self.end_time.replace(second=0, microsecond=0)
 
         # 時間丸め設定があれば適用
-        # 時間丸め設定があれば適用
         if self.staff_contract and self.staff_contract.time_punch:
             from .utils import apply_time_rounding
             rounded_start, rounded_end = apply_time_rounding(
