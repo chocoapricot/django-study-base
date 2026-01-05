@@ -934,8 +934,8 @@ class StaffTimerecordBreak(MyModel):
         if (self.timerecord and
                 self.timerecord.staff_contract and
                 self.timerecord.staff_contract.time_punch):
-            from .utils import apply_break_time_punch
-            rounded_start, rounded_end = apply_break_time_punch(
+            from .utils import apply_break_time_rounding
+            rounded_start, rounded_end = apply_break_time_rounding(
                 self.rounded_break_start, self.rounded_break_end, self.timerecord.staff_contract.time_punch
             )
             self.rounded_break_start = rounded_start
