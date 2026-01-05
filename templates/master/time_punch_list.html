@@ -34,7 +34,7 @@
                     <tr>
                         <th width="30%">名称</th>
                         <th width="10%">打刻方法</th>
-                        <th width="10%">位置情報</th>
+                        <th width="10%">位置情報取得</th>
                         <th width="25%">丸め設定概要</th>
                         <th width="10%">状態</th>
                         <th width="5%">表示順</th>
@@ -52,9 +52,9 @@
                         </td>
                         <td>
                             {% if item.location_info %}
-                                <span class="badge bg-info text-dark">する</span>
+                                する
                             {% else %}
-                                <span class="badge bg-secondary">しない</span>
+                                しない
                             {% endif %}
                         </td>
                         <td>

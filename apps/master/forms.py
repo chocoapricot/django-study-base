@@ -24,7 +24,8 @@ from .models import (
 from apps.system.settings.models import Dropdowns
 from apps.common.constants import (
     Constants,
-    get_break_input_choices
+    get_break_input_choices,
+    get_location_fetch_choices
 )
 from apps.common.forms import MyRadioSelect
 
@@ -741,7 +742,7 @@ class TimePunchForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'punch_method': forms.RadioSelect(attrs={'class': 'form-check-input'}),
             'location_info': forms.RadioSelect(
-                choices=get_break_input_choices(),
+                choices=get_location_fetch_choices(),
                 attrs={'class': 'form-check-input'}
             ),
             'start_time_unit': forms.Select(attrs={'class': 'form-control form-control-sm'}),

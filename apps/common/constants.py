@@ -250,6 +250,14 @@ def get_break_input_choices():
     ]
 
 
+def get_location_fetch_choices():
+    """位置情報取得の選択肢リストを返す"""
+    return [
+        (True, '取得する'),
+        (False, '取得しない'),
+    ]
+
+
 # 使用例
 """
 使用例:
