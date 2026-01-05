@@ -309,6 +309,17 @@ def timerecord_punch(request):
             for contract in available_contracts
         )
     
+    # 位置情報取得設定の取得
+    require_location_info = True  # デフォルトは取得する
+    if current_contract and current_contract.time_punch:
+        require_location_info = current_contract.time_punch.location_info
+    elif available_contracts.count() > 1:
+        # 複数契約がある場合は、どれか一つでも取得設定があれば取得を試みる（安全側）
+        require_location_info = any(
+            contract.time_punch is None or contract.time_punch.location_info 
+            for contract in available_contracts
+        )
+    
     # 進行中の打刻（退勤していないもの）を優先的に取得
     timerecord = StaffTimerecord.objects.filter(staff=staff, end_time__isnull=True).order_by('-work_date', '-start_time').first()
     
@@ -330,6 +341,19 @@ def timerecord_punch(request):
                 status = 'on_break'  # 休憩中
             else:
                 status = 'working'  # 勤務中
+    
+    # 進行中の打刻がある場合は、その契約をカレントとする
+    if timerecord and timerecord.staff_contract:
+        current_contract = timerecord.staff_contract
+    
+    # 位置情報取得設定の再判定（進行中の打刻契約がある場合を考慮）
+    if current_contract and current_contract.time_punch:
+        require_location_info = current_contract.time_punch.location_info
+    elif available_contracts.count() > 1:
+        require_location_info = any(
+            contract.time_punch is None or contract.time_punch.location_info 
+            for contract in available_contracts
+        )
     
     # 取り消し可能判定（直近5分以内）
     can_cancel = False
@@ -362,6 +386,7 @@ def timerecord_punch(request):
         'today': today,
         'can_cancel': can_cancel,
         'show_break_buttons': show_break_buttons,
+        'require_location_info': require_location_info,
     }
     return render(request, 'kintai/timerecord_punch.html', context)
 

@@ -182,7 +182,7 @@
                             <div class="card-body">
                                 {% for contract in available_contracts %}
                                 <div class="form-check mb-2">
-                                    <input class="form-check-input" type="radio" name="contract_selection" id="contract_{{ contract.id }}" value="{{ contract.id }}">
+                                    <input class="form-check-input" type="radio" name="contract_selection" id="contract_{{ contract.id }}" value="{{ contract.id }}" data-location-info="{{ contract.time_punch.location_info|yesno:'true,false' }}">
                                     <label class="form-check-label" for="contract_{{ contract.id }}">
                                         <strong>{{ contract.contract_name }}</strong><br>
                                         <small class="text-muted">{{ contract.start_date|date:"Y/m/d" }}〜{% if contract.end_date %}{{ contract.end_date|date:"Y/m/d" }}{% else %}継続中{% endif %}</small>
@@ -477,6 +477,17 @@
             // 二重送信防止（ボタンを無効化）
             document.querySelectorAll('.punch-btn').forEach(b => b.disabled = true);
 
+            // 位置情報取得が必要かどうかのグローバル設定（Viewから渡された値）
+            let shouldFetchLocation = {{ require_location_info|yesno:"true,false" }};
+            
+            // 出勤時で契約が選択された場合は、その契約の設定を優先する
+            if (action === 'start') {
+                const selectedContract = document.querySelector('input[name="contract_selection"]:checked');
+                if (selectedContract && selectedContract.dataset.locationInfo) {
+                    shouldFetchLocation = (selectedContract.dataset.locationInfo === 'true');
+                }
+            }
+
             const finalizeSubmission = () => {
                 const hiddenAction = document.createElement('input');
                 hiddenAction.type = 'hidden';
@@ -486,7 +497,7 @@
                 punchForm.submit();
             };
 
-            if (navigator.geolocation) {
+            if (shouldFetchLocation && navigator.geolocation) {
                 // ボタンを押した瞬間に位置情報を取得
                 navigator.geolocation.getCurrentPosition(
                     function(position) {

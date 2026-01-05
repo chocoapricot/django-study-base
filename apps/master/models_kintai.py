@@ -33,6 +33,13 @@ class TimePunch(MyModel):
         help_text='勤怠管理の打刻方法'
     )
     
+    location_info = models.BooleanField(
+        default=True,
+        choices=get_break_input_choices(),
+        verbose_name='位置情報取得',
+        help_text='勤怠打刻時に位置情報を取得するかどうか'
+    )
+    
     # 開始時刻丸め設定
     start_time_unit = models.IntegerField(
         choices=get_time_rounding_unit_choices(),

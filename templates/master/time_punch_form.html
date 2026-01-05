@@ -41,6 +41,26 @@
                 </div>
             </div>
 
+            <!-- 位置情報取得 -->
+            <div class="row mb-3 align-items-center">
+                <label class="col-sm-2 col-form-label text-start text-md-end">{{ form.location_info.label }}</label>
+                <div class="col-sm-10">
+                    <div class="d-flex flex-wrap">
+                        {% for radio in form.location_info %}
+                            <div class="form-check me-3">
+                                {{ radio.tag }}
+                                <label class="form-check-label" for="{{ radio.id_for_label }}">
+                                    {{ radio.choice_label }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% if form.location_info.errors %}
+                        <div class="text-danger small">{{ form.location_info.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
             <!-- 開始時刻丸め設定 -->
             <div class="row mb-1 align-items-center">
                 <label for="{{ form.start_time_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.start_time_unit.label }}</label>
