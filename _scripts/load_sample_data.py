@@ -32,6 +32,21 @@ def run_command(command, description):
 
 def main():
     print("📊 サンプルデータのインポートを開始します...")
+
+    # スーパーユーザーを作成 (初回実行時)
+    # dropdowns.json などのデータが user_id=1 に依存しているため、
+    # loaddata の前に実行する必要がある。
+    # ユーザーが既に存在する場合、このコマンドは失敗するが、それは期待通りの動作。
+    print("\nスーパーユーザー(admin)の作成を試みます...")
+    # コマンドの出力を表示しないように stdout と stderr を DEVNULL にリダイレクト
+    # ユーザーが既に存在するとエラーになるが、それを無視して処理を続ける
+    subprocess.run(
+        "DJANGO_SUPERUSER_PASSWORD=password python manage.py createsuperuser --username admin --email admin@example.com --noinput",
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    print("...完了")
     
     # サンプルデータファイルの存在確認
     missing_files = []
