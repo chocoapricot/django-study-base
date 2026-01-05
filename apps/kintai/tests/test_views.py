@@ -5,7 +5,7 @@ from datetime import date
 from apps.kintai.models import StaffTimesheet, StaffTimecard
 from apps.contract.models import StaffContract
 from apps.staff.models import Staff
-from apps.master.models import EmploymentType, ContractPattern
+from apps.master.models import EmploymentType, ContractPattern, OvertimePattern
 from apps.common.constants import Constants
 
 User = get_user_model()
@@ -48,12 +48,19 @@ class TimesheetViewTest(TestCase):
             domain=Constants.DOMAIN.STAFF
         )
 
+        # 時間外算出パターン作成
+        self.overtime_pattern = OvertimePattern.objects.create(
+            name='テスト用時間外パターン',
+            calculate_midnight_premium=True,
+        )
+
         # スタッフ契約作成
         self.staff_contract = StaffContract.objects.create(
             staff=self.staff,
             employment_type=self.employment_type,
             contract_name='2024年度契約',
             contract_pattern=self.contract_pattern,
+            overtime_pattern=self.overtime_pattern,
             start_date=date(2024, 4, 1),
             end_date=date(2025, 3, 31),
             contract_status=Constants.CONTRACT_STATUS.CONFIRMED
@@ -145,12 +152,19 @@ class TimecardViewTest(TestCase):
             domain=Constants.DOMAIN.STAFF
         )
 
+        # 時間外算出パターン作成
+        self.overtime_pattern = OvertimePattern.objects.create(
+            name='テスト用時間外パターン',
+            calculate_midnight_premium=True,
+        )
+
         # スタッフ契約作成
         self.staff_contract = StaffContract.objects.create(
             staff=self.staff,
             employment_type=self.employment_type,
             contract_name='2024年度契約',
             contract_pattern=self.contract_pattern,
+            overtime_pattern=self.overtime_pattern,
             start_date=date(2024, 4, 1),
             end_date=date(2025, 3, 31),
             contract_status=Constants.CONTRACT_STATUS.CONFIRMED

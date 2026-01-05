@@ -7,7 +7,7 @@ from datetime import date, datetime, time
 from apps.kintai.models import StaffTimerecord, StaffTimerecordBreak
 from apps.contract.models import StaffContract
 from apps.staff.models import Staff
-from apps.master.models import EmploymentType, ContractPattern, StaffAgreement
+from apps.master.models import EmploymentType, ContractPattern, StaffAgreement, TimePunch, OvertimePattern
 from apps.connect.models import ConnectStaff, ConnectStaffAgree
 from apps.common.constants import Constants
 
@@ -40,6 +40,8 @@ class TimerecordPunchViewTest(TestCase):
         # 雇用形態と契約パターン
         self.employment_type = EmploymentType.objects.create(name='正社員')
         self.contract_pattern = ContractPattern.objects.create(name='標準', domain=Constants.DOMAIN.STAFF)
+        self.time_punch = TimePunch.objects.create(name='テスト打刻', punch_method=Constants.PUNCH_METHOD.PUNCH)
+        self.overtime_pattern = OvertimePattern.objects.create(name='テスト時間外')
 
         # 有効なスタッフ契約作成（今日の日付に合わせて設定）
         today = timezone.localtime().date()
@@ -47,6 +49,8 @@ class TimerecordPunchViewTest(TestCase):
             staff=self.staff,
             employment_type=self.employment_type,
             contract_pattern=self.contract_pattern,
+            time_punch=self.time_punch,
+            overtime_pattern=self.overtime_pattern,
             start_date=today,
             end_date=date(today.year + 1, 12, 31),  # 来年末まで有効
             contract_status=Constants.CONTRACT_STATUS.CONFIRMED
@@ -271,6 +275,8 @@ class TimerecordPunchViewTest(TestCase):
             contract_name="テスト契約2",
             start_date=timezone.localtime().date(),
             contract_pattern=self.contract_pattern,
+            time_punch=self.time_punch,
+            overtime_pattern=self.overtime_pattern,
             contract_status=Constants.CONTRACT_STATUS.CONFIRMED
         )
         
@@ -343,6 +349,8 @@ class TimerecordPunchViewTest(TestCase):
             contract_name="未確認契約",
             start_date=timezone.localtime().date(),
             contract_pattern=self.contract_pattern,
+            time_punch=self.time_punch,
+            overtime_pattern=self.overtime_pattern,
             contract_status=Constants.CONTRACT_STATUS.ISSUED  # 未確認
         )
         

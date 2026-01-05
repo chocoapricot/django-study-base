@@ -6,7 +6,7 @@ from datetime import date
 from apps.kintai.models import StaffTimerecord
 from apps.contract.models import StaffContract
 from apps.staff.models import Staff
-from apps.master.models import EmploymentType, ContractPattern, StaffAgreement
+from apps.master.models import EmploymentType, ContractPattern, StaffAgreement, OvertimePattern, TimePunch
 from apps.connect.models import ConnectStaff, ConnectStaffAgree
 from apps.common.constants import Constants
 
@@ -44,12 +44,26 @@ class StaffAgreementKintaiTest(TestCase):
             employment_type=self.employment_type
         )
         
+        # 時間外算出パターン作成
+        self.overtime_pattern = OvertimePattern.objects.create(
+            name='テスト用時間外パターン',
+            calculate_midnight_premium=True,
+        )
+
+        # 時間丸め設定を作成
+        self.time_punch = TimePunch.objects.create(
+            name='テスト用打刻設定',
+            punch_method=Constants.PUNCH_METHOD.PUNCH,
+        )
+
         # スタッフ契約作成
         self.staff_contract = StaffContract.objects.create(
             staff=self.staff,
             contract_name="テスト契約",
             start_date=timezone.localtime().date(),
             contract_pattern=self.contract_pattern,
+            overtime_pattern=self.overtime_pattern,
+            time_punch=self.time_punch,
             contract_status=Constants.CONTRACT_STATUS.CONFIRMED
         )
         
