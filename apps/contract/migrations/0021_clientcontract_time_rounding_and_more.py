@@ -8,18 +8,18 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('contract', '0020_clientcontract_overtime_pattern'),
-        ('master', '0034_timerounding'),
+        ('master', '0034_timepunch'),
     ]
 
     operations = [
         migrations.AddField(
             model_name='clientcontract',
             name='time_rounding',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='master.timerounding', verbose_name='時間丸め'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='master.timepunch', verbose_name='時間丸め'),
         ),
         migrations.AddField(
             model_name='staffcontract',
             name='time_rounding',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='master.timerounding', verbose_name='時間丸め'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='master.timepunch', verbose_name='時間丸め'),
         ),
     ]

@@ -70,7 +70,7 @@ def apply_time_rounding(start_time, end_time, time_rounding_config):
     Args:
         start_time (datetime): 開始時刻
         end_time (datetime): 終了時刻
-        time_rounding_config (TimeRounding): 時間丸め設定
+        time_rounding_config (TimePunch): 時間丸め設定
     
     Returns:
         tuple: (rounded_start_time, rounded_end_time)
@@ -108,7 +108,7 @@ def apply_break_time_rounding(break_start, break_end, time_rounding_config):
     Args:
         break_start (datetime): 休憩開始時刻
         break_end (datetime): 休憩終了時刻
-        time_rounding_config (TimeRounding): 時間丸め設定
+        time_rounding_config (TimePunch): 時間丸め設定
     
     Returns:
         tuple: (rounded_break_start, rounded_break_end)

@@ -9,7 +9,7 @@ from apps.common.constants import (
 )
 
 
-class TimeRounding(MyModel):
+class TimePunch(MyModel):
     """時間丸めマスタ"""
     
     name = models.CharField(

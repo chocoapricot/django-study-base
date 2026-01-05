@@ -1,6 +1,6 @@
 [
 {
-    "model": "master.timerounding",
+    "model": "master.timepunch",
     "pk": 1,
     "fields": {
         "version": 0,
@@ -24,7 +24,7 @@
     }
 },
 {
-    "model": "master.timerounding",
+    "model": "master.timepunch",
     "pk": 2,
     "fields": {
         "version": 0,
@@ -48,7 +48,7 @@
     }
 },
 {
-    "model": "master.timerounding",
+    "model": "master.timepunch",
     "pk": 3,
     "fields": {
         "version": 0,

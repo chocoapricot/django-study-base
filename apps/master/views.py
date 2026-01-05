@@ -6,8 +6,8 @@ from django.db.models import Q
 from django.urls import reverse
 from django.apps import apps
 from apps.system.logs.models import AppLog
-from .models import TimeRounding
-from .forms import TimeRoundingForm
+from .models import TimePunch
+from .forms import TimePunchForm
 
 from .views_staff import *
 from .views_client import *
@@ -112,9 +112,9 @@ MASTER_CONFIGS = [
         "category": "勤怠",
         "name": "時間丸めマスタ",
         "description": "勤怠時刻の丸め処理設定を管理",
-        "model": "master.TimeRounding",
+        "model": "master.TimePunch",
         "url_name": "master:time_rounding_list",
-        "permission": "master.view_timerounding",
+        "permission": "master.view_timepunch",
     },
 
 
@@ -271,7 +271,7 @@ def time_rounding_list(request):
     search_query = request.GET.get('search', '')
     
     # 基本クエリ
-    queryset = TimeRounding.objects.all()
+    queryset = TimePunch.objects.all()
     
     # 検索処理
     if search_query:
@@ -287,13 +287,13 @@ def time_rounding_list(request):
     
     # 変更履歴を取得（最新5件）
     change_logs = AppLog.objects.filter(
-        model_name='TimeRounding',
+        model_name='TimePunch',
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')[:5]
     
     # 変更履歴の総件数
     change_logs_count = AppLog.objects.filter(
-        model_name='TimeRounding',
+        model_name='TimePunch',
         action__in=['create', 'update', 'delete']
     ).count()
     
@@ -316,13 +316,13 @@ def time_rounding_list(request):
 def time_rounding_create(request):
     """時間丸めマスタ作成"""
     if request.method == 'POST':
-        form = TimeRoundingForm(request.POST)
+        form = TimePunchForm(request.POST)
         if form.is_valid():
             time_rounding = form.save()
             messages.success(request, f'時間丸めマスタ「{time_rounding.name}」を作成しました。')
             return redirect('master:time_rounding_list')
     else:
-        form = TimeRoundingForm()
+        form = TimePunchForm()
     
     context = {
         'form': form,
@@ -335,16 +335,16 @@ def time_rounding_create(request):
 @login_required
 def time_rounding_edit(request, pk):
     """時間丸めマスタ編集"""
-    time_rounding = get_object_or_404(TimeRounding, pk=pk)
+    time_rounding = get_object_or_404(TimePunch, pk=pk)
     
     if request.method == 'POST':
-        form = TimeRoundingForm(request.POST, instance=time_rounding)
+        form = TimePunchForm(request.POST, instance=time_rounding)
         if form.is_valid():
             time_rounding = form.save()
             messages.success(request, f'時間丸めマスタ「{time_rounding.name}」を更新しました。')
             return redirect('master:time_rounding_list')
     else:
-        form = TimeRoundingForm(instance=time_rounding)
+        form = TimePunchForm(instance=time_rounding)
     
     context = {
         'form': form,
@@ -358,7 +358,7 @@ def time_rounding_edit(request, pk):
 @login_required
 def time_rounding_delete_confirm(request, pk):
     """時間丸めマスタ削除確認"""
-    time_rounding = get_object_or_404(TimeRounding, pk=pk)
+    time_rounding = get_object_or_404(TimePunch, pk=pk)
     
     context = {
         'time_rounding': time_rounding,
@@ -370,7 +370,7 @@ def time_rounding_delete_confirm(request, pk):
 @login_required
 def time_rounding_delete(request, pk):
     """時間丸めマスタ削除"""
-    time_rounding = get_object_or_404(TimeRounding, pk=pk)
+    time_rounding = get_object_or_404(TimePunch, pk=pk)
     
     if request.method == 'POST':
         name = time_rounding.name
@@ -385,7 +385,7 @@ def time_rounding_delete(request, pk):
 def time_rounding_change_history_list(request):
     """時間丸めマスタ変更履歴一覧"""
     logs = AppLog.objects.filter(
-        model_name='TimeRounding',
+        model_name='TimePunch',
         action__in=['create', 'update', 'delete']
     ).order_by('-timestamp')
     
@@ -397,5 +397,5 @@ def time_rounding_change_history_list(request):
         'change_logs': logs_page,
         'page_title': '時間丸めマスタ変更履歴',
         'back_url_name': 'master:time_rounding_list',
-        'model_name': 'TimeRounding',
+        'model_name': 'TimePunch',
     })

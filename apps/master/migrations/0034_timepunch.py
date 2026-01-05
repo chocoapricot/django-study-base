@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='TimeRounding',
+            name='TimePunch',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('version', concurrency.fields.IntegerVersionField(default=0, help_text='record revision number')),

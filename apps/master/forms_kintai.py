@@ -1,7 +1,7 @@
 from django import forms
 from .models import (
     OvertimePattern,
-    TimeRounding,
+    TimePunch,
 )
 from apps.common.forms import MyRadioSelect
 from apps.common.constants import get_break_input_choices
@@ -54,11 +54,11 @@ class OvertimePatternForm(forms.ModelForm):
         }
 
 
-class TimeRoundingForm(forms.ModelForm):
+class TimePunchForm(forms.ModelForm):
     """時間丸めマスタフォーム"""
 
     class Meta:
-        model = TimeRounding
+        model = TimePunch
         fields = [
             'name', 'description', 'start_time_unit', 'start_time_method',
             'end_time_unit', 'end_time_method', 'break_input',

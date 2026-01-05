@@ -19,7 +19,7 @@ from .models import (
     EmploymentType,
     StaffRegistStatus,
     ClientRegistStatus,
-    TimeRounding,
+    TimePunch,
 )
 from apps.system.settings.models import Dropdowns
 from apps.common.constants import (
@@ -723,11 +723,11 @@ class UserParameterForm(forms.ModelForm):
         
         return value
 
-class TimeRoundingForm(forms.ModelForm):
+class TimePunchForm(forms.ModelForm):
     """時間丸めマスタフォーム"""
     
     class Meta:
-        model = TimeRounding
+        model = TimePunch
         fields = [
             'name', 'description', 'start_time_unit', 'start_time_method',
             'end_time_unit', 'end_time_method', 'break_input',

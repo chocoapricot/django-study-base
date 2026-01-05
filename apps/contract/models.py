@@ -87,7 +87,7 @@ class ClientContract(MyModel):
         verbose_name='時間外算出'
     )
     time_rounding = models.ForeignKey(
-        'master.TimeRounding',
+        'master.TimePunch',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -458,7 +458,7 @@ class StaffContract(MyModel):
         verbose_name='時間外算出'
     )
     time_rounding = models.ForeignKey(
-        'master.TimeRounding',
+        'master.TimePunch',
         on_delete=models.SET_NULL,
         blank=True,
         null=True,

@@ -2,14 +2,14 @@ from django.test import TestCase
 from datetime import datetime, date
 from apps.kintai.models import StaffTimerecord, StaffTimerecordBreak
 from apps.kintai.utils import round_time, apply_time_rounding, apply_break_time_rounding
-from apps.master.models_kintai import TimeRounding
+from apps.master.models_kintai import TimePunch
 from apps.master.models_contract import ContractPattern
 from apps.contract.models import StaffContract
 from apps.staff.models import Staff
 from apps.common.constants import Constants
 
 
-class TimeRoundingUtilsTest(TestCase):
+class TimePunchUtilsTest(TestCase):
     """時間丸めユーティリティ関数のテスト"""
     
     def test_round_time_10min_ceil(self):
@@ -184,7 +184,7 @@ class StaffTimerecordRoundingTest(TestCase):
         )
         
         # 時間丸め設定を作成（10分単位、開始時刻切り上げ、終了時刻切り捨て）
-        self.time_rounding = TimeRounding.objects.create(
+        self.time_rounding = TimePunch.objects.create(
             name='テスト用丸め設定',
             start_time_unit=10,
             start_time_method=Constants.TIME_ROUNDING_METHOD.CEIL,
@@ -297,7 +297,7 @@ class StaffTimerecordRoundingTest(TestCase):
         self.assertIsNone(timerecord2.rounded_start_time)
         self.assertEqual(timerecord2.rounded_end_time, datetime(2024, 1, 2, 18, 0, 0))
 
-class TimeRoundingDemoTest(TestCase):
+class TimePunchDemoTest(TestCase):
     """時間丸め機能のデモンストレーション用テスト"""
     
     def test_demo_all_rounding_methods(self):

@@ -8,7 +8,7 @@ from .models import (
     OvertimePattern,
 )
 from .models_kintai import (
-    TimeRounding,
+    TimePunch,
 )
 from .forms_kintai import (
     OvertimePatternForm,
@@ -185,11 +185,11 @@ def overtime_pattern_select_modal(request):
 
 
 @login_required
-@permission_required("master.view_timerounding", raise_exception=True)
+@permission_required("master.view_timepunch", raise_exception=True)
 def time_rounding_select_modal(request):
     """時間丸めパターン選択モーダル用API"""
     search_query = request.GET.get("q", "")
-    patterns = TimeRounding.objects.filter(is_active=True)
+    patterns = TimePunch.objects.filter(is_active=True)
 
     if search_query:
         patterns = patterns.filter(name__icontains=search_query)

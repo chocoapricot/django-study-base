@@ -89,7 +89,7 @@ python manage.py dumpdata master.worktimepattern           --format=json --inden
 python manage.py dumpdata master.worktimepatternwork       --format=json --indent=4 > _sample_data/master_worktime_pattern_work.json
 python manage.py dumpdata master.worktimepatternbreak      --format=json --indent=4 > _sample_data/master_worktime_pattern_break.json
 python manage.py dumpdata master.overtimepattern           --format=json --indent=4 > _sample_data/master_overtime_pattern.json
-python manage.py dumpdata master.timerounding           --format=json --indent=4 > _sample_data/master_time_rounding.json
+python manage.py dumpdata master.timepunch           --format=json --indent=4 > _sample_data/master_time_rounding.json
 
 #   UTF16からUTF8に変更してから取り込む必要あり
 

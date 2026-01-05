@@ -6,27 +6,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('master', '0034_timerounding'),
+        ('master', '0034_timepunch'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='timerounding',
+            model_name='timepunch',
             name='break_end_unit',
             field=models.IntegerField(choices=[(1, '1分'), (5, '5分'), (10, '10分'), (15, '15分'), (30, '30分')], default=1, help_text='休憩終了時刻の丸め単位（分）', verbose_name='休憩終了時刻丸め単位'),
         ),
         migrations.AlterField(
-            model_name='timerounding',
+            model_name='timepunch',
             name='break_start_unit',
             field=models.IntegerField(choices=[(1, '1分'), (5, '5分'), (10, '10分'), (15, '15分'), (30, '30分')], default=1, help_text='休憩開始時刻の丸め単位（分）', verbose_name='休憩開始時刻丸め単位'),
         ),
         migrations.AlterField(
-            model_name='timerounding',
+            model_name='timepunch',
             name='end_time_unit',
             field=models.IntegerField(choices=[(1, '1分'), (5, '5分'), (10, '10分'), (15, '15分'), (30, '30分')], default=1, help_text='終了時刻の丸め単位（分）', verbose_name='終了時刻丸め単位'),
         ),
         migrations.AlterField(
-            model_name='timerounding',
+            model_name='timepunch',
             name='start_time_unit',
             field=models.IntegerField(choices=[(1, '1分'), (5, '5分'), (10, '10分'), (15, '15分'), (30, '30分')], default=1, help_text='開始時刻の丸め単位（分）', verbose_name='開始時刻丸め単位'),
         ),
