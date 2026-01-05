@@ -284,10 +284,12 @@ def timerecord_punch(request):
     today = now_jst.date()
     
     # 今日の有効かつ確認済みの契約を取得（複数の場合もある）
+    # ※勤怠打刻マスタの打刻方法が「打刻」のもののみ対象とする
     available_contracts = StaffContract.objects.filter(
         staff=staff, 
         start_date__lte=today,
-        contract_status=Constants.CONTRACT_STATUS.CONFIRMED
+        contract_status=Constants.CONTRACT_STATUS.CONFIRMED,
+        time_punch__punch_method=Constants.PUNCH_METHOD.PUNCH
     ).filter(
         Q(end_date__gte=today) | Q(end_date__isnull=True)
     ).order_by('start_date')
@@ -402,7 +404,8 @@ def timerecord_action(request):
                         id=contract_id,
                         staff=staff,
                         start_date__lte=today,
-                        contract_status=Constants.CONTRACT_STATUS.CONFIRMED
+                        contract_status=Constants.CONTRACT_STATUS.CONFIRMED,
+                        time_punch__punch_method=Constants.PUNCH_METHOD.PUNCH
                     )
                     # 契約の有効性を再確認
                     if contract.end_date and contract.end_date < today:
@@ -411,10 +414,12 @@ def timerecord_action(request):
                     contract = None
             else:
                 # 有効かつ確認済みの契約を取得
+                # ※勤怠打刻マスタの打刻方法が「打刻」のもののみ対象とする
                 contract = StaffContract.objects.filter(
                     staff=staff, 
                     start_date__lte=today,
-                    contract_status=Constants.CONTRACT_STATUS.CONFIRMED
+                    contract_status=Constants.CONTRACT_STATUS.CONFIRMED,
+                    time_punch__punch_method=Constants.PUNCH_METHOD.PUNCH
                 ).filter(
                     Q(end_date__gte=today) | Q(end_date__isnull=True)
                 ).first()

@@ -5,7 +5,8 @@ from apps.common.constants import (
     Constants,
     get_time_rounding_unit_choices,
     get_time_rounding_method_choices,
-    get_break_input_choices
+    get_break_input_choices,
+    get_punch_method_choices
 )
 
 
@@ -22,6 +23,14 @@ class TimePunch(MyModel):
         blank=True,
         verbose_name='説明',
         help_text='設定の詳細説明'
+    )
+    
+    punch_method = models.CharField(
+        max_length=20,
+        choices=get_punch_method_choices(),
+        default=Constants.PUNCH_METHOD.PUNCH,
+        verbose_name='打刻方法',
+        help_text='勤怠管理の打刻方法'
     )
     
     # 開始時刻丸め設定

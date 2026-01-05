@@ -137,6 +137,15 @@ class Constants:
         FLOOR = 'floor'  # 切り捨て
         CEIL = 'ceil'    # 切り上げ
 
+    # 打刻方法 (punch_method)
+    class PUNCH_METHOD:
+        PUNCH = 'punch'             # 打刻
+        E_STAFFING = 'e-staffing'   # e-staffing
+        HRMOS = 'hrmos'             # HRMOS
+        KING_OF_TIME = 'kot'        # KING OF TIME
+        TOUCH_ON_TIME = 'tot'       # Touch On Time
+        MANUAL = 'manual'           # 手入力
+
 
 # CHOICESリスト生成ヘルパー(モデルで使用)
 def get_mail_type_choices():
@@ -218,6 +227,18 @@ def get_time_rounding_method_choices():
         (Constants.TIME_ROUNDING_METHOD.ROUND, '四捨五入'),
         (Constants.TIME_ROUNDING_METHOD.FLOOR, '切り捨て'),
         (Constants.TIME_ROUNDING_METHOD.CEIL, '切り上げ'),
+    ]
+
+
+def get_punch_method_choices():
+    """打刻方法の選択肢リストを返す"""
+    return [
+        (Constants.PUNCH_METHOD.PUNCH, '打刻'),
+        (Constants.PUNCH_METHOD.E_STAFFING, 'e-staffing'),
+        (Constants.PUNCH_METHOD.HRMOS, 'HRMOS'),
+        (Constants.PUNCH_METHOD.KING_OF_TIME, 'KING OF TIME'),
+        (Constants.PUNCH_METHOD.TOUCH_ON_TIME, 'Touch On Time'),
+        (Constants.PUNCH_METHOD.MANUAL, '手入力'),
     ]
 
 

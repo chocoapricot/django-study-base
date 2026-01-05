@@ -729,7 +729,8 @@ class TimePunchForm(forms.ModelForm):
     class Meta:
         model = TimePunch
         fields = [
-            'name', 'description', 'start_time_unit', 'start_time_method',
+            'name', 'description', 'punch_method',
+            'start_time_unit', 'start_time_method',
             'end_time_unit', 'end_time_method', 'break_input',
             'break_start_unit', 'break_start_method',
             'break_end_unit', 'break_end_method',
@@ -738,6 +739,7 @@ class TimePunchForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'description': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+            'punch_method': forms.RadioSelect(attrs={'class': 'form-check-input'}),
             'start_time_unit': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'start_time_method': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'end_time_unit': forms.Select(attrs={'class': 'form-control form-control-sm'}),
@@ -758,7 +760,7 @@ class TimePunchForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         
         # 必須フィールドのラベルにアスタリスクを追加
-        required_fields = ['name', 'start_time_unit', 'start_time_method', 
+        required_fields = ['name', 'punch_method', 'start_time_unit', 'start_time_method', 
                           'end_time_unit', 'end_time_method']
         for field_name in required_fields:
             if field_name in self.fields:

@@ -32,10 +32,11 @@
             <table class="table table-sm table-hover">
                 <thead>
                     <tr>
-                        <th width="35%">名称</th>
-                        <th width="35%">丸め設定概要</th>
+                        <th width="30%">名称</th>
+                        <th width="15%">打刻方法</th>
+                        <th width="30%">丸め設定概要</th>
                         <th width="10%">状態</th>
-                        <th width="10%">表示順</th>
+                        <th width="5%">表示順</th>
                         <th width="10%">操作</th>
                     </tr>
                 </thead>
@@ -44,6 +45,9 @@
                     <tr>
                         <td>
                             <a href="{% url 'master:time_punch_edit' item.pk %}">{{ item.name|truncatechars:100 }}</a>
+                        </td>
+                        <td>
+                            {{ item.get_punch_method_display }}
                         </td>
                         <td>
                             <small class="text-muted">{{ item.get_rounding_summary }}</small>
@@ -67,7 +71,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="text-center">データが登録されていません。</td>
+                        <td colspan="6" class="text-center">データが登録されていません。</td>
                     </tr>
                     {% endfor %}
                 </tbody>
