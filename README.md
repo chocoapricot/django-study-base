@@ -92,13 +92,14 @@ django-study-base/
 └── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（106テーブル）
+## データベーステーブル一覧（108テーブル）
 
-### 本アプリケーション独自テーブル（89テーブル）
+### 本アプリケーション独自テーブル（91テーブル）
 
 | テーブル名 | モデル名 | 説明 |
 | --- | --- | --- |
 | `accounts_myuser` | `MyUser` | カスタムユーザー（メインテーブル） |
+| `apicache_apicache` | `ApiCache` | APIキャッシュ |
 | `apps_client` | `Client` | クライアント基本情報 |
 | `apps_client_contacted` | `ClientContacted` | クライアント連絡履歴 |
 | `apps_client_department` | `ClientDepartment` | クライアント部署情報 |
@@ -156,6 +157,7 @@ django-study-base/
 | `apps_master_skill` | `Skill` | 技能マスター |
 | `apps_master_staff_agreement` | `StaffAgreement` | スタッフ同意書マスター |
 | `apps_master_staff_regist_status` | `StaffRegistStatus` | スタッフ登録状況 |
+| `apps_master_time_punch` | `TimePunch` | 打刻まるめパターンマスター |
 | `apps_master_user_parameter` | `UserParameter` | 設定値マスター |
 | `apps_master_worktime_pattern` | `WorktimePattern` | 勤務時間パターンマスター |
 | `apps_master_worktime_pattern_break` | `WorktimePatternBreak` | 勤務時間パターン休憩 |
@@ -199,11 +201,10 @@ django-study-base/
 | `socialaccount_socialapp_sites` | ソーシャルアプリとサイトの関連 |
 | `socialaccount_socialtoken` | ソーシャルアカウントトークン |
 
-### Django標準・その他テーブル（12テーブル）
+### Django標準・その他テーブル（11テーブル）
 
 | テーブル名 | 説明 |
 | --- | --- |
-| `accounts_myuser` | カスタムユーザー（メインテーブル） |
 | `accounts_myuser_groups` | ユーザーとグループの関連 |
 | `accounts_myuser_user_permissions` | ユーザーと権限の関連 |
 | `auth_group` | グループ |
