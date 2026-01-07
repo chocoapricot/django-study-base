@@ -1,6 +1,7 @@
 import csv
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from allauth.account.models import EmailAddress
 from django.db import transaction
 from apps.connect.utils import (
@@ -74,11 +75,31 @@ class Command(BaseCommand):
                             # スタッフ接続承認時と同じ権限を付与
                             grant_profile_permissions(user)
                             grant_staff_contract_confirmation_permission(user)
+                            # staffグループに追加
+                            try:
+                                staff_group = Group.objects.get(name='staff')
+                                user.groups.add(staff_group)
+                            except Group.DoesNotExist:
+                                self.stdout.write(self.style.WARNING(f'Group "staff" does not exist. Skipping group assignment.'))
                             self.stdout.write(self.style.SUCCESS(f'Successfully created staff user "{username}" with permissions.'))
                         elif user_type == 'client':
                             # クライアント接続承認時と同じ権限を付与
                             grant_client_contract_confirmation_permission(user)
+                            # clientグループに追加
+                            try:
+                                client_group = Group.objects.get(name='client')
+                                user.groups.add(client_group)
+                            except Group.DoesNotExist:
+                                self.stdout.write(self.style.WARNING(f'Group "client" does not exist. Skipping group assignment.'))
                             self.stdout.write(self.style.SUCCESS(f'Successfully created client user "{username}" with permissions.'))
+                        elif user_type == 'company':
+                            # companyグループに追加
+                            try:
+                                company_group = Group.objects.get(name='company')
+                                user.groups.add(company_group)
+                            except Group.DoesNotExist:
+                                self.stdout.write(self.style.WARNING(f'Group "company" does not exist. Skipping group assignment.'))
+                            self.stdout.write(self.style.SUCCESS(f'Successfully created company user "{username}".'))
                         else:
                             # 管理者または権限付与不要なユーザー
                             self.stdout.write(self.style.SUCCESS(f'Successfully created user "{username}".'))

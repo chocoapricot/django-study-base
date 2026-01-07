@@ -7,6 +7,7 @@
 # サンプルデータファイルのリスト（読み込み順序）
 # タプル形式: (ファイルパス, 説明)
 SAMPLE_DATA_FILES = [
+    ("_sample_data/groups.json", "グループデータ"),
     ("_sample_data/dropdowns.json", "ドロップダウンデータ"),
     ("_sample_data/parameters.json", "パラメータデータ"),
     ("_sample_data/master_user_parameter.json", "ユーザーパラメータマスタデータ"),
