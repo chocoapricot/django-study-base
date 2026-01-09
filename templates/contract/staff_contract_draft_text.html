@@ -23,26 +23,7 @@
 【ドラフト版】
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-{% endif %}{{ document_title }}
-
-{% if intro_text %}{{ intro_text }}
-
-{% endif %}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-契約内容
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-{% for item in items %}
-■ {{ item.title }}
-{{ item.text }}
-{% endfor %}{% if postamble_text %}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-{{ postamble_text }}
-{% endif %}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-契約番号: {{ contract.contract_number|default:"未採番" }}
-契約名: {{ contract.contract_name }}
-スタッフ: {{ contract.staff.name_last }} {{ contract.staff.name_first }}
+{% endif %}{{ contract_text }}
 </pre>
     </div>
 </div>

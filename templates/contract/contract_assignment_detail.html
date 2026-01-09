@@ -54,12 +54,17 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a class="dropdown-item" href="{% url 'contract:assignment_employment_conditions_pdf' assignment_pk=assignment.pk %}" target="_blank">
-                                    <i class="bi bi-file-earmark-text me-2"></i>就業条件明示書（ドラフト）
+                                    <i class="bi bi-file-earmark-text me-2"></i>就業条件明示書(ドラフト)
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'contract:assignment_employment_conditions_text' assignment_pk=assignment.pk %}" target="_blank">
                                     <i class="bi bi-file-text me-2"></i>就業条件明示書(テキスト表示)
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'contract:assignment_ai_check' assignment_pk=assignment.pk %}">
+                                    <i class="bi bi-robot me-2"></i>就業条件明示書(AI確認)
                                 </a>
                             </li>
                         </ul>

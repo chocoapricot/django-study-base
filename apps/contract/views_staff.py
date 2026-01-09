@@ -1041,112 +1041,21 @@ def staff_contract_draft_pdf(request, pk):
 @permission_required('contract.view_staffcontract', raise_exception=True)
 def staff_contract_draft_text(request, pk):
     """スタッフ契約書のドラフトをテキスト形式で表示する"""
-    from .utils import get_contract_pdf_title, format_worktime_pattern, format_insurance_status
+    from .utils import get_contract_pdf_title
+    from .text_utils import generate_staff_contract_full_text
     
     contract = get_object_or_404(StaffContract, pk=pk)
     
     # 契約書タイトル
     pdf_title = get_contract_pdf_title(contract)
     
-    # 契約情報の準備
-    start_date_str = contract.start_date.strftime('%Y年%m月%d日')
-    end_date_str = contract.end_date.strftime('%Y年%m月%d日') if contract.end_date else "無期限"
-    contract_period = f"{start_date_str}　～　{end_date_str}"
-    
-    # 給与単位名を取得
-    pay_unit_name = ""
-    if contract.pay_unit:
-        from apps.system.settings.models import Dropdowns
-        try:
-            dropdown = Dropdowns.objects.get(category='pay_unit', value=contract.pay_unit)
-            pay_unit_name = dropdown.name
-        except Dropdowns.DoesNotExist:
-            pass
-    
-    # 契約金額テキスト
-    contract_amount_text = "N/A"
-    if contract.contract_amount is not None:
-        contract_amount_text = f"{contract.contract_amount:,}円"
-        if pay_unit_name:
-            contract_amount_text = f"{pay_unit_name} {contract_amount_text}"
-    
-    # 基本項目
-    items = [
-        {"title": "契約番号", "text": str(contract.contract_number or "")},
-        {"title": "契約名", "text": str(contract.contract_name)},
-        {"title": "スタッフ名", "text": f"{contract.staff.name_last} {contract.staff.name_first}"},
-        {"title": "契約期間", "text": contract_period},
-        {"title": "契約金額", "text": contract_amount_text},
-        {"title": "就業場所", "text": str(contract.work_location or "")},
-        {"title": "業務内容", "text": str(contract.business_content or "")},
-    ]
-    
-    # 就業時間
-    worktime_text = format_worktime_pattern(contract.worktime_pattern)
-    if worktime_text:
-        items.append({"title": "就業時間", "text": worktime_text})
-    
-    # 備考
-    items.append({"title": "備考", "text": str(contract.notes or "")})
-    
-    # 契約パターンの文言を追加
-    intro_text = ""
-    postamble_text = ""
-    
-    if contract.contract_pattern:
-        from apps.company.models import Company
-        import re
-        
-        # プレースホルダーの準備
-        company = Company.objects.first()
-        replacements = {
-            "{{company_name}}": company.name if company else "",
-            "{{staff_name}}": f"{contract.staff.name_last} {contract.staff.name_first}",
-        }
-        
-        def replace_placeholders(text):
-            text = str(text) if text is not None else ""
-            for key, value in replacements.items():
-                placeholder = key.strip('{}').strip()
-                pattern = re.compile(r'{{\s*' + re.escape(placeholder) + r'\s*}}')
-                text = pattern.sub(value, text)
-            return text
-        
-        terms = contract.contract_pattern.terms.all().order_by('display_position', 'display_order')
-        
-        preamble_terms = [term for term in terms if term.display_position == 1]
-        body_terms = [term for term in terms if term.display_position == 2]
-        postamble_terms = [term for term in terms if term.display_position == 3]
-        
-        if preamble_terms:
-            preamble_text_parts = [replace_placeholders(term.contract_terms) for term in preamble_terms]
-            intro_text = "\n\n".join(preamble_text_parts)
-        
-        if body_terms:
-            # 備考の前に契約文言を挿入
-            notes_index = -1
-            for i, item in enumerate(items):
-                if item["title"] == "備考":
-                    notes_index = i
-                    break
-            
-            term_items = [{"title": str(term.contract_clause), "text": replace_placeholders(term.contract_terms)} for term in body_terms]
-            
-            if notes_index != -1:
-                items[notes_index:notes_index] = term_items
-            else:
-                items.extend(term_items)
-        
-        if postamble_terms:
-            postamble_text_parts = [replace_placeholders(term.contract_terms) for term in postamble_terms]
-            postamble_text = "\n\n".join(postamble_text_parts)
+    # 共通ロジックでテキスト生成
+    full_contract_text = generate_staff_contract_full_text(contract)
     
     context = {
         'contract': contract,
         'document_title': pdf_title,
-        'intro_text': intro_text,
-        'items': items,
-        'postamble_text': postamble_text,
+        'contract_text': full_contract_text,
     }
     
     return render(request, 'contract/staff_contract_draft_text.html', context)
@@ -1643,3 +1552,54 @@ def download_staff_contract_pdf(request, pk):
         return response
     except Exception as e:
         raise Http404(f"PDFファイルの読み込みに失敗しました: {str(e)}")
+
+
+@login_required
+@permission_required('contract.view_staffcontract', raise_exception=True)
+def staff_contract_ai_check(request, pk):
+    """
+    スタッフ契約（雇用契約書兼労働条件通知書）の内容をAIでチェックする
+    """
+    from apps.master.models import UserParameter
+    from apps.common.gemini_utils import call_gemini_api
+    from .text_utils import generate_staff_contract_full_text
+    
+    contract = get_object_or_404(StaffContract, pk=pk)
+    
+    # テキスト生成（共通ロジック使用）
+    full_contract_text = generate_staff_contract_full_text(contract)
+    
+    # --- AIチェック処理 ---
+    ai_response = None
+    error_message = None
+    
+    if request.method == 'POST':
+        # プロンプトテンプレート取得
+        prompt_template_param = UserParameter.objects.filter(pk='GEMINI_PROMPT_TEMPLATE').first()
+        prompt_template = prompt_template_param.value if prompt_template_param else ""
+        
+        if not prompt_template:
+            # デフォルトプロンプト
+            prompt_template = "あなたは日本の労働法に詳しい社労士です。以下の雇用契約書兼労働条件通知書の内容を確認し、法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\n\n【契約内容】\n{{contract_text}}"
+            
+        # プレースホルダー置換
+        final_prompt = prompt_template.replace('{{contract_text}}', full_contract_text)
+        
+        # API呼び出し
+        result = call_gemini_api(final_prompt)
+        
+        if result['success']:
+            import markdown
+            # MarkdownをHTMLに変換（nl2br拡張を使用して改行を保持）
+            ai_response = markdown.markdown(result['text'], extensions=['nl2br', 'fenced_code', 'tables'])
+        else:
+            error_message = result['error']
+    
+    context = {
+        'contract': contract,
+        'ai_response': ai_response,
+        'error_message': error_message,
+        'full_contract_text': full_contract_text, 
+    }
+    
+    return render(request, 'contract/staff_contract_ai_check.html', context)

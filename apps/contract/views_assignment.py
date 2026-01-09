@@ -1465,3 +1465,57 @@ def assignment_employment_conditions_text(request, assignment_pk):
     }
     
     return render(request, 'contract/assignment_employment_conditions_text.html', context)
+@login_required
+@permission_required('contract.view_staffcontract', raise_exception=True)
+def assignment_ai_check(request, assignment_pk):
+    """
+    就業条件明示書の内容をAIでチェックする
+    """
+    from apps.master.models import UserParameter
+    from apps.common.gemini_utils import call_gemini_api
+    from .text_utils import generate_assignment_employment_conditions_full_text
+    
+    assignment = get_object_or_404(
+        ContractAssignment.objects.select_related(
+            'client_contract', 'staff_contract__staff'
+        ),
+        pk=assignment_pk
+    )
+    
+    # テキスト生成
+    full_contract_text = generate_assignment_employment_conditions_full_text(assignment)
+    
+    # --- AIチェック処理 ---
+    ai_response = None
+    error_message = None
+    
+    if request.method == 'POST':
+        # プロンプトテンプレート取得
+        prompt_template_param = UserParameter.objects.filter(pk='GEMINI_PROMPT_TEMPLATE_ASSIGNMENT').first()
+        prompt_template = prompt_template_param.value if prompt_template_param else ""
+        
+        if not prompt_template:
+            # デフォルトプロンプト
+            prompt_template = "あなたは日本の労働法に詳しい社労士です。以下の就業条件明示書の内容を確認し、労働者派遣法等の法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\n\n【契約内容】\n{{contract_text}}"
+            
+        # プレースホルダー置換
+        final_prompt = prompt_template.replace('{{contract_text}}', full_contract_text)
+        
+        # API呼び出し
+        result = call_gemini_api(final_prompt)
+        
+        if result['success']:
+            import markdown
+            # MarkdownをHTMLに変換
+            ai_response = markdown.markdown(result['text'], extensions=['nl2br', 'fenced_code', 'tables'])
+        else:
+            error_message = result['error']
+    
+    context = {
+        'assignment': assignment,
+        'ai_response': ai_response,
+        'error_message': error_message,
+        'full_contract_text': full_contract_text, 
+    }
+    
+    return render(request, 'contract/assignment_ai_check.html', context)
