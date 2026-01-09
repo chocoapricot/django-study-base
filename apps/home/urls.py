@@ -12,4 +12,7 @@ urlpatterns = [
     path('setup/start/', views.setup_start, name='setup_start'),
     path('setup/process/<str:task_id>/', views.setup_process, name='setup_process'),
     path('setup/progress/<str:task_id>/', views.setup_progress, name='setup_progress'),
+
+    # データ削除
+    path('start/delete_data/', views.delete_application_data, name='delete_application_data'),
 ]
