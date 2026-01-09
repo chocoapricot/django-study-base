@@ -81,6 +81,16 @@
             <h1 class="h4 mb-0 fw-bold">django study base</h1>
           </div>
           <div class="card-body">
+            {% if messages %}
+              <div class="mb-3">
+                {% for message in messages %}
+                  <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
             <p class="text-muted text-center mb-4">
               サンプルデータを使用して、システムの機能を体験できます。
             </p>
@@ -180,6 +190,27 @@
               </div>
             </div>
 
+            <hr class="my-4 text-muted opacity-25">
+
+            <!-- Step 3 -->
+            <div class="mb-4">
+                <h5 class="fw-bold mb-3 d-flex align-items-center">
+                    <span class="step-badge">3</span>データ削除
+                </h5>
+                <div class="ps-4">
+                    <p class="small text-muted mb-2">
+                        システム内のサンプルデータをすべて削除し、初期状態に戻します。<br>
+                        マスターデータやパラメータ、管理者アカウントは削除されません。
+                    </p>
+                    <form id="delete-data-form" method="post" action="{% url 'home:delete_application_data' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            <i class="bi bi-trash me-1"></i>データ削除を実行
+                        </button>
+                    </form>
+                </div>
+            </div>
+
           </div>
           <div class="card-footer bg-transparent text-center border-0 py-3">
             <small class="text-muted">&copy; 2025 django study base</small>
@@ -198,6 +229,16 @@
     const elapsedTimeEl = document.getElementById('elapsed-time');
     const estimatedTimeEl = document.getElementById('estimated-time');
     const resultContainer = document.getElementById('result-container');
+
+    // データ削除フォームの処理
+    const deleteDataForm = document.getElementById('delete-data-form');
+    if (deleteDataForm) {
+        deleteDataForm.addEventListener('submit', function(event) {
+            if (!confirm('本当にすべてのデータを削除しますか？\nこの操作は元に戻せません。')) {
+                event.preventDefault();
+            }
+        });
+    }
 
     setupButton.addEventListener('click', function() {
       // 確認ダイアログを表示

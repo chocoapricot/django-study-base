@@ -198,3 +198,109 @@ def setup_progress(request, task_id):
         return JsonResponse({'error': '無効なタスクIDです'}, status=400)
     
     return JsonResponse(task.to_dict())
+
+
+from django.views.decorators.http import require_POST
+from django.db import transaction
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import user_passes_test
+from apps.staff.models import Staff
+from apps.client.models import Client, ClientDepartment, ClientUser, ClientContacted, ClientFile
+from apps.connect.models import (
+    ConnectStaff, ConnectClient, ConnectStaffAgree,
+    MynumberRequest, ProfileRequest, BankRequest,
+    ContactRequest, ConnectInternationalRequest, DisabilityRequest
+)
+from apps.contract.models import (
+    ContractAssignment, ClientContract, StaffContract,
+    ClientContractNumber, StaffContractNumber, StaffContractTeishokubi,
+    ClientContractPrint, StaffContractPrint, ContractAssignmentConfirm,
+    ContractAssignmentHaken, ContractAssignmentHakenPrint,
+)
+from apps.kintai.models import (
+    StaffTimesheet, StaffTimecard, StaffTimerecord, StaffTimerecordBreak
+)
+from apps.system.logs.models import MailLog, AppLog, AccessLog
+from apps.accounts.models import MyUser
+from apps.profile.models import StaffProfile, StaffProfileQualification, StaffProfileSkill, StaffProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact
+
+@require_POST
+@user_passes_test(lambda u: u.is_superuser)
+def delete_application_data(request):
+    """
+    マスターデータと管理者アカウントを除く、すべてのアプリケーションデータを削除する。
+    """
+    try:
+        with transaction.atomic():
+            # 外部キー制約を考慮し、依存関係の末端から削除していく
+
+            # 1. 契約アサイン関連 (ContractAssignmentがClient/StaffContractを参照)
+            ContractAssignmentHakenPrint.objects.all().delete()
+            ContractAssignmentHaken.objects.all().delete()
+            ContractAssignmentConfirm.objects.all().delete()
+            ContractAssignment.objects.all().delete()
+
+            # 2. 契約書印刷履歴
+            ClientContractPrint.objects.all().delete()
+            StaffContractPrint.objects.all().delete()
+
+            # 3. 勤怠データ (StaffTimesheet/StaffTimecardがStaffContractを参照)
+            StaffTimerecordBreak.objects.all().delete()
+            StaffTimerecord.objects.all().delete()
+            StaffTimecard.objects.all().delete()
+            StaffTimesheet.objects.all().delete()
+
+            # 4. 契約本体
+            ClientContract.objects.all().delete()
+            StaffContract.objects.all().delete()
+
+            # 5. 接続申請関連 (ConnectStaffがStaffを参照)
+            MynumberRequest.objects.all().delete()
+            ProfileRequest.objects.all().delete()
+            BankRequest.objects.all().delete()
+            ContactRequest.objects.all().delete()
+            ConnectInternationalRequest.objects.all().delete()
+            DisabilityRequest.objects.all().delete()
+            ConnectStaffAgree.objects.all().delete()
+            ConnectStaff.objects.all().delete()
+            ConnectClient.objects.all().delete()
+
+            # 6. クライアント関連データ (ClientUserなどがClientを参照)
+            ClientFile.objects.all().delete()
+            ClientContacted.objects.all().delete()
+            ClientUser.objects.all().delete()
+            ClientDepartment.objects.all().delete()
+            Client.objects.all().delete()
+
+            # 7. スタッフプロフィール関連 (StaffProfileがUserを参照)
+            StaffProfileQualification.objects.all().delete()
+            StaffProfileSkill.objects.all().delete()
+            StaffProfileMynumber.objects.all().delete()
+            StaffProfileInternational.objects.all().delete()
+            StaffProfileBank.objects.all().delete()
+            StaffProfileDisability.objects.all().delete()
+            StaffProfileContact.objects.all().delete()
+            StaffProfile.objects.all().delete()
+
+            # 8. スタッフ本体
+            Staff.objects.all().delete()
+
+            # 9. ログデータ
+            MailLog.objects.all().delete()
+            AppLog.objects.all().delete()
+            AccessLog.objects.all().delete()
+
+            # 10. 独立したテーブル
+            ClientContractNumber.objects.all().delete()
+            StaffContractNumber.objects.all().delete()
+            StaffContractTeishokubi.objects.all().delete()
+
+            # 11. 管理者以外のアカウント
+            MyUser.objects.filter(is_superuser=False).delete()
+
+        messages.success(request, "アプリケーションデータを削除しました。")
+    except Exception as e:
+        messages.error(request, f"データの削除中にエラーが発生しました: {e}")
+
+    return redirect('home:start_page')
