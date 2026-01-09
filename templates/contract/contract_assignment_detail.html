@@ -57,6 +57,11 @@
                                     <i class="bi bi-file-earmark-text me-2"></i>就業条件明示書（ドラフト）
                                 </a>
                             </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'contract:assignment_employment_conditions_text' assignment_pk=assignment.pk %}" target="_blank">
+                                    <i class="bi bi-file-text me-2"></i>就業条件明示書(テキスト表示)
+                                </a>
+                            </li>
                         </ul>
                     </div>
                     {% endif %}
