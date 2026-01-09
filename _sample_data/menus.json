@@ -142,7 +142,7 @@
         "level": 0,
         "exact_match": true,
         "required_permission": "master.view_qualification",
-        "disp_seq": 60,
+        "disp_seq": 90,
         "active": true
     }
 },
