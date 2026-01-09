@@ -680,10 +680,7 @@ class UserParameterForm(forms.ModelForm):
             self.fields['format'].widget.attrs['style'] = 'pointer-events: none; background-color: #e9ecef;'
             
             if self.instance.format == 'text':
-                self.fields['value'].widget.attrs.update({
-                    'rows': '1',
-                    'style': 'resize: none;'
-                })
+                self.fields['value'].widget = forms.TextInput(attrs={'class': 'form-control form-control-sm'})
             elif self.instance.format == 'boolean':
                 # boolean形式の場合はラジオボタンに変更
                 self.fields['value'] = forms.ChoiceField(
