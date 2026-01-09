@@ -1,6 +1,7 @@
 import requests
 import json
 from apps.master.models import UserParameter
+from apps.system.settings.utils import my_parameter
 
 def call_gemini_api(prompt_text):
     """
@@ -9,13 +10,12 @@ def call_gemini_api(prompt_text):
     # 設定値を取得
     try:
         api_key_param = UserParameter.objects.filter(pk='GEMINI_API_KEY').first()
-        api_url_param = UserParameter.objects.filter(pk='GEMINI_API_URL').first()
+        api_url = my_parameter('GEMINI_API_URL')
         
-        if not api_key_param or not api_url_param:
-             return {"success": False, "error": "GEMINI_API_KEY または GEMINI_API_URL が設定値マスタに設定されていません。"}
+        if not api_key_param or not api_url:
+             return {"success": False, "error": "GEMINI_API_KEYが設定値マスタに設定されていないか、GEMINI_API_URLがパラメータに設定されていません。"}
 
         api_key = api_key_param.value
-        api_url = api_url_param.value
         
     except Exception as e:
          return {"success": False, "error": f"設定取得エラー: {str(e)}"}

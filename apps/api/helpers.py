@@ -5,6 +5,7 @@ import re
 from django.utils import timezone
 from apps.system.apicache.utils import get_api_cache, set_api_cache
 from apps.system.settings.utils import my_parameter
+from apps.master.models import UserParameter
 
 def fetch_company_info(corporate_number):
     # キャッシュをチェック
@@ -15,8 +16,11 @@ def fetch_company_info(corporate_number):
 
     base_url = my_parameter("GBIZ_API_PATH",'https://info.gbiz.go.jp/hojin/v1/hojin/')
     url = f"{ base_url }{corporate_number}"
+    token_param = UserParameter.objects.filter(pk='GBIZ_API_TOKEN').first()
+    api_token = token_param.value if token_param and token_param.value else 'riGQUpnKTLCx8a9aCeyw7Gp4Hq3SJ2zs'
+
     headers = {
-        "X-hojinInfo-api-token": my_parameter("GBIZ_API_TOKEN",'riGQUpnKTLCx8a9aCeyw7Gp4Hq3SJ2zs')
+        "X-hojinInfo-api-token": api_token
     }
     response = requests.get(url, headers=headers)
     # APIのレスポンスを確認
