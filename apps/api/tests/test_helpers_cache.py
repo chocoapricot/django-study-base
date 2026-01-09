@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock
 from ..helpers import fetch_company_info, fetch_zipcode
 from apps.system.apicache.models import ApiCache
 from apps.system.settings.models import Parameter
+from apps.master.models import UserParameter
 
 class ApiHelpersCacheTest(TestCase):
     """APIヘルパーのキャッシュ動作テスト"""
@@ -10,7 +11,7 @@ class ApiHelpersCacheTest(TestCase):
     def setUp(self):
         # 必要なパラメータを設定
         Parameter.objects.create(key="GBIZ_API_PATH", value="https://example.com/gbiz/", active=True)
-        Parameter.objects.create(key="GBIZ_API_TOKEN", value="test_token", active=True)
+        UserParameter.objects.create(pk="GBIZ_API_TOKEN", value="test_token")
         Parameter.objects.create(key="ZIPCODE_API_PATH", value="https://example.com/zipcode/", active=True)
         Parameter.objects.create(key="API_CACHE_VALIDITY_PERIOD", value="3600", active=True)
 
