@@ -65,16 +65,42 @@
 
 <!-- 確認対象テキスト用の別カード -->
 <div class="content-box card bg-light mb-4" style="max-width: 100%;">
-    <div class="card-header">
-        <i class="bi bi-file-text me-2"></i>確認対象の契約テキスト
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-file-text me-2"></i>確認対象の契約テキスト</span>
+        <button id="copyButton" onclick="copyToClipboard(event)" class="btn btn-sm btn-primary">
+            <i class="bi bi-clipboard"></i> コピー
+        </button>
     </div>
     <div class="card-body">
-        <pre style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; white-space: pre-wrap; font-size: 0.9em; border: 1px solid #dee2e6;">{{ full_contract_text }}</pre>
+        <pre id="contractText" style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; white-space: pre-wrap; font-size: 0.9em; border: 1px solid #dee2e6;">{% if assignment.staff_contract.contract_status == '10' or assignment.staff_contract.contract_status == '20' %}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【ドラフト版】
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+{% endif %}{{ full_contract_text }}</pre>
     </div>
 </div>
 
 
 <script>
+function copyToClipboard(event) {
+    const text = document.getElementById('contractText').textContent;
+    const btn = event.currentTarget;
+    
+    navigator.clipboard.writeText(text).then(function() {
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-check"></i> コピー完了';
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-success');
+        setTimeout(function() {
+            btn.innerHTML = originalHTML;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-primary');
+        }, 3000);
+    }, function(err) {
+        alert('コピーに失敗しました: ' + err);
+    });
+}
+
     document.addEventListener('DOMContentLoaded', function() {
         const forms = document.querySelectorAll('form');
         forms.forEach(function(form) {

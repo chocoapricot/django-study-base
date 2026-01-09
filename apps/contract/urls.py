@@ -43,7 +43,6 @@ urlpatterns = [
     path('staff/confirm_list/', views.staff_contract_confirm_list, name='staff_contract_confirm_list'),
     path('staff/<int:pk>/pdf/', views.staff_contract_pdf, name='staff_contract_pdf'),
     path('staff/<int:pk>/draft_pdf/', views.staff_contract_draft_pdf, name='staff_contract_draft_pdf'),
-    path('staff/<int:pk>/draft_text/', views.staff_contract_draft_text, name='staff_contract_draft_text'),
     path('staff/<int:pk>/ai_check/', views.staff_contract_ai_check, name='staff_contract_ai_check'),
     path('staff/export/', views.staff_contract_export, name='staff_contract_export'),
     path('staff/expire_list/', views.staff_contract_expire_list, name='staff_contract_expire_list'),
@@ -94,7 +93,6 @@ urlpatterns = [
     # アサイン情報詳細画面
     path('assignment/<int:assignment_pk>/detail/', views.contract_assignment_detail, name='contract_assignment_detail'),
     path('assignment/<int:assignment_pk>/employment-conditions-issue/', views.assignment_employment_conditions_issue, name='assignment_employment_conditions_issue'),
-    path('assignment/<int:assignment_pk>/employment-conditions-text/', views.assignment_employment_conditions_text, name='assignment_employment_conditions_text'),
     path('assignment/<int:assignment_pk>/ai_check/', views.assignment_ai_check, name='assignment_ai_check'),
     path('view/assignment-haken-print/<int:pk>/', views.view_assignment_haken_print_pdf, name='view_assignment_haken_print_pdf'),
     path('download/assignment-haken-print/<int:pk>/', views.download_assignment_haken_print_pdf, name='download_assignment_haken_print_pdf'),

@@ -1039,30 +1039,6 @@ def staff_contract_draft_pdf(request, pk):
 
 @login_required
 @permission_required('contract.view_staffcontract', raise_exception=True)
-def staff_contract_draft_text(request, pk):
-    """スタッフ契約書のドラフトをテキスト形式で表示する"""
-    from .utils import get_contract_pdf_title
-    from .text_utils import generate_staff_contract_full_text
-    
-    contract = get_object_or_404(StaffContract, pk=pk)
-    
-    # 契約書タイトル
-    pdf_title = get_contract_pdf_title(contract)
-    
-    # 共通ロジックでテキスト生成
-    full_contract_text = generate_staff_contract_full_text(contract)
-    
-    context = {
-        'contract': contract,
-        'document_title': pdf_title,
-        'contract_text': full_contract_text,
-    }
-    
-    return render(request, 'contract/staff_contract_draft_text.html', context)
-
-
-@login_required
-@permission_required('contract.view_staffcontract', raise_exception=True)
 def staff_contract_export(request):
     """スタッフ契約データのエクスポート（CSV/Excel）"""
     search_query = request.GET.get('q', '')
