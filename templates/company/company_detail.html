@@ -8,11 +8,11 @@
 <style>
     .seal-container {
         position: relative;
-        width: 80px;
-        height: 80px;
+        width: 100px;
+        height: 100px;
         border: 1px solid #ddd;
         background: #fff;
-        border-radius: 4px;
+        border-radius: 0;
         overflow: hidden;
         display: flex;
         align-items: center;
@@ -55,144 +55,156 @@
     <div class="card-header">会社基本情報</div>
     <div class="card-body">
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-4">
+            <div class="col-sm-12">
                 <h4>{{ company.name }}</h4>
             </div>
         </div>
 
-        {% if company.corporate_number %}
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end">
-                <strong>法人番号</strong>
-            </div>
-            <div class="col-sm-4">
-                <span class="copy-target">{{ company.corporate_number }}</span>
-                <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
-                <span class="copy-message">コピーしました!</span>
-            </div>
-        </div>
-        {% endif %}
-
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end">
-                <strong>代表者</strong>
-            </div>
-            <div class="col-sm-4">
-                {{ company.representative }}
-            </div>
-            <div class="col-sm-1 text-start text-md-end">
-                <strong>会社印</strong>
-            </div>
-            <div class="col-sm-4 d-flex gap-4">
-                <div class="text-center">
-                    <div class="seal-container mb-1" {% if company.round_seal %}data-bs-toggle="modal" data-bs-target="#viewRoundSealModal" style="cursor: pointer;"{% endif %}>
-                        {% if company.round_seal %}
-                        <img src="{{ company.round_seal.url }}?v={% now "U" %}" style="max-width: 100%; max-height: 100%;">
-                        {% else %}
-                        <div class="text-muted d-flex align-items-center justify-content-center small" style="height: 100%;">未登録</div>
-                        {% endif %}
-                        <div class="seal-overlay">
-                            <button type="button" class="btn btn-sm btn-primary" onclick="event.stopPropagation(); openSealUpload('round')" title="登録/変更"><i class="bi bi-upload"></i></button>
-                            {% if company.round_seal %}
-                            <button type="button" class="btn btn-sm btn-dark" onclick="event.stopPropagation(); deleteSeal('round')" title="削除"><i class="bi bi-trash"></i></button>
-                            {% endif %}
-                        </div>
+        <div class="row">
+            <!-- 左カラム: 基本・連絡先情報 -->
+            <div class="col-lg-6">
+                {% if company.corporate_number %}
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>法人番号</strong>
                     </div>
-                    <span class="small">丸印</span>
-                </div>
-                <div class="text-center">
-                    <div class="seal-container mb-1" {% if company.square_seal %}data-bs-toggle="modal" data-bs-target="#viewSquareSealModal" style="cursor: pointer;"{% endif %}>
-                        {% if company.square_seal %}
-                        <img src="{{ company.square_seal.url }}?v={% now "U" %}" style="max-width: 100%; max-height: 100%;">
-                        {% else %}
-                        <div class="text-muted d-flex align-items-center justify-content-center small" style="height: 100%;">未登録</div>
-                        {% endif %}
-                        <div class="seal-overlay">
-                            <button type="button" class="btn btn-sm btn-primary" onclick="event.stopPropagation(); openSealUpload('square')" title="登録/変更"><i class="bi bi-upload"></i></button>
-                            {% if company.square_seal %}
-                            <button type="button" class="btn btn-sm btn-dark" onclick="event.stopPropagation(); deleteSeal('square')" title="削除"><i class="bi bi-trash"></i></button>
-                            {% endif %}
-                        </div>
+                    <div class="col-sm-8">
+                        <span class="copy-target">{{ company.corporate_number }}</span>
+                        <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
+                        <span class="copy-message">コピーしました!</span>
                     </div>
-                    <span class="small">角印</span>
                 </div>
-            </div>
-        </div>
-
-        {% if company.postal_code or company.address %}
-        <div class="row mb-3 align-items-top">
-            <div class="col-sm-2 text-start text-md-end">
-                <strong>住所</strong>
-            </div>
-            <div class="col-sm-4">
-                {% if company.postal_code %}〒 {{ company.postal_code }}<br/>{% endif %}
-                {{ company.address }}
-                {% if company.address %}
-                <a href="{% parameter 'GOOGLE_MAPS_SEARCH_URL_BASE' %}{{ company.address|urlencode }}" target="_blank" class="text-decoration-none" style="color:green;margin-left: 5px;" aria-label="Googleマップで開く">
-                    <i class="bi bi-box-arrow-up-right"></i>
-                </a>
                 {% endif %}
+
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>代表者</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        {{ company.representative }}
+                    </div>
+                </div>
+
+                {% if company.postal_code or company.address %}
+                <div class="row mb-3 align-items-start">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>住所</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        {% if company.postal_code %}〒 {{ company.postal_code }}<br/>{% endif %}
+                        {{ company.address }}
+                        {% if company.address %}
+                        <a href="{% parameter 'GOOGLE_MAPS_SEARCH_URL_BASE' %}{{ company.address|urlencode }}" target="_blank" class="text-decoration-none" style="color:green;margin-left: 5px;" aria-label="Googleマップで開く">
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if company.phone_number %}
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>電話番号</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        <span class="copy-target">{{ company.phone_number }}</span>
+                        <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
+                        <span class="copy-message">コピーしました!</span>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="row mb-1 align-items-center">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>許可番号(派遣)</strong>
+                        {% my_help_icon "労働者派遣事業 厚生労働大臣許可番号" %}
+                    </div>
+                    <div class="col-sm-8">
+                        <span class="copy-target">{{ company.haken_permit_number }}</span>
+                        <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
+                    </div>
+                </div>
+
+                <div class="row mb-1 align-items-center">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>待遇決定方式</strong>
+                        {% my_help_icon "派遣労働者の待遇決定方式を選択してください。派遣先通知書に反映されます。" %}
+                    </div>
+                    <div class="col-sm-8">
+                        {{ company.get_dispatch_treatment_method_display }}
+                    </div>
+                </div>
+
+                <div class="row mb-1 align-items-center">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>許可番号(紹介)</strong>
+                        {% my_help_icon "有料職業紹介事業許可証 許可番号" %}
+                    </div>
+                    <div class="col-sm-8">
+                        <span class="copy-target">{{ company.shokai_permit_number }}</span>
+                        <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
+                    </div>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>登録番号(特技)</strong>
+                        {% my_help_icon "特定技能外国人受入れに関する登録支援機関 登録番号" %}
+                    </div>
+                    <div class="col-sm-8">
+                        <span class="copy-target">{{ company.foreign_regist_number }}</span>
+                        <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右カラム: 印影・許可証情報 -->
+            <div class="col-lg-6">
+                <div class="row mb-3 align-items-start">
+                    <div class="col-sm-4 text-start text-md-end">
+                        <strong>会社印</strong>
+                    </div>
+                    <div class="col-sm-8 d-flex gap-4">
+                        <div class="text-center">
+                            <div class="seal-container mb-1" {% if company.round_seal %}onclick="viewSeal('round')" style="cursor: pointer;"{% endif %}>
+                                {% if company.round_seal %}
+                                <img src="{{ company.round_seal.url }}?v={% now "U" %}" style="max-width: 100%; max-height: 100%;">
+                                {% else %}
+                                <div class="text-muted d-flex align-items-center justify-content-center small" style="height: 100%;">未登録</div>
+                                {% endif %}
+                                <div class="seal-overlay">
+                                    <button type="button" class="btn btn-sm btn-primary" onclick="event.stopPropagation(); openSealUpload('round')" title="登録/変更"><i class="bi bi-upload"></i></button>
+                                    {% if company.round_seal %}
+                                    <button type="button" class="btn btn-sm btn-dark" onclick="event.stopPropagation(); deleteSeal('round')" title="削除"><i class="bi bi-trash"></i></button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <span class="small">丸印</span>
+                        </div>
+                        <div class="text-center">
+                            <div class="seal-container mb-1" {% if company.square_seal %}onclick="viewSeal('square')" style="cursor: pointer;"{% endif %}>
+                                {% if company.square_seal %}
+                                <img src="{{ company.square_seal.url }}?v={% now "U" %}" style="max-width: 100%; max-height: 100%;">
+                                {% else %}
+                                <div class="text-muted d-flex align-items-center justify-content-center small" style="height: 100%;">未登録</div>
+                                {% endif %}
+                                <div class="seal-overlay">
+                                    <button type="button" class="btn btn-sm btn-primary" onclick="event.stopPropagation(); openSealUpload('square')" title="登録/変更"><i class="bi bi-upload"></i></button>
+                                    {% if company.square_seal %}
+                                    <button type="button" class="btn btn-sm btn-dark" onclick="event.stopPropagation(); deleteSeal('square')" title="削除"><i class="bi bi-trash"></i></button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <span class="small">角印</span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
-        {% endif %}
 
-        {% if company.phone_number %}
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end">
-                <strong>電話番号</strong>
-            </div>
-            <div class="col-sm-4">
-                <span class="copy-target">{{ company.phone_number }}</span>
-                <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
-                <span class="copy-message">コピーしました!</span>
-            </div>
-        </div>
-        {% endif %}
-
-        <div class="row mb-1 align-items-center">
-            <div class="col-sm-2 text-start text-md-end">
-                <strong>許可番号(人材派遣)</strong>
-                {% my_help_icon "労働者派遣事業 厚生労働大臣許可番号" %}
-            </div>
-            <div class="col-sm-2">
-                <span class="copy-target">{{ company.haken_permit_number }}</span>
-                <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
-                <span class="copy-message">コピーしました!</span>
-            </div>
-            <div class="col-sm-2 text-start text-md-end">
-                <strong>派遣待遇決定方式</strong>
-                {% my_help_icon "派遣労働者の待遇決定方式を選択してください。派遣先通知書に反映されます。" %}
-            </div>
-            <div class="col-sm-4">
-                {{ company.get_dispatch_treatment_method_display }}
-            </div>
-        </div>
-
-        <div class="row mb-1 align-items-center">
-            <div class="col-sm-2 text-start text-md-end">
-                <strong>許可番号(職業紹介)</strong>
-                {% my_help_icon "有料職業紹介事業許可証 許可番号" %}
-            </div>
-            <div class="col-sm-2">
-                <span class="copy-target">{{ company.shokai_permit_number }}</span>
-                <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
-                <span class="copy-message">コピーしました!</span>
-            </div>
-        </div>
-
-        <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end">
-                <strong>登録番号(特定技能)</strong>
-                {% my_help_icon "特定技能外国人受入れに関する登録支援機関 登録番号" %}
-            </div>
-            <div class="col-sm-2">
-                <span class="copy-target">{{ company.foreign_regist_number }}</span>
-                <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
-                <span class="copy-message">コピーしました!</span>
-            </div>
-        </div>
-
-        <div class="d-flex justify-content-start">
+        <div class="d-flex justify-content-start mt-3">
             <a href="{% url 'company:company_edit' %}" class="btn btn-sm btn-primary me-2">編集</a>
         </div>
     </div>
@@ -379,6 +391,15 @@
         if (confirm(`${type === 'round' ? '丸印' : '角印'}を削除しますか？`)) {
             document.getElementById('id_delete_seal_type').value = type;
             document.getElementById('deleteSealForm').submit();
+        }
+    }
+
+    function viewSeal(type) {
+        const modalId = type === 'round' ? 'viewRoundSealModal' : 'viewSquareSealModal';
+        const modalElement = document.getElementById(modalId);
+        if (modalElement) {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
         }
     }
 
