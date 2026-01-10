@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, Http404
 from .models import Company, CompanyDepartment, CompanyUser
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -579,3 +580,30 @@ def company_seal_delete(request):
         log_model_action(request.user, 'update', company)
     
     return redirect('company:company_detail')
+
+@login_required
+@permission_required('company.view_company', raise_exception=True)
+def serve_company_seal(request, seal_type):
+    """会社印（丸印・角印）を安全に配信するビュー"""
+    company = Company.objects.first()
+    if not company:
+        raise Http404("会社情報が見つかりません。")
+
+    image_field = None
+    if seal_type == 'round':
+        image_field = company.round_seal
+    elif seal_type == 'square':
+        image_field = company.square_seal
+    else:
+        raise Http404("無効な印章タイプです。")
+
+    if not image_field:
+        raise Http404("画像が見つかりません。")
+
+    try:
+        # ストレージからファイルを開く
+        image_data = image_field.read()
+        content_type = 'image/png'  # アップロード時にPNGに変換しているため
+        return HttpResponse(image_data, content_type=content_type)
+    except IOError:
+        raise Http404("画像ファイルを開けませんでした。")
