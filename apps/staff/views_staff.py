@@ -1150,6 +1150,13 @@ def staff_face_upload(request, pk):
                     if img.mode == 'RGBA':
                         img = img.convert('RGB')
                     img.save(image_path, 'JPEG', quality=95)
+                AppLog.objects.create(
+                    user=request.user,
+                    model_name='Staff',
+                    object_id=str(staff.pk),
+                    object_repr=f'{staff} - 顔写真登録',
+                    action='update'
+                )
                 messages.success(request, '顔写真を登録しました。')
             except Exception as e:
                 messages.error(request, f'画像の保存中にエラーが発生しました: {e}')
@@ -1171,6 +1178,13 @@ def staff_face_delete(request, pk):
         if os.path.exists(image_path):
             try:
                 os.remove(image_path)
+                AppLog.objects.create(
+                    user=request.user,
+                    model_name='Staff',
+                    object_id=str(staff.pk),
+                    object_repr=f'{staff} - 顔写真削除',
+                    action='update'
+                )
                 messages.success(request, '顔写真を削除しました。')
             except OSError as e:
                 messages.error(request, f'ファイルの削除中にエラーが発生しました: {e}')
