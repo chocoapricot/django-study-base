@@ -53,7 +53,7 @@
             "created_by": 1,
             "updated_at": "2025-01-01T00:00:00.000Z",
             "updated_by": 1,
-            "target_item": "Staff Contract Check Prompt",
+            "target_item": "スタッフ契約書確認用プロンプト",
             "format": "textarea",
             "value": "あなたは日本の労働法に詳しい社労士です。以下の雇用契約書兼労働条件通知書の内容を確認し、法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\\n\\n【契約内容】\\n{{contract_text}}",
             "display_order": 902
@@ -68,7 +68,7 @@
             "created_by": 1,
             "updated_at": "2025-01-01T00:00:00.000Z",
             "updated_by": 1,
-            "target_item": "Assignment Cond. Check Prompt",
+            "target_item": "アサイン契約書確認用プロンプト",
             "format": "textarea",
             "value": "あなたは日本の労働法に詳しい社労士です。以下の就業条件明示書の内容を確認し、労働者派遣法等の法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\\n\\n【契約内容】\\n{{contract_text}}",
             "display_order": 903
@@ -83,7 +83,7 @@
             "created_by": 1,
             "updated_at": "2025-01-01T00:00:00.000Z",
             "updated_by": 1,
-            "target_item": "Client Ind. Contract Check Prompt",
+            "target_item": "クライアント契約書確認用プロンプト",
             "format": "textarea",
             "value": "あなたは日本の労働法に詳しい社労士です。以下の労働者派遣個別契約書の内容を確認し、労働者派遣法等の法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\n\n【契約内容】\n{{contract_text}}",
             "display_order": 904
