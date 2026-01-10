@@ -1,17 +1,17 @@
 {% extends 'common/_base.html' %}
 {% load static %}
 
-{% block title %}個別契約書(AI確認){% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">
-        個別契約書(AI確認) - {{ contract.contract_name }}
+        {{ header_title }}
     </div>
     <div class="card-body">
         <div class="alert alert-info mb-3">
-            <i class="bi bi-info-circle"></i>
-            生成AIによる契約内容のチェックを行います。<br>
+            <i class="bi bi-info-circle"></i> 
+            {{ info_message|default:"生成AIによる内容チェックを行います。" }}<br>
             ※ あくまでAIによる参考意見であり、法的な正確性を保証するものではありません。<br>
             ※ マスタ管理の生成AI設定でAPIキー、URL、プロンプトの設定が必要です。
         </div>
@@ -43,7 +43,7 @@
         {% else %}
             <div class="text-center py-5 mb-4 border rounded bg-white">
                 <i class="bi bi-robot text-primary mb-3" style="font-size: 3rem;"></i>
-                <p class="lead mb-4">生成AIを使用して、契約内容の法的チェックを行います。</p>
+                <p class="lead mb-4">生成AIを使用して、内容の法的チェックを行います。</p>
                 <form method="post">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-primary btn-lg px-5">
@@ -57,7 +57,7 @@
         {% endif %}
 
         <div class="mt-3">
-            <a href="{% url 'contract:client_contract_detail' contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+            <a href="{{ back_url }}" class="btn btn-sm btn-secondary">戻る</a>
         </div>
 
     </div>
@@ -66,13 +66,13 @@
 <!-- 確認対象テキスト用の別カード -->
 <div class="content-box card bg-light mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <span><i class="bi bi-file-text me-2"></i>確認対象の契約テキスト</span>
+        <span><i class="bi bi-file-text me-2"></i>確認対象のテキスト</span>
         <button id="copyButton" onclick="copyToClipboard(event)" class="btn btn-sm btn-primary">
             <i class="bi bi-clipboard"></i> コピー
         </button>
     </div>
     <div class="card-body">
-        <pre id="contractText" style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; white-space: pre-wrap; font-size: 0.9em; border: 1px solid #dee2e6;">{% if contract.contract_status == '10' or contract.contract_status == '20' %}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        <pre id="contractText" style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; white-space: pre-wrap; font-size: 0.9em; border: 1px solid #dee2e6;">{% if is_draft %}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【ドラフト版】
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -85,7 +85,7 @@
 function copyToClipboard(event) {
     const text = document.getElementById('contractText').textContent;
     const btn = event.currentTarget;
-
+    
     navigator.clipboard.writeText(text).then(function() {
         const originalHTML = btn.innerHTML;
         btn.innerHTML = '<i class="bi bi-check"></i> コピー完了';

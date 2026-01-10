@@ -1536,13 +1536,12 @@ def staff_contract_ai_check(request, pk):
     """
     スタッフ契約（雇用契約書兼労働条件通知書）の内容をAIでチェックする
     """
-    from apps.master.models import GenerativeAiSetting
-    from apps.common.gemini_utils import call_gemini_api
+    from .utils import run_ai_check
     from .text_utils import generate_staff_contract_full_text
     
     contract = get_object_or_404(StaffContract, pk=pk)
     
-    # テキスト生成（共通ロジック使用）
+    # テキスト生成
     full_contract_text = generate_staff_contract_full_text(contract)
     
     # --- AIチェック処理 ---
@@ -1550,32 +1549,19 @@ def staff_contract_ai_check(request, pk):
     error_message = None
     
     if request.method == 'POST':
-        # プロンプトテンプレート取得
-        prompt_template_param = GenerativeAiSetting.objects.filter(pk='GEMINI_PROMPT_TEMPLATE').first()
-        prompt_template = prompt_template_param.value if prompt_template_param else ""
-        
-        if not prompt_template:
-            # デフォルトプロンプト
-            prompt_template = "あなたは日本の労働法に詳しい社労士です。以下の雇用契約書兼労働条件通知書の内容を確認し、法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\n\n【契約内容】\n{{contract_text}}"
-            
-        # プレースホルダー置換
-        final_prompt = prompt_template.replace('{{contract_text}}', full_contract_text)
-        
-        # API呼び出し
-        result = call_gemini_api(final_prompt)
-        
-        if result['success']:
-            import markdown
-            # MarkdownをHTMLに変換（nl2br拡張を使用して改行を保持）
-            ai_response = markdown.markdown(result['text'], extensions=['nl2br', 'fenced_code', 'tables'])
-        else:
-            error_message = result['error']
+        default_prompt = "あなたは日本の労働法に詳しい社労士です。以下の雇用契約書兼労働条件通知書の内容を確認し、法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\n\n【契約内容】\n{{contract_text}}"
+        ai_response, error_message = run_ai_check('GEMINI_PROMPT_TEMPLATE', full_contract_text, default_prompt)
     
     context = {
+        'page_title': '雇用契約書兼労働条件通知書(AI確認)',
+        'header_title': f'雇用契約書兼労働条件通知書(AI確認) - {contract.contract_name}',
+        'info_message': '生成AIによる契約内容のチェックを行います。',
+        'back_url': reverse('contract:staff_contract_detail', args=[pk]),
+        'is_draft': contract.contract_status in ['10', '20'],
         'contract': contract,
         'ai_response': ai_response,
         'error_message': error_message,
         'full_contract_text': full_contract_text, 
     }
     
-    return render(request, 'contract/staff_contract_ai_check.html', context)
+    return render(request, 'contract/ai_check_base.html', context)

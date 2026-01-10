@@ -1509,9 +1509,7 @@ def client_contract_ai_check(request, pk):
     """
     クライアント契約の内容をAIでチェックする
     """
-    from apps.master.models import GenerativeAiSetting
-    from apps.common.gemini_utils import call_gemini_api
-
+    from .utils import run_ai_check
     contract = get_object_or_404(ClientContract, pk=pk)
 
     # テキスト生成
@@ -1522,34 +1520,21 @@ def client_contract_ai_check(request, pk):
     error_message = None
 
     if request.method == 'POST':
-        # プロンプトテンプレート取得
-        prompt_template_param = GenerativeAiSetting.objects.filter(pk='GEMINI_PROMPT_TEMPLATE_CLIENT').first()
-        prompt_template = prompt_template_param.value if prompt_template_param else ""
-
-        if not prompt_template:
-            # デフォルトプロンプト
-            prompt_template = "あなたは日本の労働法に詳しい社労士です。以下の労働者派遣個別契約書の内容を確認し、労働者派遣法等の法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\n\n【契約内容】\n{{contract_text}}"
-
-        # プレースホルダー置換
-        final_prompt = prompt_template.replace('{{contract_text}}', full_contract_text)
-
-        # API呼び出し
-        result = call_gemini_api(final_prompt)
-
-        if result['success']:
-            import markdown
-            # MarkdownをHTMLに変換（nl2br拡張を使用して改行を保持）
-            ai_response = markdown.markdown(result['text'], extensions=['nl2br', 'fenced_code', 'tables'])
-        else:
-            error_message = result['error']
+        default_prompt = "あなたは日本の労働法に詳しい社労士です。以下の労働者派遣個別契約書の内容を確認し、労働者派遣法等の法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\n\n【契約内容】\n{{contract_text}}"
+        ai_response, error_message = run_ai_check('GEMINI_PROMPT_TEMPLATE_CLIENT', full_contract_text, default_prompt)
 
     context = {
+        'page_title': '個別契約書(AI確認)',
+        'header_title': f'個別契約書(AI確認) - {contract.contract_name}',
+        'info_message': '生成AIによる契約内容のチェックを行います。',
+        'back_url': reverse('contract:client_contract_detail', args=[pk]),
+        'is_draft': contract.contract_status in ['10', '20'],
         'contract': contract,
         'ai_response': ai_response,
         'error_message': error_message,
         'full_contract_text': full_contract_text,
     }
 
-    return render(request, 'contract/client_contract_ai_check.html', context)
+    return render(request, 'contract/ai_check_base.html', context)
 
 
