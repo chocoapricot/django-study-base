@@ -279,6 +279,8 @@ from apps.kintai.models import (
 from apps.system.logs.models import MailLog, AppLog, AccessLog
 from apps.accounts.models import MyUser
 from apps.profile.models import StaffProfile, StaffProfileQualification, StaffProfileSkill, StaffProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact
+import os
+import shutil
 
 @require_POST
 @user_passes_test(lambda u: u.is_superuser)
@@ -359,7 +361,6 @@ def delete_application_data(request):
             MyUser.objects.filter(is_superuser=False).delete()
 
             # 12. 顔写真ファイルの削除
-            import shutil
             from django.conf import settings
             staff_photos_dir = os.path.join(settings.MEDIA_ROOT, 'staff_files')
             if os.path.exists(staff_photos_dir):
