@@ -202,9 +202,18 @@
                         システム内のサンプルデータをすべて削除し、初期状態に戻します。<br>
                         マスターデータやパラメータ、管理者アカウントは削除されません。
                     </p>
+                    <div class="alert alert-warning small p-3 mb-3">
+                        <h6 class="alert-heading fw-bold"><i class="bi bi-exclamation-triangle-fill me-1"></i>削除対象データ</h6>
+                        <p class="mb-2">以下のデータがすべて削除されます。</p>
+                        <ul class="list-unstyled mb-0 row">
+                            {% for item in deleted_data_list %}
+                                <li class="col-md-4">{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                     <form id="delete-data-form" method="post" action="{% url 'home:delete_application_data' %}">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-warning btn-sm">
+                        <button type="submit" class="btn btn-danger btn-sm">
                             <i class="bi bi-trash me-1"></i>サンプルデータ削除を実行
                         </button>
                     </form>
@@ -264,7 +273,11 @@
     const deleteDataForm = document.getElementById('delete-data-form');
     if (deleteDataForm) {
         deleteDataForm.addEventListener('submit', function(event) {
-            if (!confirm('本当にすべてのデータを削除しますか？\nこの操作は元に戻せません。')) {
+            const deletedDataList = [
+                {% for item in deleted_data_list %}"{{ item }}"{% if not forloop.last %}, {% endif %}{% endfor %}
+            ];
+            const message = `以下のサンプルデータをすべて削除します。よろしいですか？\n\n- ${deletedDataList.join('\n- ')}\n\nこの操作は元に戻せません。`;
+            if (!confirm(message)) {
                 event.preventDefault();
             }
         });
