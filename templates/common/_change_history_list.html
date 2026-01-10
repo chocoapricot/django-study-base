@@ -122,6 +122,8 @@
                             <span class="badge bg-primary">時間外算出パターン</span>
                         {% elif log.model_name == 'TimePunch' %}
                             <span class="badge bg-primary">勤怠打刻マスタ</span>
+                        {% elif log.model_name == 'GenerativeAiSetting' %}
+                            <span class="badge bg-primary">生成AI設定</span>
                         {% elif log.model_name %}
                             <span class="badge bg-primary">{{ log.model_name }}</span>
                         {% else %}

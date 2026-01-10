@@ -11,7 +11,7 @@
     <div class="card-body">
         <div class="alert alert-info mb-3">
             <i class="bi bi-info-circle"></i> 
-            Gemini AIによる就業条件明示書の内容チェックを行います。<br>
+            生成AIによる就業条件明示書の内容チェックを行います。<br>
             ※ あくまでAIによる参考意見であり、法的な正確性を保証するものではありません。<br>
             ※ マスタ管理の設定値マスタでAPIキー、URL、プロンプトの設定が必要です。
         </div>
@@ -43,7 +43,7 @@
         {% else %}
             <div class="text-center py-5 mb-4 border rounded bg-white">
                 <i class="bi bi-robot text-primary mb-3" style="font-size: 3rem;"></i>
-                <p class="lead mb-4">Gemini AIを使用して、契約内容の法的チェックを行います。</p>
+                <p class="lead mb-4">生成AIを使用して、契約内容の法的チェックを行います。</p>
                 <form method="post">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-primary btn-lg px-5">
