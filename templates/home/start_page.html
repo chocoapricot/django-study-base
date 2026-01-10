@@ -213,7 +213,7 @@
                     </div>
                     <form id="delete-data-form" method="post" action="{% url 'home:delete_application_data' %}">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger btn-sm">
+                        <button type="submit" class="btn btn-warning btn-sm">
                             <i class="bi bi-trash me-1"></i>サンプルデータ削除を実行
                         </button>
                     </form>
