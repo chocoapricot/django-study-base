@@ -1169,8 +1169,8 @@ def staff_face_upload(request, pk):
                     if img.mode != 'RGB':
                         img = img.convert('RGB')
                     
-                    # 300x300の正方形にリサイズ
-                    img = img.resize((300, 300), Image.Resampling.LANCZOS)
+                    # 600x600の正方形にリサイズ
+                    img = img.resize((600, 600), Image.Resampling.LANCZOS)
                     
                     # 保存
                     img.save(image_path, 'JPEG', quality=95)
