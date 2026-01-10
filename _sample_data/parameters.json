@@ -52,7 +52,7 @@
 },
 {
     "model": "settings.parameter",
-    "pk": 8,
+    "pk": 14,
     "fields": {
         "created_at": "2025-01-01T00:00:00.000Z",
         "created_by": 1,
@@ -63,7 +63,7 @@
         "value": "https://api.openai.com/v1/chat/completions",
         "default_value": "https://api.openai.com/v1/chat/completions",
         "note": "OpenAIのAPI URL",
-        "disp_seq": 8,
+        "disp_seq": 9,
         "active": true
     }
 },
