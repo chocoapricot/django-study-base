@@ -635,3 +635,22 @@ class StaffEvaluationForm(forms.ModelForm):
             'rating': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'comment': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
+
+class StaffFaceUploadForm(forms.Form):
+    """スタッフ顔写真アップロードフォーム"""
+    face_image = forms.ImageField(
+        label='顔写真ファイル',
+        help_text='2MB以下のJPEGまたはPNG画像を選択してください。',
+        widget=forms.ClearableFileInput(attrs={
+            'class': 'form-control',
+            'accept': 'image/jpeg,image/png',
+        })
+    )
+
+    def clean_face_image(self):
+        image = self.cleaned_data.get('face_image')
+        if image:
+            # ファイルサイズチェック（2MB制限）
+            if image.size > 2 * 1024 * 1024:
+                raise forms.ValidationError('ファイルサイズは2MB以下にしてください。')
+        return image

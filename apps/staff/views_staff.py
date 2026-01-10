@@ -12,7 +12,7 @@ from apps.system.logs.utils import log_model_action
 from .forms_mail import ConnectionRequestMailForm, DisconnectionMailForm
 
 from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact
-from .forms import StaffForm, StaffContactedForm, StaffFileForm
+from .forms import StaffForm, StaffContactedForm, StaffFileForm, StaffFaceUploadForm
 from apps.system.settings.utils import my_parameter
 from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
@@ -1125,3 +1125,55 @@ def staff_mail_send(request, pk):
         'title': f'{staff.name_last} {staff.name_first} へのメール送信',
     }
     return render(request, 'staff/staff_mail_send.html', context)
+
+@login_required
+@permission_required('staff.change_staff', raise_exception=True)
+def staff_face_upload(request, pk):
+    staff = get_object_or_404(Staff, pk=pk)
+    if request.method == 'POST':
+        form = StaffFaceUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.cleaned_data['face_image']
+
+            # ディレクトリの存在を確認し、なければ作成
+            upload_dir = os.path.join(settings.MEDIA_ROOT, 'staff_files')
+            if not os.path.exists(upload_dir):
+                os.makedirs(upload_dir)
+
+            # ファイルパスを定義
+            image_path = os.path.join(upload_dir, f'{staff.pk}.jpg')
+
+            # Pillowを使って画像をリサイズ・保存
+            try:
+                with Image.open(image) as img:
+                    # JPEGに変換して保存
+                    if img.mode == 'RGBA':
+                        img = img.convert('RGB')
+                    img.save(image_path, 'JPEG', quality=95)
+                messages.success(request, '顔写真を登録しました。')
+            except Exception as e:
+                messages.error(request, f'画像の保存中にエラーが発生しました: {e}')
+        else:
+            # フォームが無効な場合のエラーメッセージ
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'{field}: {error}')
+
+    return redirect('staff:staff_detail', pk=staff.pk)
+
+
+@login_required
+@permission_required('staff.change_staff', raise_exception=True)
+def staff_face_delete(request, pk):
+    staff = get_object_or_404(Staff, pk=pk)
+    if request.method == 'POST':
+        image_path = os.path.join(settings.MEDIA_ROOT, 'staff_files', f'{staff.pk}.jpg')
+        if os.path.exists(image_path):
+            try:
+                os.remove(image_path)
+                messages.success(request, '顔写真を削除しました。')
+            except OSError as e:
+                messages.error(request, f'ファイルの削除中にエラーが発生しました: {e}')
+        else:
+            messages.warning(request, '削除対象の顔写真が見つかりませんでした。')
+    return redirect('staff:staff_detail', pk=staff.pk)
