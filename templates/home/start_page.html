@@ -133,7 +133,7 @@
             <!-- Step 2 -->
             <div class="mb-4">
               <h5 class="fw-bold mb-3 d-flex align-items-center">
-                <span class="step-badge">2</span>ログイン
+                <span class="step-badge">2</span>サンプルログイン
               </h5>
               <div class="ps-4">
                 <p class="small text-muted mb-3">以下のアカウントでログインできます。</p>
@@ -195,7 +195,7 @@
             <!-- Step 3 -->
             <div class="mb-4">
                 <h5 class="fw-bold mb-3 d-flex align-items-center">
-                    <span class="step-badge">3</span>データ削除
+                    <span class="step-badge">3</span>サンプルデータ削除
                 </h5>
                 <div class="ps-4">
                     <p class="small text-muted mb-2">
@@ -204,11 +204,41 @@
                     </p>
                     <form id="delete-data-form" method="post" action="{% url 'home:delete_application_data' %}">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger btn-sm">
-                            <i class="bi bi-trash me-1"></i>データ削除を実行
+                        <button type="submit" class="btn btn-warning btn-sm">
+                            <i class="bi bi-trash me-1"></i>サンプルデータ削除を実行
                         </button>
                     </form>
                 </div>
+            </div>
+
+            <hr class="my-4 text-muted opacity-25">
+
+            <!-- Step 4 -->
+            <div class="mb-4">
+              <h5 class="fw-bold mb-3 d-flex align-items-center">
+                <span class="step-badge">4</span>ログイン
+              </h5>
+              <div class="ps-4">
+                <p class="small text-muted mb-3">管理者アカウントでログインできます。</p>
+                <div class="table-responsive" style="max-width: 500px;">
+                  <table class="table table-bordered table-sm small mb-3 credentials-table">
+                    <tbody>
+                      <tr>
+                        <th class="align-middle">管理者</th>
+                        <td>
+                          <div>admin@test.com</div>
+                          <div class="text-muted">passwordforstudybase!</div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="ps-4 mt-4">
+                <a href="{% url 'account_login' %}" class="btn btn-primary btn-sm">
+                  ログイン画面へ
+                </a>
+              </div>
             </div>
 
           </div>
