@@ -4,6 +4,21 @@
 {% load dropdowns %}
 {% load badge_tags %}
 {% load parameters %}
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+<style>
+    .cropper-container-wrapper {
+        width: 100%;
+        max-height: 400px;
+        min-height: 200px;
+        background-color: #f7f7f7;
+        margin-top: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
 {% block content %}
 
 <div class="row" style="max-width: 100%;">
@@ -694,9 +709,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         <input type="file" name="face_image" class="form-control" id="id_face_image" accept="image/jpeg,image/png" required>
                         <div class="form-text">2MB以下のJPEGまたはPNG画像を選択してください。</div>
                     </div>
-                    <div class="text-center">
-                        <img id="imagePreview" src="#" alt="プレビュー" class="img-fluid" style="display: none; max-height: 200px; border: 1px solid #ddd; margin-top: 10px;"/>
+                    <div id="cropperWrapper" class="cropper-container-wrapper" style="display: none;">
+                        <img id="imagePreview" src="#" alt="プレビュー" style="max-width: 100%; display: block;">
                     </div>
+                    <!-- クロップ座標保持用 -->
+                    <input type="hidden" name="crop_x" id="id_crop_x">
+                    <input type="hidden" name="crop_y" id="id_crop_y">
+                    <input type="hidden" name="crop_width" id="id_crop_width">
+                    <input type="hidden" name="crop_height" id="id_crop_height">
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary" id="uploadSubmitButton" disabled>アップロード</button>
@@ -757,11 +777,22 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 </style>
 
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const imageInput = document.getElementById('id_face_image');
     const imagePreview = document.getElementById('imagePreview');
+    const cropperWrapper = document.getElementById('cropperWrapper');
     const uploadSubmitButton = document.getElementById('uploadSubmitButton');
+    
+    // クロップ座標用
+    const cropX = document.getElementById('id_crop_x');
+    const cropY = document.getElementById('id_crop_y');
+    const cropWidth = document.getElementById('id_crop_width');
+    const cropHeight = document.getElementById('id_crop_height');
+
+    let cropper = null;
 
     imageInput.addEventListener('change', function(event) {
         if (event.target.files && event.target.files[0]) {
@@ -781,8 +812,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const reader = new FileReader();
             reader.onload = function(e) {
+                // 既存のCropperがあれば破棄
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+
                 imagePreview.src = e.target.result;
-                imagePreview.style.display = 'block';
+                cropperWrapper.style.display = 'block';
+                
+                // Cropperの初期化
+                cropper = new Cropper(imagePreview, {
+                    aspectRatio: 1, // 正方形固定
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 1,
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false,
+                    crop(event) {
+                        // クロップ情報を隠しフィールドにセット
+                        const data = event.detail;
+                        cropX.value = data.x;
+                        cropY.value = data.y;
+                        cropWidth.value = data.width;
+                        cropHeight.value = data.height;
+                    },
+                });
+
                 uploadSubmitButton.disabled = false;
             };
             reader.readAsDataURL(file);
@@ -792,10 +853,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function resetPreview() {
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
         imageInput.value = ''; // ファイル選択をリセット
         imagePreview.src = '#';
-        imagePreview.style.display = 'none';
+        cropperWrapper.style.display = 'none';
         uploadSubmitButton.disabled = true;
+        
+        cropX.value = '';
+        cropY.value = '';
+        cropWidth.value = '';
+        cropHeight.value = '';
     }
 
     // モーダルが閉じられたときにプレビューをリセット
@@ -805,7 +875,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
+{% endblock %}
 {% endblock %}
 
 

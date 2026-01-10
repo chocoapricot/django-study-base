@@ -1131,9 +1131,14 @@ def staff_mail_send(request, pk):
 def staff_face_upload(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
     if request.method == 'POST':
+        from .forms import StaffFaceUploadForm
         form = StaffFaceUploadForm(request.POST, request.FILES)
         if form.is_valid():
             image = form.cleaned_data['face_image']
+            x = form.cleaned_data.get('crop_x')
+            y = form.cleaned_data.get('crop_y')
+            w = form.cleaned_data.get('crop_width')
+            h = form.cleaned_data.get('crop_height')
 
             # ディレクトリの存在を確認し、なければ作成
             upload_dir = os.path.join(settings.MEDIA_ROOT, 'staff_files')
@@ -1143,12 +1148,31 @@ def staff_face_upload(request, pk):
             # ファイルパスを定義
             image_path = os.path.join(upload_dir, f'{staff.pk}.jpg')
 
-            # Pillowを使って画像をリサイズ・保存
+            # Pillowを使って画像を切り抜き・リサイズ・保存
             try:
                 with Image.open(image) as img:
-                    # JPEGに変換して保存
-                    if img.mode == 'RGBA':
+                    # 元の情報の取得
+                    orig_w, orig_h = img.size
+
+                    # クロップ処理（座標が提供されている場合）
+                    if all(v is not None for v in [x, y, w, h]):
+                        # 念のため座標を整数に変換し、範囲内に収める
+                        left = max(0, int(x))
+                        top = max(0, int(y))
+                        right = min(orig_w, int(x + w))
+                        bottom = min(orig_h, int(y + h))
+                        
+                        if right > left and bottom > top:
+                            img = img.crop((left, top, right, bottom))
+
+                    # JPEGに変換可能な形式（RGB）に変換
+                    if img.mode != 'RGB':
                         img = img.convert('RGB')
+                    
+                    # 300x300の正方形にリサイズ
+                    img = img.resize((300, 300), Image.Resampling.LANCZOS)
+                    
+                    # 保存
                     img.save(image_path, 'JPEG', quality=95)
                 AppLog.objects.create(
                     user=request.user,

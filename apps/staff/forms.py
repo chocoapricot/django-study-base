@@ -647,6 +647,12 @@ class StaffFaceUploadForm(forms.Form):
         })
     )
 
+    # クロップデータ保持用
+    crop_x = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    crop_y = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    crop_width = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    crop_height = forms.FloatField(widget=forms.HiddenInput(), required=False)
+
     def clean_face_image(self):
         image = self.cleaned_data.get('face_image')
         if image:
