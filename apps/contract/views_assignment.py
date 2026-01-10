@@ -1471,7 +1471,7 @@ def assignment_ai_check(request, assignment_pk):
     """
     就業条件明示書の内容をAIでチェックする
     """
-    from apps.master.models import UserParameter
+    from apps.master.models import GenerativeAiSetting
     from apps.common.gemini_utils import call_gemini_api
     from .text_utils import generate_assignment_employment_conditions_full_text
     
@@ -1491,7 +1491,7 @@ def assignment_ai_check(request, assignment_pk):
     
     if request.method == 'POST':
         # プロンプトテンプレート取得
-        prompt_template_param = UserParameter.objects.filter(pk='GEMINI_PROMPT_TEMPLATE_ASSIGNMENT').first()
+        prompt_template_param = GenerativeAiSetting.objects.filter(pk='GEMINI_PROMPT_TEMPLATE_ASSIGNMENT').first()
         prompt_template = prompt_template_param.value if prompt_template_param else ""
         
         if not prompt_template:
