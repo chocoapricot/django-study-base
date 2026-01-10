@@ -2,6 +2,7 @@ from .views_assignment import *
 from .views_haken import *
 from .views_staff import *
 from .views_print import *
+from .text_utils import generate_client_contract_full_text
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
@@ -1502,5 +1503,53 @@ def _prepare_contract_timeline_data(all_assignments, today, search_query):
     }
 
 
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def client_contract_ai_check(request, pk):
+    """
+    クライアント契約の内容をAIでチェックする
+    """
+    from apps.master.models import GenerativeAiSetting
+    from apps.common.gemini_utils import call_gemini_api
+
+    contract = get_object_or_404(ClientContract, pk=pk)
+
+    # テキスト生成
+    full_contract_text = generate_client_contract_full_text(contract)
+
+    # --- AIチェック処理 ---
+    ai_response = None
+    error_message = None
+
+    if request.method == 'POST':
+        # プロンプトテンプレート取得
+        prompt_template_param = GenerativeAiSetting.objects.filter(pk='GEMINI_PROMPT_TEMPLATE').first()
+        prompt_template = prompt_template_param.value if prompt_template_param else ""
+
+        if not prompt_template:
+            # デフォルトプロンプト
+            prompt_template = "あなたは日本の法律に詳しい弁護士です。以下の契約書の内容を確認し、法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\n\n【契約内容】\n{{contract_text}}"
+
+        # プレースホルダー置換
+        final_prompt = prompt_template.replace('{{contract_text}}', full_contract_text)
+
+        # API呼び出し
+        result = call_gemini_api(final_prompt)
+
+        if result['success']:
+            import markdown
+            # MarkdownをHTMLに変換（nl2br拡張を使用して改行を保持）
+            ai_response = markdown.markdown(result['text'], extensions=['nl2br', 'fenced_code', 'tables'])
+        else:
+            error_message = result['error']
+
+    context = {
+        'contract': contract,
+        'ai_response': ai_response,
+        'error_message': error_message,
+        'full_contract_text': full_contract_text,
+    }
+
+    return render(request, 'contract/client_contract_ai_check.html', context)
 
 

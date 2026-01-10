@@ -124,6 +124,125 @@ def generate_staff_contract_full_text(contract):
     return "\n".join(lines)
 
 
+def generate_client_contract_full_text(contract):
+    """
+    クライアント契約のテキスト全文を生成する
+    PDF生成ロジック(utils.generate_contract_pdf_content)と一致させる
+    """
+
+    # 1. タイトル
+    pdf_title = get_contract_pdf_title(contract)
+
+    # 2. 基本情報項目の構築 (items)
+    start_date_str = contract.start_date.strftime('%Y年%m月%d日')
+    end_date_str = contract.end_date.strftime('%Y年%m月%d日') if contract.end_date else "無期限"
+    contract_period = f"{start_date_str}　～　{end_date_str}"
+
+    bill_unit_name = ""
+    if contract.bill_unit:
+        try:
+            dropdown = Dropdowns.objects.get(category='bill_unit', value=contract.bill_unit)
+            bill_unit_name = dropdown.name
+        except Dropdowns.DoesNotExist:
+            pass
+
+    contract_amount_text = "N/A"
+    if contract.contract_amount is not None:
+        contract_amount_text = f"{contract.contract_amount:,}円"
+        if bill_unit_name:
+            contract_amount_text = f"{bill_unit_name} {contract_amount_text}"
+
+    items = [
+        {"title": "契約番号", "text": str(contract.contract_number or "")},
+        {"title": "契約名", "text": str(contract.contract_name)},
+        {"title": "クライアント名", "text": str(contract.client.name)},
+        {"title": "契約期間", "text": contract_period},
+        {"title": "契約金額", "text": contract_amount_text},
+        {"title": "業務内容", "text": str(contract.business_content or "")},
+    ]
+
+    worktime_text = format_worktime_pattern(contract.worktime_pattern)
+    if worktime_text:
+        items.append({"title": "就業時間", "text": worktime_text})
+
+    items.append({"title": "備考", "text": str(contract.notes or "")})
+
+    # 3. 契約パターンの適用 (Preamble, Body Terms, Postamble)
+    intro_text = ""
+    postamble_text = ""
+
+    if contract.contract_pattern:
+        company = Company.objects.first()
+        replacements = {
+            "{{company_name}}": company.name if company else "",
+            "{{client_name}}": str(contract.client.name),
+        }
+
+        def replace_placeholders(text):
+            text = str(text) if text is not None else ""
+            for key, value in replacements.items():
+                placeholder = key.strip('{}').strip()
+                pattern = re.compile(r'{{\s*' + re.escape(placeholder) + r'\s*}}')
+                text = pattern.sub(value, text)
+            return text
+
+        terms = contract.contract_pattern.terms.all().order_by('display_position', 'display_order')
+
+        preamble_terms = [term for term in terms if term.display_position == 1]
+        body_terms = [term for term in terms if term.display_position == 2]
+        postamble_terms = [term for term in terms if term.display_position == 3]
+
+        if preamble_terms:
+            preamble_text_parts = [replace_placeholders(term.contract_terms) for term in preamble_terms]
+            intro_text = "\n\n".join(preamble_text_parts)
+
+        if body_terms:
+            notes_index = -1
+            for i, item in enumerate(items):
+                if item["title"] == "備考":
+                    notes_index = i
+                    break
+
+            term_items = [{"title": str(term.contract_clause), "text": replace_placeholders(term.contract_terms)} for term in body_terms]
+
+            if notes_index != -1:
+                items[notes_index:notes_index] = term_items
+            else:
+                items.extend(term_items)
+
+        if postamble_terms:
+            postamble_text_parts = [replace_placeholders(term.contract_terms) for term in postamble_terms]
+            postamble_text = "\n\n".join(postamble_text_parts)
+
+    # 4. テキスト構築
+    lines = []
+
+    # ヘッダー
+    lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    lines.append(f"【{pdf_title}】")
+    lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    lines.append("")
+
+    if intro_text:
+        lines.append(intro_text)
+        lines.append("")
+        lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        lines.append("契約内容")
+        lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
+    for item in items:
+        lines.append(f"■ {item['title']}")
+        lines.append(item['text'])
+        lines.append("")
+
+    if postamble_text:
+        lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        lines.append("")
+        lines.append(postamble_text)
+
+    return "\n".join(lines)
+
+
 def generate_assignment_employment_conditions_full_text(assignment):
     """
     就業条件明示書のテキスト全文を生成する

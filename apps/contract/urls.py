@@ -30,6 +30,7 @@ urlpatterns = [
     path('client/<int:pk>/teishokubi_notification_pdf/', views.client_teishokubi_notification_pdf, name='client_teishokubi_notification_pdf'),
     path('client/<int:pk>/dispatch_ledger_pdf/', views.client_dispatch_ledger_pdf, name='client_dispatch_ledger_pdf'),
     path('client/export/', views.client_contract_export, name='client_contract_export'),
+    path('client/<int:pk>/ai_check/', views.client_contract_ai_check, name='client_contract_ai_check'),
 
     # スタッフ契約
     path('staff/', views.staff_contract_list, name='staff_contract_list'),
