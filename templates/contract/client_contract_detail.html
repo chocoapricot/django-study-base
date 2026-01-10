@@ -38,6 +38,9 @@
                                 <a href="{% url 'contract:client_contract_draft_haken_notification' contract.pk %}" class="dropdown-item" target="_blank"><i class="bi bi-file-earmark-check"></i>　派遣先通知書(ドラフト)</a>
                                 <a href="{% url 'contract:client_contract_draft_dispatch_ledger' contract.pk %}" class="dropdown-item" target="_blank"><i class="bi bi-file-earmark-spreadsheet"></i>　派遣先管理台帳(ドラフト)</a>
                                 {% endif %}
+                                <hr class="dropdown-divider">
+                                <a href="{% url 'contract:client_contract_ai_check' contract.pk %}" class="dropdown-item"><i class="bi bi-robot"></i>　個別契約書(AI確認)</a>
+                                <hr class="dropdown-divider">
                                 {% endif %}
 
                                 {% if contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH %}
