@@ -152,11 +152,65 @@ def information_detail(request, pk):
     }
     return render(request, 'home/information_detail.html', context)
 
+from apps.staff.models import Staff
+from apps.client.models import Client, ClientDepartment, ClientUser, ClientContacted, ClientFile
+from apps.company.models import CompanyDepartment, CompanyUser
+from apps.connect.models import (
+    ConnectStaff, ConnectClient, ConnectStaffAgree,
+    MynumberRequest, ProfileRequest, BankRequest,
+    ContactRequest, ConnectInternationalRequest, DisabilityRequest
+)
+from apps.contract.models import (
+    ContractAssignment, ClientContract, StaffContract,
+    ClientContractNumber, StaffContractNumber, StaffContractTeishokubi,
+    ClientContractPrint, StaffContractPrint, ContractAssignmentConfirm,
+    ContractAssignmentHaken, ContractAssignmentHakenPrint,
+)
+from apps.kintai.models import (
+    StaffTimesheet, StaffTimecard, StaffTimerecord, StaffTimerecordBreak
+)
+from apps.system.logs.models import MailLog, AppLog, AccessLog
+from apps.accounts.models import MyUser
+from apps.profile.models import StaffProfile, StaffProfileQualification, StaffProfileSkill, StaffProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact
+
 def start_page(request):
     """
     ログイン不要なスタートページ
     """
-    return render(request, 'home/start_page.html')
+    models_to_delete = [
+        # 契約
+        ContractAssignment, ClientContract, StaffContract,
+        ClientContractNumber, StaffContractNumber, StaffContractTeishokubi,
+        ClientContractPrint, StaffContractPrint, ContractAssignmentConfirm,
+        ContractAssignmentHaken, ContractAssignmentHakenPrint,
+        # 勤怠
+        StaffTimesheet, StaffTimecard, StaffTimerecord, StaffTimerecordBreak,
+        # 接続
+        ConnectStaff, ConnectClient, ConnectStaffAgree,
+        MynumberRequest, ProfileRequest, BankRequest,
+        ContactRequest, ConnectInternationalRequest, DisabilityRequest,
+        # クライアント
+        Client, ClientDepartment, ClientUser, ClientContacted, ClientFile,
+        # 自社
+        CompanyDepartment, CompanyUser,
+        # スタッフ
+        Staff,
+        # プロフィール
+        StaffProfile, StaffProfileQualification, StaffProfileSkill, StaffProfileMynumber,
+        StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact,
+        # システム
+        MailLog, AppLog, AccessLog,
+        # アカウント
+        MyUser,
+    ]
+
+    # verbose_nameのリストを作成し、重複を除いてソート
+    deleted_data_list = sorted(list(set([model._meta.verbose_name for model in models_to_delete])))
+
+    context = {
+        'deleted_data_list': deleted_data_list,
+    }
+    return render(request, 'home/start_page.html', context)
 
 
 from django.http import JsonResponse
@@ -207,6 +261,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import user_passes_test
 from apps.staff.models import Staff
 from apps.client.models import Client, ClientDepartment, ClientUser, ClientContacted, ClientFile
+from apps.company.models import CompanyDepartment, CompanyUser
 from apps.connect.models import (
     ConnectStaff, ConnectClient, ConnectStaffAgree,
     MynumberRequest, ProfileRequest, BankRequest,
@@ -272,6 +327,10 @@ def delete_application_data(request):
             ClientUser.objects.all().delete()
             ClientDepartment.objects.all().delete()
             Client.objects.all().delete()
+
+            # 6.5. 自社関連データ
+            CompanyUser.objects.all().delete()
+            CompanyDepartment.objects.all().delete()
 
             # 7. スタッフプロフィール関連 (StaffProfileがUserを参照)
             StaffProfileQualification.objects.all().delete()
