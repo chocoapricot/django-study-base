@@ -179,6 +179,42 @@ def import_sample_users(task: SetupTask) -> bool:
     return True
 
 
+def copy_sample_photos(task: SetupTask) -> bool:
+    """サンプル画像をコピー"""
+    task.current_step = 'サンプル画像をコピー中...'
+    
+    import shutil
+    from django.conf import settings
+    
+    sample_photos_dir = os.path.join(settings.BASE_DIR, '_sample_data', 'staff_photos')
+    target_photos_dir = os.path.join(settings.MEDIA_ROOT, 'staff_files')
+    
+    if not os.path.exists(sample_photos_dir):
+        print(f"ℹ️ サンプル画像ディレクトリが見つからないためスキップします: {sample_photos_dir}")
+        return True
+    
+    if not os.path.exists(target_photos_dir):
+        os.makedirs(target_photos_dir)
+        
+    copied_count = 0
+    try:
+        for filename in os.listdir(sample_photos_dir):
+            if filename.lower().endswith(('.jpg', '.jpeg', '.png')):
+                src_path = os.path.join(sample_photos_dir, filename)
+                # ファイル名は {id}.jpg であることを想定
+                dst_path = os.path.join(target_photos_dir, filename)
+                shutil.copy2(src_path, dst_path)
+                copied_count += 1
+        
+        print(f"✅ {copied_count}枚のサンプル画像をコピーしました")
+        return True
+    except Exception as e:
+        error_msg = f"画像のコピー中にエラーが発生しました: {e}"
+        print(f"❌ {error_msg}")
+        task.errors.append(error_msg)
+        return False
+
+
 def execute_setup(task_id: str):
     """セットアップ処理を実行（別スレッドで実行される）"""
     task = get_setup_task(task_id)
@@ -216,6 +252,12 @@ def execute_setup(task_id: str):
 
         # 5. サンプルユーザーのインポート
         if not import_sample_users(task):
+            task.status = 'failed'
+            task.end_time = datetime.now()
+            return
+
+        # 6. サンプル画像のコピー
+        if not copy_sample_photos(task):
             task.status = 'failed'
             task.end_time = datetime.now()
             return

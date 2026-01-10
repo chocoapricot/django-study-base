@@ -358,6 +358,21 @@ def delete_application_data(request):
             # 11. 管理者以外のアカウント
             MyUser.objects.filter(is_superuser=False).delete()
 
+            # 12. 顔写真ファイルの削除
+            import shutil
+            from django.conf import settings
+            staff_photos_dir = os.path.join(settings.MEDIA_ROOT, 'staff_files')
+            if os.path.exists(staff_photos_dir):
+                for filename in os.listdir(staff_photos_dir):
+                    file_path = os.path.join(staff_photos_dir, filename)
+                    try:
+                        if os.path.isfile(file_path) or os.path.islink(file_path):
+                            os.unlink(file_path)
+                        elif os.path.isdir(file_path):
+                            shutil.rmtree(file_path)
+                    except Exception as e:
+                        print(f'Failed to delete {file_path}. Reason: {e}')
+
         messages.success(request, "アプリケーションデータを削除しました。")
     except Exception as e:
         messages.error(request, f"データの削除中にエラーが発生しました: {e}")
