@@ -206,6 +206,7 @@ def start_page(request):
 
     # verbose_nameのリストを作成し、重複を除いてソート
     deleted_data_list = sorted(list(set([model._meta.verbose_name for model in models_to_delete])))
+    deleted_data_list.append('ファイル')  # アップロードされたファイルも削除対象
 
     context = {
         'deleted_data_list': deleted_data_list,
@@ -374,6 +375,31 @@ def delete_application_data(request):
                             shutil.rmtree(file_path)
                     except Exception as e:
                         print(f'Failed to delete {file_path}. Reason: {e}')
+
+            # 13. 会社印ファイルの削除
+            company_seals_dir = os.path.join(settings.MEDIA_ROOT, 'company_seals')
+            if os.path.exists(company_seals_dir):
+                for filename in os.listdir(company_seals_dir):
+                    file_path = os.path.join(company_seals_dir, filename)
+                    try:
+                        if os.path.isfile(file_path) or os.path.islink(file_path):
+                            os.unlink(file_path)
+                        elif os.path.isdir(file_path):
+                            shutil.rmtree(file_path)
+                    except Exception as e:
+                        print(f'Failed to delete {file_path}. Reason: {e}')
+
+            # 14. その他のアップロードファイルの削除
+            # mediaルート内の全ファイルを削除（ただし、.gitkeepなどの隠しファイルは残す）
+            if os.path.exists(settings.MEDIA_ROOT):
+                for root, dirs, files in os.walk(settings.MEDIA_ROOT):
+                    for file in files:
+                        if not file.startswith('.'):  # .gitkeepなどの隠しファイルは残す
+                            file_path = os.path.join(root, file)
+                            try:
+                                os.unlink(file_path)
+                            except Exception as e:
+                                print(f'Failed to delete {file_path}. Reason: {e}')
 
         messages.success(request, "アプリケーションデータを削除しました。")
     except Exception as e:

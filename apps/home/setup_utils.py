@@ -111,6 +111,25 @@ def reset_database(task: SetupTask) -> bool:
     if not run_command("python manage.py migrate", "マイグレーションの適用", task):
         return False
     
+    # アップロードされたファイルの削除
+    task.current_step = 'アップロードファイルを削除中...'
+    import shutil
+    from django.conf import settings
+    
+    if os.path.exists(settings.MEDIA_ROOT):
+        try:
+            for root, dirs, files in os.walk(settings.MEDIA_ROOT):
+                for file in files:
+                    if not file.startswith('.'):  # .gitkeepなどの隠しファイルは残す
+                        file_path = os.path.join(root, file)
+                        os.unlink(file_path)
+            print("✅ アップロードファイルを削除しました")
+        except Exception as e:
+            error_msg = f"ファイル削除中にエラーが発生しました: {e}"
+            print(f"❌ {error_msg}")
+            task.errors.append(error_msg)
+            return False
+    
     return True
 
 
