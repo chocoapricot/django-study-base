@@ -175,6 +175,14 @@ class Staff(MyModel):
         """給与情報が登録されているかどうかを返す"""
         return hasattr(self, 'payroll')
 
+    @property
+    def has_face_photo(self):
+        """顔写真が登録されているかどうかを返す"""
+        from django.conf import settings
+        import os
+        image_path = os.path.join(settings.MEDIA_ROOT, 'staff_files', f'{self.pk}.jpg')
+        return os.path.exists(image_path)
+
 def staff_file_upload_path(instance, filename):
     """スタッフファイルのアップロードパスを生成"""
     # ファイル拡張子を取得

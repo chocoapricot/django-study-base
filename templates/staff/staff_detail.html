@@ -61,7 +61,9 @@
                                 <div class="face-photo-overlay">
                                     {% if perms.staff.change_staff %}
                                     <a href="#" data-bs-toggle="modal" data-bs-target="#uploadFaceModal" class="btn btn-sm btn-primary" title="登録/変更"><i class="bi bi-upload"></i></a>
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#deleteFaceModal" class="btn btn-sm btn-danger" title="削除"><i class="bi bi-trash"></i></a>
+                                    {% if staff.has_face_photo %}
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#deleteFaceModal" class="btn btn-sm btn-dark" title="削除"><i class="bi bi-trash"></i></a>
+                                    {% endif %}
                                     {% endif %}
                                 </div>
                             </div>
@@ -697,8 +699,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
                     <button type="submit" class="btn btn-primary" id="uploadSubmitButton" disabled>アップロード</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
                 </div>
             </form>
         </div>
@@ -719,8 +721,8 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="modal-footer">
                 <form action="{% url 'staff:staff_face_delete' staff.pk %}" method="post">
                     {% csrf_token %}
+                    <button type="submit" class="btn btn-dark">削除</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
-                    <button type="submit" class="btn btn-danger">削除</button>
                 </form>
             </div>
         </div>
