@@ -56,8 +56,15 @@
                     {% csrf_token %}
                     <div class="row mb-3 align-items-center">
                         <div class="col-sm-4 d-flex justify-content-center">
-                            <img src="{% url 'staff:staff_face' staff.pk %}" class="rounded-circle img-fluid" width="100" height="100" style="border-radius: 15%;">
-        <!--                   <img src="{% url 'staff:staff_face' staff.pk %}" class="img-fluid" width="100" height="100" style="border-radius: 15%;">-->
+                            <div class="face-photo-container">
+                                <img src="{% url 'staff:staff_face' staff.pk %}?v={% now "U" %}" class="rounded-circle img-fluid" width="100" height="100" style="border-radius: 15%;">
+                                <div class="face-photo-overlay">
+                                    {% if perms.staff.change_staff %}
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#uploadFaceModal" class="btn btn-sm btn-primary" title="登録/変更"><i class="bi bi-upload"></i></a>
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#deleteFaceModal" class="btn btn-sm btn-danger" title="削除"><i class="bi bi-trash"></i></a>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="col-sm">
@@ -668,6 +675,134 @@ document.addEventListener('DOMContentLoaded', function() {
 {% with change_logs=change_logs change_logs_count=change_logs_count history_url=staff_history_url show_full_content=False %}
     {% include 'common/_change_history_list.html' %}
 {% endwith %}
+
+<!-- Face Upload Modal -->
+<div class="modal fade" id="uploadFaceModal" tabindex="-1" aria-labelledby="uploadFaceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadFaceModalLabel">顔写真の登録/変更</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'staff:staff_face_upload' staff.pk %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="id_face_image" class="form-label">画像ファイル</label>
+                        <input type="file" name="face_image" class="form-control" id="id_face_image" accept="image/jpeg,image/png" required>
+                        <div class="form-text">2MB以下のJPEGまたはPNG画像を選択してください。</div>
+                    </div>
+                    <div class="text-center">
+                        <img id="imagePreview" src="#" alt="プレビュー" class="img-fluid" style="display: none; max-height: 200px; border: 1px solid #ddd; margin-top: 10px;"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                    <button type="submit" class="btn btn-primary" id="uploadSubmitButton" disabled>アップロード</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Face Delete Modal -->
+<div class="modal fade" id="deleteFaceModal" tabindex="-1" aria-labelledby="deleteFaceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteFaceModalLabel">顔写真の削除</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>本当に顔写真を削除しますか？</p>
+            </div>
+            <div class="modal-footer">
+                <form action="{% url 'staff:staff_face_delete' staff.pk %}" method="post">
+                    {% csrf_token %}
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                    <button type="submit" class="btn btn-danger">削除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.face-photo-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+.face-photo-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 15%;
+}
+.face-photo-container:hover .face-photo-overlay {
+    opacity: 1;
+}
+.face-photo-overlay .btn {
+    margin: 0 5px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const imageInput = document.getElementById('id_face_image');
+    const imagePreview = document.getElementById('imagePreview');
+    const uploadSubmitButton = document.getElementById('uploadSubmitButton');
+
+    imageInput.addEventListener('change', function(event) {
+        if (event.target.files && event.target.files[0]) {
+            const file = event.target.files[0];
+            // ファイルタイプのチェック
+            if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
+                alert('JPEGまたはPNG形式の画像を選択してください。');
+                resetPreview();
+                return;
+            }
+            // ファイルサイズのチェック (2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('ファイルサイズは2MB以下にしてください。');
+                resetPreview();
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                uploadSubmitButton.disabled = false;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            resetPreview();
+        }
+    });
+
+    function resetPreview() {
+        imageInput.value = ''; // ファイル選択をリセット
+        imagePreview.src = '#';
+        imagePreview.style.display = 'none';
+        uploadSubmitButton.disabled = true;
+    }
+
+    // モーダルが閉じられたときにプレビューをリセット
+    const uploadModal = document.getElementById('uploadFaceModal');
+    uploadModal.addEventListener('hidden.bs.modal', function () {
+        resetPreview();
+    });
+});
+</script>
 
 {% endblock %}
 
