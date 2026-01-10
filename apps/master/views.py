@@ -145,6 +145,14 @@ MASTER_CONFIGS = [
     },
     {
         "category": "その他",
+        "name": "生成AI設定",
+        "description": "生成AIに関する設定を管理します",
+        "model": "master.GenerativeAiSetting",
+        "url_name": "master:generative_ai_setting_list",
+        "permission": "master.view_generativeaisetting",
+    },
+    {
+        "category": "その他",
         "name": "お知らせ管理",
         "description": "会社・スタッフ・クライアントへのお知らせを管理",
         "model": "master.Information",

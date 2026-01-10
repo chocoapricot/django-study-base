@@ -115,6 +115,11 @@ urlpatterns = [
     path('user-parameter/<str:pk>/update/', views.user_parameter_update, name='user_parameter_update'),
     path('user-parameter/history/', views.user_parameter_change_history_list, name='user_parameter_change_history_list'),
 
+    # 生成AI設定
+    path('generative-ai-setting/', views.generative_ai_setting_list, name='generative_ai_setting_list'),
+    path('generative-ai-setting/<str:pk>/update/', views.generative_ai_setting_update, name='generative_ai_setting_update'),
+    path('generative-ai-setting/history/', views.generative_ai_setting_change_history_list, name='generative_ai_setting_change_history_list'),
+
     # 初期値マスタ
     path('default-value/', views.default_value_list, name='default_value_list'),
     path('default-value/<str:pk>/update/', views.default_value_update, name='default_value_update'),

@@ -10,12 +10,14 @@ from .models import (
     MailTemplate,
     DefaultValue,
     UserParameter,
+    GenerativeAiSetting,
 )
 from .forms import (
     InformationForm,
     MailTemplateForm,
     DefaultValueForm,
     UserParameterForm,
+    GenerativeAiSettingForm,
 )
 from apps.system.logs.models import AppLog
 from apps.company.models import Company
@@ -421,3 +423,73 @@ def user_parameter_change_history_list(request):
         },
     )
 
+
+@login_required
+@permission_required("master.view_generativeaisetting", raise_exception=True)
+def generative_ai_setting_list(request):
+    """生成AI設定一覧"""
+    search_query = request.GET.get("search", "")
+    items = GenerativeAiSetting.objects.all()
+    if search_query:
+        items = items.filter(
+            Q(target_item__icontains=search_query) | Q(value__icontains=search_query)
+        )
+
+    paginator = Paginator(items, 20)
+    page = request.GET.get("page")
+    items_page = paginator.get_page(page)
+
+    change_logs = AppLog.objects.filter(model_name="GenerativeAiSetting", action__in=["update"]).order_by("-timestamp")[:5]
+    change_logs_count = AppLog.objects.filter(model_name="GenerativeAiSetting", action__in=["update"]).count()
+
+    context = {
+        "items": items_page,
+        "search_query": search_query,
+        "change_logs": change_logs,
+        "change_logs_count": change_logs_count,
+        "history_url_name": "master:generative_ai_setting_change_history_list",
+        "title": "生成AI設定",
+    }
+    return render(request, "master/generative_ai_setting_list.html", context)
+
+
+@login_required
+@permission_required("master.change_generativeaisetting", raise_exception=True)
+def generative_ai_setting_update(request, pk):
+    """生成AI設定編集"""
+    item = get_object_or_404(GenerativeAiSetting, pk=pk)
+    if request.method == "POST":
+        form = GenerativeAiSettingForm(request.POST, instance=item)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"生成AI設定「{item.target_item}」を更新しました。")
+            return redirect("master:generative_ai_setting_list")
+    else:
+        form = GenerativeAiSettingForm(instance=item)
+
+    context = {
+        "form": form,
+        "item": item,
+        "title": f"生成AI設定編集 - {item.target_item}",
+    }
+    return render(request, "master/generative_ai_setting_form.html", context)
+
+
+@login_required
+@permission_required("master.view_generativeaisetting", raise_exception=True)
+def generative_ai_setting_change_history_list(request):
+    """生成AI設定変更履歴一覧"""
+    logs = AppLog.objects.filter(model_name="GenerativeAiSetting", action__in=["update"]).order_by("-timestamp")
+    paginator = Paginator(logs, 20)
+    page = request.GET.get("page")
+    logs_page = paginator.get_page(page)
+    return render(
+        request,
+        "common/common_change_history_list.html",
+        {
+            "change_logs": logs_page,
+            "page_title": "生成AI設定変更履歴",
+            "back_url_name": "master:generative_ai_setting_list",
+            "model_name": "GenerativeAiSetting",
+        },
+    )
