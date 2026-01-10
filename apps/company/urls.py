@@ -7,6 +7,8 @@ urlpatterns = [
     # 会社情報
     path('', views.company_detail, name='company_detail'),
     path('edit/', views.company_edit, name='company_edit'),
+    path('seal/upload/', views.company_seal_upload, name='company_seal_upload'),
+    path('seal/delete/', views.company_seal_delete, name='company_seal_delete'),
     
     # 部署管理
     path('departments/create/', views.department_create, name='department_create'),

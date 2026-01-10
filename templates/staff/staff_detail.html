@@ -74,9 +74,6 @@
                             <div class="face-photo-container" {% if staff.has_face_photo %}data-bs-toggle="modal" data-bs-target="#viewFaceModal" style="cursor: pointer;"{% endif %}>
                                 <img src="{% url 'staff:staff_face' staff.pk %}?v={% now "U" %}" class="rounded-circle img-fluid" width="100" height="100" style="border-radius: 15%;">
                                 <div class="face-photo-overlay d-flex gap-1">
-                                    {% if staff.has_face_photo %}
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#viewFaceModal" class="btn btn-sm btn-dark" title="拡大表示"><i class="bi bi-eye"></i></a>
-                                    {% endif %}
                                     {% if perms.staff.change_staff %}
                                     <a href="#" onclick="event.stopPropagation();" data-bs-toggle="modal" data-bs-target="#uploadFaceModal" class="btn btn-sm btn-primary" title="登録/変更"><i class="bi bi-upload"></i></a>
                                     {% if staff.has_face_photo %}

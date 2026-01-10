@@ -1,12 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Company, CompanyDepartment, CompanyUser
-from .forms import CompanyForm, CompanyDepartmentForm, CompanyUserForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from apps.system.logs.models import AppLog
 from apps.system.logs.utils import log_view_detail, log_model_action
 from django.db.models import Q
 from django.core.paginator import Paginator
+from PIL import Image
+from io import BytesIO
+from django.core.files.base import ContentFile
+from django.conf import settings
+from .forms import CompanyForm, CompanyDepartmentForm, CompanyUserForm, CompanySealUploadForm
 
 @login_required
 @permission_required('company.view_company', raise_exception=True)
@@ -488,3 +492,90 @@ def company_user_detail(request, pk):
         'department': department, # 部署情報をテンプレートに渡す
         'related_contracts': related_contracts,
     })
+
+@login_required
+@permission_required('company.change_company', raise_exception=True)
+def company_seal_upload(request):
+    """会社印（丸印・角印）のアップロード処理"""
+    company = Company.objects.first()
+    if not company:
+        messages.error(request, '会社情報が見つかりません。')
+        return redirect('company:company_detail')
+
+    if request.method == 'POST':
+        form = CompanySealUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.cleaned_data['seal_image']
+            seal_type = form.cleaned_data['seal_type'] # 'round' or 'square'
+            x = form.cleaned_data.get('crop_x')
+            y = form.cleaned_data.get('crop_y')
+            w = form.cleaned_data.get('crop_width')
+            h = form.cleaned_data.get('crop_height')
+
+            try:
+                with Image.open(image) as img:
+                    orig_w, orig_h = img.size
+
+                    # クロップ処理
+                    if all(v is not None for v in [x, y, w, h]):
+                        left = max(0, int(float(x)))
+                        top = max(0, int(float(y)))
+                        right = min(orig_w, int(float(x + w)))
+                        bottom = min(orig_h, int(float(y + h)))
+                        
+                        if right > left and bottom > top:
+                            img = img.crop((left, top, right, bottom))
+
+                    # RGBA（透明度あり）は維持しつつ、それ以外はRGBにする
+                    if img.mode not in ('RGB', 'RGBA'):
+                        img = img.convert('RGB')
+                    
+                    # 600x600にリサイズ
+                    img = img.resize((600, 600), Image.Resampling.LANCZOS)
+                    
+                    # メモリ上に保存
+                    temp_io = BytesIO()
+                    img.save(temp_io, format='PNG')
+                    image_content = ContentFile(temp_io.getvalue())
+                    
+                    # 保存処理
+                    company._upload_type = f"{seal_type}_seal"
+                    if seal_type == 'round':
+                        company.round_seal.save(f'round_seal.png', image_content, save=True)
+                    else:
+                        company.square_seal.save(f'square_seal.png', image_content, save=True)
+                
+                log_model_action(request.user, 'update', company)
+                messages.success(request, f'{"丸印" if seal_type == "round" else "角印"}を登録しました。')
+            except Exception as e:
+                messages.error(request, f'画像の保存中にエラーが発生しました: {e}')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'{field}: {error}')
+
+    return redirect('company:company_detail')
+
+@login_required
+@permission_required('company.change_company', raise_exception=True)
+def company_seal_delete(request):
+    """会社印（丸印・角印）の削除処理"""
+    company = Company.objects.first()
+    if not company:
+        messages.error(request, '会社情報が見つかりません。')
+        return redirect('company:company_detail')
+
+    if request.method == 'POST':
+        seal_type = request.POST.get('seal_type')
+        if seal_type == 'round':
+            if company.round_seal:
+                company.round_seal.delete()
+                messages.success(request, '丸印を削除しました。')
+        elif seal_type == 'square':
+            if company.square_seal:
+                company.square_seal.delete()
+                messages.success(request, '角印を削除しました。')
+        
+        log_model_action(request.user, 'update', company)
+    
+    return redirect('company:company_detail')

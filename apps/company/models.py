@@ -126,6 +126,14 @@ class CompanyDepartment(MyModel):
         return f"{self.name}{period_str}"
 
 
+def company_seal_upload_path(instance, filename):
+    """会社印（丸印・角印）のアップロードパスを生成"""
+    ext = filename.split('.')[-1]
+    # round_seal または square_seal をファイル名に含める
+    # instance._upload_type が設定されていることを期待
+    upload_type = getattr(instance, '_upload_type', 'seal')
+    return f'company_seals/{upload_type}.{ext}'
+
 class Company(MyModel):
     """
     自社の会社情報を管理するモデル。
@@ -151,6 +159,21 @@ class Company(MyModel):
         choices=DISPATCH_TREATMENT_METHOD_CHOICES,
         default=Constants.DISPATCH_TREATMENT_METHOD.AGREEMENT,
         help_text='派遣労働者の待遇決定方式を選択してください'
+    )
+
+    round_seal = models.ImageField(
+        '丸印',
+        upload_to=company_seal_upload_path,
+        blank=True,
+        null=True,
+        help_text='契約書等に使用する丸印の画像 (600x600推奨)'
+    )
+    square_seal = models.ImageField(
+        '角印',
+        upload_to=company_seal_upload_path,
+        blank=True,
+        null=True,
+        help_text='請求書等に使用する角印の画像 (600x600推奨)'
     )
 
 

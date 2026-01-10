@@ -168,6 +168,31 @@ class CompanyUserForm(forms.ModelForm):
                 'style': 'ime-mode:disabled;',
                 'autocomplete': 'off',
             }),
-            'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
         }
+
+class CompanySealUploadForm(forms.Form):
+    """会社印アップロードフォーム"""
+    seal_image = forms.ImageField(
+        label='画像ファイル',
+        help_text='2MB以下のJPEGまたはPNG画像を選択してください。',
+        widget=forms.ClearableFileInput(attrs={
+            'class': 'form-control',
+            'accept': 'image/jpeg,image/png',
+        })
+    )
+    seal_type = forms.CharField(widget=forms.HiddenInput()) # 'round' or 'square'
+    
+    # クロップデータ保持用
+    crop_x = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    crop_y = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    crop_width = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    crop_height = forms.FloatField(widget=forms.HiddenInput(), required=False)
+
+    def clean_seal_image(self):
+        image = self.cleaned_data.get('seal_image')
+        if image:
+            # ファイルサイズチェック（2MB制限）
+            if image.size > 2 * 1024 * 1024:
+                raise forms.ValidationError('ファイルサイズは2MB以下にしてください。')
+        return image

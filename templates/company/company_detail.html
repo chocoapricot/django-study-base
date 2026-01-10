@@ -2,6 +2,53 @@
 {% load static %}
 {% load help_tags %}
 {% load parameters %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+<style>
+    .seal-container {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        border: 1px solid #ddd;
+        background: #fff;
+        border-radius: 4px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .seal-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: flex-end; /* 下部に配置 */
+        padding-bottom: 5px;
+        gap: 5px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .seal-container:hover .seal-overlay {
+        opacity: 1;
+    }
+    .cropper-container-wrapper {
+        width: 100%;
+        max-height: 400px;
+        min-height: 200px;
+        background-color: #f7f7f7;
+        margin-top: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
@@ -32,6 +79,43 @@
             </div>
             <div class="col-sm-4">
                 {{ company.representative }}
+            </div>
+            <div class="col-sm-1 text-start text-md-end">
+                <strong>会社印</strong>
+            </div>
+            <div class="col-sm-4 d-flex gap-4">
+                <div class="text-center">
+                    <div class="seal-container mb-1" {% if company.round_seal %}data-bs-toggle="modal" data-bs-target="#viewRoundSealModal" style="cursor: pointer;"{% endif %}>
+                        {% if company.round_seal %}
+                        <img src="{{ company.round_seal.url }}?v={% now "U" %}" style="max-width: 100%; max-height: 100%;">
+                        {% else %}
+                        <div class="text-muted d-flex align-items-center justify-content-center small" style="height: 100%;">未登録</div>
+                        {% endif %}
+                        <div class="seal-overlay">
+                            <button type="button" class="btn btn-sm btn-primary" onclick="event.stopPropagation(); openSealUpload('round')" title="登録/変更"><i class="bi bi-upload"></i></button>
+                            {% if company.round_seal %}
+                            <button type="button" class="btn btn-sm btn-dark" onclick="event.stopPropagation(); deleteSeal('round')" title="削除"><i class="bi bi-trash"></i></button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <span class="small">丸印</span>
+                </div>
+                <div class="text-center">
+                    <div class="seal-container mb-1" {% if company.square_seal %}data-bs-toggle="modal" data-bs-target="#viewSquareSealModal" style="cursor: pointer;"{% endif %}>
+                        {% if company.square_seal %}
+                        <img src="{{ company.square_seal.url }}?v={% now "U" %}" style="max-width: 100%; max-height: 100%;">
+                        {% else %}
+                        <div class="text-muted d-flex align-items-center justify-content-center small" style="height: 100%;">未登録</div>
+                        {% endif %}
+                        <div class="seal-overlay">
+                            <button type="button" class="btn btn-sm btn-primary" onclick="event.stopPropagation(); openSealUpload('square')" title="登録/変更"><i class="bi bi-upload"></i></button>
+                            {% if company.square_seal %}
+                            <button type="button" class="btn btn-sm btn-dark" onclick="event.stopPropagation(); deleteSeal('square')" title="削除"><i class="bi bi-trash"></i></button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <span class="small">角印</span>
+                </div>
             </div>
         </div>
 
@@ -151,11 +235,6 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                {% if show_all_link and departments.count > 5 %}
-                <div class="text-center">
-                    <a href="{% url 'company:department_list' %}" class="btn btn-link">全て表示</a>
-                </div>
-                {% endif %}
             </div>
         </div>
     </div>
@@ -188,4 +267,191 @@
 </style>
 <script src="{% static 'js/copy-to-clipboard.js' %}"></script>
 
+<!-- Seal Upload Modal -->
+<div class="modal fade" id="uploadSealModal" tabindex="-1" aria-labelledby="uploadSealModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadSealModalLabel">会社印の登録/変更</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'company:company_seal_upload' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" name="seal_type" id="id_seal_type">
+                    <div class="mb-3">
+                        <label for="id_seal_image" class="form-label">画像ファイル</label>
+                        <input type="file" name="seal_image" class="form-control" id="id_seal_image" accept="image/jpeg,image/png" required>
+                        <div class="form-text">2MB以下のJPEGまたはPNG画像を選択してください。</div>
+                    </div>
+                    <div id="cropperWrapper" class="cropper-container-wrapper" style="display: none;">
+                        <img id="imagePreview" src="#" alt="プレビュー" style="max-width: 100%; display: block;">
+                    </div>
+                    <!-- クロップ座標保持用 -->
+                    <input type="hidden" name="crop_x" id="id_crop_x">
+                    <input type="hidden" name="crop_y" id="id_crop_y">
+                    <input type="hidden" name="crop_width" id="id_crop_width">
+                    <input type="hidden" name="crop_height" id="id_crop_height">
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="uploadSubmitButton" disabled>アップロード</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Seal Delete Form (hidden) -->
+<form id="deleteSealForm" action="{% url 'company:company_seal_delete' %}" method="post" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="seal_type" id="id_delete_seal_type">
+</form>
+
+<!-- Round Seal View Modal -->
+{% if company.round_seal %}
+<div class="modal fade" id="viewRoundSealModal" tabindex="-1" aria-labelledby="viewRoundSealModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewRoundSealModalLabel">丸印表示</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-0 overflow-hidden">
+                <img src="{{ company.round_seal.url }}?v={% now "U" %}" class="img-fluid w-100">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Square Seal View Modal -->
+{% if company.square_seal %}
+<div class="modal fade" id="viewSquareSealModal" tabindex="-1" aria-labelledby="viewSquareSealModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewSquareSealModalLabel">角印表示</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-0 overflow-hidden">
+                <img src="{{ company.square_seal.url }}?v={% now "U" %}" class="img-fluid w-100">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+<script>
+    const imageInput = document.getElementById('id_seal_image');
+    const imagePreview = document.getElementById('imagePreview');
+    const cropperWrapper = document.getElementById('cropperWrapper');
+    const uploadSubmitButton = document.getElementById('uploadSubmitButton');
+    const sealTypeInput = document.getElementById('id_seal_type');
+    
+    // クロップ座標用
+    const cropX = document.getElementById('id_crop_x');
+    const cropY = document.getElementById('id_crop_y');
+    const cropWidth = document.getElementById('id_crop_width');
+    const cropHeight = document.getElementById('id_crop_height');
+
+    let cropper = null;
+
+    function openSealUpload(type) {
+        sealTypeInput.value = type;
+        const title = type === 'round' ? '丸印の登録/変更' : '角印の登録/変更';
+        document.getElementById('uploadSealModalLabel').textContent = title;
+        const modal = new bootstrap.Modal(document.getElementById('uploadSealModal'));
+        modal.show();
+    }
+
+    function deleteSeal(type) {
+        if (confirm(`${type === 'round' ? '丸印' : '角印'}を削除しますか？`)) {
+            document.getElementById('id_delete_seal_type').value = type;
+            document.getElementById('deleteSealForm').submit();
+        }
+    }
+
+    imageInput.addEventListener('change', function(event) {
+        if (event.target.files && event.target.files[0]) {
+            const file = event.target.files[0];
+            if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
+                alert('JPEGまたはPNG形式の画像を選択してください。');
+                resetPreview();
+                return;
+            }
+            if (file.size > 2 * 1024 * 1024) {
+                alert('ファイルサイズは2MB以下にしてください。');
+                resetPreview();
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+
+                imagePreview.src = e.target.result;
+                cropperWrapper.style.display = 'block';
+                
+                cropper = new Cropper(imagePreview, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 1,
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false,
+                    crop(event) {
+                        const data = event.detail;
+                        cropX.value = data.x;
+                        cropY.value = data.y;
+                        cropWidth.value = data.width;
+                        cropHeight.value = data.height;
+                    },
+                });
+
+                uploadSubmitButton.disabled = false;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            resetPreview();
+        }
+    });
+
+    function resetPreview() {
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+        imageInput.value = '';
+        imagePreview.src = '#';
+        cropperWrapper.style.display = 'none';
+        uploadSubmitButton.disabled = true;
+        cropX.value = '';
+        cropY.value = '';
+        cropWidth.value = '';
+        cropHeight.value = '';
+    }
+
+    document.getElementById('uploadSealModal').addEventListener('hidden.bs.modal', function () {
+        resetPreview();
+    });
+</script>
 {% endblock %}
