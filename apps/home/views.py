@@ -279,6 +279,8 @@ from apps.kintai.models import (
 from apps.system.logs.models import MailLog, AppLog, AccessLog
 from apps.accounts.models import MyUser
 from apps.profile.models import StaffProfile, StaffProfileQualification, StaffProfileSkill, StaffProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact
+import os
+import shutil
 
 @require_POST
 @user_passes_test(lambda u: u.is_superuser)
