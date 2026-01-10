@@ -215,6 +215,41 @@ def copy_sample_photos(task: SetupTask) -> bool:
         return False
 
 
+def copy_company_seals(task: SetupTask) -> bool:
+    """会社印のサンプルファイルをコピー"""
+    task.current_step = '会社印のサンプルファイルをコピー中...'
+    
+    import shutil
+    from django.conf import settings
+    
+    sample_seals_dir = os.path.join(settings.BASE_DIR, '_sample_data', 'company_seals')
+    target_seals_dir = os.path.join(settings.MEDIA_ROOT, 'company_seals')
+    
+    if not os.path.exists(sample_seals_dir):
+        print(f"ℹ️ 会社印サンプルディレクトリが見つからないためスキップします: {sample_seals_dir}")
+        return True
+    
+    if not os.path.exists(target_seals_dir):
+        os.makedirs(target_seals_dir)
+        
+    copied_count = 0
+    try:
+        for filename in os.listdir(sample_seals_dir):
+            if filename.lower().endswith(('.jpg', '.jpeg', '.png')):
+                src_path = os.path.join(sample_seals_dir, filename)
+                dst_path = os.path.join(target_seals_dir, filename)
+                shutil.copy2(src_path, dst_path)
+                copied_count += 1
+        
+        print(f"✅ {copied_count}個の会社印サンプルファイルをコピーしました")
+        return True
+    except Exception as e:
+        error_msg = f"会社印ファイルのコピー中にエラーが発生しました: {e}"
+        print(f"❌ {error_msg}")
+        task.errors.append(error_msg)
+        return False
+
+
 def execute_setup(task_id: str):
     """セットアップ処理を実行（別スレッドで実行される）"""
     task = get_setup_task(task_id)
@@ -258,6 +293,12 @@ def execute_setup(task_id: str):
 
         # 6. サンプル画像のコピー
         if not copy_sample_photos(task):
+            task.status = 'failed'
+            task.end_time = datetime.now()
+            return
+
+        # 7. 会社印サンプルファイルのコピー
+        if not copy_company_seals(task):
             task.status = 'failed'
             task.end_time = datetime.now()
             return

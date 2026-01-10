@@ -132,7 +132,7 @@ def company_seal_upload_path(instance, filename):
     # round_seal または square_seal をファイル名に含める
     # instance._upload_type が設定されていることを期待
     upload_type = getattr(instance, '_upload_type', 'seal')
-    return f'company_seals/{upload_type}.{ext}'
+    return f'company_seals/{instance.pk}_{upload_type}.{ext}'
 
 class Company(MyModel):
     """
