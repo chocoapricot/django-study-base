@@ -40,7 +40,6 @@
                                 {% endif %}
                                 <hr class="dropdown-divider">
                                 <a href="{% url 'contract:client_contract_ai_check' contract.pk %}" class="dropdown-item"><i class="bi bi-robot"></i>　個別契約書(AI確認)</a>
-                                <hr class="dropdown-divider">
                                 {% endif %}
 
                                 {% if contract.client_contract_type_code == Constants.CLIENT_CONTRACT_TYPE.DISPATCH %}

@@ -1523,12 +1523,12 @@ def client_contract_ai_check(request, pk):
 
     if request.method == 'POST':
         # プロンプトテンプレート取得
-        prompt_template_param = GenerativeAiSetting.objects.filter(pk='GEMINI_PROMPT_TEMPLATE').first()
+        prompt_template_param = GenerativeAiSetting.objects.filter(pk='GEMINI_PROMPT_TEMPLATE_CLIENT').first()
         prompt_template = prompt_template_param.value if prompt_template_param else ""
 
         if not prompt_template:
             # デフォルトプロンプト
-            prompt_template = "あなたは日本の法律に詳しい弁護士です。以下の契約書の内容を確認し、法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\n\n【契約内容】\n{{contract_text}}"
+            prompt_template = "あなたは日本の労働法に詳しい社労士です。以下の労働者派遣個別契約書の内容を確認し、労働者派遣法等の法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\n\n【契約内容】\n{{contract_text}}"
 
         # プレースホルダー置換
         final_prompt = prompt_template.replace('{{contract_text}}', full_contract_text)
