@@ -171,12 +171,19 @@ class GenerativeAiSetting(MyModel):
         ('textarea', 'テキストエリア'),
         ('boolean', '真偽値'),
         ('number', '数値'),
+        ('choice', '選択肢'),
+    ]
+
+    AI_PROVIDER_CHOICES = [
+        ('openai', 'OpenAI'),
+        ('gemini', 'Gemini'),
     ]
 
     key = models.CharField('キー', max_length=255, primary_key=True)
     target_item = models.CharField('対象項目', max_length=255)
     format = models.CharField('形式', max_length=10, choices=FORMAT_CHOICES, default='text')
     value = models.TextField('値', blank=True)
+    ai_provider = models.CharField('生成AI', max_length=10, choices=AI_PROVIDER_CHOICES, blank=True, null=True)
     display_order = models.IntegerField('表示順', default=0)
 
     class Meta:

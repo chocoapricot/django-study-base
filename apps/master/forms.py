@@ -806,6 +806,13 @@ class GenerativeAiSettingForm(forms.ModelForm):
                     }),
                     initial=self.instance.value
                 )
+            elif self.instance.format == 'choice':
+                # choice形式の場合は選択肢フィールドに変更
+                self.fields['value'] = forms.ChoiceField(
+                    choices=[('openai', 'OpenAI'), ('gemini', 'Gemini')],
+                    widget=forms.Select(attrs={'class': 'form-control form-control-sm'}),
+                    initial=self.instance.value
+                )
 
     def clean_value(self):
         """値のバリデーション"""
@@ -827,5 +834,9 @@ class GenerativeAiSettingForm(forms.ModelForm):
                         int(value)
                 except (ValueError, TypeError):
                     raise ValidationError('数値を入力してください。')
+        elif format_type == 'choice':
+            # choice形式の場合、openai/geminiのみ許可
+            if value not in ['openai', 'gemini']:
+                raise ValidationError('選択肢は "openai" または "gemini" で入力してください。')
 
         return value
