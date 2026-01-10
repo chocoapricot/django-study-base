@@ -17,7 +17,12 @@ def run_ai_check(prompt_key, contract_text, default_prompt):
     """
     from apps.master.models import GenerativeAiSetting
     from apps.common.gemini_utils import call_gemini_api
+    from apps.common.openai_utils import call_openai_api
     import markdown
+
+    # AIプロバイダーを取得
+    ai_provider_param = GenerativeAiSetting.objects.filter(pk='AI_PROVIDER').first()
+    ai_provider = ai_provider_param.value if ai_provider_param else 'gemini'  # デフォルトはgemini
 
     prompt_template_param = GenerativeAiSetting.objects.filter(pk=prompt_key).first()
     prompt_template = prompt_template_param.value if prompt_template_param else ""
@@ -26,7 +31,12 @@ def run_ai_check(prompt_key, contract_text, default_prompt):
         prompt_template = default_prompt
 
     final_prompt = prompt_template.replace('{{contract_text}}', contract_text)
-    result = call_gemini_api(final_prompt)
+
+    # AIプロバイダーに応じてAPIを呼び出す
+    if ai_provider.lower() == 'openai':
+        result = call_openai_api(final_prompt)
+    else:
+        result = call_gemini_api(final_prompt)
 
     ai_response = None
     error_message = None

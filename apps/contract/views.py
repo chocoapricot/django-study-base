@@ -1521,7 +1521,7 @@ def client_contract_ai_check(request, pk):
 
     if request.method == 'POST':
         default_prompt = "あなたは日本の労働法に詳しい社労士です。以下の労働者派遣個別契約書の内容を確認し、労働者派遣法等の法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\n\n【契約内容】\n{{contract_text}}"
-        ai_response, error_message = run_ai_check('GEMINI_PROMPT_TEMPLATE_CLIENT', full_contract_text, default_prompt)
+        ai_response, error_message = run_ai_check('PROMPT_TEMPLATE_CLIENT', full_contract_text, default_prompt)
 
     context = {
         'page_title': '個別契約書(AI確認)',

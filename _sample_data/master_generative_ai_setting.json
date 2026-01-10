@@ -16,14 +16,14 @@
     },
     {
         "model": "master.generativeaisetting",
-        "pk": "GEMINI_API_KEY",
+        "pk": "AI_API_KEY",
         "fields": {
             "version": 1,
             "created_at": "2025-01-01T00:00:00.000Z",
             "created_by": 1,
             "updated_at": "2025-01-01T00:00:00.000Z",
             "updated_by": 1,
-            "target_item": "Gemini > API Key",
+            "target_item": "API Key",
             "format": "text",
             "value": "",
             "display_order": 900
@@ -31,14 +31,29 @@
     },
     {
         "model": "master.generativeaisetting",
-        "pk": "GEMINI_PROMPT_TEMPLATE",
+        "pk": "AI_MODEL",
         "fields": {
             "version": 1,
             "created_at": "2025-01-01T00:00:00.000Z",
             "created_by": 1,
             "updated_at": "2025-01-01T00:00:00.000Z",
             "updated_by": 1,
-            "target_item": "Gemini > Contract Check Prompt",
+            "target_item": "AI Model",
+            "format": "text",
+            "value": "gemini-2.5-flash",
+            "display_order": 901
+        }
+    },
+    {
+        "model": "master.generativeaisetting",
+        "pk": "PROMPT_TEMPLATE_STAFF",
+        "fields": {
+            "version": 1,
+            "created_at": "2025-01-01T00:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2025-01-01T00:00:00.000Z",
+            "updated_by": 1,
+            "target_item": "Staff Contract Check Prompt",
             "format": "textarea",
             "value": "あなたは日本の労働法に詳しい社労士です。以下の雇用契約書兼労働条件通知書の内容を確認し、法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\\n\\n【契約内容】\\n{{contract_text}}",
             "display_order": 902
@@ -46,14 +61,14 @@
     },
     {
         "model": "master.generativeaisetting",
-        "pk": "GEMINI_PROMPT_TEMPLATE_ASSIGNMENT",
+        "pk": "PROMPT_TEMPLATE_ASSIGNMENT",
         "fields": {
             "version": 1,
             "created_at": "2025-01-01T00:00:00.000Z",
             "created_by": 1,
             "updated_at": "2025-01-01T00:00:00.000Z",
             "updated_by": 1,
-            "target_item": "Gemini > Assignment Cond. Check Prompt",
+            "target_item": "Assignment Cond. Check Prompt",
             "format": "textarea",
             "value": "あなたは日本の労働法に詳しい社労士です。以下の就業条件明示書の内容を確認し、労働者派遣法等の法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\\n\\n【契約内容】\\n{{contract_text}}",
             "display_order": 903
@@ -61,14 +76,14 @@
     },
     {
         "model": "master.generativeaisetting",
-        "pk": "GEMINI_PROMPT_TEMPLATE_CLIENT",
+        "pk": "PROMPT_TEMPLATE_CLIENT",
         "fields": {
             "version": 1,
             "created_at": "2025-01-01T00:00:00.000Z",
             "created_by": 1,
             "updated_at": "2025-01-01T00:00:00.000Z",
             "updated_by": 1,
-            "target_item": "Gemini > Client Ind. Contract Check Prompt",
+            "target_item": "Client Ind. Contract Check Prompt",
             "format": "textarea",
             "value": "あなたは日本の労働法に詳しい社労士です。以下の労働者派遣個別契約書の内容を確認し、労働者派遣法等の法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\n\n【契約内容】\n{{contract_text}}",
             "display_order": 904

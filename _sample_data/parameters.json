@@ -43,10 +43,27 @@
         "updated_by": 1,
         "category": "api",
         "key": "GEMINI_API_URL",
-        "value": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
-        "default_value": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
-        "note": "GeminiのAPI URL",
+        "value": "https://generativelanguage.googleapis.com/v1beta/models/",
+        "default_value": "https://generativelanguage.googleapis.com/v1beta/models/",
+        "note": "GeminiのAPI URL（ベース部分）",
         "disp_seq": 4,
+        "active": true
+    }
+},
+{
+    "model": "settings.parameter",
+    "pk": 8,
+    "fields": {
+        "created_at": "2025-01-01T00:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00.000Z",
+        "updated_by": 1,
+        "category": "api",
+        "key": "OPENAI_API_URL",
+        "value": "https://api.openai.com/v1/chat/completions",
+        "default_value": "https://api.openai.com/v1/chat/completions",
+        "note": "OpenAIのAPI URL",
+        "disp_seq": 8,
         "active": true
     }
 },
