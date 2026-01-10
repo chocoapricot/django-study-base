@@ -9,6 +9,7 @@ urlpatterns = [
     path('edit/', views.company_edit, name='company_edit'),
     path('seal/upload/', views.company_seal_upload, name='company_seal_upload'),
     path('seal/delete/', views.company_seal_delete, name='company_seal_delete'),
+    path('seal/<str:seal_type>/', views.serve_company_seal, name='serve_company_seal'),
     
     # 部署管理
     path('departments/create/', views.department_create, name='department_create'),

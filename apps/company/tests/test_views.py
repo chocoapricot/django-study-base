@@ -1,6 +1,8 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
+from django.core.files.uploadedfile import SimpleUploadedFile
 from ..models import Company, CompanyDepartment, CompanyUser
 
 User = get_user_model()
@@ -15,9 +17,19 @@ class CompanyViewTest(TestCase):
             email='test@example.com',
             password='testpass123'
         )
-        # ユーザーをスーパーユーザーにして権限問題を回避
-        self.user.is_superuser = True
+        # 必要な権限を付与
+        view_permission = Permission.objects.get(codename='view_company')
+        change_permission = Permission.objects.get(codename='change_company')
+        self.user.user_permissions.add(view_permission, change_permission)
         self.user.save()
+
+        # テスト用の画像を作成
+        self.seal_image = SimpleUploadedFile(
+            name='test_seal.png',
+            content=b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\x0aIDATx\x9cc\xf8\xff\xff?\x03\x00\x05\xfe\x02\xfe\xdc\xccY\xe7\x00\x00\x00\x00IEND\xaeB`\x82',
+            content_type='image/png'
+        )
+
         self.company = Company.objects.create(
             name="テスト会社",
             corporate_number="1234567890123",
@@ -26,7 +38,23 @@ class CompanyViewTest(TestCase):
             address="東京都千代田区千代田1-1",
             phone_number="03-1234-5678"
         )
+        self.company.round_seal.save('test.png', self.seal_image)
     
+    def test_serve_company_seal_authenticated(self):
+        """認証済みユーザーの印章画像ビューへのアクセス"""
+        self.client.login(username='testuser', password='testpass123')
+        url = reverse('company:serve_company_seal', kwargs={'seal_type': 'round'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.seal_image.seek(0)  # read()でポインタが末尾に行くためリセット
+        self.assertEqual(response.content, self.seal_image.read())
+
+    def test_serve_company_seal_unauthenticated(self):
+        """未認証ユーザーの印章画像ビューへのアクセス"""
+        url = reverse('company:serve_company_seal', kwargs={'seal_type': 'round'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+
     def test_company_detail_view_requires_login(self):
         """会社詳細ビューのログイン必須テスト"""
         response = self.client.get(reverse('company:company_detail'))
