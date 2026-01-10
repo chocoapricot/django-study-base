@@ -1536,7 +1536,7 @@ def staff_contract_ai_check(request, pk):
     """
     スタッフ契約（雇用契約書兼労働条件通知書）の内容をAIでチェックする
     """
-    from apps.master.models import UserParameter
+    from apps.master.models import GenerativeAiSetting
     from apps.common.gemini_utils import call_gemini_api
     from .text_utils import generate_staff_contract_full_text
     
@@ -1551,7 +1551,7 @@ def staff_contract_ai_check(request, pk):
     
     if request.method == 'POST':
         # プロンプトテンプレート取得
-        prompt_template_param = UserParameter.objects.filter(pk='GEMINI_PROMPT_TEMPLATE').first()
+        prompt_template_param = GenerativeAiSetting.objects.filter(pk='GEMINI_PROMPT_TEMPLATE').first()
         prompt_template = prompt_template_param.value if prompt_template_param else ""
         
         if not prompt_template:

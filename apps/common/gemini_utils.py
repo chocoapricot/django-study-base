@@ -1,19 +1,19 @@
 import requests
 import json
-from apps.master.models import UserParameter
+from apps.master.models import GenerativeAiSetting
 from apps.system.settings.utils import my_parameter
 
 def call_gemini_api(prompt_text):
     """
-    UserParameterマスタの設定を使ってGemini APIを呼び出す関数
+    GenerativeAiSettingマスタの設定を使ってGemini APIを呼び出す関数
     """
     # 設定値を取得
     try:
-        api_key_param = UserParameter.objects.filter(pk='GEMINI_API_KEY').first()
+        api_key_param = GenerativeAiSetting.objects.filter(pk='GEMINI_API_KEY').first()
         api_url = my_parameter('GEMINI_API_URL')
         
         if not api_key_param or not api_url:
-             return {"success": False, "error": "GEMINI_API_KEYが設定値マスタに設定されていないか、GEMINI_API_URLがパラメータに設定されていません。"}
+             return {"success": False, "error": "GEMINI_API_KEYが生成AI設定に設定されていないか、GEMINI_API_URLがパラメータに設定されていません。"}
 
         api_key = api_key_param.value
         
