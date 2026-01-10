@@ -27,6 +27,7 @@ class ApiCache(models.Model):
         return f"{self.key} - Expires at {self.expires_at}"
 
     class Meta:
+        db_table = 'apps_system_api_cache'
         verbose_name = "APIキャッシュ"
         verbose_name_plural = "APIキャッシュ"
         ordering = ['-created_at']
