@@ -1,0 +1,66 @@
+{% extends 'common/_base.html' %}
+{% load static %}
+{% load help_tags %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">{{ title }}</div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.target_item.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">対象項目</label>
+                <div class="col-sm-6">
+                    {{ form.target_item }}
+                    {% if form.target_item.errors %}
+                        <div class="text-danger small">{{ form.target_item.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.format.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">形式</label>
+                <div class="col-sm-6">
+                    {{ form.format }}
+                    {% if form.format.errors %}
+                        <div class="text-danger small">{{ form.format.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.value.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">設定値</label>
+                <div class="col-sm-6">
+                    {% if form.value.field.widget.input_type == 'radio' %}
+                        <div class="d-flex gap-3">
+                            {% for choice in form.value %}
+                                <div class="form-check">
+                                    {{ choice.tag }}
+                                    <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                        {{ choice.choice_label }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.value }}
+                    {% endif %}
+                    {% if form.value.errors %}
+                        <div class="text-danger small">{{ form.value.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>
+                    <a href="{% url 'master:generative_ai_setting_list' %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
