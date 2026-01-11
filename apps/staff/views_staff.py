@@ -13,7 +13,7 @@ from .forms_mail import ConnectionRequestMailForm, DisconnectionMailForm
 
 from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact
 from .forms import StaffForm, StaffContactedForm, StaffFileForm, StaffFaceUploadForm
-from apps.system.settings.utils import my_parameter
+from .utils import get_staff_face_photo_style
 from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
 from apps.common.utils import fill_excel_from_template
@@ -203,6 +203,7 @@ def staff_contacted_delete(request, pk):
 @login_required
 @permission_required('staff.view_staff', raise_exception=True)
 def staff_list(request):
+    staff_face_photo_style = get_staff_face_photo_style()
     sort = request.GET.get('sort', 'pk')  # デフォルトソートをpkに設定
     query = request.GET.get('q', '').strip()
     staff_regist_status_filter = request.GET.get('regist_status', '').strip()  # 登録区分フィルター
@@ -396,6 +397,7 @@ def staff_list(request):
         'has_request_filter': has_request_filter,
         'has_international_filter': has_international_filter,
         'has_disability_filter': has_disability_filter,
+        'staff_face_photo_style': staff_face_photo_style,
     })
 
 @login_required
@@ -414,6 +416,7 @@ def staff_create(request):
 @login_required
 @permission_required('staff.view_staff', raise_exception=True)
 def staff_detail(request, pk):
+    staff_face_photo_style = get_staff_face_photo_style()
     staff = get_object_or_404(Staff, pk=pk)
 
     # 接続依頼の切り替え処理
@@ -670,6 +673,7 @@ def staff_detail(request, pk):
         'rating_distribution': rating_distribution,
         'total_evaluations': total_evaluations,
         'last_login': last_login,
+        'staff_face_photo_style': staff_face_photo_style,
     })
 
 # 連絡履歴 登録
