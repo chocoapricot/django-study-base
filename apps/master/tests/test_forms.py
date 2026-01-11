@@ -65,3 +65,40 @@ class UserParameterFormTest(TestCase):
         form = UserParameterForm(instance=self.param_textarea)
         widget = form.fields['value'].widget
         self.assertIsInstance(widget, forms.Textarea, "The widget should be a Textarea for the default format.")
+
+    def test_choice_format_field(self):
+        """
+        Tests the behavior of the 'value' field when format is 'choice'.
+        """
+        param_choice = UserParameter.objects.create(
+            key='TEST_CHOICE_PARAM',
+            target_item='Test Choice Param',
+            format='choice',
+            value='option1',
+            choices='option1: Option 1, option2: Option 2'
+        )
+
+        # Test widget type
+        form = UserParameterForm(instance=param_choice)
+        field = form.fields['value']
+        self.assertIsInstance(field, forms.ChoiceField, "The field should be a ChoiceField for choice format.")
+
+        # Test choices are correctly parsed
+        expected_choices = [('option1', 'Option 1'), ('option2', 'Option 2')]
+        self.assertEqual(list(field.choices), expected_choices, "The choices are not parsed correctly.")
+
+        # Test valid data
+        form_data = {
+            'target_item': param_choice.target_item,
+            'format': param_choice.format,
+            'value': 'option2',
+            'choices': param_choice.choices,
+        }
+        form = UserParameterForm(instance=param_choice, data=form_data)
+        self.assertTrue(form.is_valid(), f"Form should be valid with a valid choice. Errors: {form.errors}")
+
+        # Test invalid data
+        form_data['value'] = 'invalid_option'
+        form = UserParameterForm(instance=param_choice, data=form_data)
+        self.assertFalse(form.is_valid(), "Form should be invalid with an invalid choice.")
+        self.assertIn('value', form.errors, "There should be an error on the 'value' field.")
