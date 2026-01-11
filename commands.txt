@@ -97,6 +97,10 @@ python manage.py dumpdata master.timepunch                 --format=json --inden
 # データベースアクセス
 python manage.py dbshell
 
+#テストデータ作成（スタッフ評価）
+.venv\Scripts\Activate 
+_scripts/make_sample_data_staff_evaluation.py
+
 # テスト実施
 python manage.py test 
 python manage.py test apps.api.tests
