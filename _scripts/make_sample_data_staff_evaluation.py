@@ -24,6 +24,7 @@ from apps.master.models import GenerativeAiSetting
 def get_evaluation_data():
     """
     AIからスタッフ評価の文言と点数を10件取得する。
+    エラーの場合はNoneを返す。
     """
     prompt = """
     スタッフ評価のコメントと1-5の評価点を10件生成してください。
@@ -50,26 +51,14 @@ def get_evaluation_data():
                 print("AIからデータを取得しました。")
                 return data[:10]  # 最初の10件
             else:
-                print("AIからのレスポンスが不正な形式です。固定データを使用します。")
+                print("AIからのレスポンスが不正な形式です。")
+                return None
         except json.JSONDecodeError as e:
-            print(f"AIからのレスポンスがJSONではありません: {e}。固定データを使用します。")
+            print(f"AIからのレスポンスがJSONではありません: {e}")
+            return None
     else:
-        print(f"AI呼び出しエラー: {result.get('error')}。固定データを使用します。")
-    
-    # フォールバック: 固定データ
-    print("固定データを使用します。")
-    return [
-        {'comment': '非常に優秀なパフォーマンスを示し、チームに貢献しています。', 'rating': 5},
-        {'comment': 'コミュニケーションスキルが優れており、協調性が高いです。', 'rating': 4},
-        {'comment': '業務知識が豊富で、問題解決能力が優れています。', 'rating': 5},
-        {'comment': '責任感が強く、期限を守って仕事を進めています。', 'rating': 4},
-        {'comment': '創造性があり、新しいアイデアを提案してくれます。', 'rating': 4},
-        {'comment': 'リーダーシップを発揮し、チームを牽引しています。', 'rating': 5},
-        {'comment': '細やかな気配りができ、顧客満足度を高めています。', 'rating': 4},
-        {'comment': '効率的に業務を遂行し、生産性を向上させています。', 'rating': 5},
-        {'comment': '学習意欲が高く、スキルアップに努めています。', 'rating': 4},
-        {'comment': 'ポジティブな姿勢で、周囲に良い影響を与えています。', 'rating': 5}
-    ]
+        print(f"AI呼び出しエラー: {result.get('error')}")
+        return None
 
 def create_sample_data():
     # 社員番号があるスタッフを取得
@@ -87,6 +76,9 @@ def create_sample_data():
 
     # 評価データ（文言と点数）を取得
     evaluation_data = get_evaluation_data()
+    if evaluation_data is None:
+        print("評価データの取得に失敗しました。スクリプトを終了します。")
+        sys.exit(1)
 
     created_count = 0
     for item in evaluation_data:

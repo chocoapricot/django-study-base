@@ -67,6 +67,7 @@ python manage.py dumpdata settings.dropdowns  --format=json --indent=4 > _sample
 python manage.py dumpdata settings.menu       --format=json --indent=4 > _sample_data/menus.json
 python manage.py dumpdata settings.parameters --format=json --indent=4 > _sample_data/parameters.json
 python manage.py dumpdata staff               --format=json --indent=4 > _sample_data/staff.json
+python manage.py dumpdata staff.staffevaluation --format=json --indent=4 > _sample_data/staff.staffevaluation.json
 python manage.py dumpdata client              --format=json --indent=4 > _sample_data/client.json
 python manage.py dumpdata client.clientdepartment      --format=json --indent=4 > _sample_data/client_department.json
 python manage.py dumpdata company.company              --format=json --indent=4 > _sample_data/company.json
@@ -99,7 +100,7 @@ python manage.py dbshell
 
 #テストデータ作成（スタッフ評価）
 .venv\Scripts\Activate 
-_scripts/make_sample_data_staff_evaluation.py
+python _scripts/make_sample_data_staff_evaluation.py
 
 # テスト実施
 python manage.py test 
