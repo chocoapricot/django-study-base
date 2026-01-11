@@ -666,11 +666,12 @@ class UserParameterForm(forms.ModelForm):
     """設定値マスタフォーム"""
     class Meta:
         model = UserParameter
-        fields = ['target_item', 'format', 'value']
+        fields = ['target_item', 'format', 'value', 'choices']
         widgets = {
             'target_item': forms.TextInput(attrs={'class': 'form-control form-control-sm', 'readonly': 'readonly'}),
             'format': forms.Select(attrs={'class': 'form-control form-control-sm'}),
             'value': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 5}),
+            'choices': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -698,11 +699,27 @@ class UserParameterForm(forms.ModelForm):
                     }),
                     initial=self.instance.value
                 )
+            elif self.instance.format == 'choice':
+                # choice形式の場合は選択肢フィールドに変更
+                choices_list = []
+                if self.instance.choices:
+                    for item in self.instance.choices.split(','):
+                        parts = item.split(':')
+                        if len(parts) == 2:
+                            choices_list.append((parts[0].strip(), parts[1].strip()))
+
+                self.fields['value'] = forms.ChoiceField(
+                    choices=choices_list,
+                    widget=forms.Select(attrs={'class': 'form-control form-control-sm'}),
+                    initial=self.instance.value,
+                    required=False,
+                )
 
     def clean_value(self):
         """値のバリデーション"""
         value = self.cleaned_data.get('value')
-        format_type = self.cleaned_data.get('format')
+        # self.instanceからformatを取得する（cleaned_data['format']はreadonlyなのでフォーム送信データに含まれない）
+        format_type = self.instance.format
         
         if format_type == 'boolean':
             # boolean形式の場合、true/falseのみ許可
@@ -719,6 +736,16 @@ class UserParameterForm(forms.ModelForm):
                         int(value)
                 except (ValueError, TypeError):
                     raise ValidationError('数値を入力してください。')
+        elif format_type == 'choice':
+            # choice形式のバリデーション
+            choices_list = []
+            if self.instance.choices:
+                for item in self.instance.choices.split(','):
+                    parts = item.split(':')
+                    if len(parts) == 2:
+                        choices_list.append(parts[0].strip())
+            if value and value not in choices_list:
+                raise ValidationError('選択肢の中から選んでください。')
         
         return value
 
