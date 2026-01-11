@@ -1509,7 +1509,7 @@ def client_contract_ai_check(request, pk):
     """
     クライアント契約の内容をAIでチェックする
     """
-    from .utils import run_ai_check
+    from apps.common.ai_utils import run_ai_check
     contract = get_object_or_404(ClientContract, pk=pk)
 
     # テキスト生成

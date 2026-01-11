@@ -2,10 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.urls import reverse
 from .models import Staff
 from .models_evaluation import StaffEvaluation
 from .forms import StaffEvaluationForm
 from apps.system.logs.utils import log_view_detail
+from .text_utils import generate_staff_evaluations_full_text
+from apps.common.ai_utils import run_ai_check
 
 @login_required
 @permission_required('staff.view_staffevaluation', raise_exception=True)
@@ -65,3 +68,35 @@ def staff_evaluation_delete(request, pk):
         messages.success(request, '評価を削除しました。')
         return redirect('staff:staff_detail', pk=staff.pk)
     return render(request, 'staff/staff_evaluation_confirm_delete.html', {'evaluation': evaluation, 'staff': staff})
+
+@login_required
+@permission_required('staff.view_staffevaluation', raise_exception=True)
+def staff_evaluation_ai_check(request, staff_pk):
+    """
+    スタッフの評価内容をAIでチェックする
+    """
+    staff = get_object_or_404(Staff, pk=staff_pk)
+
+    # テキスト生成
+    full_evaluations_text = generate_staff_evaluations_full_text(staff)
+
+    # --- AIチェック処理 ---
+    ai_response = None
+    error_message = None
+
+    if request.method == 'POST':
+        default_prompt = "あなたは人事評価の専門家です。以下のスタッフの評価内容を要約し、ポジティブな点、ネガティブな点、そして総合的な所感をまとめてください。\n\n【評価内容】\n{{contract_text}}"
+        ai_response, error_message = run_ai_check('PROMPT_TEMPLATE_STAFF_EVALUATION', full_evaluations_text, default_prompt)
+
+    context = {
+        'page_title': 'スタッフ評価(AI要約)',
+        'header_title': f'スタッフ評価(AI要約) - {staff.name}',
+        'info_message': '生成AIによる評価内容の要約を行います。',
+        'back_url': reverse('staff:staff_evaluation_list', args=[staff_pk]),
+        'staff': staff,
+        'ai_response': ai_response,
+        'error_message': error_message,
+        'full_contract_text': full_evaluations_text,
+    }
+
+    return render(request, 'contract/ai_check_base.html', context)

@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from apps.staff.models import Staff, StaffEvaluation
 from apps.master.models import StaffRegistStatus, EmploymentType
 import datetime
+from unittest.mock import patch
 
 User = get_user_model()
 
@@ -73,3 +74,26 @@ class StaffEvaluationViewTests(TestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
         self.assertFalse(StaffEvaluation.objects.filter(pk=eval.pk).exists())
+
+    @patch('apps.staff.views_evaluation.run_ai_check')
+    def test_evaluation_ai_check_get(self, mock_run_ai_check):
+        """AI要約ページのGETリクエストをテスト"""
+        url = reverse('staff:staff_evaluation_ai_check', kwargs={'staff_pk': self.staff.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'contract/ai_check_base.html')
+        mock_run_ai_check.assert_not_called()
+
+    @patch('apps.staff.views_evaluation.run_ai_check')
+    def test_evaluation_ai_check_post(self, mock_run_ai_check):
+        """AI要約ページのPOSTリクエストをテスト"""
+        mock_run_ai_check.return_value = ('AIによる要約結果です', None)
+        StaffEvaluation.objects.create(staff=self.staff, evaluation_date=datetime.date.today(), rating=5, comment='素晴らしい')
+
+        url = reverse('staff:staff_evaluation_ai_check', kwargs={'staff_pk': self.staff.pk})
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'contract/ai_check_base.html')
+        self.assertContains(response, 'AIによる要約結果です')
+        mock_run_ai_check.assert_called_once()

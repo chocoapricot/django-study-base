@@ -5,6 +5,18 @@
 {% block content %}
 {% include 'staff/_staff_info_card.html' with staff=staff %}
 
+{% if evaluations %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        AIによる評価の要約
+    </div>
+    <div class="card-body mb-0">
+        <p>このスタッフの評価全体をAIに要約させ、傾向や特筆すべき点を把握します。</p>
+        <a href="{% url 'staff:staff_evaluation_ai_check' staff.pk %}" class="btn btn-primary">AI要約を生成</a>
+    </div>
+</div>
+{% endif %}
+
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         スタッフ評価一覧
