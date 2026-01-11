@@ -127,13 +127,11 @@
             form.addEventListener('submit', function(e) {
                 const btn = form.querySelector('button[type="submit"]');
                 if (btn) {
-                    e.preventDefault(); // デフォルトの送信を防ぐ
-                    btn.disabled = true;
-                    btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 要約中...';
-                    // 少し遅らせてフォームを送信
+                    // ボタンを無効化し、ローディング表示に変更
                     setTimeout(() => {
-                        form.submit();
-                    }, 100);
+                        btn.disabled = true;
+                        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 要約中...';
+                    }, 10);
                 }
             });
         });
