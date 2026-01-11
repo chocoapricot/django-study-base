@@ -125,8 +125,8 @@
         const forms = document.querySelectorAll('form');
         forms.forEach(function(form) {
             form.addEventListener('submit', function(e) {
-                const btn = form.querySelector('button[type="submit"]');
-                if (btn) {
+                const btn = e.submitter;
+                if (btn && btn.tagName === 'BUTTON' && btn.type === 'submit') {
                     e.preventDefault(); // デフォルトの送信を防ぐ
                     btn.disabled = true;
                     btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 要約中...';
