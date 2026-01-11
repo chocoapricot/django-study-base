@@ -1,0 +1,62 @@
+[
+    {
+        "model": "staff.staffevaluation",
+        "pk": 1,
+        "fields": {
+            "staff": 1,
+            "evaluator": 1,
+            "evaluation_date": "2024-01-15",
+            "rating": 5,
+            "comment": "非常に高いリーダーシップを発揮し、チームを成功に導きました。特に、新規プロジェクトの立ち上げにおける貢献は目覚ましいものがあります。",
+            "created_at": "2024-01-20T10:00:00Z",
+            "updated_at": "2024-01-20T10:00:00Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "staff.staffevaluation",
+        "pk": 2,
+        "fields": {
+            "staff": 1,
+            "evaluator": 1,
+            "evaluation_date": "2024-07-20",
+            "rating": 4,
+            "comment": "継続して高いパフォーマンスを維持していますが、時折、細部の確認漏れが見られます。今後の更なる成長を期待しています。",
+            "created_at": "2024-07-25T10:00:00Z",
+            "updated_at": "2024-07-25T10:00:00Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "staff.staffevaluation",
+        "pk": 3,
+        "fields": {
+            "staff": 2,
+            "evaluator": 1,
+            "evaluation_date": "2024-03-10",
+            "rating": 4,
+            "comment": "コミュニケーション能力が高く、クライアントからの信頼も厚いです。プロジェクト管理のスキルをさらに磨くことで、より大きな成果が期待できます。",
+            "created_at": "2024-03-15T10:00:00Z",
+            "updated_at": "2024-03-15T10:00:00Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    },
+    {
+        "model": "staff.staffevaluation",
+        "pk": 4,
+        "fields": {
+            "staff": 3,
+            "evaluator": 1,
+            "evaluation_date": "2024-05-30",
+            "rating": 3,
+            "comment": "技術的なスキルは高いものの、チーム内での情報共有に課題が見られます。より積極的にコミュニケーションを取ることを推奨します。",
+            "created_at": "2024-06-05T10:00:00Z",
+            "updated_at": "2024-06-05T10:00:00Z",
+            "created_by": 1,
+            "updated_by": 1
+        }
+    }
+]
