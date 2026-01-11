@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.urls import reverse
+from django.http import JsonResponse
 from .models import Staff
 from .models_evaluation import StaffEvaluation
 from .forms import StaffEvaluationForm
@@ -28,6 +29,9 @@ def staff_evaluation_list(request, staff_pk):
         full_evaluations_text = generate_staff_evaluations_full_text(staff)
         default_prompt = "あなたは人事評価の専門家です。以下のスタッフの評価内容を要約し、ポジティブな点、ネガティブな点、そして総合的な所感をまとめてください。\n\n【評価内容】\n{{contract_text}}"
         ai_response, error_message = run_ai_check('PROMPT_TEMPLATE_STAFF_EVALUATION', full_evaluations_text, default_prompt)
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'ai_response': ai_response, 'error_message': error_message})
 
     return render(request, 'staff/staff_evaluation_list.html', {
         'staff': staff,

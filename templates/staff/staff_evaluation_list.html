@@ -81,60 +81,127 @@
         </div>
         {% endif %}
 
-        {% if ai_response %}
-        <div class="card border-info mb-4">
-            <div class="card-header bg-info text-white">
-                <i class="bi bi-stars"></i> AIによる要約結果
+        <div id="ai-interaction-container">
+            {% if ai_response %}
+            <div class="card border-info mb-4">
+                <div class="card-header bg-info text-white">
+                    <i class="bi bi-stars"></i> AIによる要約結果
+                </div>
+                <div class="card-body bg-white">
+                    <div class="card-text">{{ ai_response|safe }}</div>
+                </div>
             </div>
-            <div class="card-body bg-white">
-                <div class="card-text">{{ ai_response|safe }}</div>
-            </div>
-        </div>
-        <div class="text-center mb-4">
-             <form method="post" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-outline-info">
-                    <i class="bi bi-arrow-repeat"></i> 再要約する
-                </button>
-            </form>
-        </div>
-        {% else %}
-            <div class="text-center py-5 mb-4 border rounded bg-white">
-                <i class="bi bi-robot text-primary mb-3" style="font-size: 3rem;"></i>
-                <p class="lead mb-4">生成AIを使用して、評価内容の要約を行います。</p>
-                <form method="post">
+            <div class="text-center mb-4">
+                 <form method="post" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-primary btn-lg px-5">
-                        <i class="bi bi-stars me-2"></i>AI要約を実行
+                    <button type="submit" class="btn btn-outline-info">
+                        <i class="bi bi-arrow-repeat"></i> 再要約する
                     </button>
-                    <div class="form-text mt-2">
-                        ※ 実行には数秒～数十秒かかる場合があります。
-                    </div>
                 </form>
             </div>
-        {% endif %}
-
+            {% else %}
+                <div class="text-center py-5 mb-4 border rounded bg-white">
+                    <i class="bi bi-robot text-primary mb-3" style="font-size: 3rem;"></i>
+                    <p class="lead mb-4">生成AIを使用して、評価内容の要約を行います。</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                            <i class="bi bi-stars me-2"></i>AI要約を実行
+                        </button>
+                        <div class="form-text mt-2">
+                            ※ 実行には数秒～数十秒かかる場合があります。
+                        </div>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endif %}
 
 {% endblock %}
 
+{% block extra_js %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const forms = document.querySelectorAll('form');
-        forms.forEach(function(form) {
-            form.addEventListener('submit', function(e) {
-                const btn = form.querySelector('button[type="submit"]');
-                if (btn) {
-                    // ボタンを無効化し、ローディング表示に変更
-                    setTimeout(() => {
-                        btn.disabled = true;
-                        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 要約中...';
-                    }, 10);
-                }
-            });
+document.addEventListener('DOMContentLoaded', function() {
+    const aiInteractionContainer = document.getElementById('ai-interaction-container');
+
+    aiInteractionContainer.addEventListener('click', function(event) {
+        const submitButton = event.target.closest('button[type="submit"]');
+        if (!submitButton) {
+            return;
+        }
+        event.preventDefault();
+
+        const form = submitButton.closest('form');
+        const csrfToken = form.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+        const originalButtonHTML = submitButton.innerHTML;
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 要約中...';
+
+        fetch(window.location.href, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken,
+            },
+            body: new FormData(form)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            let newHtml = '';
+            if (data.error_message) {
+                newHtml = `
+                    <div class="alert alert-danger mb-3">
+                        <i class="bi bi-exclamation-triangle"></i> エラーが発生しました:<br>
+                        ${data.error_message}
+                    </div>
+                    <div class="text-center mb-4">
+                        <form method="post" style="display: inline;">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+                            <button type="submit" class="btn btn-outline-info">
+                                <i class="bi bi-arrow-repeat"></i> 再試行する
+                            </button>
+                        </form>
+                    </div>
+                `;
+            } else if (data.ai_response) {
+                newHtml = `
+                    <div class="card border-info mb-4">
+                        <div class="card-header bg-info text-white">
+                            <i class="bi bi-stars"></i> AIによる要約結果
+                        </div>
+                        <div class="card-body bg-white">
+                            <div class="card-text">${data.ai_response}</div>
+                        </div>
+                    </div>
+                    <div class="text-center mb-4">
+                        <form method="post" style="display: inline;">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+                            <button type="submit" class="btn btn-outline-info">
+                                <i class="bi bi-arrow-repeat"></i> 再要約する
+                            </button>
+                        </form>
+                    </div>
+                `;
+            }
+            aiInteractionContainer.innerHTML = newHtml;
+            aiInteractionContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            alert('要約の実行中に通信エラーが発生しました。');
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonHTML;
         });
     });
+});
 </script>
+{% endblock %}
 
