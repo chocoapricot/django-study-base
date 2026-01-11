@@ -22,7 +22,6 @@ from .views import (
     staff_disability_request_detail,
     staff_payroll_detail, staff_payroll_create, staff_payroll_edit, staff_payroll_delete,
     staff_evaluation_list, staff_evaluation_create, staff_evaluation_update, staff_evaluation_delete,
-    staff_evaluation_ai_check,
 )
 
 app_name = 'staff'
@@ -123,5 +122,4 @@ urlpatterns = [
     path('staff/<int:staff_pk>/evaluation/create/', staff_evaluation_create, name='staff_evaluation_create'),
     path('staff/evaluation/<int:pk>/update/', staff_evaluation_update, name='staff_evaluation_update'),
     path('staff/evaluation/<int:pk>/delete/', staff_evaluation_delete, name='staff_evaluation_delete'),
-    path('staff/<int:staff_pk>/evaluation/ai_check/', staff_evaluation_ai_check, name='staff_evaluation_ai_check'),
 ]

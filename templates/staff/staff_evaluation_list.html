@@ -12,7 +12,29 @@
     </div>
     <div class="card-body mb-0">
         <p>このスタッフの評価全体をAIに要約させ、傾向や特筆すべき点を把握します。</p>
-        <a href="{% url 'staff:staff_evaluation_ai_check' staff.pk %}" class="btn btn-primary">AI要約を生成</a>
+        <form method="post" action="">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">AI要約を生成</button>
+        </form>
+
+        {% if ai_response or error_message %}
+        <div class="mt-4">
+            <div class="card">
+                <div class="card-header">
+                    AIによる要約結果
+                </div>
+                <div class="card-body">
+                    {% if error_message %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error_message }}
+                        </div>
+                    {% else %}
+                        <p style="white-space: pre-wrap;">{{ ai_response }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endif %}
