@@ -28,25 +28,36 @@ def get_evaluation_data():
     prompt = """
     スタッフ評価のコメントと1-5の評価点を10件生成してください。
     各コメントは日本語で、ポジティブな評価内容にしてください。
-    JSON形式で返してください。形式: [{"comment": "コメント", "rating": 点数}, ...]
+    必ず有効なJSON形式で返してください。形式: [{"comment": "コメント", "rating": 点数}, ...]
+    他のテキストは含めないでください。
     """
     
     result = call_gemini_api(prompt.strip())
     if result.get('success'):
         try:
+            text = result['text'].strip()
+            # JSON部分を抽出（```json ... ``` で囲まれている場合）
+            if text.startswith('```json'):
+                text = text[7:]
+            if text.endswith('```'):
+                text = text[:-3]
+            text = text.strip()
+            
             # AIのレスポンスをJSONとしてパース
             import json
-            data = json.loads(result['text'])
+            data = json.loads(text)
             if isinstance(data, list) and len(data) >= 10:
+                print("AIからデータを取得しました。")
                 return data[:10]  # 最初の10件
             else:
-                print("AIからのレスポンスが不正です。固定データを使用します。")
-        except json.JSONDecodeError:
-            print("AIからのレスポンスがJSONではありません。固定データを使用します。")
+                print("AIからのレスポンスが不正な形式です。固定データを使用します。")
+        except json.JSONDecodeError as e:
+            print(f"AIからのレスポンスがJSONではありません: {e}。固定データを使用します。")
     else:
         print(f"AI呼び出しエラー: {result.get('error')}。固定データを使用します。")
     
     # フォールバック: 固定データ
+    print("固定データを使用します。")
     return [
         {'comment': '非常に優秀なパフォーマンスを示し、チームに貢献しています。', 'rating': 5},
         {'comment': 'コミュニケーションスキルが優れており、協調性が高いです。', 'rating': 4},
