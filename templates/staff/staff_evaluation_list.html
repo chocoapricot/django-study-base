@@ -5,40 +5,6 @@
 {% block content %}
 {% include 'staff/_staff_info_card.html' with staff=staff %}
 
-{% if evaluations %}
-<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        AIによる評価の要約
-    </div>
-    <div class="card-body mb-0">
-        <p>このスタッフの評価全体をAIに要約させ、傾向や特筆すべき点を把握します。</p>
-        <form method="post" action="">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-primary">AI要約を生成</button>
-        </form>
-
-        {% if ai_response or error_message %}
-        <div class="mt-4">
-            <div class="card">
-                <div class="card-header">
-                    AIによる要約結果
-                </div>
-                <div class="card-body">
-                    {% if error_message %}
-                        <div class="alert alert-danger" role="alert">
-                            {{ error_message }}
-                        </div>
-                    {% else %}
-                        <p style="white-space: pre-wrap;">{{ ai_response }}</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-</div>
-{% endif %}
-
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         スタッフ評価一覧
@@ -60,8 +26,8 @@
             <tbody>
                 {% for eval in evaluations %}
                 <tr>
-                    <td>{{ eval.evaluation_date }}</td>
-                    <td><span class="badge bg-warning text-dark">{{ eval.rating }}</span></td>
+                    <td>{{ eval.evaluation_date|date:"Y/m/d" }}</td>
+                    <td><span class="badge bg-warning rounded-pill text-light">{{ eval.rating }}</span></td>
                     <td>
                         {{ eval.comment|default:"-"|truncatechars:30 }}
                     </td>
@@ -94,5 +60,81 @@
         </div>
     </div>
 </div>
+
+{% if evaluations %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        AIによる評価の要約
+    </div>
+    <div class="card-body">
+        <div class="alert alert-info mb-3">
+            <i class="bi bi-info-circle"></i> 
+            生成AIによる評価内容の要約を行います。<br>
+            ※ あくまでAIによる参考意見であり、評価の正確性を保証するものではありません。<br>
+            ※ マスタ管理の生成AI設定でAPIキー、URL、プロンプトの設定が必要です。
+        </div>
+
+        {% if error_message %}
+        <div class="alert alert-danger mb-3">
+            <i class="bi bi-exclamation-triangle"></i> エラーが発生しました:<br>
+            {{ error_message }}
+        </div>
+        {% endif %}
+
+        {% if ai_response %}
+        <div class="card border-info mb-4">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-stars"></i> AIによる要約結果
+            </div>
+            <div class="card-body bg-white">
+                <div class="card-text">{{ ai_response|safe }}</div>
+            </div>
+        </div>
+        <div class="text-center mb-4">
+             <form method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-info">
+                    <i class="bi bi-arrow-repeat"></i> 再要約する
+                </button>
+            </form>
+        </div>
+        {% else %}
+            <div class="text-center py-5 mb-4 border rounded bg-white">
+                <i class="bi bi-robot text-primary mb-3" style="font-size: 3rem;"></i>
+                <p class="lead mb-4">生成AIを使用して、評価内容の要約を行います。</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary btn-lg px-5">
+                        <i class="bi bi-stars me-2"></i>AI要約を実行
+                    </button>
+                    <div class="form-text mt-2">
+                        ※ 実行には数秒～数十秒かかる場合があります。
+                    </div>
+                </form>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endif %}
+
 {% endblock %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('form');
+        forms.forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                const btn = form.querySelector('button[type="submit"]');
+                if (btn) {
+                    // ボタンを無効化し、ローディング表示に変更
+                    setTimeout(() => {
+                        btn.disabled = true;
+                        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 確認中...';
+                    }, 10);
+                }
+            });
+        });
+    });
+</script>
 

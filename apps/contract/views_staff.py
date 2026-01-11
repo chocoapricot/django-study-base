@@ -1536,7 +1536,7 @@ def staff_contract_ai_check(request, pk):
     """
     スタッフ契約（雇用契約書兼労働条件通知書）の内容をAIでチェックする
     """
-    from .utils import run_ai_check
+    from apps.common.ai_utils import run_ai_check
     from .text_utils import generate_staff_contract_full_text
     
     contract = get_object_or_404(StaffContract, pk=pk)

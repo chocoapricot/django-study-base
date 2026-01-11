@@ -1471,7 +1471,7 @@ def assignment_ai_check(request, assignment_pk):
     """
     就業条件明示書の内容をAIでチェックする
     """
-    from .utils import run_ai_check
+    from apps.common.ai_utils import run_ai_check
     from .text_utils import generate_assignment_employment_conditions_full_text
     
     assignment = get_object_or_404(
