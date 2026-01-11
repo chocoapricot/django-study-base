@@ -50,6 +50,8 @@
                                 {% else %}
                                     <span class="badge bg-secondary">False</span>
                                 {% endif %}
+                            {% elif item.format == 'choice' %}
+                                {{ item.get_choice_display }}
                             {% else %}
                                 {{ item.value|linebreaksbr }}
                             {% endif %}

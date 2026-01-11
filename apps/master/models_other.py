@@ -289,3 +289,24 @@ class UserParameter(MyModel):
         elif self.format == 'number':
             return self.get_number_value()
         return self.value
+
+    def get_choice_display(self):
+        """
+        'choice' 形式の場合に、値に対応する表示名を取得する。
+        """
+        if self.format != 'choice' or not self.choices:
+            return self.value
+
+        choice_map = {}
+        try:
+            # "round:丸,square:四角" のような形式を辞書に変換
+            pairs = self.choices.split(',')
+            for pair in pairs:
+                if ':' in pair:
+                    value, display = pair.split(':', 1)
+                    choice_map[value.strip()] = display.strip()
+        except Exception:
+            # パースに失敗した場合は、元の値を返す
+            return self.value
+
+        return choice_map.get(self.value, self.value)
