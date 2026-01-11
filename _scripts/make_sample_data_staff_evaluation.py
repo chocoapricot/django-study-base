@@ -18,13 +18,36 @@ django.setup()
 
 from django.contrib.auth import get_user_model
 from apps.staff.models import Staff, StaffEvaluation
+from apps.common.gemini_utils import call_gemini_api
+from apps.master.models import GenerativeAiSetting
 
 def get_evaluation_data():
     """
-    AIからスタッフ評価の文言と点数を10件取得する（シミュレーション）。
-    実際にはAI APIを呼び出すが、ここでは固定のデータを使用。
+    AIからスタッフ評価の文言と点数を10件取得する。
     """
-    data = [
+    prompt = """
+    スタッフ評価のコメントと1-5の評価点を10件生成してください。
+    各コメントは日本語で、ポジティブな評価内容にしてください。
+    JSON形式で返してください。形式: [{"comment": "コメント", "rating": 点数}, ...]
+    """
+    
+    result = call_gemini_api(prompt.strip())
+    if result.get('success'):
+        try:
+            # AIのレスポンスをJSONとしてパース
+            import json
+            data = json.loads(result['text'])
+            if isinstance(data, list) and len(data) >= 10:
+                return data[:10]  # 最初の10件
+            else:
+                print("AIからのレスポンスが不正です。固定データを使用します。")
+        except json.JSONDecodeError:
+            print("AIからのレスポンスがJSONではありません。固定データを使用します。")
+    else:
+        print(f"AI呼び出しエラー: {result.get('error')}。固定データを使用します。")
+    
+    # フォールバック: 固定データ
+    return [
         {'comment': '非常に優秀なパフォーマンスを示し、チームに貢献しています。', 'rating': 5},
         {'comment': 'コミュニケーションスキルが優れており、協調性が高いです。', 'rating': 4},
         {'comment': '業務知識が豊富で、問題解決能力が優れています。', 'rating': 5},
@@ -36,7 +59,6 @@ def get_evaluation_data():
         {'comment': '学習意欲が高く、スキルアップに努めています。', 'rating': 4},
         {'comment': 'ポジティブな姿勢で、周囲に良い影響を与えています。', 'rating': 5}
     ]
-    return data
 
 def create_sample_data():
     # 社員番号があるスタッフを取得
