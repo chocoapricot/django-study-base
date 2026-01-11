@@ -71,8 +71,8 @@
                     {% csrf_token %}
                     <div class="row mb-3 align-items-center">
                         <div class="col-sm-4 d-flex justify-content-center align-items-center">
-                            <div class="face-photo-container" {% if staff.has_face_photo %}data-bs-toggle="modal" data-bs-target="#viewFaceModal" style="cursor: pointer;"{% endif %}>
-                                <img src="{% url 'staff:staff_face' staff.pk %}?v={% now "U" %}" class="rounded-circle img-fluid" width="100" height="100" style="border-radius: 15%;">
+                            <div class="face-photo-container {% if staff_face_photo_style == 'round' %}rounded-circle{% elif staff_face_photo_style == 'rounded-square' %}rounded{% endif %}" {% if staff.has_face_photo %}data-bs-toggle="modal" data-bs-target="#viewFaceModal" style="cursor: pointer;"{% endif %}>
+                                <img src="{% url 'staff:staff_face' staff.pk %}?v={% now "U" %}" class="img-fluid" width="100" height="100" >
                                 <div class="face-photo-overlay d-flex gap-1">
                                     {% if perms.staff.change_staff %}
                                     <a href="#" onclick="event.stopPropagation();" data-bs-toggle="modal" data-bs-target="#uploadFaceModal" class="btn btn-sm btn-primary" title="登録/変更"><i class="bi bi-upload"></i></a>
@@ -758,7 +758,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center p-0 overflow-hidden">
-                <img src="{% url 'staff:staff_face' staff.pk %}?v={% now "U" %}" class="img-fluid w-100" style="border-radius: 0;">
+                <img src="{% url 'staff:staff_face' staff.pk %}?v={% now "U" %}" class="img-fluid w-100" >
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
