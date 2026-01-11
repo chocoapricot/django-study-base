@@ -76,24 +76,23 @@ class StaffEvaluationViewTests(TestCase):
         self.assertFalse(StaffEvaluation.objects.filter(pk=eval.pk).exists())
 
     @patch('apps.staff.views_evaluation.run_ai_check')
-    def test_evaluation_ai_check_get(self, mock_run_ai_check):
-        """AI要約ページのGETリクエストをテスト"""
-        url = reverse('staff:staff_evaluation_ai_check', kwargs={'staff_pk': self.staff.pk})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'contract/ai_check_base.html')
-        mock_run_ai_check.assert_not_called()
-
-    @patch('apps.staff.views_evaluation.run_ai_check')
-    def test_evaluation_ai_check_post(self, mock_run_ai_check):
-        """AI要約ページのPOSTリクエストをテスト"""
+    def test_evaluation_list_ai_check(self, mock_run_ai_check):
+        """評価一覧ページでのAI要約機能のテスト"""
         mock_run_ai_check.return_value = ('AIによる要約結果です', None)
         StaffEvaluation.objects.create(staff=self.staff, evaluation_date=datetime.date.today(), rating=5, comment='素晴らしい')
 
-        url = reverse('staff:staff_evaluation_ai_check', kwargs={'staff_pk': self.staff.pk})
-        response = self.client.post(url)
+        url = reverse('staff:staff_evaluation_list', kwargs={'staff_pk': self.staff.pk})
 
+        # GETリクエストではAI要約は実行されない
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'contract/ai_check_base.html')
+        self.assertTemplateUsed(response, 'staff/staff_evaluation_list.html')
+        self.assertNotContains(response, 'AIによる要約結果です')
+        mock_run_ai_check.assert_not_called()
+
+        # POSTリクエストでAI要約が実行される
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'staff/staff_evaluation_list.html')
         self.assertContains(response, 'AIによる要約結果です')
         mock_run_ai_check.assert_called_once()

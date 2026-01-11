@@ -18,7 +18,23 @@ def staff_evaluation_list(request, staff_pk):
     paginator = Paginator(evaluations_qs, 20)
     page = request.GET.get('page')
     evaluations = paginator.get_page(page)
-    return render(request, 'staff/staff_evaluation_list.html', {'staff': staff, 'evaluations': evaluations})
+
+    ai_response = None
+    error_message = None
+    full_evaluations_text = None
+
+    if request.method == 'POST':
+        # テキスト生成
+        full_evaluations_text = generate_staff_evaluations_full_text(staff)
+        default_prompt = "あなたは人事評価の専門家です。以下のスタッフの評価内容を要約し、ポジティブな点、ネガティブな点、そして総合的な所感をまとめてください。\n\n【評価内容】\n{{contract_text}}"
+        ai_response, error_message = run_ai_check('PROMPT_TEMPLATE_STAFF_EVALUATION', full_evaluations_text, default_prompt)
+
+    return render(request, 'staff/staff_evaluation_list.html', {
+        'staff': staff,
+        'evaluations': evaluations,
+        'ai_response': ai_response,
+        'error_message': error_message,
+    })
 
 @login_required
 @permission_required('staff.add_staffevaluation', raise_exception=True)
@@ -69,34 +85,3 @@ def staff_evaluation_delete(request, pk):
         return redirect('staff:staff_detail', pk=staff.pk)
     return render(request, 'staff/staff_evaluation_confirm_delete.html', {'evaluation': evaluation, 'staff': staff})
 
-@login_required
-@permission_required('staff.view_staffevaluation', raise_exception=True)
-def staff_evaluation_ai_check(request, staff_pk):
-    """
-    スタッフの評価内容をAIでチェックする
-    """
-    staff = get_object_or_404(Staff, pk=staff_pk)
-
-    # テキスト生成
-    full_evaluations_text = generate_staff_evaluations_full_text(staff)
-
-    # --- AIチェック処理 ---
-    ai_response = None
-    error_message = None
-
-    if request.method == 'POST':
-        default_prompt = "あなたは人事評価の専門家です。以下のスタッフの評価内容を要約し、ポジティブな点、ネガティブな点、そして総合的な所感をまとめてください。\n\n【評価内容】\n{{contract_text}}"
-        ai_response, error_message = run_ai_check('PROMPT_TEMPLATE_STAFF_EVALUATION', full_evaluations_text, default_prompt)
-
-    context = {
-        'page_title': 'スタッフ評価(AI要約)',
-        'header_title': f'スタッフ評価(AI要約) - {staff.name}',
-        'info_message': '生成AIによる評価内容の要約を行います。',
-        'back_url': reverse('staff:staff_evaluation_list', args=[staff_pk]),
-        'staff': staff,
-        'ai_response': ai_response,
-        'error_message': error_message,
-        'full_contract_text': full_evaluations_text,
-    }
-
-    return render(request, 'contract/ai_check_base.html', context)
