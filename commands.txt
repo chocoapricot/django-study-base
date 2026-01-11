@@ -63,12 +63,12 @@ python manage.py createsuperuser --noinput --username admin --email admin@test.c
 python _scripts/load_sample_data.py
 
 # エクスポート
-python manage.py dumpdata settings.dropdowns  --format=json --indent=4 > _sample_data/dropdowns.json
-python manage.py dumpdata settings.menu       --format=json --indent=4 > _sample_data/menus.json
-python manage.py dumpdata settings.parameters --format=json --indent=4 > _sample_data/parameters.json
-python manage.py dumpdata staff               --format=json --indent=4 > _sample_data/staff.json
-python manage.py dumpdata staff.staffevaluation --format=json --indent=4 > _sample_data/staff.staffevaluation.json
-python manage.py dumpdata client              --format=json --indent=4 > _sample_data/client.json
+python manage.py dumpdata settings.dropdowns    --format=json --indent=4 > _sample_data/dropdowns.json
+python manage.py dumpdata settings.menu         --format=json --indent=4 > _sample_data/menus.json
+python manage.py dumpdata settings.parameters   --format=json --indent=4 > _sample_data/parameters.json
+python manage.py dumpdata staff                 --format=json --indent=4 > _sample_data/staff.json
+python manage.py dumpdata staff.staffevaluation --format=json --indent=4 > _sample_data/staff_evaluation.json
+python manage.py dumpdata client                --format=json --indent=4 > _sample_data/client.json
 python manage.py dumpdata client.clientdepartment      --format=json --indent=4 > _sample_data/client_department.json
 python manage.py dumpdata company.company              --format=json --indent=4 > _sample_data/company.json
 python manage.py dumpdata contract.staffcontract       --format=json --indent=4 > _sample_data/contract_staff.json
