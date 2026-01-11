@@ -11,6 +11,7 @@
             "target_item": "生成AI",
             "format": "choice",
             "value": "gemini",
+            "choices": "gemini:Gemini,openai:OpenAI",
             "display_order": 1
         }
     },
