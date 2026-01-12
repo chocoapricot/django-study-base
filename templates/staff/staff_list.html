@@ -179,7 +179,7 @@
                     <td>
                         <div class="d-flex align-items-center">
                             {% with photo_class=staff_face_photo_style|default:'round' %}
-                                <img src="{% url 'staff:staff_face' staff.pk %}" class="{% if photo_class == 'round' %}rounded-circle{% elif photo_class == 'rounded-square' %}rounded{% endif %} img-fluid" width="40" height="40" style="object-fit: cover;width:40px;height:40px">
+                                <img src="{% url 'staff:staff_face' staff.pk %}" class="img-fluid {% if staff.has_face_photo %}{% if photo_class == 'round' %}rounded-circle{% elif photo_class == 'rounded-square' %}rounded{% endif %}{% else %}rounded-circle{% endif %}" width="40" height="40" style="object-fit: cover;width:40px;height:40px">
                             {% endwith %}
                         </div>
                     </td>

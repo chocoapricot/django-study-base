@@ -55,8 +55,8 @@
         "updated_by": 1,
         "target_item": "スタッフ顔写真＞表示形式",
         "format": "choice",
-        "value": "round",
-        "choices": "round:丸,rounded-square:角丸四角,square:四角",
+        "value": "rounded-square",
+        "choices": "round:丸,rounded-square:角丸四角",
         "display_order": 10
     }
 }
