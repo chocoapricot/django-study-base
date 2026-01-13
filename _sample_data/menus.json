@@ -689,7 +689,7 @@
         "level": 0,
         "exact_match": true,
         "required_permission": null,
-        "disp_seq": 15,
+        "disp_seq": 85,
         "active": true
     }
 }
