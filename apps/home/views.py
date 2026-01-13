@@ -172,6 +172,7 @@ from apps.kintai.models import (
 from apps.system.logs.models import MailLog, AppLog, AccessLog
 from apps.accounts.models import MyUser
 from apps.profile.models import StaffProfile, StaffProfileQualification, StaffProfileSkill, StaffProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact
+from apps.staff.models_inquiry import StaffInquiry, StaffInquiryMessage
 
 def start_page(request):
     """
@@ -202,6 +203,8 @@ def start_page(request):
         MailLog, AppLog, AccessLog,
         # アカウント
         MyUser,
+        # 問い合わせ
+        StaffInquiry, StaffInquiryMessage,
     ]
 
     # verbose_nameのリストを作成し、重複を除いてソート
@@ -280,6 +283,7 @@ from apps.kintai.models import (
 from apps.system.logs.models import MailLog, AppLog, AccessLog
 from apps.accounts.models import MyUser
 from apps.profile.models import StaffProfile, StaffProfileQualification, StaffProfileSkill, StaffProfileMynumber, StaffProfileInternational, StaffProfileBank, StaffProfileDisability, StaffProfileContact
+from apps.staff.models_inquiry import StaffInquiry, StaffInquiryMessage
 import os
 import shutil
 
@@ -323,6 +327,10 @@ def delete_application_data(request):
             ConnectStaffAgree.objects.all().delete()
             ConnectStaff.objects.all().delete()
             ConnectClient.objects.all().delete()
+
+            # 5.5 問い合わせデータ (StaffInquiryMessageがStaffInquiryを参照)
+            StaffInquiryMessage.objects.all().delete()
+            StaffInquiry.objects.all().delete()
 
             # 6. クライアント関連データ (ClientUserなどがClientを参照)
             ClientFile.objects.all().delete()

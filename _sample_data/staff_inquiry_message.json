@@ -1,0 +1,842 @@
+[
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 1,
+        "fields": {
+            "created_at": "2025-10-01T10:30:00Z",
+            "created_by": 2,
+            "updated_at": "2025-10-01T10:30:00Z",
+            "updated_by": 2,
+            "inquiry": 1,
+            "user": 2,
+            "content": "今月の勤怠入力の締め切りは何日まででしょうか？ (Inquiry 1 - Msg 1)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 2,
+        "fields": {
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "inquiry": 1,
+            "user": 1,
+            "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 1 - Msg 2)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 3,
+        "fields": {
+            "created_at": "2025-10-01T11:30:00Z",
+            "created_by": 2,
+            "updated_at": "2025-10-01T11:30:00Z",
+            "updated_by": 2,
+            "inquiry": 1,
+            "user": 2,
+            "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 1 - Msg 3)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 4,
+        "fields": {
+            "created_at": "2025-10-01T12:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T12:00:00Z",
+            "updated_by": 1,
+            "inquiry": 1,
+            "user": 1,
+            "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 1 - Msg 4)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 5,
+        "fields": {
+            "created_at": "2025-10-01T12:30:00Z",
+            "created_by": 2,
+            "updated_at": "2025-10-01T12:30:00Z",
+            "updated_by": 2,
+            "inquiry": 1,
+            "user": 2,
+            "content": "確認しました！ありがとうございます。 (Inquiry 1 - Msg 5)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 6,
+        "fields": {
+            "created_at": "2025-10-01T13:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T13:00:00Z",
+            "updated_by": 1,
+            "inquiry": 1,
+            "user": 1,
+            "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 1 - Msg 6)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 7,
+        "fields": {
+            "created_at": "2025-10-02T10:30:00Z",
+            "created_by": 3,
+            "updated_at": "2025-10-02T10:30:00Z",
+            "updated_by": 3,
+            "inquiry": 2,
+            "user": 3,
+            "content": "有給休暇を申請したいのですが、システム上の操作方法を教えてください。 (Inquiry 2 - Msg 1)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 8,
+        "fields": {
+            "created_at": "2025-10-02T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-02T11:00:00Z",
+            "updated_by": 1,
+            "inquiry": 2,
+            "user": 1,
+            "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 2 - Msg 2)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 9,
+        "fields": {
+            "created_at": "2025-10-02T11:30:00Z",
+            "created_by": 3,
+            "updated_at": "2025-10-02T11:30:00Z",
+            "updated_by": 3,
+            "inquiry": 2,
+            "user": 3,
+            "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 2 - Msg 3)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 10,
+        "fields": {
+            "created_at": "2025-10-02T12:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-02T12:00:00Z",
+            "updated_by": 1,
+            "inquiry": 2,
+            "user": 1,
+            "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 2 - Msg 4)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 11,
+        "fields": {
+            "created_at": "2025-10-02T12:30:00Z",
+            "created_by": 3,
+            "updated_at": "2025-10-02T12:30:00Z",
+            "updated_by": 3,
+            "inquiry": 2,
+            "user": 3,
+            "content": "確認しました！ありがとうございます。 (Inquiry 2 - Msg 5)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 12,
+        "fields": {
+            "created_at": "2025-10-02T13:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-02T13:00:00Z",
+            "updated_by": 1,
+            "inquiry": 2,
+            "user": 1,
+            "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 2 - Msg 6)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 13,
+        "fields": {
+            "created_at": "2025-10-03T10:30:00Z",
+            "created_by": 4,
+            "updated_at": "2025-10-03T10:30:00Z",
+            "updated_by": 4,
+            "inquiry": 3,
+            "user": 4,
+            "content": "年末調整の書類の提出期限はいつまででしょうか？ (Inquiry 3 - Msg 1)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 14,
+        "fields": {
+            "created_at": "2025-10-03T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-03T11:00:00Z",
+            "updated_by": 1,
+            "inquiry": 3,
+            "user": 1,
+            "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 3 - Msg 2)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 15,
+        "fields": {
+            "created_at": "2025-10-03T11:30:00Z",
+            "created_by": 4,
+            "updated_at": "2025-10-03T11:30:00Z",
+            "updated_by": 4,
+            "inquiry": 3,
+            "user": 4,
+            "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 3 - Msg 3)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 16,
+        "fields": {
+            "created_at": "2025-10-03T12:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-03T12:00:00Z",
+            "updated_by": 1,
+            "inquiry": 3,
+            "user": 1,
+            "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 3 - Msg 4)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 17,
+        "fields": {
+            "created_at": "2025-10-03T12:30:00Z",
+            "created_by": 4,
+            "updated_at": "2025-10-03T12:30:00Z",
+            "updated_by": 4,
+            "inquiry": 3,
+            "user": 4,
+            "content": "確認しました！ありがとうございます。 (Inquiry 3 - Msg 5)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 18,
+        "fields": {
+            "created_at": "2025-10-03T13:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-03T13:00:00Z",
+            "updated_by": 1,
+            "inquiry": 3,
+            "user": 1,
+            "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 3 - Msg 6)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 19,
+        "fields": {
+            "created_at": "2025-10-04T10:30:00Z",
+            "created_by": 2,
+            "updated_at": "2025-10-04T10:30:00Z",
+            "updated_by": 2,
+            "inquiry": 4,
+            "user": 2,
+            "content": "バスを利用した場合の領収書は必要ですか？ (Inquiry 4 - Msg 1)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 20,
+        "fields": {
+            "created_at": "2025-10-04T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-04T11:00:00Z",
+            "updated_by": 1,
+            "inquiry": 4,
+            "user": 1,
+            "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 4 - Msg 2)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 21,
+        "fields": {
+            "created_at": "2025-10-04T11:30:00Z",
+            "created_by": 2,
+            "updated_at": "2025-10-04T11:30:00Z",
+            "updated_by": 2,
+            "inquiry": 4,
+            "user": 2,
+            "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 4 - Msg 3)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 22,
+        "fields": {
+            "created_at": "2025-10-04T12:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-04T12:00:00Z",
+            "updated_by": 1,
+            "inquiry": 4,
+            "user": 1,
+            "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 4 - Msg 4)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 23,
+        "fields": {
+            "created_at": "2025-10-04T12:30:00Z",
+            "created_by": 2,
+            "updated_at": "2025-10-04T12:30:00Z",
+            "updated_by": 2,
+            "inquiry": 4,
+            "user": 2,
+            "content": "確認しました！ありがとうございます。 (Inquiry 4 - Msg 5)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 24,
+        "fields": {
+            "created_at": "2025-10-04T13:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-04T13:00:00Z",
+            "updated_by": 1,
+            "inquiry": 4,
+            "user": 1,
+            "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 4 - Msg 6)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 25,
+        "fields": {
+            "created_at": "2025-10-05T10:30:00Z",
+            "created_by": 3,
+            "updated_at": "2025-10-05T10:30:00Z",
+            "updated_by": 3,
+            "inquiry": 5,
+            "user": 3,
+            "content": "来月の健康診断の日程を変更したいのですが、可能でしょうか？ (Inquiry 5 - Msg 1)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 26,
+        "fields": {
+            "created_at": "2025-10-05T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-05T11:00:00Z",
+            "updated_by": 1,
+            "inquiry": 5,
+            "user": 1,
+            "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 5 - Msg 2)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 27,
+        "fields": {
+            "created_at": "2025-10-05T11:30:00Z",
+            "created_by": 3,
+            "updated_at": "2025-10-05T11:30:00Z",
+            "updated_by": 3,
+            "inquiry": 5,
+            "user": 3,
+            "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 5 - Msg 3)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 28,
+        "fields": {
+            "created_at": "2025-10-05T12:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-05T12:00:00Z",
+            "updated_by": 1,
+            "inquiry": 5,
+            "user": 1,
+            "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 5 - Msg 4)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 29,
+        "fields": {
+            "created_at": "2025-10-05T12:30:00Z",
+            "created_by": 3,
+            "updated_at": "2025-10-05T12:30:00Z",
+            "updated_by": 3,
+            "inquiry": 5,
+            "user": 3,
+            "content": "確認しました！ありがとうございます。 (Inquiry 5 - Msg 5)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 30,
+        "fields": {
+            "created_at": "2025-10-05T13:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-05T13:00:00Z",
+            "updated_by": 1,
+            "inquiry": 5,
+            "user": 1,
+            "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 5 - Msg 6)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 31,
+        "fields": {
+            "created_at": "2025-10-06T10:30:00Z",
+            "created_by": 4,
+            "updated_at": "2025-10-06T10:30:00Z",
+            "updated_by": 4,
+            "inquiry": 6,
+            "user": 4,
+            "content": "現在の社会保険の加入状況を確認したいです。 (Inquiry 6 - Msg 1)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 32,
+        "fields": {
+            "created_at": "2025-10-06T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-06T11:00:00Z",
+            "updated_by": 1,
+            "inquiry": 6,
+            "user": 1,
+            "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 6 - Msg 2)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 33,
+        "fields": {
+            "created_at": "2025-10-06T11:30:00Z",
+            "created_by": 4,
+            "updated_at": "2025-10-06T11:30:00Z",
+            "updated_by": 4,
+            "inquiry": 6,
+            "user": 4,
+            "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 6 - Msg 3)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 34,
+        "fields": {
+            "created_at": "2025-10-06T12:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-06T12:00:00Z",
+            "updated_by": 1,
+            "inquiry": 6,
+            "user": 1,
+            "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 6 - Msg 4)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 35,
+        "fields": {
+            "created_at": "2025-10-06T12:30:00Z",
+            "created_by": 4,
+            "updated_at": "2025-10-06T12:30:00Z",
+            "updated_by": 4,
+            "inquiry": 6,
+            "user": 4,
+            "content": "確認しました！ありがとうございます。 (Inquiry 6 - Msg 5)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 36,
+        "fields": {
+            "created_at": "2025-10-06T13:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-06T13:00:00Z",
+            "updated_by": 1,
+            "inquiry": 6,
+            "user": 1,
+            "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 6 - Msg 6)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 37,
+        "fields": {
+            "created_at": "2025-10-07T10:30:00Z",
+            "created_by": 2,
+            "updated_at": "2025-10-07T10:30:00Z",
+            "updated_by": 2,
+            "inquiry": 7,
+            "user": 2,
+            "content": "先月分の給与明細を紛失してしまいました。再発行をお願いできますか？ (Inquiry 7 - Msg 1)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 38,
+        "fields": {
+            "created_at": "2025-10-07T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-07T11:00:00Z",
+            "updated_by": 1,
+            "inquiry": 7,
+            "user": 1,
+            "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 7 - Msg 2)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 39,
+        "fields": {
+            "created_at": "2025-10-07T11:30:00Z",
+            "created_by": 2,
+            "updated_at": "2025-10-07T11:30:00Z",
+            "updated_by": 2,
+            "inquiry": 7,
+            "user": 2,
+            "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 7 - Msg 3)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 40,
+        "fields": {
+            "created_at": "2025-10-07T12:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-07T12:00:00Z",
+            "updated_by": 1,
+            "inquiry": 7,
+            "user": 1,
+            "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 7 - Msg 4)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 41,
+        "fields": {
+            "created_at": "2025-10-07T12:30:00Z",
+            "created_by": 2,
+            "updated_at": "2025-10-07T12:30:00Z",
+            "updated_by": 2,
+            "inquiry": 7,
+            "user": 2,
+            "content": "確認しました！ありがとうございます。 (Inquiry 7 - Msg 5)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 42,
+        "fields": {
+            "created_at": "2025-10-07T13:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-07T13:00:00Z",
+            "updated_by": 1,
+            "inquiry": 7,
+            "user": 1,
+            "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 7 - Msg 6)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 43,
+        "fields": {
+            "created_at": "2025-10-08T10:30:00Z",
+            "created_by": 3,
+            "updated_at": "2025-10-08T10:30:00Z",
+            "updated_by": 3,
+            "inquiry": 8,
+            "user": 3,
+            "content": "引っ越しをしたので住所変更の手続きをしたいです。 (Inquiry 8 - Msg 1)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 44,
+        "fields": {
+            "created_at": "2025-10-08T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-08T11:00:00Z",
+            "updated_by": 1,
+            "inquiry": 8,
+            "user": 1,
+            "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 8 - Msg 2)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 45,
+        "fields": {
+            "created_at": "2025-10-08T11:30:00Z",
+            "created_by": 3,
+            "updated_at": "2025-10-08T11:30:00Z",
+            "updated_by": 3,
+            "inquiry": 8,
+            "user": 3,
+            "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 8 - Msg 3)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 46,
+        "fields": {
+            "created_at": "2025-10-08T12:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-08T12:00:00Z",
+            "updated_by": 1,
+            "inquiry": 8,
+            "user": 1,
+            "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 8 - Msg 4)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 47,
+        "fields": {
+            "created_at": "2025-10-08T12:30:00Z",
+            "created_by": 3,
+            "updated_at": "2025-10-08T12:30:00Z",
+            "updated_by": 3,
+            "inquiry": 8,
+            "user": 3,
+            "content": "確認しました！ありがとうございます。 (Inquiry 8 - Msg 5)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 48,
+        "fields": {
+            "created_at": "2025-10-08T13:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-08T13:00:00Z",
+            "updated_by": 1,
+            "inquiry": 8,
+            "user": 1,
+            "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 8 - Msg 6)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 49,
+        "fields": {
+            "created_at": "2025-10-09T10:30:00Z",
+            "created_by": 4,
+            "updated_at": "2025-10-09T10:30:00Z",
+            "updated_by": 4,
+            "inquiry": 9,
+            "user": 4,
+            "content": "外部の研修に参加したいのですが、費用補助の制度はありますか？ (Inquiry 9 - Msg 1)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 50,
+        "fields": {
+            "created_at": "2025-10-09T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-09T11:00:00Z",
+            "updated_by": 1,
+            "inquiry": 9,
+            "user": 1,
+            "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 9 - Msg 2)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 51,
+        "fields": {
+            "created_at": "2025-10-09T11:30:00Z",
+            "created_by": 4,
+            "updated_at": "2025-10-09T11:30:00Z",
+            "updated_by": 4,
+            "inquiry": 9,
+            "user": 4,
+            "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 9 - Msg 3)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 52,
+        "fields": {
+            "created_at": "2025-10-09T12:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-09T12:00:00Z",
+            "updated_by": 1,
+            "inquiry": 9,
+            "user": 1,
+            "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 9 - Msg 4)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 53,
+        "fields": {
+            "created_at": "2025-10-09T12:30:00Z",
+            "created_by": 4,
+            "updated_at": "2025-10-09T12:30:00Z",
+            "updated_by": 4,
+            "inquiry": 9,
+            "user": 4,
+            "content": "確認しました！ありがとうございます。 (Inquiry 9 - Msg 5)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 54,
+        "fields": {
+            "created_at": "2025-10-09T13:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-09T13:00:00Z",
+            "updated_by": 1,
+            "inquiry": 9,
+            "user": 1,
+            "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 9 - Msg 6)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 55,
+        "fields": {
+            "created_at": "2025-10-10T10:30:00Z",
+            "created_by": 2,
+            "updated_at": "2025-10-10T10:30:00Z",
+            "updated_by": 2,
+            "inquiry": 10,
+            "user": 2,
+            "content": "弊社の退職金制度の概要を知りたいです。 (Inquiry 10 - Msg 1)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 56,
+        "fields": {
+            "created_at": "2025-10-10T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-10T11:00:00Z",
+            "updated_by": 1,
+            "inquiry": 10,
+            "user": 1,
+            "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 10 - Msg 2)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 57,
+        "fields": {
+            "created_at": "2025-10-10T11:30:00Z",
+            "created_by": 2,
+            "updated_at": "2025-10-10T11:30:00Z",
+            "updated_by": 2,
+            "inquiry": 10,
+            "user": 2,
+            "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 10 - Msg 3)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 58,
+        "fields": {
+            "created_at": "2025-10-10T12:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-10T12:00:00Z",
+            "updated_by": 1,
+            "inquiry": 10,
+            "user": 1,
+            "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 10 - Msg 4)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 59,
+        "fields": {
+            "created_at": "2025-10-10T12:30:00Z",
+            "created_by": 2,
+            "updated_at": "2025-10-10T12:30:00Z",
+            "updated_by": 2,
+            "inquiry": 10,
+            "user": 2,
+            "content": "確認しました！ありがとうございます。 (Inquiry 10 - Msg 5)",
+            "is_hidden": false
+        }
+    },
+    {
+        "model": "staff.staffinquirymessage",
+        "pk": 60,
+        "fields": {
+            "created_at": "2025-10-10T13:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-10T13:00:00Z",
+            "updated_by": 1,
+            "inquiry": 10,
+            "user": 1,
+            "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 10 - Msg 6)",
+            "is_hidden": false
+        }
+    }
+]

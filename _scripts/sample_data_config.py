@@ -56,4 +56,6 @@ SAMPLE_DATA_FILES = [
     ("_sample_data/contract_client_haken.json", "クライアント契約派遣データ"),
     ("_sample_data/contract_staff.json", "スタッフ契約データ"),
     ("_sample_data/contract_assignment.json", "契約アサインメントデータ"),
+    ("_sample_data/staff_inquiry.json", "スタッフ問い合わせデータ"),
+    ("_sample_data/staff_inquiry_message.json", "スタッフ問い合わせメッセージデータ"),
 ]
