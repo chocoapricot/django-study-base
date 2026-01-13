@@ -13,22 +13,22 @@
             <thead>
                 <tr>
                     <th>送信日時</th>
+                    <th>件名</th>
                     <th>問い合わせユーザ</th>
                     <th>問い合わせ先</th>
-                    <th>件名</th>
                 </tr>
             </thead>
             <tbody>
                 {% for inquiry in page_obj %}
                 <tr>
                     <td>{{ inquiry.created_at|date:"Y/m/d H:i:s" }}</td>
-                    <td>{{ inquiry.user_full_name }}</td>
-                    <td>{{ inquiry.client_name }}</td>
                     <td>
                         <a href="{% url 'staff:staff_inquiry_detail' inquiry.pk %}" class="text-decoration-none">
                             {{ inquiry.subject }}
                         </a>
                     </td>
+                    <td>{{ inquiry.user_full_name }}</td>
+                    <td>{{ inquiry.client_name }}</td>
                 </tr>
                 {% empty %}
                 <tr>
