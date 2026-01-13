@@ -23,6 +23,9 @@ from .views import (
     staff_payroll_detail, staff_payroll_create, staff_payroll_edit, staff_payroll_delete,
     staff_evaluation_list, staff_evaluation_create, staff_evaluation_update, staff_evaluation_delete,
 )
+from .views_inquiry import (
+    staff_inquiry_list, staff_inquiry_create, staff_inquiry_detail
+)
 
 app_name = 'staff'
 
@@ -122,4 +125,9 @@ urlpatterns = [
     path('staff/<int:staff_pk>/evaluation/create/', staff_evaluation_create, name='staff_evaluation_create'),
     path('staff/evaluation/<int:pk>/update/', staff_evaluation_update, name='staff_evaluation_update'),
     path('staff/evaluation/<int:pk>/delete/', staff_evaluation_delete, name='staff_evaluation_delete'),
+
+    # 問い合わせ
+    path('inquiry/', staff_inquiry_list, name='staff_inquiry_list'),
+    path('inquiry/create/', staff_inquiry_create, name='staff_inquiry_create'),
+    path('inquiry/<int:pk>/', staff_inquiry_detail, name='staff_inquiry_detail'),
 ]
