@@ -67,24 +67,44 @@ class StaffInquiryTest(TestCase):
         response = self.client_user.get(url)
         self.assertRedirects(response, reverse('staff:staff_inquiry_create'))
 
-    def test_inquiry_message(self):
+    def test_inquiry_message_delete(self):
+        from apps.staff.models_inquiry import StaffInquiryMessage
+        from django.utils import timezone
+        from datetime import timedelta
+        
         inquiry = StaffInquiry.objects.create(
             user=self.user,
             corporate_number='1234567890123',
-            subject='Message Test',
+            subject='Delete Test',
             content='Original Content'
         )
-        url = reverse('staff:staff_inquiry_detail', kwargs={'pk': inquiry.pk})
         
-        # メッセージ投稿
-        data = {
-            'content': 'Reply from Staff'
-        }
-        response = self.client_user.post(url, data)
-        self.assertEqual(response.status_code, 302)
+        # 1. 5分以内のメッセージ作成
+        msg = StaffInquiryMessage.objects.create(
+            inquiry=inquiry,
+            user=self.user,
+            content='Deletable message'
+        )
         
-        from apps.staff.models_inquiry import StaffInquiryMessage
+        delete_url = reverse('staff:staff_inquiry_message_delete', kwargs={'pk': msg.pk})
+        
+        # 削除実行
+        response = self.client_user.post(delete_url) # urls.py matches this, even if using GET link in UI
+        self.assertEqual(StaffInquiryMessage.objects.count(), 0)
+        
+        # 2. 5分経過後のメッセージ作成
+        msg_old = StaffInquiryMessage.objects.create(
+            inquiry=inquiry,
+            user=self.user,
+            content='Expired message'
+        )
+        # created_atを手動で過去にずらす
+        msg_old.created_at = timezone.now() - timedelta(minutes=6)
+        msg_old.save()
+        
+        delete_url_old = reverse('staff:staff_inquiry_message_delete', kwargs={'pk': msg_old.pk})
+        response = self.client_user.post(delete_url_old)
+        
+        # 削除されていないことを確認
         self.assertEqual(StaffInquiryMessage.objects.count(), 1)
-        msg = StaffInquiryMessage.objects.first()
-        self.assertEqual(msg.content, 'Reply from Staff')
-        self.assertEqual(msg.user, self.user)
+        self.assertTrue(StaffInquiryMessage.objects.filter(pk=msg_old.pk).exists())

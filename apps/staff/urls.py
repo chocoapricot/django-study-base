@@ -24,7 +24,7 @@ from .views import (
     staff_evaluation_list, staff_evaluation_create, staff_evaluation_update, staff_evaluation_delete,
 )
 from .views_inquiry import (
-    staff_inquiry_list, staff_inquiry_create, staff_inquiry_detail
+    staff_inquiry_list, staff_inquiry_create, staff_inquiry_detail, staff_inquiry_message_delete
 )
 
 app_name = 'staff'
@@ -130,4 +130,5 @@ urlpatterns = [
     path('inquiry/', staff_inquiry_list, name='staff_inquiry_list'),
     path('inquiry/create/', staff_inquiry_create, name='staff_inquiry_create'),
     path('inquiry/<int:pk>/', staff_inquiry_detail, name='staff_inquiry_detail'),
+    path('inquiry/message/<int:pk>/delete/', staff_inquiry_message_delete, name='staff_inquiry_message_delete'),
 ]

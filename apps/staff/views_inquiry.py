@@ -7,6 +7,8 @@ from apps.system.logs.utils import log_model_action, log_view_detail
 from .models_inquiry import StaffInquiry, StaffInquiryMessage
 from .forms_inquiry import StaffInquiryForm, StaffInquiryMessageForm
 from apps.company.models import Company, CompanyUser
+from django.utils import timezone
+from datetime import timedelta
 
 @login_required
 def staff_inquiry_list(request):
@@ -121,9 +123,13 @@ def staff_inquiry_detail(request, pk):
     messages_qs = inquiry.messages.all().order_by('created_at')
     
     # スタッフ（作成者）の場合は非表示メッセージを除外
-    is_company_or_admin = request.user.is_superuser or CompanyUser.objects.filter(email=request.user.email).exists()
     if not is_company_or_admin:
         messages_qs = messages_qs.filter(is_hidden=False)
+    
+    now = timezone.now()
+    for m in messages_qs:
+        # 5分以内 & 自分の投稿であれば削除可能
+        m.can_delete = (m.user == request.user and now - m.created_at < timedelta(minutes=5))
     
     # ログ記録
     log_view_detail(request.user, inquiry)
@@ -134,3 +140,24 @@ def staff_inquiry_detail(request, pk):
         'form': form,
         'is_company_or_admin': is_company_or_admin,
     })
+
+@login_required
+def staff_inquiry_message_delete(request, pk):
+    """メッセージ削除 (5分以内)"""
+    message_obj = get_object_or_404(StaffInquiryMessage, pk=pk)
+    
+    # 権限チェック: 自分の投稿 & 5分以内
+    now = timezone.now()
+    if message_obj.user != request.user:
+        messages.error(request, '他人のメッセージは削除できません。')
+    elif now - message_obj.created_at >= timedelta(minutes=5):
+        messages.error(request, '投稿から5分以上経過したメッセージは削除できません。')
+    else:
+        inquiry_pk = message_obj.inquiry.pk
+        # ログ記録
+        log_model_action(request.user, 'delete', message_obj)
+        message_obj.delete()
+        messages.success(request, 'メッセージを削除しました。')
+        return redirect('staff:staff_inquiry_detail', pk=inquiry_pk)
+    
+    return redirect('staff:staff_inquiry_detail', pk=message_obj.inquiry.pk)

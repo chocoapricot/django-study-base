@@ -80,6 +80,16 @@
                                 <small class="text-muted ms-3" style="font-size: 0.75rem;">{{ msg.created_at|date:"Y/m/d H:i" }}</small>
                             </div>
                             <div class="message-content" style="white-space: pre-wrap; font-size: 0.95rem; line-height: 1.5;">{{ msg.content }}</div>
+
+                            {% if msg.can_delete %}
+                                <div class="text-end mt-2">
+                                    <a href="{% url 'staff:staff_inquiry_message_delete' msg.pk %}" 
+                                       class="text-danger text-decoration-none small"
+                                       onclick="return confirm('このメッセージを削除しますか？\n（投稿後5分以内のみ削除可能です）');">
+                                        <i class="bi bi-trash"></i> 削除
+                                    </a>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 {% empty %}
