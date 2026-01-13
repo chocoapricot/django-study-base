@@ -172,6 +172,13 @@ def load_sample_data(task: SetupTask) -> bool:
         command = f"python manage.py loaddata {file_path}"
         if not run_command(command, description, task):
             return False
+            
+        # グループデータが読み込まれた直後にユーザーをインポートする
+        # （問い合わせデータなどがMyUserを直接参照するため、早期のインポートが必要）
+        if "groups.json" in file_path:
+            if not import_sample_users(task):
+                return False
+                
         task.progress += 1
         task.imported_count += 1
         # データベースロックを軽減するため、短い待機時間を追加
@@ -298,25 +305,19 @@ def execute_setup(task_id: str):
             task.end_time = datetime.now()
             return
         
-        # 4. サンプルデータ読み込み
+        # 4. サンプルデータ読み込み（内部でユーザーのインポートも行われる）
         if not load_sample_data(task):
             task.status = 'failed'
             task.end_time = datetime.now()
             return
 
-        # 5. サンプルユーザーのインポート
-        if not import_sample_users(task):
-            task.status = 'failed'
-            task.end_time = datetime.now()
-            return
-
-        # 6. サンプル画像のコピー
+        # 5. サンプル画像のコピー
         if not copy_sample_photos(task):
             task.status = 'failed'
             task.end_time = datetime.now()
             return
 
-        # 7. 会社印サンプルファイルのコピー
+        # 6. 会社印サンプルファイルのコピー
         if not copy_company_seals(task):
             task.status = 'failed'
             task.end_time = datetime.now()

@@ -51,6 +51,15 @@ def main():
         if not run_command(command, description):
             print(f"❌ {description}のインポートでエラーが発生しました")
             sys.exit(1)
+            
+        # グループデータが読み込まれた直後にユーザーをインポートする
+        # （問い合わせデータなどがMyUserを直接参照するため、早期のインポートが必要）
+        if "groups.json" in file_path:
+            user_csv = "_sample_data/users.csv"
+            if os.path.exists(user_csv):
+                if not run_command(f"python manage.py import_users {user_csv}", "サンプルユーザーのインポート"):
+                    print("❌ サンプルユーザーのインポートでエラーが発生しました")
+                    sys.exit(1)
 
     # スーパーユーザーの姓名を更新
     update_superuser_command = "python manage.py update_superuser_info"
