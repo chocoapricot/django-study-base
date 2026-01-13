@@ -92,9 +92,9 @@ django-study-base/
 └── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（109テーブル）
+## データベーステーブル一覧（111テーブル）
 
-### 本アプリケーション独自テーブル（92テーブル）
+### 本アプリケーション独自テーブル（94テーブル）
 
 | テーブル名 | モデル名 | 説明 |
 | --- | --- | --- |
@@ -183,6 +183,8 @@ django-study-base/
 | `apps_staff_payroll` | `StaffPayroll` | スタッフ給与 |
 | `apps_staff_qualification` | `StaffQualification` | スタッフ保有資格 |
 | `apps_staff_skill` | `StaffSkill` | スタッフ保有スキル |
+| `apps_staff_inquiry` | `StaffInquiry` | スタッフ問い合わせ |
+| `apps_staff_inquiry_message` | `StaffInquiryMessage` | スタッフ問い合わせメッセージ |
 | `apps_system_access_log` | `AccessLog` | アクセスログ |
 | `apps_system_app_log` | `AppLog` | アプリケーション操作ログ |
 | `apps_system_dropdowns` | `Dropdowns` | ドロップダウン設定 |
