@@ -77,6 +77,24 @@ class StaffMailTest(TestCase):
         
         self.client = Client()
         self.client.login(username='testuser', password='testpass123')
+
+        # Create a company for ConnectStaff
+        from apps.company.models import Company, CompanyUser
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        CompanyUser.objects.create(
+            email=self.user.email,
+            corporate_number=self.company.corporate_number,
+            name_last='Test',
+            name_first='User'
+        )
+
+        # Create an approved connection for the main test staff
+        from apps.connect.models import ConnectStaff
+        ConnectStaff.objects.create(
+            corporate_number=self.company.corporate_number,
+            email=self.staff.email,
+            status='approved'
+        )
     
     def test_staff_mail_send_view_with_email(self):
         """メールアドレスありのスタッフのメール送信画面表示テスト"""

@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from apps.staff.models import Staff
 from apps.connect.models import ConnectStaff
-from apps.company.models import Company
+from apps.company.models import Company, CompanyUser
 
 User = get_user_model()
 
@@ -18,6 +18,12 @@ class StaffMailSendViewTest(TestCase):
         self.client.login(username='testuser', password='password')
 
         self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        CompanyUser.objects.create(
+            email=self.user.email,
+            corporate_number=self.company.corporate_number,
+            name_last='Test',
+            name_first='User'
+        )
 
         # Staff with approved connection
         self.approved_staff = Staff.objects.create(

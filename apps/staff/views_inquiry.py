@@ -8,7 +8,8 @@ from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
-from .models import Staff, StaffInquiry
+from .models import Staff
+from .models_inquiry import StaffInquiry, StaffInquiryMessage
 from apps.company.models import CompanyUser, Company
 from apps.connect.models import ConnectStaff
 from .forms_inquiry import StaffInquiryForm, StaffInquiryMessageForm, StaffInquiryFromAdminForm

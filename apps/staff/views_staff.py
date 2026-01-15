@@ -1116,6 +1116,20 @@ def staff_mail_send(request, pk):
         return redirect('staff:staff_detail', pk=pk)
 
     from .forms_mail import StaffMailForm
+    from apps.connect.models import ConnectStaff
+    from apps.company.models import Company
+
+    # 接続が承認されているかどうかを確認
+    from apps.company.models import CompanyUser
+    is_connection_approved = False
+    company_user = CompanyUser.objects.filter(email=request.user.email).first()
+    if company_user and company_user.corporate_number and staff.email:
+        connect_staff = ConnectStaff.objects.filter(
+            corporate_number=company_user.corporate_number,
+            email=staff.email
+        ).first()
+        if connect_staff and connect_staff.is_approved:
+            is_connection_approved = True
 
     if request.method == 'POST':
         form = StaffMailForm(staff=staff, user=request.user, data=request.POST)
@@ -1133,6 +1147,7 @@ def staff_mail_send(request, pk):
         'form': form,
         'staff': staff,
         'title': f'{staff.name_last} {staff.name_first} へのメール送信',
+        'is_connection_approved': is_connection_approved,
     }
     return render(request, 'staff/staff_mail_send.html', context)
 
