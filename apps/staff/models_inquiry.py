@@ -70,6 +70,11 @@ class StaffInquiryMessage(MyModel):
         default=False,
         help_text='チェックを入れるとスタッフに表示されません（社内メモ用）'
     )
+    read_at = models.DateTimeField(
+        '既読日時',
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         db_table = 'apps_staff_inquiry_message'

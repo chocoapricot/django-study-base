@@ -1,0 +1,11 @@
+Watching for file changes with StatReloader
+[16/Jan/2026 07:43:48] "GET /accounts/login/ HTTP/1.1" 200 4830
+[16/Jan/2026 07:43:48] "GET /static/css/None/bootstrap.min.css HTTP/1.1" 404 1892
+[16/Jan/2026 07:43:49] "POST /accounts/login/ HTTP/1.1" 302 0
+[16/Jan/2026 07:43:49] "GET / HTTP/1.1" 200 32788
+[16/Jan/2026 07:43:49] "GET /static/css/None/bootstrap.min.css HTTP/1.1" 404 1892
+[16/Jan/2026 07:43:49] "GET /static/js/bootstrap.bundle.min.js HTTP/1.1" 200 80421
+[16/Jan/2026 07:43:49] "GET /system/notifications/count/ HTTP/1.1" 200 19
+[16/Jan/2026 07:43:49] "GET /staff/inquiry/1/ HTTP/1.1" 200 25653
+[16/Jan/2026 07:43:49] "GET /static/css/None/bootstrap.min.css HTTP/1.1" 404 1892
+[16/Jan/2026 07:43:49] "GET /system/notifications/count/ HTTP/1.1" 200 19

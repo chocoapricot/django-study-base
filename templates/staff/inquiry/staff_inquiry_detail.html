@@ -77,7 +77,12 @@
                                         <span class="badge bg-danger ms-1" style="font-size: 0.7rem;">社内限定</span>
                                     {% endif %}
                                 </div>
-                                <small class="text-muted ms-3" style="font-size: 0.75rem;">{{ msg.created_at|date:"Y/m/d H:i" }}</small>
+                                <div class="d-flex align-items-center">
+                                    {% if is_company_or_admin and msg.user != inquiry.user and msg.read_at %}
+                                        <small class="text-primary me-2" style="font-size: 0.75rem;">既読 {{ msg.read_at|date:"m/d H:i" }}</small>
+                                    {% endif %}
+                                    <small class="text-muted" style="font-size: 0.75rem;">{{ msg.created_at|date:"Y/m/d H:i" }}</small>
+                                </div>
                             </div>
                             <div class="message-content" style="white-space: pre-wrap; font-size: 0.95rem; line-height: 1.5;">{{ msg.content }}</div>
 
