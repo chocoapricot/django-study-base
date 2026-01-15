@@ -714,10 +714,11 @@ class UserParameterForm(forms.ModelForm):
                     initial=self.instance.value,
                     required=False,
                 )
-                # choice形式の場合はchoicesフィールドを非表示にする
-                self.fields['choices'].widget = forms.HiddenInput()
             elif self.instance.format == 'color':
                 self.fields['value'].widget = ColorInput(attrs={'class': 'form-control form-control-sm form-control-color'})
+
+            if self.instance.format != 'choice':
+                self.fields['choices'].widget = forms.HiddenInput()
 
     def clean_value(self):
         """値のバリデーション"""
