@@ -8,7 +8,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
-from .models import Staff, StaffInquiry
+from .models import Staff, StaffInquiry, StaffInquiryMessage
 from apps.company.models import CompanyUser, Company
 from apps.connect.models import ConnectStaff
 from .forms_inquiry import StaffInquiryForm, StaffInquiryMessageForm, StaffInquiryFromAdminForm
@@ -61,6 +61,7 @@ def staff_inquiry_create(request):
         if form.is_valid():
             inquiry = form.save(commit=False)
             inquiry.user = request.user
+            inquiry.inquiry_from = 'staff'
             inquiry.save()
             
             # ログ記録
@@ -207,6 +208,7 @@ def staff_inquiry_create_for_staff(request, staff_pk):
             inquiry = form.save(commit=False)
             inquiry.user = staff_user
             inquiry.corporate_number = corporate_number
+            inquiry.inquiry_from = 'company'
             inquiry.save()
             
             # ログ記録
