@@ -8,6 +8,16 @@ class StaffInquiry(MyModel):
     """
     スタッフからの問い合わせを管理するモデル。
     """
+    INQUIRY_FROM_CHOICES = [
+        ('staff', 'スタッフ'),
+        ('company', '会社'),
+    ]
+    inquiry_from = models.CharField(
+        '問い合わせ元',
+        max_length=10,
+        choices=INQUIRY_FROM_CHOICES,
+        default='staff',
+    )
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

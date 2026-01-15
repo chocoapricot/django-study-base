@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from apps.staff.models import Staff
 from apps.staff.models_inquiry import StaffInquiry
 from apps.connect.models import ConnectStaff
 from apps.company.models import Company as CompanyModel
@@ -11,9 +12,13 @@ User = get_user_model()
 class StaffInquiryTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='teststaff', email='staff@example.com', password='password')
+        self.admin_user = User.objects.create_superuser(username='adminuser', email='admin@test.com', password='password')
         self.client_user = Client()
         self.client_user.login(username='teststaff', password='password')
         
+        # スタッフ作成
+        self.staff = Staff.objects.create(email=self.user.email, name_last='Staff', name_first='Test')
+
         # 会社作成
         self.company_model = CompanyModel.objects.create(
             name='Test Company',
@@ -46,6 +51,7 @@ class StaffInquiryTest(TestCase):
         inquiry = StaffInquiry.objects.first()
         self.assertEqual(inquiry.subject, 'Test Subject')
         self.assertEqual(inquiry.user, self.user)
+        self.assertEqual(inquiry.inquiry_from, 'staff')
 
     def test_inquiry_list(self):
         StaffInquiry.objects.create(
@@ -108,3 +114,16 @@ class StaffInquiryTest(TestCase):
         # 削除されていないことを確認
         self.assertEqual(StaffInquiryMessage.objects.count(), 1)
         self.assertTrue(StaffInquiryMessage.objects.filter(pk=msg_old.pk).exists())
+
+    def test_staff_inquiry_create_for_staff_view(self):
+        self.client.login(email='admin@test.com', password='password')
+        url = reverse('staff:staff_inquiry_create_for_staff', kwargs={'staff_pk': self.staff.pk})
+        data = {
+            'subject': 'Test Subject from Company',
+            'content': 'Test Content from Company',
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        inquiry = StaffInquiry.objects.get(subject='Test Subject from Company')
+        self.assertEqual(inquiry.inquiry_from, 'company')
+        self.assertEqual(inquiry.user, self.user)
