@@ -8,6 +8,8 @@ from ...system.logs.models import MailLog
 from ..forms_mail import StaffMailForm
 from ...system.notifications.models import Notification
 from ...system.settings.models import Dropdowns
+from ...company.models import Company, CompanyUser
+from ...connect.models import ConnectStaff
 
 User = get_user_model()
 
@@ -27,6 +29,19 @@ class StaffMailTest(TestCase):
         permission = Permission.objects.get(codename='view_staff')
         self.user.user_permissions.add(permission)
         
+        self.company = Company.objects.create(
+            corporate_number='1234567890123',
+            name='テスト株式会社',
+            created_by=self.user,
+            updated_by=self.user
+        )
+        CompanyUser.objects.create(
+            email=self.user.email,
+            corporate_number=self.company.corporate_number,
+            created_by=self.user,
+            updated_by=self.user
+        )
+
         # マスターデータを作成
         self.regist_status = StaffRegistStatus.objects.create(
             name='正社員',
@@ -75,6 +90,15 @@ class StaffMailTest(TestCase):
             updated_by=self.user
         )
         
+        #
+        ConnectStaff.objects.create(
+            corporate_number=self.company.corporate_number,
+            email=self.staff.email,
+            status='approved',
+            created_by=self.user,
+            updated_by=self.user,
+        )
+
         self.client = Client()
         self.client.login(username='testuser', password='testpass123')
     
@@ -104,7 +128,7 @@ class StaffMailTest(TestCase):
             'send_notification': True,
         }
         
-        form = StaffMailForm(staff=self.staff, user=self.user, data=form_data)
+        form = StaffMailForm(staff=self.staff, user=self.user, company=self.company, data=form_data)
         self.assertTrue(form.is_valid())
     
     def test_staff_mail_form_invalid_email(self):
@@ -116,7 +140,7 @@ class StaffMailTest(TestCase):
             'send_notification': True,
         }
         
-        form = StaffMailForm(staff=self.staff, user=self.user, data=form_data)
+        form = StaffMailForm(staff=self.staff, user=self.user, company=self.company, data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn('宛先メールアドレスが正しくありません', str(form.errors))
     
@@ -129,7 +153,7 @@ class StaffMailTest(TestCase):
             'send_notification': True,
         }
         
-        form = StaffMailForm(staff=self.staff, user=self.user, data=form_data)
+        form = StaffMailForm(staff=self.staff, user=self.user, company=self.company, data=form_data)
         self.assertTrue(form.is_valid())
         
         success, message = form.send_mail()
@@ -165,7 +189,7 @@ class StaffMailTest(TestCase):
             'send_notification': False,
         }
         
-        form = StaffMailForm(staff=self.staff, user=self.user, data=form_data)
+        form = StaffMailForm(staff=self.staff, user=self.user, company=self.company, data=form_data)
         self.assertTrue(form.is_valid())
         
         success, message = form.send_mail()
@@ -245,3 +269,39 @@ class StaffMailTest(TestCase):
         
         # 通知が作成されていないことを確認（ユーザーがいないので）
         self.assertEqual(Notification.objects.filter(title='ユーザーなし').count(), 0)
+
+    def test_send_notification_field_visibility(self):
+        """接続承認状況に応じた通知チェックボックスの表示テスト"""
+        # 承認済みスタッフ
+        approved_staff = Staff.objects.create(
+            name_last='承認', name_first='太郎',
+            email='approved@example.com',
+            created_by=self.user, updated_by=self.user
+        )
+        ConnectStaff.objects.create(
+            corporate_number=self.company.corporate_number,
+            email=approved_staff.email,
+            status='approved',
+            created_by=self.user, updated_by=self.user
+        )
+
+        # 未承認スタッフ
+        pending_staff = Staff.objects.create(
+            name_last='未承認', name_first='花子',
+            email='pending@example.com',
+            created_by=self.user, updated_by=self.user
+        )
+        ConnectStaff.objects.create(
+            corporate_number=self.company.corporate_number,
+            email=pending_staff.email,
+            status='pending',
+            created_by=self.user, updated_by=self.user
+        )
+
+        # 承認済みスタッフのフォームにはフィールドが表示される
+        approved_form = StaffMailForm(staff=approved_staff, company=self.company)
+        self.assertIn('send_notification', approved_form.fields)
+
+        # 未承認スタッフのフォームにはフィールドが表示されない
+        pending_form = StaffMailForm(staff=pending_staff, company=self.company)
+        self.assertNotIn('send_notification', pending_form.fields)

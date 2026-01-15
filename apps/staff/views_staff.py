@@ -1104,6 +1104,8 @@ def staff_file_download(request, pk):
 
 
 
+from apps.company.models import Company, CompanyUser
+
 @login_required
 @permission_required('staff.view_staff', raise_exception=True)
 def staff_mail_send(request, pk):
@@ -1117,8 +1119,17 @@ def staff_mail_send(request, pk):
 
     from .forms_mail import StaffMailForm
 
+    # ログインユーザーから会社情報を取得
+    try:
+        company_user = CompanyUser.objects.get(email=request.user.email)
+        company = Company.objects.get(corporate_number=company_user.corporate_number)
+    except (CompanyUser.DoesNotExist, Company.DoesNotExist):
+        company = None
+        messages.error(request, '自社情報が見つからないため、メールを送信できません。')
+        return redirect('staff:staff_detail', pk=pk)
+
     if request.method == 'POST':
-        form = StaffMailForm(staff=staff, user=request.user, data=request.POST)
+        form = StaffMailForm(staff=staff, user=request.user, company=company, data=request.POST)
         if form.is_valid():
             success, message = form.send_mail()
             if success:
@@ -1127,7 +1138,7 @@ def staff_mail_send(request, pk):
             else:
                 messages.error(request, message)
     else:
-        form = StaffMailForm(staff=staff, user=request.user)
+        form = StaffMailForm(staff=staff, user=request.user, company=company)
 
     context = {
         'form': form,

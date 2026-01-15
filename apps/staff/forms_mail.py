@@ -10,6 +10,7 @@ from django.urls import reverse
 from apps.company.models import Company
 from apps.master.models import MailTemplate
 from apps.system.notifications.models import Notification
+from apps.connect.models import ConnectStaff
 
 
 class StaffMailForm(forms.Form):
@@ -60,13 +61,25 @@ class StaffMailForm(forms.Form):
     
 
     
-    def __init__(self, staff=None, user=None, *args, **kwargs):
+    def __init__(self, staff=None, user=None, company=None, *args, **kwargs):
         self.staff = staff
         self.user = user
+        self.company = company
         super().__init__(*args, **kwargs)
         
         if staff and staff.email:
             self.fields['to_email'].initial = staff.email
+
+            # 接続が承認されているかチェック
+            if self.company:
+                is_approved = ConnectStaff.objects.filter(
+                    corporate_number=self.company.corporate_number,
+                    email=staff.email,
+                    status='approved'
+                ).exists()
+
+                if not is_approved:
+                    del self.fields['send_notification']
     
     def clean_to_email(self):
         """宛先メールアドレスのバリデーション"""
