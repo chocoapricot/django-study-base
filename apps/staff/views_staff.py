@@ -212,9 +212,14 @@ def staff_list(request):
     has_request_filter = request.GET.get('has_request', '')
     has_international_filter = request.GET.get('has_international', '')
     has_disability_filter = request.GET.get('has_disability', '')
+    is_registration_status_view = request.GET.get('registration_status', '') == 'true'
 
     # 基本のクエリセット
     staffs = Staff.objects.all()
+
+    # 社員登録状況一覧の場合
+    if is_registration_status_view:
+        staffs = staffs.exclude(employee_no__isnull=True).exclude(employee_no='')
 
     if has_request_filter == 'true':
         from apps.connect.models import (
@@ -398,6 +403,7 @@ def staff_list(request):
         'has_international_filter': has_international_filter,
         'has_disability_filter': has_disability_filter,
         'staff_face_photo_style': staff_face_photo_style,
+        'is_registration_status_view': is_registration_status_view,
     })
 
 @login_required

@@ -63,7 +63,7 @@ def staff_inquiry_create(request):
             # ログ記録
             log_model_action(request.user, 'create', inquiry)
             
-            messages.success(request, '問い合わせを送信しました。')
+            messages.success(request, '問い合わせ・ご連絡を送信しました。')
             return redirect('staff:staff_inquiry_list')
     else:
         form = StaffInquiryForm(user=request.user)

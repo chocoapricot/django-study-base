@@ -29,8 +29,8 @@ class StaffInquiry(MyModel):
 
     class Meta:
         db_table = 'apps_staff_inquiry'
-        verbose_name = 'スタッフ問い合わせ'
-        verbose_name_plural = 'スタッフ問い合わせ'
+        verbose_name = 'スタッフ問い合わせ・ご連絡'
+        verbose_name_plural = 'スタッフ問い合わせ・ご連絡'
         ordering = ['-created_at']
 
     def __str__(self):

@@ -681,7 +681,7 @@
         "created_by": 1,
         "updated_at": "2026-01-10T16:00:00Z",
         "updated_by": 1,
-        "name": "問い合わせ",
+        "name": "問い合わせ・ご連絡",
         "url": "/staff/inquiry/",
         "icon": "bi-chat-left-text",
         "icon_style": "color:#17a2b8;",

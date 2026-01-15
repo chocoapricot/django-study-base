@@ -3,9 +3,9 @@
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        問い合わせ一覧
+        問い合わせ・ご連絡一覧
         <div class="d-flex">
-            <a href="{% url 'staff:staff_inquiry_create' %}" class="btn btn-sm btn-primary">新規お問い合わせ</a>
+            <a href="{% url 'staff:staff_inquiry_create' %}" class="btn btn-sm btn-primary">新規お問い合わせ・ご連絡</a>
         </div>
     </div>
     <div class="card-body">
@@ -14,8 +14,8 @@
                 <tr>
                     <th>送信日時</th>
                     <th>件名</th>
-                    <th>問い合わせユーザ</th>
-                    <th>問い合わせ先</th>
+                    <th>スタッフ</th>
+                    <th>あて先企業</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,7 +32,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="text-center">問い合わせはありません。</td>
+                    <td colspan="4" class="text-center">問い合わせ・ご連絡はありません。</td>
                 </tr>
                 {% endfor %}
             </tbody>

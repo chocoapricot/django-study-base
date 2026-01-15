@@ -4,7 +4,19 @@
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        スタッフ一覧
+        <div>
+            {% if is_registration_status_view %}
+                <i class="bi bi-card-checklist"></i> スタッフ一覧（社員登録状況一覧）
+            {% elif has_request_filter == 'true' %}
+                <i class="bi bi-arrow-down-circle"></i> スタッフ一覧（申請一覧）
+            {% elif has_international_filter == 'true' %}
+                <i class="bi bi-send"></i> スタッフ一覧（外国籍一覧）
+            {% elif has_disability_filter == 'true' %}
+                <i class="bi bi-heart"></i> スタッフ一覧（障害者一覧）
+            {% else %}
+                スタッフ一覧
+            {% endif %}
+        </div>
         <div class="d-flex">
             <ul class="nav nav-pills">
                 <li class="nav-item dropdown">
@@ -21,6 +33,11 @@
                         <a class="dropdown-item" href="{% url 'staff:staff_list' %}?has_disability=true">
                             <i class="bi bi-heart"></i>
                             障害者一覧
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{% url 'staff:staff_list' %}?registration_status=true">
+                            <i class="bi bi-card-checklist"></i>
+                            社員登録状況一覧
                         </a>
                     </div>
                 </li>
@@ -126,6 +143,9 @@
                 if (currentParams.has('has_disability')) {
                     params.append('has_disability', currentParams.get('has_disability'));
                 }
+                if (currentParams.has('registration_status')) {
+                    params.append('registration_status', currentParams.get('registration_status'));
+                }
 
                 params.append('format', format);
 
@@ -140,19 +160,24 @@
                 <tr>
                     <th><i class="bi bi-person-fill"></i></th>
                     <th>
-                        <a href="?sort={% if request.GET.sort == 'employee_no' %}-employee_no{% else %}employee_no{% endif %}&q={{ query }}&regist_status={{ regist_status_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}&has_international={{ has_international_filter }}&has_disability={{ has_disability_filter }}"
+                        <a href="?sort={% if request.GET.sort == 'employee_no' %}-employee_no{% else %}employee_no{% endif %}&q={{ query }}&regist_status={{ regist_status_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}&has_international={{ has_international_filter }}&has_disability={{ has_disability_filter }}&registration_status={{ is_registration_status_view|yesno:'true,false' }}"
                            class="no-link-style">
                             社員番号
                             {% if request.GET.sort == 'employee_no' %}↓{% elif request.GET.sort == '-employee_no' %}↑{% endif %}
                         </a>
                     </th>
                     <th>
-                        <a href="?sort={% if request.GET.sort == 'name_last' %}-name_last{% else %}name_last{% endif %}&q={{ query }}&regist_status={{ regist_status_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}&has_international={{ has_international_filter }}&has_disability={{ has_disability_filter }}"
+                        <a href="?sort={% if request.GET.sort == 'name_last' %}-name_last{% else %}name_last{% endif %}&q={{ query }}&regist_status={{ regist_status_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}&has_international={{ has_international_filter }}&has_disability={{ has_disability_filter }}&registration_status={{ is_registration_status_view|yesno:'true,false' }}"
                            class="no-link-style">
                             氏名
                             {% if request.GET.sort == 'name_last' %}↓{% elif request.GET.sort == '-name_last' %}↑{% endif %}
                         </a>
                     </th>
+                    {% if is_registration_status_view %}
+                    <th><i class="bi bi-credit-card"></i> マイナンバー</th>
+                    <th><i class="bi bi-bank"></i> 銀行情報</th>
+                    <th><i class="bi bi-cash-stack"></i> 給与関連</th>
+                    {% else %}
                     <th class="d-none d-lg-table-cell">
                         <a href="?sort={% if request.GET.sort == 'address1' %}-address1{% else %}address1{% endif %}&q={{ query }}&regist_status={{ regist_status_filter }}&department={{ department_filter }}&employment_type={{ employment_type_filter }}&has_request={{ has_request_filter }}&has_international={{ has_international_filter }}&has_disability={{ has_disability_filter }}"
                            class="no-link-style">
@@ -167,6 +192,7 @@
                             {% if request.GET.sort == 'age' %}↓{% elif request.GET.sort == '-age' %}↑{% endif %}
                         </a>
                     </th>
+                    {% endif %}
                     <th>登録区分</th>
             <th>雇用形態</th>
                     <th class="d-none d-md-table-cell">所属部署</th>
@@ -206,8 +232,32 @@
                             <i class="bi bi-heart" style="color:#17a2b8;" title="障害者"></i>
                         {% endif %}
                     </td>
+                    {% if is_registration_status_view %}
+                    <td>
+                        {% if staff.has_mynumber %}
+                            <i class="bi bi-check-circle-fill text-success" title="登録済み"></i>
+                        {% else %}
+                            <i class="bi bi-dash-circle text-muted" title="未登録"></i>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if staff.has_bank %}
+                            <i class="bi bi-check-circle-fill text-success" title="登録済み"></i>
+                        {% else %}
+                            <i class="bi bi-dash-circle text-muted" title="未登録"></i>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if staff.has_payroll %}
+                            <i class="bi bi-check-circle-fill text-success" title="登録済み"></i>
+                        {% else %}
+                            <i class="bi bi-dash-circle text-muted" title="未登録"></i>
+                        {% endif %}
+                    </td>
+                    {% else %}
                     <td class="d-none d-lg-table-cell">{{ staff.address1 }}</td>
                     <td>{{ staff.age }}歳</td>
+                    {% endif %}
                     <td>
                         {% if staff.regist_status %}
                             <span class="badge {{ staff.regist_status.display_order|badge_class }}" style="font-size:13px">{{ staff.regist_status.name }}</span>
