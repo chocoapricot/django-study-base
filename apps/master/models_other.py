@@ -234,6 +234,7 @@ class UserParameter(MyModel):
         ('boolean', '真偽値'),
         ('number', '数値'),
         ('choice', '選択肢'),
+        ('color', '色'),
     ]
 
     key = models.CharField('キー', max_length=255, primary_key=True)
