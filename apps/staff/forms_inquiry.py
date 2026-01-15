@@ -70,3 +70,12 @@ class StaffInquiryMessageForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'メッセージを入力してください', 'rows': 3}),
             'is_hidden': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
+class StaffInquiryFromAdminForm(forms.ModelForm):
+    class Meta:
+        model = StaffInquiry
+        fields = ['subject', 'content']
+        widgets = {
+            'subject': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '件名を入力してください'}),
+            'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'メッセージ内容を入力してください', 'rows': 5}),
+        }

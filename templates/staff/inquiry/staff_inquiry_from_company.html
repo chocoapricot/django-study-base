@@ -1,0 +1,57 @@
+{% extends 'common/_base.html' %}
+{% load help_tags %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<!-- スタッフ共通カード -->
+{% include 'staff/_staff_info_card.html' %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">{{ title }}</div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.subject.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">件名</label>
+                <div class="col-sm-8">
+                    {{ form.subject }}
+                    {% if form.subject.errors %}
+                        <div class="text-danger small">{{ form.subject.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="{{ form.content.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">内容</label>
+                <div class="col-sm-10">
+                    {{ form.content }}
+                    {% if form.content.errors %}
+                        <div class="text-danger small">{{ form.content.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <button type="submit" class="btn btn-sm btn-primary me-2">
+                        登録
+                    </button>
+                    <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // ツールチップを有効化
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

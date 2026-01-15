@@ -4,11 +4,14 @@ from django.contrib import messages
 from django.db import models
 from django.core.paginator import Paginator
 from apps.system.logs.utils import log_model_action, log_view_detail
-from .models_inquiry import StaffInquiry, StaffInquiryMessage
-from .forms_inquiry import StaffInquiryForm, StaffInquiryMessageForm
-from apps.company.models import Company, CompanyUser
 from django.utils import timezone
 from datetime import timedelta
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import permission_required
+from .models import Staff, StaffInquiry
+from apps.company.models import CompanyUser, Company
+from apps.connect.models import ConnectStaff
+from .forms_inquiry import StaffInquiryForm, StaffInquiryMessageForm, StaffInquiryFromAdminForm
 
 @login_required
 def staff_inquiry_list(request):
@@ -161,3 +164,61 @@ def staff_inquiry_message_delete(request, pk):
         return redirect('staff:staff_inquiry_detail', pk=inquiry_pk)
     
     return redirect('staff:staff_inquiry_detail', pk=message_obj.inquiry.pk)
+
+@login_required
+@permission_required('staff.view_staff', raise_exception=True)
+def staff_inquiry_create_for_staff(request, staff_pk):
+    """会社からスタッフへのメッセージ連絡"""
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    User = get_user_model()
+    
+    # 会社の法人番号を取得（最初の会社を仮定）
+    company = Company.objects.first()
+    corporate_number = company.corporate_number if company else None
+    
+    if not staff.email:
+        messages.error(request, 'このスタッフにはメールアドレスが設定されていません。')
+        return redirect('staff:staff_detail', pk=staff_pk)
+
+    # 接続・承認状況の確認
+    if not corporate_number:
+        messages.error(request, '会社情報が設定されていません。')
+        return redirect('staff:staff_detail', pk=staff_pk)
+        
+    connect_request = ConnectStaff.objects.filter(
+        email=staff.email, 
+        corporate_number=corporate_number, 
+        status='approved'
+    ).first()
+    
+    if not connect_request:
+        messages.error(request, 'このスタッフは接続承認されていません。')
+        return redirect('staff:staff_detail', pk=staff_pk)
+
+    # スタッフのユーザーアカウント確認
+    staff_user = User.objects.filter(email=staff.email).first()
+    if not staff_user:
+        messages.error(request, 'このスタッフのユーザーアカウントが見つかりません。')
+        return redirect('staff:staff_detail', pk=staff_pk)
+
+    if request.method == 'POST':
+        form = StaffInquiryFromAdminForm(request.POST)
+        if form.is_valid():
+            inquiry = form.save(commit=False)
+            inquiry.user = staff_user
+            inquiry.corporate_number = corporate_number
+            inquiry.save()
+            
+            # ログ記録
+            log_model_action(request.user, 'create', inquiry)
+            
+            messages.success(request, 'メッセージを送信しました。')
+            return redirect('staff:staff_inquiry_detail', pk=inquiry.pk)
+    else:
+        form = StaffInquiryFromAdminForm()
+
+    return render(request, 'staff/inquiry/staff_inquiry_from_company.html', {
+        'form': form,
+        'staff': staff,
+        'title': f'{staff.name_last} {staff.name_first} へのメッセージ連絡',
+    })
