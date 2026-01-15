@@ -19,7 +19,7 @@
             font-size: {{ BASE_FONT_SIZE }}; /* settings.pyで管理 */
         }
         body {
-            background-color: #f0f0f0;
+            background-color: {% parameter 'MAIN_BACKGROUND_COLOR' '#f0f0f0' %};
             font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
         }
         /* ヘッダスタイル */
@@ -160,7 +160,7 @@
             margin-left: auto;
         }
         .sidebar .nav-link.active, .sidebar .nav-link:hover {
-            background-color: #f0f0f0;
+            background-color: {% parameter 'MAIN_BACKGROUND_COLOR' '#f0f0f0' %};
         }
         .sidebar .nav-link.active > i {
             color: #28a745; /* 選択されたメニューアイコンの色 */
@@ -190,7 +190,7 @@
             margin-left: auto;
         }
         .offcanvas-body .nav-link.active, .offcanvas-body .nav-link:hover {
-            background-color: #f0f0f0;
+            background-color: {% parameter 'MAIN_BACKGROUND_COLOR' '#f0f0f0' %};
         }
         .offcanvas-body .nav-link.active i {
             color: #28a745; /* 選択されたメニューアイコンの色 */
@@ -426,7 +426,7 @@ body.no-transition #sidebar {
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" style="background-color: #f0f0f0;">
+            <div class="modal-body" style="background-color: {% parameter 'MAIN_BACKGROUND_COLOR' '#f0f0f0' %};">
                 <div id="logic-info-content">
                     <!-- ページ固有のロジック情報がここに表示される -->
                     <p class="text-muted">このページのロジック情報はありません。</p>
