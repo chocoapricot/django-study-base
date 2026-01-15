@@ -36,3 +36,8 @@ class MyRadioSelect(RadioSelect):
         return ''
 
 
+class ColorInput(forms.TextInput):
+    """
+    HTML5の <input type="color"> をレンダリングするためのウィジェット。
+    """
+    input_type = 'color'

@@ -2,6 +2,7 @@ from django.test import TestCase
 from django import forms
 from apps.master.models import UserParameter
 from apps.master.forms import UserParameterForm
+from apps.common.forms import ColorInput
 
 class UserParameterFormTest(TestCase):
 
@@ -102,3 +103,18 @@ class UserParameterFormTest(TestCase):
         form = UserParameterForm(instance=param_choice, data=form_data)
         self.assertFalse(form.is_valid(), "Form should be invalid with an invalid choice.")
         self.assertIn('value', form.errors, "There should be an error on the 'value' field.")
+
+    def test_widget_is_colorinput_for_color_format(self):
+        """
+        Tests that the widget for the 'value' field is a TextInput with type 'color' when format is 'color'.
+        """
+        param_color = UserParameter.objects.create(
+            key='TEST_COLOR_PARAM',
+            target_item='Test Color Param',
+            format='color',
+            value='#ff0000'
+        )
+        form = UserParameterForm(instance=param_color)
+        widget = form.fields['value'].widget
+        self.assertIsInstance(widget, ColorInput, "The widget should be a ColorInput for color format.")
+        self.assertEqual(widget.input_type, 'color', "The widget's input_type attribute should be 'color'.")
