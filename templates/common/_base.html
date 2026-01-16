@@ -61,7 +61,7 @@
 
 /* アイコンのスタイル */
 .header .btn i {
-    font-size: 1.25rem; /* 20px - アイコンの大きさを調整 */
+    font-size: 1.5rem; /* 24px - アイコンの大きさを調整 */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -108,7 +108,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.25rem; /* 20px */
+            font-size: 1.5rem; /* 24px */
         }
         /* マウスオーバー時の背景色変更 */
 .header .icons i:hover {
@@ -306,7 +306,7 @@ body.no-transition #sidebar {
             <i class="bi bi-search"></i> <!-- 検索アイコン -->
             <a href="{% url 'system_notifications:notification_list' %}" style="position: relative; text-decoration: none; color: inherit;">
                 <i class="bi bi-bell"></i> <!-- 通知アイコン -->
-                <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none; font-size: 0.6rem;">
+                <span id="notification-badge" class="position-absolute top-0 start-100 badge rounded-pill bg-primary" style="display: none; font-size: 0.6rem; transform: translate(-90%, 10%);">
                     0
                 </span>
             </a>
