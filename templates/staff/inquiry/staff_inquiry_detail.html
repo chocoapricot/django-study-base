@@ -79,7 +79,7 @@
                                 </div>
                                 <div class="d-flex align-items-center">
                                     {% if is_company_or_admin and msg.user != inquiry.user and msg.read_at %}
-                                        <small class="text-primary me-2" style="font-size: 0.75rem;">既読 {{ msg.read_at|date:"m/d H:i" }}</small>
+                                        <small class="text-primary me-3" style="font-size: 0.75rem;">既読 {{ msg.read_at|date:"Y/m/d H:i" }}</small>
                                     {% endif %}
                                     <small class="text-muted" style="font-size: 0.75rem;">{{ msg.created_at|date:"Y/m/d H:i" }}</small>
                                 </div>
