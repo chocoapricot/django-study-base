@@ -50,6 +50,8 @@
                                 {% else %}
                                     <span class="badge bg-secondary">False</span>
                                 {% endif %}
+                            {% elif item.format == 'color' %}
+                                <span style="background-color: {{ item.value }}; padding: 2px 4px; border: 1px solid #ccc; display: inline-block;">{{ item.value }}</span>
                             {% elif item.format == 'choice' %}
                                 {{ item.get_choice_display }}
                             {% else %}
