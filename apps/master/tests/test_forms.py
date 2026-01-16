@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django import forms
 from apps.master.models import UserParameter
-from apps.master.forms import UserParameterForm
-from apps.common.forms import ColorInput
+from apps.master.forms import UserParameterAdminForm as UserParameterForm
+from apps.master.forms import ColorInput
 
 class UserParameterFormTest(TestCase):
 

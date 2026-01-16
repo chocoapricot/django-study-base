@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import Qualification, Skill, BillPayment, BillBank
 from .models_phrase import PhraseTemplate, PhraseTemplateTitle
 from .models_other import DefaultValue, UserParameter
+from .forms import UserParameterAdminForm
 
 # 資格マスタ、技能マスタ、支払いサイト、会社銀行は
 # Webインターフェースで管理するため、admin.pyには登録しない
@@ -88,6 +89,7 @@ class DefaultValueAdmin(admin.ModelAdmin):
 
 @admin.register(UserParameter)
 class UserParameterAdmin(admin.ModelAdmin):
+    form = UserParameterAdminForm
     list_display = ('key', 'target_item', 'format', 'get_value_short', 'display_order', 'created_at')
     list_filter = ('format', 'created_at')
     search_fields = ('key', 'target_item', 'value')

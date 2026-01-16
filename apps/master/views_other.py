@@ -16,7 +16,7 @@ from .forms import (
     InformationForm,
     MailTemplateForm,
     DefaultValueForm,
-    UserParameterForm,
+    UserParameterAdminForm as UserParameterForm,
     GenerativeAiSettingForm,
 )
 from apps.system.logs.models import AppLog
