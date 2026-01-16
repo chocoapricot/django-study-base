@@ -93,6 +93,10 @@ def staff_inquiry_detail(request, pk):
             models.Q(pk=pk) & (models.Q(user=request.user) | models.Q(corporate_number__in=my_companies))
         )
     
+    # スタッフが閲覧した場合、未読の会社側メッセージを既読にする
+    if not is_company_or_admin:
+        inquiry.messages.exclude(user=request.user).filter(read_at__isnull=True).update(read_at=timezone.now())
+
     if request.method == 'POST':
         # 返信時もスタッフの場合は接続承認を再確認
         if not is_company_or_admin:
