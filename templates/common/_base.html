@@ -1,6 +1,7 @@
 <!-- templates/common/base.html -->
 {% load static %}
 {% load parameters %}
+{% load user_parameters %}
 {% load menus %}
 <!DOCTYPE html>
 <html lang="ja">
@@ -19,7 +20,7 @@
             font-size: {{ BASE_FONT_SIZE }}; /* settings.pyで管理 */
         }
         body {
-            background-color: {% parameter 'MAIN_BACKGROUND_COLOR' '#f0f0f0' %};
+            background-color: {% user_parameter 'MAIN_BACKGROUND_COLOR' '#f0f0f0' %};
             font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
         }
         /* ヘッダスタイル */
@@ -426,7 +427,7 @@ body.no-transition #sidebar {
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" style="background-color: {% parameter 'MAIN_BACKGROUND_COLOR' '#f0f0f0' %};">
+            <div class="modal-body" style="background-color: {% user_parameter 'MAIN_BACKGROUND_COLOR' '#f0f0f0' %};">
                 <div id="logic-info-content">
                     <!-- ページ固有のロジック情報がここに表示される -->
                     <p class="text-muted">このページのロジック情報はありません。</p>

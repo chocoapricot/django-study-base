@@ -1,5 +1,9 @@
 from django import forms
 from django.core.exceptions import ValidationError
+
+class ColorInput(forms.TextInput):
+    input_type = 'color'
+
 from .models import (
     Qualification,
     Skill,
@@ -28,7 +32,7 @@ from apps.common.constants import (
     get_break_input_choices,
     get_location_fetch_choices
 )
-from apps.common.forms import ColorInput, MyRadioSelect
+from apps.common.forms import MyRadioSelect
 
 
 
@@ -662,7 +666,7 @@ class ClientRegistStatusForm(forms.ModelForm):
 
 
 
-class UserParameterForm(forms.ModelForm):
+class UserParameterAdminForm(forms.ModelForm):
     """設定値マスタフォーム"""
     class Meta:
         model = UserParameter

@@ -219,22 +219,5 @@
         "disp_seq": 7,
         "active": true
     }
-},
-{
-    "model": "settings.parameter",
-    "pk": 15,
-    "fields": {
-        "created_at": "2025-12-31T09:00:00.000Z",
-        "created_by": 1,
-        "updated_at": "2025-12-31T09:00:00.000Z",
-        "updated_by": 1,
-        "category": "system",
-        "key": "MAIN_BACKGROUND_COLOR",
-        "value": "#f0f0f0",
-        "default_value": "#f0f0f0",
-        "note": "メイン画面の背景色",
-        "disp_seq": 8,
-        "active": true
-    }
 }
 ]
