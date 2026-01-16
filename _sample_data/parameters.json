@@ -86,23 +86,6 @@
 },
 {
     "model": "settings.parameter",
-    "pk": 6,
-    "fields": {
-        "created_at": "2024-11-18T22:44:34.537Z",
-        "created_by": 1,
-        "updated_at": "2024-11-19T14:42:15.361Z",
-        "updated_by": 1,
-        "category": "system",
-        "key": "GLOBAL_CSS_THEME",
-        "value": "simplex",
-        "default_value": "simplex",
-        "note": "スタイル指定。simplex／pulse／journal／zephyr／cerulean／cosmo／flatly／lumen／united／brite",
-        "disp_seq": 0,
-        "active": true
-    }
-},
-{
-    "model": "settings.parameter",
     "pk": 7,
     "fields": {
         "created_at": "2025-07-20T00:57:31.161Z",

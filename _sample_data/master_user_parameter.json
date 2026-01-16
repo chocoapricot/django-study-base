@@ -91,5 +91,21 @@
         "choices": "",
         "display_order": 21
     }
+},
+{
+    "model": "master.userparameter",
+    "pk": "GLOBAL_CSS_THEME",
+    "fields": {
+        "version": 1,
+        "created_at": "2025-01-01T00:00:00.000Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00.000Z",
+        "updated_by": 1,
+        "target_item": "グローバルCSSテーマ",
+        "format": "choice",
+        "value": "simplex",
+        "choices": "simplex:Simplex,pulse:Pulse,journal:Journal,zephyr:Zephyr,cerulean:Cerulean,cosmo:Cosmo,flatly:Flatly,lumen:Lumen,united:United,brite:Brite",
+        "display_order": 22
+    }
 }
 ]

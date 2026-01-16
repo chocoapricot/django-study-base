@@ -685,6 +685,9 @@ class UserParameterAdminForm(forms.ModelForm):
             self.fields['format'].widget.attrs['readonly'] = True
             self.fields['format'].widget.attrs['style'] = 'pointer-events: none; background-color: #e9ecef;'
             
+            # 編集時はchoicesフィールドを除外
+            self.Meta.fields = ['target_item', 'format', 'value']
+            
             if self.instance.format == 'text':
                 self.fields['value'].widget = forms.TextInput(attrs={'class': 'form-control form-control-sm'})
             elif self.instance.format == 'boolean':
@@ -720,8 +723,12 @@ class UserParameterAdminForm(forms.ModelForm):
                 )
             elif self.instance.format == 'color':
                 self.fields['value'].widget = ColorInput(attrs={'class': 'form-control form-control-sm form-control-color'})
-
-            # choiceフィールドは常にhidden
+            
+            # 編集時はchoicesフィールドを削除
+            if 'choices' in self.fields:
+                del self.fields['choices']
+        else:
+            # 新規作成時はchoicesフィールドをhidden
             self.fields['choices'].widget = forms.HiddenInput()
 
     def clean_value(self):

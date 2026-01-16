@@ -10,7 +10,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% parameter 'SYSTEM_NAME' %}</title>
     <!-- Bootstrap CSS -->
-    <link href="{% static 'css/' %}{% parameter 'GLOBAL_CSS_THEME' %}/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'css/' %}{% user_parameter 'GLOBAL_CSS_THEME' 'simplex' %}/bootstrap.min.css" rel="stylesheet">
     <!-- BootswatchのCSS -->
     <!-- Bootstrap Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.0/font/bootstrap-icons.min.css" rel="stylesheet">
