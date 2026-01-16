@@ -710,7 +710,7 @@ class UserParameterForm(forms.ModelForm):
 
                 self.fields['value'] = forms.ChoiceField(
                     choices=choices_list,
-                    widget=forms.Select(attrs={'class': 'form-control form-control-sm'}),
+                    widget=forms.HiddenInput(),
                     initial=self.instance.value,
                     required=False,
                 )
