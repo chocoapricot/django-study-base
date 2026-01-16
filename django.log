@@ -1,0 +1,25 @@
+Watching for file changes with StatReloader
+[17/Jan/2026 02:35:11] "GET /accounts/login/ HTTP/1.1" 200 4873
+[17/Jan/2026 02:35:11] "GET /static/css/simplex/bootstrap.min.css HTTP/1.1" 200 234306
+[17/Jan/2026 02:35:13] "POST /accounts/login/ HTTP/1.1" 302 0
+[17/Jan/2026 02:35:13] "GET / HTTP/1.1" 200 52794
+[17/Jan/2026 02:35:13] "GET /static/js/bootstrap.bundle.min.js HTTP/1.1" 200 80421
+[17/Jan/2026 02:35:13] "GET /system/notifications/count/ HTTP/1.1" 200 19
+[17/Jan/2026 02:35:13] "GET /company/ HTTP/1.1" 200 90775
+[17/Jan/2026 02:35:13] "GET /static/js/copy-to-clipboard.js HTTP/1.1" 200 642
+Not Found: /company/seal/round/
+[17/Jan/2026 02:35:13] "GET /company/seal/round/?v=1768584913 HTTP/1.1" 404 7699
+Not Found: /company/seal/square/
+[17/Jan/2026 02:35:13] "GET /company/seal/square/?v=1768584913 HTTP/1.1" 404 7702
+[17/Jan/2026 02:35:14] "GET /company/ HTTP/1.1" 200 90775
+[17/Jan/2026 02:35:14] "GET /system/notifications/count/ HTTP/1.1" 200 19
+Performing system checks...
+
+System check identified no issues (0 silenced).
+January 17, 2026 - 02:34:35
+Django version 5.2.8, using settings 'config.settings.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
