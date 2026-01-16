@@ -1,382 +1,401 @@
 [
-    {
-        "model": "company.companyuser",
-        "pk": 1,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "SOMU",
-            "name_last": "夏目",
-            "name_first": "漱石",
-            "position": "部長",
-            "phone_number": "03-1234-5700",
-            "email": "soseki.natsume@example.com",
-            "display_order": 10
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 2,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "EIGYO",
-            "name_last": "森",
-            "name_first": "鴎外",
-            "position": "課長",
-            "phone_number": "03-1234-5701",
-            "email": "ogai.mori@example.com",
-            "display_order": 20
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 3,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "DEV",
-            "name_last": "芥川",
-            "name_first": "龍之介",
-            "position": "係長",
-            "phone_number": "03-1234-5702",
-            "email": "ryunosuke.akutagawa@example.com",
-            "display_order": 30
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 4,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "KEIRI",
-            "name_last": "太宰",
-            "name_first": "治",
-            "position": "主任",
-            "phone_number": "03-1234-5703",
-            "email": "osamu.dazai@example.com",
-            "display_order": 40
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 5,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "JINJI",
-            "name_last": "川端",
-            "name_first": "康成",
-            "position": "一般社員",
-            "phone_number": "03-1234-5704",
-            "email": "yasunari.kawabata@example.com",
-            "display_order": 50
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 6,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "SOMU",
-            "name_last": "谷崎",
-            "name_first": "潤一郎",
-            "position": "部長",
-            "phone_number": "03-1234-5705",
-            "email": "junichiro.tanizaki@example.com",
-            "display_order": 60
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 7,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "EIGYO",
-            "name_last": "志賀",
-            "name_first": "直哉",
-            "position": "課長",
-            "phone_number": "03-1234-5706",
-            "email": "naoya.shiga@example.com",
-            "display_order": 70
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 8,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "DEV",
-            "name_last": "島崎",
-            "name_first": "藤村",
-            "position": "係長",
-            "phone_number": "03-1234-5707",
-            "email": "toson.shimazaki@example.com",
-            "display_order": 80
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 9,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "KEIRI",
-            "name_last": "国木田",
-            "name_first": "独歩",
-            "position": "主任",
-            "phone_number": "03-1234-5708",
-            "email": "doppo.kunikida@example.com",
-            "display_order": 90
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 10,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "JINJI",
-            "name_last": "泉",
-            "name_first": "鏡花",
-            "position": "一般社員",
-            "phone_number": "03-1234-5709",
-            "email": "kyoka.izumi@example.com",
-            "display_order": 100
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 11,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "SOMU",
-            "name_last": "樋口",
-            "name_first": "一葉",
-            "position": "部長",
-            "phone_number": "03-1234-5710",
-            "email": "ichiyo.higuchi@example.com",
-            "display_order": 110
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 12,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "EIGYO",
-            "name_last": "与謝野",
-            "name_first": "晶子",
-            "position": "課長",
-            "phone_number": "03-1234-5711",
-            "email": "akiko.yosano@example.com",
-            "display_order": 120
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 13,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "DEV",
-            "name_last": "林",
-            "name_first": "芙美子",
-            "position": "係長",
-            "phone_number": "03-1234-5712",
-            "email": "fumiko.hayashi@example.com",
-            "display_order": 130
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 14,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "KEIRI",
-            "name_last": "宮本",
-            "name_first": "百合子",
-            "position": "主任",
-            "phone_number": "03-1234-5713",
-            "email": "yuriko.miyamoto@example.com",
-            "display_order": 140
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 15,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "JINJI",
-            "name_last": "平塚",
-            "name_first": "らいてう",
-            "position": "一般社員",
-            "phone_number": "03-1234-5714",
-            "email": "raiteu.hiratsuka@example.com",
-            "display_order": 150
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 16,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "SOMU",
-            "name_last": "岡本",
-            "name_first": "かの子",
-            "position": "部長",
-            "phone_number": "03-1234-5715",
-            "email": "kanoko.okamoto@example.com",
-            "display_order": 160
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 17,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "EIGYO",
-            "name_last": "佐多",
-            "name_first": "稲子",
-            "position": "課長",
-            "phone_number": "03-1234-5716",
-            "email": "ineko.sata@example.com",
-            "display_order": 170
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 18,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "DEV",
-            "name_last": "宇野",
-            "name_first": "千代",
-            "position": "係長",
-            "phone_number": "03-1234-5717",
-            "email": "chiyo.uno@example.com",
-            "display_order": 180
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 19,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "KEIRI",
-            "name_last": "野上",
-            "name_first": "弥生子",
-            "position": "主任",
-            "phone_number": "03-1234-5718",
-            "email": "yaeko.nogami@example.com",
-            "display_order": 190
-        }
-    },
-    {
-        "model": "company.companyuser",
-        "pk": 20,
-        "fields": {
-            "version": 1,
-            "created_at": "2025-01-01T00:00:00.000Z",
-            "created_by": 1,
-            "updated_at": "2025-01-01T00:00:00.000Z",
-            "updated_by": 1,
-            "corporate_number": "1234567890122",
-            "department_code": "JINJI",
-            "name_last": "長谷川",
-            "name_first": "時雨",
-            "position": "一般社員",
-            "phone_number": "03-1234-5719",
-            "email": "shigure.hasegawa@example.com",
-            "display_order": 200
-        }
+{
+    "model": "company.companyuser",
+    "pk": 1,
+    "fields": {
+        "version": 1768575202499735,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "SOMU",
+        "name_last": "夏目",
+        "name_first": "漱石",
+        "position": "部長",
+        "phone_number": "03-1234-5700",
+        "email": "soseki.natsume@example.com",
+        "display_order": 10
     }
+},
+{
+    "model": "company.companyuser",
+    "pk": 2,
+    "fields": {
+        "version": 1768575202507982,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "EIGYO",
+        "name_last": "森",
+        "name_first": "鴎外",
+        "position": "課長",
+        "phone_number": "03-1234-5701",
+        "email": "ogai.mori@example.com",
+        "display_order": 20
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 3,
+    "fields": {
+        "version": 1768575202511805,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "DEV",
+        "name_last": "芥川",
+        "name_first": "龍之介",
+        "position": "係長",
+        "phone_number": "03-1234-5702",
+        "email": "ryunosuke.akutagawa@example.com",
+        "display_order": 30
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 4,
+    "fields": {
+        "version": 1768575202515286,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "KEIRI",
+        "name_last": "太宰",
+        "name_first": "治",
+        "position": "主任",
+        "phone_number": "03-1234-5703",
+        "email": "osamu.dazai@example.com",
+        "display_order": 40
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 5,
+    "fields": {
+        "version": 1768575202517741,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "JINJI",
+        "name_last": "川端",
+        "name_first": "康成",
+        "position": "一般社員",
+        "phone_number": "03-1234-5704",
+        "email": "yasunari.kawabata@example.com",
+        "display_order": 50
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 6,
+    "fields": {
+        "version": 1768575202520783,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "SOMU",
+        "name_last": "谷崎",
+        "name_first": "潤一郎",
+        "position": "部長",
+        "phone_number": "03-1234-5705",
+        "email": "junichiro.tanizaki@example.com",
+        "display_order": 60
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 7,
+    "fields": {
+        "version": 1768575202525690,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "EIGYO",
+        "name_last": "志賀",
+        "name_first": "直哉",
+        "position": "課長",
+        "phone_number": "03-1234-5706",
+        "email": "naoya.shiga@example.com",
+        "display_order": 70
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 8,
+    "fields": {
+        "version": 1768575202528422,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "DEV",
+        "name_last": "島崎",
+        "name_first": "藤村",
+        "position": "係長",
+        "phone_number": "03-1234-5707",
+        "email": "toson.shimazaki@example.com",
+        "display_order": 80
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 9,
+    "fields": {
+        "version": 1768575202532377,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "KEIRI",
+        "name_last": "国木田",
+        "name_first": "独歩",
+        "position": "主任",
+        "phone_number": "03-1234-5708",
+        "email": "doppo.kunikida@example.com",
+        "display_order": 90
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 10,
+    "fields": {
+        "version": 1768575202535150,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "JINJI",
+        "name_last": "泉",
+        "name_first": "鏡花",
+        "position": "一般社員",
+        "phone_number": "03-1234-5709",
+        "email": "kyoka.izumi@example.com",
+        "display_order": 100
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 11,
+    "fields": {
+        "version": 1768575202537452,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "SOMU",
+        "name_last": "樋口",
+        "name_first": "一葉",
+        "position": "部長",
+        "phone_number": "03-1234-5710",
+        "email": "ichiyo.higuchi@example.com",
+        "display_order": 110
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 12,
+    "fields": {
+        "version": 1768575202542730,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "EIGYO",
+        "name_last": "与謝野",
+        "name_first": "晶子",
+        "position": "課長",
+        "phone_number": "03-1234-5711",
+        "email": "akiko.yosano@example.com",
+        "display_order": 120
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 13,
+    "fields": {
+        "version": 1768575202545225,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "DEV",
+        "name_last": "林",
+        "name_first": "芙美子",
+        "position": "係長",
+        "phone_number": "03-1234-5712",
+        "email": "fumiko.hayashi@example.com",
+        "display_order": 130
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 14,
+    "fields": {
+        "version": 1768575202547320,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "KEIRI",
+        "name_last": "宮本",
+        "name_first": "百合子",
+        "position": "主任",
+        "phone_number": "03-1234-5713",
+        "email": "yuriko.miyamoto@example.com",
+        "display_order": 140
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 15,
+    "fields": {
+        "version": 1768575202549284,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "JINJI",
+        "name_last": "平塚",
+        "name_first": "らいてう",
+        "position": "一般社員",
+        "phone_number": "03-1234-5714",
+        "email": "raiteu.hiratsuka@example.com",
+        "display_order": 150
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 16,
+    "fields": {
+        "version": 1768575202551321,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "SOMU",
+        "name_last": "岡本",
+        "name_first": "かの子",
+        "position": "部長",
+        "phone_number": "03-1234-5715",
+        "email": "kanoko.okamoto@example.com",
+        "display_order": 160
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 17,
+    "fields": {
+        "version": 1768575202553319,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "EIGYO",
+        "name_last": "佐多",
+        "name_first": "稲子",
+        "position": "課長",
+        "phone_number": "03-1234-5716",
+        "email": "ineko.sata@example.com",
+        "display_order": 170
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 18,
+    "fields": {
+        "version": 1768575202557715,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "DEV",
+        "name_last": "宇野",
+        "name_first": "千代",
+        "position": "係長",
+        "phone_number": "03-1234-5717",
+        "email": "chiyo.uno@example.com",
+        "display_order": 180
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 19,
+    "fields": {
+        "version": 1768575202559935,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "KEIRI",
+        "name_last": "野上",
+        "name_first": "弥生子",
+        "position": "主任",
+        "phone_number": "03-1234-5718",
+        "email": "yaeko.nogami@example.com",
+        "display_order": 190
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 20,
+    "fields": {
+        "version": 1768575202561878,
+        "created_at": "2025-01-01T00:00:00Z",
+        "created_by": 1,
+        "updated_at": "2025-01-01T00:00:00Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "JINJI",
+        "name_last": "長谷川",
+        "name_first": "時雨",
+        "position": "一般社員",
+        "phone_number": "03-1234-5719",
+        "email": "shigure.hasegawa@example.com",
+        "display_order": 200
+    }
+},
+{
+    "model": "company.companyuser",
+    "pk": 21,
+    "fields": {
+        "version": 1768576155611901,
+        "created_at": "2026-01-16T15:23:55.780Z",
+        "created_by": 1,
+        "updated_at": "2026-01-16T15:25:02.264Z",
+        "updated_by": 1,
+        "corporate_number": "1234567890122",
+        "department_code": "SOMU",
+        "name_last": "サンプル",
+        "name_first": "太郎",
+        "position": "代表取締役社長",
+        "phone_number": "03-1234-5720",
+        "email": "admin@test.com",
+        "display_order": 210
+    }
+}
 ]

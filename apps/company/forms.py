@@ -168,6 +168,7 @@ class CompanyUserForm(forms.ModelForm):
                 'style': 'ime-mode:disabled;',
                 'autocomplete': 'off',
             }),
+            'email': forms.EmailInput(attrs={'class': 'form-control form-control-sm'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
         }
 
