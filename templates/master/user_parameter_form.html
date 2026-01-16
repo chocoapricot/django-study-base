@@ -54,19 +54,6 @@
                 </div>
             </div>
 
-            {% if form.instance.format == 'choice' %}
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.choices.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">選択肢</label>
-                <div class="col-sm-6">
-                    {{ form.choices }}
-                    {% if form.choices.errors %}
-                        <div class="text-danger small">{{ form.choices.errors.0 }}</div>
-                    {% endif %}
-                    <div class="form-text">{{ form.choices.help_text }}</div>
-                </div>
-            </div>
-            {% endif %}
-
             <div class="row mt-3">
                 <div class="col text-left">
                     <button type="submit" class="btn btn-sm btn-primary me-2">保存</button>

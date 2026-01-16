@@ -714,15 +714,15 @@ class UserParameterAdminForm(forms.ModelForm):
 
                 self.fields['value'] = forms.ChoiceField(
                     choices=choices_list,
-                    widget=forms.HiddenInput(),
+                    widget=forms.Select(attrs={'class': 'form-control form-control-sm'}),
                     initial=self.instance.value,
                     required=False,
                 )
             elif self.instance.format == 'color':
                 self.fields['value'].widget = ColorInput(attrs={'class': 'form-control form-control-sm form-control-color'})
 
-            if self.instance.format != 'choice':
-                self.fields['choices'].widget = forms.HiddenInput()
+            # choiceフィールドは常にhidden
+            self.fields['choices'].widget = forms.HiddenInput()
 
     def clean_value(self):
         """値のバリデーション"""
