@@ -279,6 +279,20 @@
 body.no-transition #sidebar {
     transition: none;
 }
+
+    /* Copy to clipboard styles */
+    .copy-message {
+        display: none;
+        color: green;
+        font-size: 0.8em;
+        margin-left: 5px;
+    }
+    .copy-icon {
+        color: green;
+        font-size: 0.8em;
+        cursor: pointer;
+        margin-left: 5px;
+    }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -638,6 +652,8 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(`通知カウント更新間隔: ${intervalSeconds}秒`);
     });
 </script>
+
+<script src="{% static 'js/copy-to-clipboard.js' %}"></script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>

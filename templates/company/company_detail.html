@@ -123,6 +123,7 @@
                     <div class="col-sm-8">
                         <span class="copy-target">{{ company.haken_permit_number }}</span>
                         <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
+                        <span class="copy-message">コピーしました!</span>
                     </div>
                 </div>
 
@@ -144,6 +145,7 @@
                     <div class="col-sm-8">
                         <span class="copy-target">{{ company.shokai_permit_number }}</span>
                         <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
+                        <span class="copy-message">コピーしました!</span>
                     </div>
                 </div>
 
@@ -155,6 +157,7 @@
                     <div class="col-sm-8">
                         <span class="copy-target">{{ company.foreign_regist_number }}</span>
                         <i class="bi bi-copy copy-icon" onclick="copyToClipboard(this)"></i>
+                        <span class="copy-message">コピーしました!</span>
                     </div>
                 </div>
             </div>
@@ -263,21 +266,7 @@
     {% include 'common/_change_history_list.html' %}
 {% endwith %}
 
-<style>
-    .copy-message {
-        display: none;
-        color: green;
-        font-size: 0.8em;
-        margin-left: 5px;
-    }
-    .copy-icon {
-        color: green;
-        font-size: 0.8em;
-        cursor: pointer;
-        margin-left: 5px;
-    }
-</style>
-<script src="{% static 'js/copy-to-clipboard.js' %}"></script>
+
 
 <!-- Seal Upload Modal -->
 <div class="modal fade" id="uploadSealModal" tabindex="-1" aria-labelledby="uploadSealModalLabel" aria-hidden="true">

@@ -67,7 +67,7 @@
 <div class="content-box card bg-light mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         <span><i class="bi bi-file-text me-2"></i>確認対象のテキスト</span>
-        <button id="copyButton" onclick="copyToClipboard(event)" class="btn btn-sm btn-primary">
+        <button id="copyButton" onclick="copyContractText(event)" class="btn btn-sm btn-primary">
             <i class="bi bi-clipboard"></i> コピー
         </button>
     </div>
@@ -82,7 +82,7 @@
 
 
 <script>
-function copyToClipboard(event) {
+function copyContractText(event) {
     const text = document.getElementById('contractText').textContent;
     const btn = event.currentTarget;
     
