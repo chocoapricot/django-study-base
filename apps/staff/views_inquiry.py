@@ -16,6 +16,7 @@ from apps.profile.decorators import check_staff_agreement
 
 @login_required
 @check_staff_agreement
+@permission_required('staff.view_staffinquiry', raise_exception=True)
 def staff_inquiry_list(request):
     """問い合わせ一覧"""
     is_company_or_admin = request.user.is_superuser or CompanyUser.objects.filter(email=request.user.email).exists()
@@ -56,6 +57,7 @@ def staff_inquiry_list(request):
 
 @login_required
 @check_staff_agreement
+@permission_required('staff.add_staffinquiry', raise_exception=True)
 def staff_inquiry_create(request):
     """問い合わせ新規登録"""
     is_company_or_admin = request.user.is_superuser or CompanyUser.objects.filter(email=request.user.email).exists()
@@ -82,6 +84,7 @@ def staff_inquiry_create(request):
 
 @login_required
 @check_staff_agreement
+@permission_required('staff.view_staffinquiry', raise_exception=True)
 def staff_inquiry_detail(request, pk):
     """問い合わせ詳細 & メッセージ投稿"""
     is_company_or_admin = request.user.is_superuser or CompanyUser.objects.filter(email=request.user.email).exists()
@@ -155,6 +158,7 @@ def staff_inquiry_detail(request, pk):
 
 @login_required
 @check_staff_agreement
+@permission_required('staff.delete_staffinquirymessage', raise_exception=True)
 def staff_inquiry_message_delete(request, pk):
     """メッセージ削除 (5分以内)"""
     message_obj = get_object_or_404(StaffInquiryMessage, pk=pk)
@@ -177,6 +181,7 @@ def staff_inquiry_message_delete(request, pk):
 
 @login_required
 @permission_required('staff.view_staff', raise_exception=True)
+@permission_required('staff.add_staffinquiry', raise_exception=True)
 @check_staff_agreement
 def staff_inquiry_create_for_staff(request, staff_pk):
     """会社からスタッフへのメッセージ連絡"""

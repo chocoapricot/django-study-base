@@ -3,7 +3,7 @@
     "model": "settings.menu",
     "pk": 1,
     "fields": {
-        "version": 1764942094831210,
+        "version": 1768666030168079,
         "created_at": "2024-10-25T07:19:05.997Z",
         "created_by": 1,
         "updated_at": "2025-08-09T15:27:08.561Z",
@@ -22,30 +22,9 @@
 },
 {
     "model": "settings.menu",
-    "pk": 32,
-    "fields": {
-        "version": 1764942094831211,
-        "created_at": "2025-12-05T14:50:00Z",
-        "created_by": 1,
-        "updated_at": "2025-12-05T14:50:00Z",
-        "updated_by": 1,
-        "name": "（リセット）",
-        "url": "/start/",
-        "icon": "bi-play-circle",
-        "icon_style": "color:#17a2b8;",
-        "parent": null,
-        "level": 0,
-        "exact_match": true,
-        "required_permission": null,
-        "disp_seq": 1005,
-        "active": true
-    }
-},
-{
-    "model": "settings.menu",
     "pk": 2,
     "fields": {
-        "version": 1764942094840313,
+        "version": 1768666030174397,
         "created_at": "2024-10-25T07:19:42.113Z",
         "created_by": 1,
         "updated_at": "2025-09-14T15:12:21.427Z",
@@ -66,7 +45,7 @@
     "model": "settings.menu",
     "pk": 3,
     "fields": {
-        "version": 1764942094842639,
+        "version": 1768666030176352,
         "created_at": "2024-10-25T07:20:18.686Z",
         "created_by": 1,
         "updated_at": "2025-09-14T15:12:35.277Z",
@@ -87,7 +66,7 @@
     "model": "settings.menu",
     "pk": 4,
     "fields": {
-        "version": 1764942094844846,
+        "version": 1768666030178380,
         "created_at": "2024-10-25T07:20:18.686Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.659Z",
@@ -108,7 +87,7 @@
     "model": "settings.menu",
     "pk": 5,
     "fields": {
-        "version": 1764942094849461,
+        "version": 1768666030180673,
         "created_at": "2024-10-25T07:21:23.405Z",
         "created_by": 1,
         "updated_at": "2025-08-09T14:28:52.858Z",
@@ -129,7 +108,7 @@
     "model": "settings.menu",
     "pk": 6,
     "fields": {
-        "version": 1764942094853838,
+        "version": 1768666030182839,
         "created_at": "2025-08-06T12:12:24.013Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.696Z",
@@ -150,7 +129,7 @@
     "model": "settings.menu",
     "pk": 8,
     "fields": {
-        "version": 1764942094857885,
+        "version": 1768666030184833,
         "created_at": "2025-07-19T15:46:59.051Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.724Z",
@@ -171,7 +150,7 @@
     "model": "settings.menu",
     "pk": 9,
     "fields": {
-        "version": 1764942094861000,
+        "version": 1768666030186682,
         "created_at": "2025-07-19T15:46:59.051Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.744Z",
@@ -192,7 +171,7 @@
     "model": "settings.menu",
     "pk": 10,
     "fields": {
-        "version": 1764942094872769,
+        "version": 1768666030188600,
         "created_at": "2025-07-19T15:46:59.051Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.761Z",
@@ -213,7 +192,7 @@
     "model": "settings.menu",
     "pk": 11,
     "fields": {
-        "version": 1764942094875858,
+        "version": 1768666030191613,
         "created_at": "2025-08-09T13:20:50.317Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.678Z",
@@ -234,7 +213,7 @@
     "model": "settings.menu",
     "pk": 12,
     "fields": {
-        "version": 1764942094879180,
+        "version": 1768666030193744,
         "created_at": "2025-08-09T14:20:17.099Z",
         "created_by": 1,
         "updated_at": "2025-09-14T15:13:17.268Z",
@@ -255,7 +234,7 @@
     "model": "settings.menu",
     "pk": 13,
     "fields": {
-        "version": 1764942094895343,
+        "version": 1768666030196906,
         "created_at": "2025-08-09T14:20:17.115Z",
         "created_by": 1,
         "updated_at": "2025-09-14T15:13:23.324Z",
@@ -276,7 +255,7 @@
     "model": "settings.menu",
     "pk": 14,
     "fields": {
-        "version": 1764942094908257,
+        "version": 1768666030199647,
         "created_at": "2025-08-14T11:36:34.629Z",
         "created_by": 1,
         "updated_at": "2025-08-14T11:36:34.629Z",
@@ -297,7 +276,7 @@
     "model": "settings.menu",
     "pk": 15,
     "fields": {
-        "version": 1764942094912269,
+        "version": 1768666030201660,
         "created_at": "2025-08-26T15:16:55.328Z",
         "created_by": 1,
         "updated_at": "2025-08-29T16:21:51.475Z",
@@ -318,7 +297,7 @@
     "model": "settings.menu",
     "pk": 16,
     "fields": {
-        "version": 1764942094918228,
+        "version": 1768666030203503,
         "created_at": "2025-08-16T14:00:00Z",
         "created_by": 1,
         "updated_at": "2025-08-31T15:01:22.278Z",
@@ -339,7 +318,7 @@
     "model": "settings.menu",
     "pk": 17,
     "fields": {
-        "version": 1764942094925093,
+        "version": 1768666030205986,
         "created_at": "2025-08-26T15:00:00Z",
         "created_by": 1,
         "updated_at": "2025-08-31T15:01:34.360Z",
@@ -360,7 +339,7 @@
     "model": "settings.menu",
     "pk": 18,
     "fields": {
-        "version": 1764942094928260,
+        "version": 1768666030208491,
         "created_at": "2025-08-26T16:00:00Z",
         "created_by": 1,
         "updated_at": "2025-08-31T15:01:25.448Z",
@@ -381,7 +360,7 @@
     "model": "settings.menu",
     "pk": 19,
     "fields": {
-        "version": 1764942094932057,
+        "version": 1768666030211003,
         "created_at": "2025-08-26T17:00:00Z",
         "created_by": 1,
         "updated_at": "2025-08-31T15:01:37.478Z",
@@ -402,7 +381,7 @@
     "model": "settings.menu",
     "pk": 20,
     "fields": {
-        "version": 1764942094934804,
+        "version": 1768666030214541,
         "created_at": "2025-08-26T18:00:00Z",
         "created_by": 1,
         "updated_at": "2025-08-31T15:01:28.884Z",
@@ -423,7 +402,7 @@
     "model": "settings.menu",
     "pk": 21,
     "fields": {
-        "version": 1764942094939642,
+        "version": 1768666030217524,
         "created_at": "2025-08-16T13:00:00Z",
         "created_by": 1,
         "updated_at": "2025-08-31T15:01:18.152Z",
@@ -444,7 +423,7 @@
     "model": "settings.menu",
     "pk": 22,
     "fields": {
-        "version": 1764942094942586,
+        "version": 1768666030220187,
         "created_at": "2025-07-19T15:46:59.051Z",
         "created_by": 1,
         "updated_at": "2025-08-14T10:18:29.744Z",
@@ -465,7 +444,7 @@
     "model": "settings.menu",
     "pk": 23,
     "fields": {
-        "version": 1764944227662290,
+        "version": 1768666030222491,
         "created_at": "2025-09-08T15:45:00Z",
         "created_by": 1,
         "updated_at": "2025-12-05T14:32:54.314Z",
@@ -486,7 +465,7 @@
     "model": "settings.menu",
     "pk": 24,
     "fields": {
-        "version": 1764944260851606,
+        "version": 1768666030224806,
         "created_at": "2025-09-09T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-12-05T14:33:27.503Z",
@@ -507,7 +486,7 @@
     "model": "settings.menu",
     "pk": 25,
     "fields": {
-        "version": 1764942094952590,
+        "version": 1768666030226943,
         "created_at": "2025-09-10T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-09-10T00:00:00Z",
@@ -528,7 +507,7 @@
     "model": "settings.menu",
     "pk": 26,
     "fields": {
-        "version": 1764942094954916,
+        "version": 1768666030229096,
         "created_at": "2025-10-12T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-10-27T17:02:14.194Z",
@@ -549,7 +528,7 @@
     "model": "settings.menu",
     "pk": 27,
     "fields": {
-        "version": 1764942094957564,
+        "version": 1768666030231959,
         "created_at": "2025-10-16T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-11-20T13:53:37.790Z",
@@ -570,7 +549,7 @@
     "model": "settings.menu",
     "pk": 28,
     "fields": {
-        "version": 1764942094959981,
+        "version": 1768666030234925,
         "created_at": "2025-10-28T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-10-27T17:10:40.269Z",
@@ -591,7 +570,7 @@
     "model": "settings.menu",
     "pk": 29,
     "fields": {
-        "version": 1764942094962508,
+        "version": 1768666030237777,
         "created_at": "2025-11-15T10:53:15.666Z",
         "created_by": 1,
         "updated_at": "2025-11-22T18:03:24.607Z",
@@ -612,7 +591,7 @@
     "model": "settings.menu",
     "pk": 30,
     "fields": {
-        "version": 1764942094965512,
+        "version": 1768666030239603,
         "created_at": "2025-11-15T10:53:15.678Z",
         "created_by": 1,
         "updated_at": "2025-11-25T11:34:13.828Z",
@@ -633,7 +612,7 @@
     "model": "settings.menu",
     "pk": 31,
     "fields": {
-        "version": 1764942094969194,
+        "version": 1768666030242193,
         "created_at": "2025-11-25T11:34:45.985Z",
         "created_by": 1,
         "updated_at": "2025-11-25T11:37:16.258Z",
@@ -650,12 +629,32 @@
         "active": true
     }
 },
-
+{
+    "model": "settings.menu",
+    "pk": 32,
+    "fields": {
+        "version": 1768666030172394,
+        "created_at": "2025-12-05T14:50:00Z",
+        "created_by": 1,
+        "updated_at": "2025-12-05T14:50:00Z",
+        "updated_by": 1,
+        "name": "（リセット）",
+        "url": "/start/",
+        "icon": "bi-play-circle",
+        "icon_style": "color:#17a2b8;",
+        "parent": null,
+        "level": 0,
+        "exact_match": true,
+        "required_permission": null,
+        "disp_seq": 1005,
+        "active": true
+    }
+},
 {
     "model": "settings.menu",
     "pk": 34,
     "fields": {
-        "version": 4,
+        "version": 1768666030244722,
         "created_at": "2025-12-27T00:00:00Z",
         "created_by": 1,
         "updated_at": "2025-12-31T00:00:00Z",
@@ -676,10 +675,10 @@
     "model": "settings.menu",
     "pk": 35,
     "fields": {
-        "version": 1,
+        "version": 1768667303798893,
         "created_at": "2026-01-10T16:00:00Z",
         "created_by": 1,
-        "updated_at": "2026-01-10T16:00:00Z",
+        "updated_at": "2026-01-17T16:44:10.451Z",
         "updated_by": 1,
         "name": "問い合わせ・ご連絡",
         "url": "/staff/inquiry/",
@@ -688,7 +687,7 @@
         "parent": null,
         "level": 0,
         "exact_match": true,
-        "required_permission": null,
+        "required_permission": "staff.view_staffinquiry",
         "disp_seq": 85,
         "active": true
     }
