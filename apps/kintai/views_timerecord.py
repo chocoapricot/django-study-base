@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -16,6 +16,7 @@ from apps.profile.decorators import check_staff_agreement
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.view_stafftimerecord', raise_exception=True)
 def timerecord_list(request):
     """勤怠打刻一覧"""
     # スタッフ特定（メールアドレス連携）
@@ -63,6 +64,7 @@ def timerecord_list(request):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.add_stafftimerecord', raise_exception=True)
 def timerecord_create(request):
     """勤怠打刻作成"""
     if request.method == 'POST':
@@ -86,6 +88,7 @@ def timerecord_create(request):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.view_stafftimerecord', raise_exception=True)
 def timerecord_detail(request, pk):
     """勤怠打刻詳細"""
     timerecord = get_object_or_404(StaffTimerecord, pk=pk)
@@ -112,6 +115,7 @@ def timerecord_detail(request, pk):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.edit_stafftimerecord', raise_exception=True)
 def timerecord_update(request, pk):
     """勤怠打刻編集"""
     timerecord = get_object_or_404(StaffTimerecord, pk=pk)
@@ -268,6 +272,7 @@ def timerecord_break_delete(request, pk):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.view_stafftimerecord', raise_exception=True)
 def timerecord_punch(request):
     """勤怠打刻画面（ダッシュボード形式）"""
     # スタッフ特定
