@@ -6,8 +6,7 @@ from allauth.account.models import EmailAddress
 from django.db import transaction
 from apps.connect.utils import (
     grant_profile_permissions,
-    grant_staff_contract_confirmation_permission,
-    grant_client_contract_confirmation_permission
+    grant_staff_contract_confirmation_permission
 )
 
 User = get_user_model()
@@ -83,8 +82,6 @@ class Command(BaseCommand):
                                 self.stdout.write(self.style.WARNING(f'Group "staff" does not exist. Skipping group assignment.'))
                             self.stdout.write(self.style.SUCCESS(f'Successfully created staff user "{username}" with permissions.'))
                         elif user_type == 'client':
-                            # クライアント接続承認時と同じ権限を付与
-                            grant_client_contract_confirmation_permission(user)
                             # clientグループに追加
                             try:
                                 client_group = Group.objects.get(name='client')
