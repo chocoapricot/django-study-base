@@ -36,6 +36,12 @@ class StaffInquiry(MyModel):
     content = models.TextField(
         '内容'
     )
+    attachment = models.FileField(
+        '添付ファイル',
+        upload_to='inquiry_attachments/%Y/%m/%d/',
+        null=True,
+        blank=True
+    )
 
     class Meta:
         db_table = 'apps_staff_inquiry'
@@ -74,6 +80,12 @@ class StaffInquiryMessage(MyModel):
         '既読日時',
         null=True,
         blank=True,
+    )
+    attachment = models.FileField(
+        '添付ファイル',
+        upload_to='inquiry_attachments/%Y/%m/%d/',
+        null=True,
+        blank=True
     )
 
     class Meta:

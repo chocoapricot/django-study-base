@@ -109,7 +109,7 @@ def staff_inquiry_detail(request, pk):
                 messages.error(request, '接続承認が解除されているため、返信できません。')
                 return redirect('staff:staff_inquiry_list')
 
-        form = StaffInquiryMessageForm(request.POST)
+        form = StaffInquiryMessageForm(request.POST, request.FILES, is_company=is_company_or_admin)
         if form.is_valid():
             message = form.save(commit=False)
             message.inquiry = inquiry
@@ -125,7 +125,7 @@ def staff_inquiry_detail(request, pk):
             messages.success(request, 'メッセージを投稿しました。')
             return redirect('staff:staff_inquiry_detail', pk=pk)
     else:
-        form = StaffInquiryMessageForm()
+        form = StaffInquiryMessageForm(is_company=is_company_or_admin)
     
     # 法人名を取得
     company = Company.objects.filter(corporate_number=inquiry.corporate_number).first()
@@ -213,7 +213,7 @@ def staff_inquiry_create_for_staff(request, staff_pk):
         return redirect('staff:staff_detail', pk=staff_pk)
 
     if request.method == 'POST':
-        form = StaffInquiryFromAdminForm(request.POST)
+        form = StaffInquiryFromAdminForm(request.POST, request.FILES)
         if form.is_valid():
             inquiry = form.save(commit=False)
             inquiry.user = staff_user

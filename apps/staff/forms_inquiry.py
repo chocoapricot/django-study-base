@@ -65,17 +65,25 @@ class StaffInquiryForm(forms.ModelForm):
 class StaffInquiryMessageForm(forms.ModelForm):
     class Meta:
         model = StaffInquiryMessage
-        fields = ['content', 'is_hidden']
+        fields = ['content', 'is_hidden', 'attachment']
         widgets = {
             'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'メッセージを入力してください', 'rows': 3}),
             'is_hidden': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'attachment': forms.FileInput(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        self.is_company = kwargs.pop('is_company', False)
+        super().__init__(*args, **kwargs)
+        if not self.is_company:
+            self.fields.pop('attachment')
 
 class StaffInquiryFromAdminForm(forms.ModelForm):
     class Meta:
         model = StaffInquiry
-        fields = ['subject', 'content']
+        fields = ['subject', 'content', 'attachment']
         widgets = {
             'subject': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '件名を入力してください'}),
             'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'メッセージ内容を入力してください', 'rows': 5}),
+            'attachment': forms.FileInput(attrs={'class': 'form-control'}),
         }
