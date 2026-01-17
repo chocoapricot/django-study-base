@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 from django.utils import timezone
 from datetime import date
 from apps.kintai.models import StaffTimerecord
@@ -24,6 +25,10 @@ class StaffAgreementKintaiTest(TestCase):
             password='testpass123'
         )
         
+        # Add permission
+        permission = Permission.objects.get(codename='view_stafftimerecord')
+        self.user.user_permissions.add(permission)
+
         # スタッフ作成
         self.staff = Staff.objects.create(
             email='test@example.com',
