@@ -17,6 +17,8 @@
         "client.change_client"
     ],
     "client": [
+        "connect.view_connectclient",
+        "connect.change_connectclient",
         "contract.view_clientcontract",
         "contract.confirm_clientcontract"
     ],

@@ -710,6 +710,11 @@ def client_user_detail(request, pk):
             if existing_request:
                 # 既存の申請を削除
                 existing_request.delete()
+                
+                # グループ削除チェック
+                from apps.connect.utils import remove_user_from_client_group_if_no_requests
+                remove_user_from_client_group_if_no_requests(client_user.email)
+                
                 messages.success(request, 'クライアント接続申請を取り消しました。')
                 connect_request = None
             else:
