@@ -97,7 +97,7 @@ def grant_permissions_on_connection_request(email):
 
 
 def grant_client_connect_permissions(user):
-    """ユーザーにクライアント接続関連の権限を付与し、グループに追加"""
+    """ユーザーにクライアント接続関連の権限を付与"""
     try:
         # ConnectClientモデルのContentTypeを取得
         content_type = ContentType.objects.get_for_model(ConnectClient)
@@ -111,40 +111,11 @@ def grant_client_connect_permissions(user):
         # 権限を付与
         for permission in permissions:
             user.user_permissions.add(permission)
-
-        # clientグループに追加
-        from django.contrib.auth.models import Group
-        group, created = Group.objects.get_or_create(name='client')
-        user.groups.add(group)
         
         return True
-        
+
     except Exception as e:
         print(f"[ERROR] クライアント権限付与エラー: {e}")
-        return False
-
-
-def remove_user_from_client_group_if_no_requests(email):
-    """両方の接続申請がない場合、ユーザーをclientグループから削除"""
-    try:
-        # ConnectStaffとConnectClientの両方で申請が残っているか確認
-        has_staff_request = ConnectStaff.objects.filter(email=email).exists()
-        has_client_request = ConnectClient.objects.filter(email=email).exists()
-
-        if not has_staff_request and not has_client_request:
-            user = User.objects.get(email=email)
-            from django.contrib.auth.models import Group
-            try:
-                group = Group.objects.get(name='client')
-                user.groups.remove(group)
-                print(f"[INFO] clientグループから削除: {email}")
-            except Group.DoesNotExist:
-                pass
-        return True
-    except User.DoesNotExist:
-        return False
-    except Exception as e:
-        print(f"[ERROR] clientグループ削除判定エラー: {e}")
         return False
 
 

@@ -298,7 +298,14 @@ def connect_client_approve(request, pk):
             # クライアント担当者が見つからない場合は通常のログ記録
             log_model_action(request.user, 'update', connection)
         
-
+        from .utils import grant_client_contract_confirmation_permission
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        try:
+            user = User.objects.get(email=connection.email)
+            grant_client_contract_confirmation_permission(user)
+        except User.DoesNotExist:
+            print(f"[ERROR] 権限付与対象のユーザーが見つかりません: {connection.email}")
 
         messages.success(request, 'クライアント接続申請を承認しました。')
     else:
