@@ -281,17 +281,52 @@ body.no-transition #sidebar {
 }
 
     /* Copy to clipboard styles */
+    /* 既存の .copy-message は非表示にする（JSで動的生成するため） */
     .copy-message {
-        display: none;
-        color: green;
-        font-size: 0.8em;
-        margin-left: 5px;
+        display: none !important;
+    }
+    
+    /* JSで動的に生成されるツールチップ用スタイル */
+    .copy-tooltip {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.9);
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        z-index: 1070;
+        white-space: nowrap;
+        pointer-events: none; /* マウスイベントを透過 */
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        /* JSで left をアイコンの中心に設定するため、ここで -50% して中央揃えにする */
+        transform: translateX(-50%);
+    }
+    .copy-tooltip.show {
+        opacity: 1;
+    }
+    /* 吹き出しの矢印（下向き） */
+    .copy-tooltip::before {
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        margin-left: -6px;
+        border-width: 6px 6px 0;
+        border-style: solid;
+        border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
     }
     .copy-icon {
         color: green;
-        font-size: 0.8em;
+        font-size: 1rem;
         cursor: pointer;
         margin-left: 5px;
+        vertical-align: middle;
+        display: inline-block;
+    }
+    .copy-target {
+        vertical-align: middle;
     }
     </style>
     {% block extra_css %}{% endblock %}
