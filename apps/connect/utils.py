@@ -97,27 +97,41 @@ def grant_permissions_on_connection_request(email):
 
 
 def grant_client_connect_permissions(user):
-    """ユーザーをclientグループに追加"""
+    """ユーザーにクライアント接続関連の権限を付与し、グループに追加"""
     try:
+        # ConnectClientモデルのContentTypeを取得
+        content_type = ContentType.objects.get_for_model(ConnectClient)
+
+        # 必要な権限を取得
+        permissions = Permission.objects.filter(
+            content_type=content_type,
+            codename__in=['view_connectclient', 'change_connectclient']
+        )
+
+        # 権限を付与
+        for permission in permissions:
+            user.user_permissions.add(permission)
+
+        # clientグループに追加
         from django.contrib.auth.models import Group
         group, created = Group.objects.get_or_create(name='client')
-        
-        # グループに権限がある前提なので、ここで権限の追加は行わない
-        # ユーザーをグループに追加
         user.groups.add(group)
         
         return True
         
     except Exception as e:
-        print(f"[ERROR] clientグループ追加エラー: {e}")
+        print(f"[ERROR] クライアント権限付与エラー: {e}")
         return False
 
 
 def remove_user_from_client_group_if_no_requests(email):
-    """接続申請がない場合、ユーザーをclientグループから削除"""
+    """両方の接続申請がない場合、ユーザーをclientグループから削除"""
     try:
-        # 申請が残っているか確認
-        if not ConnectClient.objects.filter(email=email).exists():
+        # ConnectStaffとConnectClientの両方で申請が残っているか確認
+        has_staff_request = ConnectStaff.objects.filter(email=email).exists()
+        has_client_request = ConnectClient.objects.filter(email=email).exists()
+
+        if not has_staff_request and not has_client_request:
             user = User.objects.get(email=email)
             from django.contrib.auth.models import Group
             try:
@@ -191,3 +205,16 @@ def grant_staff_contract_confirmation_permission(user):
         return False
 
 
+def grant_client_contract_confirmation_permission(user):
+    """ユーザーにクライアント契約確認の権限を付与"""
+    try:
+        content_type = ContentType.objects.get_for_model(ClientContract)
+        permission = Permission.objects.get(
+            content_type=content_type,
+            codename='confirm_clientcontract'
+        )
+        user.user_permissions.add(permission)
+        return True
+    except Exception as e:
+        print(f"[ERROR] クライアント契約確認権限付与エラー: {e}")
+        return False
