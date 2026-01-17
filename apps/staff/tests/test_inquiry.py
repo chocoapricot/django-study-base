@@ -1,6 +1,8 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
+from django.db.models import Q
 from apps.staff.models import Staff
 from apps.staff.models_inquiry import StaffInquiry
 from apps.connect.models import ConnectStaff
@@ -12,6 +14,15 @@ User = get_user_model()
 class StaffInquiryTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='teststaff', email='staff@example.com', password='password')
+
+        # Grant permissions for inquiry tests
+        permissions = Permission.objects.filter(
+            Q(codename='view_staffinquiry') |
+            Q(codename='add_staffinquiry') |
+            Q(codename='delete_staffinquirymessage')
+        )
+        self.user.user_permissions.set(permissions)
+
         self.admin_user = User.objects.create_superuser(username='adminuser', email='admin@test.com', password='password')
         self.client_user = Client()
         self.client_user.login(username='teststaff', password='password')

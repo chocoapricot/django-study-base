@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 from django.utils import timezone
 from django.db.models import Q
 from datetime import date, datetime, time
@@ -25,6 +26,11 @@ class TimerecordPunchViewTest(TestCase):
             password='testpass123',
             is_staff=True  # スタッフユーザーとして同意チェックをバイパス
         )
+
+        # Add permission
+        permission = Permission.objects.get(codename='view_stafftimerecord')
+        self.user.user_permissions.add(permission)
+
         self.client = Client()
         self.client.login(username='staffuser', password='testpass123')
 
@@ -189,7 +195,12 @@ class TimerecordPunchViewTest(TestCase):
 
     def test_no_staff_profile(self):
         """スタッフ情報がないユーザーのアクセス制限テスト"""
-        User.objects.create_user(username='otheruser', email='other@example.com', password='pass')
+        other_user = User.objects.create_user(username='otheruser', email='other@example.com', password='pass')
+
+        # Add permission
+        permission = Permission.objects.get(codename='view_stafftimerecord')
+        other_user.user_permissions.add(permission)
+
         self.client.login(username='otheruser', password='pass')
         
         response = self.client.get(self.punch_url)

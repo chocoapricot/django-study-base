@@ -79,6 +79,10 @@ class StaffTimerecordModelTests(TestCase):
             record.full_clean()
 
 
+from django.contrib.auth.models import Permission
+from django.db.models import Q
+
+
 class StaffTimerecordViewTests(TestCase):
     def setUp(self):
         # 契約パターンを作成
@@ -88,6 +92,14 @@ class StaffTimerecordViewTests(TestCase):
         )
 
         self.user = User.objects.create_user(username='staff_user', email='staff@example.com', password='password')
+
+        # Add permissions
+        permissions = Permission.objects.filter(
+            Q(codename='view_stafftimerecord') |
+            Q(codename='add_stafftimerecord')
+        )
+        self.user.user_permissions.set(permissions)
+
         self.client.login(username='staff_user', password='password')
         self.staff = Staff.objects.create(
             employee_no='1001',
