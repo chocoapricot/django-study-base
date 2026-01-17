@@ -4,17 +4,35 @@ from io import StringIO
 from django.core.management import call_command
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from allauth.account.models import EmailAddress
 from apps.profile.models import StaffProfile
 from apps.contract.models import StaffContract, ClientContract
+from apps.connect.models import ConnectClient
 
 User = get_user_model()
 
 class ImportUsersCommandTest(TestCase):
     def setUp(self):
         self.csv_file_path = 'test_users.csv'
+        # clientグループと関連権限のセットアップ
+        self.client_group, _ = Group.objects.get_or_create(name='client')
+
+        # 権限とモデルをマッピング
+        permissions_map = {
+            'view_connectclient': ConnectClient,
+            'change_connectclient': ConnectClient,
+            'confirm_clientcontract': ClientContract,
+        }
+
+        for codename, model_cls in permissions_map.items():
+            content_type = ContentType.objects.get_for_model(model_cls)
+            permission, _ = Permission.objects.get_or_create(
+                codename=codename,
+                content_type=content_type,
+            )
+            self.client_group.permissions.add(permission)
 
     def tearDown(self):
         if os.path.exists(self.csv_file_path):

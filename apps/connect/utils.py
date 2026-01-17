@@ -189,17 +189,3 @@ def grant_staff_contract_confirmation_permission(user):
     except Exception as e:
         print(f"[ERROR] スタッフ契約確認権限付与エラー: {e}")
         return False
-
-def grant_client_contract_confirmation_permission(user):
-    """ユーザーにクライアント契約確認の権限を付与"""
-    try:
-        content_type = ContentType.objects.get_for_model(ClientContract)
-        permission = Permission.objects.get(
-            content_type=content_type,
-            codename='confirm_clientcontract'
-        )
-        user.user_permissions.add(permission)
-        return True
-    except Exception as e:
-        print(f"[ERROR] クライアント契約確認権限付与エラー: {e}")
-        return False

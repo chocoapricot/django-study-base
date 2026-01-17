@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from unittest.mock import patch, MagicMock
 
@@ -14,7 +14,6 @@ from apps.connect.utils import (
     check_and_grant_client_permissions_for_email,
     grant_client_permissions_on_connection_request,
     grant_staff_contract_confirmation_permission,
-    grant_client_contract_confirmation_permission,
 )
 from apps.profile.models import (
     StaffProfile,
@@ -34,6 +33,15 @@ class UtilsPermissionGrantingTest(TestCase):
         self.user = User.objects.create_user(
             username="testuser", email="test@example.com", password="password"
         )
+        # clientグループと関連権限のセットアップ
+        self.client_group, _ = Group.objects.get_or_create(name='client')
+        client_permissions = [
+            'view_connectclient',
+            'change_connectclient',
+        ]
+        for perm_codename in client_permissions:
+            permission = Permission.objects.get(codename=perm_codename)
+            self.client_group.permissions.add(permission)
 
     def test_grant_profile_permissions_success(self):
         """Test that profile permissions are granted successfully."""
@@ -129,10 +137,10 @@ class UtilsPermissionGrantingTest(TestCase):
         self.assertTrue(self.user.has_perm('connect.view_connectclient'))
         self.assertTrue(self.user.has_perm('connect.change_connectclient'))
 
-    @patch('apps.connect.utils.ContentType.objects.get_for_model')
-    def test_grant_client_connect_permissions_failure(self, mock_get_for_model):
+    @patch('django.contrib.auth.models.Group.objects.get_or_create')
+    def test_grant_client_connect_permissions_failure(self, mock_get_or_create):
         """Test that grant_client_connect_permissions returns False on exception."""
-        mock_get_for_model.side_effect = Exception("Test exception")
+        mock_get_or_create.side_effect = Exception("Test exception")
         result = grant_client_connect_permissions(self.user)
         self.assertFalse(result)
 
@@ -196,16 +204,3 @@ class UtilsPermissionGrantingTest(TestCase):
         result = grant_staff_contract_confirmation_permission(self.user)
         self.assertFalse(result)
 
-    def test_grant_client_contract_confirmation_permission_success(self):
-        """Test that client contract confirmation permission is granted successfully."""
-        # The permission should be created by migrations, so we just need to grant it.
-        result = grant_client_contract_confirmation_permission(self.user)
-        self.assertTrue(result)
-        self.assertTrue(self.user.has_perm('contract.confirm_clientcontract'))
-
-    @patch('apps.connect.utils.Permission.objects.get')
-    def test_grant_client_contract_confirmation_permission_failure(self, mock_perm_get):
-        """Test that the function returns False on exception."""
-        mock_perm_get.side_effect = Exception("Test exception")
-        result = grant_client_contract_confirmation_permission(self.user)
-        self.assertFalse(result)
