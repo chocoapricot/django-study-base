@@ -169,9 +169,13 @@ def load_sample_data(task: SetupTask) -> bool:
     
     # サンプルデータを順次読み込み
     for file_path, description in SAMPLE_DATA_FILES:
-        command = f"python manage.py loaddata {file_path}"
-        if not run_command(command, description, task):
-            return False
+        if "group_permissions.json" in file_path:
+            if not apply_group_permissions(task, file_path):
+                return False
+        else:
+            command = f"python manage.py loaddata {file_path}"
+            if not run_command(command, description, task):
+                return False
             
         # グループデータが読み込まれた直後にユーザーをインポートする
         # （問い合わせデータなどがMyUserを直接参照するため、早期のインポートが必要）
@@ -185,6 +189,47 @@ def load_sample_data(task: SetupTask) -> bool:
         time.sleep(0.1)
     
     return True
+
+
+def apply_group_permissions(task: SetupTask, file_path: str) -> bool:
+    """グループ権限を適用"""
+    task.current_step = 'グループ権限を適用中...'
+    
+    try:
+        from django.contrib.auth.models import Group, Permission
+        import json
+        
+        if not os.path.exists(file_path):
+            error_msg = f"ファイルが見つかりません: {file_path}"
+            print(f"❌ {error_msg}")
+            task.errors.append(error_msg)
+            return False
+            
+        with open(file_path, 'r', encoding='utf-8') as f:
+            permissions_data = json.load(f)
+            
+        for group_name, perms in permissions_data.items():
+            try:
+                group = Group.objects.get(name=group_name)
+                for perm_str in perms:
+                    try:
+                        app_label, codename = perm_str.split('.')
+                        permission = Permission.objects.get(content_type__app_label=app_label, codename=codename)
+                        group.permissions.add(permission)
+                    except (ValueError, Permission.DoesNotExist):
+                        print(f"⚠️ 権限が見つかりません: {perm_str}")
+                group.save()
+            except Group.DoesNotExist:
+                print(f"⚠️ グループが見つかりません: {group_name}")
+                
+        print("✅ グループ権限を適用しました")
+        return True
+        
+    except Exception as e:
+        error_msg = f"グループ権限の適用中にエラーが発生しました: {e}"
+        print(f"❌ {error_msg}")
+        task.errors.append(error_msg)
+        return False
 
 
 def import_sample_users(task: SetupTask) -> bool:

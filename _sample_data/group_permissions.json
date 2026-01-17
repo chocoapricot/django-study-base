@@ -1,0 +1,26 @@
+{
+    "company": [
+        "contract.view_clientcontract",
+        "contract.add_clientcontract",
+        "contract.change_clientcontract",
+        "contract.delete_clientcontract",
+        "contract.view_staffcontract",
+        "contract.add_staffcontract",
+        "contract.change_staffcontract",
+        "contract.delete_staffcontract",
+        "contract.confirm_clientcontract",
+        "staff.view_staff",
+        "staff.add_staff",
+        "staff.change_staff",
+        "client.view_client",
+        "client.add_client",
+        "client.change_client"
+    ],
+    "client": [
+        "contract.view_clientcontract",
+        "contract.confirm_clientcontract"
+    ],
+    "staff": [
+        "contract.view_staffcontract"
+    ]
+}
