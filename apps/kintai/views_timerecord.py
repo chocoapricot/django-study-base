@@ -148,6 +148,7 @@ def timerecord_update(request, pk):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.delete_stafftimerecord', raise_exception=True)
 def timerecord_delete(request, pk):
     """勤怠打刻削除"""
     timerecord = get_object_or_404(StaffTimerecord, pk=pk)
@@ -175,6 +176,7 @@ def timerecord_delete(request, pk):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.change_stafftimerecord', raise_exception=True)
 def timerecord_break_create(request, timerecord_pk):
     """休憩時間作成"""
     timerecord = get_object_or_404(StaffTimerecord, pk=timerecord_pk)
@@ -209,6 +211,7 @@ def timerecord_break_create(request, timerecord_pk):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.change_stafftimerecord', raise_exception=True)
 def timerecord_break_update(request, pk):
     """休憩時間編集"""
     break_record = get_object_or_404(StaffTimerecordBreak, pk=pk)
@@ -243,6 +246,7 @@ def timerecord_break_update(request, pk):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.change_stafftimerecord', raise_exception=True)
 def timerecord_break_delete(request, pk):
     """休憩時間削除"""
     break_record = get_object_or_404(StaffTimerecordBreak, pk=pk)
@@ -398,6 +402,7 @@ def timerecord_punch(request):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.change_stafftimerecord', raise_exception=True)
 def timerecord_action(request):
     """打刻アクション（出勤・退勤・休憩開始・休憩終了）"""
     if request.method != 'POST':
