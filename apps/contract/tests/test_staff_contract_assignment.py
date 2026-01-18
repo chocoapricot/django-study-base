@@ -32,7 +32,8 @@ class StaffContractAssignmentTestCase(TestCase):
         permissions = Permission.objects.filter(
             codename__in=[
                 'add_staffcontract', 'change_staffcontract', 'view_staffcontract',
-                'add_clientcontract', 'change_clientcontract', 'view_clientcontract'
+                'add_clientcontract', 'change_clientcontract', 'view_clientcontract',
+                'add_contractassignment', 'change_contractassignment', 'view_contractassignment'
             ]
         )
         self.user.user_permissions.set(permissions)
