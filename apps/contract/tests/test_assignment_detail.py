@@ -25,10 +25,20 @@ class ContractAssignmentDetailViewTest(TestCase):
         
         # 必要な権限を付与
         from django.contrib.auth.models import Permission
-        permissions = Permission.objects.filter(
-            codename__in=['view_clientcontract', 'view_staffcontract']
-        )
-        self.user.user_permissions.set(permissions)
+        from django.contrib.contenttypes.models import ContentType
+        all_permissions = []
+        content_type_client = ContentType.objects.get_for_model(ClientContract)
+        client_permissions = Permission.objects.filter(content_type=content_type_client)
+        all_permissions.extend(client_permissions)
+
+        content_type_staff = ContentType.objects.get_for_model(StaffContract)
+        staff_permissions = Permission.objects.filter(content_type=content_type_staff)
+        all_permissions.extend(staff_permissions)
+
+        content_type_assignment = ContentType.objects.get_for_model(ContractAssignment)
+        assignment_permissions = Permission.objects.filter(content_type=content_type_assignment)
+        all_permissions.extend(assignment_permissions)
+        self.user.user_permissions.set(all_permissions)
         
         # テストクライアント
         self.client_obj = Client.objects.create(

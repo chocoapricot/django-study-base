@@ -60,11 +60,8 @@ class ClientContractConfirmTest(TestCase):
             email='staffuser@example.com'
         )
         content_type = ContentType.objects.get_for_model(ClientContract)
-        permission = Permission.objects.get(
-            codename='view_clientcontract',
-            content_type=content_type,
-        )
-        self.staff_user.user_permissions.add(permission)
+        permissions = Permission.objects.filter(content_type=content_type)
+        self.staff_user.user_permissions.set(permissions)
         CompanyUser.objects.create(name_last="Staff", name_first="Test", email=self.staff_user.email)
 
         self.contract_pattern = ContractPattern.objects.create(
