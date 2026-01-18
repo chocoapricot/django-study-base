@@ -9,19 +9,25 @@ User = get_user_model()
 
 class CompanyViewTest(TestCase):
     """会社ビューのテスト"""
-    
+
     def setUp(self):
         self.client = Client()
-        self.user = User.objects.create_user(
-            username='testuser',
-            email='test@example.com',
+        # 権限を持つユーザー
+        self.perm_user = User.objects.create_user(
+            username='perm_user',
+            email='perm@example.com',
             password='testpass123'
         )
-        # 必要な権限を付与
-        view_permission = Permission.objects.get(codename='view_company')
-        change_permission = Permission.objects.get(codename='change_company')
-        self.user.user_permissions.add(view_permission, change_permission)
-        self.user.save()
+        self.perm_user.user_permissions.add(
+            Permission.objects.get(codename='view_company'),
+            Permission.objects.get(codename='change_company')
+        )
+        # 権限を持たないユーザー
+        self.no_perm_user = User.objects.create_user(
+            username='no_perm_user',
+            email='no_perm@example.com',
+            password='testpass123'
+        )
 
         # テスト用の画像を作成
         self.seal_image = SimpleUploadedFile(
@@ -39,15 +45,22 @@ class CompanyViewTest(TestCase):
             phone_number="03-1234-5678"
         )
         self.company.round_seal.save('test.png', self.seal_image)
-    
-    def test_serve_company_seal_authenticated(self):
-        """認証済みユーザーの印章画像ビューへのアクセス"""
-        self.client.login(username='testuser', password='testpass123')
+
+    def test_serve_company_seal_with_permission(self):
+        """認証済みユーザーの印章画像ビューへのアクセス（権限あり）"""
+        self.client.login(username='perm_user', password='testpass123')
         url = reverse('company:serve_company_seal', kwargs={'seal_type': 'round'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.seal_image.seek(0)  # read()でポインタが末尾に行くためリセット
+        self.seal_image.seek(0)
         self.assertEqual(response.content, self.seal_image.read())
+
+    def test_serve_company_seal_no_permission(self):
+        """認証済みユーザーの印章画像ビューへのアクセス（権限なし）"""
+        self.client.login(username='no_perm_user', password='testpass123')
+        url = reverse('company:serve_company_seal', kwargs={'seal_type': 'round'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
 
     def test_serve_company_seal_unauthenticated(self):
         """未認証ユーザーの印章画像ビューへのアクセス"""
@@ -58,26 +71,37 @@ class CompanyViewTest(TestCase):
     def test_company_detail_view_requires_login(self):
         """会社詳細ビューのログイン必須テスト"""
         response = self.client.get(reverse('company:company_detail'))
-        self.assertEqual(response.status_code, 302)  # リダイレクト
-    
-    def test_company_detail_view_with_login(self):
-        """ログイン後の会社詳細ビューテスト"""
-        self.client.login(username='testuser', password='testpass123')
+        self.assertEqual(response.status_code, 302)
+
+    def test_company_detail_view_with_permission(self):
+        """会社詳細ビュー（権限あり）"""
+        self.client.login(username='perm_user', password='testpass123')
         response = self.client.get(reverse('company:company_detail'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "テスト会社")
-    
-    def test_company_edit_view_with_login(self):
-        """ログイン後の会社編集ビューテスト"""
-        self.client.login(username='testuser', password='testpass123')
+
+    def test_company_detail_view_no_permission(self):
+        """会社詳細ビュー（権限なし）"""
+        self.client.login(username='no_perm_user', password='testpass123')
+        response = self.client.get(reverse('company:company_detail'))
+        self.assertEqual(response.status_code, 403)
+
+    def test_company_edit_view_with_permission(self):
+        """会社編集ビュー（権限あり）"""
+        self.client.login(username='perm_user', password='testpass123')
         response = self.client.get(reverse('company:company_edit'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "会社情報編集")
+
+    def test_company_edit_view_no_permission(self):
+        """会社編集ビュー（権限なし）"""
+        self.client.login(username='no_perm_user', password='testpass123')
+        response = self.client.get(reverse('company:company_edit'))
+        self.assertEqual(response.status_code, 403)
     
     def test_company_edit_no_changes(self):
         """会社編集で変更がない場合のテスト"""
-        self.client.login(username='testuser', password='testpass123')
-        # 既存のデータと同じ内容でPOST
+        self.client.login(username='perm_user', password='testpass123')
         response = self.client.post(reverse('company:company_edit'), {
             'name': self.company.name,
             'corporate_number': getattr(self.company, 'corporate_number', '') or '',
@@ -86,125 +110,177 @@ class CompanyViewTest(TestCase):
             'address': getattr(self.company, 'address', '') or '',
             'phone_number': getattr(self.company, 'phone_number', '') or '',
         })
-        # フォームが有効であればリダイレクト、無効であれば200が返される
         self.assertIn(response.status_code, [200, 302])
 
-    def test_change_history_list_view(self):
-        """変更履歴一覧ビューのテスト"""
-        self.client.login(username='testuser', password='testpass123')
+    def test_change_history_list_view_with_permission(self):
+        """変更履歴一覧ビュー（権限あり）"""
+        self.client.login(username='perm_user', password='testpass123')
         response = self.client.get(reverse('company:change_history_list'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'common/common_change_history_list.html')
         self.assertContains(response, "会社関連 変更履歴一覧")
+
+    def test_change_history_list_view_no_permission(self):
+        """変更履歴一覧ビュー（権限なし）"""
+        self.client.login(username='no_perm_user', password='testpass123')
+        response = self.client.get(reverse('company:change_history_list'))
+        self.assertEqual(response.status_code, 403)
+
 
 class DepartmentViewTest(TestCase):
     """部署ビューのテスト"""
     
     def setUp(self):
         self.client = Client()
-        self.user = User.objects.create_user(
-            username='testuser',
-            email='test@example.com',
-            password='testpass123'
+        # 権限を持つユーザー
+        self.perm_user = User.objects.create_user(
+            username='perm_user', password='testpassword'
         )
-        # ユーザーをスーパーユーザーにして権限問題を回避
-        self.user.is_superuser = True
-        self.user.save()
+        self.perm_user.user_permissions.add(
+            Permission.objects.get(codename='view_companydepartment'),
+            Permission.objects.get(codename='add_companydepartment'),
+            Permission.objects.get(codename='change_companydepartment'),
+            Permission.objects.get(codename='delete_companydepartment')
+        )
+        # 権限を持たないユーザー
+        self.no_perm_user = User.objects.create_user(
+            username='no_perm_user', password='testpassword'
+        )
+
         self.department = CompanyDepartment.objects.create(
             name="開発部",
             corporate_number="1234567890123",
             department_code="DEV001",
             display_order=1
         )
-    
 
-    
-    def test_department_detail_view_with_login(self):
-        """ログイン後の部署詳細ビューテスト"""
-        self.client.login(username='testuser', password='testpass123')
+    def test_department_detail_view_with_permission(self):
+        """部署詳細ビュー（権限あり）"""
+        self.client.login(username='perm_user', password='testpassword')
         response = self.client.get(reverse('company:department_detail', kwargs={'pk': self.department.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "開発部")
+
+    def test_department_detail_view_no_permission(self):
+        """部署詳細ビュー（権限なし）"""
+        self.client.login(username='no_perm_user', password='testpassword')
+        response = self.client.get(reverse('company:department_detail', kwargs={'pk': self.department.pk}))
+        self.assertEqual(response.status_code, 403)
     
-    def test_department_create_view_with_login(self):
-        """ログイン後の部署作成ビューテスト"""
-        self.client.login(username='testuser', password='testpass123')
+    def test_department_create_view_get_with_permission(self):
+        """部署作成ビュー GET（権限あり）"""
+        self.client.login(username='perm_user', password='testpassword')
         response = self.client.get(reverse('company:department_create'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "部署作成")
+
+    def test_department_create_view_get_no_permission(self):
+        """部署作成ビュー GET（権限なし）"""
+        self.client.login(username='no_perm_user', password='testpassword')
+        response = self.client.get(reverse('company:department_create'))
+        self.assertEqual(response.status_code, 403)
     
-    def test_department_create_post(self):
-        """部署作成のPOSTテスト"""
-        self.client.login(username='testuser', password='testpass123')
-        response = self.client.post(reverse('company:department_create'), {
-            'name': '営業部',
-            'corporate_number': '1234567890123',
-            'department_code': 'SALES001',
-            'display_order': 2,
-            'valid_from': '',
-            'valid_to': '',
-            'accounting_code': '',
-            'postal_code': '',
-            'address': '',
-            'phone_number': ''
-        })
-        self.assertEqual(response.status_code, 302)  # リダイレクト
+    def test_department_create_post_with_permission(self):
+        """部署作成 POST（権限あり）"""
+        self.client.login(username='perm_user', password='testpassword')
+        data = {'name': '営業部', 'corporate_number': '1234567890123', 'department_code': 'SALES001', 'display_order': 2}
+        response = self.client.post(reverse('company:department_create'), data)
+        self.assertEqual(response.status_code, 302)
         self.assertTrue(CompanyDepartment.objects.filter(name='営業部').exists())
-    
-    def test_department_edit_view_with_login(self):
-        """ログイン後の部署編集ビューテスト"""
-        self.client.login(username='testuser', password='testpass123')
+
+    def test_department_create_post_no_permission(self):
+        """部署作成 POST（権限なし）"""
+        self.client.login(username='no_perm_user', password='testpassword')
+        data = {'name': '総務部', 'corporate_number': '1234567890123', 'department_code': 'GA001', 'display_order': 3}
+        response = self.client.post(reverse('company:department_create'), data)
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(CompanyDepartment.objects.filter(name='総務部').exists())
+
+    def test_department_edit_view_get_with_permission(self):
+        """部署編集ビュー GET（権限あり）"""
+        self.client.login(username='perm_user', password='testpassword')
         response = self.client.get(reverse('company:department_edit', kwargs={'pk': self.department.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "部署編集")
-    
-    def test_department_delete_view_with_login(self):
-        """ログイン後の部署削除確認ビューテスト"""
-        self.client.login(username='testuser', password='testpass123')
+
+    def test_department_edit_view_get_no_permission(self):
+        """部署編集ビュー GET（権限なし）"""
+        self.client.login(username='no_perm_user', password='testpassword')
+        response = self.client.get(reverse('company:department_edit', kwargs={'pk': self.department.pk}))
+        self.assertEqual(response.status_code, 403)
+
+    def test_department_edit_post_with_permission(self):
+        """部署編集 POST（権限あり）"""
+        self.client.login(username='perm_user', password='testpassword')
+        data = {
+            'name': '開発部(更新)', 'corporate_number': self.department.corporate_number,
+            'department_code': self.department.department_code, 'display_order': self.department.display_order
+        }
+        response = self.client.post(reverse('company:department_edit', kwargs={'pk': self.department.pk}), data)
+        self.assertEqual(response.status_code, 302)
+        self.department.refresh_from_db()
+        self.assertEqual(self.department.name, '開発部(更新)')
+
+    def test_department_edit_post_no_permission(self):
+        """部署編集 POST（権限なし）"""
+        self.client.login(username='no_perm_user', password='testpassword')
+        data = {'name': '開発部(更新失敗)'}
+        response = self.client.post(reverse('company:department_edit', kwargs={'pk': self.department.pk}), data)
+        self.assertEqual(response.status_code, 403)
+        self.department.refresh_from_db()
+        self.assertNotEqual(self.department.name, '開発部(更新失敗)')
+
+    def test_department_delete_view_get_with_permission(self):
+        """部署削除ビュー GET（権限あり）"""
+        self.client.login(username='perm_user', password='testpassword')
         response = self.client.get(reverse('company:department_delete', kwargs={'pk': self.department.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "部署削除確認")
-    
-    def test_department_delete_post(self):
-        """部署削除のPOSTテスト"""
-        self.client.login(username='testuser', password='testpass123')
+
+    def test_department_delete_view_get_no_permission(self):
+        """部署削除ビュー GET（権限なし）"""
+        self.client.login(username='no_perm_user', password='testpassword')
+        response = self.client.get(reverse('company:department_delete', kwargs={'pk': self.department.pk}))
+        self.assertEqual(response.status_code, 403)
+
+    def test_department_delete_post_with_permission(self):
+        """部署削除 POST（権限あり）"""
+        self.client.login(username='perm_user', password='testpassword')
         department_id = self.department.pk
         response = self.client.post(reverse('company:department_delete', kwargs={'pk': department_id}))
-        self.assertEqual(response.status_code, 302)  # リダイレクト
+        self.assertEqual(response.status_code, 302)
         self.assertFalse(CompanyDepartment.objects.filter(pk=department_id).exists())
-    
 
-    
-    def test_department_edit_no_changes(self):
-        """部署編集で変更がない場合のテスト"""
-        self.client.login(username='testuser', password='testpass123')
-        # 既存のデータと同じ内容でPOST
-        response = self.client.post(reverse('company:department_edit', kwargs={'pk': self.department.pk}), {
-            'name': self.department.name,
-            'corporate_number': self.department.corporate_number or '',
-            'department_code': self.department.department_code,
-            'accounting_code': self.department.accounting_code or '',
-            'display_order': self.department.display_order,
-            'postal_code': self.department.postal_code or '',
-            'address': self.department.address or '',
-            'phone_number': self.department.phone_number or '',
-            'valid_from': self.department.valid_from or '',
-            'valid_to': self.department.valid_to or ''
-        })
-        self.assertEqual(response.status_code, 302)  # リダイレクト
+    def test_department_delete_post_no_permission(self):
+        """部署削除 POST（権限なし）"""
+        self.client.login(username='no_perm_user', password='testpassword')
+        department_id = self.department.pk
+        response = self.client.post(reverse('company:department_delete', kwargs={'pk': department_id}))
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(CompanyDepartment.objects.filter(pk=department_id).exists())
 
 
 class CompanyUserViewTest(TestCase):
     """自社担当者ビューのテスト"""
 
     def setUp(self):
+        Company.objects.all().delete()
         self.client = Client()
-        self.user = User.objects.create_user(
-            username='testuser',
-            password='testpassword',
-            is_superuser=True
+        # 権限を持つユーザー
+        self.perm_user = User.objects.create_user(
+            username='perm_user', password='testpassword'
         )
-        self.client.login(username='testuser', password='testpassword')
+        self.perm_user.user_permissions.add(
+            Permission.objects.get(codename='view_companyuser'),
+            Permission.objects.get(codename='add_companyuser'),
+            Permission.objects.get(codename='change_companyuser'),
+            Permission.objects.get(codename='delete_companyuser'),
+            Permission.objects.get(codename='view_company') # リダイレクト先で必要
+        )
+        # 権限を持たないユーザー
+        self.no_perm_user = User.objects.create_user(
+            username='no_perm_user', password='testpassword'
+        )
 
         self.company = Company.objects.create(name="テスト株式会社", corporate_number="1112223334445", dispatch_treatment_method='agreement')
         self.department = CompanyDepartment.objects.create(
@@ -221,57 +297,59 @@ class CompanyUserViewTest(TestCase):
         self.create_url = reverse('company:company_user_create')
         self.edit_url = reverse('company:company_user_edit', kwargs={'pk': self.company_user.pk})
         self.delete_url = reverse('company:company_user_delete', kwargs={'pk': self.company_user.pk})
-        self.detail_url = reverse('company:company_detail')
+        self.detail_url = reverse('company:company_user_detail', kwargs={'pk': self.company_user.pk})
+        self.redirect_url = reverse('company:company_detail')
 
-    def test_create_view_get(self):
-        """作成ビューのGETアクセス"""
+    def test_views_with_permission(self):
+        """権限ありユーザーのビューアクセス"""
+        self.client.login(username='perm_user', password='testpassword')
+        # Create
         response = self.client.get(self.create_url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "担当者作成")
-
-    def test_create_view_post(self):
-        """作成ビューのPOST"""
-        data = {
-            'department_code': self.department.department_code,
-            'name_last': '鈴木',
-            'name_first': '一郎',
-            'position': '係長',
-            'display_order': 10,
-        }
+        data = {'department_code': self.department.department_code, 'name_last': '鈴木', 'name_first': '一郎', 'display_order': 0}
         response = self.client.post(self.create_url, data)
-        self.assertRedirects(response, self.detail_url)
+        self.assertRedirects(response, self.redirect_url)
         self.assertTrue(CompanyUser.objects.filter(name_last='鈴木').exists())
-
-    def test_edit_view_get(self):
-        """編集ビューのGETアクセス"""
+        # Edit
         response = self.client.get(self.edit_url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "担当者編集")
-
-    def test_edit_view_post(self):
-        """編集ビューのPOST"""
-        data = {
-            'department_code': self.department.department_code,
-            'name_last': '山田',
-            'name_first': '太郎',
-            'position': '本部長', # Change position
-            'phone_number': '',
-            'email': '',
-            'display_order': 0,
-        }
+        data = {'department_code': self.department.department_code, 'name_last': '山田', 'name_first': '太郎', 'position': '本部長', 'display_order': 0}
         response = self.client.post(self.edit_url, data)
-        self.assertRedirects(response, self.detail_url)
+        self.assertRedirects(response, self.redirect_url)
         self.company_user.refresh_from_db()
         self.assertEqual(self.company_user.position, '本部長')
-
-    def test_delete_view_get(self):
-        """削除ビューのGETアクセス"""
+        # Detail
+        response = self.client.get(self.detail_url)
+        self.assertEqual(response.status_code, 200)
+        # Delete
         response = self.client.get(self.delete_url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "担当者削除の確認")
-
-    def test_delete_view_post(self):
-        """削除ビューのPOST"""
         response = self.client.post(self.delete_url)
-        self.assertRedirects(response, self.detail_url)
+        self.assertRedirects(response, self.redirect_url)
         self.assertFalse(CompanyUser.objects.filter(pk=self.company_user.pk).exists())
+
+    def test_views_no_permission(self):
+        """権限なしユーザーのビューアクセス"""
+        self.client.login(username='no_perm_user', password='testpassword')
+        # Create
+        response = self.client.get(self.create_url)
+        self.assertEqual(response.status_code, 403)
+        data = {'department_code': self.department.department_code, 'name_last': '佐藤', 'name_first': '次郎'}
+        response = self.client.post(self.create_url, data)
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(CompanyUser.objects.filter(name_last='佐藤').exists())
+        # Edit
+        response = self.client.get(self.edit_url)
+        self.assertEqual(response.status_code, 403)
+        data = {'department_code': self.department.department_code, 'name_last': '山田', 'name_first': '太郎', 'position': '課長'}
+        response = self.client.post(self.edit_url, data)
+        self.assertEqual(response.status_code, 403)
+        # Detail
+        response = self.client.get(self.detail_url)
+        self.assertEqual(response.status_code, 403)
+        # Delete
+        response = self.client.get(self.delete_url)
+        self.assertEqual(response.status_code, 403)
+        response = self.client.post(self.delete_url)
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(CompanyUser.objects.filter(pk=self.company_user.pk).exists())
