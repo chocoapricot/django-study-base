@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
-from apps.staff.models import Staff, StaffContacted
+from apps.staff.models import Staff, StaffContacted, StaffBank, StaffInternational
 from apps.system.settings.models import Dropdowns
 from apps.master.models import StaffRegistStatus
 from datetime import date, datetime 
@@ -43,6 +43,30 @@ class StaffViewsTest(TestCase):
         self.user.user_permissions.add(self.add_staffcontacted_permission)
         self.user.user_permissions.add(self.change_staffcontacted_permission)
         self.user.user_permissions.add(self.delete_staffcontacted_permission)
+
+        # StaffBankモデルのContentTypeを取得
+        bank_content_type = ContentType.objects.get_for_model(StaffBank)
+        self.view_staffbank_permission = Permission.objects.get(codename='view_staffbank', content_type=bank_content_type)
+        self.add_staffbank_permission = Permission.objects.get(codename='add_staffbank', content_type=bank_content_type)
+        self.change_staffbank_permission = Permission.objects.get(codename='change_staffbank', content_type=bank_content_type)
+        self.delete_staffbank_permission = Permission.objects.get(codename='delete_staffbank', content_type=bank_content_type)
+
+        self.user.user_permissions.add(self.view_staffbank_permission)
+        self.user.user_permissions.add(self.add_staffbank_permission)
+        self.user.user_permissions.add(self.change_staffbank_permission)
+        self.user.user_permissions.add(self.delete_staffbank_permission)
+
+        # StaffInternationalモデルのContentTypeを取得
+        international_content_type = ContentType.objects.get_for_model(StaffInternational)
+        self.view_staffinternational_permission = Permission.objects.get(codename='view_staffinternational', content_type=international_content_type)
+        self.add_staffinternational_permission = Permission.objects.get(codename='add_staffinternational', content_type=international_content_type)
+        self.change_staffinternational_permission = Permission.objects.get(codename='change_staffinternational', content_type=international_content_type)
+        self.delete_staffinternational_permission = Permission.objects.get(codename='delete_staffinternational', content_type=international_content_type)
+
+        self.user.user_permissions.add(self.view_staffinternational_permission)
+        self.user.user_permissions.add(self.add_staffinternational_permission)
+        self.user.user_permissions.add(self.change_staffinternational_permission)
+        self.user.user_permissions.add(self.delete_staffinternational_permission)
 
         # Create necessary Dropdowns for StaffForm
         Dropdowns.objects.create(category='sex', value='1', name='男性', active=True, disp_seq=1)
