@@ -224,6 +224,7 @@ def connect_staff_unapprove(request, pk):
     return redirect('connect:staff_list')
 
 @login_required
+@permission_required('connect.view_connectclient', raise_exception=True)
 def connect_client_list(request):
     """クライアント接続一覧"""
     # 管理者の場合は全ての接続、そうでない場合は自分宛の接続を表示
@@ -269,6 +270,7 @@ def connect_client_list(request):
 
 
 @login_required
+@permission_required('connect.change_connectclient', raise_exception=True)
 @require_POST
 def connect_client_approve(request, pk):
     """クライアント接続を承認"""
@@ -312,6 +314,7 @@ def connect_client_approve(request, pk):
 
 
 @login_required
+@permission_required('connect.change_connectclient', raise_exception=True)
 @require_POST
 def connect_client_unapprove(request, pk):
     """クライアント接続を未承認に戻す"""

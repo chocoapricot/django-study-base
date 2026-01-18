@@ -97,19 +97,26 @@ def grant_permissions_on_connection_request(email):
 
 
 def grant_client_connect_permissions(user):
-    """ユーザーをclientグループに追加"""
+    """ユーザーをclientグループに追加し、関連権限を付与"""
     try:
         from django.contrib.auth.models import Group
         group, created = Group.objects.get_or_create(name='client')
+
+        # clientグループに必要な権限を付与
+        content_type = ContentType.objects.get_for_model(ConnectClient)
+        permissions = Permission.objects.filter(
+            content_type=content_type,
+            codename__in=['view_connectclient', 'change_connectclient']
+        )
+        group.permissions.add(*permissions)
         
-        # グループに権限がある前提なので、ここで権限の追加は行わない
         # ユーザーをグループに追加
         user.groups.add(group)
         
         return True
         
     except Exception as e:
-        print(f"[ERROR] clientグループ追加エラー: {e}")
+        print(f"[ERROR] clientグループへの追加・権限付与エラー: {e}")
         return False
 
 

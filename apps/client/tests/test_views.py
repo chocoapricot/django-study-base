@@ -67,6 +67,15 @@ class ClientViewsTest(TestCase):
         self.user.user_permissions.add(self.change_clientdepartment_permission)
         self.user.user_permissions.add(self.delete_clientdepartment_permission)
 
+        # ConnectClientモデルのContentTypeを取得
+        from apps.connect.models import ConnectClient
+        connect_content_type = ContentType.objects.get_for_model(ConnectClient)
+        self.view_connectclient_permission = Permission.objects.get(codename='view_connectclient', content_type=connect_content_type)
+        self.change_connectclient_permission = Permission.objects.get(codename='change_connectclient', content_type=connect_content_type)
+
+        self.user.user_permissions.add(self.view_connectclient_permission)
+        self.user.user_permissions.add(self.change_connectclient_permission)
+
         from apps.system.settings.models import Dropdowns
         # Create necessary ClientRegistStatus for ClientForm
         from apps.master.models import ClientRegistStatus
