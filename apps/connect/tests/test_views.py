@@ -92,3 +92,77 @@ class StaffAgreeViewTest(TestCase):
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, f'{self.company.name} - 同意確認')
+
+
+class ConnectClientViewsTest(TestCase):
+    """ConnectClientビューのテスト"""
+    def setUp(self):
+        self.client_user = User.objects.create_user(
+            username='clientuser',
+            email='client@example.com',
+            password='password'
+        )
+        self.other_user = User.objects.create_user(
+            username='otheruser',
+            email='other@example.com',
+            password='password'
+        )
+        self.staff_user = User.objects.create_user(
+            username='staff',
+            email='staff@example.com',
+            password='password',
+            is_staff=True
+        )
+
+        # 権限を付与
+        from django.contrib.contenttypes.models import ContentType
+        from django.contrib.auth.models import Permission
+        from apps.connect.models import ConnectClient
+        content_type = ContentType.objects.get_for_model(ConnectClient)
+        permissions = Permission.objects.filter(
+            content_type=content_type,
+            codename__in=['view_connectclient', 'change_connectclient']
+        )
+        self.client_user.user_permissions.add(*permissions)
+
+        self.connect_request = ConnectClient.objects.create(
+            corporate_number='1234567890123',
+            email=self.client_user.email,
+            created_by=self.staff_user,
+            updated_by=self.staff_user,
+        )
+        self.other_connect_request = ConnectClient.objects.create(
+            corporate_number='9876543210987',
+            email=self.other_user.email,
+            created_by=self.staff_user,
+            updated_by=self.staff_user,
+        )
+
+    def test_client_user_can_view_own_requests(self):
+        """クライアントユーザーが自身の接続申請一覧を閲覧できる"""
+        self.client.login(username='clientuser', password='password')
+        response = self.client.get(reverse('connect:client_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.connect_request.corporate_number)
+        self.assertNotContains(response, self.other_connect_request.corporate_number)
+
+    def test_client_user_can_approve_own_request(self):
+        """クライアントユーザーが自身の接続申請を承認できる"""
+        self.client.login(username='clientuser', password='password')
+        self.connect_request.status = 'pending'
+        self.connect_request.save()
+        response = self.client.post(reverse('connect:client_approve', kwargs={'pk': self.connect_request.pk}))
+        self.assertEqual(response.status_code, 302)
+        self.connect_request.refresh_from_db()
+        self.assertEqual(self.connect_request.status, 'approved')
+
+    def test_client_user_cannot_approve_other_users_request(self):
+        """クライアントユーザーが他人の接続申請を承認できない"""
+        self.client.login(username='clientuser', password='password')
+        self.other_connect_request.status = 'pending'
+        self.other_connect_request.save()
+        response = self.client.post(reverse('connect:client_approve', kwargs={'pk': self.other_connect_request.pk}))
+        # view内の手動権限チェックでリダイレクトされる
+        self.assertEqual(response.status_code, 302)
+        self.other_connect_request.refresh_from_db()
+        self.assertEqual(self.other_connect_request.status, 'pending')
