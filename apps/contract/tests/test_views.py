@@ -165,6 +165,20 @@ class ContractViewTest(TestCase):
 
         self.client.login(username='testuser', password='testpass123')
 
+    def test_permission_denied(self):
+        """権限のないユーザーがアクセスできないことをテスト"""
+        # 権限のないユーザーを作成
+        no_perm_user = User.objects.create_user(
+            username='nopermuser',
+            email='noperm@example.com',
+            password='testpass123'
+        )
+        self.client.login(username='nopermuser', password='testpass123')
+
+        # contract_indexビューにアクセス
+        response = self.client.get(reverse('contract:contract_index'))
+        self.assertEqual(response.status_code, 403)
+
     def test_issue_teishokubi_notification_updates_contract(self):
         """抵触日通知書を共有した際に、契約の共有日時と共有者が更新されるかテスト"""
         # 契約を承認済みにする
@@ -932,6 +946,7 @@ class ContractAssignmentViewTest(TestCase):
         content_types = [
             ContentType.objects.get_for_model(ClientContract),
             ContentType.objects.get_for_model(StaffContract),
+            ContentType.objects.get_for_model(ContractAssignment),
         ]
         permissions = Permission.objects.filter(content_type__in=content_types)
         self.user.user_permissions.set(permissions)
@@ -1363,6 +1378,38 @@ class ContractAssignmentViewTest(TestCase):
 
         staff_contract_2.refresh_from_db()
         self.assertEqual(staff_contract_2.work_location, 'Client Work Location')
+
+    def test_assignment_permission_denied(self):
+        """契約アサイン関連ビューで権限のないユーザーがアクセスできないことをテスト"""
+        # 権限のないユーザーを作成
+        no_perm_user = User.objects.create_user(
+            username='nopermuser_assignment',
+            email='noperm_assignment@example.com',
+            password='testpass123'
+        )
+        self.client.login(username='nopermuser_assignment', password='testpass123')
+
+        # --- 割当作成ビュー (add_contractassignment) ---
+        create_url = reverse('contract:create_contract_assignment')
+        post_data_create = {
+            'client_contract_id': self.client_contract_draft.pk,
+            'staff_contract_id': self.assignable_staff_contract.pk,
+            'from': 'client',
+        }
+        response_create = self.client.post(create_url, post_data_create)
+        self.assertEqual(response_create.status_code, 403)
+
+        # --- 割当確認ビュー (change_contractassignment) ---
+        confirm_url_client = reverse('contract:client_assignment_confirm')
+        confirm_url_staff = reverse('contract:staff_assignment_confirm')
+        post_data_confirm = {
+            'client_contract_id': self.client_contract_draft.pk,
+            'staff_contract_id': self.assignable_staff_contract.pk,
+        }
+        response_confirm_client = self.client.post(confirm_url_client, post_data_confirm)
+        response_confirm_staff = self.client.post(confirm_url_staff, post_data_confirm)
+        self.assertEqual(response_confirm_client.status_code, 403)
+        self.assertEqual(response_confirm_staff.status_code, 403)
 
 
 class ContractAssignmentDisplayTest(TestCase):

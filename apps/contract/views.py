@@ -74,6 +74,7 @@ def _check_assigned_staff_payroll(client_contract):
 
 # 契約管理トップページ
 @login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
 def contract_index(request):
     """契約管理トップページ"""
     # クライアント契約の統計

@@ -133,6 +133,8 @@ def staff_contract_assignment_view(request, pk):
 
 
 @login_required
+@permission_required('contract.change_contractassignment', raise_exception=True)
+@require_POST
 def client_assignment_confirm(request):
     """クライアント割当の確認画面を表示するビュー（スタッフ契約からクライアント契約を割り当てる場合）"""
     if request.method == 'POST':
@@ -205,6 +207,8 @@ def client_assignment_confirm(request):
 
 
 @login_required
+@permission_required('contract.change_contractassignment', raise_exception=True)
+@require_POST
 def staff_assignment_confirm(request):
     """スタッフ割当の確認画面を表示するビュー（クライアント契約からスタッフ契約を割り当てる場合）"""
     if request.method == 'POST':
@@ -404,6 +408,8 @@ def staff_assignment_confirm_from_create(request):
 
 
 @login_required
+@permission_required('contract.add_contractassignment', raise_exception=True)
+@require_POST
 def create_contract_assignment_view(request):
     """契約アサインを作成するビュー"""
     if request.method == 'POST':
