@@ -15,6 +15,13 @@ class KintaiViewIntegrationTests(TestCase):
     def setUp(self):
         User = get_user_model()
         self.user = User.objects.create_user(username='tester', password='pass')
+        # 権限を付与
+        from django.contrib.auth.models import Permission
+        permissions = Permission.objects.filter(
+            content_type__app_label='kintai',
+            content_type__model__in=['stafftimesheet', 'stafftimecard']
+        )
+        self.user.user_permissions.set(permissions)
         self.client = Client()
         self.client.login(username='tester', password='pass')
 

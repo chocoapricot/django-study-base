@@ -417,6 +417,7 @@ class TimerecordCRUDViewTest(TestCase):
         )
         permissions = Permission.objects.filter(
             Q(codename='view_stafftimerecord') |
+            Q(codename='add_stafftimerecord') |
             Q(codename='change_stafftimerecord') |
             Q(codename='delete_stafftimerecord')
         )

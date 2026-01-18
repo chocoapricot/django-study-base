@@ -11,6 +11,7 @@ from apps.common.constants import Constants
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.view_stafftimesheet', raise_exception=True)
 def timesheet_list(request):
     """月次勤怠一覧"""
     timesheets = StaffTimesheet.objects.select_related('staff', 'staff_contract').all()
@@ -22,6 +23,7 @@ def timesheet_list(request):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.view_stafftimesheet', raise_exception=True)
 def contract_search(request):
     """契約検索"""
     from datetime import date, datetime
@@ -127,6 +129,7 @@ def contract_search(request):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.view_stafftimesheet', raise_exception=True)
 def staff_search(request):
     """スタッフ検索"""
     from datetime import date
@@ -203,6 +206,7 @@ def staff_search(request):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.change_stafftimecard', raise_exception=True)
 def staff_timecard_calendar(request, staff_pk, target_month):
     """スタッフ別日次勤怠カレンダー入力"""
     from datetime import date, time as dt_time
@@ -429,6 +433,7 @@ from apps.contract.models import StaffContract
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.add_stafftimesheet', raise_exception=True)
 def timesheet_create(request):
     """月次勤怠作成"""
     if request.method == 'POST':
@@ -462,6 +467,7 @@ def timesheet_create(request):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.view_stafftimesheet', raise_exception=True)
 def timesheet_detail(request, pk):
     """月次勤怠詳細"""
     import jpholiday
@@ -492,6 +498,7 @@ def timesheet_detail(request, pk):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.delete_stafftimesheet', raise_exception=True)
 def timesheet_delete(request, pk):
     """月次勤怠削除"""
     # select_relatedでテンプレート表示用に関連オブジェクトを事前ロード
@@ -514,6 +521,7 @@ def timesheet_delete(request, pk):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.view_stafftimesheet', raise_exception=True)
 def timesheet_preview(request, contract_pk, target_month):
     """月次勤怠プレビュー（未作成状態）"""
     from datetime import datetime, date
@@ -562,6 +570,7 @@ def timesheet_preview(request, contract_pk, target_month):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.add_stafftimecard', raise_exception=True)
 def timecard_create(request, timesheet_pk):
     """日次勤怠作成"""
     timesheet = get_object_or_404(StaffTimesheet, pk=timesheet_pk)
@@ -600,6 +609,7 @@ def timecard_create(request, timesheet_pk):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.add_stafftimecard', raise_exception=True)
 def timecard_create_initial(request, contract_pk, target_month):
     """初回日次勤怠作成（同時に月次勤怠も作成）"""
     from datetime import date
@@ -663,6 +673,7 @@ def timecard_create_initial(request, contract_pk, target_month):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.change_stafftimecard', raise_exception=True)
 def timecard_edit(request, pk):
     """日次勤怠編集"""
     timecard = get_object_or_404(StaffTimecard, pk=pk)
@@ -699,6 +710,7 @@ def timecard_edit(request, pk):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.delete_stafftimecard', raise_exception=True)
 def timecard_delete(request, pk):
     """日次勤怠削除"""
     timecard = get_object_or_404(StaffTimecard, pk=pk)
@@ -723,6 +735,7 @@ def timecard_delete(request, pk):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.change_stafftimecard', raise_exception=True)
 def timecard_calendar(request, timesheet_pk):
     """日次勤怠カレンダー入力"""
     from datetime import date, timedelta
@@ -912,6 +925,7 @@ def timecard_calendar(request, timesheet_pk):
 
 @login_required
 @check_staff_agreement
+@permission_required('kintai.add_stafftimecard', raise_exception=True)
 def timecard_calendar_initial(request, contract_pk, target_month):
     """初回日次勤怠カレンダー入力（同時に月次勤怠も作成）"""
     from datetime import date, timedelta
