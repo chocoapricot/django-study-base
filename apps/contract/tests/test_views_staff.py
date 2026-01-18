@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.contrib.messages import get_messages
-from ..models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp
+from ..models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp, ContractAssignment
 from apps.client.models import Client as TestClient, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from apps.master.models import ContractPattern, DefaultValue
@@ -61,9 +61,17 @@ class StaffContractViewTest(TestCase):
 
         # 契約関連の権限を追加
         all_permissions = []
+        content_type_client = ContentType.objects.get_for_model(ClientContract)
+        client_permissions = Permission.objects.filter(content_type=content_type_client)
+        all_permissions.extend(client_permissions)
+
         content_type_staff = ContentType.objects.get_for_model(StaffContract)
         staff_permissions = Permission.objects.filter(content_type=content_type_staff)
         all_permissions.extend(staff_permissions)
+
+        content_type_assignment = ContentType.objects.get_for_model(ContractAssignment)
+        assignment_permissions = Permission.objects.filter(content_type=content_type_assignment)
+        all_permissions.extend(assignment_permissions)
 
         self.user.user_permissions.set(all_permissions)
 
