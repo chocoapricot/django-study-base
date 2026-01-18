@@ -370,9 +370,17 @@ class ProfitMarginViewTest(TestCase):
             email='test@example.com',
             password='testpass123'
         )
-        self.user.user_permissions.add(
-            *self.user._meta.model.objects.get(username='testuser').get_all_permissions()
+
+        # 必要な権限を追加
+        from django.contrib.auth.models import Permission
+        permissions = Permission.objects.filter(
+            codename__in=[
+                'add_staffcontract', 'change_staffcontract', 'view_staffcontract',
+                'add_clientcontract', 'change_clientcontract', 'view_clientcontract',
+                'add_contractassignment', 'change_contractassignment', 'view_contractassignment'
+            ]
         )
+        self.user.user_permissions.set(permissions)
 
         # クライアント作成
         self.client_obj = Client.objects.create(
