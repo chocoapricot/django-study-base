@@ -77,7 +77,7 @@ class OvertimePatternModelTest(TestCase):
 
 
 from django.urls import reverse
-from apps.accounts.models import MyUser
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 
@@ -87,10 +87,11 @@ class OvertimePatternListViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         """テストクラス用のデータを一度だけ作成"""
-        cls.user = MyUser.objects.create_user(
-            username='testuser',
+        User = get_user_model()
+        cls.user = User.objects.create_user(
+            username='testuser_list',
             password='password123',
-            email='testuser@example.com',
+            email='testuser_list@example.com',
             is_active=True
         )
         content_type = ContentType.objects.get_for_model(OvertimePattern)
@@ -112,7 +113,7 @@ class OvertimePatternListViewTest(TestCase):
 
     def setUp(self):
         """各テストの前に実行"""
-        self.client.login(username='testuser', password='password123')
+        self.client.login(username='testuser_list', password='password123')
 
     def test_view_renders_midnight_premium_text(self):
         """深夜割増が有効な場合、「深夜」が表示される"""
@@ -123,3 +124,105 @@ class OvertimePatternListViewTest(TestCase):
         # "Premium On" のパターンで「深夜」が表示され、
         # "Premium Off" のパターンでは表示されないため、合計1回表示されるはず
         self.assertContains(response, '深夜', count=1)
+
+class OvertimePatternViewPermissionTest(TestCase):
+    """
+    OvertimePattern views permission tests.
+    """
+    def setUp(self):
+        """
+        Set up the test environment.
+        """
+        User = get_user_model()
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.overtime_pattern = OvertimePattern.objects.create(name='Test Overtime Pattern')
+        self.content_type = ContentType.objects.get_for_model(OvertimePattern)
+
+    def test_overtime_pattern_list_view_permission(self):
+        """
+        Test that the overtime_pattern_list view requires the correct permission.
+        """
+        url = reverse('master:overtime_pattern_list')
+        self.client.login(username='testuser', password='password')
+
+        # Test without permission
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        # Test with permission
+        permission = Permission.objects.get(content_type=self.content_type, codename='view_overtimepattern')
+        self.user.user_permissions.add(permission)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_overtime_pattern_create_view_permission(self):
+        """
+        Test that the overtime_pattern_create view requires the correct permission.
+        """
+        url = reverse('master:overtime_pattern_create')
+        self.client.login(username='testuser', password='password')
+
+        # Test without permission
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        # Test with permission
+        permission = Permission.objects.get(content_type=self.content_type, codename='add_overtimepattern')
+        self.user.user_permissions.add(permission)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_overtime_pattern_update_view_permission(self):
+        """
+        Test that the overtime_pattern_update view requires the correct permission.
+        """
+        url = reverse('master:overtime_pattern_update', args=[self.overtime_pattern.pk])
+        self.client.login(username='testuser', password='password')
+
+        # Test without permission
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        # Test with permission
+        permission = Permission.objects.get(content_type=self.content_type, codename='change_overtimepattern')
+        self.user.user_permissions.add(permission)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_overtime_pattern_delete_view_permission(self):
+        """
+        Test that the overtime_pattern_delete view requires the correct permission.
+        """
+        url = reverse('master:overtime_pattern_delete', args=[self.overtime_pattern.pk])
+        self.client.login(username='testuser', password='password')
+
+        # Test without permission
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
+        # Test with permission
+        permission = Permission.objects.get(content_type=self.content_type, codename='delete_overtimepattern')
+        self.user.user_permissions.add(permission)
+        # Re-create the object as it might have been deleted in other tests
+        overtime_pattern_for_delete = OvertimePattern.objects.create(name='Test Overtime Pattern for Delete')
+        url_for_delete = reverse('master:overtime_pattern_delete', args=[overtime_pattern_for_delete.pk])
+        response = self.client.post(url_for_delete)
+        # Should redirect after successful deletion
+        self.assertEqual(response.status_code, 302)
+
+    def test_overtime_pattern_change_history_list_view_permission(self):
+        """
+        Test that the overtime_pattern_change_history_list view requires the correct permission.
+        """
+        url = reverse('master:overtime_pattern_change_history_list')
+        self.client.login(username='testuser', password='password')
+
+        # Test without permission
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        # Test with permission
+        permission = Permission.objects.get(content_type=self.content_type, codename='view_overtimepattern')
+        self.user.user_permissions.add(permission)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)

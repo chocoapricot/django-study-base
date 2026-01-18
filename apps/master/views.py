@@ -273,6 +273,7 @@ def master_index_list(request):
 
 
 @login_required
+@permission_required("master.view_timepunch", raise_exception=True)
 def time_punch_list(request):
     """勤怠打刻マスタ一覧"""
     search_query = request.GET.get('search', '')
@@ -320,6 +321,7 @@ def time_punch_list(request):
 
 
 @login_required
+@permission_required("master.add_timepunch", raise_exception=True)
 def time_punch_create(request):
     """勤怠打刻マスタ作成"""
     if request.method == 'POST':
@@ -340,6 +342,7 @@ def time_punch_create(request):
 
 
 @login_required
+@permission_required("master.change_timepunch", raise_exception=True)
 def time_punch_edit(request, pk):
     """勤怠打刻マスタ編集"""
     time_punch = get_object_or_404(TimePunch, pk=pk)
@@ -363,6 +366,7 @@ def time_punch_edit(request, pk):
 
 
 @login_required
+@permission_required("master.delete_timepunch", raise_exception=True)
 def time_punch_delete_confirm(request, pk):
     """勤怠打刻マスタ削除確認"""
     time_punch = get_object_or_404(TimePunch, pk=pk)
@@ -375,6 +379,7 @@ def time_punch_delete_confirm(request, pk):
 
 
 @login_required
+@permission_required("master.delete_timepunch", raise_exception=True)
 def time_punch_delete(request, pk):
     """勤怠打刻マスタ削除"""
     time_punch = get_object_or_404(TimePunch, pk=pk)
@@ -389,6 +394,7 @@ def time_punch_delete(request, pk):
 
 
 @login_required
+@permission_required("master.view_timepunch", raise_exception=True)
 def time_punch_change_history_list(request):
     """勤怠打刻マスタ変更履歴一覧"""
     logs = AppLog.objects.filter(
