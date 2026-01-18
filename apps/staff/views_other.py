@@ -66,7 +66,7 @@ def staff_profile_request_detail(request, staff_pk, pk):
 # ===== スタッフマイナンバー関連ビュー =====
 
 @login_required
-@permission_required('staff.view_staffmynumberrecord', raise_exception=True)
+@permission_required('staff.view_staffmynumber', raise_exception=True)
 def staff_mynumber_detail(request, staff_id):
     """スタッフのマイナンバー詳細表示"""
     staff = get_object_or_404(Staff, pk=staff_id)
@@ -84,7 +84,7 @@ def staff_mynumber_detail(request, staff_id):
 
 
 @login_required
-@permission_required('staff.add_staffmynumberrecord', raise_exception=True)
+@permission_required('staff.add_staffmynumber', raise_exception=True)
 def staff_mynumber_create(request, staff_id):
     """スタッフのマイナンバー登録"""
     staff = get_object_or_404(Staff, pk=staff_id)
@@ -112,7 +112,7 @@ def staff_mynumber_create(request, staff_id):
 
 
 @login_required
-@permission_required('staff.change_staffmynumberrecord', raise_exception=True)
+@permission_required('staff.change_staffmynumber', raise_exception=True)
 def staff_mynumber_edit(request, staff_id):
     """スタッフのマイナンバー編集"""
     staff = get_object_or_404(Staff, pk=staff_id)
@@ -137,7 +137,7 @@ def staff_mynumber_edit(request, staff_id):
 
 
 @login_required
-@permission_required('staff.delete_staffmynumberrecord', raise_exception=True)
+@permission_required('staff.delete_staffmynumber', raise_exception=True)
 def staff_mynumber_delete(request, staff_id):
     """スタッフのマイナンバー削除確認"""
     staff = get_object_or_404(Staff, pk=staff_id)
@@ -442,7 +442,7 @@ def staff_contact_request_detail(request, staff_pk, pk):
 
 
 @login_required
-@permission_required('staff.change_staffmynumberrecord', raise_exception=True)
+@permission_required('staff.change_staffmynumber', raise_exception=True)
 def staff_mynumber_request_detail(request, staff_pk, pk):
     """マイナンバー申請の詳細、承認・却下"""
     from apps.connect.models import MynumberRequest
@@ -488,7 +488,7 @@ def staff_mynumber_request_detail(request, staff_pk, pk):
 
 
 @login_required
-@permission_required('staff.view_staff', raise_exception=True)
+@permission_required('staff.view_staffbank', raise_exception=True)
 def staff_bank_detail(request, staff_id):
     """スタッフの銀行情報詳細表示"""
     staff = get_object_or_404(Staff, pk=staff_id)
@@ -506,7 +506,7 @@ def staff_bank_detail(request, staff_id):
 
 
 @login_required
-@permission_required('staff.add_staff', raise_exception=True)
+@permission_required('staff.add_staffbank', raise_exception=True)
 def staff_bank_create(request, staff_id):
     """スタッフの銀行情報登録"""
     staff = get_object_or_404(Staff, pk=staff_id)
@@ -537,7 +537,7 @@ def staff_bank_create(request, staff_id):
 
 
 @login_required
-@permission_required('staff.change_staff', raise_exception=True)
+@permission_required('staff.change_staffbank', raise_exception=True)
 def staff_bank_edit(request, staff_id):
     """スタッフの銀行情報編集"""
     staff = get_object_or_404(Staff, pk=staff_id)
@@ -566,7 +566,7 @@ def staff_bank_edit(request, staff_id):
 
 
 @login_required
-@permission_required('staff.delete_staff', raise_exception=True)
+@permission_required('staff.delete_staffbank', raise_exception=True)
 def staff_bank_delete(request, staff_id):
     """スタッフの銀行情報削除確認"""
     staff = get_object_or_404(Staff, pk=staff_id)
@@ -585,7 +585,7 @@ def staff_bank_delete(request, staff_id):
 
 
 @login_required
-@permission_required('staff.change_staff', raise_exception=True)
+@permission_required('staff.change_staffbank', raise_exception=True)
 def staff_bank_request_detail(request, staff_pk, pk):
     """銀行情報申請の詳細、承認・却下"""
     from apps.connect.models import BankRequest
@@ -731,7 +731,7 @@ def staff_international_delete(request, staff_id):
 
 
 @login_required
-@permission_required('staff.change_staff', raise_exception=True)
+@permission_required('staff.change_staffinternational', raise_exception=True)
 def staff_international_request_detail(request, staff_pk, pk):
     """外国籍情報申請の詳細、承認・却下"""
     from apps.connect.models import ConnectInternationalRequest
