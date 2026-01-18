@@ -175,6 +175,13 @@ class KintaiAgreementRedirectTest(TestCase):
             password=self.password,
             is_staff=True,
         )
+        # 権限を付与
+        from django.contrib.auth.models import Permission
+        permissions = Permission.objects.filter(
+            content_type__app_label='kintai',
+            content_type__model__in=['stafftimesheet', 'stafftimecard']
+        )
+        admin_user.user_permissions.set(permissions)
         self.client.login(email=admin_email, password=self.password)
         
         # 管理者がスタッフ検索画面にアクセス（この画面にはデコレータをつけていないが、念のため）

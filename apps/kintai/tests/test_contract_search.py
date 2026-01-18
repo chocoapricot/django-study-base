@@ -24,17 +24,11 @@ class ContractSearchViewTest(TestCase):
         
         # 必要な権限を追加
         from django.contrib.auth.models import Permission
-        from django.contrib.contenttypes.models import ContentType
-        from apps.kintai.models import StaffTimesheet, StaffTimecard
-        
-        timesheet_ct = ContentType.objects.get_for_model(StaffTimesheet)
-        timecard_ct = ContentType.objects.get_for_model(StaffTimecard)
-        
-        add_timesheet_perm = Permission.objects.get(codename='add_stafftimesheet', content_type=timesheet_ct)
-        add_timecard_perm = Permission.objects.get(codename='add_stafftimecard', content_type=timecard_ct)
-        delete_timesheet_perm = Permission.objects.get(codename='delete_stafftimesheet', content_type=timesheet_ct)
-        
-        self.user.user_permissions.add(add_timesheet_perm, add_timecard_perm, delete_timesheet_perm)
+        permissions = Permission.objects.filter(
+            content_type__app_label='kintai',
+            content_type__model__in=['stafftimesheet', 'stafftimecard']
+        )
+        self.user.user_permissions.set(permissions)
         
         self.client = Client()
         self.client.login(username='testuser', password='testpass123')

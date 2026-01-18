@@ -115,7 +115,7 @@ def timerecord_detail(request, pk):
 
 @login_required
 @check_staff_agreement
-@permission_required('kintai.edit_stafftimerecord', raise_exception=True)
+@permission_required('kintai.change_stafftimerecord', raise_exception=True)
 def timerecord_update(request, pk):
     """勤怠打刻編集"""
     timerecord = get_object_or_404(StaffTimerecord, pk=pk)

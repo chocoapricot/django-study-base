@@ -11,6 +11,9 @@ from apps.common.constants import Constants
 User = get_user_model()
 
 
+from django.contrib.auth.models import Permission
+
+
 class TimesheetViewTest(TestCase):
     """月次勤怠ビューのテスト"""
 
@@ -22,6 +25,13 @@ class TimesheetViewTest(TestCase):
             email='test@example.com',
             password='testpass123'
         )
+        # 権限を付与
+        permissions = Permission.objects.filter(
+            content_type__app_label='kintai',
+            content_type__model__in=['stafftimesheet', 'stafftimecard']
+        )
+        self.user.user_permissions.set(permissions)
+
         self.client = Client()
         self.client.login(username='testuser', password='testpass123')
 
@@ -126,6 +136,13 @@ class TimecardViewTest(TestCase):
             email='test@example.com',
             password='testpass123'
         )
+        # 権限を付与
+        permissions = Permission.objects.filter(
+            content_type__app_label='kintai',
+            content_type__model__in=['stafftimesheet', 'stafftimecard']
+        )
+        self.user.user_permissions.set(permissions)
+
         self.client = Client()
         self.client.login(username='testuser', password='testpass123')
 

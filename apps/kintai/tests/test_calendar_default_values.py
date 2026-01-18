@@ -15,6 +15,13 @@ class TestCalendarDefaultValues(TestCase):
         try:
             # ユーザー作成
             self.user = MyUser.objects.create_user(username='testuser', email='test@example.com', password='password')
+            # 権限を付与
+            from django.contrib.auth.models import Permission
+            permissions = Permission.objects.filter(
+                content_type__app_label='kintai',
+                content_type__model__in=['stafftimesheet', 'stafftimecard']
+            )
+            self.user.user_permissions.set(permissions)
             self.client = Client()
             self.client.force_login(self.user)
 

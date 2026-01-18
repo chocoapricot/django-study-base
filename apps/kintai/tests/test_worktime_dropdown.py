@@ -26,6 +26,13 @@ class WorkTimeDropdownTest(TestCase):
             email='test@example.com',
             password='testpass123'
         )
+        # 権限を付与
+        from django.contrib.auth.models import Permission
+        permissions = Permission.objects.filter(
+            content_type__app_label='kintai',
+            content_type__model__in=['stafftimesheet', 'stafftimecard']
+        )
+        self.user.user_permissions.set(permissions)
         self.client = Client()
         self.client.force_login(self.user)
 
