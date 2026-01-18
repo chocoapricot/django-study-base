@@ -11,6 +11,7 @@ from .decorators import check_staff_agreement
 
 @login_required
 @check_staff_agreement
+@permission_required('profile.view_staffprofile', raise_exception=True)
 def profile_index(request):
     """プロフィールメニュー"""
     user = request.user
