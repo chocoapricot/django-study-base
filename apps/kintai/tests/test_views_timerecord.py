@@ -28,8 +28,11 @@ class TimerecordPunchViewTest(TestCase):
         )
 
         # Add permission
-        permission = Permission.objects.get(codename='view_stafftimerecord')
-        self.user.user_permissions.add(permission)
+        permissions = Permission.objects.filter(
+            Q(codename='view_stafftimerecord') |
+            Q(codename='change_stafftimerecord')
+        )
+        self.user.user_permissions.add(*permissions)
 
         self.client = Client()
         self.client.login(username='staffuser', password='testpass123')
@@ -382,3 +385,161 @@ class TimerecordPunchViewTest(TestCase):
         
         # 打刻が作成されていないことを確認
         self.assertEqual(StaffTimerecord.objects.count(), 0)
+
+    def test_action_permission_denied(self):
+        """権限がない場合の打刻アクション拒否テスト"""
+        # スタッフプロファイルはあるが権限のないユーザーを作成
+        no_perm_user = User.objects.create_user(
+            username='noperm_staff',
+            email='noperm_staff@example.com',
+            password='testpass123',
+            is_staff=True
+        )
+        Staff.objects.create(
+            name_last='権限なし',
+            name_first='スタッフ',
+            email='noperm_staff@example.com',
+        )
+        self.client.login(username='noperm_staff', password='testpass123')
+
+        response = self.client.post(self.action_url, {'action': 'start'})
+        self.assertEqual(response.status_code, 403)
+
+
+class TimerecordCRUDViewTest(TestCase):
+    """勤怠打刻および休憩のCRUDビューの権限テスト"""
+
+    def setUp(self):
+        """テストデータの準備"""
+        # 権限を持つユーザー
+        self.perm_user = User.objects.create_user(
+            username='perm_user', password='password', is_staff=True
+        )
+        permissions = Permission.objects.filter(
+            Q(codename='view_stafftimerecord') |
+            Q(codename='change_stafftimerecord') |
+            Q(codename='delete_stafftimerecord')
+        )
+        self.perm_user.user_permissions.add(*permissions)
+
+        # 権限のないユーザー
+        self.no_perm_user = User.objects.create_user(
+            username='no_perm_user', password='password', is_staff=True
+        )
+
+        # テストデータ
+        self.staff = Staff.objects.create(name_last='テスト', name_first='太郎')
+        now = timezone.localtime().replace(second=0, microsecond=0)
+        self.timerecord = StaffTimerecord.objects.create(
+            staff=self.staff,
+            work_date=now.date(),
+            start_time=now,
+            end_time=now + timezone.timedelta(hours=8)
+        )
+        self.break_record = StaffTimerecordBreak.objects.create(
+            timerecord=self.timerecord,
+            break_start=now + timezone.timedelta(hours=1)
+        )
+
+        self.client = Client()
+
+    def test_delete_timerecord_permission(self):
+        """勤怠打刻削除の権限テスト"""
+        url = reverse('kintai:timerecord_delete', kwargs={'pk': self.timerecord.pk})
+
+        # 権限のないユーザー
+        self.client.login(username='no_perm_user', password='password')
+        response_get = self.client.get(url)
+        response_post = self.client.post(url)
+        self.assertEqual(response_get.status_code, 403)
+        self.assertEqual(response_post.status_code, 403)
+
+        # 権限のあるユーザー
+        self.client.login(username='perm_user', password='password')
+        response_get_perm = self.client.get(url)
+        self.assertEqual(response_get_perm.status_code, 200)
+
+        # 削除実行
+        response_post_perm = self.client.post(url)
+        self.assertRedirects(response_post_perm, reverse('kintai:timerecord_list'))
+        self.assertFalse(StaffTimerecord.objects.filter(pk=self.timerecord.pk).exists())
+
+    def test_break_create_permission(self):
+        """休憩作成の権限テスト"""
+        url = reverse('kintai:timerecord_break_create', kwargs={'timerecord_pk': self.timerecord.pk})
+
+        # 正しいフォーマットのdatetime文字列を生成
+        now = timezone.now()
+        start_time_str = now.strftime('%Y-%m-%dT%H:%M')
+        end_time_str = (now + timezone.timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M')
+        data = {'break_start': start_time_str, 'break_end': end_time_str}
+
+        # 権限のないユーザー
+        self.client.login(username='no_perm_user', password='password')
+        response_get = self.client.get(url)
+        response_post = self.client.post(url, data)
+        self.assertEqual(response_get.status_code, 403)
+        self.assertEqual(response_post.status_code, 403)
+
+        # 権限のあるユーザー
+        self.client.login(username='perm_user', password='password')
+        response_get_perm = self.client.get(url)
+        self.assertEqual(response_get_perm.status_code, 200)
+
+        # 作成実行
+        initial_break_count = self.timerecord.breaks.count()
+        response_post_perm = self.client.post(url, data)
+        self.assertRedirects(response_post_perm, reverse('kintai:timerecord_detail', kwargs={'pk': self.timerecord.pk}))
+        self.assertEqual(self.timerecord.breaks.count(), initial_break_count + 1)
+
+
+    def test_break_update_permission(self):
+        """休憩編集の権限テスト"""
+        url = reverse('kintai:timerecord_break_update', kwargs={'pk': self.break_record.pk})
+
+        # 正しいフォーマットのdatetime文字列を生成
+        # 休憩時間を勤務開始2時間後から3時間後に変更する
+        new_break_start = self.timerecord.start_time + timezone.timedelta(hours=2)
+        new_break_end = new_break_start + timezone.timedelta(hours=1)
+        start_time_str = new_break_start.strftime('%Y-%m-%dT%H:%M')
+        end_time_str = new_break_end.strftime('%Y-%m-%dT%H:%M')
+        data = {'break_start': start_time_str, 'break_end': end_time_str}
+
+        # 権限のないユーザー
+        self.client.login(username='no_perm_user', password='password')
+        response_get = self.client.get(url)
+        response_post = self.client.post(url, data)
+        self.assertEqual(response_get.status_code, 403)
+        self.assertEqual(response_post.status_code, 403)
+
+        # 権限のあるユーザー
+        self.client.login(username='perm_user', password='password')
+        response_get_perm = self.client.get(url)
+        self.assertEqual(response_get_perm.status_code, 200)
+
+        # 更新実行
+        response_post_perm = self.client.post(url, data)
+        self.assertRedirects(response_post_perm, reverse('kintai:timerecord_detail', kwargs={'pk': self.timerecord.pk}))
+        self.break_record.refresh_from_db()
+        self.assertIsNotNone(self.break_record.break_end)
+
+    def test_break_delete_permission(self):
+        """休憩削除の権限テスト"""
+        url = reverse('kintai:timerecord_break_delete', kwargs={'pk': self.break_record.pk})
+
+        # 権限のないユーザー
+        self.client.login(username='no_perm_user', password='password')
+        response_get = self.client.get(url)
+        response_post = self.client.post(url)
+        self.assertEqual(response_get.status_code, 403)
+        self.assertEqual(response_post.status_code, 403)
+
+        # 権限のあるユーザー
+        self.client.login(username='perm_user', password='password')
+        response_get_perm = self.client.get(url)
+        self.assertEqual(response_get_perm.status_code, 200)
+
+        # 削除実行
+        response_post_perm = self.client.post(url)
+        self.assertRedirects(response_post_perm, reverse('kintai:timerecord_detail', kwargs={'pk': self.timerecord.pk}))
+        self.assertFalse(StaffTimerecordBreak.objects.filter(pk=self.break_record.pk).exists())
