@@ -35,6 +35,10 @@ def company_detail(request):
     # 担当者一覧も取得
     company_users = CompanyUser.objects.filter(corporate_number=company.corporate_number)
 
+    # 担当者のうち、ログインアカウントが存在するメールアドレスのセットを取得
+    user_emails = [user.email for user in company_users if user.email]
+    users_with_account = set(get_user_model().objects.filter(email__in=user_emails).values_list('email', flat=True))
+
     # 全部署を取得し、コードをキーにした辞書を作成
     all_departments = CompanyDepartment.objects.filter(corporate_number=company.corporate_number)
     department_map = {d.department_code: d.name for d in all_departments}
@@ -91,7 +95,8 @@ def company_detail(request):
         'departments': departments,
         'company_users': company_users,
         'change_logs': change_logs,
-        'change_logs_count': change_logs_count
+        'change_logs_count': change_logs_count,
+        'users_with_account': users_with_account,
     })
 
 @login_required
@@ -435,6 +440,10 @@ def company_user_detail(request, pk):
     company = Company.objects.filter(corporate_number=company_user.corporate_number).first()
     company_users = CompanyUser.objects.filter(corporate_number=company_user.corporate_number)
 
+    # 担当者のうち、ログインアカウントが存在するメールアドレスのセットを取得
+    user_emails = [user.email for user in company_users if user.email]
+    users_with_account = set(get_user_model().objects.filter(email__in=user_emails).values_list('email', flat=True))
+
     # ログインアカウントの存在確認
     user_account = None
     if company_user.email:
@@ -539,6 +548,7 @@ def company_user_detail(request, pk):
         'department': department,
         'related_contracts': related_contracts,
         'user_account': user_account,
+        'users_with_account': users_with_account,
     })
 
 @login_required

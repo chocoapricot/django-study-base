@@ -290,6 +290,13 @@ class CompanyUserViewTest(TestCase):
         self.no_perm_user = User.objects.create_user(
             username='no_perm_user', password='testpassword'
         )
+        # 閲覧のみ権限を持つユーザー
+        self.view_only_user = User.objects.create_user(
+            username='view_only_user', password='testpassword'
+        )
+        self.view_only_user.user_permissions.add(
+            Permission.objects.get(codename='view_companyuser')
+        )
         # companyグループ作成
         self.company_group = Group.objects.create(name='company')
 
@@ -387,7 +394,7 @@ class CompanyUserViewTest(TestCase):
 
     def test_account_creation_no_permission(self):
         """アカウント作成（権限なし）"""
-        self.client.login(username='no_perm_user', password='testpassword')
+        self.client.login(username='view_only_user', password='testpassword')
 
         response = self.client.post(self.detail_url, {'toggle_account': '1'})
         # 権限がない場合、ビューはメッセージを表示してリダイレクトする
@@ -406,4 +413,4 @@ class CompanyUserViewTest(TestCase):
         response = self.client.post(detail_url, {'toggle_account': '1'})
         self.assertRedirects(response, detail_url)
         # メールアドレスがないのでUserは作成されない
-        self.assertEqual(User.objects.count(), 2) # perm_userとno_perm_userのみ
+        self.assertEqual(User.objects.count(), 3) # perm_user, no_perm_user, view_only_user
