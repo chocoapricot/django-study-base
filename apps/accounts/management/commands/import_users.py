@@ -96,6 +96,7 @@ class Command(BaseCommand):
                                 user.groups.add(company_group)
                             except Group.DoesNotExist:
                                 self.stdout.write(self.style.WARNING(f'Group "company" does not exist. Skipping group assignment.'))
+
                             self.stdout.write(self.style.SUCCESS(f'Successfully created company user "{username}".'))
                         else:
                             # 管理者または権限付与不要なユーザー
