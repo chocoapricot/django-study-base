@@ -140,7 +140,7 @@ def create_superuser(task: SetupTask) -> bool:
     # 環境変数を設定
     os.environ['DJANGO_SUPERUSER_PASSWORD'] = 'passwordforstudybase!'
     
-    command = 'python manage.py createsuperuser --noinput --username admin --email admin@test.com'
+    command = 'python manage.py createsuperuser --noinput --username admin --email admin@example.com'
     if not run_command(command, "スーパーユーザーの作成", task):
         return False
     
