@@ -3,6 +3,8 @@ from django.http import HttpResponse, Http404
 from .models import Company, CompanyDepartment, CompanyUser
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from apps.system.logs.models import AppLog
 from apps.system.logs.utils import log_view_detail, log_model_action
 from django.db.models import Q
@@ -426,11 +428,55 @@ def company_user_delete(request, pk):
 def company_user_detail(request, pk):
     from django.utils import timezone
     from apps.contract.models import ClientContract, ClientContractHaken
+    User = get_user_model()
     
     company_user = get_object_or_404(CompanyUser, pk=pk)
     log_view_detail(request.user, company_user)
     company = Company.objects.filter(corporate_number=company_user.corporate_number).first()
     company_users = CompanyUser.objects.filter(corporate_number=company_user.corporate_number)
+
+    # ログインアカウントの存在確認
+    user_account = None
+    if company_user.email:
+        user_account = User.objects.filter(email=company_user.email).first()
+
+    if request.method == 'POST' and 'toggle_account' in request.POST:
+        if not request.user.has_perm('company.change_companyuser'):
+            messages.error(request, '権限がありません。')
+            return redirect('company:company_user_detail', pk=pk)
+
+        if not company_user.email:
+            messages.error(request, 'メールアドレスが設定されていないため、アカウント操作はできません。')
+            return redirect('company:company_user_detail', pk=pk)
+
+        if user_account:
+            # アカウント削除
+            user_account.delete()
+            log_model_action(request.user, 'delete', user_account)
+            messages.success(request, f'ユーザーアカウント「{company_user.email}」を削除しました。')
+        else:
+            # アカウント作成
+            if User.objects.filter(email=company_user.email).exists():
+                messages.error(request, 'このメールアドレスは既に使用されています。')
+                return redirect('company:company_user_detail', pk=pk)
+
+            user_account = User.objects.create_user(
+                username=company_user.email,
+                email=company_user.email,
+                last_name=company_user.name_last,
+                first_name=company_user.name_first
+            )
+            # companyグループに追加
+            try:
+                company_group = Group.objects.get(name='company')
+                user_account.groups.add(company_group)
+            except Group.DoesNotExist:
+                messages.warning(request, '「company」グループが存在しません。権限が正しく付与されませんでした。')
+
+            log_model_action(request.user, 'create', user_account)
+            messages.success(request, f'ユーザーアカウント「{company_user.email}」を作成しました。')
+
+        return redirect('company:company_user_detail', pk=pk)
 
     # 全部署を取得し、コードをキーにした辞書を作成
     all_departments = CompanyDepartment.objects.filter(corporate_number=company.corporate_number)
@@ -490,8 +536,9 @@ def company_user_detail(request, pk):
         'company_users': company_users,
         'current_company_user': company_user,
         'company': company,
-        'department': department, # 部署情報をテンプレートに渡す
+        'department': department,
         'related_contracts': related_contracts,
+        'user_account': user_account,
     })
 
 @login_required

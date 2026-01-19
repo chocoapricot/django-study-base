@@ -142,9 +142,17 @@ class DepartmentViewTest(TestCase):
             Permission.objects.get(codename='change_companydepartment'),
             Permission.objects.get(codename='delete_companydepartment')
         )
-        # 権限を持たないユーザー
+        # 権限を持たないユーザー（閲覧のみ可能）
         self.no_perm_user = User.objects.create_user(
             username='no_perm_user', password='testpassword'
+        )
+        self.no_perm_user.user_permissions.add(
+            Permission.objects.get(codename='view_companyuser'),
+            Permission.objects.get(codename='view_company')
+        )
+        self.no_perm_user.user_permissions.add(
+            Permission.objects.get(codename='view_companyuser'),
+            Permission.objects.get(codename='view_company')
         )
 
         self.department = CompanyDepartment.objects.create(
@@ -264,6 +272,7 @@ class CompanyUserViewTest(TestCase):
     """自社担当者ビューのテスト"""
 
     def setUp(self):
+        from django.contrib.auth.models import Group
         Company.objects.all().delete()
         self.client = Client()
         # 権限を持つユーザー
@@ -281,6 +290,8 @@ class CompanyUserViewTest(TestCase):
         self.no_perm_user = User.objects.create_user(
             username='no_perm_user', password='testpassword'
         )
+        # companyグループ作成
+        self.company_group = Group.objects.create(name='company')
 
         self.company = Company.objects.create(name="テスト株式会社", corporate_number="1112223334445", dispatch_treatment_method='agreement')
         self.department = CompanyDepartment.objects.create(
@@ -293,6 +304,7 @@ class CompanyUserViewTest(TestCase):
             department_code="TEST_DEPT",
             name_last="山田",
             name_first="太郎",
+            email="taro.yamada@example.com"
         )
         self.create_url = reverse('company:company_user_create')
         self.edit_url = reverse('company:company_user_edit', kwargs={'pk': self.company_user.pk})
@@ -353,3 +365,45 @@ class CompanyUserViewTest(TestCase):
         response = self.client.post(self.delete_url)
         self.assertEqual(response.status_code, 403)
         self.assertTrue(CompanyUser.objects.filter(pk=self.company_user.pk).exists())
+
+    def test_account_creation_and_deletion_with_permission(self):
+        """アカウント作成・削除（権限あり）"""
+        self.client.login(username='perm_user', password='testpassword')
+
+        # 初期状態ではアカウントが存在しないことを確認
+        self.assertFalse(User.objects.filter(email=self.company_user.email).exists())
+
+        # アカウント作成
+        response = self.client.post(self.detail_url, {'toggle_account': '1'})
+        self.assertRedirects(response, self.detail_url)
+        self.assertTrue(User.objects.filter(email=self.company_user.email).exists())
+        user_account = User.objects.get(email=self.company_user.email)
+        self.assertIn(self.company_group, user_account.groups.all())
+
+        # アカウント削除
+        response = self.client.post(self.detail_url, {'toggle_account': '1'})
+        self.assertRedirects(response, self.detail_url)
+        self.assertFalse(User.objects.filter(email=self.company_user.email).exists())
+
+    def test_account_creation_no_permission(self):
+        """アカウント作成（権限なし）"""
+        self.client.login(username='no_perm_user', password='testpassword')
+
+        response = self.client.post(self.detail_url, {'toggle_account': '1'})
+        # 権限がない場合、ビューはメッセージを表示してリダイレクトする
+        self.assertRedirects(response, self.detail_url)
+        self.assertFalse(User.objects.filter(email=self.company_user.email).exists())
+
+    def test_account_creation_no_email(self):
+        """アカウント作成（メールアドレスなし）"""
+        self.client.login(username='perm_user', password='testpassword')
+        no_email_user = CompanyUser.objects.create(
+            corporate_number=self.company.corporate_number,
+            name_last="佐藤", name_first="花子"
+        )
+        detail_url = reverse('company:company_user_detail', kwargs={'pk': no_email_user.pk})
+
+        response = self.client.post(detail_url, {'toggle_account': '1'})
+        self.assertRedirects(response, detail_url)
+        # メールアドレスがないのでUserは作成されない
+        self.assertEqual(User.objects.count(), 2) # perm_userとno_perm_userのみ
