@@ -15,10 +15,10 @@ class Command(BaseCommand):
             user.save(update_fields=['first_name', 'last_name'])
 
             # Create EmailAddress for allauth
-            if not EmailAddress.objects.filter(user=user, email='admin@test.com').exists():
+            if not EmailAddress.objects.filter(user=user, email='admin@example.com').exists():
                 EmailAddress.objects.create(
                     user=user,
-                    email='admin@test.com',
+                    email='admin@example.com',
                     primary=True,
                     verified=True
                 )
