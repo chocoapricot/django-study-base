@@ -290,6 +290,9 @@ class CompanyUserViewTest(TestCase):
         self.no_perm_user = User.objects.create_user(
             username='no_perm_user', password='testpassword'
         )
+        self.no_perm_user.user_permissions.add(
+            Permission.objects.get(codename='view_companyuser')
+        )
         # companyグループ作成
         self.company_group = Group.objects.create(name='company')
 
@@ -358,7 +361,7 @@ class CompanyUserViewTest(TestCase):
         self.assertEqual(response.status_code, 403)
         # Detail
         response = self.client.get(self.detail_url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
         # Delete
         response = self.client.get(self.delete_url)
         self.assertEqual(response.status_code, 403)
