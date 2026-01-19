@@ -1,7 +1,7 @@
 import csv
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Group
 from allauth.account.models import EmailAddress
 from django.db import transaction
 from apps.connect.utils import (
@@ -92,15 +92,10 @@ class Command(BaseCommand):
                         elif user_type == 'company':
                             # companyグループに追加
                             try:
-                                company_group, created = Group.objects.get_or_create(name='company')
-                                # 権限を付与
-                                from django.contrib.contenttypes.models import ContentType
-                                content_type = ContentType.objects.get(app_label='company', model='company')
-                                perm = Permission.objects.get(codename='view_company', content_type=content_type)
-                                company_group.permissions.add(perm)
+                                company_group = Group.objects.get(name='company')
                                 user.groups.add(company_group)
-                            except (Group.DoesNotExist, Permission.DoesNotExist, ContentType.DoesNotExist):
-                                self.stdout.write(self.style.WARNING(f'Group "company" or permission "view_company" does not exist. Skipping group assignment.'))
+                            except Group.DoesNotExist:
+                                self.stdout.write(self.style.WARNING(f'Group "company" does not exist. Skipping group assignment.'))
                             self.stdout.write(self.style.SUCCESS(f'Successfully created company user "{username}".'))
                         else:
                             # 管理者または権限付与不要なユーザー
