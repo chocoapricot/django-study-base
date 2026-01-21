@@ -73,7 +73,7 @@ class ImportUsersCommandTest(TestCase):
 
     def test_import_staff_user_with_permissions(self):
         """
-        Test that staff users are imported with correct permissions.
+        Test that staff users are imported with correct groups.
         """
         csv_data = [
             ['staffuser', 'password123', 'staff@example.com', 'Staff', 'User', 'staff'],
@@ -86,33 +86,15 @@ class ImportUsersCommandTest(TestCase):
         out = StringIO()
         call_command('import_users', self.csv_file_path, stdout=out)
 
-        self.assertIn('Successfully created staff user "staffuser" with permissions', out.getvalue())
+        self.assertIn('Successfully created staff user "staffuser" and added to staff/staff_connected groups.', out.getvalue())
 
         user = User.objects.get(username='staffuser')
-        
-        # プロファイル関連の権限を確認
-        content_type = ContentType.objects.get_for_model(StaffProfile)
-        profile_permissions = Permission.objects.filter(content_type=content_type)
-        for perm in profile_permissions:
-            self.assertTrue(
-                user.has_perm(f'{content_type.app_label}.{perm.codename}'),
-                f'User should have permission: {perm.codename}'
-            )
-        
-        # スタッフ契約確認権限を確認
-        content_type = ContentType.objects.get_for_model(StaffContract)
-        confirm_perm = Permission.objects.get(
-            content_type=content_type,
-            codename='confirm_staffcontract'
-        )
-        self.assertTrue(
-            user.has_perm(f'{content_type.app_label}.confirm_staffcontract'),
-            'User should have staff contract confirmation permission'
-        )
+        self.assertTrue(user.groups.filter(name='staff').exists())
+        self.assertTrue(user.groups.filter(name='staff_connected').exists())
 
     def test_import_client_user_with_permissions(self):
         """
-        Test that client users are imported with correct permissions.
+        Test that client users are imported with correct groups.
         """
         csv_data = [
             ['clientuser', 'password123', 'client@example.com', 'Client', 'User', 'client'],
@@ -125,20 +107,11 @@ class ImportUsersCommandTest(TestCase):
         out = StringIO()
         call_command('import_users', self.csv_file_path, stdout=out)
 
-        self.assertIn('Successfully created client user "clientuser" with permissions', out.getvalue())
+        self.assertIn('Successfully created client user "clientuser" and added to client/client_connected groups.', out.getvalue())
 
         user = User.objects.get(username='clientuser')
-        
-        # クライアント契約確認権限を確認
-        content_type = ContentType.objects.get_for_model(ClientContract)
-        confirm_perm = Permission.objects.get(
-            content_type=content_type,
-            codename='confirm_clientcontract'
-        )
-        self.assertTrue(
-            user.has_perm(f'{content_type.app_label}.confirm_clientcontract'),
-            'User should have client contract confirmation permission'
-        )
+        self.assertTrue(user.groups.filter(name='client').exists())
+        self.assertTrue(user.groups.filter(name='client_connected').exists())
 
     def test_import_users_backward_compatibility(self):
         """

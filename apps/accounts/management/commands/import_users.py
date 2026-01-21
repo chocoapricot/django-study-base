@@ -5,8 +5,10 @@ from django.contrib.auth.models import Group
 from allauth.account.models import EmailAddress
 from django.db import transaction
 from apps.connect.utils import (
-    grant_profile_permissions,
-    grant_staff_contract_confirmation_permission
+    grant_staff_connect_permissions,
+    grant_staff_connected_permissions,
+    grant_client_connect_permissions,
+    grant_client_connected_permissions
 )
 
 User = get_user_model()
@@ -71,24 +73,15 @@ class Command(BaseCommand):
                         
                         # user_typeに応じて権限を付与
                         if user_type == 'staff':
-                            # スタッフ接続承認時と同じ権限を付与
-                            grant_profile_permissions(user)
-                            grant_staff_contract_confirmation_permission(user)
-                            # staffグループに追加
-                            try:
-                                staff_group = Group.objects.get(name='staff')
-                                user.groups.add(staff_group)
-                            except Group.DoesNotExist:
-                                self.stdout.write(self.style.WARNING(f'Group "staff" does not exist. Skipping group assignment.'))
-                            self.stdout.write(self.style.SUCCESS(f'Successfully created staff user "{username}" with permissions.'))
+                            # staff および staff_connected グループに追加
+                            grant_staff_connect_permissions(user)
+                            grant_staff_connected_permissions(user)
+                            self.stdout.write(self.style.SUCCESS(f'Successfully created staff user "{username}" and added to staff/staff_connected groups.'))
                         elif user_type == 'client':
-                            # clientグループに追加
-                            try:
-                                client_group = Group.objects.get(name='client')
-                                user.groups.add(client_group)
-                            except Group.DoesNotExist:
-                                self.stdout.write(self.style.WARNING(f'Group "client" does not exist. Skipping group assignment.'))
-                            self.stdout.write(self.style.SUCCESS(f'Successfully created client user "{username}" with permissions.'))
+                            # client および client_connected グループに追加
+                            grant_client_connect_permissions(user)
+                            grant_client_connected_permissions(user)
+                            self.stdout.write(self.style.SUCCESS(f'Successfully created client user "{username}" and added to client/client_connected groups.'))
                         elif user_type == 'company':
                             # companyグループに追加
                             try:

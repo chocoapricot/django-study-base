@@ -103,16 +103,13 @@ def connect_staff_approve(request, pk):
         except Staff.DoesNotExist:
             log_model_action(request.user, 'update', connection)
         
-        from .utils import grant_permissions_on_connection_request, grant_profile_permissions, grant_staff_contract_confirmation_permission
+        from .utils import grant_staff_connected_permissions
         from django.contrib.auth import get_user_model
         User = get_user_model()
 
-        grant_permissions_on_connection_request(connection.email)
-        
         try:
             user = User.objects.get(email=connection.email)
-            grant_profile_permissions(user)
-            grant_staff_contract_confirmation_permission(user)
+            grant_staff_connected_permissions(user)
         except User.DoesNotExist:
             print(f"[ERROR] 権限付与対象のユーザーが見つかりません: {connection.email}")
         
@@ -301,6 +298,16 @@ def connect_client_approve(request, pk):
             log_model_action(request.user, 'update', connection)
         
 
+
+        from .utils import grant_client_connected_permissions
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+
+        try:
+            user = User.objects.get(email=connection.email)
+            grant_client_connected_permissions(user)
+        except User.DoesNotExist:
+            print(f"[ERROR] 権限付与対象のユーザーが見つかりません: {connection.email}")
 
         messages.success(request, 'クライアント接続申請を承認しました。')
     else:

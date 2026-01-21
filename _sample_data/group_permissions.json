@@ -18,10 +18,53 @@
     ],
     "client": [
         "connect.view_connectclient",
-        "connect.change_connectclient",
+        "connect.change_connectclient"
+    ],
+    "client_connected": [
         "contract.confirm_clientcontract"
     ],
     "staff": [
-        "contract.view_staffcontract"
+        "connect.view_connectstaff",
+        "connect.change_connectstaff"
+    ],
+    "staff_connected": [
+        "contract.confirm_staffcontract",
+        "contract.view_staffcontract",
+        "kintai.add_stafftimerecord",
+        "kintai.change_stafftimerecord",
+        "kintai.delete_stafftimerecord",
+        "kintai.view_stafftimerecord",
+        "profile.add_staffprofile",
+        "profile.add_staffprofilebank",
+        "profile.add_staffprofilecontact",
+        "profile.add_staffprofiledisability",
+        "profile.add_staffprofileinternational",
+        "profile.add_staffprofilemynumber",
+        "profile.add_staffprofilequalification",
+        "profile.add_staffprofileskill",
+        "profile.change_staffprofile",
+        "profile.change_staffprofilebank",
+        "profile.change_staffprofilecontact",
+        "profile.change_staffprofiledisability",
+        "profile.change_staffprofileinternational",
+        "profile.change_staffprofilemynumber",
+        "profile.change_staffprofilequalification",
+        "profile.change_staffprofileskill",
+        "profile.delete_staffprofile",
+        "profile.delete_staffprofilebank",
+        "profile.delete_staffprofilecontact",
+        "profile.delete_staffprofiledisability",
+        "profile.delete_staffprofileinternational",
+        "profile.delete_staffprofilemynumber",
+        "profile.delete_staffprofilequalification",
+        "profile.delete_staffprofileskill",
+        "profile.view_staffprofile",
+        "profile.view_staffprofilebank",
+        "profile.view_staffprofilecontact",
+        "profile.view_staffprofiledisability",
+        "profile.view_staffprofileinternational",
+        "profile.view_staffprofilemynumber",
+        "profile.view_staffprofilequalification",
+        "profile.view_staffprofileskill"
     ]
 }
