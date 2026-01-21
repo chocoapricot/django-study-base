@@ -72,6 +72,9 @@ class ConnectViewTest(TestCase):
     """Connect関連ビューのテスト"""
     
     def setUp(self):
+        from django.contrib.auth.models import Group, Permission
+        from django.contrib.contenttypes.models import ContentType
+
         self.client = Client()
         self.user = User.objects.create_user(
             username='testuser',
@@ -79,6 +82,15 @@ class ConnectViewTest(TestCase):
             password='TestPass123!'
         )
         self.client.login(username='testuser', password='TestPass123!')
+
+        # --- staff グループのセットアップ ---
+        staff_group, _ = Group.objects.get_or_create(name='staff')
+        content_type = ContentType.objects.get_for_model(ConnectStaff)
+        permissions = Permission.objects.filter(
+            content_type=content_type,
+            codename__in=['view_connectstaff', 'change_connectstaff']
+        )
+        staff_group.permissions.add(*permissions)
         
         # テスト用の接続申請を作成
         self.connection = ConnectStaff.objects.create(
