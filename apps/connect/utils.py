@@ -64,11 +64,19 @@ def grant_permissions_on_connection_request(email):
 
 
 def grant_client_connect_permissions(user):
-    """ユーザーをclientグループに追加"""
+    """ユーザーをclientグループに追加し、関連権限をグループに付与"""
     try:
         from django.contrib.auth.models import Group
         group, created = Group.objects.get_or_create(name='client')
-        
+
+        # 権限をグループに付与
+        content_type = ContentType.objects.get_for_model(ConnectClient)
+        permissions = Permission.objects.filter(
+            content_type=content_type,
+            codename__in=['view_connectclient', 'change_connectclient']
+        )
+        group.permissions.add(*permissions)
+
         # ユーザーをグループに追加
         user.groups.add(group)
         
@@ -80,10 +88,18 @@ def grant_client_connect_permissions(user):
 
 
 def grant_client_connected_permissions(user):
-    """ユーザーをclient_connectedグループに追加"""
+    """ユーザーをclient_connectedグループに追加し、関連権限をグループに付与"""
     try:
         from django.contrib.auth.models import Group
         group, created = Group.objects.get_or_create(name='client_connected')
+
+        # 権限をグループに付与
+        content_type = ContentType.objects.get_for_model(ClientContract)
+        permission = Permission.objects.get(
+            content_type=content_type,
+            codename='confirm_clientcontract'
+        )
+        group.permissions.add(permission)
         
         # ユーザーをグループに追加
         user.groups.add(group)
@@ -124,10 +140,18 @@ def remove_user_from_client_group_if_no_requests(email):
 
 
 def grant_staff_connect_permissions(user):
-    """ユーザーをstaffグループに追加"""
+    """ユーザーをstaffグループに追加し、関連権限をグループに付与"""
     try:
         from django.contrib.auth.models import Group
         group, created = Group.objects.get_or_create(name='staff')
+
+        # 権限をグループに付与
+        content_type = ContentType.objects.get_for_model(ConnectStaff)
+        permissions = Permission.objects.filter(
+            content_type=content_type,
+            codename__in=['view_connectstaff', 'change_connectstaff']
+        )
+        group.permissions.add(*permissions)
         
         # ユーザーをグループに追加
         user.groups.add(group)
@@ -140,10 +164,37 @@ def grant_staff_connect_permissions(user):
 
 
 def grant_staff_connected_permissions(user):
-    """ユーザーをstaff_connectedグループに追加"""
+    """ユーザーをstaff_connectedグループに追加し、関連権限をグループに付与"""
     try:
         from django.contrib.auth.models import Group
+        from apps.kintai.models import StaffTimesheet, StaffTimecard, StaffTimerecord, StaffTimerecordBreak
         group, created = Group.objects.get_or_create(name='staff_connected')
+
+        # 対象となるモデルのリスト
+        models_to_grant_all = [
+            StaffProfile, StaffProfileMynumber, StaffProfileBank, StaffProfileContact,
+            StaffProfileInternational, StaffProfileDisability,
+            StaffTimesheet, StaffTimecard, StaffTimerecord, StaffTimerecordBreak
+        ]
+
+        permissions_to_add = []
+
+        # 'profile.*' と 'kintai.*' の全権限を取得
+        for model in models_to_grant_all:
+            content_type = ContentType.objects.get_for_model(model)
+            permissions = Permission.objects.filter(content_type=content_type)
+            permissions_to_add.extend(permissions)
+
+        # 'contract' の特定権限を取得
+        contract_content_type = ContentType.objects.get_for_model(StaffContract)
+        contract_permissions = Permission.objects.filter(
+            content_type=contract_content_type,
+            codename__in=['confirm_staffcontract', 'view_staffcontract']
+        )
+        permissions_to_add.extend(contract_permissions)
+
+        # 権限をグループに一括で追加
+        group.permissions.add(*permissions_to_add)
         
         # ユーザーをグループに追加
         user.groups.add(group)

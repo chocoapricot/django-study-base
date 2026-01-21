@@ -111,11 +111,10 @@ class ClientGroupPermissionTests(TestCase):
         connect_request.refresh_from_db()
         self.assertEqual(connect_request.status, 'approved')
         
-        # ダイレクトな権限付与が行われていないことの確認
-        # contract.confirm_clientcontract 権限を持っているかチェック (グループ経由で持っている可能性はあるが、user_permissionsにはないはず)
-        # ただし今回はグループに権限を設定していないので、持っていないはず
-        self.assertFalse(self.user.has_perm('contract.confirm_clientcontract')) 
-        # has_permはグループも含めてチェックする。グループに権限入れてないのでFalseになるはず。
+        # connect_client_approve を実行すると grant_client_connected_permissions が呼ばれ、
+        # client_connected グループ経由で権限が付与されるはず
+        self.user.refresh_from_db() # ユーザー情報を更新
+        self.assertTrue(self.user.has_perm('contract.confirm_clientcontract'))
 
     def test_client_user_can_access_views_with_permission(self):
         """権限を持つクライアントユーザーがビューにアクセスできるか"""

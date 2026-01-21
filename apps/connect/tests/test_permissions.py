@@ -37,12 +37,8 @@ class PermissionGrantingTest(TestCase):
         response = self.client.post(reverse('connect:staff_approve', args=[self.connection.pk]))
         self.assertEqual(response.status_code, 302)
 
-        # Refresh user object to get updated permissions
-        self.user.refresh_from_db()
-        if hasattr(self.user, '_perm_cache'):
-            del self.user._perm_cache
-        if hasattr(self.user, '_user_perm_cache'):
-            del self.user._user_perm_cache
+        # 権限の変更を確実に反映させるため、ユーザーオブジェクトを再取得
+        self.user = User.objects.get(pk=self.user.pk)
 
         # Check for permissions
         profile_perms = [
