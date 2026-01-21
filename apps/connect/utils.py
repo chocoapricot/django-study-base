@@ -68,7 +68,7 @@ def grant_client_connect_permissions(user):
     try:
         from django.contrib.auth.models import Group
         group, created = Group.objects.get_or_create(name='client')
-        
+
         # ユーザーをグループに追加
         user.groups.add(group)
         

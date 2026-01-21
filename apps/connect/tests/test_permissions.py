@@ -11,6 +11,11 @@ class PermissionGrantingTest(TestCase):
     """権限付与のテスト"""
 
     def setUp(self):
+        from django.contrib.auth.models import Group
+        from django.contrib.contenttypes.models import ContentType
+        from apps.contract.models import StaffContract
+        from apps.kintai.models import StaffTimesheet, StaffTimecard, StaffTimerecord, StaffTimerecordBreak
+
         self.client = Client()
         self.user = User.objects.create_user(
             username='testuser',
@@ -26,6 +31,29 @@ class PermissionGrantingTest(TestCase):
             updated_by=self.user
         )
 
+        # --- staff_connected グループのセットアップ ---
+        group, _ = Group.objects.get_or_create(name='staff_connected')
+
+        models_to_grant_all = [
+            StaffProfile, StaffProfileMynumber,
+            StaffTimesheet, StaffTimecard, StaffTimerecord, StaffTimerecordBreak
+        ]
+        permissions_to_add = []
+
+        for model in models_to_grant_all:
+            content_type = ContentType.objects.get_for_model(model)
+            permissions = Permission.objects.filter(content_type=content_type)
+            permissions_to_add.extend(permissions)
+
+        contract_content_type = ContentType.objects.get_for_model(StaffContract)
+        contract_permissions = Permission.objects.filter(
+            content_type=contract_content_type,
+            codename__in=['confirm_staffcontract', 'view_staffcontract']
+        )
+        permissions_to_add.extend(contract_permissions)
+        group.permissions.add(*permissions_to_add)
+
+
     def test_profile_permission_grant_on_approval(self):
         """接続承認時にプロファイル権限が付与されるかテスト"""
         
@@ -37,12 +65,8 @@ class PermissionGrantingTest(TestCase):
         response = self.client.post(reverse('connect:staff_approve', args=[self.connection.pk]))
         self.assertEqual(response.status_code, 302)
 
-        # Refresh user object to get updated permissions
-        self.user.refresh_from_db()
-        if hasattr(self.user, '_perm_cache'):
-            del self.user._perm_cache
-        if hasattr(self.user, '_user_perm_cache'):
-            del self.user._user_perm_cache
+        # 権限の変更を確実に反映させるため、ユーザーオブジェクトを再取得
+        self.user = User.objects.get(pk=self.user.pk)
 
         # Check for permissions
         profile_perms = [

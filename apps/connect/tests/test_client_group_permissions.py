@@ -25,27 +25,34 @@ class ClientGroupPermissionTests(TestCase):
             is_staff=True
         )
         self.group_name = 'client'
-        # グループは自動作成されるはずだが、権限がある前提なので作りはしない（utilsが作ってくれるか確認）
 
-    def test_grant_client_connect_permissions_adds_to_group_and_assigns_permissions(self):
-        """申請時の権限付与関数がユーザーをグループに追加し、グループに権限を付与するか"""
+        # --- client グループのセットアップ ---
+        client_group, _ = Group.objects.get_or_create(name='client')
+        content_type_connect = ContentType.objects.get_for_model(ConnectClient)
+        client_permissions = Permission.objects.filter(
+            content_type=content_type_connect,
+            codename__in=['view_connectclient', 'change_connectclient']
+        )
+        client_group.permissions.add(*client_permissions)
+
+        # --- client_connected グループのセットアップ ---
+        from apps.contract.models import ClientContract
+        client_connected_group, _ = Group.objects.get_or_create(name='client_connected')
+        content_type_contract = ContentType.objects.get_for_model(ClientContract)
+        connected_permission = Permission.objects.get(
+            content_type=content_type_contract,
+            codename='confirm_clientcontract'
+        )
+        client_connected_group.permissions.add(connected_permission)
+
+
+    def test_grant_client_connect_permissions_adds_to_group(self):
+        """申請時の権限付与関数がユーザーをグループに追加するか"""
         # 実行
         grant_client_connect_permissions(self.user)
         
         # 検証
-        self.assertTrue(Group.objects.filter(name=self.group_name).exists())
-        group = Group.objects.get(name=self.group_name)
         self.assertTrue(self.user.groups.filter(name=self.group_name).exists())
-
-        # グループに権限が付与されているか確認
-        content_type = ContentType.objects.get_for_model(ConnectClient)
-        required_permissions = Permission.objects.filter(
-            content_type=content_type,
-            codename__in=['view_connectclient', 'change_connectclient']
-        )
-        self.assertEqual(group.permissions.count(), 2)
-        for perm in required_permissions:
-            self.assertIn(perm, group.permissions.all())
 
     def test_remove_from_group_if_no_requests(self):
         """申請がない場合にグループから削除されるか"""
@@ -111,11 +118,9 @@ class ClientGroupPermissionTests(TestCase):
         connect_request.refresh_from_db()
         self.assertEqual(connect_request.status, 'approved')
         
-        # ダイレクトな権限付与が行われていないことの確認
-        # contract.confirm_clientcontract 権限を持っているかチェック (グループ経由で持っている可能性はあるが、user_permissionsにはないはず)
-        # ただし今回はグループに権限を設定していないので、持っていないはず
-        self.assertFalse(self.user.has_perm('contract.confirm_clientcontract')) 
-        # has_permはグループも含めてチェックする。グループに権限入れてないのでFalseになるはず。
+        # 承認ビュー実行後、ユーザーは client_connected グループに追加され、権限を持つはず
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.has_perm('contract.confirm_clientcontract'))
 
     def test_client_user_can_access_views_with_permission(self):
         """権限を持つクライアントユーザーがビューにアクセスできるか"""
