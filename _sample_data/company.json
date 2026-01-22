@@ -8,6 +8,7 @@
         "created_by": 1,
         "updated_at": "2026-01-10T17:42:48.984Z",
         "updated_by": 1,
+        "tenant_id": 1,
         "name": "サンプル株式会社",
         "corporate_number": "1234567890122",
         "representative": "代表取締役社長　サンプル太郎",

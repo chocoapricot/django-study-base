@@ -9,6 +9,7 @@ class CompanyDepartment(MyModel):
     自社の部署情報を管理するモデル。
     部署コードと有効期間に基づいた重複チェック機能を持つ。
     """
+    tenant_id = models.PositiveIntegerField('テナントID', blank=True, null=True, db_index=True)
     name = models.CharField('部署名', max_length=100)
     corporate_number = models.CharField('法人番号', max_length=13, blank=True, null=True, db_index=True)
     department_code = models.CharField('部署コード', max_length=20)
@@ -125,6 +126,13 @@ class CompanyDepartment(MyModel):
             period_str = f" ({start}～{end})"
         return f"{self.name}{period_str}"
 
+    def save(self, *args, **kwargs):
+        if not self.tenant_id and self.corporate_number:
+            company = Company.objects.filter(corporate_number=self.corporate_number).first()
+            if company:
+                self.tenant_id = company.tenant_id
+        super().save(*args, **kwargs)
+
 
 def company_seal_upload_path(instance, filename):
     """会社印（丸印・角印）のアップロードパスを生成"""
@@ -140,6 +148,7 @@ class Company(MyModel):
     このシステムは単一の会社で運用されることを想定しているため、
     通常、このテーブルには1つのレコードのみが存在する。
     """
+    tenant_id = models.PositiveIntegerField('テナントID', blank=True, null=True, db_index=True)
     name = models.CharField('会社名', max_length=255, unique=True)
     # 会社情報として必要そうなフィールドを追加（例）
     corporate_number = models.CharField('法人番号', max_length=13, blank=True, null=True, unique=True)
@@ -185,9 +194,16 @@ class Company(MyModel):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if not self.tenant_id:
+            self.tenant_id = self.pk
+            super().save(update_fields=['tenant_id'])
+
 
 class CompanyUser(MyModel):
     """自社の担当者情報を管理するモデル。"""
+    tenant_id = models.PositiveIntegerField('テナントID', blank=True, null=True, db_index=True)
     corporate_number = models.CharField('法人番号', max_length=13, blank=True, null=True, db_index=True)
     department_code = models.CharField('部署コード', max_length=20, blank=True, null=True, db_index=True)
     name_last = models.CharField('姓', max_length=50)
@@ -214,6 +230,10 @@ class CompanyUser(MyModel):
         return None
 
     def save(self, *args, **kwargs):
+        if not self.tenant_id and self.corporate_number:
+            company = Company.objects.filter(corporate_number=self.corporate_number).first()
+            if company:
+                self.tenant_id = company.tenant_id
         if self.email:
             self.email = self.email.lower()
         super().save(*args, **kwargs)
