@@ -204,6 +204,26 @@ def home(request):
     # Count the number of Staff with these emails
     staff_request_count = Staff.objects.filter(email__in=pending_emails).distinct().count()
 
+    # 連絡予定件数
+    today = timezone.localdate()
+    yesterday = today - timedelta(days=1)
+
+    has_staff_perm = request.user.has_perm('staff.view_staffcontactschedule')
+    has_client_perm = request.user.has_perm('client.view_clientcontactschedule')
+
+    staff_schedules_today = 0
+    staff_schedules_yesterday = 0
+    client_schedules_today = 0
+    client_schedules_yesterday = 0
+
+    if has_staff_perm:
+        staff_schedules_today = StaffContactSchedule.objects.filter(contact_date=today).count()
+        staff_schedules_yesterday = StaffContactSchedule.objects.filter(contact_date=yesterday).count()
+
+    if has_client_perm:
+        client_schedules_today = ClientContactSchedule.objects.filter(contact_date=today).count()
+        client_schedules_yesterday = ClientContactSchedule.objects.filter(contact_date=yesterday).count()
+
     context = {
         'staff_count': staff_count,
         'approved_staff_count': approved_staff_count,
@@ -212,6 +232,12 @@ def home(request):
         'staff_request_count': staff_request_count,
         'information_list': information_list,
         'information_count': information_count,
+        'has_staff_perm': has_staff_perm,
+        'has_client_perm': has_client_perm,
+        'staff_schedules_today': staff_schedules_today,
+        'staff_schedules_yesterday': staff_schedules_yesterday,
+        'client_schedules_today': client_schedules_today,
+        'client_schedules_yesterday': client_schedules_yesterday,
     }
 
     return render(request, 'home/home.html', context)
