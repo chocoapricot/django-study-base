@@ -1,0 +1,219 @@
+{% extends 'common/_base.html' %}
+{% load badge_tags %}
+{% load dropdowns %}
+
+{% block content %}
+<style>
+    .text-sunday-holiday { color: #dc3545 !important; }
+    .text-saturday { color: #0d6efd !important; }
+    .bg-holiday { background-color: #fff5f5 !important; } /* 薄い赤 */
+    .bg-saturday { background-color: #f5faff !important; } /* 薄い青 */
+    .table-today { background-color: #e7f1ff !important; } /* 控えめな青（枠なし） */
+    .table-yesterday { background-color: #f8f9fa; color: #6c757d; }
+    
+    .summary-table th, .summary-table td {
+        vertical-align: middle;
+        text-align: center;
+        padding: 0.5rem;
+    }
+    .summary-table th {
+        font-weight: bold;
+    }
+    .schedule-badge {
+        font-size: 1rem;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+</style>
+
+<!-- サマリカード -->
+<div class="content-box card bg-light mt-2 mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-alarm me-2"></i> 連絡予定サマリ</span>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered summary-table bg-white mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="min-width: 100px;">区分</th>
+                        {% for day in daily_schedules %}
+                        <th class="{% if day.is_today %}table-today{% elif day.is_yesterday %}table-yesterday{% elif day.is_holiday or day.weekday_num == 6 %}bg-holiday{% elif day.weekday_num == 5 %}bg-saturday{% endif %}">
+                            <div class="small">{{ day.date|date:'m/d' }}</div>
+                            <div class="{% if day.is_holiday or day.weekday_num == 6 %}text-sunday-holiday{% elif day.weekday_num == 5 %}text-saturday{% endif %}">
+                                ({{ day.day_of_week }})
+                            </div>
+                            {% if day.is_today %}
+                                <span class="badge bg-primary">本日</span>
+                            {% elif day.is_yesterday %}
+                                <span class="badge bg-secondary">昨日</span>
+                            {% endif %}
+                        </th>
+                        {% endfor %}
+                        <th style="min-width: 120px; background-color: #fff4e5;">
+                            <div class="small">その他</div>
+                            <div>1ヶ月以内</div>
+                            <div class="x-small text-muted" style="font-size: 0.7rem;">
+                                {{ start_of_other|date:'m/d' }}〜{{ one_month_later|date:'m/d' }}
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if has_staff_perm %}
+                    <tr>
+                        <th class="table-light">スタッフ</th>
+                        {% for day in daily_schedules %}
+                        <td class="{% if day.is_today %}table-today{% elif day.is_yesterday %}table-yesterday{% elif day.is_holiday or day.weekday_num == 6 %}bg-holiday{% elif day.weekday_num == 5 %}bg-saturday{% endif %}">
+                            {% if day.staff_count > 0 %}
+                                <a href="{% url 'staff:staff_list' %}?q=contact_date:{{ day.date|date:'Y-m-d' }}" class="badge rounded-pill bg-primary text-white text-decoration-none schedule-badge">
+                                    {{ day.staff_count }}
+                                </a>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                        <td style="background-color: #fffdfa;">
+                            {% if other_staff_count > 0 %}
+                                <span class="badge rounded-pill bg-primary text-white schedule-badge">{{ other_staff_count }}</span>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+
+                    {% if has_client_perm %}
+                    <tr>
+                        <th class="table-light">クライアント</th>
+                        {% for day in daily_schedules %}
+                        <td class="{% if day.is_today %}table-today{% elif day.is_yesterday %}table-yesterday{% elif day.is_holiday or day.weekday_num == 6 %}bg-holiday{% elif day.weekday_num == 5 %}bg-saturday{% endif %}">
+                            {% if day.client_count > 0 %}
+                                <span class="badge rounded-pill bg-primary text-white schedule-badge">
+                                    {{ day.client_count }}
+                                </span>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                        <td style="background-color: #fffdfa;">
+                            {% if other_client_count > 0 %}
+                                <span class="badge rounded-pill bg-primary text-white schedule-badge">{{ other_client_count }}</span>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer bg-white border-top-0 mb-3">
+        <a href="{% url 'home:home' %}" class="btn btn-sm btn-secondary shadow-sm px-4">
+            <i class="bi bi-house-door me-1"></i>ホームへ戻る
+        </a>
+    </div>
+</div>
+
+<div class="row" style="max-width: 100%;">
+    <!-- スタッフ連絡予定カード -->
+    <div class="col-lg-6">
+        {% if staff_schedules %}
+        <div class="content-box card bg-light mb-4" style="max-width: 100%;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                スタッフ連絡予定詳細
+            </div>
+            <div class="card-body mb-0">
+                <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+                    <thead>
+                        <tr>
+                            <th>予定日</th>
+                            <th>スタッフ氏名</th>
+                            <th>連絡種別</th>
+                            <th>対応内容</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for schedule in staff_schedules %}
+                        <tr>
+                            <td class="{% if schedule.is_holiday or schedule.weekday_num == 6 %}text-sunday-holiday{% elif schedule.weekday_num == 5 %}text-saturday{% endif %}">
+                                {{ schedule.contact_date|date:'Y/m/d' }}({{ schedule.day_of_week }})
+                                {% if schedule.contact_date == today %}
+                                    <i class="bi bi-alarm text-primary" style="font-size: 0.8rem;" title="本日"></i>
+                                {% endif %}
+                            </td>
+                            <td class="fw-bold">
+                                {{ schedule.staff.name_last }} {{ schedule.staff.name_first }}
+                            </td>
+                            <td>
+                                {% if schedule.contact_type %}
+                                    <span class="badge {{ schedule.contact_type|badge_class }}">{% my_name 'contact_type' schedule.contact_type %}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'staff:staff_contact_schedule_detail' schedule.id %}">
+                                    {{ schedule.content|default:"(対応内容なし)"|truncatechars:20 }}
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- クライアント連絡予定カード -->
+    <div class="col-lg-6">
+        {% if client_schedules %}
+        <div class="content-box card bg-light mb-4" style="max-width: 100%;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                クライアント連絡予定詳細
+            </div>
+            <div class="card-body mb-0">
+                <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+                    <thead>
+                        <tr>
+                            <th>予定日</th>
+                            <th>クライアント名</th>
+                            <th>連絡種別</th>
+                            <th>対応内容</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for schedule in client_schedules %}
+                        <tr>
+                            <td class="{% if schedule.is_holiday or schedule.weekday_num == 6 %}text-sunday-holiday{% elif schedule.weekday_num == 5 %}text-saturday{% endif %}">
+                                {{ schedule.contact_date|date:'Y/m/d' }}({{ schedule.day_of_week }})
+                                {% if schedule.contact_date == today %}
+                                    <i class="bi bi-alarm text-primary" style="font-size: 0.8rem;" title="本日"></i>
+                                {% endif %}
+                            </td>
+                            <td class="fw-bold">
+                                {{ schedule.client.name }}
+                            </td>
+                            <td>
+                                {% if schedule.contact_type %}
+                                    <span class="badge {{ schedule.contact_type|badge_class }}">{% my_name 'contact_type' schedule.contact_type %}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'client:client_contact_schedule_detail' schedule.id %}">
+                                    {{ schedule.content|default:"(対応内容なし)"|truncatechars:20 }}
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

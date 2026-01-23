@@ -138,6 +138,7 @@ TEMPLATES = [
                 'apps.system.settings.context_processors.menu_items',
                 'apps.system.settings.context_processors.constants',
                 'apps.system.settings.context_processors.ui_settings',
+                'apps.home.context_processors.contact_schedule_counts',
             ],
         },
     },

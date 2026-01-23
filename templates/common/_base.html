@@ -358,6 +358,16 @@ body.no-transition #sidebar {
                 (横幅：<span id="window-width">0</span>px)
             </span>
             <i class="bi bi-search"></i> <!-- 検索アイコン -->
+            {% if perms.staff.view_staffcontactschedule or perms.client.view_clientcontactschedule %}
+            <a href="{% url 'home:contact_schedule_summary' %}" title="連絡予定サマリ" style="position: relative; text-decoration: none; color: inherit;">
+                <i class="bi bi-alarm"></i>
+                {% if contact_schedule_yesterday_today_count > 0 %}
+                <span id="schedule-badge" class="position-absolute top-0 start-100 badge rounded-pill bg-primary" style="font-size: 0.6rem; transform: translate(-90%, 10%);">
+                    {{ contact_schedule_yesterday_today_count }}
+                </span>
+                {% endif %}
+            </a>
+            {% endif %}
             <a href="{% url 'system_notifications:notification_list' %}" style="position: relative; text-decoration: none; color: inherit;">
                 <i class="bi bi-bell"></i> <!-- 通知アイコン -->
                 <span id="notification-badge" class="position-absolute top-0 start-100 badge rounded-pill bg-primary" style="display: none; font-size: 0.6rem; transform: translate(-90%, 10%);">

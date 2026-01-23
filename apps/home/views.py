@@ -13,6 +13,109 @@ from apps.master.models import Information
 from django.utils import timezone
 from django.db.models import Q
 from apps.common.constants import Constants
+from datetime import timedelta
+from dateutil.relativedelta import relativedelta
+from apps.staff.models import StaffContactSchedule
+from apps.client.models import ClientContactSchedule
+import jpholiday
+
+@login_required
+def contact_schedule_summary(request):
+    """
+    連絡予定のサマリ画面
+    昨日から1週間の日別件数と、1ヶ月以内の残り件数を表示する
+    """
+    # 閲覧権限チェック
+    has_staff_perm = request.user.has_perm('staff.view_staffcontactschedule')
+    has_client_perm = request.user.has_perm('client.view_clientcontactschedule')
+    
+    if not (has_staff_perm or has_client_perm):
+        from django.core.exceptions import PermissionDenied
+        raise PermissionDenied
+
+    today = timezone.now().date()
+    yesterday = today - timedelta(days=1)
+    jp_weeks = ['月', '火', '水', '木', '金', '土', '日']
+    
+    daily_schedules = []
+    # 昨日から10日間
+    for i in range(10):
+        current_date = yesterday + timedelta(days=i)
+        staff_count = StaffContactSchedule.objects.filter(contact_date=current_date).count() if has_staff_perm else 0
+        client_count = ClientContactSchedule.objects.filter(contact_date=current_date).count() if has_client_perm else 0
+        
+        daily_schedules.append({
+            'date': current_date,
+            'day_of_week': jp_weeks[current_date.weekday()],
+            'staff_count': staff_count,
+            'client_count': client_count,
+            'is_today': current_date == today,
+            'is_yesterday': current_date == yesterday,
+            'is_holiday': jpholiday.is_holiday(current_date),
+            'weekday_num': current_date.weekday(), # 5:土, 6:日
+        })
+    
+    # 10日後以降から昨日から1ヶ月まで
+    start_of_other = yesterday + timedelta(days=10)
+    one_month_later = yesterday + relativedelta(months=1)
+    
+    other_staff_count = StaffContactSchedule.objects.filter(
+        contact_date__gte=start_of_other,
+        contact_date__lte=one_month_later
+    ).count() if has_staff_perm else 0
+    
+    other_client_count = ClientContactSchedule.objects.filter(
+        contact_date__gte=start_of_other,
+        contact_date__lte=one_month_later
+    ).count() if has_client_perm else 0
+
+    # 10日間の予定詳細リストを取得
+    staff_schedules = []
+    if has_staff_perm:
+        staff_schedules = StaffContactSchedule.objects.filter(
+            contact_date__gte=yesterday,
+            contact_date__lt=start_of_other
+        ).select_related('staff').order_by('contact_date', 'id')
+        for s in staff_schedules:
+            s.day_of_week = jp_weeks[s.contact_date.weekday()]
+            s.weekday_num = s.contact_date.weekday()
+            s.is_holiday = jpholiday.is_holiday(s.contact_date)
+
+    client_schedules = []
+    if has_client_perm:
+        client_schedules = ClientContactSchedule.objects.filter(
+            contact_date__gte=yesterday,
+            contact_date__lt=start_of_other
+        ).select_related('client').order_by('contact_date', 'id')
+        for s in client_schedules:
+            s.day_of_week = jp_weeks[s.contact_date.weekday()]
+            s.weekday_num = s.contact_date.weekday()
+            s.is_holiday = jpholiday.is_holiday(s.contact_date)
+    
+    # 1ヶ月以内の全予定数（アイコンバッジ等で将来的に使えるよう）
+    total_scheduled_count = StaffContactSchedule.objects.filter(
+        contact_date__gte=yesterday,
+        contact_date__lte=one_month_later
+    ).count() if has_staff_perm else 0
+    if has_client_perm:
+        total_scheduled_count += ClientContactSchedule.objects.filter(
+            contact_date__gte=yesterday,
+            contact_date__lte=one_month_later
+        ).count()
+
+    context = {
+        'daily_schedules': daily_schedules,
+        'other_staff_count': other_staff_count,
+        'other_client_count': other_client_count,
+        'staff_schedules': staff_schedules,
+        'client_schedules': client_schedules,
+        'one_month_later': one_month_later,
+        'start_of_other': start_of_other,
+        'has_staff_perm': has_staff_perm,
+        'has_client_perm': has_client_perm,
+        'total_scheduled_count': total_scheduled_count,
+    }
+    return render(request, 'home/contact_schedule_summary.html', context)
 
 def get_filtered_informations(user):
     """
