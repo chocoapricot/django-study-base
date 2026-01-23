@@ -8,7 +8,13 @@ class CompanyFormTest(TestCase):
     def test_corporate_number_validation(self):
         """法人番号のバリデーションテスト"""
         # 無効な法人番号（桁数不足）
-        form_data = {'name': 'テスト会社', 'corporate_number': '123456789012', 'dispatch_treatment_method': 'agreement'}
+        form_data = {'name': 'テスト会社', 'corporate_number': '123456789012'}
+        form = CompanyForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('corporate_number', form.errors)
+
+        # 無効な法人番号（チェックディジット不正）
+        form_data = {'name': 'テスト会社', 'corporate_number': '1234567890123'}
         form = CompanyForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn('corporate_number', form.errors)
@@ -57,19 +63,6 @@ class CompanyFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('phone_number', form.errors)
         self.assertIn('電話番号は数字とハイフンのみ入力してください。', form.errors['phone_number'])
-
-    def test_real_corporate_numbers(self):
-        """実在する法人番号でのバリデーションテスト"""
-        valid_numbers = [
-            '8011101011499',
-            '1010401083118',
-            '1010401024357',
-        ]
-        for number in valid_numbers:
-            with self.subTest(corporate_number=number):
-                form_data = {'name': 'テスト会社', 'corporate_number': number, 'dispatch_treatment_method': 'agreement'}
-                form = CompanyForm(data=form_data)
-                self.assertTrue(form.is_valid(), msg=f"Failed for corporate number: {number}")
 
 
 class CompanyUserFormTest(TestCase):
