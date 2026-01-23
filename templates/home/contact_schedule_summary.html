@@ -138,11 +138,11 @@
                     </thead>
                     <tbody>
                         {% for schedule in staff_schedules %}
-                        <tr>
+                        <tr class="{% if schedule.contact_date == today or schedule.contact_date == yesterday %}table-warning{% endif %}">
                             <td class="{% if schedule.is_holiday or schedule.weekday_num == 6 %}text-sunday-holiday{% elif schedule.weekday_num == 5 %}text-saturday{% endif %}">
                                 {{ schedule.contact_date|date:'Y/m/d' }}({{ schedule.day_of_week }})
                                 {% if schedule.contact_date == today %}
-                                    <i class="bi bi-alarm text-primary" style="font-size: 0.8rem;" title="本日"></i>
+                                    <span class="badge bg-primary ms-1" style="font-size: 0.6rem;">本日</span>
                                 {% endif %}
                             </td>
                             <td class="fw-bold">
@@ -186,11 +186,11 @@
                     </thead>
                     <tbody>
                         {% for schedule in client_schedules %}
-                        <tr>
+                        <tr class="{% if schedule.contact_date == today or schedule.contact_date == yesterday %}table-warning{% endif %}">
                             <td class="{% if schedule.is_holiday or schedule.weekday_num == 6 %}text-sunday-holiday{% elif schedule.weekday_num == 5 %}text-saturday{% endif %}">
                                 {{ schedule.contact_date|date:'Y/m/d' }}({{ schedule.day_of_week }})
                                 {% if schedule.contact_date == today %}
-                                    <i class="bi bi-alarm text-primary" style="font-size: 0.8rem;" title="本日"></i>
+                                    <span class="badge bg-primary ms-1" style="font-size: 0.6rem;">本日</span>
                                 {% endif %}
                             </td>
                             <td class="fw-bold">

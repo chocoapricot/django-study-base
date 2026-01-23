@@ -109,6 +109,8 @@ def contact_schedule_summary(request):
         'other_client_count': other_client_count,
         'staff_schedules': staff_schedules,
         'client_schedules': client_schedules,
+        'today': today,
+        'yesterday': yesterday,
         'one_month_later': one_month_later,
         'start_of_other': start_of_other,
         'has_staff_perm': has_staff_perm,

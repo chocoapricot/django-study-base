@@ -359,7 +359,7 @@ body.no-transition #sidebar {
             </span>
             <i class="bi bi-search"></i> <!-- 検索アイコン -->
             {% if perms.staff.view_staffcontactschedule or perms.client.view_clientcontactschedule %}
-            <a href="{% url 'home:contact_schedule_summary' %}" title="連絡予定サマリ" style="position: relative; text-decoration: none; color: inherit;">
+            <a href="{% url 'home:contact_schedule_summary' %}" title="{% if contact_schedule_yesterday_today_count > 0 %}本日連絡予定あり{% else %}本日連絡予定なし{% endif %}" style="position: relative; text-decoration: none; color: inherit;">
                 <i class="bi bi-alarm"></i>
                 {% if contact_schedule_yesterday_today_count > 0 %}
                 <span id="schedule-badge" class="position-absolute top-0 start-100 badge rounded-pill bg-primary" style="font-size: 0.6rem; transform: translate(-90%, 10%);">
