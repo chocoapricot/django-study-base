@@ -210,7 +210,7 @@ class StaffForm(forms.ModelForm):
         self.fields['employment_type'].queryset = EmploymentType.objects.filter(is_active=True).order_by('display_order', 'name')
         
         # 現在有効な部署の選択肢を設定
-        current_date = timezone.now().date()
+        current_date = timezone.localdate()
         valid_departments = CompanyDepartment.get_valid_departments(current_date)
         self.fields['department_code'].choices = [('', '選択してください')] + [
             (dept.department_code, f"{dept.name} ({dept.department_code})")

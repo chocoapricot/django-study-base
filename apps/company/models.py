@@ -86,7 +86,7 @@ class CompanyDepartment(MyModel):
     def is_valid_on_date(self, date=None):
         """指定日時点で有効かどうかを判定"""
         if date is None:
-            date = timezone.now().date()
+            date = timezone.localdate()
         
         # 開始日チェック
         if self.valid_from and date < self.valid_from:
@@ -102,7 +102,7 @@ class CompanyDepartment(MyModel):
     def get_valid_departments(cls, date=None):
         """指定日時点で有効な部署一覧を取得"""
         if date is None:
-            date = timezone.now().date()
+            date = timezone.localdate()
         
         queryset = cls.objects.all()
         

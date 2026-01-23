@@ -46,7 +46,7 @@ def company_detail(request):
     # 本日以降有効なクライアント契約を取得
     from django.utils import timezone
     from apps.contract.models import ClientContract
-    today = timezone.now().date()
+    today = timezone.localdate()
     
     # 各担当者に部署名とバッジ情報を追加
     for user in company_users:
@@ -287,7 +287,7 @@ def company_user_create(request):
     # 本日以降有効なクライアント契約を取得
     from django.utils import timezone
     from apps.contract.models import ClientContract
-    today = timezone.now().date()
+    today = timezone.localdate()
     
     # 全部署を取得し、コードをキーにした辞書を作成
     all_departments = CompanyDepartment.objects.filter(corporate_number=company.corporate_number)
@@ -342,7 +342,7 @@ def company_user_edit(request, pk):
     # 本日以降有効なクライアント契約を取得
     from django.utils import timezone
     from apps.contract.models import ClientContract
-    today = timezone.now().date()
+    today = timezone.localdate()
     
     # 全部署を取得し、コードをキーにした辞書を作成
     all_departments = CompanyDepartment.objects.filter(corporate_number=company.corporate_number)
@@ -394,7 +394,7 @@ def company_user_delete(request, pk):
     # 本日以降有効なクライアント契約を取得
     from django.utils import timezone
     from apps.contract.models import ClientContract
-    today = timezone.now().date()
+    today = timezone.localdate()
     
     # 全部署を取得し、コードをキーにした辞書を作成
     all_departments = CompanyDepartment.objects.filter(corporate_number=company.corporate_number)
@@ -492,7 +492,7 @@ def company_user_detail(request, pk):
     department_map = {d.department_code: d.name for d in all_departments}
 
     # 本日以降有効なクライアント契約を取得
-    today = timezone.now().date()
+    today = timezone.localdate()
     
     # 各担当者に部署名とバッジ情報を追加
     for user in company_users:

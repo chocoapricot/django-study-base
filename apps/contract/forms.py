@@ -405,7 +405,7 @@ class ClientContractHakenForm(forms.ModelForm):
             self.fields[field_name].choices = [('', '選択してください')]
 
         # 派遣元関連のフィールドの選択肢を自社ユーザに限定
-        valid_departments = CompanyDepartment.get_valid_departments(timezone.now().date())
+        valid_departments = CompanyDepartment.get_valid_departments(timezone.localdate())
         department_display_order = valid_departments.filter(
             department_code=OuterRef('department_code')
         ).values('display_order')[:1]
