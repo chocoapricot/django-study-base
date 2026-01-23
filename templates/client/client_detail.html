@@ -49,7 +49,7 @@
                     〒 {{ client.postal_code }}<br/>
                     {{ client.address }}
                     {% if client.address %}
-                    <a href="{% parameter 'GOOGLE_MAPS_SEARCH_URL_BASE' %}{{ client.address|urlencode }}" target="_blank" class="text-decoration-none" style="color:green;margin-left: 5px;" aria-label="Googleマップで開く">
+                    <a href="{% parameter 'GOOGLE_MAPS_URL_BASE' %}{{ client.address|urlencode }}" target="_blank" class="text-decoration-none" style="color:green;margin-left: 5px;" aria-label="Googleマップで開く">
                         <i class="bi bi-box-arrow-up-right"></i>
                     </a>
                 {% endif %}

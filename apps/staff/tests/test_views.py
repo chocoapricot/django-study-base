@@ -459,7 +459,7 @@ class StaffViewsTest(TestCase):
     def test_staff_detail_address_link(self):
         """
         Test the address link in the staff detail view.
-        The link should only be displayed if the GOOGLE_MAPS_SEARCH_URL_BASE parameter is set.
+        The link should only be displayed if the GOOGLE_MAPS_URL_BASE parameter is set.
         """
         # 1. Parameter is not set
         response = self.client.get(reverse('staff:staff_detail', args=[self.staff_obj.pk]))
@@ -468,7 +468,7 @@ class StaffViewsTest(TestCase):
 
         # 2. Parameter is set
         Parameter.objects.create(
-            key='GOOGLE_MAPS_SEARCH_URL_BASE',
+            key='GOOGLE_MAPS_URL_BASE',
             value='https://maps.google.com/?q=',
             active=True
         )
