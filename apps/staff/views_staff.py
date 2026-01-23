@@ -804,9 +804,34 @@ def staff_contact_schedule_list(request, staff_pk):
 def staff_contact_schedule_detail(request, pk):
     schedule = get_object_or_404(StaffContactSchedule, pk=pk)
     staff = schedule.staff
+
+    if request.method == 'POST' and 'register_history' in request.POST:
+        form = StaffContactedForm(request.POST)
+        if form.is_valid():
+            contacted = form.save(commit=False)
+            contacted.staff = staff
+            contacted.save()
+            # 予定を削除
+            schedule.delete()
+            messages.success(request, '連絡履歴を登録し、対応予定を完了（削除）しました。')
+            return redirect('staff:staff_detail', pk=staff.pk)
+    else:
+        # 予定の内容を初期値としてセット
+        initial_data = {
+            'contact_type': schedule.contact_type,
+            'content': schedule.content,
+            'detail': schedule.detail,
+            'contacted_at': timezone.now()
+        }
+        form = StaffContactedForm(initial=initial_data)
+
     from apps.system.logs.utils import log_view_detail
     log_view_detail(request.user, schedule)
-    return render(request, 'staff/staff_contact_schedule_detail.html', {'schedule': schedule, 'staff': staff})
+    return render(request, 'staff/staff_contact_schedule_detail.html', {
+        'schedule': schedule,
+        'staff': staff,
+        'form': form
+    })
 
 # 連絡予定 編集
 @login_required
