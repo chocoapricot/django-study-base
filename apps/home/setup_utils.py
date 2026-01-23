@@ -106,10 +106,12 @@ def reset_database(task: SetupTask) -> bool:
     # （テーブル構造は維持されるため、ミドルウェアのDBアクセスでエラーが発生しない）
     if not run_command("python manage.py flush --noinput", "データベースのデータをクリア", task):
         return False
+    task.progress += 1  # 進捗追加
     
     # 新しいマイグレーションがある場合に適用
     if not run_command("python manage.py migrate", "マイグレーションの適用", task):
         return False
+    task.progress += 1  # 進捗追加
     
     # アップロードされたファイルの削除
     task.current_step = 'アップロードファイルを削除中...'
@@ -129,7 +131,8 @@ def reset_database(task: SetupTask) -> bool:
             print(f"❌ {error_msg}")
             task.errors.append(error_msg)
             return False
-    
+            
+    task.progress += 1  # 進捗追加
     return True
 
 
@@ -144,6 +147,7 @@ def create_superuser(task: SetupTask) -> bool:
     if not run_command(command, "スーパーユーザーの作成", task):
         return False
     
+    task.progress += 1  # 進捗追加
     return True
 
 
@@ -163,9 +167,9 @@ def load_sample_data(task: SetupTask) -> bool:
         task.errors.append(error_msg)
         return False
     
-    # 総ステップ数を設定（各ファイルのみ）
-    task.total = len(SAMPLE_DATA_FILES)
-    task.progress = 0
+    # 総ステップ数の設定はexecute_setupで行うため、ここではリセットしない
+    # task.total = len(SAMPLE_DATA_FILES)
+    # task.progress = 0
     
     # サンプルデータを順次読み込み
     for file_path, description in SAMPLE_DATA_FILES:
@@ -186,7 +190,7 @@ def load_sample_data(task: SetupTask) -> bool:
         task.progress += 1
         task.imported_count += 1
         # データベースロックを軽減するため、短い待機時間を追加
-        time.sleep(0.1)
+        time.sleep(0.05)  # 少し短縮
     
     return True
 
@@ -247,6 +251,7 @@ def import_sample_users(task: SetupTask) -> bool:
     if not run_command(command, "サンプルユーザーのインポート", task):
         return False
 
+    task.progress += 1  # 進捗追加
     return True
 
 
@@ -278,6 +283,7 @@ def copy_sample_photos(task: SetupTask) -> bool:
                 copied_count += 1
         
         print(f"✅ {copied_count}枚のサンプル画像をコピーしました")
+        task.progress += 1  # 進捗追加
         return True
     except Exception as e:
         error_msg = f"画像のコピー中にエラーが発生しました: {e}"
@@ -313,6 +319,7 @@ def copy_company_seals(task: SetupTask) -> bool:
                 copied_count += 1
         
         print(f"✅ {copied_count}個の会社印サンプルファイルをコピーしました")
+        task.progress += 1  # 進捗追加
         return True
     except Exception as e:
         error_msg = f"会社印ファイルのコピー中にエラーが発生しました: {e}"
@@ -329,6 +336,16 @@ def execute_setup(task_id: str):
     
     task.status = 'processing'
     task.start_time = datetime.now()
+    task.progress = 0
+    
+    # 全体のタスク数を計算
+    # 1. reset_database: 3 (flush, migrate, delete files)
+    # 2. create_superuser: 1
+    # 3. update_superuser_info: 1
+    # 4. load_sample_data: len(SAMPLE_DATA_FILES) + 1 (import_sample_users)
+    # 5. copy_sample_photos: 1
+    # 6. copy_company_seals: 1
+    task.total = 3 + 1 + 1 + len(SAMPLE_DATA_FILES) + 1 + 1 + 1
     
     try:
         # 1. データベースリセット
@@ -349,6 +366,7 @@ def execute_setup(task_id: str):
             task.status = 'failed'
             task.end_time = datetime.now()
             return
+        task.progress += 1  # 進捗追加
         
         # 4. サンプルデータ読み込み（内部でユーザーのインポートも行われる）
         if not load_sample_data(task):
