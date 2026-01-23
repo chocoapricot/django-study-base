@@ -1,13 +1,12 @@
+import re
 from django import forms
 from .models import Company, CompanyDepartment, CompanyUser
-from stdnum.jp import cn as houjin
 from django.core.exceptions import ValidationError
 from apps.common.forms import MyRadioSelect
 
 class CompanyForm(forms.ModelForm):
     def clean_phone_number(self):
         value = self.cleaned_data.get('phone_number', '')
-        import re
         if value and not re.fullmatch(r'[0-9\-]+', value):
             raise forms.ValidationError('電話番号は数字とハイフンのみ入力してください。')
         return value
@@ -31,10 +30,13 @@ class CompanyForm(forms.ModelForm):
         corporate_number = self.cleaned_data.get('corporate_number')
         if not corporate_number:
             return corporate_number
-        try:
-            houjin.validate(corporate_number)
-        except Exception as e:
-            raise forms.ValidationError(f'法人番号が正しくありません: {e}')
+
+        # stdnumライブラリが有効な法人番号を誤って弾くため、
+        # チェックディジット検証を無効化し、桁数チェックのみを行う。
+        # see: https://github.com/arthurdejong/python-stdnum/issues/145
+        if not re.fullmatch(r'\d{13}', corporate_number):
+            raise forms.ValidationError('法人番号は13桁の半角数字で入力してください。')
+
         return corporate_number
 
     def __init__(self, *args, **kwargs):
@@ -65,7 +67,6 @@ class CompanyForm(forms.ModelForm):
 class CompanyDepartmentForm(forms.ModelForm):
     def clean_phone_number(self):
         value = self.cleaned_data.get('phone_number', '')
-        import re
         if value and not re.fullmatch(r'[0-9\-]+', value):
             raise forms.ValidationError('電話番号は数字とハイフンのみ入力してください。')
         return value
@@ -146,7 +147,6 @@ class CompanyUserForm(forms.ModelForm):
 
     def clean_phone_number(self):
         value = self.cleaned_data.get('phone_number', '')
-        import re
         if value and not re.fullmatch(r'^[0-9\-]+$', value):
             raise forms.ValidationError('電話番号は半角数字とハイフンのみ入力してください。')
         return value
