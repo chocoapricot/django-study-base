@@ -33,7 +33,7 @@ def contact_schedule_summary(request):
         from django.core.exceptions import PermissionDenied
         raise PermissionDenied
 
-    today = timezone.now().date()
+    today = timezone.localdate()
     yesterday = today - timedelta(days=1)
     jp_weeks = ['月', '火', '水', '木', '金', '土', '日']
     
@@ -123,7 +123,7 @@ def get_filtered_informations(user):
     """
     ユーザーに基づいてフィルタリングされたお知らせを取得する
     """
-    today = timezone.now().date()
+    today = timezone.localdate()
     
     # 基本的な絞り込み
     base_query = Information.objects.filter(

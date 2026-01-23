@@ -143,6 +143,8 @@
                                 {{ schedule.contact_date|date:'Y/m/d' }}({{ schedule.day_of_week }})
                                 {% if schedule.contact_date == today %}
                                     <span class="badge bg-primary ms-1" style="font-size: 0.6rem;">本日</span>
+                                {% elif schedule.contact_date == yesterday %}
+                                    <span class="badge bg-secondary ms-1" style="font-size: 0.6rem;">昨日</span>
                                 {% endif %}
                             </td>
                             <td class="fw-bold">
@@ -191,6 +193,8 @@
                                 {{ schedule.contact_date|date:'Y/m/d' }}({{ schedule.day_of_week }})
                                 {% if schedule.contact_date == today %}
                                     <span class="badge bg-primary ms-1" style="font-size: 0.6rem;">本日</span>
+                                {% elif schedule.contact_date == yesterday %}
+                                    <span class="badge bg-secondary ms-1" style="font-size: 0.6rem;">昨日</span>
                                 {% endif %}
                             </td>
                             <td class="fw-bold">

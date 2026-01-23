@@ -17,7 +17,7 @@ def contact_schedule_counts(request):
     if not (has_staff_perm or has_client_perm):
         return {}
 
-    today = timezone.now().date()
+    today = timezone.localdate()
     yesterday = today - timedelta(days=1)
     target_dates = [yesterday, today]
     
