@@ -4,12 +4,13 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from apps.staff.models import Staff, StaffContacted, StaffBank, StaffInternational
-from apps.system.settings.models import Dropdowns
+from apps.system.settings.models import Dropdowns, Parameter
 from apps.master.models import StaffRegistStatus
 from datetime import date, datetime 
 from django.utils import timezone
 from apps.connect.models import ConnectStaff, ProfileRequest
 from apps.profile.models import StaffProfile
+from urllib.parse import quote
 
 User = get_user_model()
 
@@ -133,7 +134,9 @@ class StaffViewsTest(TestCase):
             employee_no='ZEMP000', # ソート順で最後にくるように変更
             hire_date=date(2019, 4, 1),  # 入社日を追加
             email='test@example.com',
-            address1='テスト住所', # address1を追加
+            address1='東京都',
+            address2='千代田区',
+            address3='1-1-1',
             age=10 # ageを10に変更
         )
         # ソートテスト用のスタッフデータを作成 (12件)
@@ -452,3 +455,24 @@ class StaffViewsTest(TestCase):
         staff_list_on_page = response.context['staffs'].object_list
         self.assertEqual(len(staff_list_on_page), 1)
         self.assertEqual(staff_list_on_page[0], staff_with_request)
+
+    def test_staff_detail_address_link(self):
+        """
+        Test the address link in the staff detail view.
+        The link should only be displayed if the GOOGLE_MAPS_SEARCH_URL_BASE parameter is set.
+        """
+        # 1. Parameter is not set
+        response = self.client.get(reverse('staff:staff_detail', args=[self.staff_obj.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'bi-box-arrow-up-right')
+
+        # 2. Parameter is set
+        Parameter.objects.create(
+            key='GOOGLE_MAPS_SEARCH_URL_BASE',
+            value='https://maps.google.com/?q=',
+            active=True
+        )
+        response = self.client.get(reverse('staff:staff_detail', args=[self.staff_obj.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'bi-box-arrow-up-right')
+        self.assertContains(response, f'href="https://maps.google.com/?q={quote(self.staff_obj.full_address)}"')
