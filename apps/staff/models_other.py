@@ -230,7 +230,7 @@ class StaffInternational(MyModel):
     def is_expired(self):
         """在留期限が切れているかどうか"""
         from django.utils import timezone
-        return self.residence_period_to < timezone.now().date()
+        return self.residence_period_to < timezone.localdate()
 
     @property
     def is_expiring_soon(self):
@@ -241,7 +241,7 @@ class StaffInternational(MyModel):
         """在留期限が指定日数以内に切れるかどうか"""
         from django.utils import timezone
         from datetime import timedelta
-        return self.residence_period_to <= timezone.now().date() + timedelta(days=days)
+        return self.residence_period_to <= timezone.localdate() + timedelta(days=days)
 
 
 class StaffDisability(MyModel):

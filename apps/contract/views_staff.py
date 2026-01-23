@@ -1137,7 +1137,7 @@ def staff_select(request):
     department_codes = [staff.department_code for staff in staff_page if staff.department_code]
     department_map = {}
     if department_codes:
-        today = timezone.now().date()
+        today = timezone.localdate()
 
         valid_departments = CompanyDepartment.objects.filter(
             department_code__in=set(department_codes)

@@ -219,7 +219,7 @@ def staff_list(request):
     from django.db.models import OuterRef, Subquery
     next_schedule = StaffContactSchedule.objects.filter(
         staff=OuterRef('pk'),
-        contact_date__gte=timezone.now().date()
+        contact_date__gte=timezone.localdate()
     ).order_by('contact_date')
 
     staffs = Staff.objects.annotate(
@@ -338,7 +338,7 @@ def staff_list(request):
     # 所属部署の選択肢を取得（現在有効な部署のみ）
     from apps.company.models import CompanyDepartment
 
-    current_date = timezone.now().date()
+    current_date = timezone.localdate()
     department_options = CompanyDepartment.get_valid_departments(current_date)
 
     # 各部署オプションに選択状態を追加

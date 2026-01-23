@@ -75,7 +75,7 @@ class Staff(MyModel):
         from django.utils import timezone
 
         if date is None:
-            date = timezone.now().date()
+            date = timezone.localdate()
 
         try:
             # 指定日時点で有効な部署を取得
@@ -100,7 +100,7 @@ class Staff(MyModel):
         from django.utils import timezone
 
         if date is None:
-            date = timezone.now().date()
+            date = timezone.localdate()
 
         # 入社日チェック
         if self.hire_date and date < self.hire_date:
@@ -117,7 +117,7 @@ class Staff(MyModel):
         from django.utils import timezone
 
         if date is None:
-            date = timezone.now().date()
+            date = timezone.localdate()
 
         if not self.hire_date:
             return "入社日未設定"
@@ -358,7 +358,7 @@ class StaffQualification(MyModel):
         if not self.expiry_date:
             return False
         from django.utils import timezone
-        return self.expiry_date < timezone.now().date()
+        return self.expiry_date < timezone.localdate()
 
     @property
     def is_expiring_soon(self):
@@ -371,7 +371,7 @@ class StaffQualification(MyModel):
             return False
         from django.utils import timezone
         from datetime import timedelta
-        return self.expiry_date <= timezone.now().date() + timedelta(days=days)
+        return self.expiry_date <= timezone.localdate() + timedelta(days=days)
 
 
 class StaffSkill(MyModel):

@@ -55,7 +55,7 @@ def staff_evaluation_create(request, staff_pk):
             return redirect('staff:staff_detail', pk=staff.pk)
     else:
         from django.utils import timezone
-        form = StaffEvaluationForm(initial={'evaluation_date': timezone.now().date()})
+        form = StaffEvaluationForm(initial={'evaluation_date': timezone.localdate()})
     
     return render(request, 'staff/staff_evaluation_form.html', {'form': form, 'staff': staff})
 

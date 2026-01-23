@@ -142,7 +142,7 @@ class ClientDepartment(MyModel):
         """指定日時点で有効かどうかを判定"""
         from django.utils import timezone
         if date is None:
-            date = timezone.now().date()
+            date = timezone.localdate()
         
         # 開始日チェック
         if self.valid_from and date < self.valid_from:

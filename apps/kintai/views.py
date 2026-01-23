@@ -31,7 +31,7 @@ def contract_search(request):
     from apps.contract.models import StaffContract
     
     # 年月の取得（デフォルトは当月）
-    today = timezone.now().date()
+    today = timezone.localdate()
     target_month_str = request.GET.get('target_month')
     
     if target_month_str:
@@ -138,7 +138,7 @@ def staff_search(request):
     from apps.staff.models import Staff
     
     # 年月の取得（デフォルトは当月）
-    today = timezone.now().date()
+    today = timezone.localdate()
     target_month_str = request.GET.get('target_month')
     
     if target_month_str:
@@ -443,7 +443,7 @@ def timesheet_create(request):
             messages.success(request, '月次勤怠を作成しました。')
             return redirect('kintai:timesheet_detail', pk=timesheet.pk)
     else:
-        today = timezone.now().date()
+        today = timezone.localdate()
         initial_data = {
             'target_month': today.strftime('%Y-%m'), # YYYY-MM 形式
         }

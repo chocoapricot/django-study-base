@@ -74,7 +74,7 @@ class StaffResource(resources.ModelResource):
         """所属部署の表示名を取得"""
         if staff.department_code:
             try:
-                current_date = timezone.now().date()
+                current_date = timezone.localdate()
                 department = CompanyDepartment.get_valid_departments(current_date).get(
                     department_code=staff.department_code
                 )

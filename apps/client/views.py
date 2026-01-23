@@ -82,7 +82,7 @@ def client_list(request):
     from .models import ClientContactSchedule
     company = Company.objects.first()
     corporate_number = company.corporate_number if company else None
-    today = timezone.now().date()
+    today = timezone.localdate()
     
     for client in clients_pages:
         client.has_connected_approved_user = False
@@ -238,7 +238,7 @@ def client_detail(request, pk):
     
     company = Company.objects.first()
     corporate_number = company.corporate_number if company else None
-    today = timezone.now().date()
+    today = timezone.localdate()
     
     if corporate_number:
         for user in client_users:
@@ -524,7 +524,7 @@ def client_department_detail(request, pk):
     from django.db.models import Q
     from apps.contract.models import ClientContract
     
-    today = timezone.now().date()
+    today = timezone.localdate()
     
     for user in users_in_department:
         # 派遣先責任者として指定されているか確認
@@ -635,7 +635,7 @@ def client_user_list(request, client_pk):
     
     company = Company.objects.first()
     corporate_number = company.corporate_number if company else None
-    today = timezone.now().date()
+    today = timezone.localdate()
     
     if corporate_number:
         for user in client_users:
@@ -795,7 +795,7 @@ def client_user_detail(request, pk):
     from django.db.models import Q
     from apps.contract.models import ClientContract
     
-    today = timezone.now().date()
+    today = timezone.localdate()
     
     # 派遣先責任者、苦情申出先、指揮命令者として指定されているクライアント契約を統合取得
     related_contracts = ClientContract.objects.filter(
