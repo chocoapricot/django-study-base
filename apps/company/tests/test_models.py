@@ -25,10 +25,17 @@ class CompanyModelTest(TestCase):
         with self.assertRaises(Exception):
             Company.objects.create(name="テスト会社", dispatch_treatment_method='agreement')
 
+    def test_tenant_id_auto_creation(self):
+        """tenant_idの自動採番テスト"""
+        self.assertEqual(self.company.tenant_id, self.company.pk)
+        company2 = Company.objects.create(name="テスト会社2", dispatch_treatment_method='agreement')
+        self.assertEqual(company2.tenant_id, company2.pk)
+
 class CompanyDepartmentModelTest(TestCase):
     """部署モデルのテスト"""
 
     def setUp(self):
+        self.company = Company.objects.create(name="テスト会社", corporate_number="1234567890123", dispatch_treatment_method='agreement')
         self.department = CompanyDepartment.objects.create(
             name="開発部",
             corporate_number="1234567890123",
@@ -109,6 +116,10 @@ class CompanyDepartmentModelTest(TestCase):
         valid_depts = CompanyDepartment.get_valid_departments(date(2025, 1, 1))
         self.assertEqual(valid_depts.count(), 1)  # 無期限部署のみ
 
+    def test_tenant_id_inheritance(self):
+        """tenant_idの継承テスト"""
+        self.assertEqual(self.department.tenant_id, self.company.tenant_id)
+
 
 class CompanyUserModelTest(TestCase):
     """自社担当者モデルのテスト"""
@@ -138,3 +149,7 @@ class CompanyUserModelTest(TestCase):
         self.assertEqual(self.company_user.corporate_number, "1112223334445")
         self.assertEqual(self.company_user.department_code, "TEST_DEPT")
         self.assertEqual(str(self.company_user), "テスト部署 - 部長 - 山田 太郎")
+
+    def test_tenant_id_inheritance(self):
+        """tenant_idの継承テスト"""
+        self.assertEqual(self.company_user.tenant_id, self.company.tenant_id)
