@@ -340,6 +340,7 @@ class CompanyUserViewTest(TestCase):
         # Detail
         response = self.client.get(self.detail_url)
         self.assertEqual(response.status_code, 200)
+
         # Delete
         response = self.client.get(self.delete_url)
         self.assertEqual(response.status_code, 200)
