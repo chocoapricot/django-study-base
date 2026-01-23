@@ -25,16 +25,19 @@ def fetch_company_info(corporate_number):
     response = requests.get(url, headers=headers)
     # APIのレスポンスを確認
     if response.status_code == 200:
-        data = response.json()
-        # 'hojin-infos'が存在するか確認し、データがあれば返す
-        if "hojin-infos" in data and data["hojin-infos"] and len(data["hojin-infos"]) > 0:
-            result = data["hojin-infos"][0]
-            # キャッシュに保存
-            validity_period = int(my_parameter("API_CACHE_VALIDITY_PERIOD", 86400))
-            set_api_cache(cache_key, result, validity_period)
-            return result
-        else:
-            return None  # 'hojin-infos' がない場合は None を返す
+        try:
+            data = response.json()
+            # 'hojin-infos'が存在するか確認し、データがあれば返す
+            if "hojin-infos" in data and data["hojin-infos"] and len(data["hojin-infos"]) > 0:
+                result = data["hojin-infos"][0]
+                # キャッシュに保存
+                validity_period = int(my_parameter("API_CACHE_VALIDITY_PERIOD", 86400))
+                set_api_cache(cache_key, result, validity_period)
+                return result
+            else:
+                return None  # 'hojin-infos' がない場合は None を返す
+        except requests.exceptions.JSONDecodeError:
+            return None  # JSONのデコードに失敗した場合は None を返す
     return None  # APIリクエストが失敗した場合
 
 def fetch_zipcode(zipcode):

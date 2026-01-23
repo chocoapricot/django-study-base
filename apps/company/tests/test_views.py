@@ -38,7 +38,7 @@ class CompanyViewTest(TestCase):
 
         self.company = Company.objects.create(
             name="テスト会社",
-            corporate_number="1234567890123",
+            corporate_number="2000012010019",
             dispatch_treatment_method='agreement',
             postal_code="1000001",
             address="東京都千代田区千代田1-1",
@@ -157,7 +157,7 @@ class DepartmentViewTest(TestCase):
 
         self.department = CompanyDepartment.objects.create(
             name="開発部",
-            corporate_number="1234567890123",
+            corporate_number="8011101011499",
             department_code="DEV001",
             display_order=1
         )
@@ -191,7 +191,7 @@ class DepartmentViewTest(TestCase):
     def test_department_create_post_with_permission(self):
         """部署作成 POST（権限あり）"""
         self.client.login(username='perm_user', password='testpassword')
-        data = {'name': '営業部', 'corporate_number': '1234567890123', 'department_code': 'SALES001', 'display_order': 2}
+        data = {'name': '営業部', 'corporate_number': '1010401083118', 'department_code': 'SALES001', 'display_order': 2}
         response = self.client.post(reverse('company:department_create'), data)
         self.assertEqual(response.status_code, 302)
         self.assertTrue(CompanyDepartment.objects.filter(name='営業部').exists())
@@ -199,7 +199,7 @@ class DepartmentViewTest(TestCase):
     def test_department_create_post_no_permission(self):
         """部署作成 POST（権限なし）"""
         self.client.login(username='no_perm_user', password='testpassword')
-        data = {'name': '総務部', 'corporate_number': '1234567890123', 'department_code': 'GA001', 'display_order': 3}
+        data = {'name': '総務部', 'corporate_number': '1010401024357', 'department_code': 'GA001', 'display_order': 3}
         response = self.client.post(reverse('company:department_create'), data)
         self.assertEqual(response.status_code, 403)
         self.assertFalse(CompanyDepartment.objects.filter(name='総務部').exists())
@@ -340,6 +340,7 @@ class CompanyUserViewTest(TestCase):
         # Detail
         response = self.client.get(self.detail_url)
         self.assertEqual(response.status_code, 200)
+
         # Delete
         response = self.client.get(self.delete_url)
         self.assertEqual(response.status_code, 200)

@@ -7,7 +7,7 @@ class CompanyModelTest(TestCase):
     def setUp(self):
         self.company = Company.objects.create(
             name="テスト会社",
-            corporate_number="1234567890123",
+            corporate_number="2000012010019",
             dispatch_treatment_method='agreement',
             postal_code="1000001",
             address="東京都千代田区千代田1-1",
@@ -17,7 +17,7 @@ class CompanyModelTest(TestCase):
     def test_company_creation(self):
         """会社の作成テスト"""
         self.assertEqual(self.company.name, "テスト会社")
-        self.assertEqual(self.company.corporate_number, "1234567890123")
+        self.assertEqual(self.company.corporate_number, "2000012010019")
         self.assertEqual(str(self.company), "テスト会社")
 
     def test_company_unique_name(self):
@@ -35,10 +35,10 @@ class CompanyDepartmentModelTest(TestCase):
     """部署モデルのテスト"""
 
     def setUp(self):
-        self.company = Company.objects.create(name="テスト会社", corporate_number="1234567890123", dispatch_treatment_method='agreement')
+        self.company = Company.objects.create(name="テスト会社", corporate_number="8011101011499", dispatch_treatment_method='agreement')
         self.department = CompanyDepartment.objects.create(
             name="開発部",
-            corporate_number="1234567890123",
+            corporate_number="8011101011499",
             department_code="DEV001",
             accounting_code="ACC001",
             display_order=1
@@ -64,7 +64,7 @@ class CompanyDepartmentModelTest(TestCase):
         # 同じ部署コードで期間重複する部署を作成しようとする
         overlapping_dept = CompanyDepartment(
             name="開発部2",
-            corporate_number="1234567890123",
+            corporate_number="8011101011499",
             department_code="DEV001",  # 同じ部署コード
             valid_from=date(2024, 6, 1),
             valid_to=date(2025, 5, 31)
@@ -80,7 +80,7 @@ class CompanyDepartmentModelTest(TestCase):
         # 有効期限付きの部署を作成
         dept_with_period = CompanyDepartment.objects.create(
             name="期間限定部署",
-            corporate_number="1234567890123",
+            corporate_number="8011101011499",
             department_code="TEMP001",
             valid_from=date(2024, 1, 1),
             valid_to=date(2024, 12, 31)
@@ -102,7 +102,7 @@ class CompanyDepartmentModelTest(TestCase):
         # 期間限定部署を作成
         CompanyDepartment.objects.create(
             name="期間限定部署",
-            corporate_number="1234567890123",
+            corporate_number="8011101011499",
             department_code="TEMP001",
             valid_from=date(2024, 1, 1),
             valid_to=date(2024, 12, 31)
