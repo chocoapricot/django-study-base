@@ -101,6 +101,7 @@ django-study-base/
 | `apps_staff` | スタッフ基本情報 |
 | `apps_staff_bank` | スタッフ銀行口座 |
 | `apps_staff_contacted` | スタッフ連絡履歴 |
+| `apps_staff_contact_schedule` | スタッフ連絡予定 |
 | `apps_staff_contacts` | スタッフ連絡先 |
 | `apps_staff_disability` | スタッフ障害者情報 |
 | `apps_staff_evaluation` | スタッフ評価 |

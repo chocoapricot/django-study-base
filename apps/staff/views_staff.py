@@ -21,6 +21,7 @@ from apps.common.constants import Constants
 from django.http import HttpResponse
 from .resources import StaffResource
 import datetime
+from django.utils import timezone
 
 # ロガーの作成
 logger = logging.getLogger('staff')
@@ -215,7 +216,16 @@ def staff_list(request):
     is_registration_status_view = request.GET.get('registration_status', '') == 'true'
 
     # 基本のクエリセット
-    staffs = Staff.objects.all()
+    from django.db.models import OuterRef, Subquery
+    next_schedule = StaffContactSchedule.objects.filter(
+        staff=OuterRef('pk'),
+        contact_date__gte=timezone.now().date()
+    ).order_by('contact_date')
+
+    staffs = Staff.objects.annotate(
+        next_contact_date=Subquery(next_schedule.values('contact_date')[:1]),
+        next_contact_content=Subquery(next_schedule.values('content')[:1])
+    )
 
     # 社員登録状況一覧の場合
     if is_registration_status_view:
@@ -493,10 +503,40 @@ def staff_detail(request, pk):
             except Exception as e:
                 messages.error(request, f'接続依頼の処理中にエラーが発生しました: {str(e)}')
         return redirect('staff:staff_detail', pk=pk)
-    # 連絡履歴（最新5件）
-    contacted_list = staff.contacted_histories.all()[:5]
-    # 連絡予定（最新5件）
-    contact_schedule_list = staff.contact_schedules.all()[:5]
+    # 連絡履歴と予定を統合
+    all_contacts = []
+    
+    # 最近の履歴を取得
+    for c in staff.contacted_histories.all()[:10]:
+        all_contacts.append({
+            'type': 'history',
+            'pk': c.pk,
+            'contact_type': c.contact_type,
+            'content': c.content,
+            'created_by': c.created_by,
+            'at': c.contacted_at,
+            'is_schedule': False,
+        })
+    
+    # 最近の予定を取得
+    for s in staff.contact_schedules.all()[:10]:
+        # DateFieldをDateTimeField的に扱ってソート可能にする
+        dt = timezone.make_aware(datetime.datetime.combine(s.contact_date, datetime.time.min))
+        all_contacts.append({
+            'type': 'schedule',
+            'pk': s.pk,
+            'contact_type': s.contact_type,
+            'content': s.content,
+            'created_by': s.created_by,
+            'at': dt, # ソート用
+            'display_date': s.contact_date, # 表示用
+            'is_schedule': True,
+        })
+    
+    # 日付の降順でソート
+    all_contacts.sort(key=lambda x: x['at'], reverse=True)
+    contacted_combined_list = all_contacts[:5]
+
     # スタッフ契約（最新5件）
     from apps.contract.models import StaffContract
     staff_contracts = StaffContract.objects.filter(staff=staff).order_by('-start_date')[:5]
@@ -661,8 +701,7 @@ def staff_detail(request, pk):
 
     return render(request, 'staff/staff_detail.html', {
         'staff': staff,
-        'contacted_list': contacted_list,
-         'contact_schedule_list': contact_schedule_list,
+        'contacted_combined_list': contacted_combined_list,
         'staff_contracts': staff_contracts,
         'staff_contracts_count': staff_contracts_count,
         'qualifications': qualifications,

@@ -196,6 +196,7 @@
                     <th>登録区分</th>
             <th>雇用形態</th>
                     <th class="d-none d-md-table-cell">所属部署</th>
+                    <th>連絡予定</th>
                     <th>操作</th>
                 </tr>
             </thead>
@@ -271,6 +272,16 @@
                     <td class="d-none d-md-table-cell">
                         {% if staff.department_code %}
                             {{ staff.get_current_department_name|truncatechars:15 }}
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if staff.next_contact_date %}
+                            <div class="small">
+                                <span class="text-primary">{{ staff.next_contact_date|date:'Y/m/d' }}</span><br>
+                                <span class="text-muted text-truncate d-inline-block" style="max-width: 100px;" title="{{ staff.next_contact_content }}">{{ staff.next_contact_content }}</span>
+                            </div>
                         {% else %}
                             <span class="text-muted">-</span>
                         {% endif %}
