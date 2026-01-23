@@ -1012,16 +1012,47 @@ def client_contact_schedule_detail(request, pk):
     schedule = get_object_or_404(ClientContactSchedule, pk=pk)
     client = schedule.client
 
-    if request.method == 'POST' and 'register_history' in request.POST:
-        form = ClientContactedForm(request.POST, client=client)
-        if form.is_valid():
-            contacted = form.save(commit=False)
-            contacted.client = client
-            contacted.save()
-            # 予定を削除
-            schedule.delete()
-            messages.success(request, '連絡履歴を登録し、対応予定を完了（削除）しました。')
-            return redirect('client:client_detail', pk=client.pk)
+    from .forms_mail import ClientMailForm
+
+    # メールアドレスが設定されている担当者がいるか確認
+    has_email_users = ClientUser.objects.filter(client=client, email__isnull=False).exclude(email='').exists()
+
+    if request.method == 'POST':
+        if 'register_history' in request.POST:
+            form = ClientContactedForm(request.POST, client=client)
+            if form.is_valid():
+                contacted = form.save(commit=False)
+                contacted.client = client
+                contacted.save()
+                # 予定を削除
+                schedule.delete()
+                messages.success(request, '連絡履歴を登録し、対応予定を完了（削除）しました。')
+                return redirect('client:client_detail', pk=client.pk)
+            # バリデーションエラー時はmail_formを初期化
+            mail_form = ClientMailForm(client=client, user=request.user)
+        elif 'send_mail' in request.POST:
+            mail_form = ClientMailForm(client=client, user=request.user, data=request.POST)
+            if mail_form.is_valid():
+                success, message = mail_form.send_mail()
+                if success:
+                    # 予定を削除
+                    schedule.delete()
+                    messages.success(request, f'{message} および連絡予定を完了（削除）しました。')
+                    return redirect('client:client_detail', pk=client.pk)
+                else:
+                    messages.error(request, message)
+            # バリデーションエラー時はformを初期化
+            initial_data = {
+                'department': schedule.department,
+                'user': schedule.user,
+                'contact_type': schedule.contact_type,
+                'content': schedule.content,
+                'detail': schedule.detail,
+                'contacted_at': timezone.now()
+            }
+            form = ClientContactedForm(client=client, initial=initial_data)
+        else:
+            return redirect('client:client_contact_schedule_detail', pk=pk)
     else:
         # 予定の内容を初期値としてセット
         initial_data = {
@@ -1034,12 +1065,25 @@ def client_contact_schedule_detail(request, pk):
         }
         form = ClientContactedForm(client=client, initial=initial_data)
 
+        # メール初期値
+        initial_mail_data = {
+            'subject': f"ご連絡: {schedule.content}",
+            'body': schedule.detail if schedule.detail else "",
+        }
+        # 予定に紐づく担当者にメールアドレスがあれば、初期選択とする
+        if schedule.user and schedule.user.email:
+            initial_mail_data['to_user'] = schedule.user
+
+        mail_form = ClientMailForm(client=client, user=request.user, initial=initial_mail_data)
+
     from apps.system.logs.utils import log_view_detail
     log_view_detail(request.user, schedule)
     return render(request, 'client/client_contact_schedule_detail.html', {
         'schedule': schedule,
         'client': client,
-        'form': form
+        'form': form,
+        'mail_form': mail_form,
+        'has_email_users': has_email_users
     })
 
 # クライアント連絡予定 編集

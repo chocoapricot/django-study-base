@@ -805,16 +805,51 @@ def staff_contact_schedule_detail(request, pk):
     schedule = get_object_or_404(StaffContactSchedule, pk=pk)
     staff = schedule.staff
 
-    if request.method == 'POST' and 'register_history' in request.POST:
-        form = StaffContactedForm(request.POST)
-        if form.is_valid():
-            contacted = form.save(commit=False)
-            contacted.staff = staff
-            contacted.save()
-            # 予定を削除
-            schedule.delete()
-            messages.success(request, '連絡履歴を登録し、対応予定を完了（削除）しました。')
-            return redirect('staff:staff_detail', pk=staff.pk)
+    # 自社情報を取得
+    from apps.company.models import Company, CompanyUser
+    try:
+        company_user = CompanyUser.objects.get(email=request.user.email)
+        company = Company.objects.get(corporate_number=company_user.corporate_number)
+    except (CompanyUser.DoesNotExist, Company.DoesNotExist):
+        company = None
+
+    from .forms_mail import StaffMailForm
+
+    if request.method == 'POST':
+        if 'register_history' in request.POST:
+            form = StaffContactedForm(request.POST)
+            if form.is_valid():
+                contacted = form.save(commit=False)
+                contacted.staff = staff
+                contacted.save()
+                # 予定を削除
+                schedule.delete()
+                messages.success(request, '連絡履歴を登録し、対応予定を完了（削除）しました。')
+                return redirect('staff:staff_detail', pk=staff.pk)
+            # バリデーションエラー時はmail_formを初期化
+            mail_form = StaffMailForm(staff=staff, user=request.user, company=company)
+        elif 'send_mail' in request.POST:
+            mail_form = StaffMailForm(staff=staff, user=request.user, company=company, data=request.POST)
+            if mail_form.is_valid():
+                success, message = mail_form.send_mail()
+                if success:
+                    # 予定を削除
+                    schedule.delete()
+                    messages.success(request, f'{message} および連絡予定を完了（削除）しました。')
+                    return redirect('staff:staff_detail', pk=staff.pk)
+                else:
+                    messages.error(request, message)
+            # バリデーションエラー時はformを初期化
+            initial_data = {
+                'contact_type': schedule.contact_type,
+                'content': schedule.content,
+                'detail': schedule.detail,
+                'contacted_at': timezone.now()
+            }
+            form = StaffContactedForm(initial=initial_data)
+        else:
+            # 他のPOST（基本的には無いはずだが安全のため）
+            return redirect('staff:staff_contact_schedule_detail', pk=pk)
     else:
         # 予定の内容を初期値としてセット
         initial_data = {
@@ -825,12 +860,21 @@ def staff_contact_schedule_detail(request, pk):
         }
         form = StaffContactedForm(initial=initial_data)
 
+        # メール初期値
+        initial_mail_data = {
+            'subject': f"ご連絡: {schedule.content}",
+            'body': schedule.detail if schedule.detail else "",
+            'to_email': staff.email
+        }
+        mail_form = StaffMailForm(staff=staff, user=request.user, company=company, initial=initial_mail_data)
+
     from apps.system.logs.utils import log_view_detail
     log_view_detail(request.user, schedule)
     return render(request, 'staff/staff_contact_schedule_detail.html', {
         'schedule': schedule,
         'staff': staff,
-        'form': form
+        'form': form,
+        'mail_form': mail_form
     })
 
 # 連絡予定 編集

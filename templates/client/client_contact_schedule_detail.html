@@ -126,6 +126,65 @@
                 </form>
             </div>
         </div>
+
+        {% if has_email_users %}
+        <div class="content-box card bg-light mt-2 mb-4">
+            <div class="card-header">
+                メール送信（履歴登録・予定完了）
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="send_mail" value="1">
+                    
+                    <div class="row mb-3 align-items-center">
+                        <label for="{{ mail_form.to_user.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ mail_form.to_user.label }}</label>
+                        <div class="col-sm-9">
+                            {{ mail_form.to_user }}
+                            {% if mail_form.to_user.errors %}
+                                <div class="text-danger small">{{ mail_form.to_user.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3 align-items-center">
+                        <label for="{{ mail_form.subject.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ mail_form.subject.label }}</label>
+                        <div class="col-sm-9">
+                            {{ mail_form.subject }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3 align-items-center">
+                        <label for="{{ mail_form.body.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ mail_form.body.label }}</label>
+                        <div class="col-sm-9">
+                            {{ mail_form.body }}
+                        </div>
+                    </div>
+
+                    {% if mail_form.send_notification %}
+                    <div class="row mb-3">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-9">
+                            <div class="form-check">
+                                {{ mail_form.send_notification }}
+                                <label class="form-check-label" for="{{ mail_form.send_notification.id_for_label }}">
+                                    {{ mail_form.send_notification.label }}
+                                </label>
+                                <div class="form-text mt-0">{{ mail_form.send_notification.help_text }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-start mt-3">
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            メール送信して予定を完了
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
