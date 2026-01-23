@@ -38,6 +38,66 @@
     </div>
     {% endif %}
 
+    {% if has_staff_perm or has_client_perm %}
+    <div class="content-box card bg-light mt-2 mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>業務サマリ</span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% if has_staff_perm %}
+                <div class="col-md-6 mb-4">
+                    <div class="card bg-light h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>
+                                <i class="bi bi-people text-success"></i>
+                                スタッフ連絡予定
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center mb-3">
+                                <div class="col-6">
+                                    <h4 class="text-primary">{{ staff_schedules_yesterday }}</h4>
+                                    <small class="text-muted">昨日</small>
+                                </div>
+                                <div class="col-6">
+                                    <h4 class="text-success">{{ staff_schedules_today }}</h4>
+                                    <small class="text-muted">今日</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if has_client_perm %}
+                <div class="col-md-6 mb-4">
+                    <div class="card bg-light h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>
+                                <i class="bi bi-building text-primary"></i>
+                                クライアント連絡予定
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center mb-3">
+                                <div class="col-6">
+                                    <h4 class="text-primary">{{ client_schedules_yesterday }}</h4>
+                                    <small class="text-muted">昨日</small>
+                                </div>
+                                <div class="col-6">
+                                    <h4 class="text-success">{{ client_schedules_today }}</h4>
+                                    <small class="text-muted">今日</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
         <div class="card-header">サマリー</div>
         <div class="card-body">
