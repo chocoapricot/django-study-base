@@ -1,0 +1,54 @@
+{% extends 'common/_base.html' %}
+{% load dropdowns %}
+{% load badge_tags %}
+{% block content %}
+{% include 'staff/_staff_info_card.html' with staff=staff %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        連絡予定詳細
+    </div>
+    <div class="card-body">
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end"><strong>連絡種別</strong></div>
+            <div class="col-sm-10">
+                {% if schedule.contact_type %}
+                    <span class="badge {{ schedule.contact_type|badge_class }}">{% my_name 'contact_type' schedule.contact_type %}</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end"><strong>対応内容</strong></div>
+            <div class="col-sm-10">{{ schedule.content }}</div>
+        </div>
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end"><strong>対応詳細</strong></div>
+            <div class="col-sm-10">{{ schedule.detail|linebreaksbr }}</div>
+        </div>
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end"><strong>対応者</strong></div>
+            <div class="col-sm-10">
+                {% if schedule.created_by.last_name or schedule.created_by.first_name %}
+                    {{ schedule.created_by.last_name }} {{ schedule.created_by.first_name }}
+                {% else %}
+                    {{ schedule.created_by.username }}
+                {% endif %}
+            </div>
+        </div>
+        <div class="row mb-3 align-items-center">
+            <div class="col-sm-2 text-start text-md-end"><strong>予定日</strong></div>
+            <div class="col-sm-10">{{ schedule.contact_date|date:'Y/m/d' }}</div>
+        </div>
+        <div class="row mb-3 align-items-center">
+            <div class="col-12 d-flex justify-content-start align-items-center">
+                {% if perms.staff.change_staffcontactschedule %}
+                <a href="{% url 'staff:staff_contact_schedule_update' schedule.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
+                {% endif %}
+                {% if perms.staff.delete_staffcontactschedule %}
+                <a href="{% url 'staff:staff_contact_schedule_delete' schedule.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+                {% endif %}
+                <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </div>
+</div>
+{% endblock %}

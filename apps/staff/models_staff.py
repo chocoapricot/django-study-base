@@ -293,6 +293,26 @@ class StaffContacted(MyModel):
         return f"{self.staff} {self.contacted_at:%Y-%m-%d %H:%M} {self.content[:20]}"
 
 
+class StaffContactSchedule(MyModel):
+    """
+    スタッフへの連絡予定を管理するモデル。
+    """
+    staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='contact_schedules', verbose_name='スタッフ')
+    contact_date = models.DateField('連絡日')
+    content = models.CharField('対応内容', max_length=255, blank=False, null=False)
+    detail = models.TextField('対応詳細', blank=True, null=True)
+    contact_type = models.IntegerField('連絡種別', blank=True, null=True)
+
+    class Meta:
+        db_table = 'apps_staff_contact_schedule'
+        verbose_name = 'スタッフ連絡予定'
+        verbose_name_plural = 'スタッフ連絡予定'
+        ordering = ['-contact_date']
+
+    def __str__(self):
+        return f"{self.staff} {self.contact_date:%Y-%m-%d} {self.content[:20]}"
+
+
 class StaffQualification(MyModel):
     """
     スタッフが保有する資格情報を管理するモデル。

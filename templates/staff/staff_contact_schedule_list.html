@@ -1,0 +1,55 @@
+{% extends 'common/_base.html' %}
+{% load dropdowns %}
+{% load badge_tags %}
+{% block content %}
+{% include 'staff/_staff_info_card.html' with staff=staff %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        連絡予定一覧
+        <a href="{% url 'staff:staff_contact_schedule_create' staff.pk %}" class="btn btn-sm btn-primary me-2">連絡予定登録</a>
+    </div>
+    <div class="card-body mb-0">
+        <table class="table table-hover me-2 mt-2" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>連絡種別</th>
+                    <th>対応内容</th>
+                    <th>対応者</th>
+                    <th>予定日</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in schedules %}
+                <tr>
+                    <td>
+                        {% if s.contact_type %}
+                            <span class="badge {{ s.contact_type|badge_class }}">{% my_name 'contact_type' s.contact_type %}</span>
+                        {% endif %}
+                    </td>
+                    <td><a href="{% url 'staff:staff_contact_schedule_detail' s.pk %}">{{ s.content|truncatechars:20 }}</a></td>
+                    <td>
+                        {% if s.created_by.last_name or s.created_by.first_name %}
+                            {{ s.created_by.last_name }} {{ s.created_by.first_name }}
+                        {% else %}
+                            {{ s.created_by.username }}
+                        {% endif %}
+                    </td>
+                    <td>{{ s.contact_date|date:'Y/m/d' }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4">予定なし</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div>
+            {% include 'common/_pagination.html' with page_obj=schedules %}
+        </div>
+        <div class="row">
+            <div class="col text-left">
+                <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
