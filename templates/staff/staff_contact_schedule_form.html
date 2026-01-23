@@ -28,8 +28,13 @@
 
             <div class="row mb-3 align-items-center">
                 <label for="{{ form.contact_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.contact_date.label }}</label>
-                <div class="col-sm-6">
+                <div class="col-sm-6 d-flex align-items-center">
                     {{ form.contact_date }}
+                    <div class="ms-2 d-flex gap-1" style="flex-shrink: 0;">
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="setContactDate(1)">1ヶ月</button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="setContactDate(3)">3ヶ月</button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="setContactDate(6)">6ヶ月</button>
+                    </div>
                 </div>
             </div>
             <div class="row mb-3 align-items-center">
@@ -58,4 +63,28 @@
         </form>
     </div>
 </div>
+
+<script>
+function setContactDate(months) {
+    const contactDateInput = document.getElementById('{{ form.contact_date.id_for_label }}');
+    
+    // 基準日は今日
+    const baseDate = new Date();
+    
+    const targetDate = new Date(baseDate);
+    targetDate.setMonth(targetDate.getMonth() + months);
+
+    // 応答日が存在しない場合（月が変わってしまった場合）、その月の末日に設定
+    if (baseDate.getDate() !== targetDate.getDate()) {
+        targetDate.setDate(0);
+    }
+    
+    // YYYY-MM-DD形式で設定
+    const year = targetDate.getFullYear();
+    const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+    const day = String(targetDate.getDate()).padStart(2, '0');
+    
+    contactDateInput.value = `${year}-${month}-${day}`;
+}
+</script>
 {% endblock %}
