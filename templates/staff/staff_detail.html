@@ -608,7 +608,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </td>
                     <td>
                         {% if c.is_schedule %}
-                            {{ c.display_date|date:'Y/m/d' }} <span class="badge bg-warning text-dark">予定</span>
+                            {{ c.display_date|date:'Y/m/d' }} <i class="bi bi-alarm text-primary" title="予定"></i>
                         {% else %}
                             {{ c.at|date:'Y/m/d H:i:s' }}
                         {% endif %}

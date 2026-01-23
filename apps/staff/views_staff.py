@@ -328,7 +328,7 @@ def staff_list(request):
 
     # 所属部署の選択肢を取得（現在有効な部署のみ）
     from apps.company.models import CompanyDepartment
-    from django.utils import timezone
+
     current_date = timezone.now().date()
     department_options = CompanyDepartment.get_valid_departments(current_date)
 
@@ -728,7 +728,7 @@ def staff_detail(request, pk):
 @login_required
 @permission_required('staff.add_staffcontacted', raise_exception=True)
 def staff_contacted_create(request, staff_pk):
-    from django.utils import timezone
+
     staff = get_object_or_404(Staff, pk=staff_pk)
     if request.method == 'POST':
         form = StaffContactedForm(request.POST)
@@ -774,7 +774,7 @@ def staff_contacted_update(request, pk):
 @login_required
 @permission_required('staff.add_staffcontactschedule', raise_exception=True)
 def staff_contact_schedule_create(request, staff_pk):
-    from django.utils import timezone
+
     staff = get_object_or_404(Staff, pk=staff_pk)
     if request.method == 'POST':
         form = StaffContactScheduleForm(request.POST)
