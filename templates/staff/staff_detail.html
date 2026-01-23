@@ -563,9 +563,15 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         連絡履歴
-        {% if perms.staff.add_staffcontacted %}
-        <a href="{% url 'staff:staff_contacted_create' staff.pk %}" class="btn btn-sm btn-primary me-2">連絡登録</a>
-        {% endif %}
+        <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                連絡登録
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'staff:staff_contacted_create' staff.pk %}">連絡履歴 登録</a></li>
+                <li><a class="dropdown-item" href="{% url 'staff:staff_contact_schedule_create' staff.pk %}">連絡予定 登録</a></li>
+            </ul>
+        </div>
     </div>
     <div class="card-body mb-0">
         <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
@@ -604,6 +610,51 @@ document.addEventListener('DOMContentLoaded', function() {
     {% if staff.contacted_histories.count > 5 %}
     <div class="card-footer d-flex justify-content-center align-items-center">
         <a href="{% url 'staff:staff_contacted_list' staff.pk %}">全て表示 (全{{ staff.contacted_histories.count }}件)</a>
+    </div>
+    {% endif %}
+</div>
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        連絡予定
+    </div>
+    <div class="card-body mb-0">
+        <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
+            <thead>
+                <tr>
+                    <th>連絡種別</th>
+                    <th>対応内容</th>
+                    <th>対応者</th>
+                    <th>予定日</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in contact_schedule_list %}
+                <tr>
+                    <td>
+                        {% if s.contact_type %}
+                            <span class="badge {{ s.contact_type|badge_class }}">{% my_name 'contact_type' s.contact_type %}</span>
+                        {% endif %}
+                    </td>
+                    <td><a href="{% url 'staff:staff_contact_schedule_detail' s.pk %}">{{ s.content|truncatechars:20 }}</a></td>
+                    <td>
+                        {% if s.created_by.last_name or s.created_by.first_name %}
+                            {{ s.created_by.last_name }} {{ s.created_by.first_name }}
+                        {% else %}
+                            {{ s.created_by.username }}
+                        {% endif %}
+                    </td>
+                    <td>{{ s.contact_date|date:'Y/m/d' }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4">予定がありません</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if staff.contact_schedules.count > 5 %}
+    <div class="card-footer d-flex justify-content-center align-items-center">
+        <a href="{% url 'staff:staff_contact_schedule_list' staff.pk %}">全て表示 (全{{ staff.contact_schedules.count }}件)</a>
     </div>
     {% endif %}
 </div>

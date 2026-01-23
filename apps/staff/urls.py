@@ -5,6 +5,7 @@ from .views import (
     staff_kyushoku,
     staff_export,
     staff_contacted_create, staff_contacted_list, staff_contacted_update, staff_contacted_delete, staff_contacted_detail,
+    staff_contact_schedule_create, staff_contact_schedule_list, staff_contact_schedule_detail, staff_contact_schedule_update, staff_contact_schedule_delete,
     staff_change_history_list, staff_mail_send,
     staff_qualification_list, staff_qualification_create, staff_qualification_update, staff_qualification_delete,
     staff_skill_list, staff_skill_create, staff_skill_update, staff_skill_delete,
@@ -50,6 +51,13 @@ urlpatterns = [
     path('staff/contacted/<int:pk>/detail/', staff_contacted_detail, name='staff_contacted_detail'),
     path('staff/contacted/<int:pk>/update/', staff_contacted_update, name='staff_contacted_update'),
     path('staff/contacted/<int:pk>/delete/', staff_contacted_delete, name='staff_contacted_delete'),
+
+    # 連絡予定
+    path('staff/<int:staff_pk>/contact_schedule/create/', staff_contact_schedule_create, name='staff_contact_schedule_create'),
+    path('staff/<int:staff_pk>/contact_schedule/list/', staff_contact_schedule_list, name='staff_contact_schedule_list'),
+    path('staff/contact_schedule/<int:pk>/detail/', staff_contact_schedule_detail, name='staff_contact_schedule_detail'),
+    path('staff/contact_schedule/<int:pk>/update/', staff_contact_schedule_update, name='staff_contact_schedule_update'),
+    path('staff/contact_schedule/<int:pk>/delete/', staff_contact_schedule_delete, name='staff_contact_schedule_delete'),
     
     # メール送信
     path('staff/<int:pk>/mail/send/', staff_mail_send, name='staff_mail_send'),

@@ -11,8 +11,8 @@ from django.contrib import messages
 from apps.system.logs.utils import log_model_action
 from .forms_mail import ConnectionRequestMailForm, DisconnectionMailForm
 
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact
-from .forms import StaffForm, StaffContactedForm, StaffFileForm, StaffFaceUploadForm
+from .models import Staff, StaffContacted, StaffContactSchedule, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact
+from .forms import StaffForm, StaffContactedForm, StaffContactScheduleForm, StaffFileForm, StaffFaceUploadForm
 from .utils import get_staff_face_photo_style
 from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
@@ -495,6 +495,8 @@ def staff_detail(request, pk):
         return redirect('staff:staff_detail', pk=pk)
     # 連絡履歴（最新5件）
     contacted_list = staff.contacted_histories.all()[:5]
+    # 連絡予定（最新5件）
+    contact_schedule_list = staff.contact_schedules.all()[:5]
     # スタッフ契約（最新5件）
     from apps.contract.models import StaffContract
     staff_contracts = StaffContract.objects.filter(staff=staff).order_by('-start_date')[:5]
@@ -660,6 +662,7 @@ def staff_detail(request, pk):
     return render(request, 'staff/staff_detail.html', {
         'staff': staff,
         'contacted_list': contacted_list,
+         'contact_schedule_list': contact_schedule_list,
         'staff_contracts': staff_contracts,
         'staff_contracts_count': staff_contracts_count,
         'qualifications': qualifications,
@@ -726,6 +729,73 @@ def staff_contacted_update(request, pk):
     else:
         form = StaffContactedForm(instance=contacted)
     return render(request, 'staff/staff_contacted_form.html', {'form': form, 'staff': staff, 'contacted': contacted})
+
+
+# 連絡予定 登録
+@login_required
+@permission_required('staff.add_staffcontactschedule', raise_exception=True)
+def staff_contact_schedule_create(request, staff_pk):
+    from django.utils import timezone
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    if request.method == 'POST':
+        form = StaffContactScheduleForm(request.POST)
+        if form.is_valid():
+            contact_schedule = form.save(commit=False)
+            contact_schedule.staff = staff
+            contact_schedule.save()
+            return redirect('staff:staff_detail', pk=staff.pk)
+    else:
+        form = StaffContactScheduleForm(initial={'contact_date': timezone.now()})
+    return render(request, 'staff/staff_contact_schedule_form.html', {'form': form, 'staff': staff})
+
+# 連絡予定 一覧
+@login_required
+@permission_required('staff.view_staffcontactschedule', raise_exception=True)
+def staff_contact_schedule_list(request, staff_pk):
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    contact_schedule_qs = staff.contact_schedules.all().order_by('-contact_date')
+    paginator = Paginator(contact_schedule_qs, 20)
+    page = request.GET.get('page')
+    schedules = paginator.get_page(page)
+    return render(request, 'staff/staff_contact_schedule_list.html', {'staff': staff, 'schedules': schedules})
+
+# 連絡予定 詳細
+@login_required
+@permission_required('staff.view_staffcontactschedule', raise_exception=True)
+def staff_contact_schedule_detail(request, pk):
+    schedule = get_object_or_404(StaffContactSchedule, pk=pk)
+    staff = schedule.staff
+    from apps.system.logs.utils import log_view_detail
+    log_view_detail(request.user, schedule)
+    return render(request, 'staff/staff_contact_schedule_detail.html', {'schedule': schedule, 'staff': staff})
+
+# 連絡予定 編集
+@login_required
+@permission_required('staff.change_staffcontactschedule', raise_exception=True)
+def staff_contact_schedule_update(request, pk):
+    schedule = get_object_or_404(StaffContactSchedule, pk=pk)
+    staff = schedule.staff
+    if request.method == 'POST':
+        form = StaffContactScheduleForm(request.POST, instance=schedule)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '連絡予定を更新しました。')
+            return redirect('staff:staff_detail', pk=staff.pk)
+    else:
+        form = StaffContactScheduleForm(instance=schedule)
+    return render(request, 'staff/staff_contact_schedule_form.html', {'form': form, 'staff': staff, 'schedule': schedule})
+
+# 連絡予定 削除
+@login_required
+@permission_required('staff.delete_staffcontactschedule', raise_exception=True)
+def staff_contact_schedule_delete(request, pk):
+    schedule = get_object_or_404(StaffContactSchedule, pk=pk)
+    staff = schedule.staff
+    if request.method == 'POST':
+        schedule.delete()
+        return redirect('staff:staff_detail', pk=staff.pk)
+    return render(request, 'staff/staff_contact_schedule_confirm_delete.html', {'schedule': schedule, 'staff': staff})
+
 
 @login_required
 @permission_required('staff.change_staff', raise_exception=True)

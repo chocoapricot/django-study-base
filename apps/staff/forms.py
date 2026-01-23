@@ -2,7 +2,7 @@
 import os
 from django import forms
 from django.forms import TextInput
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact
+from .models import Staff, StaffContacted, StaffContactSchedule, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact
 from django.core.exceptions import ValidationError
 from apps.common.forms import MyRadioSelect
 
@@ -28,6 +28,33 @@ class StaffContactedForm(forms.ModelForm):
         fields = ['contacted_at', 'contact_type', 'content', 'detail']
         widgets = {
             'contacted_at': forms.DateTimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'datetime-local'}),
+            'content': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'detail': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+        }
+
+
+# スタッフ連絡予定フォーム
+class StaffContactScheduleForm(forms.ModelForm):
+    contact_type = forms.ChoiceField(
+        choices=[],
+        label='連絡種別',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from apps.system.settings.models import Dropdowns
+        self.fields['contact_type'].choices = [
+            (opt.value, opt.name)
+            for opt in Dropdowns.objects.filter(active=True, category='contact_type').order_by('disp_seq')
+        ]
+
+    class Meta:
+        model = StaffContactSchedule
+        fields = ['contact_date', 'contact_type', 'content', 'detail']
+        widgets = {
+            'contact_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'content': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'detail': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
