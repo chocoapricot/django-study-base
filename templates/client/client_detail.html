@@ -289,48 +289,75 @@
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        連絡履歴
-        {% if perms.client.add_clientcontacted %}
-        <a href="{% url 'client:client_contacted_create' client.id %}" class="btn btn-sm btn-primary">連絡登録</a>
-        {% endif %}
+        連絡履歴 / 予定
+        <div class="btn-group">
+            {% if perms.client.add_clientcontacted %}
+            <a href="{% url 'client:client_contacted_create' client.pk %}" class="btn btn-sm btn-primary">
+                連絡履歴
+            </a>
+            {% endif %}
+            <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+                {% if perms.client.add_clientcontactschedule %}
+                <li><a class="dropdown-item" href="{% url 'client:client_contact_schedule_create' client.pk %}"><i class="bi bi-alarm"></i> 連絡予定</a></li>
+                {% endif %}
+            </ul>
+        </div>
     </div>
-    <div class="card-body mb-0" style="margin-bottom: 2rem;">
+    <div class="card-body mb-0">
         <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
             <thead>
                 <tr>
                     <th>連絡種別</th>
                     <th>対応内容</th>
                     <th>対応者</th>
-                    <th>日時</th>
+                    <th>日時 / 予定日</th>
                 </tr>
             </thead>
             <tbody>
-                {% for contacted in client.contacted_histories.all|slice:":5" %}
-                <tr>
+                {% for c in contacted_combined_list %}
+                <tr {% if c.is_schedule %}class="table-warning" title="連絡予定"{% endif %}>
                     <td>
-                        {% if contacted.contact_type %}
-                            <span class="badge {{ contacted.contact_type|badge_class }}">{% my_name 'contact_type' contacted.contact_type %}</span>
+                        {% if c.contact_type %}
+                            <span class="badge {{ c.contact_type|badge_class }}">{% my_name 'contact_type' c.contact_type %}</span>
                         {% endif %}
                     </td>
-                    <td><a href="{% url 'client:client_contacted_detail' contacted.pk %}">{{ contacted.content }}</a></td>
                     <td>
-                        {% if contacted.created_by.last_name or contacted.created_by.first_name %}
-                            {{ contacted.created_by.last_name }} {{ contacted.created_by.first_name }}
+                        {% if c.is_schedule %}
+                            <a href="{% url 'client:client_contact_schedule_detail' c.pk %}">{{ c.content|truncatechars:20 }}</a>
                         {% else %}
-                            {{ contacted.created_by.username }}
+                            <a href="{% url 'client:client_contacted_detail' c.pk %}">{{ c.content|truncatechars:20 }}</a>
                         {% endif %}
                     </td>
-                    <td>{{ contacted.contacted_at|date:'Y/m/d H:i:s' }}</td>
+                    <td>
+                        {% if c.created_by.last_name or c.created_by.first_name %}
+                            {{ c.created_by.last_name }} {{ c.created_by.first_name }}
+                        {% else %}
+                            {{ c.created_by.username }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if c.is_schedule %}
+                            {{ c.display_date|date:'Y/m/d' }} <i class="bi bi-alarm text-primary" title="予定"></i>
+                        {% else %}
+                            {{ c.at|date:'Y/m/d H:i:s' }}
+                        {% endif %}
+                    </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="4">履歴がありません</td></tr>
+                <tr><td colspan="4">履歴・予定がありません</td></tr>
                 {% endfor %}
             </tbody>
         </table>
-        {% if client.contacted_histories.count > 5 %}
-        <div class="text-center">
-            <a href="{% url 'client:client_contacted_list' client.id %}" class="btn btn-link">全て表示 (全{{ client.contacted_histories.count }}件)</a>
-        </div>
+    </div>
+    <div class="card-footer d-flex justify-content-center align-items-center gap-3">
+        {% if client.contacted_histories.count > 0 %}
+        <a href="{% url 'client:client_contacted_list' client.pk %}">履歴一覧 (全{{ client.contacted_histories.count }}件)</a>
+        {% endif %}
+        {% if client.contact_schedules.count > 0 %}
+        <a href="{% url 'client:client_contact_schedule_list' client.pk %}">予定一覧 (全{{ client.contact_schedules.count }}件)</a>
         {% endif %}
     </div>
 </div>

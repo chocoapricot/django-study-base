@@ -2,6 +2,7 @@ from django.urls import path
 from .views import (
     client_list, client_create, client_detail, client_update, client_delete, client_export,
     client_contacted_create, client_contacted_list, client_contacted_update, client_contacted_delete, client_contacted_detail,
+    client_contact_schedule_create, client_contact_schedule_list, client_contact_schedule_detail, client_contact_schedule_update, client_contact_schedule_delete,
     client_change_history_list,
     client_department_create, client_department_list, client_department_update, client_department_delete, client_department_detail, client_department_change_history_list, issue_teishokubi_notification_from_department,
     client_user_create, client_user_list, client_user_detail, client_user_update, client_user_delete, client_user_mail_send,
@@ -24,6 +25,12 @@ urlpatterns = [
     path('client/contacted/<int:pk>/detail/', client_contacted_detail, name='client_contacted_detail'),
     path('client/contacted/<int:pk>/update/', client_contacted_update, name='client_contacted_update'),
     path('client/contacted/<int:pk>/delete/', client_contacted_delete, name='client_contacted_delete'),
+    # クライアント連絡予定
+    path('client/<int:client_pk>/contact_schedule/create/', client_contact_schedule_create, name='client_contact_schedule_create'),
+    path('client/<int:client_pk>/contact_schedule/list/', client_contact_schedule_list, name='client_contact_schedule_list'),
+    path('client/contact_schedule/<int:pk>/detail/', client_contact_schedule_detail, name='client_contact_schedule_detail'),
+    path('client/contact_schedule/<int:pk>/update/', client_contact_schedule_update, name='client_contact_schedule_update'),
+    path('client/contact_schedule/<int:pk>/delete/', client_contact_schedule_delete, name='client_contact_schedule_delete'),
     # 変更履歴
     path('client/<int:pk>/change_history/', client_change_history_list, name='client_change_history_list'),
     # クライアント組織

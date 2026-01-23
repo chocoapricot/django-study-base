@@ -92,9 +92,9 @@ django-study-base/
 └── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（112テーブル）
+## データベーステーブル一覧（113テーブル）
 
-### 本アプリケーション独自テーブル（95テーブル）
+### 本アプリケーション独自テーブル（96テーブル）
 
 | テーブル名 | モデル名 | 説明 |
 | --- | --- | --- |
@@ -102,6 +102,7 @@ django-study-base/
 | `apps_system_api_cache` | `ApiCache` | APIキャッシュ |
 | `apps_client` | `Client` | クライアント基本情報 |
 | `apps_client_contacted` | `ClientContacted` | クライアント連絡履歴 |
+| `apps_client_contact_schedule` | `ClientContactSchedule` | クライアント連絡予定 |
 | `apps_client_department` | `ClientDepartment` | クライアント部署情報 |
 | `apps_client_file` | `ClientFile` | クライアントファイル |
 | `apps_client_user` | `ClientUser` | クライアント担当者 |

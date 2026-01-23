@@ -1,0 +1,131 @@
+{% extends 'common/_base.html' %}
+{% load dropdowns %}
+{% load badge_tags %}
+{% block content %}
+{% include 'client/_client_info_card.html' with client=client %}
+
+<div class="row">
+    <!-- 左側：予定詳細 -->
+    <div class="col-md-6">
+        <div class="content-box card bg-light mt-2 mb-4">
+            <div class="card-header">
+                連絡予定詳細
+            </div>
+            <div class="card-body">
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-3 text-start text-md-end"><strong>連絡種別</strong></div>
+                    <div class="col-sm-9">
+                        {% if schedule.contact_type %}
+                            <span class="badge {{ schedule.contact_type|badge_class }}">{% my_name 'contact_type' schedule.contact_type %}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-3 text-start text-md-end"><strong>組織/担当者</strong></div>
+                    <div class="col-sm-9">
+                        {% if schedule.department %}{{ schedule.department.name }}{% endif %}
+                        {% if schedule.user %} / {{ schedule.user.name }}{% endif %}
+                    </div>
+                </div>
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-3 text-start text-md-end"><strong>対応内容</strong></div>
+                    <div class="col-sm-9">{{ schedule.content }}</div>
+                </div>
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-3 text-start text-md-end"><strong>対応詳細</strong></div>
+                    <div class="col-sm-9 text-break">{{ schedule.detail|linebreaksbr }}</div>
+                </div>
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-3 text-start text-md-end"><strong>予定日</strong></div>
+                    <div class="col-sm-9">{{ schedule.contact_date|date:'Y/m/d' }}</div>
+                </div>
+                <div class="row mb-3 align-items-center">
+                    <div class="col-sm-3 text-start text-md-end"><strong>対応者</strong></div>
+                    <div class="col-sm-9">
+                        {% if schedule.created_by.last_name or schedule.created_by.first_name %}
+                            {{ schedule.created_by.last_name }} {{ schedule.created_by.first_name }}
+                        {% else %}
+                            {{ schedule.created_by.username }}
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="d-flex justify-content-start align-items-center">
+                    {% if perms.client.change_clientcontactschedule %}
+                    <a href="{% url 'client:client_contact_schedule_update' schedule.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
+                    {% endif %}
+                    {% if perms.client.delete_clientcontactschedule %}
+                    <a href="{% url 'client:client_contact_schedule_delete' schedule.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
+                    {% endif %}
+                    <a href="{% url 'client:client_detail' client.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右側：履歴登録 -->
+    <div class="col-md-6">
+        <div class="content-box card bg-light mt-2 mb-4">
+            <div class="card-header">
+                連絡履歴 登録
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="register_history" value="1">
+                    
+                    <div class="row mb-3 align-items-center">
+                        <label for="{{ form.contacted_at.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ form.contacted_at.label }}</label>
+                        <div class="col-sm-9">
+                            {{ form.contacted_at }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3 align-items-center">
+                        <label for="{{ form.department.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ form.department.label }}</label>
+                        <div class="col-sm-9">
+                            {{ form.department }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3 align-items-center">
+                        <label for="{{ form.user.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ form.user.label }}</label>
+                        <div class="col-sm-9">
+                            {{ form.user }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3 align-items-center">
+                        <label for="{{ form.contact_type.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ form.contact_type.label }}</label>
+                        <div class="col-sm-9">
+                            {{ form.contact_type }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3 align-items-center">
+                        <label for="{{ form.content.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ form.content.label }}</label>
+                        <div class="col-sm-9">
+                            {{ form.content }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3 align-items-center">
+                        <label for="{{ form.detail.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ form.detail.label }}</label>
+                        <div class="col-sm-9">
+                            {{ form.detail }}
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-start mt-3">
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            履歴登録して予定を完了
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

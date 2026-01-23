@@ -13,8 +13,8 @@ from django.core.files.base import ContentFile
 from apps.system.logs.utils import log_model_action
 from apps.contract.utils import generate_teishokubi_notification_pdf
 # クライアント連絡履歴用インポート
-from .models import Client, ClientContacted, ClientDepartment, ClientUser, ClientFile
-from .forms import ClientForm, ClientContactedForm, ClientDepartmentForm, ClientUserForm, ClientFileForm
+from .models import Client, ClientContacted, ClientDepartment, ClientUser, ClientFile, ClientContactSchedule
+from .forms import ClientForm, ClientContactedForm, ClientDepartmentForm, ClientUserForm, ClientFileForm, ClientContactScheduleForm
 # from apps.api.helpers import fetch_company_info  # API呼び出し関数をインポート
 
 # ロガーの作成
@@ -67,14 +67,18 @@ def client_list(request):
     page_number = request.GET.get('page')
     clients_pages = paginator.get_page(page_number)
 
-    # 各クライアントに「接続承認済み担当者がいるか」「未承認の接続申請があるか」フラグを付与
+    # 各クライアントに「接続承認済み担当者がいるか」「未承認の接続申請があるか」「連絡予定があるか」フラグを付与
     from apps.connect.models import ConnectClient
     from apps.company.models import Company
+    from .models import ClientContactSchedule
     company = Company.objects.first()
     corporate_number = company.corporate_number if company else None
+    today = timezone.now().date()
+    
     for client in clients_pages:
         client.has_connected_approved_user = False
         client.has_pending_connection_request = False
+        client.has_contact_schedule = ClientContactSchedule.objects.filter(client=client, contact_date__gte=today).exists()
         if corporate_number:
             # 承認済みユーザーがいるか
             if ConnectClient.objects.filter(
@@ -174,8 +178,41 @@ def client_create(request):
 def client_detail(request, pk):
     client = get_object_or_404(Client, pk=pk)
     form = ClientForm(instance=client)
-    # 連絡履歴（最新5件）
-    contacted_list = client.contacted_histories.all()[:5]
+    # 連絡履歴と予定を統合
+    all_contacts = []
+    
+    # 最近の履歴を取得
+    for c in client.contacted_histories.all()[:10]:
+        all_contacts.append({
+            'type': 'history',
+            'pk': c.pk,
+            'contact_type': c.contact_type,
+            'content': c.content,
+            'created_by': c.created_by,
+            'at': c.contacted_at,
+            'is_schedule': False,
+        })
+    
+    # 最近の予定を取得
+    for s in client.contact_schedules.all()[:10]:
+        import datetime
+        # DateFieldをDateTimeField的に扱ってソート可能にする
+        dt = timezone.make_aware(datetime.datetime.combine(s.contact_date, datetime.time.min))
+        all_contacts.append({
+            'type': 'schedule',
+            'pk': s.pk,
+            'contact_type': s.contact_type,
+            'content': s.content,
+            'created_by': s.created_by,
+            'at': dt, # ソート用
+            'display_date': s.contact_date, # 表示用
+            'is_schedule': True,
+        })
+    
+    # 日付の降順でソート
+    all_contacts.sort(key=lambda x: x['at'], reverse=True)
+    contacted_combined_list = all_contacts[:5]
+
     # クライアント契約（最新5件）
     from apps.contract.models import ClientContract
     client_contracts = ClientContract.objects.filter(client=client).order_by('-start_date')[:5]
@@ -188,7 +225,6 @@ def client_detail(request, pk):
     # 各担当者が接続承認済みか、未承認の接続申請があるかを付与
     from apps.connect.models import ConnectClient
     from apps.company.models import Company
-    from django.utils import timezone
     from django.db.models import Q
     
     company = Company.objects.first()
@@ -270,7 +306,7 @@ def client_detail(request, pk):
     return render(request, 'client/client_detail.html', {
         'client': client,
         'form': form,
-        'contacted_list': contacted_list,
+        'contacted_combined_list': contacted_combined_list,
         'client_contracts': client_contracts,
         'client_contracts_count': client_contracts_count,
         'departments': departments,
@@ -322,7 +358,6 @@ def client_change_history_list(request, pk):
 @login_required
 @permission_required('client.add_clientcontacted', raise_exception=True)
 def client_contacted_create(request, client_pk):
-    from django.utils import timezone
     client = get_object_or_404(Client, pk=client_pk)
     if request.method == 'POST':
         form = ClientContactedForm(request.POST, client=client)
@@ -477,7 +512,6 @@ def client_department_detail(request, pk):
     users_count = users_in_department.count()
     
     # 各担当者にバッジ情報を追加
-    from django.utils import timezone
     from django.db.models import Q
     from apps.contract.models import ClientContract
     
@@ -587,7 +621,6 @@ def client_user_list(request, client_pk):
     # 各担当者が接続承認済みか、未承認の接続申請があるかを付与
     from apps.connect.models import ConnectClient
     from apps.company.models import Company
-    from django.utils import timezone
     from django.db.models import Q
     from apps.contract.models import ClientContract
     
@@ -750,7 +783,6 @@ def client_user_detail(request, pk):
     ).order_by('-timestamp')[:5]
     
     # 関連するクライアント契約を取得
-    from django.utils import timezone
     from django.db.models import Q
     from apps.contract.models import ClientContract
     
@@ -944,3 +976,95 @@ def issue_teishokubi_notification_from_department(request, pk):
     else:
         messages.error(request, "抵触日通知書のPDFの生成に失敗しました。")
         return redirect('client:client_department_detail', pk=pk)
+
+
+# クライアント連絡予定 登録
+@login_required
+@permission_required('client.add_clientcontactschedule', raise_exception=True)
+def client_contact_schedule_create(request, client_pk):
+    client = get_object_or_404(Client, pk=client_pk)
+    if request.method == 'POST':
+        form = ClientContactScheduleForm(request.POST, client=client)
+        if form.is_valid():
+            contact_schedule = form.save(commit=False)
+            contact_schedule.client = client
+            contact_schedule.save()
+            return redirect('client:client_detail', pk=client.pk)
+    else:
+        form = ClientContactScheduleForm(client=client, initial={'contact_date': timezone.now()})
+    return render(request, 'client/client_contact_schedule_form.html', {'form': form, 'client': client})
+
+# クライアント連絡予定 一覧
+@login_required
+@permission_required('client.view_clientcontactschedule', raise_exception=True)
+def client_contact_schedule_list(request, client_pk):
+    client = get_object_or_404(Client, pk=client_pk)
+    contact_schedule_qs = client.contact_schedules.all().order_by('-contact_date')
+    paginator = Paginator(contact_schedule_qs, 20)
+    page = request.GET.get('page')
+    schedules = paginator.get_page(page)
+    return render(request, 'client/client_contact_schedule_list.html', {'client': client, 'schedules': schedules})
+
+# クライアント連絡予定 詳細
+@login_required
+@permission_required('client.view_clientcontactschedule', raise_exception=True)
+def client_contact_schedule_detail(request, pk):
+    schedule = get_object_or_404(ClientContactSchedule, pk=pk)
+    client = schedule.client
+
+    if request.method == 'POST' and 'register_history' in request.POST:
+        form = ClientContactedForm(request.POST, client=client)
+        if form.is_valid():
+            contacted = form.save(commit=False)
+            contacted.client = client
+            contacted.save()
+            # 予定を削除
+            schedule.delete()
+            messages.success(request, '連絡履歴を登録し、対応予定を完了（削除）しました。')
+            return redirect('client:client_detail', pk=client.pk)
+    else:
+        # 予定の内容を初期値としてセット
+        initial_data = {
+            'department': schedule.department,
+            'user': schedule.user,
+            'contact_type': schedule.contact_type,
+            'content': schedule.content,
+            'detail': schedule.detail,
+            'contacted_at': timezone.now()
+        }
+        form = ClientContactedForm(client=client, initial=initial_data)
+
+    from apps.system.logs.utils import log_view_detail
+    log_view_detail(request.user, schedule)
+    return render(request, 'client/client_contact_schedule_detail.html', {
+        'schedule': schedule,
+        'client': client,
+        'form': form
+    })
+
+# クライアント連絡予定 編集
+@login_required
+@permission_required('client.change_clientcontactschedule', raise_exception=True)
+def client_contact_schedule_update(request, pk):
+    schedule = get_object_or_404(ClientContactSchedule, pk=pk)
+    client = schedule.client
+    if request.method == 'POST':
+        form = ClientContactScheduleForm(request.POST, instance=schedule, client=client)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '連絡予定を更新しました。')
+            return redirect('client:client_detail', pk=client.pk)
+    else:
+        form = ClientContactScheduleForm(instance=schedule, client=client)
+    return render(request, 'client/client_contact_schedule_form.html', {'form': form, 'client': client, 'schedule': schedule})
+
+# クライアント連絡予定 削除
+@login_required
+@permission_required('client.delete_clientcontactschedule', raise_exception=True)
+def client_contact_schedule_delete(request, pk):
+    schedule = get_object_or_404(ClientContactSchedule, pk=pk)
+    client = schedule.client
+    if request.method == 'POST':
+        schedule.delete()
+        return redirect('client:client_detail', pk=client.pk)
+    return render(request, 'client/client_contact_schedule_confirm_delete.html', {'schedule': schedule, 'client': client})

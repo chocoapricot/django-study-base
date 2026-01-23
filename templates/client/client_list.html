@@ -111,6 +111,9 @@
                 <tr>
                     <td>
                         {{ client.corporate_number }}
+                        {% if client.has_contact_schedule %}
+                            <i class="bi bi-alarm text-primary" title="連絡予定あり"></i>
+                        {% endif %}
                         {% if client.has_pending_connection_request %}
                             <i class="bi bi-arrow-up-circle" style="color:#17a2b8;" title="接続申請中"></i>
                         {% elif client.has_connected_approved_user %}

@@ -90,7 +90,56 @@ class ClientForm(forms.ModelForm):
 
 
 # クライアント組織フォーム
-from .models import ClientContacted, ClientDepartment, ClientUser
+from .models import ClientContacted, ClientDepartment, ClientUser, ClientContactSchedule
+
+class ClientContactScheduleForm(forms.ModelForm):
+    contact_type = forms.ChoiceField(
+        choices=[],
+        label='連絡種別',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        client = kwargs.pop('client', None)
+        super().__init__(*args, **kwargs)
+        from apps.system.settings.models import Dropdowns
+        self.fields['contact_type'].choices = [
+            (opt.value, opt.name)
+            for opt in Dropdowns.objects.filter(active=True, category='contact_type').order_by('disp_seq')
+        ]
+        
+        # クライアントが指定されている場合、組織と担当者の選択肢を絞り込む
+        if client:
+            self.fields['department'].queryset = ClientDepartment.objects.filter(client=client).order_by('display_order', 'name')
+            self.fields['user'].queryset = ClientUser.objects.filter(client=client).order_by('display_order', 'name_last', 'name_first')
+        else:
+            self.fields['department'].queryset = ClientDepartment.objects.none()
+            self.fields['user'].queryset = ClientUser.objects.none()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        department = cleaned_data.get('department')
+        user = cleaned_data.get('user')
+
+        if department and user:
+            # 担当者が指定の所属に属しているかチェック
+            if user.department != department:
+                self.add_error('user', '指定された担当者はこの所属にはいません。')
+
+        return cleaned_data
+
+    class Meta:
+        model = ClientContactSchedule
+        fields = ['contact_date', 'department', 'user', 'contact_type', 'content', 'detail']
+        widgets = {
+            'contact_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'department': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'user': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'content': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'detail': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+        }
+
 
 class ClientDepartmentForm(forms.ModelForm):
     def clean_phone_number(self):

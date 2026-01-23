@@ -1,0 +1,82 @@
+{% extends 'common/_base.html' %}
+{% load dropdowns %}
+{% load badge_tags %}
+
+{% block content %}
+{% include 'client/_client_info_card.html' with client=client %}
+
+<div class="card mt-2">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-calendar-event"></i> 連絡予定一覧</span>
+        <a href="{% url 'client:client_contact_schedule_create' client.pk %}" class="btn btn-sm btn-primary">
+            <i class="bi bi-plus-lg"></i> 予定追加
+        </a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 150px;">予定日</th>
+                        <th style="width: 120px;">種別</th>
+                        <th>組織/担当者</th>
+                        <th>内容</th>
+                        <th style="width: 150px;">作成者</th>
+                        <th style="width: 100px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for schedule in schedules %}
+                    <tr>
+                        <td>{{ schedule.contact_date|date:'Y/m/d' }}</td>
+                        <td>
+                            {% if schedule.contact_type %}
+                            <span class="badge {{ schedule.contact_type|badge_class }}">{% my_name 'contact_type' schedule.contact_type %}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="small">
+                                {% if schedule.department %}{{ schedule.department.name }}{% endif %}
+                                {% if schedule.user %} / {{ schedule.user.name }}{% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <a href="{% url 'client:client_contact_schedule_detail' schedule.pk %}">
+                                {{ schedule.content }}
+                            </a>
+                        </td>
+                        <td>
+                            <div class="small text-muted">
+                                {% if schedule.created_by.last_name or schedule.created_by.first_name %}
+                                    {{ schedule.created_by.last_name }} {{ schedule.created_by.first_name }}
+                                {% else %}
+                                    {{ schedule.created_by.username }}
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="text-end">
+                            <a href="{% url 'client:client_contact_schedule_update' schedule.pk %}" class="btn btn-sm btn-outline-primary py-0">編集</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">連絡予定はありません。</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if schedules.has_other_pages %}
+    <div class="card-footer">
+        {% include 'common/_pagination.html' with page_obj=schedules %}
+    </div>
+    {% endif %}
+</div>
+
+<div class="mt-3">
+    <a href="{% url 'client:client_detail' client.pk %}" class="btn btn-sm btn-secondary">
+        <i class="bi bi-arrow-left"></i> 詳細に戻る
+    </a>
+</div>
+{% endblock %}

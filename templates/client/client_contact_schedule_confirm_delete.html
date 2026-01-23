@@ -1,0 +1,43 @@
+{% extends 'common/_base.html' %}
+{% load dropdowns %}
+
+{% block content %}
+{% include 'client/_client_info_card.html' with client=client %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header bg-dark text-white">連絡予定の削除</div>
+    <div class="card-body">
+        <p>以下の連絡予定を削除しますか？この操作は取り消せません。</p>
+        
+        <table class="table table-bordered bg-white">
+            <tr>
+                <th class="table-light" style="width: 200px;">予定日</th>
+                <td>{{ schedule.contact_date|date:'Y/m/d' }}</td>
+            </tr>
+            <tr>
+                <th class="table-light">種別</th>
+                <td>{% if schedule.contact_type %}{% my_name 'contact_type' schedule.contact_type %}{% else %}-{% endif %}</td>
+            </tr>
+            <tr>
+                <th class="table-light">組織/担当者</th>
+                <td>
+                    {% if schedule.department %}{{ schedule.department.name }}{% endif %}
+                    {% if schedule.user %} / {{ schedule.user.name }}{% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th class="table-light">対応内容</th>
+                <td>{{ schedule.content }}</td>
+            </tr>
+        </table>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-dark me-2">削除する</button>
+                <a href="{% url 'client:client_contact_schedule_detail' schedule.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

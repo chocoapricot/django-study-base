@@ -64,6 +64,7 @@ django-study-base/
 | `accounts_myuser_user_permissions` | ユーザーと権限の関連 |
 | `apps_client` | クライアント基本情報 |
 | `apps_client_contacted` | クライアント連絡履歴 |
+| `apps_client_contact_schedule` | クライアント連絡予定 |
 | `apps_client_department` | クライアント部署情報 |
 | `apps_client_file` | クライアントファイル |
 | `apps_client_user` | クライアント担当者 |

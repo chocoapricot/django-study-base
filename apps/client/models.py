@@ -222,6 +222,28 @@ class ClientContacted(MyModel):
         return f"{self.client} {self.contacted_at:%Y-%m-%d %H:%M} {self.content[:20]}"
 
 
+class ClientContactSchedule(MyModel):
+    """
+    クライアント企業への連絡予定を管理するモデル。
+    """
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='contact_schedules', verbose_name='クライアント')
+    department = models.ForeignKey(ClientDepartment, on_delete=models.SET_NULL, blank=True, null=True, related_name='contact_schedules', verbose_name='組織')
+    user = models.ForeignKey(ClientUser, on_delete=models.SET_NULL, blank=True, null=True, related_name='contact_schedules', verbose_name='担当者')
+    contact_date = models.DateField('連絡日')
+    content = models.CharField('対応内容', max_length=255, blank=False, null=False)
+    detail = models.TextField('対応詳細', blank=True, null=True)
+    contact_type = models.IntegerField('連絡種別', blank=True, null=True)
+
+    class Meta:
+        db_table = 'apps_client_contact_schedule'
+        verbose_name = 'クライアント連絡予定'
+        verbose_name_plural = 'クライアント連絡予定'
+        ordering = ['-contact_date']
+
+    def __str__(self):
+        return f"{self.client} {self.contact_date:%Y-%m-%d} {self.content[:20]}"
+
+
 class ClientFile(MyModel):
     """クライアントに関連する添付ファイルを管理するモデル。"""
     client = models.ForeignKey(
