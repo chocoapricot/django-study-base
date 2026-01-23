@@ -259,8 +259,8 @@ def information_detail(request, pk):
     }
     return render(request, 'home/information_detail.html', context)
 
-from apps.staff.models import Staff
-from apps.client.models import Client, ClientDepartment, ClientUser, ClientContacted, ClientFile
+from apps.staff.models import Staff, StaffContactSchedule
+from apps.client.models import Client, ClientDepartment, ClientUser, ClientContacted, ClientFile, ClientContactSchedule
 from apps.company.models import CompanyDepartment, CompanyUser
 from apps.connect.models import (
     ConnectStaff, ConnectClient, ConnectStaffAgree,
@@ -288,6 +288,7 @@ def start_page(request):
     models_to_delete = [
         # 契約
         ContractAssignment, ClientContract, StaffContract,
+        StaffContactSchedule, ClientContactSchedule,
         ClientContractNumber, StaffContractNumber, StaffContractTeishokubi,
         ClientContractPrint, StaffContractPrint, ContractAssignmentConfirm,
         ContractAssignmentHaken, ContractAssignmentHakenPrint,
@@ -370,8 +371,11 @@ from django.db import transaction
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import user_passes_test
-from apps.staff.models import Staff
-from apps.client.models import Client, ClientDepartment, ClientUser, ClientContacted, ClientFile
+from apps.staff.models import Staff, StaffContactSchedule
+from apps.client.models import (
+    Client, ClientDepartment, ClientUser, ClientContacted, ClientFile,
+    ClientContactSchedule
+)
 from apps.company.models import CompanyDepartment, CompanyUser
 from apps.connect.models import (
     ConnectStaff, ConnectClient, ConnectStaffAgree,
@@ -441,6 +445,7 @@ def delete_application_data(request):
 
             # 6. クライアント関連データ (ClientUserなどがClientを参照)
             ClientFile.objects.all().delete()
+            ClientContactSchedule.objects.all().delete()
             ClientContacted.objects.all().delete()
             ClientUser.objects.all().delete()
             ClientDepartment.objects.all().delete()
@@ -459,6 +464,7 @@ def delete_application_data(request):
             StaffProfileDisability.objects.all().delete()
             StaffProfileContact.objects.all().delete()
             StaffProfile.objects.all().delete()
+            StaffContactSchedule.objects.all().delete()
 
             # 8. スタッフ本体
             Staff.objects.all().delete()
