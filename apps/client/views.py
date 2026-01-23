@@ -39,12 +39,21 @@ def client_list(request):
     
     # キーワード検索
     if query:
-        clients = clients.filter(
-            Q(name__icontains=query)
-            | Q(name_furigana__icontains=query)
-            | Q(address__icontains=query)
-            | Q(memo__icontains=query)
-        )
+        if query.startswith('contact_date:'):
+            date_str = query.replace('contact_date:', '')
+            client_ids = ClientContactSchedule.objects.filter(contact_date=date_str).values_list('client_id', flat=True)
+            clients = clients.filter(id__in=client_ids)
+        elif query.startswith('contact_date_before:'):
+            date_str = query.replace('contact_date_before:', '')
+            client_ids = ClientContactSchedule.objects.filter(contact_date__lt=date_str).values_list('client_id', flat=True)
+            clients = clients.filter(id__in=client_ids)
+        else:
+            clients = clients.filter(
+                Q(name__icontains=query)
+                | Q(name_furigana__icontains=query)
+                | Q(address__icontains=query)
+                | Q(memo__icontains=query)
+            )
     
     # 登録区分での絞り込み
     if client_regist_status:

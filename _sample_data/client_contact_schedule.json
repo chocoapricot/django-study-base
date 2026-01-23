@@ -1,0 +1,87 @@
+[
+    {
+        "model": "client.clientcontactschedule",
+        "pk": 1,
+        "fields": {
+            "created_at": "2026-02-10T09:00:00Z",
+            "created_by": 1,
+            "updated_at": "2026-02-10T09:00:00Z",
+            "updated_by": 1,
+            "client": 3,
+            "department": null,
+            "user": null,
+            "contact_date": "2026-02-10",
+            "content": "定期訪問",
+            "detail": "現在の稼働状況と新規案件のヒアリング",
+            "contact_type": 20
+        }
+    },
+    {
+        "model": "client.clientcontactschedule",
+        "pk": 2,
+        "fields": {
+            "created_at": "2026-02-11T09:00:00Z",
+            "created_by": 1,
+            "updated_at": "2026-02-11T09:00:00Z",
+            "updated_by": 1,
+            "client": 4,
+            "department": null,
+            "user": null,
+            "contact_date": "2026-02-11",
+            "content": "見積書の提出",
+            "detail": "新規プロジェクトの見積書をメールで送付",
+            "contact_type": 50
+        }
+    },
+    {
+        "model": "client.clientcontactschedule",
+        "pk": 3,
+        "fields": {
+            "created_at": "2026-02-12T09:00:00Z",
+            "created_by": 1,
+            "updated_at": "2026-02-12T09:00:00Z",
+            "updated_by": 1,
+            "client": 5,
+            "department": null,
+            "user": null,
+            "contact_date": "2026-02-12",
+            "content": "契約締結の打ち合わせ",
+            "detail": "基本契約書の修正案について協議",
+            "contact_type": 20
+        }
+    },
+    {
+        "model": "client.clientcontactschedule",
+        "pk": 4,
+        "fields": {
+            "created_at": "2026-03-01T09:00:00Z",
+            "created_by": 1,
+            "updated_at": "2026-03-01T09:00:00Z",
+            "updated_by": 1,
+            "client": 6,
+            "department": null,
+            "user": null,
+            "contact_date": "2026-03-01",
+            "content": "請求金額の確認",
+            "detail": "今月の請求内容に相違がないか確認",
+            "contact_type": 10
+        }
+    },
+    {
+        "model": "client.clientcontactschedule",
+        "pk": 5,
+        "fields": {
+            "created_at": "2026-03-14T09:00:00Z",
+            "created_by": 1,
+            "updated_at": "2026-03-14T09:00:00Z",
+            "updated_by": 1,
+            "client": 8,
+            "department": null,
+            "user": null,
+            "contact_date": "2026-03-14",
+            "content": "人員補充の提案",
+            "detail": "欠員が出たポジションへのスタッフ提案",
+            "contact_type": 20
+        }
+    }
+]

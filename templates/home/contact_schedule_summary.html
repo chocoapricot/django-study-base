@@ -37,6 +37,11 @@
                 <thead class="table-light">
                     <tr>
                         <th style="min-width: 100px;">区分</th>
+                        <th style="min-width: 80px; background-color: #fff0f0;">
+                            <div class="small">過去</div>
+                            <div class="text-danger">昨日より前</div>
+                            <span class="badge bg-danger">期限切</span>
+                        </th>
                         {% for day in daily_schedules %}
                         <th class="{% if day.is_today %}table-today{% elif day.is_yesterday %}table-yesterday{% elif day.is_holiday or day.weekday_num == 6 %}bg-holiday{% elif day.weekday_num == 5 %}bg-saturday{% endif %}">
                             <div class="small">{{ day.date|date:'m/d' }}</div>
@@ -63,6 +68,15 @@
                     {% if has_staff_perm %}
                     <tr>
                         <th class="table-light">スタッフ</th>
+                        <td style="background-color: #fff9f9;">
+                            {% if past_staff_count > 0 %}
+                                <a href="{% url 'staff:staff_list' %}?q=contact_date_before:{{ yesterday|date:'Y-m-d' }}" class="badge rounded-pill bg-danger text-white text-decoration-none schedule-badge">
+                                    {{ past_staff_count }}
+                                </a>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
                         {% for day in daily_schedules %}
                         <td class="{% if day.is_today %}table-today{% elif day.is_yesterday %}table-yesterday{% elif day.is_holiday or day.weekday_num == 6 %}bg-holiday{% elif day.weekday_num == 5 %}bg-saturday{% endif %}">
                             {% if day.staff_count > 0 %}
@@ -87,12 +101,21 @@
                     {% if has_client_perm %}
                     <tr>
                         <th class="table-light">クライアント</th>
+                        <td style="background-color: #fff9f9;">
+                            {% if past_client_count > 0 %}
+                                <a href="{% url 'client:client_list' %}?q=contact_date_before:{{ yesterday|date:'Y-m-d' }}" class="badge rounded-pill bg-danger text-white text-decoration-none schedule-badge">
+                                    {{ past_client_count }}
+                                </a>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
                         {% for day in daily_schedules %}
                         <td class="{% if day.is_today %}table-today{% elif day.is_yesterday %}table-yesterday{% elif day.is_holiday or day.weekday_num == 6 %}bg-holiday{% elif day.weekday_num == 5 %}bg-saturday{% endif %}">
                             {% if day.client_count > 0 %}
-                                <span class="badge rounded-pill bg-primary text-white schedule-badge">
+                                <a href="{% url 'client:client_list' %}?q=contact_date:{{ day.date|date:'Y-m-d' }}" class="badge rounded-pill bg-primary text-white text-decoration-none schedule-badge">
                                     {{ day.client_count }}
-                                </span>
+                                </a>
                             {% else %}
                                 <span class="text-muted">-</span>
                             {% endif %}
@@ -138,10 +161,12 @@
                     </thead>
                     <tbody>
                         {% for schedule in staff_schedules %}
-                        <tr class="{% if schedule.contact_date == today or schedule.contact_date == yesterday %}table-warning{% endif %}">
+                        <tr class="{% if schedule.contact_date < yesterday %}table-danger{% elif schedule.contact_date == today or schedule.contact_date == yesterday %}table-warning{% endif %}">
                             <td class="{% if schedule.is_holiday or schedule.weekday_num == 6 %}text-sunday-holiday{% elif schedule.weekday_num == 5 %}text-saturday{% endif %}">
                                 {{ schedule.contact_date|date:'Y/m/d' }}({{ schedule.day_of_week }})
-                                {% if schedule.contact_date == today %}
+                                {% if schedule.contact_date < yesterday %}
+                                    <span class="badge bg-danger ms-1" style="font-size: 0.6rem;">昨日より前</span>
+                                {% elif schedule.contact_date == today %}
                                     <span class="badge bg-primary ms-1" style="font-size: 0.6rem;">本日</span>
                                 {% elif schedule.contact_date == yesterday %}
                                     <span class="badge bg-secondary ms-1" style="font-size: 0.6rem;">昨日</span>
@@ -188,10 +213,12 @@
                     </thead>
                     <tbody>
                         {% for schedule in client_schedules %}
-                        <tr class="{% if schedule.contact_date == today or schedule.contact_date == yesterday %}table-warning{% endif %}">
+                        <tr class="{% if schedule.contact_date < yesterday %}table-danger{% elif schedule.contact_date == today or schedule.contact_date == yesterday %}table-warning{% endif %}">
                             <td class="{% if schedule.is_holiday or schedule.weekday_num == 6 %}text-sunday-holiday{% elif schedule.weekday_num == 5 %}text-saturday{% endif %}">
                                 {{ schedule.contact_date|date:'Y/m/d' }}({{ schedule.day_of_week }})
-                                {% if schedule.contact_date == today %}
+                                {% if schedule.contact_date < yesterday %}
+                                    <span class="badge bg-danger ms-1" style="font-size: 0.6rem;">昨日より前</span>
+                                {% elif schedule.contact_date == today %}
                                     <span class="badge bg-primary ms-1" style="font-size: 0.6rem;">本日</span>
                                 {% elif schedule.contact_date == yesterday %}
                                     <span class="badge bg-secondary ms-1" style="font-size: 0.6rem;">昨日</span>

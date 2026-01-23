@@ -265,19 +265,28 @@ def staff_list(request):
 
     # キーワード検索
     if query:
-        staffs = staffs.filter(
-            Q(name_last__icontains=query)
-            |Q(name_first__icontains=query)
-            |Q(name_kana_last__icontains=query)
-            |Q(name_kana_first__icontains=query)
-            |Q(name__icontains=query)
-            |Q(address_kana__icontains=query)
-            |Q(address1__icontains=query)
-            |Q(address2__icontains=query)
-            |Q(address3__icontains=query)
-            |Q(email__icontains=query)
-            |Q(employee_no__icontains=query)
-        )
+        if query.startswith('contact_date:'):
+            date_str = query.replace('contact_date:', '')
+            staff_ids = StaffContactSchedule.objects.filter(contact_date=date_str).values_list('staff_id', flat=True)
+            staffs = staffs.filter(id__in=staff_ids)
+        elif query.startswith('contact_date_before:'):
+            date_str = query.replace('contact_date_before:', '')
+            staff_ids = StaffContactSchedule.objects.filter(contact_date__lt=date_str).values_list('staff_id', flat=True)
+            staffs = staffs.filter(id__in=staff_ids)
+        else:
+            staffs = staffs.filter(
+                Q(name_last__icontains=query)
+                |Q(name_first__icontains=query)
+                |Q(name_kana_last__icontains=query)
+                |Q(name_kana_first__icontains=query)
+                |Q(name__icontains=query)
+                |Q(address_kana__icontains=query)
+                |Q(address1__icontains=query)
+                |Q(address2__icontains=query)
+                |Q(address3__icontains=query)
+                |Q(email__icontains=query)
+                |Q(employee_no__icontains=query)
+            )
 
     # 登録区分での絞り込み
     if staff_regist_status_filter:

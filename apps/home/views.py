@@ -37,6 +37,10 @@ def contact_schedule_summary(request):
     yesterday = today - timedelta(days=1)
     jp_weeks = ['月', '火', '水', '木', '金', '土', '日']
     
+    # 昨日より前（過去分）の件数
+    past_staff_count = StaffContactSchedule.objects.filter(contact_date__lt=yesterday).count() if has_staff_perm else 0
+    past_client_count = ClientContactSchedule.objects.filter(contact_date__lt=yesterday).count() if has_client_perm else 0
+
     daily_schedules = []
     # 昨日から10日間
     for i in range(10):
@@ -69,11 +73,10 @@ def contact_schedule_summary(request):
         contact_date__lte=one_month_later
     ).count() if has_client_perm else 0
 
-    # 10日間の予定詳細リストを取得
+    # 10日間の予定詳細リストを取得（過去分も含む）
     staff_schedules = []
     if has_staff_perm:
         staff_schedules = StaffContactSchedule.objects.filter(
-            contact_date__gte=yesterday,
             contact_date__lt=start_of_other
         ).select_related('staff').order_by('contact_date', 'id')
         for s in staff_schedules:
@@ -84,26 +87,25 @@ def contact_schedule_summary(request):
     client_schedules = []
     if has_client_perm:
         client_schedules = ClientContactSchedule.objects.filter(
-            contact_date__gte=yesterday,
             contact_date__lt=start_of_other
         ).select_related('client').order_by('contact_date', 'id')
         for s in client_schedules:
             s.day_of_week = jp_weeks[s.contact_date.weekday()]
             s.weekday_num = s.contact_date.weekday()
             s.is_holiday = jpholiday.is_holiday(s.contact_date)
-    
-    # 1ヶ月以内の全予定数（アイコンバッジ等で将来的に使えるよう）
+
+    # 1ヶ月以内の全予定数
     total_scheduled_count = StaffContactSchedule.objects.filter(
-        contact_date__gte=yesterday,
         contact_date__lte=one_month_later
     ).count() if has_staff_perm else 0
     if has_client_perm:
         total_scheduled_count += ClientContactSchedule.objects.filter(
-            contact_date__gte=yesterday,
             contact_date__lte=one_month_later
         ).count()
 
     context = {
+        'past_staff_count': past_staff_count,
+        'past_client_count': past_client_count,
         'daily_schedules': daily_schedules,
         'other_staff_count': other_staff_count,
         'other_client_count': other_client_count,
