@@ -87,37 +87,29 @@
         <div class="row mb-1 align-items-center">
             <div class="col-sm-2 text-start text-md-end"><strong>開始位置</strong></div>
             <div class="col-sm-10">
-                {% if timerecord.start_latitude %}
-                    {% if timerecord.start_address %}
-                        {{ timerecord.start_address }}
-                    {% else %}
-                        <i class="bi bi-geo-alt"></i> 
-                        {{ timerecord.start_latitude|floatformat:4 }}, {{ timerecord.start_longitude|floatformat:4 }}
-                    {% endif %}
-                    <a href="{% parameter 'GOOGLE_MAPS_URL_BASE' %}{{ timerecord.start_latitude }},{{ timerecord.start_longitude }}" target="_blank" class="ms-1" style="color:green;" title="Google Mapで開く">
-                        <i class="bi bi-box-arrow-up-right"></i>
-                    </a>
+                {% if timerecord.start_address %}
+                    {{ timerecord.start_address }}
                 {% else %}
-                    -
+                    <i class="bi bi-geo-alt"></i>
+                    {{ timerecord.start_latitude|floatformat:4 }}, {{ timerecord.start_longitude|floatformat:4 }}
                 {% endif %}
+                <a href="{% parameter 'GOOGLE_MAPS_URL_BASE' %}{{ timerecord.start_latitude }},{{ timerecord.start_longitude }}" target="_blank" class="ms-1" style="color:green;" title="Google Mapで開く">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                </a>
             </div>
         </div>
         <div class="row mb-3 align-items-center">
             <div class="col-sm-2 text-start text-md-end"><strong>終了位置</strong></div>
             <div class="col-sm-10">
-                {% if timerecord.end_latitude %}
-                    {% if timerecord.end_address %}
-                        {{ timerecord.end_address }}
-                    {% else %}
-                        <i class="bi bi-geo-alt"></i> 
-                        {{ timerecord.end_latitude|floatformat:4 }}, {{ timerecord.end_longitude|floatformat:4 }}
-                    {% endif %}
-                    <a href="{% parameter 'GOOGLE_MAPS_URL_BASE' %}{{ timerecord.end_latitude }},{{ timerecord.end_longitude }}" target="_blank" class="ms-1" style="color:green;" title="Google Mapで開く">
-                        <i class="bi bi-box-arrow-up-right"></i>
-                    </a>
+                {% if timerecord.end_address %}
+                    {{ timerecord.end_address }}
                 {% else %}
-                    -
+                    <i class="bi bi-geo-alt"></i>
+                    {{ timerecord.end_latitude|floatformat:4 }}, {{ timerecord.end_longitude|floatformat:4 }}
                 {% endif %}
+                <a href="{% parameter 'GOOGLE_MAPS_URL_BASE' %}{{ timerecord.end_latitude }},{{ timerecord.end_longitude }}" target="_blank" class="ms-1" style="color:green;" title="Google Mapで開く">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                </a>
             </div>
         </div>
         
@@ -173,34 +165,26 @@
                         </td>
                         <td>{{ break.break_hours_display }}</td>
                         <td>
-                            {% if break.start_latitude %}
-                                {% if break.start_address %}
-                                    {{ break.start_address }}
-                                {% else %}
-                                    <i class="bi bi-geo-alt"></i> 
-                                    {{ break.start_latitude|floatformat:4 }}, {{ break.start_longitude|floatformat:4 }}
-                                {% endif %}
-                                <a href="{% parameter 'GOOGLE_MAPS_URL_BASE' %}{{ break.start_latitude }},{{ break.start_longitude }}" target="_blank" class="ms-1" style="color:green;" title="Google Mapで開く">
-                                    <i class="bi bi-box-arrow-up-right"></i>
-                                </a>
+                            {% if break.start_address %}
+                                {{ break.start_address }}
                             {% else %}
-                                -
+                                <i class="bi bi-geo-alt"></i>
+                                {{ break.start_latitude|floatformat:4 }}, {{ break.start_longitude|floatformat:4 }}
                             {% endif %}
+                            <a href="{% parameter 'GOOGLE_MAPS_URL_BASE' %}{{ break.start_latitude }},{{ break.start_longitude }}" target="_blank" class="ms-1" style="color:green;" title="Google Mapで開く">
+                                <i class="bi bi-box-arrow-up-right"></i>
+                            </a>
                         </td>
                         <td>
-                            {% if break.end_latitude %}
-                                {% if break.end_address %}
-                                    {{ break.end_address }}
-                                {% else %}
-                                    <i class="bi bi-geo-alt"></i> 
-                                    {{ break.end_latitude|floatformat:4 }}, {{ break.end_longitude|floatformat:4 }}
-                                {% endif %}
-                                <a href="{% parameter 'GOOGLE_MAPS_URL_BASE' %}{{ break.end_latitude }},{{ break.end_longitude }}" target="_blank" class="ms-1" style="color:green;" title="Google Mapで開く">
-                                    <i class="bi bi-box-arrow-up-right"></i>
-                                </a>
+                            {% if break.end_address %}
+                                {{ break.end_address }}
                             {% else %}
-                                -
+                                <i class="bi bi-geo-alt"></i>
+                                {{ break.end_latitude|floatformat:4 }}, {{ break.end_longitude|floatformat:4 }}
                             {% endif %}
+                            <a href="{% parameter 'GOOGLE_MAPS_URL_BASE' %}{{ break.end_latitude }},{{ break.end_longitude }}" target="_blank" class="ms-1" style="color:green;" title="Google Mapで開く">
+                                <i class="bi bi-box-arrow-up-right"></i>
+                            </a>
                         </td>
                         <td>
                             <a href="{% url 'kintai:timerecord_break_update' break.pk %}" class="btn btn-dark btn-sm me-1" title="編集"><i class="bi bi-pencil"></i></a>
