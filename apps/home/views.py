@@ -3,13 +3,14 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from apps.staff.models import Staff
 from apps.client.models import Client
-from apps.company.models import Company
+from apps.company.models import Company, CompanyUser
 from apps.contract.models import ClientContract, StaffContract
 from apps.connect.models import (
     ConnectStaff, ConnectClient, MynumberRequest, ProfileRequest,
     BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
 )
 from apps.master.models import Information
+from apps.staff.models_inquiry import StaffInquiry
 from django.utils import timezone
 from django.db.models import Q
 from apps.common.constants import Constants
@@ -231,6 +232,23 @@ def home(request):
         Q(end_date__gte=today) | Q(end_date__isnull=True)
     ).count()
 
+    has_inquiry_perm = request.user.has_perm('staff.view_staffinquiry')
+    unanswered_inquiry_count = 0
+    if has_inquiry_perm:
+        # 会社ユーザーまたは管理者であるかを判定
+        is_company_or_admin = request.user.is_superuser or CompanyUser.objects.filter(email=request.user.email).exists()
+
+        if is_company_or_admin:
+            # 自分が担当者の問い合わせ or 管理者
+            if request.user.is_superuser:
+                inquiries_qs = StaffInquiry.objects.all()
+            else:
+                # CompanyUserとしての権限
+                my_companies = CompanyUser.objects.filter(email=request.user.email).values_list('corporate_number', flat=True)
+                inquiries_qs = StaffInquiry.objects.filter(corporate_number__in=my_companies)
+
+            unanswered_inquiry_count = inquiries_qs.filter(status='open', last_message_by='staff').count()
+
     context = {
         'staff_count': staff_count,
         'approved_staff_count': approved_staff_count,
@@ -249,6 +267,8 @@ def home(request):
         'client_schedules_yesterday': client_schedules_yesterday,
         'pending_connect_staff_count': ConnectStaff.objects.filter(status=Constants.CONNECT_STATUS.PENDING).count(),
         'pending_connect_client_count': ConnectClient.objects.filter(status=Constants.CONNECT_STATUS.PENDING).count(),
+        'has_inquiry_perm': has_inquiry_perm,
+        'unanswered_inquiry_count': unanswered_inquiry_count,
     }
 
     return render(request, 'home/home.html', context)
