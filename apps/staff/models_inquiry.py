@@ -43,9 +43,6 @@ class StaffInquiry(MyModel):
         '件名',
         max_length=200
     )
-    content = models.TextField(
-        '内容'
-    )
     attachment = models.FileField(
         '添付ファイル',
         upload_to='inquiry_attachments/%Y/%m/%d/',

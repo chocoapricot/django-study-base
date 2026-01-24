@@ -43,24 +43,6 @@
             </div>
         </div>
 
-        <div class="row mb-3">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>内容</strong></label>
-            <div class="col-sm-10">
-                <div class="p-3 bg-white border rounded shadow-sm" style="white-space: pre-wrap; box-shadow: 2px 2px 5px rgba(0,0,0,0.1) !important;">{{ inquiry.content }}</div>
-                {% if inquiry.attachment %}
-                <div class="mt-2 text-start">
-                    <div class="small">
-                        <i class="bi bi-paperclip text-muted"></i>
-                        <a href="{{ inquiry.attachment.url }}" target="_blank" class="text-decoration-underline text-secondary">
-                            {{ inquiry.attachment|basename }}
-                        </a>
-                        <span class="text-muted ms-1" style="font-size: 0.85em;">({{ inquiry.attachment.size|filesizeformat }})</span>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
         <hr>
 
         <!-- メッセージ履歴 -->
@@ -203,7 +185,7 @@
                 {% if inquiry.status == 'open' %}
                 <form action="{% url 'staff:staff_inquiry_toggle_status' inquiry.pk %}" method="post" class="d-inline-block ms-2">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-dark px-3 shadow-sm">完了にする</button>
+                    <button type="submit" class="btn btn-sm btn-dark px-3 shadow-sm" onclick="return confirm('この問い合わせを完了にしてよろしいですか？');">完了にする</button>
                 </form>
                 {% endif %}
             </div>

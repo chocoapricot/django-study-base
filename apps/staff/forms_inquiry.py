@@ -4,9 +4,14 @@ from apps.connect.models import ConnectStaff
 from apps.company.models import Company
 
 class StaffInquiryForm(forms.ModelForm):
+    content = forms.CharField(
+        label='内容',
+        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'お問い合わせ内容を入力してください', 'rows': 5})
+    )
+
     class Meta:
         model = StaffInquiry
-        fields = ['corporate_number', 'subject', 'content']
+        fields = ['corporate_number', 'subject']
         widgets = {
             'corporate_number': forms.Select(attrs={'class': 'form-select'}),
             'subject': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '件名を入力してください'}),
@@ -79,9 +84,14 @@ class StaffInquiryMessageForm(forms.ModelForm):
             self.fields.pop('attachment')
 
 class StaffInquiryFromAdminForm(forms.ModelForm):
+    content = forms.CharField(
+        label='内容',
+        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'メッセージ内容を入力してください', 'rows': 5})
+    )
+
     class Meta:
         model = StaffInquiry
-        fields = ['subject', 'content', 'attachment']
+        fields = ['subject', 'attachment']
         widgets = {
             'subject': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '件名を入力してください'}),
             'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'メッセージ内容を入力してください', 'rows': 5}),

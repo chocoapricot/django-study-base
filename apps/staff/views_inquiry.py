@@ -70,6 +70,16 @@ def staff_inquiry_create(request):
             inquiry.inquiry_from = 'staff'
             inquiry.last_message_by = 'staff'
             inquiry.save()
+
+            # フォームから content を取得して最初のメッセージとして保存
+            content = form.cleaned_data.get('content')
+            if content:
+                StaffInquiryMessage.objects.create(
+                    inquiry=inquiry,
+                    user=request.user,
+                    content=content,
+                    # attachmentはフォームに含まれないので、別途処理が必要な場合は追加
+                )
             
             # ログ記録
             log_model_action(request.user, 'create', inquiry)
@@ -239,7 +249,20 @@ def staff_inquiry_create_for_staff(request, staff_pk):
             inquiry.corporate_number = corporate_number
             inquiry.inquiry_from = 'company'
             inquiry.last_message_by = 'company'
+            inquiry.attachment = None  # StaffInquiry自体のattachmentは使わない
             inquiry.save()
+            
+            # フォームから content と attachment を取得して最初のメッセージとして保存
+            content = form.cleaned_data.get('content')
+            attachment = form.cleaned_data.get('attachment')
+            if content or attachment:
+                StaffInquiryMessage.objects.create(
+                    inquiry=inquiry,
+                    user=request.user,  # 投稿者は管理者
+                    content=content,
+                    attachment=attachment,
+                    is_hidden=False # 必要に応じて
+                )
             
             # ログ記録
             log_model_action(request.user, 'create', inquiry)

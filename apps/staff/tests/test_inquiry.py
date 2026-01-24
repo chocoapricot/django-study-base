@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.db.models import Q
 from apps.staff.models import Staff
-from apps.staff.models_inquiry import StaffInquiry
+from apps.staff.models_inquiry import StaffInquiry, StaffInquiryMessage
 from apps.connect.models import ConnectStaff
 from apps.company.models import Company as CompanyModel
 from apps.common.constants import Constants
@@ -60,16 +60,24 @@ class StaffInquiryTest(TestCase):
         response = self.client_user.post(url, data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(StaffInquiry.objects.count(), 1)
+        self.assertEqual(StaffInquiryMessage.objects.count(), 1)
         inquiry = StaffInquiry.objects.first()
+        message = StaffInquiryMessage.objects.first()
         self.assertEqual(inquiry.subject, 'Test Subject')
         self.assertEqual(inquiry.user, self.user)
         self.assertEqual(inquiry.inquiry_from, 'staff')
+        self.assertEqual(message.content, 'Test Content')
+        self.assertEqual(message.inquiry, inquiry)
 
     def test_inquiry_list(self):
-        StaffInquiry.objects.create(
+        inquiry = StaffInquiry.objects.create(
             user=self.user,
             corporate_number='1234567890123',
             subject='Initial Subject',
+        )
+        StaffInquiryMessage.objects.create(
+            inquiry=inquiry,
+            user=self.user,
             content='Initial Content'
         )
         url = reverse('staff:staff_inquiry_list')
@@ -86,7 +94,6 @@ class StaffInquiryTest(TestCase):
         self.assertRedirects(response, reverse('staff:staff_inquiry_create'))
 
     def test_inquiry_message_delete(self):
-        from apps.staff.models_inquiry import StaffInquiryMessage
         from django.utils import timezone
         from datetime import timedelta
         
@@ -94,7 +101,6 @@ class StaffInquiryTest(TestCase):
             user=self.user,
             corporate_number='1234567890123',
             subject='Delete Test',
-            content='Original Content'
         )
         
         # 1. 5分以内のメッセージ作成
@@ -136,9 +142,13 @@ class StaffInquiryTest(TestCase):
         }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 302)
+        self.assertTrue(StaffInquiry.objects.filter(subject='Test Subject from Company').exists())
         inquiry = StaffInquiry.objects.get(subject='Test Subject from Company')
         self.assertEqual(inquiry.inquiry_from, 'company')
         self.assertEqual(inquiry.user, self.user)
+        # Check that a message was created
+        self.assertEqual(inquiry.messages.count(), 1)
+        self.assertEqual(inquiry.messages.first().content, 'Test Content from Company')
 
 
 class StaffInquiryStatusTest(TestCase):
@@ -164,6 +174,10 @@ class StaffInquiryStatusTest(TestCase):
             user=self.staff_user,
             corporate_number=self.company.corporate_number,
             subject='Status Test',
+        )
+        StaffInquiryMessage.objects.create(
+            inquiry=self.inquiry,
+            user=self.staff_user,
             content='Test Content'
         )
 
@@ -191,31 +205,43 @@ class StaffInquiryStatusTest(TestCase):
         # Note: Response is redirect, message is in Django messages. checking redirect.
         self.assertRedirects(response, reverse('staff:staff_inquiry_detail', kwargs={'pk': self.inquiry.pk}))
 
-    def test_company_cannot_post_on_completed_inquiry(self):
+    def test_company_can_post_on_completed_inquiry(self):
         from apps.company.models import CompanyUser
         CompanyUser.objects.create(email=self.company_user.email, corporate_number=self.company.corporate_number)
 
         self.inquiry.status = 'completed'
         self.inquiry.save()
 
+        initial_message_count = self.inquiry.messages.count()
+        self.assertEqual(initial_message_count, 1)
+
         url = reverse('staff:staff_inquiry_detail', kwargs={'pk': self.inquiry.pk})
-        data = {'content': 'Company tries to post'}
+        data = {'content': 'Company CAN post'}
         response = self.client_company.post(url, data, follow=True)
 
         self.inquiry.refresh_from_db()
-        self.assertEqual(self.inquiry.messages.count(), 0) # Should be 0 messages
-        self.assertContains(response, 'この問い合わせは完了済みのため、スタッフからのメッセージは投稿できません。')
+        # Should increase
+        self.assertEqual(self.inquiry.messages.count(), initial_message_count + 1)
+        self.assertNotContains(response, 'この問い合わせは完了済みのため、メッセージを投稿できません。')
+        self.assertEqual(self.inquiry.messages.last().content, 'Company CAN post')
 
 
     def test_flags_on_reply(self):
+        from apps.company.models import CompanyUser
+        CompanyUser.objects.create(email=self.company_user.email, corporate_number=self.company.corporate_number)
+
         # Create inquiry by staff
         inquiry = StaffInquiry.objects.create(
             user=self.staff_user,
             corporate_number=self.company.corporate_number,
             subject='Initial',
-            content='Initial',
             inquiry_from='staff',
             last_message_by='staff'
+        )
+        StaffInquiryMessage.objects.create(
+            inquiry=inquiry,
+            user=self.staff_user,
+            content='Initial'
         )
         url = reverse('staff:staff_inquiry_detail', kwargs={'pk': inquiry.pk})
 
