@@ -4,7 +4,7 @@ from django.core.paginator import Paginator
 from apps.staff.models import Staff
 from apps.client.models import Client
 from apps.company.models import Company, CompanyUser
-from apps.contract.models import ClientContract, StaffContract
+from apps.contract.models import ClientContract, StaffContract, ContractAssignment
 from apps.connect.models import (
     ConnectStaff, ConnectClient, MynumberRequest, ProfileRequest,
     BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
@@ -249,6 +249,15 @@ def home(request):
 
             unanswered_inquiry_count = inquiries_qs.filter(status='open', last_message_by='staff').count()
 
+    # スタッフ契約延長未確認件数
+    unconfirmed_staff_contract_extension_count = 0
+    has_contract_assignment_perm = request.user.has_perm('contract.view_contractassignment')
+    if has_contract_assignment_perm:
+        unconfirmed_staff_contract_extension_count = ContractAssignment.objects.filter(
+            assignment_end_date__gte=today,
+            assignment_confirm__isnull=True
+        ).count()
+
     context = {
         'staff_count': staff_count,
         'approved_staff_count': approved_staff_count,
@@ -269,6 +278,8 @@ def home(request):
         'pending_connect_client_count': ConnectClient.objects.filter(status=Constants.CONNECT_STATUS.PENDING).count(),
         'has_inquiry_perm': has_inquiry_perm,
         'unanswered_inquiry_count': unanswered_inquiry_count,
+        'has_contract_assignment_perm': has_contract_assignment_perm,
+        'unconfirmed_staff_contract_extension_count': unconfirmed_staff_contract_extension_count,
     }
 
     return render(request, 'home/home.html', context)
