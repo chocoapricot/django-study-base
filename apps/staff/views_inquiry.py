@@ -68,6 +68,7 @@ def staff_inquiry_create(request):
             inquiry = form.save(commit=False)
             inquiry.user = request.user
             inquiry.inquiry_from = 'staff'
+            inquiry.last_message_by = 'staff'
             inquiry.save()
             
             # ログ記録
@@ -106,10 +107,10 @@ def staff_inquiry_detail(request, pk):
         inquiry.messages.exclude(user=request.user).filter(read_at__isnull=True).update(read_at=timezone.now())
 
     if request.method == 'POST':
-        # 完了済みの問い合わせにはスタッフは投稿できない
-        if not is_company_or_admin and inquiry.status == 'completed':
-            messages.error(request, 'この問い合わせは完了済みのため、メッセージを投稿できません。')
-            return redirect('staff:staff_inquiry_detail', pk=pk)
+        # 完了済みの問い合わせチェック
+        if inquiry.status == 'completed' and not is_company_or_admin:
+             messages.error(request, 'この問い合わせは完了済みのため、メッセージを投稿できません。')
+             return redirect('staff:staff_inquiry_detail', pk=pk)
 
         # 返信時もスタッフの場合は接続承認を再確認
         if not is_company_or_admin:
@@ -123,10 +124,17 @@ def staff_inquiry_detail(request, pk):
             message = form.save(commit=False)
             message.inquiry = inquiry
             message.user = request.user
+            
             # スタッフの場合は非表示を強制的に解除
             if not is_company_or_admin:
                 message.is_hidden = False
             message.save()
+            
+            # 問い合わせの最終投稿者を更新
+            # sender_type removed, determine by user role
+            sender_type_val = 'company' if is_company_or_admin else 'staff'
+            inquiry.last_message_by = sender_type_val
+            inquiry.save()
             
             # ログ記録
             log_model_action(request.user, 'create', message)
@@ -230,6 +238,7 @@ def staff_inquiry_create_for_staff(request, staff_pk):
             inquiry.user = staff_user
             inquiry.corporate_number = corporate_number
             inquiry.inquiry_from = 'company'
+            inquiry.last_message_by = 'company'
             inquiry.save()
             
             # ログ記録
@@ -262,12 +271,15 @@ def staff_inquiry_toggle_status(request, pk):
         )
 
     # ステータスを切り替え
+    # ステータスを切り替え
     if inquiry.status == 'open':
         inquiry.status = 'completed'
         messages.success(request, 'この問い合わせを「完了」にしました。')
     else:
-        inquiry.status = 'open'
-        messages.success(request, 'この問い合わせを「受付中」に戻しました。')
+        # already completed, do not allow reopen based on requirements
+        # "問い合わせは、スタッフもcompany側も「受付中に戻す」ボタン・昨日は無しとする"
+        messages.error(request, '完了済みの問い合わせを再開することはできません。')
+        return redirect('staff:staff_inquiry_detail', pk=pk)
     inquiry.save()
 
     # ログ記録

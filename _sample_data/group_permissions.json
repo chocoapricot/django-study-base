@@ -1,31 +1,31 @@
 {
-    "company": [
-        "contract.view_clientcontract",
-        "contract.add_clientcontract",
-        "contract.change_clientcontract",
-        "contract.delete_clientcontract",
-        "contract.view_staffcontract",
-        "contract.add_staffcontract",
-        "contract.change_staffcontract",
-        "contract.delete_staffcontract",
-        "contract.confirm_clientcontract",
-        "staff.view_staff",
-        "staff.add_staff",
-        "staff.change_staff",
-        "client.view_client",
-        "client.add_client",
-        "client.change_client"
-    ],
     "client": [
-        "connect.view_connectclient",
-        "connect.change_connectclient"
+        "connect.change_connectclient",
+        "connect.view_connectclient"
     ],
     "client_connected": [
         "contract.confirm_clientcontract"
     ],
+    "company": [
+        "client.add_client",
+        "client.change_client",
+        "client.view_client",
+        "contract.add_clientcontract",
+        "contract.add_staffcontract",
+        "contract.change_clientcontract",
+        "contract.change_staffcontract",
+        "contract.confirm_clientcontract",
+        "contract.delete_clientcontract",
+        "contract.delete_staffcontract",
+        "contract.view_clientcontract",
+        "contract.view_staffcontract",
+        "staff.add_staff",
+        "staff.change_staff",
+        "staff.view_staff"
+    ],
     "staff": [
-        "connect.view_connectstaff",
-        "connect.change_connectstaff"
+        "connect.change_connectstaff",
+        "connect.view_connectstaff"
     ],
     "staff_connected": [
         "contract.confirm_staffcontract",
@@ -65,6 +65,14 @@
         "profile.view_staffprofileinternational",
         "profile.view_staffprofilemynumber",
         "profile.view_staffprofilequalification",
-        "profile.view_staffprofileskill"
+        "profile.view_staffprofileskill",
+        "staff.add_staffinquiry",
+        "staff.add_staffinquirymessage",
+        "staff.change_staffinquiry",
+        "staff.change_staffinquirymessage",
+        "staff.delete_staffinquiry",
+        "staff.delete_staffinquirymessage",
+        "staff.view_staffinquiry",
+        "staff.view_staffinquirymessage"
     ]
 }

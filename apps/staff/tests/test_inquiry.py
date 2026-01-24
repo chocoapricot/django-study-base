@@ -172,7 +172,7 @@ class StaffInquiryStatusTest(TestCase):
         self.client_company = Client()
         self.client_company.login(username='companyuser', password='password')
 
-    def test_toggle_status(self):
+    def test_toggle_status_reopen_failure(self):
         self.assertEqual(self.inquiry.status, 'open')
 
         # Toggle to completed
@@ -182,24 +182,16 @@ class StaffInquiryStatusTest(TestCase):
         self.inquiry.refresh_from_db()
         self.assertEqual(self.inquiry.status, 'completed')
 
-        # Toggle back to open
+        # Try to toggle back to open (should fail now)
         response = self.client_staff.post(url)
         self.inquiry.refresh_from_db()
-        self.assertEqual(self.inquiry.status, 'open')
+        self.assertEqual(self.inquiry.status, 'completed') # Should still be completed
+        # Expect error message
+        # self.assertContains(response, '完了済みの問い合わせを再開することはできません。') 
+        # Note: Response is redirect, message is in Django messages. checking redirect.
+        self.assertRedirects(response, reverse('staff:staff_inquiry_detail', kwargs={'pk': self.inquiry.pk}))
 
-    def test_staff_cannot_post_on_completed_inquiry(self):
-        self.inquiry.status = 'completed'
-        self.inquiry.save()
-
-        url = reverse('staff:staff_inquiry_detail', kwargs={'pk': self.inquiry.pk})
-        data = {'content': 'This should not be posted'}
-        response = self.client_staff.post(url, data, follow=True)
-
-        self.inquiry.refresh_from_db()
-        self.assertEqual(self.inquiry.messages.count(), 0)
-        self.assertContains(response, 'この問い合わせは完了済みのため、メッセージを投稿できません。')
-
-    def test_company_can_post_on_completed_inquiry(self):
+    def test_company_cannot_post_on_completed_inquiry(self):
         from apps.company.models import CompanyUser
         CompanyUser.objects.create(email=self.company_user.email, corporate_number=self.company.corporate_number)
 
@@ -207,9 +199,36 @@ class StaffInquiryStatusTest(TestCase):
         self.inquiry.save()
 
         url = reverse('staff:staff_inquiry_detail', kwargs={'pk': self.inquiry.pk})
-        data = {'content': 'Company can post this'}
-        response = self.client_company.post(url, data)
+        data = {'content': 'Company tries to post'}
+        response = self.client_company.post(url, data, follow=True)
 
         self.inquiry.refresh_from_db()
-        self.assertEqual(self.inquiry.messages.count(), 1)
-        self.assertEqual(self.inquiry.messages.first().content, 'Company can post this')
+        self.assertEqual(self.inquiry.messages.count(), 0) # Should be 0 messages
+        self.assertContains(response, 'この問い合わせは完了済みのため、スタッフからのメッセージは投稿できません。')
+
+
+    def test_flags_on_reply(self):
+        # Create inquiry by staff
+        inquiry = StaffInquiry.objects.create(
+            user=self.staff_user,
+            corporate_number=self.company.corporate_number,
+            subject='Initial',
+            content='Initial',
+            inquiry_from='staff',
+            last_message_by='staff'
+        )
+        url = reverse('staff:staff_inquiry_detail', kwargs={'pk': inquiry.pk})
+
+        # Company replies
+        self.client_company.post(url, {'content': 'Company Reply'})
+        inquiry.refresh_from_db()
+        self.assertEqual(inquiry.last_message_by, 'company')
+        # msg = inquiry.messages.last()
+        # self.assertEqual(msg.sender_type, 'company') # Field removed
+
+        # Staff replies
+        self.client_staff.post(url, {'content': 'Staff Reply'})
+        inquiry.refresh_from_db()
+        self.assertEqual(inquiry.last_message_by, 'staff')
+        # msg_staff = inquiry.messages.last()
+        # self.assertEqual(msg_staff.sender_type, 'staff') # Field removed

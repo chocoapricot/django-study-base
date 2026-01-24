@@ -63,6 +63,7 @@ python manage.py createsuperuser --noinput --username admin --email admin@exampl
 python _scripts/load_sample_data.py
 
 # エクスポート
+python manage.py export_group_permissions --output _sample_data/group_permissions.json
 python manage.py dumpdata settings.dropdowns    --format=json --indent=4 > _sample_data/dropdowns.json
 python manage.py dumpdata settings.menu         --format=json --indent=4 > _sample_data/menus.json
 python manage.py dumpdata settings.parameters   --format=json --indent=4 > _sample_data/parameters.json

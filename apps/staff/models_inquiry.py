@@ -22,6 +22,12 @@ class StaffInquiry(MyModel):
         choices=INQUIRY_FROM_CHOICES,
         default='staff',
     )
+    last_message_by = models.CharField(
+        '最終投稿者',
+        max_length=10,
+        choices=INQUIRY_FROM_CHOICES,
+        default='staff',
+    )
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
