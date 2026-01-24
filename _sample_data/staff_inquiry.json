@@ -9,6 +9,7 @@
             "updated_by": 2,
             "user": 2,
             "corporate_number": "1234567890122",
+            "last_message_by": "company",
             "subject": "勤怠入力の締め切りについて"
         }
     },
@@ -22,6 +23,7 @@
             "updated_by": 3,
             "user": 3,
             "corporate_number": "1234567890122",
+            "last_message_by": "company",
             "subject": "有給休暇の申請方法"
         }
     },
@@ -35,6 +37,7 @@
             "updated_by": 4,
             "user": 4,
             "corporate_number": "1234567890122",
+            "last_message_by": "company",
             "subject": "年末調整の書類について"
         }
     },
@@ -48,6 +51,7 @@
             "updated_by": 2,
             "user": 2,
             "corporate_number": "1234567890122",
+            "last_message_by": "company",
             "subject": "交通費精算のルール"
         }
     },
@@ -61,6 +65,7 @@
             "updated_by": 3,
             "user": 3,
             "corporate_number": "1234567890122",
+            "last_message_by": "company",
             "subject": "健康診断の日程について"
         }
     },
@@ -74,6 +79,7 @@
             "updated_by": 4,
             "user": 4,
             "corporate_number": "1234567890122",
+            "last_message_by": "company",
             "subject": "社会保険の加入状況確認"
         }
     },
@@ -87,6 +93,7 @@
             "updated_by": 2,
             "user": 2,
             "corporate_number": "1234567890122",
+            "last_message_by": "company",
             "subject": "給与明細の再発行依頼"
         }
     },
@@ -100,6 +107,7 @@
             "updated_by": 3,
             "user": 3,
             "corporate_number": "1234567890122",
+            "last_message_by": "company",
             "subject": "住所変更の届け出について"
         }
     },
@@ -113,6 +121,7 @@
             "updated_by": 4,
             "user": 4,
             "corporate_number": "1234567890122",
+            "last_message_by": "company",
             "subject": "スキルアップ研修の補助"
         }
     },
@@ -126,6 +135,7 @@
             "updated_by": 2,
             "user": 2,
             "corporate_number": "1234567890122",
+            "last_message_by": "company",
             "subject": "退職金制度について"
         }
     }

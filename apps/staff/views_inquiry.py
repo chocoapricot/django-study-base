@@ -12,7 +12,7 @@ from django.views.decorators.http import require_POST
 from .models import Staff, StaffInquiry, StaffInquiryMessage
 from apps.company.models import CompanyUser, Company
 from apps.connect.models import ConnectStaff
-from .forms_inquiry import StaffInquiryForm, StaffInquiryMessageForm, StaffInquiryFromAdminForm
+from .forms_inquiry import StaffInquiryForm, StaffInquiryMessageForm, StaffInquiryFromAdminForm, StaffInquiryFilterForm
 from apps.profile.decorators import check_staff_agreement
 
 @login_required
@@ -24,36 +24,60 @@ def staff_inquiry_list(request):
     
     # 自分の問い合わせ or 自分が担当者の問い合わせ or 管理者
     if request.user.is_superuser:
-        inquiries_qs = StaffInquiry.objects.all().select_related('user')
+        inquiries_qs = StaffInquiry.objects.all().select_related('user').order_by('-created_at')
     else:
         # CompanyUserとしての権限
         my_companies = CompanyUser.objects.filter(email=request.user.email).values_list('corporate_number', flat=True)
         # 自分が作成者 or 自分のCompanyあての問い合わせ
         inquiries_qs = StaffInquiry.objects.filter(
             models.Q(user=request.user) | models.Q(corporate_number__in=my_companies)
-        ).select_related('user').distinct()
+        ).select_related('user').distinct().order_by('-created_at')
     
     # 問い合わせが1件もない場合は新規作成画面へ（一般スタッフの場合のみ）
     if not is_company_or_admin:
         if not inquiries_qs.exists():
             return redirect('staff:staff_inquiry_create')
-    
-    # 法人名を取得するためのマップ作成
+
+    # フィルタフォームの処理
+    filter_form = StaffInquiryFilterForm(request.GET, is_company_or_admin=is_company_or_admin)
+    if filter_form.is_valid():
+        status_filter = filter_form.cleaned_data.get('status')
+        if status_filter:
+            if status_filter == 'unanswered' and is_company_or_admin: # company側で未回答フィルタの場合
+                inquiries_qs = inquiries_qs.filter(status='open', last_message_by='staff')
+            elif status_filter != 'unanswered': # その他のステータスフィルタの場合
+                inquiries_qs = inquiries_qs.filter(status=status_filter)
+
+    # 法人名を取得するためのマップ作成 (ここでinquiries_qsがフィルタされているので、最新のinquiries_qsからcorporate_numbersを取得)
     corporate_numbers = inquiries_qs.values_list('corporate_number', flat=True).distinct()
     companies = Company.objects.filter(corporate_number__in=corporate_numbers)
     company_name_map = {c.corporate_number: c.name for c in companies}
     
+    processed_inquiries = []
     for inquiry in inquiries_qs:
         inquiry.client_name = company_name_map.get(inquiry.corporate_number, inquiry.corporate_number)
         # 投稿者名を設定
         inquiry.user_full_name = inquiry.user.get_full_name_japanese()
-    
-    paginator = Paginator(inquiries_qs, 20)
+
+        # スタッフ側の未読メッセージ判定
+        is_hidden_exclude_cond = models.Q(is_hidden=False) if not is_company_or_admin else models.Q()
+        inquiry.has_unread_message = inquiry.messages.filter(read_at__isnull=True).exclude(user=request.user).filter(is_hidden_exclude_cond).exists()
+        
+        # 会社側の未回答ステータス判定
+        if is_company_or_admin and inquiry.status == 'open' and inquiry.last_message_by == 'staff':
+            inquiry.is_unanswered = True
+        else:
+            inquiry.is_unanswered = False
+        processed_inquiries.append(inquiry)
+
+    paginator = Paginator(processed_inquiries, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
     return render(request, 'staff/inquiry/staff_inquiry_list.html', {
         'page_obj': page_obj,
+        'filter_form': filter_form,
+        'is_company_or_admin': is_company_or_admin, # これを追加
     })
 
 @login_required

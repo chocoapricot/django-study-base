@@ -97,3 +97,20 @@ class StaffInquiryFromAdminForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'メッセージ内容を入力してください', 'rows': 5}),
             'attachment': forms.FileInput(attrs={'class': 'form-control'}),
         }
+
+class StaffInquiryFilterForm(forms.Form):
+    status = forms.ChoiceField(
+        label='ステータス',
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
+
+    def __init__(self, *args, **kwargs):
+        is_company_or_admin = kwargs.pop('is_company_or_admin', False)
+        super().__init__(*args, **kwargs)
+
+        choices = [('', '---------')] + list(StaffInquiry.STATUS_CHOICES)
+        if is_company_or_admin:
+            choices.append(('unanswered', '未回答'))
+        
+        self.fields['status'].choices = choices
