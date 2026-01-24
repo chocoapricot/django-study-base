@@ -369,7 +369,7 @@
         <div class="card-header">登録状況</div>
         <div class="card-body">
             <div class="row g-3">
-                <div class="col-md-6 col-lg-3">
+                <div class="col-md-6 col-lg-4">
                     {% if client_count > 0 %}
                     <a href="{% url 'client:client_list' %}" class="text-decoration-none">
                         <div class="stats-card">
@@ -396,7 +396,7 @@
                     </div>
                     {% endif %}
                 </div>
-                <div class="col-md-6 col-lg-3">
+                <div class="col-md-6 col-lg-4">
                     {% if approved_client_count > 0 %}
                     <a href="{% url 'client:client_list' %}" class="text-decoration-none">
                         <div class="stats-card">
@@ -423,7 +423,34 @@
                     </div>
                     {% endif %}
                 </div>
-                <div class="col-md-6 col-lg-3">
+                <div class="col-md-6 col-lg-4">
+                    {% if client_contract_count > 0 %}
+                    <a href="{% url 'contract:client_contract_list' %}" class="text-decoration-none">
+                        <div class="stats-card">
+                            <div class="stats-card-body d-flex align-items-center">
+                                <i class="bi bi-file-earmark-text-fill stats-icon me-3" style="color:#17a2b8;"></i>
+                                <div class="flex-grow-1">
+                                    <p class="stats-number text-dark">{{ client_contract_count|intcomma }}<span class="stats-unit">件</span></p>
+                                    <p class="stats-label">クライアント契約登録数</p>
+                                    <p class="stats-description">システムに登録されているクライアント契約の総数です。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    {% else %}
+                    <div class="stats-card">
+                        <div class="stats-card-body d-flex align-items-center">
+                            <i class="bi bi-file-earmark-text-fill stats-icon text-muted-light me-3"></i>
+                            <div class="flex-grow-1">
+                                <p class="stats-number text-muted-light">-</p>
+                                <p class="stats-label">クライアント契約登録数</p>
+                                <p class="stats-description">システムに登録されているクライアント契約の総数です。</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 col-lg-4">
                     {% if staff_count > 0 %}
                     <a href="{% url 'staff:staff_list' %}" class="text-decoration-none">
                         <div class="stats-card">
@@ -450,7 +477,7 @@
                     </div>
                     {% endif %}
                 </div>
-                <div class="col-md-6 col-lg-3">
+                <div class="col-md-6 col-lg-4">
                     {% if approved_staff_count > 0 %}
                     <a href="{% url 'staff:staff_list' %}" class="text-decoration-none">
                         <div class="stats-card">
@@ -472,6 +499,33 @@
                                 <p class="stats-number text-muted-light">-</p>
                                 <p class="stats-label">スタッフ接続承認済み</p>
                                 <p class="stats-description">接続申請が承認されたスタッフの数です。</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    {% if staff_contract_count > 0 %}
+                    <a href="{% url 'contract:staff_contract_list' %}" class="text-decoration-none">
+                        <div class="stats-card">
+                            <div class="stats-card-body d-flex align-items-center">
+                                <i class="bi bi-file-earmark-person-fill stats-icon me-3" style="color:#fd7e14;"></i>
+                                <div class="flex-grow-1">
+                                    <p class="stats-number text-dark">{{ staff_contract_count|intcomma }}<span class="stats-unit">件</span></p>
+                                    <p class="stats-label">スタッフ契約登録数</p>
+                                    <p class="stats-description">システムに登録されているスタッフ契約の総数です。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    {% else %}
+                    <div class="stats-card">
+                        <div class="stats-card-body d-flex align-items-center">
+                            <i class="bi bi-file-earmark-person-fill stats-icon text-muted-light me-3"></i>
+                            <div class="flex-grow-1">
+                                <p class="stats-number text-muted-light">-</p>
+                                <p class="stats-label">スタッフ契約登録数</p>
+                                <p class="stats-description">システムに登録されているスタッフ契約の総数です。</p>
                             </div>
                         </div>
                     </div>
