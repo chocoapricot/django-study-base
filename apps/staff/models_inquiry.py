@@ -8,6 +8,10 @@ class StaffInquiry(MyModel):
     """
     スタッフからの問い合わせを管理するモデル。
     """
+    STATUS_CHOICES = [
+        ('open', '受付中'),
+        ('completed', '完了'),
+    ]
     INQUIRY_FROM_CHOICES = [
         ('staff', 'スタッフ'),
         ('company', '会社'),
@@ -41,6 +45,12 @@ class StaffInquiry(MyModel):
         upload_to='inquiry_attachments/%Y/%m/%d/',
         null=True,
         blank=True
+    )
+    status = models.CharField(
+        'ステータス',
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default='open',
     )
 
     class Meta:

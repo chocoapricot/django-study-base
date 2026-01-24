@@ -19,6 +19,7 @@ class StaffInquiryTest(TestCase):
         permissions = Permission.objects.filter(
             Q(codename='view_staffinquiry') |
             Q(codename='add_staffinquiry') |
+            Q(codename='change_staffinquiry') |
             Q(codename='delete_staffinquirymessage')
         )
         self.user.user_permissions.set(permissions)
@@ -138,3 +139,77 @@ class StaffInquiryTest(TestCase):
         inquiry = StaffInquiry.objects.get(subject='Test Subject from Company')
         self.assertEqual(inquiry.inquiry_from, 'company')
         self.assertEqual(inquiry.user, self.user)
+
+
+class StaffInquiryStatusTest(TestCase):
+    def setUp(self):
+        self.staff_user = User.objects.create_user(username='teststaff', email='staff@example.com', password='password')
+        self.company_user = User.objects.create_user(username='companyuser', email='company@example.com', password='password')
+        self.company_user.is_staff = True
+        self.company_user.save()
+
+        permissions = Permission.objects.filter(
+            Q(codename='view_staffinquiry') |
+            Q(codename='add_staffinquiry') |
+            Q(codename='change_staffinquiry') |
+            Q(codename='delete_staffinquirymessage')
+        )
+        self.staff_user.user_permissions.set(permissions)
+        self.company_user.user_permissions.set(permissions)
+
+        self.company = CompanyModel.objects.create(name='Test Company', corporate_number='1234567890123')
+        ConnectStaff.objects.create(corporate_number=self.company.corporate_number, email=self.staff_user.email, status='approved')
+
+        self.inquiry = StaffInquiry.objects.create(
+            user=self.staff_user,
+            corporate_number=self.company.corporate_number,
+            subject='Status Test',
+            content='Test Content'
+        )
+
+        self.client_staff = Client()
+        self.client_staff.login(username='teststaff', password='password')
+        self.client_company = Client()
+        self.client_company.login(username='companyuser', password='password')
+
+    def test_toggle_status(self):
+        self.assertEqual(self.inquiry.status, 'open')
+
+        # Toggle to completed
+        url = reverse('staff:staff_inquiry_toggle_status', kwargs={'pk': self.inquiry.pk})
+        response = self.client_staff.post(url)
+        self.assertRedirects(response, reverse('staff:staff_inquiry_detail', kwargs={'pk': self.inquiry.pk}))
+        self.inquiry.refresh_from_db()
+        self.assertEqual(self.inquiry.status, 'completed')
+
+        # Toggle back to open
+        response = self.client_staff.post(url)
+        self.inquiry.refresh_from_db()
+        self.assertEqual(self.inquiry.status, 'open')
+
+    def test_staff_cannot_post_on_completed_inquiry(self):
+        self.inquiry.status = 'completed'
+        self.inquiry.save()
+
+        url = reverse('staff:staff_inquiry_detail', kwargs={'pk': self.inquiry.pk})
+        data = {'content': 'This should not be posted'}
+        response = self.client_staff.post(url, data, follow=True)
+
+        self.inquiry.refresh_from_db()
+        self.assertEqual(self.inquiry.messages.count(), 0)
+        self.assertContains(response, 'この問い合わせは完了済みのため、メッセージを投稿できません。')
+
+    def test_company_can_post_on_completed_inquiry(self):
+        from apps.company.models import CompanyUser
+        CompanyUser.objects.create(email=self.company_user.email, corporate_number=self.company.corporate_number)
+
+        self.inquiry.status = 'completed'
+        self.inquiry.save()
+
+        url = reverse('staff:staff_inquiry_detail', kwargs={'pk': self.inquiry.pk})
+        data = {'content': 'Company can post this'}
+        response = self.client_company.post(url, data)
+
+        self.inquiry.refresh_from_db()
+        self.assertEqual(self.inquiry.messages.count(), 1)
+        self.assertEqual(self.inquiry.messages.first().content, 'Company can post this')

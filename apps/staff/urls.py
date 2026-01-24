@@ -26,7 +26,7 @@ from .views import (
 )
 from .views_inquiry import (
     staff_inquiry_list, staff_inquiry_create, staff_inquiry_detail, staff_inquiry_message_delete,
-    staff_inquiry_create_for_staff
+    staff_inquiry_create_for_staff, staff_inquiry_toggle_status
 )
 
 app_name = 'staff'
@@ -139,6 +139,7 @@ urlpatterns = [
     path('inquiry/', staff_inquiry_list, name='staff_inquiry_list'),
     path('inquiry/create/', staff_inquiry_create, name='staff_inquiry_create'),
     path('inquiry/<int:pk>/', staff_inquiry_detail, name='staff_inquiry_detail'),
+    path('inquiry/<int:pk>/toggle_status/', staff_inquiry_toggle_status, name='staff_inquiry_toggle_status'),
     path('inquiry/message/<int:pk>/delete/', staff_inquiry_message_delete, name='staff_inquiry_message_delete'),
     path('staff/<int:staff_pk>/inquiry/create/', staff_inquiry_create_for_staff, name='staff_inquiry_create_for_staff'),
 ]
