@@ -8,6 +8,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
+from django.views.decorators.http import require_POST
 from .models import Staff, StaffInquiry, StaffInquiryMessage
 from apps.company.models import CompanyUser, Company
 from apps.connect.models import ConnectStaff
@@ -105,6 +106,11 @@ def staff_inquiry_detail(request, pk):
         inquiry.messages.exclude(user=request.user).filter(read_at__isnull=True).update(read_at=timezone.now())
 
     if request.method == 'POST':
+        # 完了済みの問い合わせにはスタッフは投稿できない
+        if not is_company_or_admin and inquiry.status == 'completed':
+            messages.error(request, 'この問い合わせは完了済みのため、メッセージを投稿できません。')
+            return redirect('staff:staff_inquiry_detail', pk=pk)
+
         # 返信時もスタッフの場合は接続承認を再確認
         if not is_company_or_admin:
             from apps.connect.models import ConnectStaff
@@ -239,3 +245,32 @@ def staff_inquiry_create_for_staff(request, staff_pk):
         'staff': staff,
         'title': f'{staff.name_last} {staff.name_first} へのメッセージ連絡',
     })
+
+@login_required
+@require_POST
+@permission_required('staff.change_staffinquiry', raise_exception=True)
+def staff_inquiry_toggle_status(request, pk):
+    """問い合わせのステータスを切り替える"""
+    # 権限確認
+    if request.user.is_superuser:
+        inquiry = get_object_or_404(StaffInquiry, pk=pk)
+    else:
+        my_companies = CompanyUser.objects.filter(email=request.user.email).values_list('corporate_number', flat=True)
+        inquiry = get_object_or_404(
+            StaffInquiry,
+            models.Q(pk=pk) & (models.Q(user=request.user) | models.Q(corporate_number__in=my_companies))
+        )
+
+    # ステータスを切り替え
+    if inquiry.status == 'open':
+        inquiry.status = 'completed'
+        messages.success(request, 'この問い合わせを「完了」にしました。')
+    else:
+        inquiry.status = 'open'
+        messages.success(request, 'この問い合わせを「受付中」に戻しました。')
+    inquiry.save()
+
+    # ログ記録
+    log_model_action(request.user, 'change', inquiry)
+
+    return redirect('staff:staff_inquiry_detail', pk=pk)

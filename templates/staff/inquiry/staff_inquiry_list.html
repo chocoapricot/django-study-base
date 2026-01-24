@@ -16,6 +16,7 @@
                     <th>件名</th>
                     <th>スタッフ</th>
                     <th>あて先企業</th>
+                    <th>ステータス</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,10 +30,17 @@
                     </td>
                     <td>{{ inquiry.user_full_name }}</td>
                     <td>{{ inquiry.client_name }}</td>
+                    <td>
+                        {% if inquiry.status == 'open' %}
+                        <span class="badge bg-success">受付中</span>
+                        {% else %}
+                        <span class="badge bg-secondary">完了</span>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="text-center">問い合わせ・ご連絡はありません。</td>
+                    <td colspan="5" class="text-center">問い合わせ・ご連絡はありません。</td>
                 </tr>
                 {% endfor %}
             </tbody>
