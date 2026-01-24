@@ -38,59 +38,104 @@
     </div>
     {% endif %}
 
-    {% if has_staff_perm or has_client_perm %}
+    <style>
+        .stats-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .stats-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background: #ffffff;
+        }
+        .stats-icon {
+            font-size: 2.5rem;
+        }
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.2;
+        }
+        .stats-label {
+            font-size: 0.875rem;
+            color: #495057;
+            margin: 0;
+            font-weight: 600;
+        }
+        .stats-description {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+            margin-bottom: 0;
+        }
+        .stats-card-body {
+            padding: 1.25rem;
+        }
+    </style>
+
+    {% if has_staff_perm or has_client_perm or staff_request_count > 0 %}
     <div class="content-box card bg-light mt-2 mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <span>業務サマリ</span>
-        </div>
+        <div class="card-header">業務サマリ</div>
         <div class="card-body">
-            <div class="row">
+            <div class="row g-3">
                 {% if has_staff_perm %}
-                <div class="col-md-6 mb-4">
-                    <div class="card bg-light h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span>
-                                <i class="bi bi-people text-success"></i>
-                                スタッフ連絡予定
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div class="row text-center mb-3">
-                                <div class="col-6">
-                                    <h4 class="text-primary">{{ staff_schedules_yesterday }}</h4>
-                                    <small class="text-muted">昨日</small>
-                                </div>
-                                <div class="col-6">
-                                    <h4 class="text-success">{{ staff_schedules_today }}</h4>
-                                    <small class="text-muted">今日</small>
-                                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="stats-card">
+                        <div class="stats-card-body d-flex align-items-center">
+                            <i class="bi bi-people-fill stats-icon text-success me-3"></i>
+                            <div class="flex-grow-1">
+                                <p class="stats-number text-dark">{{ staff_schedules_yesterday|add:staff_schedules_today }}</p>
+                                <p class="stats-label">スタッフ連絡予定</p>
+                                <p class="stats-description">昨日と今日の連絡予定件数です。クリックして詳細を確認できます。</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 {% endif %}
                 {% if has_client_perm %}
-                <div class="col-md-6 mb-4">
-                    <div class="card bg-light h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span>
-                                <i class="bi bi-building text-primary"></i>
-                                クライアント連絡予定
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div class="row text-center mb-3">
-                                <div class="col-6">
-                                    <h4 class="text-primary">{{ client_schedules_yesterday }}</h4>
-                                    <small class="text-muted">昨日</small>
-                                </div>
-                                <div class="col-6">
-                                    <h4 class="text-success">{{ client_schedules_today }}</h4>
-                                    <small class="text-muted">今日</small>
-                                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="stats-card">
+                        <div class="stats-card-body d-flex align-items-center">
+                            <i class="bi bi-building-fill stats-icon text-primary me-3"></i>
+                            <div class="flex-grow-1">
+                                <p class="stats-number text-dark">{{ client_schedules_yesterday|add:client_schedules_today }}</p>
+                                <p class="stats-label">クライアント連絡予定</p>
+                                <p class="stats-description">昨日と今日の連絡予定件数です。クリックして詳細を確認できます。</p>
                             </div>
                         </div>
                     </div>
+                </div>
+                {% endif %}
+                {% if staff_request_count > 0 %}
+                <div class="col-md-6 col-lg-4">
+                    {% if perms.staff.view_staff %}
+                    <a href="{% url 'staff:staff_list' %}?has_request=true" class="text-decoration-none">
+                        <div class="stats-card">
+                            <div class="stats-card-body d-flex align-items-center">
+                                <i class="bi bi-exclamation-circle-fill stats-icon text-warning me-3"></i>
+                                <div class="flex-grow-1">
+                                    <p class="stats-number text-dark">{{ staff_request_count }}</p>
+                                    <p class="stats-label">スタッフ申請あり</p>
+                                    <p class="stats-description">承認待ちの申請があるスタッフです。クリックして確認してください。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    {% else %}
+                    <div class="stats-card">
+                        <div class="stats-card-body d-flex align-items-center">
+                            <i class="bi bi-exclamation-circle-fill stats-icon text-warning me-3"></i>
+                            <div class="flex-grow-1">
+                                <p class="stats-number text-dark">{{ staff_request_count }}</p>
+                                <p class="stats-label">スタッフ申請あり</p>
+                                <p class="stats-description">承認待ちの申請があるスタッフの数です。</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>
@@ -98,64 +143,55 @@
     </div>
     {% endif %}
 
-    <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-        <div class="card-header">サマリー</div>
+    <div class="content-box card bg-light mt-2 mb-4">
+        <div class="card-header">登録状況</div>
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="card bg-light h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span>
-                                <i class="bi bi-building text-primary"></i>
-                                クライアント
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div class="row text-center mb-3">
-                                <div class="col-6">
-                                    <h4 class="text-primary">{{ client_count }}</h4>
-                                    <small class="text-muted">登録済み</small>
-                                </div>
-                                <div class="col-6">
-                                    <h4 class="text-success">{{ approved_client_count }}</h4>
-                                    <small class="text-muted">接続承認済みユーザ</small>
-                                </div>
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-3">
+                    <div class="stats-card">
+                        <div class="stats-card-body d-flex align-items-center">
+                            <i class="bi bi-building-fill stats-icon text-primary me-3"></i>
+                            <div class="flex-grow-1">
+                                <p class="stats-number text-dark">{{ client_count }}</p>
+                                <p class="stats-label">クライアント登録数</p>
+                                <p class="stats-description">システムに登録されているクライアントの総数です。</p>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="col-md-6 mb-4">
-                    <div class="card bg-light h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span>
-                                <i class="bi bi-people text-success"></i>
-                                スタッフ
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div class="row text-center mb-3">
-                                <div class="col-4">
-                                    <h4 class="text-primary">{{ staff_count }}</h4>
-                                    <small class="text-muted">登録済み</small>
-                                </div>
-                                <div class="col-4">
-                                    <h4 class="text-success">{{ approved_staff_count }}</h4>
-                                    <small class="text-muted">接続承認済み</small>
-                                </div>
-                                <div class="col-4">
-                                    {% if staff_request_count > 0 and perms.staff.view_staff %}
-                                    <a href="{% url 'staff:staff_list' %}?has_request=true" class="text-decoration-none">
-                                        <h4 class="text-warning">{{ staff_request_count }}</h4>
-                                        <small class="text-muted">申請あり</small>
-                                    </a>
-                                    {% else %}
-                                        <h4 class="text-warning">{{ staff_request_count }}</h4>
-                                        <small class="text-muted">申請あり</small>
-                                    {% endif %}
-                                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="stats-card">
+                        <div class="stats-card-body d-flex align-items-center">
+                            <i class="bi bi-building-check stats-icon text-info me-3"></i>
+                            <div class="flex-grow-1">
+                                <p class="stats-number text-dark">{{ approved_client_count }}</p>
+                                <p class="stats-label">クライアント接続承認済み</p>
+                                <p class="stats-description">接続申請が承認されたクライアント担当者の数です。</p>
                             </div>
-
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="stats-card">
+                        <div class="stats-card-body d-flex align-items-center">
+                            <i class="bi bi-people-fill stats-icon text-success me-3"></i>
+                            <div class="flex-grow-1">
+                                <p class="stats-number text-dark">{{ staff_count }}</p>
+                                <p class="stats-label">スタッフ登録数</p>
+                                <p class="stats-description">システムに登録されているスタッフの総数です。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="stats-card">
+                        <div class="stats-card-body d-flex align-items-center">
+                            <i class="bi bi-person-check-fill stats-icon text-secondary me-3"></i>
+                            <div class="flex-grow-1">
+                                <p class="stats-number text-dark">{{ approved_staff_count }}</p>
+                                <p class="stats-label">スタッフ接続承認済み</p>
+                                <p class="stats-description">接続申請が承認されたスタッフの数です。</p>
+                            </div>
                         </div>
                     </div>
                 </div>
