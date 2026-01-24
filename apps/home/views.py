@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from apps.staff.models import Staff
+from apps.staff.models import Staff, StaffInternational
 from apps.client.models import Client
 from apps.company.models import Company, CompanyUser
 from apps.contract.models import ClientContract, StaffContract, ContractAssignment
@@ -258,7 +258,17 @@ def home(request):
             assignment_confirm__isnull=True
         ).count()
 
+    # 外国籍スタッフの在留資格期限切れ件数
+    expiring_staff_international_count = 0
+    if request.user.has_perm('staff.view_staffinternational'):
+        thirty_days_later = today + timedelta(days=30)
+        expiring_staff_international_count = StaffInternational.objects.filter(
+            staff__employee_no__isnull=False,
+            residence_period_to__lte=thirty_days_later
+        ).exclude(staff__employee_no='').count()
+
     context = {
+        'expiring_staff_international_count': expiring_staff_international_count,
         'staff_count': staff_count,
         'approved_staff_count': approved_staff_count,
         'client_count': client_count,
