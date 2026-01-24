@@ -16,6 +16,11 @@ User = get_user_model()
 class ImportUsersCommandTest(TestCase):
     def setUp(self):
         self.csv_file_path = 'test_users.csv'
+        # Create groups
+        Group.objects.get_or_create(name='staff')
+        Group.objects.get_or_create(name='staff_connected')
+        Group.objects.get_or_create(name='client_connected')
+
         # clientグループと関連権限のセットアップ
         self.client_group, _ = Group.objects.get_or_create(name='client')
 
