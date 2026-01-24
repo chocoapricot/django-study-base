@@ -224,8 +224,12 @@ def home(request):
         client_schedules_today = ClientContactSchedule.objects.filter(contact_date=today).count()
         client_schedules_yesterday = ClientContactSchedule.objects.filter(contact_date=yesterday).count()
 
-    client_contract_count = ClientContract.objects.count()
-    staff_contract_count = StaffContract.objects.count()
+    client_contract_count = ClientContract.objects.filter(
+        Q(end_date__gte=today) | Q(end_date__isnull=True)
+    ).count()
+    staff_contract_count = StaffContract.objects.filter(
+        Q(end_date__gte=today) | Q(end_date__isnull=True)
+    ).count()
 
     context = {
         'staff_count': staff_count,

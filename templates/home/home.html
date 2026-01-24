@@ -177,43 +177,7 @@
                     {% endwith %}
                 </div>
                 {% endif %}
-                {% if has_client_perm %}
-                <div class="col-md-6 col-lg-4">
-                    {% with total=client_schedules_yesterday|add:client_schedules_today %}
-                    {% if total > 0 %}
-                    <a href="{% url 'home:contact_schedule_summary' %}" class="text-decoration-none">
-                        <div class="stats-card has-count bg-primary-light">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <div class="icon-wrapper me-3">
-                                    <i class="bi bi-building-fill stats-icon" style="color:#28a745;"></i>
-                                    <i class="bi bi-alarm icon-badge" style="color:#28a745;"></i>
-                                </div>
-                                <div class="flex-grow-1 stats-content-with-alarm">
-                                    <p class="stats-number text-dark">{{ total|intcomma }}<span class="stats-unit">件</span></p>
-                                    <p class="stats-label">クライアント連絡予定</p>
-                                    <p class="stats-description">昨日と今日の連絡予定件数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <div class="icon-wrapper me-3">
-                                <i class="bi bi-building-fill stats-icon text-muted-light"></i>
-                                <i class="bi bi-alarm icon-badge text-muted-light"></i>
-                            </div>
-                            <div class="flex-grow-1 stats-content-with-alarm">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">クライアント連絡予定</p>
-                                <p class="stats-description">昨日と今日の連絡予定件数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                    {% endwith %}
-                </div>
-                {% endif %}
+
                 <div class="col-md-6 col-lg-4">
                     {% if pending_connect_staff_count > 0 %}
                         {% if perms.staff.view_staff %}
@@ -314,6 +278,44 @@
                     {% endif %}
                 </div>
 
+                {% if has_client_perm %}
+                <div class="col-md-6 col-lg-4">
+                    {% with total=client_schedules_yesterday|add:client_schedules_today %}
+                    {% if total > 0 %}
+                    <a href="{% url 'home:contact_schedule_summary' %}" class="text-decoration-none">
+                        <div class="stats-card has-count bg-primary-light">
+                            <div class="stats-card-body d-flex align-items-center">
+                                <div class="icon-wrapper me-3">
+                                    <i class="bi bi-building-fill stats-icon" style="color:#28a745;"></i>
+                                    <i class="bi bi-alarm icon-badge" style="color:#28a745;"></i>
+                                </div>
+                                <div class="flex-grow-1 stats-content-with-alarm">
+                                    <p class="stats-number text-dark">{{ total|intcomma }}<span class="stats-unit">件</span></p>
+                                    <p class="stats-label">クライアント連絡予定</p>
+                                    <p class="stats-description">昨日と今日の連絡予定件数です。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    {% else %}
+                    <div class="stats-card">
+                        <div class="stats-card-body d-flex align-items-center">
+                            <div class="icon-wrapper me-3">
+                                <i class="bi bi-building-fill stats-icon text-muted-light"></i>
+                                <i class="bi bi-alarm icon-badge text-muted-light"></i>
+                            </div>
+                            <div class="flex-grow-1 stats-content-with-alarm">
+                                <p class="stats-number text-muted-light">-</p>
+                                <p class="stats-label">クライアント連絡予定</p>
+                                <p class="stats-description">昨日と今日の連絡予定件数です。</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                </div>
+                {% endif %}
+
                 <div class="col-md-6 col-lg-4">
                     {% if pending_connect_client_count > 0 %}
                         {% if perms.client.view_client %}
@@ -373,90 +375,9 @@
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-md-6 col-lg-4">
-                    {% if client_count > 0 %}
-                    <a href="{% url 'client:client_list' %}" class="text-decoration-none">
-                        <div class="stats-card">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <i class="bi bi-building-fill stats-icon me-3" style="color:#28a745;"></i>
-                                <div class="flex-grow-1">
-                                    <p class="stats-number text-dark">{{ client_count|intcomma }}<span class="stats-unit">社</span></p>
-                                    <p class="stats-label">クライアント登録数</p>
-                                    <p class="stats-description">システムに登録されているクライアントの総数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <i class="bi bi-building-fill stats-icon text-muted-light me-3"></i>
-                            <div class="flex-grow-1">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">クライアント登録数</p>
-                                <p class="stats-description">システムに登録されているクライアントの総数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    {% if approved_client_count > 0 %}
-                    <a href="{% url 'client:client_list' %}" class="text-decoration-none">
-                        <div class="stats-card">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <i class="bi bi-building-check stats-icon me-3" style="color:#28a745;"></i>
-                                <div class="flex-grow-1">
-                                    <p class="stats-number text-dark">{{ approved_client_count|intcomma }}<span class="stats-unit">名</span></p>
-                                    <p class="stats-label">クライアント接続承認済み</p>
-                                    <p class="stats-description">接続申請が承認されたクライアント担当者の数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <i class="bi bi-building-check stats-icon text-muted-light me-3"></i>
-                            <div class="flex-grow-1">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">クライアント接続承認済み</p>
-                                <p class="stats-description">接続申請が承認されたクライアント担当者の数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    {% if client_contract_count > 0 %}
-                    <a href="{% url 'contract:client_contract_list' %}" class="text-decoration-none">
-                        <div class="stats-card">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <i class="bi bi-file-earmark-text-fill stats-icon me-3" style="color:#28a745;"></i>
-                                <div class="flex-grow-1">
-                                    <p class="stats-number text-dark">{{ client_contract_count|intcomma }}<span class="stats-unit">件</span></p>
-                                    <p class="stats-label">クライアント契約登録数</p>
-                                    <p class="stats-description">システムに登録されているクライアント契約の総数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <i class="bi bi-file-earmark-text-fill stats-icon text-muted-light me-3"></i>
-                            <div class="flex-grow-1">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">クライアント契約登録数</p>
-                                <p class="stats-description">システムに登録されているクライアント契約の総数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="col-md-6 col-lg-4">
                     {% if staff_count > 0 %}
                     <a href="{% url 'staff:staff_list' %}" class="text-decoration-none">
-                        <div class="stats-card">
+                        <div class="stats-card has-count">
                             <div class="stats-card-body d-flex align-items-center">
                                 <i class="bi bi-people-fill stats-icon me-3" style="color:#ff5722;"></i>
                                 <div class="flex-grow-1">
@@ -483,7 +404,7 @@
                 <div class="col-md-6 col-lg-4">
                     {% if approved_staff_count > 0 %}
                     <a href="{% url 'staff:staff_list' %}" class="text-decoration-none">
-                        <div class="stats-card">
+                        <div class="stats-card has-count">
                             <div class="stats-card-body d-flex align-items-center">
                                 <i class="bi bi-person-check-fill stats-icon me-3" style="color:#ff5722;"></i>
                                 <div class="flex-grow-1">
@@ -510,13 +431,13 @@
                 <div class="col-md-6 col-lg-4">
                     {% if staff_contract_count > 0 %}
                     <a href="{% url 'contract:staff_contract_list' %}" class="text-decoration-none">
-                        <div class="stats-card">
+                        <div class="stats-card has-count">
                             <div class="stats-card-body d-flex align-items-center">
                                 <i class="bi bi-file-earmark-person-fill stats-icon me-3" style="color:#ff5722;"></i>
                                 <div class="flex-grow-1">
                                     <p class="stats-number text-dark">{{ staff_contract_count|intcomma }}<span class="stats-unit">件</span></p>
                                     <p class="stats-label">スタッフ契約登録数</p>
-                                    <p class="stats-description">システムに登録されているスタッフ契約の総数です。</p>
+                                    <p class="stats-description">本日以降に有効な契約の総数です。</p>
                                 </div>
                             </div>
                         </div>
@@ -528,7 +449,88 @@
                             <div class="flex-grow-1">
                                 <p class="stats-number text-muted-light">-</p>
                                 <p class="stats-label">スタッフ契約登録数</p>
-                                <p class="stats-description">システムに登録されているスタッフ契約の総数です。</p>
+                                <p class="stats-description">本日以降に有効な契約の総数です。</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    {% if client_count > 0 %}
+                    <a href="{% url 'client:client_list' %}" class="text-decoration-none">
+                        <div class="stats-card has-count">
+                            <div class="stats-card-body d-flex align-items-center">
+                                <i class="bi bi-building-fill stats-icon me-3" style="color:#28a745;"></i>
+                                <div class="flex-grow-1">
+                                    <p class="stats-number text-dark">{{ client_count|intcomma }}<span class="stats-unit">社</span></p>
+                                    <p class="stats-label">クライアント登録数</p>
+                                    <p class="stats-description">システムに登録されているクライアントの総数です。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    {% else %}
+                    <div class="stats-card">
+                        <div class="stats-card-body d-flex align-items-center">
+                            <i class="bi bi-building-fill stats-icon text-muted-light me-3"></i>
+                            <div class="flex-grow-1">
+                                <p class="stats-number text-muted-light">-</p>
+                                <p class="stats-label">クライアント登録数</p>
+                                <p class="stats-description">システムに登録されているクライアントの総数です。</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    {% if approved_client_count > 0 %}
+                    <a href="{% url 'client:client_list' %}" class="text-decoration-none">
+                        <div class="stats-card has-count">
+                            <div class="stats-card-body d-flex align-items-center">
+                                <i class="bi bi-building-check stats-icon me-3" style="color:#28a745;"></i>
+                                <div class="flex-grow-1">
+                                    <p class="stats-number text-dark">{{ approved_client_count|intcomma }}<span class="stats-unit">名</span></p>
+                                    <p class="stats-label">クライアント接続承認済み</p>
+                                    <p class="stats-description">接続申請が承認されたクライアント担当者の数です。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    {% else %}
+                    <div class="stats-card">
+                        <div class="stats-card-body d-flex align-items-center">
+                            <i class="bi bi-building-check stats-icon text-muted-light me-3"></i>
+                            <div class="flex-grow-1">
+                                <p class="stats-number text-muted-light">-</p>
+                                <p class="stats-label">クライアント接続承認済み</p>
+                                <p class="stats-description">接続申請が承認されたクライアント担当者の数です。</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    {% if client_contract_count > 0 %}
+                    <a href="{% url 'contract:client_contract_list' %}" class="text-decoration-none">
+                        <div class="stats-card has-count">
+                            <div class="stats-card-body d-flex align-items-center">
+                                <i class="bi bi-file-earmark-text-fill stats-icon me-3" style="color:#28a745;"></i>
+                                <div class="flex-grow-1">
+                                    <p class="stats-number text-dark">{{ client_contract_count|intcomma }}<span class="stats-unit">件</span></p>
+                                    <p class="stats-label">クライアント契約登録数</p>
+                                    <p class="stats-description">本日以降に有効な契約の総数です。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    {% else %}
+                    <div class="stats-card">
+                        <div class="stats-card-body d-flex align-items-center">
+                            <i class="bi bi-file-earmark-text-fill stats-icon text-muted-light me-3"></i>
+                            <div class="flex-grow-1">
+                                <p class="stats-number text-muted-light">-</p>
+                                <p class="stats-label">クライアント契約登録数</p>
+                                <p class="stats-description">本日以降に有効な契約の総数です。</p>
                             </div>
                         </div>
                     </div>
