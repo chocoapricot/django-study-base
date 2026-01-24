@@ -238,6 +238,8 @@ def home(request):
         'staff_schedules_yesterday': staff_schedules_yesterday,
         'client_schedules_today': client_schedules_today,
         'client_schedules_yesterday': client_schedules_yesterday,
+        'pending_connect_staff_count': ConnectStaff.objects.filter(status=Constants.CONNECT_STATUS.PENDING).count(),
+        'pending_connect_client_count': ConnectClient.objects.filter(status=Constants.CONNECT_STATUS.PENDING).count(),
     }
 
     return render(request, 'home/home.html', context)
