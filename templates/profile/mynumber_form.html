@@ -13,7 +13,7 @@
             
             <!-- メールアドレス（表示のみ） -->
             <div class="row mb-3 align-items-center">
-                <label class="col-sm-2 col-form-label text-start text-md-end">メールアドレス</label>
+                <label class="col-sm-2 col-form-label text-start text-sm-end">メールアドレス</label>
                 <div class="col-sm-6">
                     <input type="text" class="form-control form-control-sm" value="{{ user_email }}" readonly>
                     <small class="text-muted">※ログインユーザーのメールアドレスが自動設定されます</small>
@@ -22,7 +22,7 @@
 
             <!-- マイナンバー -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.mynumber.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >マイナンバー <span class="text-danger">*</span></label>
+                <label for="{{ form.mynumber.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end" >マイナンバー <span class="text-danger">*</span></label>
                 <div class="col-sm-4">
                     {{ form.mynumber }}
                     {% if form.mynumber.errors %}
@@ -34,7 +34,7 @@
 
             <!-- マイナンバーカード表面 -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.mynumber_card_front.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">マイナンバーカード表面</label>
+                <label for="{{ form.mynumber_card_front.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">マイナンバーカード表面</label>
                 <div class="col-sm-6">
                     {{ form.mynumber_card_front }}
                     {% if form.mynumber_card_front.errors %}
@@ -45,7 +45,7 @@
 
             <!-- マイナンバーカード裏面 -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.mynumber_card_back.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">マイナンバーカード裏面</label>
+                <label for="{{ form.mynumber_card_back.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">マイナンバーカード裏面</label>
                 <div class="col-sm-6">
                     {{ form.mynumber_card_back }}
                     {% if form.mynumber_card_back.errors %}
@@ -56,7 +56,7 @@
 
             <!-- 本人確認書類１ -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.identity_document_1.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">本人確認書類１</label>
+                <label for="{{ form.identity_document_1.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">本人確認書類１</label>
                 <div class="col-sm-6">
                     {{ form.identity_document_1 }}
                     {% if form.identity_document_1.errors %}
@@ -67,7 +67,7 @@
 
             <!-- 本人確認書類２ -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.identity_document_2.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">本人確認書類２</label>
+                <label for="{{ form.identity_document_2.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">本人確認書類２</label>
                 <div class="col-sm-6">
                     {{ form.identity_document_2 }}
                     {% if form.identity_document_2.errors %}

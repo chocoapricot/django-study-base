@@ -14,14 +14,14 @@
             
             <!-- 氏名 -->
             <div class="row mb-1 align-items-center">
-                <label for="{{ form.name_last.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">名前(姓)<span class="text-danger">*</span></label>
+                <label for="{{ form.name_last.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">名前(姓)<span class="text-danger">*</span></label>
                 <div class="col-sm-4">
                     {{ form.name_last }}
                     {% if form.name_last.errors %}
                         <div class="text-danger small">{{ form.name_last.errors.0 }}</div>
                     {% endif %}
                 </div>
-                <label for="{{ form.name_first.id_for_label }}" class="col-sm-1 col-form-label text-start text-md-end">名前(名)<span class="text-danger">*</span></label>
+                <label for="{{ form.name_first.id_for_label }}" class="col-sm-1 col-form-label text-start text-sm-end">名前(名)<span class="text-danger">*</span></label>
                 <div class="col-sm-4">
                     {{ form.name_first }}
                     {% if form.name_first.errors %}
@@ -32,14 +32,14 @@
 
             <!-- 氏名（カナ） -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name_kana_last.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">カナ(姓)<span class="text-danger">*</span></label>
+                <label for="{{ form.name_kana_last.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">カナ(姓)<span class="text-danger">*</span></label>
                 <div class="col-sm-4">
                     {{ form.name_kana_last }}
                     {% if form.name_kana_last.errors %}
                         <div class="text-danger small">{{ form.name_kana_last.errors.0 }}</div>
                     {% endif %}
                 </div>
-                <label for="{{ form.name_kana_first.id_for_label }}" class="col-sm-1 col-form-label text-start text-md-end">カナ(名)<span class="text-danger">*</span></label>
+                <label for="{{ form.name_kana_first.id_for_label }}" class="col-sm-1 col-form-label text-start text-sm-end">カナ(名)<span class="text-danger">*</span></label>
                 <div class="col-sm-4">
                     {{ form.name_kana_first }}
                     {% if form.name_kana_first.errors %}
@@ -50,7 +50,7 @@
 
             <!-- 生年月日 -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.birth_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">生年月日</label>
+                <label for="{{ form.birth_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">生年月日</label>
                 <div class="col-sm-4">
                     {{ form.birth_date }}
                     {% if form.birth_date.errors %}
@@ -61,7 +61,7 @@
 
             <!-- 性別 -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.sex.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">性別</label>
+                <label for="{{ form.sex.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">性別</label>
                 <div class="col-sm-4">
                     {{ form.sex }}
                     {% if form.sex.errors %}
@@ -72,7 +72,7 @@
 
             <!-- メールアドレス（表示のみ） -->
             <div class="row mb-3 align-items-center">
-                <label class="col-sm-2 col-form-label text-start text-md-end">メールアドレス</label>
+                <label class="col-sm-2 col-form-label text-start text-sm-end">メールアドレス</label>
                 <div class="col-sm-6">
                     <input type="text" class="form-control form-control-sm" value="{{ user_email }}" readonly>
                     <small class="text-muted">※ログインユーザーのメールアドレスが自動設定されます</small>
@@ -81,7 +81,7 @@
 
             <!-- 電話番号 -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.phone.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">電話番号 {% my_help_preset "phone" %}</label>
+                <label for="{{ form.phone.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">電話番号 {% my_help_preset "phone" %}</label>
                 <div class="col-sm-4">
                     {{ form.phone }}
                     {% if form.phone.errors %}
@@ -92,7 +92,7 @@
 
             <!-- 郵便番号 -->
             <div class="row align-items-center">
-                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">郵便番号 {% my_help_preset "postal_code" %}</label>
+                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">郵便番号 {% my_help_preset "postal_code" %}</label>
                 <div class="col-sm-3">
                     {{ form.postal_code }}
                     {% if form.postal_code.errors %}
@@ -106,7 +106,7 @@
 
             <!-- 住所 -->
             <div class="row align-items-center">
-                <label for="{{ form.address1.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">住所1</label>
+                <label for="{{ form.address1.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">住所1</label>
                 <div class="col-sm-4">
                     {{ form.address1 }}
                     {% if form.address1.errors %}
@@ -116,7 +116,7 @@
             </div>
 
             <div class="row align-items-center">
-                <label for="{{ form.address2.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">住所2</label>
+                <label for="{{ form.address2.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">住所2</label>
                 <div class="col-sm-6">
                     {{ form.address2 }}
                     {% if form.address2.errors %}
@@ -126,7 +126,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.address3.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">住所3</label>
+                <label for="{{ form.address3.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">住所3</label>
                 <div class="col-sm-8">
                     {{ form.address3 }}
                     {% if form.address3.errors %}

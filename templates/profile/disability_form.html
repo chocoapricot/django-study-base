@@ -13,7 +13,7 @@
 
             <!-- メールアドレス（表示のみ） -->
             <div class="row mb-3 align-items-center">
-                <label class="col-sm-2 col-form-label text-start text-md-end">メールアドレス</label>
+                <label class="col-sm-2 col-form-label text-start text-sm-end">メールアドレス</label>
                 <div class="col-sm-6">
                     <input type="text" class="form-control form-control-sm" value="{{ user_email }}" readonly>
                     <small class="text-muted">※ログインユーザーのメールアドレスが自動設定されます</small>
@@ -22,7 +22,7 @@
 
             <!-- 障害の種類 -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.disability_type.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >障害の種類</label>
+                <label for="{{ form.disability_type.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end" >障害の種類</label>
                 <div class="col-sm-10">
                     {{ form.disability_type }}
                     {% if form.disability_type.errors %}
@@ -33,7 +33,7 @@
 
             <!-- 等級 -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.disability_grade.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >等級</label>
+                <label for="{{ form.disability_grade.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end" >等級</label>
                 <div class="col-sm-4">
                     {{ form.disability_grade }}
                     {% if form.disability_grade.errors %}
