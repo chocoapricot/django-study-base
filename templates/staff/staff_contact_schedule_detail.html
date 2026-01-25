@@ -13,7 +13,7 @@
             </div>
             <div class="card-body">
                 <div class="row mb-3 align-items-center">
-                    <div class="col-sm-3 text-start text-md-end"><strong>連絡種別</strong></div>
+                    <div class="col-sm-3 text-start text-sm-end"><strong>連絡種別</strong></div>
                     <div class="col-sm-9">
                         {% if schedule.contact_type %}
                             <span class="badge {{ schedule.contact_type|badge_class }}">{% my_name 'contact_type' schedule.contact_type %}</span>
@@ -21,19 +21,19 @@
                     </div>
                 </div>
                 <div class="row mb-3 align-items-center">
-                    <div class="col-sm-3 text-start text-md-end"><strong>対応内容</strong></div>
+                    <div class="col-sm-3 text-start text-sm-end"><strong>対応内容</strong></div>
                     <div class="col-sm-9">{{ schedule.content }}</div>
                 </div>
                 <div class="row mb-3 align-items-center">
-                    <div class="col-sm-3 text-start text-md-end"><strong>対応詳細</strong></div>
+                    <div class="col-sm-3 text-start text-sm-end"><strong>対応詳細</strong></div>
                     <div class="col-sm-9 text-break">{{ schedule.detail|linebreaksbr }}</div>
                 </div>
                 <div class="row mb-3 align-items-center">
-                    <div class="col-sm-3 text-start text-md-end"><strong>予定日</strong></div>
+                    <div class="col-sm-3 text-start text-sm-end"><strong>予定日</strong></div>
                     <div class="col-sm-9">{{ schedule.contact_date|date:'Y/m/d' }}</div>
                 </div>
                 <div class="row mb-3 align-items-center">
-                    <div class="col-sm-3 text-start text-md-end"><strong>対応者</strong></div>
+                    <div class="col-sm-3 text-start text-sm-end"><strong>対応者</strong></div>
                     <div class="col-sm-9">
                         {% if schedule.created_by.last_name or schedule.created_by.first_name %}
                             {{ schedule.created_by.last_name }} {{ schedule.created_by.first_name }}
@@ -70,28 +70,28 @@
                     <input type="hidden" name="register_history" value="1">
                     
                     <div class="row mb-3 align-items-center">
-                        <label for="{{ form.contacted_at.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ form.contacted_at.label }}</label>
+                        <label for="{{ form.contacted_at.id_for_label }}" class="col-sm-3 col-form-label text-start text-sm-end">{{ form.contacted_at.label }}</label>
                         <div class="col-sm-9">
                             {{ form.contacted_at }}
                         </div>
                     </div>
                     
                     <div class="row mb-3 align-items-center">
-                        <label for="{{ form.contact_type.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ form.contact_type.label }}</label>
+                        <label for="{{ form.contact_type.id_for_label }}" class="col-sm-3 col-form-label text-start text-sm-end">{{ form.contact_type.label }}</label>
                         <div class="col-sm-9">
                             {{ form.contact_type }}
                         </div>
                     </div>
                     
                     <div class="row mb-3 align-items-center">
-                        <label for="{{ form.content.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ form.content.label }}</label>
+                        <label for="{{ form.content.id_for_label }}" class="col-sm-3 col-form-label text-start text-sm-end">{{ form.content.label }}</label>
                         <div class="col-sm-9">
                             {{ form.content }}
                         </div>
                     </div>
                     
                     <div class="row mb-3 align-items-center">
-                        <label for="{{ form.detail.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ form.detail.label }}</label>
+                        <label for="{{ form.detail.id_for_label }}" class="col-sm-3 col-form-label text-start text-sm-end">{{ form.detail.label }}</label>
                         <div class="col-sm-9">
                             {{ form.detail }}
                         </div>
@@ -117,21 +117,21 @@
                     <input type="hidden" name="send_mail" value="1">
                     
                     <div class="row mb-3 align-items-center">
-                        <label for="{{ mail_form.to_email.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ mail_form.to_email.label }}</label>
+                        <label for="{{ mail_form.to_email.id_for_label }}" class="col-sm-3 col-form-label text-start text-sm-end">{{ mail_form.to_email.label }}</label>
                         <div class="col-sm-9">
                             {{ mail_form.to_email }}
                         </div>
                     </div>
                     
                     <div class="row mb-3 align-items-center">
-                        <label for="{{ mail_form.subject.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ mail_form.subject.label }}</label>
+                        <label for="{{ mail_form.subject.id_for_label }}" class="col-sm-3 col-form-label text-start text-sm-end">{{ mail_form.subject.label }}</label>
                         <div class="col-sm-9">
                             {{ mail_form.subject }}
                         </div>
                     </div>
                     
                     <div class="row mb-3 align-items-center">
-                        <label for="{{ mail_form.body.id_for_label }}" class="col-sm-3 col-form-label text-start text-md-end">{{ mail_form.body.label }}</label>
+                        <label for="{{ mail_form.body.id_for_label }}" class="col-sm-3 col-form-label text-start text-sm-end">{{ mail_form.body.label }}</label>
                         <div class="col-sm-9">
                             {{ mail_form.body }}
                         </div>

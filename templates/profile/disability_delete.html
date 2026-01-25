@@ -14,19 +14,19 @@
         </div>
 
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label text-start text-md-end">メールアドレス</label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end">メールアドレス</label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ disability.email }}</p>
             </div>
         </div>
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label text-start text-md-end">障害の種類</label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end">障害の種類</label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ disability.disability_type|default_if_none:"" }}</p>
             </div>
         </div>
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label text-start text-md-end">等級</label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end">等級</label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ disability.disability_grade|default_if_none:"" }}</p>
             </div>

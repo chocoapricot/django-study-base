@@ -31,7 +31,7 @@
             {% endif %}
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.client.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.client.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     クライアント
                     {% my_help_preset "client_selection" %}
                 </label>
@@ -53,7 +53,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約種別</label>
+                <label for="{{ form.contract_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">契約種別</label>
                 <div class="col-sm-10 d-flex align-items-center">
                     {{ form.client_contract_type_code }}
                     <span class="badge me-2 {{ form.client_contract_type_code.value|badge_class }}">
@@ -73,7 +73,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.job_category.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">職種</label>
+                <label for="{{ form.job_category.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">職種</label>
                 <div class="col-sm-3">
                     {{ form.job_category }}
                     {% for error in form.job_category.errors %}
@@ -83,7 +83,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約名</label>
+                <label for="{{ form.contract_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">契約名</label>
                 <div class="col-sm-6">
                     {{ form.contract_name }}
                     {% for error in form.contract_name.errors %}
@@ -93,7 +93,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_status.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約状況</label>
+                <label for="{{ form.contract_status.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">契約状況</label>
                 <div class="col-sm-3">
                     {{ form.contract_status }}
                     {% for error in form.contract_status.errors %}
@@ -106,7 +106,7 @@
             
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.start_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.start_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     契約開始日
                     {% my_help_preset "contract_start_date_client" %}
                 </label>
@@ -116,7 +116,7 @@
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
                 </div>
-                <label for="{{ form.end_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.end_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     契約終了日
                 </label>
                 <div class="col-sm-3">
@@ -133,7 +133,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.worktime_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">就業時間</label>
+                <label for="{{ form.worktime_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">就業時間</label>
                 <div class="col-sm-10">
                     <input type="hidden" id="{{ form.worktime_pattern.id_for_label }}" name="{{ form.worktime_pattern.name }}" value="{{ form.worktime_pattern.value|default:'' }}">
                     <div class="d-flex align-items-center">
@@ -152,7 +152,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.overtime_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">時間外算出</label>
+                <label for="{{ form.overtime_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">時間外算出</label>
                 <div class="col-sm-10">
                     <input type="hidden" id="{{ form.overtime_pattern.id_for_label }}" name="{{ form.overtime_pattern.name }}" value="{{ form.overtime_pattern.value|default:'' }}">
                     <div class="d-flex align-items-center">
@@ -171,7 +171,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.time_punch.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">勤怠打刻</label>
+                <label for="{{ form.time_punch.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">勤怠打刻</label>
                 <div class="col-sm-10">
                     <input type="hidden" id="{{ form.time_punch.id_for_label }}" name="{{ form.time_punch.name }}" value="{{ form.time_punch.value|default:'' }}">
                     <div class="d-flex align-items-center">
@@ -190,7 +190,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_amount.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.contract_amount.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     契約金額
                 </label>
                 <div class="col-sm-3">
@@ -211,7 +211,7 @@
 
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.payment_site.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">支払条件</label>
+                <label for="{{ form.payment_site.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">支払条件</label>
                 <div class="col-sm-3">
                     {{ form.payment_site }}
                     {% if form.payment_site.help_text %}
@@ -236,14 +236,14 @@
             {% endif %}
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ haken_form.haken_office.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.haken_office.label }}</label>
+                <label for="{{ haken_form.haken_office.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ haken_form.haken_office.label }}</label>
                 <div class="col-sm-4">
                     {{ haken_form.haken_office }}
                     {% for error in haken_form.haken_office.errors %}
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
                 </div>
-                <label for="{{ haken_form.haken_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.haken_unit.label }}</label>
+                <label for="{{ haken_form.haken_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ haken_form.haken_unit.label }}</label>
                 <div class="col-sm-4">
                     {{ haken_form.haken_unit }}
                     {% for error in haken_form.haken_unit.errors %}
@@ -253,7 +253,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ haken_form.work_location.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.work_location.label }}</label>
+                <label for="{{ haken_form.work_location.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ haken_form.work_location.label }}</label>
                 <div class="col-sm-10">
                     {{ haken_form.work_location }}
                     {% for error in haken_form.work_location.errors %}
@@ -263,7 +263,7 @@
             </div>
 
             <div class="row mb-1 align-items-center">
-                <label for="{{ haken_form.commander.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.commander.label }}</label>
+                <label for="{{ haken_form.commander.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ haken_form.commander.label }}</label>
                 <div class="col-sm-4">
                     {{ haken_form.commander }}
                     {% for error in haken_form.commander.errors %}
@@ -272,14 +272,14 @@
                 </div>
             </div>
             <div class="row mb-3 align-items-center">
-                <label for="{{ haken_form.complaint_officer_client.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.complaint_officer_client.label }}</label>
+                <label for="{{ haken_form.complaint_officer_client.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ haken_form.complaint_officer_client.label }}</label>
                 <div class="col-sm-4">
                     {{ haken_form.complaint_officer_client }}
                     {% for error in haken_form.complaint_officer_client.errors %}
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
                 </div>
-                <label for="{{ haken_form.responsible_person_client.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ haken_form.responsible_person_client.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     {{ haken_form.responsible_person_client.label }}
                     {% my_help_icon "職種が製造派遣該当の場合は「製造業務専門派遣先責任者」で帳票出力されます" %}
                 </label>
@@ -292,14 +292,14 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ haken_form.complaint_officer_company.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.complaint_officer_company.label }}</label>
+                <label for="{{ haken_form.complaint_officer_company.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ haken_form.complaint_officer_company.label }}</label>
                 <div class="col-sm-4">
                     {{ haken_form.complaint_officer_company }}
                     {% for error in haken_form.complaint_officer_company.errors %}
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
                 </div>
-                <label for="{{ haken_form.responsible_person_company.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ haken_form.responsible_person_company.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     {{ haken_form.responsible_person_company.label }}
                     {% my_help_icon "職種が製造派遣該当の場合は「製造業務専門派遣元責任者」で帳票出力されます" %}
                 </label>
@@ -313,7 +313,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label class="col-sm-2 col-form-label text-start text-md-end">
+                <label class="col-sm-2 col-form-label text-start text-sm-end">
                     {{ haken_form.limit_by_agreement.label }}
                     {% my_help_icon "通常は「限定する」を選択してください。限定しない場合、派遣会社は派遣先から「比較対象労働者」の賃金等の情報を提供してもらう必要があります。" %}
                 </label>
@@ -323,7 +323,7 @@
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
                 </div>
-                <label class="col-sm-2 col-form-label text-start text-md-end">
+                <label class="col-sm-2 col-form-label text-start text-sm-end">
                     {{ haken_form.limit_indefinite_or_senior.label }}
                     {% my_help_icon "限定する場合、60歳未満または有期雇用スタッフをアサインできません" %}
 
@@ -339,7 +339,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ haken_form.responsibility_degree.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ haken_form.responsibility_degree.label }}</label>
+                <label for="{{ haken_form.responsibility_degree.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ haken_form.responsibility_degree.label }}</label>
                 <div class="col-sm-8">
                     {{ haken_form.responsibility_degree }}
                 </div>
@@ -357,7 +357,7 @@
             {% endif %}
 
             <div class="row mb-3">
-                <label for="{{ form.business_content.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">業務内容</label>
+                <label for="{{ form.business_content.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">業務内容</label>
                 <div class="col-sm-8">
                     {{ form.business_content }}
                 </div>
@@ -373,7 +373,7 @@
             </div>
 
             <div class="row mb-3">
-                <label for="{{ form.notes.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">備考</label>
+                <label for="{{ form.notes.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">備考</label>
                 <div class="col-sm-10">
                     {{ form.notes }}
                     {% for error in form.notes.errors %}
@@ -383,7 +383,7 @@
             </div>
 
             <div class="row mb-3">
-                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     メモ{% my_help_icon "契約書には表示されません" %}
                 </label>
                 <div class="col-sm-10">

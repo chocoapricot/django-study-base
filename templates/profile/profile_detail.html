@@ -17,7 +17,7 @@
     <div class="card-body">
         {% if profile %}
             <div class="row mb-1">
-                <label class="col-sm-2 col-form-label text-start text-md-end"><strong>氏名</strong></label>
+                <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>氏名</strong></label>
                 <div class="col-sm-10">
                     <h4>
                         <ruby>
@@ -31,32 +31,32 @@
             </div>
 
             <div class="row mb-1">
-                <label class="col-sm-2 col-form-label text-start text-md-end"><strong>性別</strong></label>
+                <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>性別</strong></label>
                 <div class="col-sm-10">
                     <p class="form-control-plaintext">{% my_name 'sex' profile.sex %}</p>
                 </div>
             </div>
             <div class="row mb-1">
-                <label class="col-sm-2 col-form-label text-start text-md-end"><strong>メールアドレス</strong></label>
+                <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>メールアドレス</strong></label>
                 <div class="col-sm-10">
                     <p class="form-control-plaintext">{{ profile.email }}</p>
                 </div>
             </div>
             <div class="row mb-1">
-                <label class="col-sm-2 col-form-label text-start text-md-end"><strong>電話番号</strong></label>
+                <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>電話番号</strong></label>
                 <div class="col-sm-10">
                     <p class="form-control-plaintext">{{ profile.phone }}</p>
                 </div>
             </div>
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label text-start text-md-end"><strong>住所</strong></label>
+                <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>住所</strong></label>
                 <div class="col-sm-6">
                     <p class="form-control-plaintext">〒{{ profile.postal_code|slice:":3" }}-{{ profile.postal_code|slice:"3:" }}</p>
                     {{ profile.full_address }}
                 </div>
             </div>
             <div class="row mb-3 align-items-center">
-                <div class="col-sm-2 text-start text-md-end">
+                <div class="col-sm-2 text-start text-sm-end">
                     <strong>資格</strong>
                 </div>
                 <div class="col-sm">
@@ -71,7 +71,7 @@
                 </div>
             </div>
             <div class="row mb-2 align-items-center">
-                <div class="col-sm-2 text-start text-md-end">
+                <div class="col-sm-2 text-start text-sm-end">
                     <strong>技能</strong>
                 </div>
                 <div class="col-sm">

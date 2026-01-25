@@ -11,19 +11,19 @@
         </div>
         
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end"><strong>勤怠打刻</strong></div>
+            <div class="col-sm-2 text-start text-sm-end"><strong>勤怠打刻</strong></div>
             <div class="col-sm-10">{{ timerecord.staff }} - {{ timerecord.work_date|date:"Y/m/d" }}</div>
         </div>
         
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end"><strong>休憩開始時刻</strong></div>
+            <div class="col-sm-2 text-start text-sm-end"><strong>休憩開始時刻</strong></div>
             <div class="col-sm-4">{{ break_record.break_start|date:"Y/m/d H:i:s" }}</div>
-            <div class="col-sm-2 text-start text-md-end"><strong>休憩終了時刻</strong></div>
+            <div class="col-sm-2 text-start text-sm-end"><strong>休憩終了時刻</strong></div>
             <div class="col-sm-4">{{ break_record.break_end|date:"Y/m/d H:i:s" }}</div>
         </div>
         
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end"><strong>休憩時間</strong></div>
+            <div class="col-sm-2 text-start text-sm-end"><strong>休憩時間</strong></div>
             <div class="col-sm-4">{{ break_record.break_hours_display }}</div>
         </div>
 

@@ -9,22 +9,22 @@
     <div class="card-header">スタッフ連絡先情報</div>
     <div class="card-body">
         <div class="row mb-3 mt-3">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>緊急連絡先</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>緊急連絡先</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ contact.emergency_contact|default:"-" }}</p>
             </div>
 
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>続柄</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>続柄</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ contact.relationship|default:"-" }}</p>
             </div>
 
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>郵便番号（住民票）</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>郵便番号（住民票）</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ contact.postal_code|default:"-" }}</p>
             </div>
 
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>住所（住民票）</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>住所（住民票）</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ contact.address1|default:"" }} {{ contact.address2|default:"" }} {{ contact.address3|default:"" }}</p>
             </div>

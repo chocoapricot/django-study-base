@@ -12,7 +12,7 @@
             {% csrf_token %}
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.target_item.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">対象項目</label>
+                <label for="{{ form.target_item.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">対象項目</label>
                 <div class="col-sm-6">
                     {{ form.target_item }}
                     {% if form.target_item.errors %}
@@ -22,7 +22,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.format.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">形式</label>
+                <label for="{{ form.format.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">形式</label>
                 <div class="col-sm-6">
                     {{ form.format }}
                     {% if form.format.errors %}
@@ -32,7 +32,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.value.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">設定値</label>
+                <label for="{{ form.value.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">設定値</label>
                 <div class="col-sm-6">
                     {% if form.value.field.widget.input_type == 'radio' %}
                         <div class="d-flex gap-3">

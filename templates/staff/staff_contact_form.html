@@ -14,7 +14,7 @@
             {% csrf_token %}
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.emergency_contact.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >緊急連絡先</label>
+                <label for="{{ form.emergency_contact.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end" >緊急連絡先</label>
                 <div class="col-sm-4">
                     {{ form.emergency_contact }}
                     {% if form.emergency_contact.errors %}
@@ -22,7 +22,7 @@
                     {% endif %}
                 </div>
 
-                <label for="{{ form.relationship.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end" >続柄</label>
+                <label for="{{ form.relationship.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end" >続柄</label>
                 <div class="col-sm-4">
                     {{ form.relationship }}
                     {% if form.relationship.errors %}
@@ -31,7 +31,7 @@
                 </div>
 
                 <div class="row align-items-center">
-                    <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.postal_code.label }}
+                    <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.postal_code.label }}
                         {% my_help_preset "postal_code" %}
                     </label>
                     <div class="col-sm-3">
@@ -43,19 +43,19 @@
                 </div>
 
                 <div class="row align-items-center">
-                    <label for="{{ form.address1.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.address1.label }}</label>
+                    <label for="{{ form.address1.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.address1.label }}</label>
                     <div class="col-sm-10">
                         {{ form.address1 }}
                     </div>
                 </div>
                 <div class="row align-items-center">
-                    <label for="{{ form.address2.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.address2.label }}</label>
+                    <label for="{{ form.address2.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.address2.label }}</label>
                     <div class="col-sm-10">
                         {{ form.address2 }}
                     </div>
                 </div>
                 <div class="row mb-3 align-items-center">
-                    <label for="{{ form.address3.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.address3.label }}</label>
+                    <label for="{{ form.address3.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.address3.label }}</label>
                     <div class="col-sm-10">
                         {{ form.address3 }}
                     </div>

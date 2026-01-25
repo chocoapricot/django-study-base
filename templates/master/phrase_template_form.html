@@ -24,7 +24,7 @@
                     {% endif %}
 
                     <div class="row mb-3 align-items-center">
-                        <label for="{{ form.content.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">内容</label>
+                        <label for="{{ form.content.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">内容</label>
                         <div class="col-sm-8">
                             {{ form.content }}
                             {% if form.content.errors %}
@@ -34,7 +34,7 @@
                     </div>
 
                     <div class="row mb-3 align-items-center">
-                        <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">表示順</label>
+                        <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">表示順</label>
                         <div class="col-sm-3">
                             {{ form.display_order }}
                             {% if form.display_order.errors %}

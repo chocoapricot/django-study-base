@@ -12,7 +12,7 @@
 
             <!-- 基本情報 -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.name.label }}</label>
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.name.label }}</label>
                 <div class="col-sm-6">
                     {{ form.name }}
                     {% if form.name.errors %}
@@ -23,7 +23,7 @@
 
             <!-- 打刻方法 -->
             <div class="row mb-3 align-items-center">
-                <label class="col-sm-2 col-form-label text-start text-md-end">{{ form.punch_method.label }}</label>
+                <label class="col-sm-2 col-form-label text-start text-sm-end">{{ form.punch_method.label }}</label>
                 <div class="col-sm-10">
                     <div class="d-flex flex-wrap">
                         {% for radio in form.punch_method %}
@@ -43,7 +43,7 @@
 
             <!-- 位置情報取得 -->
             <div class="row mb-3 align-items-center">
-                <label class="col-sm-2 col-form-label text-start text-md-end">{{ form.location_info.label }}</label>
+                <label class="col-sm-2 col-form-label text-start text-sm-end">{{ form.location_info.label }}</label>
                 <div class="col-sm-10">
                     <div class="d-flex flex-wrap">
                         {% for radio in form.location_info %}
@@ -63,7 +63,7 @@
 
             <!-- 開始時刻丸め設定 -->
             <div class="row mb-1 align-items-center">
-                <label for="{{ form.start_time_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.start_time_unit.label }}</label>
+                <label for="{{ form.start_time_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.start_time_unit.label }}</label>
                 <div class="col-sm-2">
                     {{ form.start_time_unit }}
                     {% if form.start_time_unit.errors %}
@@ -71,7 +71,7 @@
                     {% endif %}
                 </div>
 
-                <label for="{{ form.start_time_method.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.start_time_method.label }}</label>
+                <label for="{{ form.start_time_method.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.start_time_method.label }}</label>
                 <div class="col-sm-2">
                     {{ form.start_time_method }}
                     {% if form.start_time_method.errors %}
@@ -82,7 +82,7 @@
 
             <!-- 終了時刻丸め設定 -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.end_time_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.end_time_unit.label }}</label>
+                <label for="{{ form.end_time_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.end_time_unit.label }}</label>
                 <div class="col-sm-2">
                     {{ form.end_time_unit }}
                     {% if form.end_time_unit.errors %}
@@ -90,7 +90,7 @@
                     {% endif %}
                 </div>
 
-                <label for="{{ form.end_time_method.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.end_time_method.label }}</label>
+                <label for="{{ form.end_time_method.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.end_time_method.label }}</label>
                 <div class="col-sm-2">
                     {{ form.end_time_method }}
                     {% if form.end_time_method.errors %}
@@ -101,7 +101,7 @@
 
             <!-- 休憩設定 -->
             <div class="row mb-3 align-items-center">
-                <label class="col-sm-2 col-form-label text-start text-md-end">{{ form.break_input.label }}</label>
+                <label class="col-sm-2 col-form-label text-start text-sm-end">{{ form.break_input.label }}</label>
                 <div class="col-sm-6">
                     <div class="d-flex">
                         {% for radio in form.break_input %}
@@ -123,7 +123,7 @@
             <div id="break-rounding-settings">
 
                 <div class="row mb-1 align-items-center">
-                    <label for="{{ form.break_start_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.break_start_unit.label }}</label>
+                    <label for="{{ form.break_start_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.break_start_unit.label }}</label>
                     <div class="col-sm-2">
                         {{ form.break_start_unit }}
                         {% if form.break_start_unit.errors %}
@@ -131,7 +131,7 @@
                         {% endif %}
                     </div>
 
-                    <label for="{{ form.break_start_method.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.break_start_method.label }}</label>
+                    <label for="{{ form.break_start_method.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.break_start_method.label }}</label>
                     <div class="col-sm-2">
                         {{ form.break_start_method }}
                         {% if form.break_start_method.errors %}
@@ -141,7 +141,7 @@
                 </div>
 
                 <div class="row mb-3 align-items-center">
-                    <label for="{{ form.break_end_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.break_end_unit.label }}</label>
+                    <label for="{{ form.break_end_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.break_end_unit.label }}</label>
                     <div class="col-sm-2">
                         {{ form.break_end_unit }}
                         {% if form.break_end_unit.errors %}
@@ -149,7 +149,7 @@
                         {% endif %}
                     </div>
 
-                    <label for="{{ form.break_end_method.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.break_end_method.label }}</label>
+                    <label for="{{ form.break_end_method.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.break_end_method.label }}</label>
                     <div class="col-sm-2">
                         {{ form.break_end_method }}
                         {% if form.break_end_method.errors %}
@@ -162,7 +162,7 @@
 
             <!-- その他の設定 -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.description.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.description.label }}</label>
+                <label for="{{ form.description.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.description.label }}</label>
                 <div class="col-sm-8">
                     {{ form.description }}
                     {% if form.description.errors %}
@@ -172,7 +172,7 @@
             </div>
 
             <div class="row mb-1 align-items-center">
-                <label for="{{ form.sort_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.sort_order.label }}</label>
+                <label for="{{ form.sort_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.sort_order.label }}</label>
                 <div class="col-sm-2">
                     {{ form.sort_order }}
                     {% if form.sort_order.errors %}
@@ -182,7 +182,7 @@
             </div>
 
             <div class="row mb-1 align-items-center">
-                <label for="{{ form.is_active.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.is_active.label }}</label>
+                <label for="{{ form.is_active.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.is_active.label }}</label>
                 <div class="col-sm-3">
                     <div class="form-check">
                         {{ form.is_active }}

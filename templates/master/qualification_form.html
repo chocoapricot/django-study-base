@@ -14,7 +14,7 @@
             {% csrf_token %}
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">資格名 <span class="text-danger">*</span></label>
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">資格名 <span class="text-danger">*</span></label>
                 <div class="col-sm-6">
                     {{ form.name }}
                     {% if form.name.errors %}
@@ -24,7 +24,7 @@
             </div>
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.parent.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">カテゴリ <span class="text-danger">*</span></label>
+                <label for="{{ form.parent.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">カテゴリ <span class="text-danger">*</span></label>
                 <div class="col-sm-4">
                     {{ form.parent }}
                     {% if form.parent.errors %}
@@ -34,7 +34,7 @@
             </div>
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.description.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">説明</label>
+                <label for="{{ form.description.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">説明</label>
                 <div class="col-sm-8">
                     {{ form.description }}
                     {% if form.description.errors %}
@@ -45,7 +45,7 @@
             
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">表示順</label>
+                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">表示順</label>
                 <div class="col-sm-3">
                     {{ form.display_order }}
                     {% if form.display_order.errors %}

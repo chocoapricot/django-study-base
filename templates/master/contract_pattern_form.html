@@ -17,7 +17,7 @@
             {% csrf_token %}
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">名称</label>
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">名称</label>
                 <div class="col-sm-6">
                     {{ form.name }}
                     {% if form.name.errors %}
@@ -27,7 +27,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.domain.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">対象</label>
+                <label for="{{ form.domain.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">対象</label>
                 <div class="col-sm-3">
                     {% for radio in form.domain %}
                     <div class="form-check form-check-inline">
@@ -56,7 +56,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">メモ</label>
+                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">メモ</label>
                 <div class="col-sm-10">
                     {{ form.memo }}
                     {% if form.memo.errors %}
@@ -66,7 +66,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">表示順</label>
+                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">表示順</label>
                 <div class="col-sm-3">
                     {{ form.display_order }}
                     {% if form.display_order.errors %}

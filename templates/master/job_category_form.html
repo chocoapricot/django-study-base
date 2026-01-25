@@ -12,7 +12,7 @@
             {% csrf_token %}
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">名称</label>
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">名称</label>
                 <div class="col-sm-6">
                     {{ form.name }}
                     {% if form.name.errors %}
@@ -22,7 +22,7 @@
             </div>
 
             <div class="row mb-1 align-items-center">
-                <label for="{{ form.jobs_kourou.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">職業分類(厚労省)</label>
+                <label for="{{ form.jobs_kourou.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">職業分類(厚労省)</label>
                 <div class="col-sm-6">
                     {{ form.jobs_kourou }}
                     {% if form.jobs_kourou.errors %}
@@ -32,7 +32,7 @@
             </div>
 
             <div class="row mb-1 align-items-center">
-                <label for="{{ form.jobs_soumu.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">職業分類(総務省)</label>
+                <label for="{{ form.jobs_soumu.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">職業分類(総務省)</label>
                 <div class="col-sm-6">
                     {{ form.jobs_soumu }}
                     {% if form.jobs_soumu.errors %}
@@ -42,7 +42,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.jobs_seirei.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.jobs_seirei.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     派遣政令業務
                     {% my_help_icon "日雇い派遣（30日以内または週20時間未満の派遣）の例外となる令第４条第１項に該当する業務" %}
                 </label>
@@ -55,7 +55,7 @@
             </div>
 
             <div class="row mb-1 align-items-center">
-                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     製造派遣該当
                     {% my_help_icon "製造派遣に該当する場合、派遣元/派遣先責任者の契約書への印字がかわります" %}
                 </label>
@@ -71,7 +71,7 @@
             </div>
 
             <div class="row mb-1 align-items-center">
-                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     農業漁業派遣該当
                     {% my_help_icon "農業・漁業派遣に該当する場合は特定技能外国人を派遣で受入れ可能です" %}
                 </label>
@@ -87,7 +87,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     特定技能外国人受入該当
                     {% my_help_icon "特定技能外国人の受入れに該当する職種の場合にチェックします。対象でないと外国籍スタッフを割当できません" %}
                 </label>
@@ -103,7 +103,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">表示順</label>
+                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">表示順</label>
                 <div class="col-sm-3">
                     {{ form.display_order }}
                     {% if form.display_order.errors %}

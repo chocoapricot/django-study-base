@@ -10,21 +10,21 @@
     </div>
     <div class="card-body mb-0">
         <div class="row">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>名称</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>名称</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ agreement.name }}</p>
             </div>
         </div>
 
         <div class="row">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>文言</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>文言</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext" style="white-space: pre-wrap;">{{ agreement.agreement_text }}</p>
             </div>
         </div>
 
         <div class="row">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>状態</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>状態</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">
                     {% if agreement.is_active %}

@@ -18,7 +18,7 @@
         <form method="post" action="{% url 'account_signup' %}" autocomplete="off">
           {% csrf_token %}
           <div class="row mb-3 align-items-center">
-            <label for="id_email" class="col-sm-4 col-form-label text-start text-md-end">メールアドレス</label>
+            <label for="id_email" class="col-sm-4 col-form-label text-start text-sm-end">メールアドレス</label>
             <div class="col-sm-8">
               <div style="height: 38px;">
                 <input type="email" name="email" class="form-control" id="id_email" autocomplete="email" value="{{ form.email.value|default:'' }}" style="height: 100%;">
@@ -26,7 +26,7 @@
             </div>
           </div>
           <div class="row mb-3 align-items-center">
-            <label for="id_last_name" class="col-sm-4 col-form-label text-start text-md-end">姓</label>
+            <label for="id_last_name" class="col-sm-4 col-form-label text-start text-sm-end">姓</label>
             <div class="col-sm-8">
               <div style="height: 38px;">
                 <input type="text" name="last_name" class="form-control" id="id_last_name" value="{{ form.last_name.value|default:'' }}" style="height: 100%;">
@@ -34,7 +34,7 @@
             </div>
           </div>
           <div class="row mb-3 align-items-center">
-            <label for="id_first_name" class="col-sm-4 col-form-label text-start text-md-end">名</label>
+            <label for="id_first_name" class="col-sm-4 col-form-label text-start text-sm-end">名</label>
             <div class="col-sm-8">
               <div style="height: 38px;">
                 <input type="text" name="first_name" class="form-control" id="id_first_name" value="{{ form.first_name.value|default:'' }}" style="height: 100%;">
@@ -42,7 +42,7 @@
             </div>
           </div>
           <div class="row mb-3 align-items-center">
-            <label for="id_password1" class="col-sm-4 col-form-label text-start text-md-end">パスワード</label>
+            <label for="id_password1" class="col-sm-4 col-form-label text-start text-sm-end">パスワード</label>
             <div class="col-sm-8">
               <div class="input-group align-items-center" style="height: 38px;">
                 <input type="password" name="password1" class="form-control" id="id_password1" autocomplete="new-password">
@@ -53,7 +53,7 @@
             </div>
           </div>
           <div class="row mb-3 align-items-center">
-            <label for="id_password2" class="col-sm-4 col-form-label text-start text-md-end">パスワード（確認）</label>
+            <label for="id_password2" class="col-sm-4 col-form-label text-start text-sm-end">パスワード（確認）</label>
             <div class="col-sm-8">
               <div class="input-group align-items-center" style="height: 38px;">
                 <input type="password" name="password2" class="form-control" id="id_password2" autocomplete="new-password">
