@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load humanize %}
+{% load user_parameters %}
 
 {% block content %}
 
@@ -328,7 +329,7 @@
                                 <div class="flex-grow-1">
                                     <p class="stats-number text-dark">{{ expiring_staff_international_count|intcomma }}<span class="stats-unit">名</span></p>
                                     <p class="stats-label">外国籍スタッフ在留資格期限</p>
-                                    <p class="stats-description">在留資格の有効期間が今日から30日以内、または過ぎているスタッフです。</p>
+                                    <p class="stats-description">在留資格の有効期間が今日から{% user_parameter 'RESIDENCE_PERIOD_WARNING_DAYS' '30' %}日以内、または過ぎているスタッフです。</p>
                                 </div>
                             </div>
                         </div>
@@ -343,7 +344,7 @@
                             <div class="flex-grow-1">
                                 <p class="stats-number text-muted-light">-</p>
                                 <p class="stats-label">外国籍スタッフ在留資格期限</p>
-                                <p class="stats-description">在留資格の有効期間が近い、または過ぎているスタッフです。</p>
+                                <p class="stats-description">在留資格の有効期間が今日から{% user_parameter 'RESIDENCE_PERIOD_WARNING_DAYS' '30' %}日以内、または過ぎているスタッフです。</p>
                             </div>
                         </div>
                     </div>
@@ -399,7 +400,7 @@
                                 <div class="flex-grow-1">
                                     <p class="stats-number text-dark">{{ personal_teishokubi_deadline_count|intcomma }}<span class="stats-unit">件</span></p>
                                     <p class="stats-label">個人抵触日期限</p>
-                                    <p class="stats-description">個人抵触日が60日以内の派遣契約数です。</p>
+                                    <p class="stats-description">個人抵触日が{% user_parameter 'PERSONAL_TEISHOKUBI_WARNING_DAYS' '60' %}日以内の派遣契約数です。</p>
                                 </div>
                             </div>
                         </div>
@@ -414,7 +415,7 @@
                             <div class="flex-grow-1">
                                 <p class="stats-number text-muted-light">-</p>
                                 <p class="stats-label">個人抵触日期限</p>
-                                <p class="stats-description">個人抵触日が60日以内の派遣契約数です。</p>
+                                <p class="stats-description">個人抵触日が{% user_parameter 'PERSONAL_TEISHOKUBI_WARNING_DAYS' '60' %}日以内の派遣契約数です。</p>
                             </div>
                         </div>
                     </div>
@@ -435,7 +436,7 @@
                                 <div class="flex-grow-1">
                                     <p class="stats-number text-dark">{{ teishokubi_deadline_count|intcomma }}<span class="stats-unit">件</span></p>
                                     <p class="stats-label">事業所抵触日期限</p>
-                                    <p class="stats-description">事業所抵触日が60日以内の派遣契約数です。</p>
+                                    <p class="stats-description">事業所抵触日が{% user_parameter 'OFFICE_TEISHOKUBI_WARNING_DAYS' '60' %}日以内の派遣契約数です。</p>
                                 </div>
                             </div>
                         </div>
@@ -450,7 +451,7 @@
                             <div class="flex-grow-1">
                                 <p class="stats-number text-muted-light">-</p>
                                 <p class="stats-label">事業所抵触日期限</p>
-                                <p class="stats-description">事業所抵触日が60日以内の派遣契約数です。</p>
+                                <p class="stats-description">事業所抵触日が{% user_parameter 'OFFICE_TEISHOKUBI_WARNING_DAYS' '60' %}日以内の派遣契約数です。</p>
                             </div>
                         </div>
                     </div>

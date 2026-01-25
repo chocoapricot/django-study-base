@@ -9,7 +9,7 @@ from apps.connect.models import (
     ConnectStaff, ConnectClient, MynumberRequest, ProfileRequest,
     BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
 )
-from apps.master.models import Information
+from apps.master.models import Information, UserParameter
 from apps.staff.models_inquiry import StaffInquiry
 from django.utils import timezone
 from django.db.models import Q
@@ -258,33 +258,55 @@ def home(request):
             assignment_confirm__isnull=True
         ).count()
 
+    # 警告日数の取得
+    try:
+        residence_period_warning_days = UserParameter.objects.get(key='RESIDENCE_PERIOD_WARNING_DAYS').get_number_value()
+        if residence_period_warning_days is None:
+            residence_period_warning_days = 30
+    except UserParameter.DoesNotExist:
+        residence_period_warning_days = 30
+
+    try:
+        personal_teishokubi_warning_days = UserParameter.objects.get(key='PERSONAL_TEISHOKUBI_WARNING_DAYS').get_number_value()
+        if personal_teishokubi_warning_days is None:
+            personal_teishokubi_warning_days = 60
+    except UserParameter.DoesNotExist:
+        personal_teishokubi_warning_days = 60
+    
+    try:
+        office_teishokubi_warning_days = UserParameter.objects.get(key='OFFICE_TEISHOKUBI_WARNING_DAYS').get_number_value()
+        if office_teishokubi_warning_days is None:
+            office_teishokubi_warning_days = 60
+    except UserParameter.DoesNotExist:
+        office_teishokubi_warning_days = 60
+
     # 外国籍スタッフの在留資格期限切れ件数
     expiring_staff_international_count = 0
     if request.user.has_perm('staff.view_staffinternational'):
-        thirty_days_later = today + timedelta(days=30)
+        residence_warning_date = today + timedelta(days=residence_period_warning_days)
         expiring_staff_international_count = StaffInternational.objects.filter(
             staff__employee_no__isnull=False,
-            residence_period_to__lte=thirty_days_later
+            residence_period_to__lte=residence_warning_date
         ).exclude(staff__employee_no='').count()
 
     # 事業所抵触日期限の件数
     teishokubi_deadline_count = 0
     has_view_client_contract_perm = request.user.has_perm('contract.view_clientcontract')
     if has_view_client_contract_perm:
-        sixty_days_later = today + timedelta(days=60)
+        office_teishokubi_warning_date = today + timedelta(days=office_teishokubi_warning_days)
         teishokubi_deadline_count = ClientContract.objects.filter(
             Q(end_date__gte=today) | Q(end_date__isnull=True),
             start_date__lte=today,
             client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
             haken_info__haken_office__haken_jigyosho_teishokubi__gte=today,
-            haken_info__haken_office__haken_jigyosho_teishokubi__lte=sixty_days_later,
+            haken_info__haken_office__haken_jigyosho_teishokubi__lte=office_teishokubi_warning_date,
         ).count()
 
     # 個人抵触日期限の件数
     personal_teishokubi_deadline_count = 0
     if has_view_client_contract_perm:
         from django.db.models import Exists, OuterRef
-        sixty_days_later = today + timedelta(days=60)
+        personal_teishokubi_warning_date = today + timedelta(days=personal_teishokubi_warning_days)
 
         active_assignments = ContractAssignment.objects.filter(
             Q(assignment_end_date__gte=today) | Q(assignment_end_date__isnull=True),
@@ -295,7 +317,7 @@ def home(request):
 
         personal_teishokubi_deadline_count = StaffContractTeishokubi.objects.filter(
             conflict_date__gte=today,
-            conflict_date__lte=sixty_days_later
+            conflict_date__lte=personal_teishokubi_warning_date
         ).annotate(has_active_assignment=Exists(active_assignments)).filter(has_active_assignment=True).count()
 
     context = {
