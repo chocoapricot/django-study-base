@@ -300,3 +300,183 @@ class HomeScheduleSummaryTest(TestCase):
         self.assertEqual(response.context['staff_schedules_yesterday'], 2)
         self.assertEqual(response.context['client_schedules_today'], 3)
         self.assertEqual(response.context['client_schedules_yesterday'], 1)
+
+from apps.master.models import UserParameter, ContractPattern
+from apps.staff.models import StaffInternational
+from apps.contract.models import ClientContract, StaffContract, StaffContractTeishokubi, ContractAssignment, ClientContractHaken
+from apps.client.models import ClientDepartment
+from apps.common.constants import Constants
+
+
+class HomeViewWarningDaysTest(TestCase):
+    def setUp(self):
+        self.client_http = Client()
+        self.user = MyUser.objects.create_user(
+            username='testuser2@example.com',
+            email='testuser2@example.com',
+            password='password'
+        )
+        # Add necessary permissions
+        permissions = Permission.objects.filter(codename__in=[
+            'view_staffinternational',
+            'view_clientcontract',
+            'view_contractassignment',
+            'view_staffcontactschedule',
+        ])
+        self.user.user_permissions.add(*permissions)
+        self.client_http.login(email='testuser2@example.com', password='password')
+        self.home_url = reverse('home:home')
+        self.today = timezone.localdate()
+
+        self.contract_pattern = ContractPattern.objects.create(name='Test Pattern')
+
+        # --- Test Data Setup ---
+        # --- Test Data Setup ---
+        # 1. Foreign Staff for Residence Status Deadline
+        self.staff1 = Staff.objects.create(email='foreign_staff@example.com', employee_no='S001')
+        self.staff_international = StaffInternational.objects.create(
+            staff=self.staff1,
+            residence_period_from=self.today,
+            residence_period_to=self.today + timedelta(days=20) # Expires in 20 days
+        )
+
+        # 2. Data for Office Conflict Date
+        self.client_obj = ClientModel.objects.create(name='Test Client', corporate_number='1112223334445')
+        self.haken_office = ClientDepartment.objects.create(
+            client=self.client_obj,
+            name='Test Office',
+            haken_jigyosho_teishokubi=self.today + timedelta(days=40) # Expires in 40 days
+        )
+        client_contract_office = ClientContract.objects.create(
+            client=self.client_obj,
+            contract_pattern=self.contract_pattern,
+            client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
+            start_date=self.today,
+        )
+        haken_info_for_office = ClientContractHaken.objects.create(
+            client_contract=client_contract_office,
+            haken_office=self.haken_office
+        )
+        client_contract_office.haken_info = haken_info_for_office
+        client_contract_office.save()
+        self.client_contract = client_contract_office
+
+        # 3. Data for Personal Conflict Date
+        self.staff2 = Staff.objects.create(email='personal_conflict_staff@example.com', employee_no='S002')
+        personal_haken_unit = ClientDepartment.objects.create(client=self.client_obj, name='Personal Unit')
+        client_contract_personal = ClientContract.objects.create(
+            client=self.client_obj,
+            contract_pattern=self.contract_pattern,
+            client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
+            start_date=self.today,
+        )
+        haken_info_for_personal = ClientContractHaken.objects.create(
+            client_contract=client_contract_personal,
+            haken_unit=personal_haken_unit
+        )
+        client_contract_personal.haken_info = haken_info_for_personal
+        client_contract_personal.save()
+        self.client_contract_for_personal = client_contract_personal
+        staff_contract = StaffContract.objects.create(
+            staff=self.staff2,
+            contract_pattern=self.contract_pattern,
+            start_date=self.today,
+        )
+        # Active assignment to make the teishokubi valid
+        self.assignment = ContractAssignment.objects.create(
+            staff_email=self.staff2.email,
+            staff_contract=staff_contract,
+            client_corporate_number=self.client_obj.corporate_number,
+            client_contract=self.client_contract_for_personal,
+            assignment_end_date=self.today + timedelta(days=100) # Active
+        )
+        self.personal_teishokubi = StaffContractTeishokubi.objects.create(
+            staff_email=self.staff2.email,
+            client_corporate_number=self.client_obj.corporate_number,
+            organization_name=personal_haken_unit.name,
+            dispatch_start_date=self.today,
+            conflict_date=self.today + timedelta(days=50) # Expires in 50 days
+        )
+        # Inactive assignment teishokubi (should not be counted)
+        self.inactive_teishokubi = StaffContractTeishokubi.objects.create(
+            staff_email='inactive@example.com',
+            client_corporate_number=self.client_obj.corporate_number,
+            organization_name='Inactive Org',
+            dispatch_start_date=self.today,
+            conflict_date=self.today + timedelta(days=10)
+        )
+
+
+    def test_summary_counts_with_default_days(self):
+        """
+        Test summary counts are correct using default warning days (30, 60, 60).
+        """
+        response = self.client_http.get(self.home_url)
+        self.assertEqual(response.status_code, 200)
+
+        # RESIDENCE_PERIOD_WARNING_DAYS defaults to 30. Staff expires in 20 days.
+        self.assertEqual(response.context['expiring_staff_international_count'], 1)
+        # PERSONAL_TEISHOKUBI_WARNING_DAYS defaults to 60. Contract expires in 50 days.
+        self.assertEqual(response.context['personal_teishokubi_deadline_count'], 1)
+        # OFFICE_TEISHOKUBI_WARNING_DAYS defaults to 60. Contract expires in 40 days.
+        self.assertEqual(response.context['teishokubi_deadline_count'], 1)
+
+    def test_summary_counts_with_custom_days(self):
+        """
+        Test summary counts and labels are correct using custom warning days.
+        """
+        # Set custom warning days
+        UserParameter.objects.create(key='RESIDENCE_PERIOD_WARNING_DAYS', value='10', format='number') # Staff expires in 20, so should be 0
+        UserParameter.objects.create(key='PERSONAL_TEISHOKUBI_WARNING_DAYS', value='40', format='number') # Contract expires in 50, so should be 0
+        UserParameter.objects.create(key='OFFICE_TEISHOKUBI_WARNING_DAYS', value='50', format='number') # Contract expires in 40, so should be 1
+
+        response = self.client_http.get(self.home_url)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(response.context['expiring_staff_international_count'], 0)
+        self.assertEqual(response.context['personal_teishokubi_deadline_count'], 0)
+        self.assertEqual(response.context['teishokubi_deadline_count'], 1)
+
+        # Check if the description text in the HTML is updated
+        self.assertContains(
+            response,
+            '今日から10日以内',
+            msg_prefix="Residence period warning text did not update"
+        )
+        self.assertContains(
+            response,
+            '個人抵触日が40日以内',
+            msg_prefix="Personal teishokubi warning text did not update"
+        )
+        self.assertContains(
+            response,
+            '事業所抵触日が50日以内',
+            msg_prefix="Office teishokubi warning text did not update"
+        )
+
+    def tearDown(self):
+        UserParameter.objects.all().delete()
+
+    def test_summary_counts_with_zero_days(self):
+        """
+        Test summary counts with a 0-day warning period.
+        """
+        UserParameter.objects.create(key='RESIDENCE_PERIOD_WARNING_DAYS', value='0', format='number')
+        UserParameter.objects.create(key='PERSONAL_TEISHOKUBI_WARNING_DAYS', value='0', format='number')
+        UserParameter.objects.create(key='OFFICE_TEISHOKUBI_WARNING_DAYS', value='0', format='number')
+
+        # Set dates to be exactly today to be included
+        self.staff_international.residence_period_to = self.today
+        self.staff_international.save()
+        self.personal_teishokubi.conflict_date = self.today
+        self.personal_teishokubi.save()
+        self.haken_office.haken_jigyosho_teishokubi = self.today - timedelta(days=1) # Expired, should not be counted
+        self.haken_office.save()
+
+
+        response = self.client_http.get(self.home_url)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(response.context['expiring_staff_international_count'], 1)
+        self.assertEqual(response.context['personal_teishokubi_deadline_count'], 1)
+        self.assertEqual(response.context['teishokubi_deadline_count'], 0)
