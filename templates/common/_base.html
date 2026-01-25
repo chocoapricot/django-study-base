@@ -352,12 +352,12 @@ body.no-transition #sidebar {
             {% endif %}
             {% endfor %}
         </div>
-        <div class="icons">
+        <div class="icons" style="align-items: center;">
             <span style="font-size:0.8rem; line-height: 1.2;">
                 <span id="window-breakpoint">-</span><br>
                 (横幅：<span id="window-width">0</span>px)
             </span>
-            <i class="bi bi-search"></i> <!-- 検索アイコン -->
+            <!-- <i class="bi bi-search"></i> --> <!-- 検索アイコン -->
             {% if perms.staff.view_staffcontactschedule or perms.client.view_clientcontactschedule %}
             <a href="{% url 'home:contact_schedule_summary' %}" title="{% if contact_schedule_yesterday_today_count > 0 %}本日連絡予定あり{% else %}本日連絡予定なし{% endif %}" style="position: relative; text-decoration: none; color: inherit;">
                 <i class="bi bi-alarm"></i>
@@ -384,10 +384,10 @@ body.no-transition #sidebar {
                 <i class="bi bi-person-circle" style="font-size: 1.25rem; margin-right: 4px;"></i>
                 <span class="d-none d-lg-inline">{{ request.user.username }}</span>
             </a>
-            <form action="/accounts/logout/" method="post" style="display:inline;" onsubmit="return confirm('ログアウトしますか？');">
+            <form action="/accounts/logout/" method="post" style="display:inline-flex; align-items:center;" onsubmit="return confirm('ログアウトしますか？');">
                 {% csrf_token %}
-                <button type="submit" class="btn p-0" title="ログアウト" style="background:none;border:none;outline:none;box-shadow:none;">
-                    <i class="bi bi-box-arrow-right" style="font-size: 1.25rem;"></i>
+                <button type="submit" class="btn" title="ログアウト">
+                    <i class="bi bi-box-arrow-right"></i>
                 </button>
             </form>
         </div>
