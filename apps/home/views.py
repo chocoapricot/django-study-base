@@ -4,7 +4,7 @@ from django.core.paginator import Paginator
 from apps.staff.models import Staff, StaffInternational
 from apps.client.models import Client
 from apps.company.models import Company, CompanyUser
-from apps.contract.models import ClientContract, StaffContract, ContractAssignment
+from apps.contract.models import ClientContract, StaffContract, ContractAssignment, StaffContractTeishokubi
 from apps.connect.models import (
     ConnectStaff, ConnectClient, MynumberRequest, ProfileRequest,
     BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
@@ -280,6 +280,24 @@ def home(request):
             haken_info__haken_office__haken_jigyosho_teishokubi__lte=sixty_days_later,
         ).count()
 
+    # 個人抵触日期限の件数
+    personal_teishokubi_deadline_count = 0
+    if has_view_client_contract_perm:
+        from django.db.models import Exists, OuterRef
+        sixty_days_later = today + timedelta(days=60)
+
+        active_assignments = ContractAssignment.objects.filter(
+            Q(assignment_end_date__gte=today) | Q(assignment_end_date__isnull=True),
+            staff_email=OuterRef('staff_email'),
+            client_corporate_number=OuterRef('client_corporate_number'),
+            client_contract__haken_info__haken_unit__name=OuterRef('organization_name'),
+        )
+
+        personal_teishokubi_deadline_count = StaffContractTeishokubi.objects.filter(
+            conflict_date__gte=today,
+            conflict_date__lte=sixty_days_later
+        ).annotate(has_active_assignment=Exists(active_assignments)).filter(has_active_assignment=True).count()
+
     context = {
         'expiring_staff_international_count': expiring_staff_international_count,
         'staff_count': staff_count,
@@ -305,6 +323,7 @@ def home(request):
         'unconfirmed_staff_contract_extension_count': unconfirmed_staff_contract_extension_count,
         'has_view_client_contract_perm': has_view_client_contract_perm,
         'teishokubi_deadline_count': teishokubi_deadline_count,
+        'personal_teishokubi_deadline_count': personal_teishokubi_deadline_count,
     }
 
     return render(request, 'home/home.html', context)
