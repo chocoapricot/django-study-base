@@ -147,7 +147,8 @@
                         <div class="stats-card has-count bg-warning-light">
                             <div class="stats-card-body d-flex align-items-center">
                                 <div class="icon-wrapper me-3">
-                                    <i class="bi bi-person-fill-exclamation stats-icon" style="color:#ffc107;"></i>
+                                    <i class="bi bi-person-fill stats-icon" style="color:#ffc107;"></i>
+                                    <i class="bi bi-chat-left-text icon-badge" style="color:#ffc107;"></i>
                                 </div>
                                 <div class="flex-grow-1">
                                     <p class="stats-number text-dark">{{ unanswered_inquiry_count|intcomma }}<span class="stats-unit">件</span></p>
@@ -161,7 +162,8 @@
                     <div class="stats-card">
                         <div class="stats-card-body d-flex align-items-center">
                             <div class="icon-wrapper me-3">
-                                <i class="bi bi-person-fill-exclamation stats-icon text-muted-light"></i>
+                                <i class="bi bi-person-fill stats-icon text-muted-light"></i>
+                                <i class="bi bi-chat-left-text icon-badge text-muted-light"></i>
                             </div>
                             <div class="flex-grow-1">
                                 <p class="stats-number text-muted-light">-</p>
@@ -318,7 +320,8 @@
                         <div class="stats-card has-count bg-warning-light">
                             <div class="stats-card-body d-flex align-items-center">
                                 <div class="icon-wrapper me-3">
-                                    <i class="bi bi-person-badge stats-icon" style="color:#ffc107;"></i>
+                                    <i class="bi bi-person-fill stats-icon" style="color:#ffc107;"></i>
+                                    <i class="bi bi-send icon-badge" style="color:#ffc107;"></i>
                                 </div>
                                 <div class="flex-grow-1">
                                     <p class="stats-number text-dark">{{ expiring_staff_international_count|intcomma }}<span class="stats-unit">名</span></p>
@@ -332,7 +335,8 @@
                     <div class="stats-card">
                         <div class="stats-card-body d-flex align-items-center">
                             <div class="icon-wrapper me-3">
-                                <i class="bi bi-person-badge stats-icon text-muted-light"></i>
+                                <i class="bi bi-person-fill stats-icon text-muted-light"></i>
+                                <i class="bi bi-send icon-badge text-muted-light"></i>
                             </div>
                             <div class="flex-grow-1">
                                 <p class="stats-number text-muted-light">-</p>
@@ -388,8 +392,8 @@
                         <div class="stats-card has-count bg-warning-light">
                             <div class="stats-card-body d-flex align-items-center">
                                 <div class="icon-wrapper me-3">
-                                    <i class="bi bi-calendar-x stats-icon" style="color:#ffc107;"></i>
-                                    <i class="bi bi-building-fill icon-badge" style="color:#ffc107;"></i>
+                                    <i class="bi bi-building-fill stats-icon" style="color:#ffc107;"></i>
+                                    <i class="bi bi-calendar-x icon-badge" style="color:#ffc107;"></i>
                                 </div>
                                 <div class="flex-grow-1">
                                     <p class="stats-number text-dark">{{ teishokubi_deadline_count|intcomma }}<span class="stats-unit">件</span></p>
@@ -403,8 +407,8 @@
                     <div class="stats-card">
                         <div class="stats-card-body d-flex align-items-center">
                             <div class="icon-wrapper me-3">
-                                <i class="bi bi-calendar-x stats-icon text-muted-light"></i>
-                                <i class="bi bi-building-fill icon-badge text-muted-light"></i>
+                                <i class="bi bi-building-fill stats-icon text-muted-light"></i>
+                                <i class="bi bi-calendar-x icon-badge text-muted-light"></i>
                             </div>
                             <div class="flex-grow-1">
                                 <p class="stats-number text-muted-light">-</p>
@@ -424,8 +428,8 @@
                         <div class="stats-card has-count bg-warning-light">
                             <div class="stats-card-body d-flex align-items-center">
                                 <div class="icon-wrapper me-3">
-                                    <i class="bi bi-calendar-x stats-icon" style="color:#ffc107;"></i>
-                                    <i class="bi bi-person-fill icon-badge" style="color:#ffc107;"></i>
+                                    <i class="bi bi-person-fill stats-icon" style="color:#ffc107;"></i>
+                                    <i class="bi bi-calendar-x icon-badge" style="color:#ffc107;"></i>
                                 </div>
                                 <div class="flex-grow-1">
                                     <p class="stats-number text-dark">{{ personal_teishokubi_deadline_count|intcomma }}<span class="stats-unit">件</span></p>
@@ -439,8 +443,8 @@
                     <div class="stats-card">
                         <div class="stats-card-body d-flex align-items-center">
                             <div class="icon-wrapper me-3">
-                                <i class="bi bi-calendar-x stats-icon text-muted-light"></i>
-                                <i class="bi bi-person-fill icon-badge text-muted-light"></i>
+                                <i class="bi bi-person-fill stats-icon text-muted-light"></i>
+                                <i class="bi bi-calendar-x icon-badge text-muted-light"></i>
                             </div>
                             <div class="flex-grow-1">
                                 <p class="stats-number text-muted-light">-</p>
@@ -662,7 +666,7 @@
                     <a href="{% url 'client:client_list' %}" class="text-decoration-none">
                         <div class="stats-card has-count">
                             <div class="stats-card-body d-flex align-items-center">
-                                <i class="bi bi-building-check stats-icon me-3" style="color:#28a745;"></i>
+                                <i class="bi bi-building-fill-check stats-icon me-3" style="color:#28a745;"></i>
                                 <div class="flex-grow-1">
                                     <p class="stats-number text-dark">{{ approved_client_count|intcomma }}<span class="stats-unit">名</span></p>
                                     <p class="stats-label">クライアント接続承認済み</p>
