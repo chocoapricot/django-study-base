@@ -156,5 +156,12 @@ class Menu(MyModel):
         if not self.required_permission:
             return True
         
-        # 権限をチェック
-        return user.has_perm(self.required_permission)
+        # 複数の権限がカンマ区切りで設定されている場合
+        permissions = [p.strip() for p in self.required_permission.split(',')]
+        
+        # いずれかの権限があればアクセス許可
+        for perm in permissions:
+            if user.has_perm(perm):
+                return True
+        
+        return False # どの権限も持っていない場合
