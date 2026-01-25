@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from apps.staff.models import Staff
+from apps.staff.models import Staff, StaffInternational
 from apps.client.models import Client
 from apps.company.models import Company, CompanyUser
 from apps.contract.models import ClientContract, StaffContract, ContractAssignment
@@ -258,7 +258,30 @@ def home(request):
             assignment_confirm__isnull=True
         ).count()
 
+    # 外国籍スタッフの在留資格期限切れ件数
+    expiring_staff_international_count = 0
+    if request.user.has_perm('staff.view_staffinternational'):
+        thirty_days_later = today + timedelta(days=30)
+        expiring_staff_international_count = StaffInternational.objects.filter(
+            staff__employee_no__isnull=False,
+            residence_period_to__lte=thirty_days_later
+        ).exclude(staff__employee_no='').count()
+
+    # 事業所抵触日期限の件数
+    teishokubi_deadline_count = 0
+    has_view_client_contract_perm = request.user.has_perm('contract.view_clientcontract')
+    if has_view_client_contract_perm:
+        sixty_days_later = today + timedelta(days=60)
+        teishokubi_deadline_count = ClientContract.objects.filter(
+            Q(end_date__gte=today) | Q(end_date__isnull=True),
+            start_date__lte=today,
+            client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
+            haken_info__haken_office__haken_jigyosho_teishokubi__gte=today,
+            haken_info__haken_office__haken_jigyosho_teishokubi__lte=sixty_days_later,
+        ).count()
+
     context = {
+        'expiring_staff_international_count': expiring_staff_international_count,
         'staff_count': staff_count,
         'approved_staff_count': approved_staff_count,
         'client_count': client_count,
@@ -280,6 +303,8 @@ def home(request):
         'unanswered_inquiry_count': unanswered_inquiry_count,
         'has_contract_assignment_perm': has_contract_assignment_perm,
         'unconfirmed_staff_contract_extension_count': unconfirmed_staff_contract_extension_count,
+        'has_view_client_contract_perm': has_view_client_contract_perm,
+        'teishokubi_deadline_count': teishokubi_deadline_count,
     }
 
     return render(request, 'home/home.html', context)
