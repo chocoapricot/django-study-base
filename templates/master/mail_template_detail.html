@@ -10,21 +10,21 @@
     </div>
     <div class="card-body">
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>日本語名</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>日本語名</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ mail_template.name }}</p>
             </div>
         </div>
 
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>件名</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>件名</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ mail_template.subject }}</p>
             </div>
         </div>
 
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>本文</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>本文</strong></label>
             <div class="col-sm-10">
                 <div class="border rounded p-3 bg-light">
                     <pre class="mb-0" style="white-space: pre-wrap; word-wrap: break-word;">{{ mail_template.body }}</pre>
@@ -34,7 +34,7 @@
 
         {% if mail_template.remarks %}
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>備考</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>備考</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ mail_template.remarks|linebreaksbr }}</p>
             </div>

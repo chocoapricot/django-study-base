@@ -31,7 +31,7 @@
             {% endif %}
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.staff.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.staff.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     スタッフ
                     {% my_help_preset "staff_selection" %}
                 </label>
@@ -55,7 +55,7 @@
             {{ form.employment_type }}
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約種別</label>
+                <label for="{{ form.contract_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">契約種別</label>
                 <div class="col-sm-4">
                     <div class="d-flex align-items-center">
                         <span id="staff-employment-type-badge" style="margin-right: 40px; min-width: 80px;">-</span>
@@ -68,7 +68,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.job_category.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">職種</label>
+                <label for="{{ form.job_category.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">職種</label>
                 <div class="col-sm-3">
                     {{ form.job_category }}
                     {% if form.job_category.errors %}
@@ -78,7 +78,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約名</label>
+                <label for="{{ form.contract_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">契約名</label>
                 <div class="col-sm-6">
                     {{ form.contract_name }}
                     {% if form.contract_name.errors %}
@@ -88,7 +88,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_status.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">契約状況</label>
+                <label for="{{ form.contract_status.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">契約状況</label>
                 <div class="col-sm-3">
                     {{ form.contract_status }}
                     {% if form.contract_status.errors %}
@@ -98,7 +98,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.start_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.start_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     契約開始日
                     {% my_help_preset "contract_start_date_staff" %}
                 </label>
@@ -109,7 +109,7 @@
                     {% endif %}
                 </div>
 
-                <label for="{{ form.end_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.end_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     契約終了日
                 </label>
                 <div class="col-sm-3">
@@ -126,7 +126,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.contract_amount.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.contract_amount.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     契約金額
                 </label>
                 <div class="col-sm-3">
@@ -145,7 +145,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.worktime_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.worktime_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     就業時間
                     {% my_help_preset "worktime_pattern_staff" %}
                 </label>
@@ -167,7 +167,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.overtime_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.overtime_pattern.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     時間外算出
                     {% my_help_preset "overtime_pattern_staff" %}
                 </label>
@@ -189,7 +189,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.time_punch.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">勤怠打刻</label>
+                <label for="{{ form.time_punch.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">勤怠打刻</label>
                 <div class="col-sm-10">
                     <input type="hidden" id="{{ form.time_punch.id_for_label }}" name="{{ form.time_punch.name }}" value="{{ form.time_punch.value|default:'' }}">
                     <div class="d-flex align-items-center">
@@ -208,7 +208,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.work_location.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">就業場所</label>
+                <label for="{{ form.work_location.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">就業場所</label>
                 <div class="col-sm-10">
                     {{ form.work_location }}
                     {% if form.work_location.errors %}
@@ -218,7 +218,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.business_content.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">業務内容</label>
+                <label for="{{ form.business_content.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">業務内容</label>
                 <div class="col-sm-8">
                     {{ form.business_content }}
                     {% if form.business_content.errors %}
@@ -234,7 +234,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.notes.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">備考</label>
+                <label for="{{ form.notes.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">備考</label>
                 <div class="col-sm-10">
                     {{ form.notes }}
                     {% if form.notes.errors %}
@@ -244,7 +244,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.memo.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     メモ{% my_help_icon "契約書には表示されません" %}
                 </label>
                 <div class="col-sm-10">

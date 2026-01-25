@@ -10,7 +10,7 @@
         <form method="post">
             {% csrf_token %}
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.corporate_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.corporate_number.label }}
+                <label for="{{ form.corporate_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.corporate_number.label }}
                     {% my_help_preset "corporate_number" %}
                 </label>
                 <div class="col-sm-4">
@@ -26,7 +26,7 @@
             </div>
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.name.label }}</label>
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.name.label }}</label>
                 <div class="col-sm-6">
                     {{ form.name }}
                     {% if form.name.errors %}
@@ -36,7 +36,7 @@
             </div>
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.representative.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.representative.label }}</label>
+                <label for="{{ form.representative.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.representative.label }}</label>
                 <div class="col-sm-6">
                     {{ form.representative }}
                     {% if form.representative.errors %}
@@ -46,7 +46,7 @@
             </div>
             
             <div class="row align-items-center">
-                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.postal_code.label }}
+                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.postal_code.label }}
                     {% my_help_preset "postal_code" %}
                 </label>
                 <div class="col-sm-3">
@@ -62,7 +62,7 @@
             </div>
             
             <div class="row align-items-top">
-                <label for="{{ form.address.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.address.label }}</label>
+                <label for="{{ form.address.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.address.label }}</label>
                 <div class="col-sm-10">
                     {{ form.address }}
                     {% if form.address.errors %}
@@ -72,7 +72,7 @@
             </div>
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.phone_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.phone_number.label }} {% my_help_preset "phone_number" %}</label>
+                <label for="{{ form.phone_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.phone_number.label }} {% my_help_preset "phone_number" %}</label>
                 <div class="col-sm-6">
                     {{ form.phone_number }}
                     {% if form.phone_number.errors %}
@@ -82,7 +82,7 @@
             </div>
 
             <div class="row align-items-center">
-                <label for="{{ form.haken_permit_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.haken_permit_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     {{ form.haken_permit_number.label }}
                     {% my_help_icon "労働者派遣事業 厚生労働大臣許可番号" %}
                 </label>
@@ -92,7 +92,7 @@
                         <div class="text-danger">{{ form.haken_permit_number.errors }}</div>
                     {% endif %}
                 </div>
-                <label for="{{ form.dispatch_treatment_method.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.dispatch_treatment_method.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     {{ form.dispatch_treatment_method.label }}
                     {% my_help_icon "派遣労働者の待遇決定方式を選択してください。派遣先通知書に反映されます。" %}
                 </label>
@@ -105,7 +105,7 @@
             </div>
 
             <div class="row align-items-center">
-                <label for="{{ form.shokai_permit_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.shokai_permit_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     {{ form.shokai_permit_number.label }}
                     {% my_help_icon "有料職業紹介事業許可証 許可番号" %}
                 </label>
@@ -118,7 +118,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.foreign_regist_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.foreign_regist_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     {{ form.foreign_regist_number.label }}
                     {% my_help_icon "特定技能外国人受入れに関する登録支援機関 登録番号" %}
                 </label>

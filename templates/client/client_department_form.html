@@ -23,7 +23,7 @@
             {% endif %}
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.name.label }}</label>
+                <label for="{{ form.name.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.name.label }}</label>
                 <div class="col-sm-6">
                     {{ form.name }}
                     {% if form.name.errors %}
@@ -34,7 +34,7 @@
 
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.department_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.department_code.label }}</label>
+                <label for="{{ form.department_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.department_code.label }}</label>
                 <div class="col-sm-4">
                     {{ form.department_code }}
                     {% if form.department_code.errors %}
@@ -44,7 +44,7 @@
             </div>
 
             <div class="row align-items-center">
-                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.postal_code.label }}</label>
+                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.postal_code.label }}</label>
                 <div class="col-sm-3">
                     {{ form.postal_code }}
                     {% if form.postal_code.errors %}
@@ -57,7 +57,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.address.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.address.label }}</label>
+                <label for="{{ form.address.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.address.label }}</label>
                 <div class="col-sm-10">
                     {{ form.address }}
                     {% if form.address.errors %}
@@ -67,7 +67,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.phone_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.phone_number.label }} {% my_help_preset "phone_number" %}</label>
+                <label for="{{ form.phone_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.phone_number.label }} {% my_help_preset "phone_number" %}</label>
                 <div class="col-sm-6">
                     {{ form.phone_number }}
                     {% if form.phone_number.errors %}
@@ -77,7 +77,7 @@
             </div>
 
             <div class="row mb-1 align-items-center">
-                <label for="{{ form.is_haken_office.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.is_haken_office.label }}</label>
+                <label for="{{ form.is_haken_office.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.is_haken_office.label }}</label>
                 <div class="col-sm-1">
                     <div class="form-check">
                         {{ form.is_haken_office }}
@@ -87,7 +87,7 @@
                     </div>
                 </div>
 
-                <label for="{{ form.haken_jigyosho_teishokubi.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">
+                <label for="{{ form.haken_jigyosho_teishokubi.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     {{ form.haken_jigyosho_teishokubi.label }}
                      {% my_note_icon "法第40条の２第1項各号に掲げる場合は、期間制限の例外となり、抵触日通知は不要です。" %}
                 </label>
@@ -102,7 +102,7 @@
             <div class="row mb-3 align-items-center">
                 <div class="col-sm-3">
                 </div>
-                <label for="{{ form.haken_jigyosho_teishokubi_notice_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.haken_jigyosho_teishokubi_notice_date.label }}</label>
+                <label for="{{ form.haken_jigyosho_teishokubi_notice_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.haken_jigyosho_teishokubi_notice_date.label }}</label>
                 <div class="col-sm-2">
                     {{ form.haken_jigyosho_teishokubi_notice_date }}
                     {% if form.haken_jigyosho_teishokubi_notice_date.errors %}
@@ -115,7 +115,7 @@
                 <div class="row mb-1 align-items-center">
                     <div class="col-sm-3">
                     </div>
-                    <label for="{{ form.commander.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.commander.label }}</label>
+                    <label for="{{ form.commander.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.commander.label }}</label>
                     <div class="col-sm-4">
                         {{ form.commander }}
                         {% if form.commander.errors %}
@@ -127,7 +127,7 @@
                 <div class="row mb-1 align-items-center">
                     <div class="col-sm-3">
                     </div>
-                    <label for="{{ form.complaint_officer.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.complaint_officer.label }}</label>
+                    <label for="{{ form.complaint_officer.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.complaint_officer.label }}</label>
                     <div class="col-sm-4">
                         {{ form.complaint_officer }}
                         {% if form.complaint_officer.errors %}
@@ -139,7 +139,7 @@
                 <div class="row mb-3 align-items-center">
                     <div class="col-sm-3">
                     </div>
-                    <label for="{{ form.responsible_person.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.responsible_person.label }}</label>
+                    <label for="{{ form.responsible_person.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.responsible_person.label }}</label>
                     <div class="col-sm-4">
                         {{ form.responsible_person }}
                         {% if form.responsible_person.errors %}
@@ -150,7 +150,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.is_haken_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.is_haken_unit.label }}</label>
+                <label for="{{ form.is_haken_unit.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.is_haken_unit.label }}</label>
                 <div class="col-sm-1">
                     <div class="form-check">
                         {{ form.is_haken_unit }}
@@ -160,7 +160,7 @@
                     </div>
                 </div>
 
-                <label for="{{ form.haken_unit_manager_title.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.haken_unit_manager_title.label }}</label>
+                <label for="{{ form.haken_unit_manager_title.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.haken_unit_manager_title.label }}</label>
                 <div class="col-sm-2">
                     {{ form.haken_unit_manager_title }}
                     {% if form.haken_unit_manager_title.errors %}
@@ -170,7 +170,7 @@
             </div>
 
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.display_order.label }}</label>
+                <label for="{{ form.display_order.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.display_order.label }}</label>
                 <div class="col-sm-2">
                     {{ form.display_order }}
                     {% if form.display_order.errors %}
@@ -180,14 +180,14 @@
             </div>
 
             <div class="row align-items-center">
-                <label for="{{ form.valid_from.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.valid_from.label }}</label>
+                <label for="{{ form.valid_from.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.valid_from.label }}</label>
                 <div class="col-sm-4">
                     {{ form.valid_from }}
                     {% if form.valid_from.errors %}
                         <div class="text-danger">{{ form.valid_from.errors }}</div>
                     {% endif %}
                 </div>
-                <label for="{{ form.valid_to.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">{{ form.valid_to.label }}</label>
+                <label for="{{ form.valid_to.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">{{ form.valid_to.label }}</label>
                 <div class="col-sm-4">
                     {{ form.valid_to }}
                     {% if form.valid_to.errors %}

@@ -12,21 +12,21 @@
             本当にこの評価を削除しますか？この操作は取り消せません。
         </div>
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end"><strong>評価日</strong></div>
+            <div class="col-sm-2 text-start text-sm-end"><strong>評価日</strong></div>
             <div class="col-sm-10">{{ evaluation.evaluation_date }}</div>
         </div>
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end"><strong>評価</strong></div>
+            <div class="col-sm-2 text-start text-sm-end"><strong>評価</strong></div>
             <div class="col-sm-10">
                 <span class="badge bg-warning text-dark">{{ evaluation.rating }}</span>
             </div>
         </div>
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end"><strong>コメント</strong></div>
+            <div class="col-sm-2 text-start text-sm-end"><strong>コメント</strong></div>
             <div class="col-sm-10">{{ evaluation.comment|default:"-"|linebreaksbr }}</div>
         </div>
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end"><strong>評価者</strong></div>
+            <div class="col-sm-2 text-start text-sm-end"><strong>評価者</strong></div>
             <div class="col-sm-10">{{ evaluation.evaluator|default:"-" }}</div>
         </div>
         <form method="post">

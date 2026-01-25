@@ -15,7 +15,7 @@
             {% include 'common/_bank_form_fields.html' %}
 
             <div class="row align-items-center">
-                <label for="{{ form.document_file.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">確認書類</label>
+                <label for="{{ form.document_file.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">確認書類</label>
                 <div class="col-sm-6">
                     {{ form.document_file }}
                     {% if form.document_file.errors %}

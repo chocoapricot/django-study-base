@@ -9,13 +9,13 @@
         
         <!-- スタッフ -->
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end"><strong>スタッフ</strong></div>
+            <div class="col-sm-2 text-start text-sm-end"><strong>スタッフ</strong></div>
             <div class="col-sm-10">{{ timerecord.staff }}</div>
         </div>
 
         <!-- 契約 -->
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end"><strong>契約</strong></div>
+            <div class="col-sm-2 text-start text-sm-end"><strong>契約</strong></div>
             <div class="col-sm-10">
                 {% if timerecord.staff_contract %}
                     {{ timerecord.staff_contract.contract_name }} 
@@ -28,13 +28,13 @@
 
         <!-- 勤務日 -->
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end"><strong>勤務日</strong></div>
+            <div class="col-sm-2 text-start text-sm-end"><strong>勤務日</strong></div>
             <div class="col-sm-4">{{ timerecord.work_date|date:"Y/m/d" }}</div>
         </div>
         
         <!-- 開始時刻 -->
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end"><strong>開始時刻</strong></div>
+            <div class="col-sm-2 text-start text-sm-end"><strong>開始時刻</strong></div>
             <div class="col-sm-4">
                 {% if timerecord.start_time %}
                     <div>{{ timerecord.start_time|date:"Y/m/d H:i:s" }}</div>
@@ -52,7 +52,7 @@
 
         <!-- 終了時刻 -->
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end"><strong>終了時刻</strong></div>
+            <div class="col-sm-2 text-start text-sm-end"><strong>終了時刻</strong></div>
             <div class="col-sm-4">
                 {% if timerecord.end_time %}
                     <div>{{ timerecord.end_time|date:"Y/m/d H:i:s" }}</div>
@@ -70,13 +70,13 @@
 
         <!-- 労働時間 -->
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end"><strong>労働時間</strong></div>
+            <div class="col-sm-2 text-start text-sm-end"><strong>労働時間</strong></div>
             <div class="col-sm-4">{{ timerecord.work_hours_display }}</div>
         </div>
 
         <!-- メモ -->
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end"><strong>メモ</strong></div>
+            <div class="col-sm-2 text-start text-sm-end"><strong>メモ</strong></div>
             <div class="col-sm-10">{{ timerecord.memo|linebreaksbr|default:"-" }}</div>
         </div>
         
@@ -85,7 +85,7 @@
         <!-- 位置情報 -->
         <h5 class="mb-3">位置情報</h5>
         <div class="row mb-1 align-items-center">
-            <div class="col-sm-2 text-start text-md-end"><strong>開始位置</strong></div>
+            <div class="col-sm-2 text-start text-sm-end"><strong>開始位置</strong></div>
             <div class="col-sm-10">
                 {% if timerecord.start_latitude %}
                     {% if timerecord.start_address %}
@@ -103,7 +103,7 @@
             </div>
         </div>
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end"><strong>終了位置</strong></div>
+            <div class="col-sm-2 text-start text-sm-end"><strong>終了位置</strong></div>
             <div class="col-sm-10">
                 {% if timerecord.end_latitude %}
                     {% if timerecord.end_address %}

@@ -13,21 +13,21 @@
     <div class="card-body">
 
         <div class="row mb-3 mt-3">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>障害の種類</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>障害の種類</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{% my_name 'disability_type' disability.disability_type %}</p>
             </div>
         </div>
 
         <div class="row mb-3 mt-3">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>等級</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>等級</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ disability.disability_grade|default_if_none:"" }}</p>
             </div>
         </div>
 
         <div class="row mb-3 mt-3">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>重度</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>重度</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ disability.disability_severity|default_if_none:"" }}</p>
             </div>

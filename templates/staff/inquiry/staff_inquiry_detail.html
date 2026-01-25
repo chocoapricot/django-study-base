@@ -9,7 +9,7 @@
     <div class="card-body">
         <!-- 問い合わせ本体 -->
         <div class="row mb-1">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>ステータス</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>ステータス</strong></label>
             <div class="col-sm-10 d-flex align-items-center">
                 <p class="form-control-plaintext fw-bold d-inline-block mb-0 me-3">
                     {% if inquiry.status == 'open' %}
@@ -23,21 +23,21 @@
         </div>
 
         <div class="row mb-1">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>送信日時</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>送信日時</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ inquiry.created_at|date:"Y/m/d H:i:s" }}</p>
             </div>
         </div>
 
         <div class="row mb-1">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>あて先企業</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>あて先企業</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ inquiry.client_name }}</p>
             </div>
         </div>
 
         <div class="row mb-1">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>件名</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>件名</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ inquiry.subject }}</p>
             </div>

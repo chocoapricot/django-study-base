@@ -14,7 +14,7 @@
             {% csrf_token %}
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.evaluation_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">評価日</label>
+                <label for="{{ form.evaluation_date.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">評価日</label>
                 <div class="col-sm-6">
                     {{ form.evaluation_date }}
                     {{ form.evaluation_date.errors }}
@@ -22,7 +22,7 @@
             </div>
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.rating.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">評価</label>
+                <label for="{{ form.rating.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">評価</label>
                 <div class="col-sm-8">
                     {{ form.rating }}
                     <div class="form-text">1(悪い) - 5(良い)</div>
@@ -31,7 +31,7 @@
             </div>
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.comment.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">コメント</label>
+                <label for="{{ form.comment.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">コメント</label>
                 <div class="col-sm-8">
                     {{ form.comment }}
                     {{ form.comment.errors }}

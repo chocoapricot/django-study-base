@@ -12,28 +12,28 @@
     <div class="card-body">
 
         <div class="row mb-3 mt-3">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>在留カード番号</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>在留カード番号</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ international.residence_card_number }}</p>
             </div>
         </div>
 
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>在留資格</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>在留資格</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ international.residence_status }}</p>
             </div>
         </div>
 
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>在留許可開始日</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>在留許可開始日</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">{{ international.residence_period_from|date:"Y年m月d日" }}</p>
             </div>
         </div>
 
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label text-start text-md-end"><strong>在留期限</strong></label>
+            <label class="col-sm-2 col-form-label text-start text-sm-end"><strong>在留期限</strong></label>
             <div class="col-sm-10">
                 <p class="form-control-plaintext">
                     {{ international.residence_period_to|date:"Y年m月d日" }}

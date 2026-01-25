@@ -6,7 +6,7 @@
     </div>
     <div class="card-body">
         <div class="row mb-3 align-items-center">
-            <div class="col-sm-2 text-start text-md-end"><strong>勤怠打刻</strong></div>
+            <div class="col-sm-2 text-start text-sm-end"><strong>勤怠打刻</strong></div>
             <div class="col-sm-10">{{ timerecord.staff }} - {{ timerecord.work_date|date:"Y/m/d" }}</div>
         </div>
         
@@ -14,7 +14,7 @@
             {% csrf_token %}
             
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.break_start.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">休憩開始時刻</label>
+                <label for="{{ form.break_start.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">休憩開始時刻</label>
                 <div class="col-sm-4">
                     <div class="input-group">
                         {{ form.break_start }}
@@ -24,7 +24,7 @@
                         <div class="text-danger">{{ form.break_start.errors }}</div>
                     {% endif %}
                 </div>
-                <label for="{{ form.break_end.id_for_label }}" class="col-sm-2 col-form-label text-start text-md-end">休憩終了時刻</label>
+                <label for="{{ form.break_end.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">休憩終了時刻</label>
                 <div class="col-sm-4">
                     <div class="input-group">
                         {{ form.break_end }}
