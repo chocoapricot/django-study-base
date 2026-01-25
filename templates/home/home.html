@@ -140,41 +140,7 @@
         <div class="card-header">業務サマリ</div>
         <div class="card-body">
             <div class="row g-3">
-                {% if has_inquiry_perm %}
-                <div class="col-md-6 col-lg-3">
-                    {% if unanswered_inquiry_count > 0 %}
-                    <a href="{% url 'staff:staff_inquiry_list' %}?status=unanswered" class="text-decoration-none">
-                        <div class="stats-card has-count bg-warning-light">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <div class="icon-wrapper me-3">
-                                    <i class="bi bi-person-fill stats-icon" style="color:#ffc107;"></i>
-                                    <i class="bi bi-chat-left-text icon-badge" style="color:#ffc107;"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <p class="stats-number text-dark">{{ unanswered_inquiry_count|intcomma }}<span class="stats-unit">件</span></p>
-                                    <p class="stats-label">スタッフ問い合わせ未回答</p>
-                                    <p class="stats-description">スタッフからの問い合わせ・ご連絡に未回答の件数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <div class="icon-wrapper me-3">
-                                <i class="bi bi-person-fill stats-icon text-muted-light"></i>
-                                <i class="bi bi-chat-left-text icon-badge text-muted-light"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">スタッフ問い合わせ未回答</p>
-                                <p class="stats-description">スタッフからの問い合わせ・ご連絡に未回答の件数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-                {% endif %}
+
                 {% if has_staff_perm %}
                 <div class="col-md-6 col-lg-3">
                     {% with total=staff_schedules_yesterday|add:staff_schedules_today %}
@@ -313,6 +279,42 @@
                     {% endif %}
                 </div>
 
+                                {% if has_inquiry_perm %}
+                <div class="col-md-6 col-lg-3">
+                    {% if unanswered_inquiry_count > 0 %}
+                    <a href="{% url 'staff:staff_inquiry_list' %}?status=unanswered" class="text-decoration-none">
+                        <div class="stats-card has-count bg-warning-light">
+                            <div class="stats-card-body d-flex align-items-center">
+                                <div class="icon-wrapper me-3">
+                                    <i class="bi bi-person-fill stats-icon" style="color:#ffc107;"></i>
+                                    <i class="bi bi-chat-left-text icon-badge" style="color:#ffc107;"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="stats-number text-dark">{{ unanswered_inquiry_count|intcomma }}<span class="stats-unit">件</span></p>
+                                    <p class="stats-label">スタッフ問い合わせ未回答</p>
+                                    <p class="stats-description">スタッフからの問い合わせ・ご連絡に未回答の件数です。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    {% else %}
+                    <div class="stats-card">
+                        <div class="stats-card-body d-flex align-items-center">
+                            <div class="icon-wrapper me-3">
+                                <i class="bi bi-person-fill stats-icon text-muted-light"></i>
+                                <i class="bi bi-chat-left-text icon-badge text-muted-light"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <p class="stats-number text-muted-light">-</p>
+                                <p class="stats-label">スタッフ問い合わせ未回答</p>
+                                <p class="stats-description">スタッフからの問い合わせ・ご連絡に未回答の件数です。</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
                 {% if perms.staff.view_staffinternational %}
                 <div class="col-md-6 col-lg-3">
                     {% if expiring_staff_international_count > 0 %}
@@ -384,6 +386,41 @@
                 </div>
                 {% endif %}
 
+                {% if has_view_client_contract_perm %}
+                <div class="col-md-6 col-lg-3">
+                    {% if personal_teishokubi_deadline_count > 0 %}
+                    <a href="{% url 'contract:staff_contract_teishokubi_list' %}" class="text-decoration-none">
+                        <div class="stats-card has-count bg-warning-light">
+                            <div class="stats-card-body d-flex align-items-center">
+                                <div class="icon-wrapper me-3">
+                                    <i class="bi bi-person-fill stats-icon" style="color:#ffc107;"></i>
+                                    <i class="bi bi-calendar-x icon-badge" style="color:#ffc107;"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="stats-number text-dark">{{ personal_teishokubi_deadline_count|intcomma }}<span class="stats-unit">件</span></p>
+                                    <p class="stats-label">個人抵触日期限</p>
+                                    <p class="stats-description">個人抵触日が60日以内の派遣契約数です。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    {% else %}
+                    <div class="stats-card">
+                        <div class="stats-card-body d-flex align-items-center">
+                            <div class="icon-wrapper me-3">
+                                <i class="bi bi-person-fill stats-icon text-muted-light"></i>
+                                <i class="bi bi-calendar-x icon-badge text-muted-light"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <p class="stats-number text-muted-light">-</p>
+                                <p class="stats-label">個人抵触日期限</p>
+                                <p class="stats-description">個人抵触日が60日以内の派遣契約数です。</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
 
                 {% if has_view_client_contract_perm %}
                 <div class="col-md-6 col-lg-3">
@@ -414,42 +451,6 @@
                                 <p class="stats-number text-muted-light">-</p>
                                 <p class="stats-label">事業所抵触日期限</p>
                                 <p class="stats-description">事業所抵触日が60日以内の派遣契約数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-                {% endif %}
-
-                {% if has_view_client_contract_perm %}
-                <div class="col-md-6 col-lg-3">
-                    {% if personal_teishokubi_deadline_count > 0 %}
-                    <a href="{% url 'contract:staff_contract_teishokubi_list' %}" class="text-decoration-none">
-                        <div class="stats-card has-count bg-warning-light">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <div class="icon-wrapper me-3">
-                                    <i class="bi bi-person-fill stats-icon" style="color:#ffc107;"></i>
-                                    <i class="bi bi-calendar-x icon-badge" style="color:#ffc107;"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <p class="stats-number text-dark">{{ personal_teishokubi_deadline_count|intcomma }}<span class="stats-unit">件</span></p>
-                                    <p class="stats-label">個人抵触日期限</p>
-                                    <p class="stats-description">個人抵触日が60日以内の派遣契約数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <div class="icon-wrapper me-3">
-                                <i class="bi bi-person-fill stats-icon text-muted-light"></i>
-                                <i class="bi bi-calendar-x icon-badge text-muted-light"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">個人抵触日期限</p>
-                                <p class="stats-description">個人抵触日が60日以内の派遣契約数です。</p>
                             </div>
                         </div>
                     </div>
