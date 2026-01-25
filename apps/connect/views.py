@@ -364,13 +364,10 @@ def connect_client_unapprove(request, pk):
 
 
 @login_required
+@permission_required('connect.view_connectclient', raise_exception=True)
+@permission_required('connect.view_connectstaff', raise_exception=True)
 def connect_index(request):
     """接続管理のトップページ"""
-    # 権限チェック：connect.view_connectclient または connect.view_connectstaff のいずれかがあればアクセス許可
-    if not (request.user.has_perm('connect.view_connectclient') or \
-            request.user.has_perm('connect.view_connectstaff')):
-        raise PermissionDenied
-    
     # ログインユーザー宛の申請数を取得
     staff_pending_count = ConnectStaff.objects.filter(email=request.user.email, status='pending').count()
     staff_approved_count = ConnectStaff.objects.filter(email=request.user.email, status='approved').count()
