@@ -414,6 +414,40 @@
                     {% endif %}
                 </div>
                 {% endif %}
+
+                {% if has_view_client_contract_perm %}
+                <div class="col-md-6 col-lg-4">
+                    {% if personal_teishokubi_deadline_count > 0 %}
+                    <a href="{% url 'contract:staff_contract_teishokubi_list' %}" class="text-decoration-none">
+                        <div class="stats-card has-count bg-warning-light">
+                            <div class="stats-card-body d-flex align-items-center">
+                                <div class="icon-wrapper me-3">
+                                    <i class="bi bi-calendar-x stats-icon" style="color:#ffc107;"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="stats-number text-dark">{{ personal_teishokubi_deadline_count|intcomma }}<span class="stats-unit">件</span></p>
+                                    <p class="stats-label">個人抵触日期限</p>
+                                    <p class="stats-description">個人抵触日が60日以内の派遣契約数です。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    {% else %}
+                    <div class="stats-card">
+                        <div class="stats-card-body d-flex align-items-center">
+                            <div class="icon-wrapper me-3">
+                                <i class="bi bi-calendar-x stats-icon text-muted-light"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <p class="stats-number text-muted-light">-</p>
+                                <p class="stats-label">個人抵触日期限</p>
+                                <p class="stats-description">個人抵触日が60日以内の派遣契約数です。</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
                 
                 {% if has_client_perm %}
                 <div class="col-md-6 col-lg-4">
