@@ -3,7 +3,7 @@
 
 <div class="row align-items-center">
     <!-- 銀行コード -->
-    <label for="{{ form.bank_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">銀行コード {% my_help_preset "bank_code" %}</label>
+    <label for="{{ form.bank_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">銀行コード {% my_help_preset "bank_code" %}</label>
     <div class="col-sm-2">
         {{ form.bank_code }}
         {% if form.bank_code.errors %}
@@ -12,7 +12,7 @@
     </div>
 
     <!-- 銀行名 -->
-    <label for="{{ form.bank_name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">銀行名</label>
+    <label for="{{ form.bank_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">銀行名</label>
     <div class="col-sm-4 position-relative">
         {{ form.bank_name }}
         <div id="bank-suggestions" class="list-group position-absolute" style="z-index: 1000; width: 95%;"></div>
@@ -24,7 +24,7 @@
 
 <div class="row align-items-center">
     <!-- 支店コード -->
-    <label for="{{ form.branch_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">支店コード {% my_help_preset "branch_code" %}</label>
+    <label for="{{ form.branch_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">支店コード {% my_help_preset "branch_code" %}</label>
     <div class="col-sm-2">
         {{ form.branch_code }}
         {% if form.branch_code.errors %}
@@ -33,7 +33,7 @@
     </div>
 
     <!-- 支店名 -->
-    <label for="{{ form.branch_name.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">支店名</label>
+    <label for="{{ form.branch_name.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">支店名</label>
     <div class="col-sm-4 position-relative">
         {{ form.branch_name }}
         <div id="branch-suggestions" class="list-group position-absolute" style="z-index: 999; width: 95%;"></div>
@@ -45,7 +45,7 @@
 
 <div class="row align-items-center">
     <!-- 口座種別 -->
-     <label class="col-sm-2 col-form-label" style="text-align:right">口座種別 <span class="text-danger">*</span></label>
+     <label class="col-sm-2 col-form-label text-start text-sm-end">口座種別 <span class="text-danger">*</span></label>
     <div class="col-sm-2">
         {{ form.account_type }}
         {% if form.account_type.errors %}
@@ -54,7 +54,7 @@
     </div>
 
     <!-- 口座番号 -->
-    <label for="{{ form.account_number.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">口座番号 <span class="text-danger">*</span> {% my_help_preset "account_number" %}</label>
+    <label for="{{ form.account_number.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">口座番号 <span class="text-danger">*</span> {% my_help_preset "account_number" %}</label>
     <div class="col-sm-2">
         {{ form.account_number }}
         {% if form.account_number.errors %}
@@ -68,7 +68,7 @@
 
 <!-- 口座名義 -->
 <div class="row align-items-center">
-    <label for="{{ form.account_holder.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right">口座名義 <span class="text-danger">*</span></label>
+    <label for="{{ form.account_holder.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">口座名義 <span class="text-danger">*</span></label>
     <div class="col-sm-2">
         {{ form.account_holder }}
         {% if form.account_holder.errors %}

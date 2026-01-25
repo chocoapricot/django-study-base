@@ -15,14 +15,14 @@
 
             <div class="row mb-1">
                 <!-- emergency_contact -->
-                <label for="{{ form.emergency_contact.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">緊急連絡先</label>
+                <label for="{{ form.emergency_contact.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">緊急連絡先</label>
                 <div class="col-sm-4">
                     {{ form.emergency_contact }}
                     {% if form.emergency_contact.errors %}<div class="text-danger small">{{ form.emergency_contact.errors.as_text }}</div>{% endif %}
                 </div>
 
                 <!-- relationship -->
-                <label for="{{ form.relationship.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">続柄</label>
+                <label for="{{ form.relationship.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">続柄</label>
                 <div class="col-sm-4">
                     {{ form.relationship }}
                     {% if form.relationship.errors %}<div class="text-danger small">{{ form.relationship.errors.as_text }}</div>{% endif %}
@@ -31,7 +31,7 @@
 
             <!-- postal_code -->
             <div class="row align-items-center">
-                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">
+                <label for="{{ form.postal_code.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     郵便番号(住民票){% my_help_preset "postal_code" %}
                 </label>
                 <div class="col-sm-3">
@@ -45,7 +45,7 @@
 
             <!-- address1 -->
             <div class="row align-items-center">
-                <label for="{{ form.address1.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">住所１(住民票)</label>
+                <label for="{{ form.address1.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">住所１(住民票)</label>
                 <div class="col-sm-8">
                     {{ form.address1 }}
                     {% if form.address1.errors %}<div class="text-danger small">{{ form.address1.errors.as_text }}</div>{% endif %}
@@ -54,7 +54,7 @@
 
             <!-- address2 -->
             <div class="row align-items-center">
-                <label for="{{ form.address2.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">住所２(住民票)</label>
+                <label for="{{ form.address2.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">住所２(住民票)</label>
                 <div class="col-sm-8">
                     {{ form.address2 }}
                     {% if form.address2.errors %}<div class="text-danger small">{{ form.address2.errors.as_text }}</div>{% endif %}
@@ -63,7 +63,7 @@
 
             <!-- address3 -->
             <div class="row mb-3 align-items-center">
-                <label for="{{ form.address3.id_for_label }}" class="col-sm-2 col-form-label" style="text-align:right;">住所３(住民票)</label>
+                <label for="{{ form.address3.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">住所３(住民票)</label>
                 <div class="col-sm-8">
                     {{ form.address3 }}
                     {% if form.address3.errors %}<div class="text-danger small">{{ form.address3.errors.as_text }}</div>{% endif %}
