@@ -141,7 +141,7 @@
         <div class="card-body">
             <div class="row g-3">
                 {% if has_inquiry_perm %}
-                <div class="col-md-6 col-lg-4">
+                <div class="col-md-6 col-lg-3">
                     {% if unanswered_inquiry_count > 0 %}
                     <a href="{% url 'staff:staff_inquiry_list' %}?status=unanswered" class="text-decoration-none">
                         <div class="stats-card has-count bg-warning-light">
@@ -174,7 +174,7 @@
                 </div>
                 {% endif %}
                 {% if has_staff_perm %}
-                <div class="col-md-6 col-lg-4">
+                <div class="col-md-6 col-lg-3">
                     {% with total=staff_schedules_yesterday|add:staff_schedules_today %}
                     {% if total > 0 %}
                     <a href="{% url 'home:contact_schedule_summary' %}" class="text-decoration-none">
@@ -211,7 +211,7 @@
                 </div>
                 {% endif %}
 
-                <div class="col-md-6 col-lg-4">
+                <div class="col-md-6 col-lg-3">
                     {% if pending_connect_staff_count > 0 %}
                         {% if perms.staff.view_staff %}
                         <a href="{% url 'connect:staff_list' %}" class="text-decoration-none">
@@ -261,7 +261,7 @@
                     {% endif %}
                 </div>
 
-                <div class="col-md-6 col-lg-4">
+                <div class="col-md-6 col-lg-3">
                     {% if staff_request_count > 0 %}
                         {% if perms.staff.view_staff %}
                         <a href="{% url 'staff:staff_list' %}?has_request=true" class="text-decoration-none">
@@ -312,7 +312,7 @@
                 </div>
 
                 {% if perms.staff.view_staffinternational %}
-                <div class="col-md-6 col-lg-4">
+                <div class="col-md-6 col-lg-3">
                     {% if expiring_staff_international_count > 0 %}
                     <a href="{% url 'staff:staff_list' %}?has_international=true" class="text-decoration-none">
                         <div class="stats-card has-count bg-warning-light">
@@ -345,7 +345,7 @@
                 </div>
                 {% endif %}
                 {% if has_contract_assignment_perm %}
-                <div class="col-md-6 col-lg-4">
+                <div class="col-md-6 col-lg-3">
                     {% if unconfirmed_staff_contract_extension_count > 0 %}
                     <a href="{% url 'contract:staff_contract_expire_list' %}" class="text-decoration-none">
                         <div class="stats-card has-count bg-info-light">
@@ -382,7 +382,7 @@
 
 
                 {% if has_view_client_contract_perm %}
-                <div class="col-md-6 col-lg-4">
+                <div class="col-md-6 col-lg-3">
                     {% if teishokubi_deadline_count > 0 %}
                     <a href="{% url 'contract:client_teishokubi_list' %}" class="text-decoration-none">
                         <div class="stats-card has-count bg-warning-light">
@@ -416,7 +416,7 @@
                 {% endif %}
 
                 {% if has_view_client_contract_perm %}
-                <div class="col-md-6 col-lg-4">
+                <div class="col-md-6 col-lg-3">
                     {% if personal_teishokubi_deadline_count > 0 %}
                     <a href="{% url 'contract:staff_contract_teishokubi_list' %}" class="text-decoration-none">
                         <div class="stats-card has-count bg-warning-light">
@@ -450,7 +450,7 @@
                 {% endif %}
                 
                 {% if has_client_perm %}
-                <div class="col-md-6 col-lg-4">
+                <div class="col-md-6 col-lg-3">
                     {% with total=client_schedules_yesterday|add:client_schedules_today %}
                     {% if total > 0 %}
                     <a href="{% url 'home:contact_schedule_summary' %}" class="text-decoration-none">
@@ -487,7 +487,7 @@
                 </div>
                 {% endif %}
 
-                <div class="col-md-6 col-lg-4">
+                <div class="col-md-6 col-lg-3">
                     {% if pending_connect_client_count > 0 %}
                         {% if perms.client.view_client %}
                         <a href="{% url 'connect:client_list' %}" class="text-decoration-none">
