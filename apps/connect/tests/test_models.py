@@ -1,10 +1,13 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from apps.connect.models import ConnectStaff, ProfileRequest
+from django.db.models import Q
+from allauth.account.models import EmailAddress
+from apps.connect.models import ConnectStaff, ConnectClient, ProfileRequest
 from apps.staff.models import Staff
 from apps.company.models import Company
 from apps.profile.models import StaffProfile
+from apps.master.models import StaffAgreement
 
 User = get_user_model()
 
@@ -75,22 +78,45 @@ class ConnectViewTest(TestCase):
         from django.contrib.auth.models import Group, Permission
         from django.contrib.contenttypes.models import ContentType
 
+        StaffAgreement.objects.all().delete()
         self.client = Client()
         self.user = User.objects.create_user(
             username='testuser',
             email='test@example.com',
             password='TestPass123!'
         )
-        self.client.login(username='testuser', password='TestPass123!')
+        self.user.is_staff = True
+        self.user.save()
+        EmailAddress.objects.create(
+            user=self.user, email=self.user.email, primary=True, verified=True
+        )
 
         # --- staff グループのセットアップ ---
         staff_group, _ = Group.objects.get_or_create(name='staff')
-        content_type = ContentType.objects.get_for_model(ConnectStaff)
+
+        # 必要な権限をリストアップ
+        permission_codenames = [
+            'view_connectstaff',
+            'change_connectstaff',
+            'view_connectclient',
+        ]
+
+        # ConnectStaff と ConnectClient の ContentType を取得
+        content_type_staff = ContentType.objects.get_for_model(ConnectStaff)
+        content_type_client = ContentType.objects.get_for_model(ConnectClient)
+
+        # 権限を取得
         permissions = Permission.objects.filter(
-            content_type=content_type,
-            codename__in=['view_connectstaff', 'change_connectstaff']
+            Q(content_type=content_type_staff, codename__in=permission_codenames) |
+            Q(content_type=content_type_client, codename__in=permission_codenames)
         )
+
         staff_group.permissions.add(*permissions)
+        self.user.groups.add(staff_group)
+        self.user.refresh_from_db()
+
+        # 権限設定後にログイン
+        self.client.login(username='testuser', password='TestPass123!')
         
         # テスト用の接続申請を作成
         self.connection = ConnectStaff.objects.create(
@@ -142,6 +168,7 @@ class ConnectViewTest(TestCase):
     def test_connect_staff_unapprove(self):
         """スタッフ接続未承認に戻すテスト"""
         # 一度承認してから未承認に戻す
+        StaffAgreement.objects.all().delete()
         self.connection.approve(self.user)
         
         response = self.client.post(reverse('connect:staff_unapprove', args=[self.connection.pk]))
