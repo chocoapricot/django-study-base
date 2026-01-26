@@ -159,9 +159,9 @@ class Menu(MyModel):
         # 複数の権限がカンマ区切りで設定されている場合
         permissions = [p.strip() for p in self.required_permission.split(',')]
         
-        # いずれかの権限があればアクセス許可
+        # 全ての権限が必要
         for perm in permissions:
-            if user.has_perm(perm):
-                return True
+            if not user.has_perm(perm):
+                return False
         
-        return False # どの権限も持っていない場合
+        return True
