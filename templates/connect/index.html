@@ -129,7 +129,7 @@
                     <td>{{ connection.created_at|date:"Y/m/d H:i" }}</td>
                     <td>
                         {% if connection.is_approved %}
-                            <span class="badge bg-success">承認済み</span>
+                            <span class="badge bg-primary">承認済み</span>
                         {% else %}
                             <span class="badge bg-warning">未承認</span>
                         {% endif %}
@@ -147,14 +147,14 @@
                                 {% if connection.is_approved %}
                                     <form method="post" action="{% url 'connect:staff_unapprove' connection.pk %}?next={{ request.get_full_path|urlencode }}" style="display: inline;">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('承認を取り消しますか？')">
+                                        <button type="submit" class="btn btn-sm btn-dark" onclick="return confirm('承認を取り消しますか？')">
                                             未承認に戻す
                                         </button>
                                     </form>
                                 {% else %}
                                     <form method="post" action="{% url 'connect:staff_approve' connection.pk %}?next={{ request.get_full_path|urlencode }}" style="display: inline;">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('この申請を承認しますか？')">
+                                        <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('この申請を承認しますか？')">
                                             承認する
                                         </button>
                                     </form>
@@ -163,14 +163,14 @@
                                 {% if connection.is_approved %}
                                     <form method="post" action="{% url 'connect:client_unapprove' connection.pk %}?next={{ request.get_full_path|urlencode }}" style="display: inline;">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('承認を取り消しますか？')">
+                                        <button type="submit" class="btn btn-sm btn-dark" onclick="return confirm('承認を取り消しますか？')">
                                             未承認に戻す
                                         </button>
                                     </form>
                                 {% else %}
                                     <form method="post" action="{% url 'connect:client_approve' connection.pk %}?next={{ request.get_full_path|urlencode }}" style="display: inline;">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('この申請を承認しますか？')">
+                                        <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('この申請を承認しますか？')">
                                             承認する
                                         </button>
                                     </form>
