@@ -1,116 +1,145 @@
 {% extends 'common/_base.html' %}
+{% load humanize %}
 {% load connect_tags %}
 
-{% block title %}クライアント接続一覧{% endblock %}
+{% block extra_css %}
+<style>
+    .stats-card {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .stats-card:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        background: #ffffff;
+    }
+    .stats-card.bg-success-light {
+        background: #e8f5e9;
+    }
+    .stats-card.bg-success-light:hover {
+        background: #d4edda;
+    }
+    .stats-card.has-action {
+        cursor: pointer;
+    }
+    .stats-card.has-action:hover {
+        transform: translateY(-4px);
+    }
+    .stats-icon {
+        font-size: 3rem;
+    }
+    .stats-label {
+        font-size: 1.5rem;
+        color: #495057;
+        margin: 0;
+        font-weight: 600;
+    }
+    .stats-description {
+        font-size: 1rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+        margin-bottom: 0;
+    }
+    .stats-card-body {
+        padding: 1.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block title %}クライアント接続申請{% endblock %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        クライアント接続一覧
+        クライアント接続申請
     </div>
     <div class="card-body">
-        <p>あなた宛のクライアント接続申請一覧です。承認・未承認を切り替えることができます。</p>
-        
-        <!-- 検索・フィルター -->
-        <form method="get" class="mb-3">
-            <div class="row">
-                <div class="col-md-4">
-                    <input type="text" name="q" class="form-control form-control-sm" placeholder="法人番号で検索" value="{{ search_query }}">
-                </div>
-                <div class="col-md-3">
-                    <select name="status" class="form-control form-control-sm">
-                        <option value="">ステータス（全て）</option>
-                        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>未承認</option>
-                        <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>承認済み</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-sm btn-primary">検索</button>
-                    <a href="{% url 'connect:client_list' %}" class="btn btn-sm btn-secondary">リセット</a>
-                </div>
+        <!-- 検索・フィルタフォーム -->
+        <form method="get" action="{% url 'connect:client_list' %}" class="form-inline d-flex flex-wrap mb-3">
+            <div class="input-group me-2 mb-2" style="width: 25em;">
+                <span class="input-group-text">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" name="q" value="{{ search_query }}" class="form-control form-control-sm" placeholder="法人番号で検索">
+                <span class="input-group-text" style="cursor: pointer;" onclick="document.querySelector('input[name=q]').value = '';">
+                    <i class="bi bi-x"></i>
+                </span>
             </div>
+            <div class="input-group me-2 mb-2" style="width: 12em;">
+                <select name="status" class="form-select form-select-sm">
+                    <option value="">ステータス（全て）</option>
+                    <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>未承認</option>
+                    <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>承認済み</option>
+                </select>
+            </div>
+            <button class="btn btn-primary btn-sm me-2 mb-2" type="submit">検索</button>
+            <button class="btn btn-secondary btn-sm mb-2" type="button" onclick="resetForm()">リセット</button>
         </form>
-        
-        <!-- 接続申請一覧 -->
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>会社名</th>
-                    <th>法人番号</th>
-                    <th>メールアドレス</th>
-                    <th>申請日時</th>
-                    <th>ステータス</th>
-                    <th>承認日時</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for connection in connections %}
-                <tr>
-                    <td>
-                        {% with company=companies|get_item:connection.corporate_number %}
-                            {% if company %}
-                                {{ company.name }}
-                            {% else %}
-                                <span class="text-muted">会社情報なし</span>
-                            {% endif %}
-                        {% endwith %}
-                    </td>
-                    <td>{{ connection.corporate_number }}</td>
-                    <td>{{ connection.email }}</td>
-                    <td>{{ connection.created_at|date:'Y/m/d H:i:s' }}</td>
-                    <td>
-                        {% if connection.status == 'pending' %}
-                            <span class="badge bg-warning">未承認</span>
-                        {% elif connection.status == 'approved' %}
-                            <span class="badge bg-success">承認済み</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if connection.approved_at %}
-                            {{ connection.approved_at|date:'Y/m/d H:i:s' }}
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if user.is_staff or connection.email == user.email %}
-                            {% if connection.status == 'pending' %}
-                                <form method="post" action="{% url 'connect:client_approve' connection.pk %}" style="display: inline;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('この申請を承認しますか？')">承認</button>
-                                </form>
-                            {% elif connection.status == 'approved' %}
-                                <form method="post" action="{% url 'connect:client_unapprove' connection.pk %}" style="display: inline;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('この申請を未承認に戻しますか？')">未承認に戻す</button>
-                                </form>
-                            {% endif %}
-                        {% else %}
-                            <span class="text-muted">権限なし</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="text-center">接続申請がありません</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        
-        <!-- ページネーション -->
-        <div class="d-flex justify-content-start">
-            {% include 'common/_pagination.html' with page_obj=connections %}
-        </div>
 
-        <!-- Back Button -->
-        <div class="row mt-3">
-            <div class="col text-left">
-                <a href="{% url 'connect:index' %}" class="btn btn-sm btn-secondary">戻る</a>
+        <script>
+        function resetForm() {
+            document.querySelector('input[name=q]').value = '';
+            document.querySelector('select[name=status]').value = '';
+            window.location.href = '{% url "connect:client_list" %}';
+        }
+        </script>
+
+        <!-- 接続申請カード一覧 -->
+        {% if connections %}
+        <div class="row g-4">
+            {% for connection in connections %}
+            <div class="col-md-6 col-lg-4">
+                <div class="stats-card{% if connection.is_approved %} bg-success-light{% endif %}">
+                    <div class="stats-card-body">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-building-fill stats-icon me-3" style="color:#28a745;"></i>
+                            <div class="flex-grow-1">
+                                <p class="stats-label">
+                                    {% with company=companies|get_item:connection.corporate_number %}
+                                        {% if company %}
+                                            {{ company.name }}
+                                        {% else %}
+                                            <span class="text-muted">会社情報なし</span>
+                                        {% endif %}
+                                    {% endwith %}
+                                </p>
+                                <p class="stats-description">
+                                    法人番号: {{ connection.corporate_number }}<br>
+                                    メール: {{ connection.email }}<br>
+                                    申請日: {{ connection.created_at|date:"Y/m/d H:i" }}<br>
+                                    {% if connection.is_approved %}
+                                    ステータス: <span class="badge bg-primary">承認済み</span>
+                                        {% if connection.approved_at %}
+                                            ({{ connection.approved_at|date:"Y/m/d H:i" }})
+                                        {% endif %}
+                                    {% endif %}
+                                </p>
+                                {% if user.is_staff or connection.email == user.email %}
+                                    {% if not connection.is_approved %}
+                                        <form method="post" action="{% url 'connect:client_approve' connection.pk %}" class="mt-3">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-primary" onclick="return confirm('この申請を承認しますか？')">
+                                                承認する
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                {% else %}
+                                    <p class="text-muted mt-3">権限なし</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+            {% endfor %}
         </div>
-
+        {% else %}
+        <div class="text-center py-4">
+            <p class="text-muted">接続申請がありません。</p>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

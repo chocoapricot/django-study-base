@@ -2,12 +2,58 @@
 {% load humanize %}
 {% load connect_tags %}
 
-{% block title %}スタッフ接続申請一覧{% endblock %}
+{% block extra_css %}
+<style>
+    .stats-card {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .stats-card:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        background: #ffffff;
+    }
+    .stats-card.bg-success-light {
+        background: #e8f5e9;
+    }
+    .stats-card.bg-success-light:hover {
+        background: #d4edda;
+    }
+    .stats-card.has-action {
+        cursor: pointer;
+    }
+    .stats-card.has-action:hover {
+        transform: translateY(-4px);
+    }
+    .stats-icon {
+        font-size: 3rem;
+    }
+    .stats-label {
+        font-size: 1.5rem;
+        color: #495057;
+        margin: 0;
+        font-weight: 600;
+    }
+    .stats-description {
+        font-size: 1rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+        margin-bottom: 0;
+    }
+    .stats-card-body {
+        padding: 1.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block title %}スタッフ接続申請{% endblock %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
-        スタッフ接続申請一覧
+        スタッフ接続申請
     </div>
     <div class="card-body">
         <!-- 検索・フィルタフォーム -->
@@ -40,91 +86,60 @@
         }
         </script>
 
-        <!-- 接続申請一覧テーブル -->
+        <!-- 接続申請カード一覧 -->
         {% if connections %}
-        <table class="table table-striped table-hover me-2 mt-2" style="border-top: 1px solid #ddd;">
-            <thead class="table-light">
-                <tr>
-                    <th>会社名</th>
-                    <th>法人番号</th>
-                    <th>メールアドレス</th>
-                    <th>申請日時</th>
-                    <th>ステータス</th>
-                    <th>承認日時</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for connection in connections %}
-                <tr>
-                    <td>
-                        {% with company=companies|get_item:connection.corporate_number %}
-                            {% if company %}
-                                {{ company.name }}
-                            {% else %}
-                                <span class="text-muted">会社情報なし</span>
-                            {% endif %}
-                        {% endwith %}
-                    </td>
-                    <td>{{ connection.corporate_number }}</td>
-                    <td>{{ connection.email }}</td>
-                    <td>{{ connection.created_at|date:"Y/m/d H:i" }}</td>
-                    <td>
-                        {% if connection.is_approved %}
-                            <span class="badge bg-success">承認済み</span>
-                        {% else %}
-                            <span class="badge bg-warning">未承認</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if connection.approved_at %}
-                            {{ connection.approved_at|date:"Y/m/d H:i" }}
-                        {% else %}
-                            -
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if user.is_staff or connection.email == user.email %}
-                            {% if connection.is_approved %}
-                                <form method="post" action="{% url 'connect:staff_unapprove' connection.pk %}" style="display: inline;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('承認を取り消しますか？')">
-                                        未承認に戻す
-                                    </button>
-                                </form>
-                            {% else %}
-                                <form method="post" action="{% url 'connect:staff_approve' connection.pk %}" style="display: inline;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('この申請を承認しますか？')">
-                                        承認する
-                                    </button>
-                                </form>
-                            {% endif %}
-                        {% else %}
-                            <span class="text-muted">権限なし</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <!-- ページネーション -->
-        <div class="d-flex justify-content-start">
-            {% include 'common/_pagination.html' with page_obj=connections %}
+        <div class="row g-4">
+            {% for connection in connections %}
+            <div class="col-md-6 col-lg-4">
+                <div class="stats-card{% if connection.is_approved %} bg-success-light{% endif %}">
+                    <div class="stats-card-body">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-building-fill stats-icon me-3" style="color:#28a745;"></i>
+                            <div class="flex-grow-1">
+                                <p class="stats-label">
+                                    {% with company=companies|get_item:connection.corporate_number %}
+                                        {% if company %}
+                                            {{ company.name }}
+                                        {% else %}
+                                            <span class="text-muted">会社情報なし</span>
+                                        {% endif %}
+                                    {% endwith %}
+                                </p>
+                                <p class="stats-description">
+                                    法人番号: {{ connection.corporate_number }}<br>
+                                    メール: {{ connection.email }}<br>
+                                    申請日: {{ connection.created_at|date:"Y/m/d H:i" }}<br>
+                                    {% if connection.is_approved %}
+                                    ステータス: <span class="badge bg-primary">承認済み</span>
+                                        {% if connection.approved_at %}
+                                            ({{ connection.approved_at|date:"Y/m/d H:i" }})
+                                        {% endif %}
+                                    {% endif %}
+                                </p>
+                                {% if user.is_staff or connection.email == user.email %}
+                                    {% if not connection.is_approved %}
+                                        <form method="post" action="{% url 'connect:staff_approve' connection.pk %}" class="mt-3">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-primary" onclick="return confirm('この申請を承認しますか？')">
+                                                承認する
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                {% else %}
+                                    <p class="text-muted mt-3">権限なし</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
-
         {% else %}
         <div class="text-center py-4">
             <p class="text-muted">接続申請がありません。</p>
         </div>
         {% endif %}
-        
-        <div class="row mt-3">
-            <div class="col text-left">
-                <a href="{% url 'connect:index' %}" class="btn btn-sm btn-secondary">戻る</a>
-            </div>
-        </div>
     </div>
 </div>
 {% endblock %}

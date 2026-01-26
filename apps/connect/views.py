@@ -35,11 +35,6 @@ def connect_staff_list(request):
     if status_filter:
         connections = connections.filter(status=status_filter)
     
-    # ページネーション
-    paginator = Paginator(connections, 20)
-    page_number = request.GET.get('page')
-    connections = paginator.get_page(page_number)
-    
     # 会社情報を取得（法人番号から）
     from apps.company.models import Company
     companies = {}
@@ -243,11 +238,6 @@ def connect_client_list(request):
     if status_filter:
         connections = connections.filter(status=status_filter)
     
-    # ページネーション
-    paginator = Paginator(connections, 20)
-    page_number = request.GET.get('page')
-    connections = paginator.get_page(page_number)
-    
     # 会社情報を取得（法人番号から）
     from apps.company.models import Company
     companies = {}
@@ -265,11 +255,6 @@ def connect_client_list(request):
         'search_query': search_query,
         'status_filter': status_filter,
     })
-
-
-@login_required
-@permission_required('connect.change_connectclient', raise_exception=True)
-@require_POST
 def connect_client_approve(request, pk):
     """クライアント接続を承認"""
     connection = get_object_or_404(ConnectClient, pk=pk)
