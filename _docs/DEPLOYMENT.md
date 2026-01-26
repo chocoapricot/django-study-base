@@ -60,39 +60,21 @@ python manage.py runserver
 
 ## データベースリセット
 
-### 自動リセットスクリプト（推奨）
+### 自動セットアップスクリプト（推奨）
 
 ```bash
-# Pythonスクリプトを使用
-python _scripts/reset_database.py
-
-# またはバッチファイルを使用（Windows）
-_scripts/reset_database.bat
+# データベースのリセット、スーパーユーザーの作成、サンプルデータのインポートをすべて行います。
+python _scripts/setup.py
 ```
 
-### 手動リセット手順
-
-```bash
-# 1. データベースファイルを削除
-del db.sqlite3
-
-# 2. マイグレーションを適用
-python manage.py migrate
-
-# 3. スーパーユーザーの作成
-python manage.py createsuperuser
-
-# 4. サンプルデータのインポート（必要に応じて）
-python _scripts/load_sample_data.py
-```
 
 ## トラブルシューティング
 
 ### common_applogエラーが発生した場合
 
 ```bash
-# リセットスクリプトを使用（推奨）
-python _scripts/reset_database.py
+# セットアップスクリプトを使用（推奨）
+python _scripts/setup.py
 
 # または手動で修正
 python manage.py migrate logs

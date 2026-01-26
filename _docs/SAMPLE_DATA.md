@@ -17,58 +17,14 @@
 
 ## データインポート手順
 
-### 1. スーパーユーザーの作成（必須）
+### 自動セットアップスクリプト（推奨）
+
 ```bash
-# サンプルデータが参照するユーザー（ID=1）を作成
-python manage.py createsuperuser
+# データベースのリセット、スーパーユーザーの作成、サンプルデータのインポートをすべて行います。
+python _scripts/setup.py
 ```
 
-### 2. 基本マスタデータのインポート
-```bash
-# ドロップダウンデータ
-python manage.py loaddata _sample_data/dropdowns.json
-```
-
-### 3. 業務データのインポート
-```bash
-# スタッフデータ
-python manage.py loaddata _sample_data/staff.json
-
-# スタッフ連絡履歴データ
-python manage.py loaddata _sample_data/staff_contacted.json
-
-# クライアントデータ
-python manage.py loaddata _sample_data/client.json
-
-# クライアント連絡履歴データ
-python manage.py loaddata _sample_data/client_contacted.json
-```
-
-### 4. 全データの一括インポート
-
-#### 自動インポートスクリプト（推奨）
-```bash
-# Pythonスクリプトを使用
-python _scripts/load_sample_data.py
-
-# またはバッチファイルを使用（Windows）
-_scripts/load_sample_data.bat
-```
-
-#### 手動で全データをインポート
-```bash
-# 1. スーパーユーザーを作成（ID=1になるように最初に作成）
-python manage.py createsuperuser
-
-# 2. 依存関係を考慮した正しい順序でインポート
-python manage.py loaddata _sample_data/dropdowns.json
-python manage.py loaddata _sample_data/parameters.json
-python manage.py loaddata _sample_data/menus.json
-python manage.py loaddata _sample_data/staff.json
-python manage.py loaddata _sample_data/staff_contacted.json
-python manage.py loaddata _sample_data/client.json
-python manage.py loaddata _sample_data/client_contacted.json
-```
+このコマンド一つで、開発環境のセットアップとサンプルデータのインポートがすべて完了します。
 
 ## データエクスポート手順
 
@@ -107,12 +63,6 @@ python manage.py dumpdata client.clientcontacted --format=json --indent=4 > _sam
 | 50 | メール配信 | 一斉送信やお知らせ |
 
 ## 注意事項
-
-### インポート順序
-1. **スーパーユーザーを最初に作成**: 作成者・更新者として参照されるため（ID=1）
-2. **ドロップダウンデータをインポート**: 他のデータが参照するため
-3. **基本データ（スタッフ・クライアント）をインポート**
-4. **関連データ（連絡履歴）を最後にインポート**
 
 ### データの整合性
 - 外部キー制約により、参照先データが存在しない場合はエラーになります
