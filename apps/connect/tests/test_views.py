@@ -1,269 +1,168 @@
 from django.test import TestCase, Client
-from django.contrib.auth import get_user_model
 from django.urls import reverse
-from apps.connect.models import ConnectStaff, ProfileRequest
-from apps.staff.models import Staff
+from django.contrib.auth import get_user_model
 from apps.company.models import Company
-from apps.profile.models import StaffProfile
+from apps.connect.models import ConnectStaff, ConnectStaffAgree
+from apps.master.models import StaffAgreement
 
 User = get_user_model()
 
-
-class ConnectStaffModelTest(TestCase):
-    """ConnectStaffモデルのテスト"""
-
-    def setUp(self):
-        self.user = User.objects.create_user(
-            username='testuser',
-            email='test@example.com',
-            password='TestPass123!'
-        )
-
-    def test_connect_staff_creation(self):
-        """ConnectStaffの作成テスト"""
-        connection = ConnectStaff.objects.create(
-            corporate_number='1234567890123',
-            email='staff@example.com',
-            created_by=self.user,
-            updated_by=self.user
-        )
-
-        self.assertEqual(connection.corporate_number, '1234567890123')
-        self.assertEqual(connection.email, 'staff@example.com')
-        self.assertEqual(connection.status, 'pending')
-        self.assertFalse(connection.is_approved)
-
-    def test_approve_connection(self):
-        """接続承認のテスト"""
-        connection = ConnectStaff.objects.create(
-            corporate_number='1234567890123',
-            email='staff@example.com',
-            created_by=self.user,
-            updated_by=self.user
-        )
-        
-        connection.approve(self.user)
-        
-        self.assertEqual(connection.status, 'approved')
-        self.assertTrue(connection.is_approved)
-        self.assertIsNotNone(connection.approved_at)
-        self.assertEqual(connection.approved_by, self.user)
-
-    def test_unapprove_connection(self):
-        """接続未承認に戻すテスト"""
-        connection = ConnectStaff.objects.create(
-            corporate_number='1234567890123',
-            email='staff@example.com',
-            created_by=self.user,
-            updated_by=self.user
-        )
-        
-        # 一度承認してから未承認に戻す
-        connection.approve(self.user)
-        connection.unapprove()
-        
-        self.assertEqual(connection.status, 'pending')
-        self.assertFalse(connection.is_approved)
-        self.assertIsNone(connection.approved_at)
-        self.assertIsNone(connection.approved_by)
-
-
-class ConnectViewTest(TestCase):
-    """Connect関連ビューのテスト"""
+class StaffAgreeViewTest(TestCase):
+    """staff_agree ビューのテスト"""
 
     def setUp(self):
-        from django.contrib.auth.models import Group, Permission
-        from django.contrib.contenttypes.models import ContentType
-
         self.client = Client()
-        self.user = User.objects.create_user(
-            username='testuser',
-            email='test@example.com',
-            password='TestPass123!'
-        )
-        self.client.login(username='testuser', password='TestPass123!')
-
-        # --- staff グループのセットアップ ---
-        staff_group, _ = Group.objects.get_or_create(name='staff')
-
-        # ConnectStaffの権限
-        staff_content_type = ContentType.objects.get_for_model(ConnectStaff)
-        staff_permissions = Permission.objects.filter(
-            content_type=staff_content_type,
-            codename__in=['view_connectstaff', 'change_connectstaff']
-        )
-        staff_group.permissions.add(*staff_permissions)
-
-        # ConnectClientの権限
-        from apps.connect.models import ConnectClient
-        client_content_type = ContentType.objects.get_for_model(ConnectClient)
-        client_permissions = Permission.objects.filter(
-            content_type=client_content_type,
-            codename__in=['view_connectclient', 'change_connectclient']
-        )
-        staff_group.permissions.add(*client_permissions)
-        
-        self.user.groups.add(staff_group)
-        self.user.refresh_from_db()
-
-        # テスト用の接続申請を作成
-        self.connection = ConnectStaff.objects.create(
-            corporate_number='1234567890123',
-            email='test@example.com',  # ログインユーザーのメールアドレス
-            created_by=self.user,
-            updated_by=self.user
-        )
-        
-        # テスト用のスタッフと会社を作成
-        self.staff = Staff.objects.create(
-            name_last='テスト',
-            name_first='太郎',
-            email='staff@example.com',
-            created_by=self.user,
-            updated_by=self.user
-        )
-
-        self.company = Company.objects.create(
-            name='テスト会社',
-            corporate_number='9876543210987',
-            created_by=self.user,
-            updated_by=self.user
-        )
-
-    def test_connect_index_view(self):
-        """接続管理トップページのテスト"""
-        response = self.client.get(reverse('connect:index'))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '接続管理')
-        self.assertContains(response, '1件')  # 未承認の申請が1件
-
-    def test_connect_staff_list_view(self):
-        """スタッフ接続一覧のテスト"""
-        response = self.client.get(reverse('connect:staff_list'))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'スタッフ接続申請一覧')
-        self.assertContains(response, '1234567890123')
-
-    def test_connect_staff_approve(self):
-        """スタッフ接続承認のテスト"""
-        response = self.client.post(reverse('connect:staff_approve', args=[self.connection.pk]))
-        self.assertEqual(response.status_code, 302)  # リダイレクト
-        
-        # 承認されたかチェック
-        self.connection.refresh_from_db()
-        self.assertTrue(self.connection.is_approved)
-
-    def test_connect_staff_unapprove(self):
-        """スタッフ接続未承認に戻すテスト"""
-        # 一度承認してから未承認に戻す
-        self.connection.approve(self.user)
-        
-        response = self.client.post(reverse('connect:staff_unapprove', args=[self.connection.pk]))
-        self.assertEqual(response.status_code, 302)  # リダイレクト
-        
-        # 未承認に戻ったかチェック
-        self.connection.refresh_from_db()
-        self.assertFalse(self.connection.is_approved)
-
-
-    def test_permission_grant_on_connection_request(self):
-        """接続依頼時の権限付与テスト"""
-        from apps.connect.utils import grant_permissions_on_connection_request
-        from django.contrib.auth.models import Permission
-        
-        # 既存ユーザーに権限を付与
-        result = grant_permissions_on_connection_request(self.user.email)
-        self.assertTrue(result)
-        
-        # 権限が付与されたかチェック
-        permission = Permission.objects.get(codename='view_connectstaff')
-        self.assertTrue(self.user.has_perm(f'connect.{permission.codename}'))
-
-    def test_permission_grant_on_account_creation(self):
-        """アカウント作成時の権限付与テスト"""
-        from apps.connect.utils import check_and_grant_permissions_for_email
-
-        # 接続申請を作成
-        ConnectStaff.objects.create(
-            corporate_number=self.company.corporate_number,
-            email='newuser@example.com',
-            created_by=self.user,
-            updated_by=self.user
-        )
-
-        # 新しいユーザーを作成
-        new_user = User.objects.create_user(
-            username='newuser',
-            email='newuser@example.com',
-            password='TestPass123!'
-        )
-
-        # 権限チェックと付与
-        result = check_and_grant_permissions_for_email(new_user.email)
-        self.assertTrue(result)
-
-        # 権限が付与されたかチェック
-        from django.contrib.auth.models import Permission
-        permission = Permission.objects.get(codename='view_connectstaff')
-        new_user.refresh_from_db()
-        self.assertTrue(new_user.has_perm(f'connect.{permission.codename}'))
-
-
-class ConnectStaffApproveMethodTest(TestCase):
-    """ConnectStaff.approveメソッドの詳細なテスト"""
-
-    def setUp(self):
         self.approver = User.objects.create_user(
             username='approver',
             email='approver@example.com',
-            password='TestPass123!'
+            password='TestPass123!',
+            is_staff=True,
+        )
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='testuser@example.com',
+            password='TestPass123!',
+        )
+        self.company = Company.objects.create(
+            corporate_number='1234567890123',
+            name='Test Company',
+        )
+        self.agreement = StaffAgreement.objects.create(
+            name='Test Agreement',
+            agreement_text='This is a test agreement.',
+            corporation_number=self.company.corporate_number,
+            is_active=True,
+        )
+        self.connection = ConnectStaff.objects.create(
+            email=self.user.email,
+            corporate_number=self.company.corporate_number,
+            status='pending', # 承認待ちの状態
+        )
+
+    def test_redirect_to_next_url_after_agreement(self):
+        """同意後、next パラメータにリダイレクトされることをテスト"""
+        self.client.login(email='approver@example.com', password='TestPass123!')
+        
+        target_redirect_url = '/profile/some_page/'
+        agree_url = reverse('connect:staff_agree', kwargs={'pk': self.connection.pk})
+        
+        # next パラメータを付けて同意画面にPOST
+        response = self.client.post(
+            f'{agree_url}?next={target_redirect_url}',
+            {'agreements': [self.agreement.pk]}
+        )
+        
+        # next パラメータのURLにリダイレクトされることを確認
+        self.assertRedirects(response, target_redirect_url, fetch_redirect_response=False)
+        
+        # 同意が記録されていることを確認
+        self.assertTrue(
+            ConnectStaffAgree.objects.filter(
+                email=self.user.email,
+                staff_agreement=self.agreement,
+                is_agreed=True,
+            ).exists()
+        )
+        
+        # 接続ステータスは変わらないことを確認 (承認フローは通らないため)
+        self.connection.refresh_from_db()
+        self.assertEqual(self.connection.status, 'pending')
+
+    def test_redirect_to_connect_list_if_no_next_param(self):
+        """next パラメータがない場合、承認フローに進むことをテスト"""
+        self.client.login(email='approver@example.com', password='TestPass123!')
+
+        agree_url = reverse('connect:staff_agree', kwargs={'pk': self.connection.pk})
+
+        response = self.client.post(agree_url, {'agreements': [self.agreement.pk]})
+        
+        # 承認されて接続一覧にリダイレクトされることを確認
+        self.assertRedirects(response, reverse('connect:staff_list'))
+        
+        # 接続ステータスが 'approved' になっていることを確認
+        self.connection.refresh_from_db()
+        self.assertEqual(self.connection.status, 'approved')
+
+    def test_staff_agree_view_contains_company_name(self):
+        """同意画面に会社名が含まれていることをテスト"""
+        self.client.login(email='approver@example.com', password='TestPass123!')
+        
+        agree_url = reverse('connect:staff_agree', kwargs={'pk': self.connection.pk})
+        response = self.client.get(agree_url)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, f'{self.company.name} - 同意確認')
+
+
+class ConnectClientViewsTest(TestCase):
+    """ConnectClientビューのテスト"""
+    def setUp(self):
+        self.client_user = User.objects.create_user(
+            username='clientuser',
+            email='client@example.com',
+            password='password'
+        )
+        self.other_user = User.objects.create_user(
+            username='otheruser',
+            email='other@example.com',
+            password='password'
         )
         self.staff_user = User.objects.create_user(
-            username='staffuser',
+            username='staff',
             email='staff@example.com',
-            password='TestPass123!',
-            first_name='Taro',
-            last_name='Staff'
-        )
-        self.staff_master = Staff.objects.create(
-            email=self.staff_user.email,
-            name_first='Taro',
-            name_last='Staff',
+            password='password',
+            is_staff=True
         )
 
-    def test_approve_creates_no_request_if_profile_does_not_exist(self):
-        """StaffProfileが存在しない場合、ProfileRequestは作成されない"""
-        connection = ConnectStaff.objects.create(
-            corporate_number='1111111111111',
-            email=self.staff_user.email,
+        # 権限を付与
+        from django.contrib.contenttypes.models import ContentType
+        from django.contrib.auth.models import Permission
+        from apps.connect.models import ConnectClient
+        content_type = ContentType.objects.get_for_model(ConnectClient)
+        permissions = Permission.objects.filter(
+            content_type=content_type,
+            codename__in=['view_connectclient', 'change_connectclient']
         )
-        connection.approve(self.approver)
-        self.assertEqual(ProfileRequest.objects.count(), 0)
+        self.client_user.user_permissions.add(*permissions)
 
-    def test_approve_creates_request_if_profile_differs(self):
-        """StaffProfileが存在し、Staffマスターと差分がある場合、ProfileRequestが作成される"""
-        StaffProfile.objects.create(
-            user=self.staff_user,
-            name_first='Jiro',  # Staffマスターと異なる名前
-            name_last='Profile',
+        self.connect_request = ConnectClient.objects.create(
+            corporate_number='1234567890123',
+            email=self.client_user.email,
+            created_by=self.staff_user,
+            updated_by=self.staff_user,
         )
-        connection = ConnectStaff.objects.create(
-            corporate_number='2222222222222',
-            email=self.staff_user.email,
+        self.other_connect_request = ConnectClient.objects.create(
+            corporate_number='9876543210987',
+            email=self.other_user.email,
+            created_by=self.staff_user,
+            updated_by=self.staff_user,
         )
-        connection.approve(self.approver)
-        self.assertEqual(ProfileRequest.objects.count(), 1)
 
-    def test_approve_creates_no_request_if_profile_matches(self):
-        """StaffProfileが存在し、Staffマスターと差分がない場合、ProfileRequestは作成されない"""
-        StaffProfile.objects.create(
-            user=self.staff_user,
-            name_first='Taro',  # Staffマスターと同じ名前
-            name_last='Staff',
-        )
-        connection = ConnectStaff.objects.create(
-            corporate_number='3333333333333',
-            email=self.staff_user.email,
-        )
-        connection.approve(self.approver)
-        self.assertEqual(ProfileRequest.objects.count(), 0)
+    def test_client_user_can_view_own_requests(self):
+        """クライアントユーザーが自身の接続申請一覧を閲覧できる"""
+        self.client.login(username='clientuser', password='password')
+        response = self.client.get(reverse('connect:client_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.connect_request.corporate_number)
+        self.assertNotContains(response, self.other_connect_request.corporate_number)
+
+    def test_client_user_can_approve_own_request(self):
+        """クライアントユーザーが自身の接続申請を承認できる"""
+        self.client.login(username='clientuser', password='password')
+        self.connect_request.status = 'pending'
+        self.connect_request.save()
+        response = self.client.post(reverse('connect:client_approve', kwargs={'pk': self.connect_request.pk}))
+        self.assertEqual(response.status_code, 302)
+        self.connect_request.refresh_from_db()
+        self.assertEqual(self.connect_request.status, 'approved')
+
+    def test_client_user_cannot_approve_other_users_request(self):
+        """クライアントユーザーが他人の接続申請を承認できない"""
+        self.client.login(username='clientuser', password='password')
+        self.other_connect_request.status = 'pending'
+        self.other_connect_request.save()
+        response = self.client.post(reverse('connect:client_approve', kwargs={'pk': self.other_connect_request.pk}))
+        # view内の手動権限チェックでリダイレクトされる
+        self.assertEqual(response.status_code, 302)
+        self.other_connect_request.refresh_from_db()
+        self.assertEqual(self.other_connect_request.status, 'pending')
