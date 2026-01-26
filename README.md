@@ -252,24 +252,10 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-4. **データベースのセットアップ**
+4. **データベースのセットアップとサンプルデータのインポート**
 ```bash
-# 自動セットアップ（推奨）
-python _scripts/reset_database.py
-
-# または手動セットアップ
-python manage.py makemigrations
-python manage.py migrate
-```
-
-5. **スーパーユーザーの作成**
-```bash
-python manage.py createsuperuser
-```
-
-6. **サンプルデータのインポート（オプション）**
-```bash
-python _scripts/load_sample_data.py
+# データベースのリセット、スーパーユーザーの作成、サンプルデータのインポートをすべて行います。
+python _scripts/setup.py
 ```
 
 7. **開発サーバーの起動**
