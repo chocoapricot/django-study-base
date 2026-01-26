@@ -387,6 +387,44 @@
                 </div>
                 {% endif %}
 
+                {% if perms.staff.view_staff %}
+                    {% if staff_payroll_info_unregistered_count > 0 %}
+                    <div class="col-md-6 col-lg-3">
+                        <a href="{% url 'staff:staff_list' %}?registration_status=true" class="text-decoration-none">
+                            <div class="stats-card has-count bg-success-light">
+                                <div class="stats-card-body d-flex align-items-center">
+                                    <div class="icon-wrapper me-3">
+                                        <i class="bi bi-person-fill stats-icon" style="color:#ff5722;"></i>
+                                        <i class="bi bi-cash-stack icon-badge" style="color:#ff5722;"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <p class="stats-number text-dark">{{ staff_payroll_info_unregistered_count|intcomma }}<span class="stats-unit">名</span></p>
+                                        <p class="stats-label">スタッフ給与情報未登録</p>
+                                        <p class="stats-description">マイナンバー・銀行情報・給与情報 のいずれかが未登録のスタッフ</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stats-card">
+                            <div class="stats-card-body d-flex align-items-center">
+                                <div class="icon-wrapper me-3">
+                                    <i class="bi bi-person-fill stats-icon text-muted-light"></i>
+                                    <i class="bi bi-cash-stack icon-badge text-muted-light"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="stats-number text-muted-light">-</p>
+                                    <p class="stats-label">スタッフ給与情報未登録</p>
+                                    <p class="stats-description">マイナンバー・銀行情報・給与情報 のいずれかが未登録のスタッフ</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endif %}
+
                 {% if has_view_client_contract_perm %}
                 <div class="col-md-6 col-lg-3">
                     {% if personal_teishokubi_deadline_count > 0 %}

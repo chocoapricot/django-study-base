@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
 from apps.staff.models import Staff, StaffInternational
 from apps.client.models import Client
@@ -11,8 +12,10 @@ from apps.connect.models import (
 )
 from apps.master.models import Information, UserParameter
 from apps.staff.models_inquiry import StaffInquiry
+from apps.staff.models_payroll import StaffPayroll
+from apps.profile.models import StaffProfileMynumber, StaffProfileBank
 from django.utils import timezone
-from django.db.models import Q
+from django.db.models import Q, Exists, OuterRef, Subquery
 from apps.common.constants import Constants
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
@@ -165,6 +168,7 @@ def get_filtered_informations(user):
 
 @login_required
 def home(request):
+    User = get_user_model()
     all_informations = get_filtered_informations(request.user).order_by('-start_date')
     information_list = all_informations[:5]
     information_count = all_informations.count()
@@ -320,7 +324,34 @@ def home(request):
             conflict_date__lte=personal_teishokubi_warning_date
         ).annotate(has_active_assignment=Exists(active_assignments)).filter(has_active_assignment=True).count()
 
+    # スタッフ給与情報未登録件数
+    staff_payroll_info_unregistered_count = 0
+    if request.user.has_perm('staff.view_staff'):
+        from django.db.models import Subquery, OuterRef, Exists
+        # Staff に対応する User の pk を Subquery で取得
+        user_pk_subquery = User.objects.filter(email=OuterRef('email')).values('pk')[:1]
+
+        # 各種情報が存在するかどうかをチェックする Subquery
+        mynumber_exists = StaffProfileMynumber.objects.filter(user_id=OuterRef('user_id'))
+        bank_exists = StaffProfileBank.objects.filter(user_id=OuterRef('user_id'))
+        payroll_exists = StaffPayroll.objects.filter(staff_id=OuterRef('pk'))
+
+        staff_payroll_info_unregistered_count = Staff.objects.annotate(
+            user_id=Subquery(user_pk_subquery)
+        ).filter(
+            employee_no__isnull=False
+        ).exclude(
+            employee_no=''
+        ).annotate(
+            has_mynumber=Exists(mynumber_exists),
+            has_bank=Exists(bank_exists),
+            has_payroll=Exists(payroll_exists)
+        ).filter(
+            Q(has_mynumber=False) | Q(has_bank=False) | Q(has_payroll=False)
+        ).count()
+
     context = {
+        'staff_payroll_info_unregistered_count': staff_payroll_info_unregistered_count,
         'expiring_staff_international_count': expiring_staff_international_count,
         'staff_count': staff_count,
         'approved_staff_count': approved_staff_count,
