@@ -47,7 +47,11 @@ def main():
     
     # サンプルデータを順次読み込み
     for file_path, description in SAMPLE_DATA_FILES:
-        command = f"python manage.py loaddata {file_path}"
+        if "group_permissions.json" in file_path:
+            command = f"python manage.py import_group_permissions {file_path}"
+        else:
+            command = f"python manage.py loaddata {file_path}"
+
         if not run_command(command, description):
             print(f"❌ {description}のインポートでエラーが発生しました")
             sys.exit(1)
