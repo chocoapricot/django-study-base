@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-from apps.common.models import MyModel
+from apps.common.models import MyTenantModel
 from apps.common.constants import (
     Constants,
     get_time_rounding_unit_choices,
@@ -10,7 +10,7 @@ from apps.common.constants import (
 )
 
 
-class TimePunch(MyModel):
+class TimePunch(MyTenantModel):
     """勤怠打刻マスタ"""
     
     name = models.CharField(
@@ -161,7 +161,7 @@ class TimePunch(MyModel):
         return " / ".join(summary)
 
 
-class OvertimePattern(MyModel):
+class OvertimePattern(MyTenantModel):
     """
     時間外算出パターンマスタ
     """

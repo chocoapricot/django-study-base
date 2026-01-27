@@ -1,8 +1,8 @@
 from django.db import models
-from apps.common.models import MyModel
+from apps.common.models import MyTenantModel
 
 
-class ClientRegistStatus(MyModel):
+class ClientRegistStatus(MyTenantModel):
     """
     クライアント登録状況マスタ
     """

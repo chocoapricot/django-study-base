@@ -1,10 +1,10 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from ..common.models import MyModel
+from ..common.models import MyTenantModel
 
 User = get_user_model()
 
-class StaffInquiry(MyModel):
+class StaffInquiry(MyTenantModel):
     """
     スタッフからの問い合わせを管理するモデル。
     """
@@ -65,7 +65,7 @@ class StaffInquiry(MyModel):
     def __str__(self):
         return f"{self.subject} ({self.corporate_number})"
 
-class StaffInquiryMessage(MyModel):
+class StaffInquiryMessage(MyTenantModel):
     """
     スタッフ問い合わせに対する個別のメッセージ（チャット形式）
     """

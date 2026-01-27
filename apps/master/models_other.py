@@ -1,7 +1,7 @@
 import os
 from uuid import uuid4
 from django.db import models
-from apps.common.models import MyModel
+from apps.common.models import MyTenantModel
 
 
 def information_file_path(instance, filename):
@@ -17,7 +17,7 @@ def information_file_path(instance, filename):
     )
 
 
-class MailTemplate(MyModel):
+class MailTemplate(MyTenantModel):
     """
     メールテンプレートを管理するマスターデータモデル。
     """
@@ -43,7 +43,7 @@ class MailTemplate(MyModel):
         return self.name
 
 
-class Information(MyModel):
+class Information(MyTenantModel):
     """
     お知らせ情報を管理するマスターデータモデル。
     """
@@ -69,7 +69,7 @@ class Information(MyModel):
         return self.subject
 
 
-class InformationFile(MyModel):
+class InformationFile(MyTenantModel):
     """
     お知らせの添付ファイルを管理するモデル。
     """
@@ -102,7 +102,7 @@ class InformationFile(MyModel):
         super().delete(*args, **kwargs)
 
 
-class DefaultValue(MyModel):
+class DefaultValue(MyTenantModel):
     """
     システムの各項目における初期値を管理するマスターデータ。
     """
@@ -162,7 +162,7 @@ class DefaultValue(MyModel):
         return self.value
 
 
-class GenerativeAiSetting(MyModel):
+class GenerativeAiSetting(MyTenantModel):
     """
     生成AI設定を管理するマスターデータ。
     """
@@ -224,7 +224,7 @@ class GenerativeAiSetting(MyModel):
         return self.value
 
 
-class UserParameter(MyModel):
+class UserParameter(MyTenantModel):
     """
     ユーザーごとの設定値を管理するマスターデータ。
     """

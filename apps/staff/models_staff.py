@@ -5,9 +5,9 @@ from django.core.exceptions import ValidationError
 import uuid
 import os
 
-from ..common.models import MyModel
+from ..common.models import MyTenantModel
 
-class Staff(MyModel):
+class Staff(MyTenantModel):
     """
     スタッフ（従業員、契約社員など）の基本情報を管理するモデル。
     個人情報、連絡先、社内情報（社員番号、所属部署など）を保持する。
@@ -192,7 +192,7 @@ def staff_file_upload_path(instance, filename):
     # staff_files/staff_id/filename の形式で保存
     return f'staff_files/{instance.staff.pk}/{filename}'
 
-class StaffFile(MyModel):
+class StaffFile(MyTenantModel):
     """
     スタッフに関連する添付ファイルを管理するモデル。
     履歴書や職務経歴書などのドキュメントを想定。
@@ -272,7 +272,7 @@ class StaffFile(MyModel):
         """ファイルサイズをMB単位で取得"""
         return round(self.file_size / (1024 * 1024), 2)
 
-class StaffContacted(MyModel):
+class StaffContacted(MyTenantModel):
     """
     スタッフへの連絡履歴を管理するモデル。
     面談や電話、メールなどのやり取りを記録する。
@@ -293,7 +293,7 @@ class StaffContacted(MyModel):
         return f"{self.staff} {self.contacted_at:%Y-%m-%d %H:%M} {self.content[:20]}"
 
 
-class StaffContactSchedule(MyModel):
+class StaffContactSchedule(MyTenantModel):
     """
     スタッフへの連絡予定を管理するモデル。
     """
@@ -313,7 +313,7 @@ class StaffContactSchedule(MyModel):
         return f"{self.staff} {self.contact_date:%Y-%m-%d} {self.content[:20]}"
 
 
-class StaffQualification(MyModel):
+class StaffQualification(MyTenantModel):
     """
     スタッフが保有する資格情報を管理するモデル。
     StaffモデルとQualificationマスターを紐付ける中間テーブル。
@@ -374,7 +374,7 @@ class StaffQualification(MyModel):
         return self.expiry_date <= timezone.localdate() + timedelta(days=days)
 
 
-class StaffSkill(MyModel):
+class StaffSkill(MyTenantModel):
     """
     スタッフが保有する技能（スキル）情報を管理するモデル。
     StaffモデルとSkillマスターを紐付ける中間テーブル。
