@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
+from django.urls import reverse
 from .models import Company, CompanyDepartment, CompanyUser
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -15,32 +16,93 @@ from django.core.files.base import ContentFile
 from django.conf import settings
 from .forms import CompanyForm, CompanyDepartmentForm, CompanyUserForm, CompanySealUploadForm
 
+def get_current_company(request, pk=None, obj=None):
+    """
+    現在のコンテキストにおける会社オブジェクトを取得するヘルパー関数。
+    管理者かつpk/company_idが指定されている場合はその会社を、
+    そうでなければセッションから取得、それもなければ最初の会社を返す。
+    """
+    company_id = pk or request.GET.get('company_id')
+
+    if request.user.is_superuser:
+        if obj and hasattr(obj, 'tenant_id'):
+            # オブジェクトが指定されている場合はそのテナントを優先
+            return get_object_or_404(Company, tenant_id=obj.tenant_id)
+
+        if company_id:
+            # パラメータで指定された場合はセッションを更新
+            request.session['admin_company_id'] = company_id
+        else:
+            # 指定がない場合はセッションから取得
+            company_id = request.session.get('admin_company_id')
+
+        if company_id:
+            try:
+                return Company.objects.get(pk=company_id)
+            except Company.DoesNotExist:
+                pass
+
+    company = Company.objects.first()
+    if not company:
+        # レコードが存在しない場合は新規作成（後方互換性のため）
+        company = Company.objects.create(name="新規会社")
+        log_model_action(request.user, 'create', company)
+    return company
+
+def get_company_change_logs(company, limit=None):
+    """会社に関連する変更ログを取得するヘルパー関数"""
+    company_logs = AppLog.objects.filter(
+        model_name='Company',
+        object_id=str(company.pk),
+        action__in=['create', 'update']
+    )
+
+    department_ids = [str(d.pk) for d in CompanyDepartment.objects.filter(tenant_id=company.tenant_id)]
+    department_logs = AppLog.objects.filter(
+        model_name='CompanyDepartment',
+        object_id__in=department_ids,
+        action__in=['create', 'update', 'delete']
+    )
+
+    company_users = CompanyUser.objects.filter(tenant_id=company.tenant_id)
+    company_user_ids = [str(user.pk) for user in company_users]
+    company_user_logs = AppLog.objects.filter(
+        model_name='CompanyUser',
+        object_id__in=company_user_ids,
+        action__in=['create', 'update', 'delete']
+    )
+
+    all_logs = (company_logs | department_logs | company_user_logs).order_by('-timestamp')
+    count = all_logs.count()
+    if limit:
+        all_logs = all_logs[:limit]
+    return all_logs, count
+
 @login_required
 @permission_required('company.view_company', raise_exception=True)
 def company_detail(request):
-    company = Company.objects.first()
-    if not company:
-        # レコードが存在しない場合は新規作成
-        company = Company.objects.create(name="新規会社") # 仮の会社名
-        log_model_action(request.user, 'create', company)
-        messages.info(request, '会社情報がまだ登録されていません。基本情報を入力してください。')
-        return redirect('company:company_edit')
+    company = get_current_company(request)
 
     # 詳細画面アクセスをログに記録
     log_view_detail(request.user, company)
 
+    # 管理者の場合は会社一覧を取得
+    companies = None
+    if request.user.is_superuser:
+        companies = Company.objects.all().order_by('pk')
+
     # 部署一覧も取得（表示順で最新5件）
-    departments = CompanyDepartment.objects.all().order_by('display_order', 'name')[:5]
+    departments = CompanyDepartment.objects.filter(tenant_id=company.tenant_id).order_by('display_order', 'name')[:5]
 
     # 担当者一覧も取得
-    company_users = CompanyUser.objects.filter(corporate_number=company.corporate_number)
+    company_users = CompanyUser.objects.filter(tenant_id=company.tenant_id)
 
     # 担当者のうち、ログインアカウントが存在するメールアドレスのセットを取得
     user_emails = [user.email for user in company_users if user.email]
     users_with_account = set(get_user_model().objects.filter(email__in=user_emails).values_list('email', flat=True))
 
     # 全部署を取得し、コードをキーにした辞書を作成
-    all_departments = CompanyDepartment.objects.filter(corporate_number=company.corporate_number)
+    all_departments = CompanyDepartment.objects.filter(tenant_id=company.tenant_id)
     department_map = {d.department_code: d.name for d in all_departments}
 
     # 本日以降有効なクライアント契約を取得
@@ -68,30 +130,12 @@ def company_detail(request):
             Q(end_date__gte=today) | Q(end_date__isnull=True)
         ).exists()
 
-    # 会社、部署、担当者の変更履歴を統合して取得
-    company_logs = AppLog.objects.filter(
-        model_name='Company',
-        object_id=str(company.pk),
-        action__in=['create', 'update']
-    )
-    department_logs = AppLog.objects.filter(
-        model_name='CompanyDepartment',
-        action__in=['create', 'update', 'delete']
-    )
-    company_user_ids = [str(user.pk) for user in company_users]
-    company_user_logs = AppLog.objects.filter(
-        model_name='CompanyUser',
-        object_id__in=company_user_ids,
-        action__in=['create', 'update', 'delete']
-    )
-    
-    # 全てのログを統合してタイムスタンプ順にソート
-    all_logs = (company_logs | department_logs | company_user_logs)
-    change_logs = all_logs.order_by('-timestamp')[:5]
-    change_logs_count = all_logs.count()
+    # 変更履歴を取得
+    change_logs, change_logs_count = get_company_change_logs(company, limit=5)
     
     return render(request, 'company/company_detail.html', {
         'company': company,
+        'companies': companies,
         'departments': departments,
         'company_users': company_users,
         'change_logs': change_logs,
@@ -100,13 +144,27 @@ def company_detail(request):
     })
 
 @login_required
+@permission_required('company.add_company', raise_exception=True)
+def company_create(request):
+    if request.method == 'POST':
+        form = CompanyForm(request.POST)
+        if form.is_valid():
+            company = form.save()
+            log_model_action(request.user, 'create', company)
+            messages.success(request, f'会社「{company.name}」を登録しました。')
+            return redirect(reverse('company:company_detail') + f'?company_id={company.pk}')
+    else:
+        form = CompanyForm()
+
+    return render(request, 'company/company_edit.html', {
+        'form': form,
+        'title': '新規会社登録'
+    })
+
+@login_required
 @permission_required('company.change_company', raise_exception=True)
-def company_edit(request):
-    company = Company.objects.first()
-    if not company:
-        # レコードが存在しない場合は新規作成
-        company = Company.objects.create(name="新規会社") # 仮の会社名
-        log_model_action(request.user, 'create', company)
+def company_edit(request, pk=None):
+    company = get_current_company(request, pk=pk)
 
     if request.method == 'POST':
         form = CompanyForm(request.POST, instance=company)
@@ -122,7 +180,7 @@ def company_edit(request):
     else:
         form = CompanyForm(instance=company)
 
-    return render(request, 'company/company_edit.html', {'form': form})
+    return render(request, 'company/company_edit.html', {'form': form, 'company': company})
 
 # 部署管理のビュー
 
@@ -131,10 +189,10 @@ def company_edit(request):
 def department_detail(request, pk):
     department = get_object_or_404(CompanyDepartment, pk=pk)
     log_view_detail(request.user, department)
-    company = Company.objects.first()
+    company = get_current_company(request, obj=department)
     
-    # 全部署一覧を取得
-    departments = CompanyDepartment.objects.all().order_by('display_order', 'name')
+    # この会社の全部署一覧を取得
+    departments = CompanyDepartment.objects.filter(tenant_id=company.tenant_id).order_by('display_order', 'name')
     
     return render(request, 'company/company_department_detail.html', {
         'department': department,
@@ -146,18 +204,21 @@ def department_detail(request, pk):
 @login_required
 @permission_required('company.add_companydepartment', raise_exception=True)
 def department_create(request):
-    company = Company.objects.first()
+    company = get_current_company(request)
     if request.method == 'POST':
         form = CompanyDepartmentForm(request.POST)
         if form.is_valid():
-            department = form.save()
+            department = form.save(commit=False)
+            department.tenant_id = company.tenant_id
+            department.corporate_number = company.corporate_number
+            department.save()
             log_model_action(request.user, 'create', department)
             messages.success(request, '部署が作成されました。')
             return redirect('company:company_detail')
     else:
-        form = CompanyDepartmentForm()
+        form = CompanyDepartmentForm(initial={'corporate_number': company.corporate_number})
     
-    departments = CompanyDepartment.objects.all().order_by('display_order', 'name')
+    departments = CompanyDepartment.objects.filter(tenant_id=company.tenant_id).order_by('display_order', 'name')
 
     return render(request, 'company/company_department_form.html', {
         'form': form,
@@ -170,7 +231,7 @@ def department_create(request):
 @permission_required('company.change_companydepartment', raise_exception=True)
 def department_edit(request, pk):
     department = get_object_or_404(CompanyDepartment, pk=pk)
-    company = Company.objects.first()
+    company = get_current_company(request, obj=department)
     if request.method == 'POST':
         form = CompanyDepartmentForm(request.POST, instance=department)
         if form.is_valid():
@@ -185,8 +246,8 @@ def department_edit(request, pk):
     else:
         form = CompanyDepartmentForm(instance=department)
     
-    # 全部署一覧を取得
-    departments = CompanyDepartment.objects.all().order_by('display_order', 'name')
+    # この会社の全部署一覧を取得
+    departments = CompanyDepartment.objects.filter(tenant_id=company.tenant_id).order_by('display_order', 'name')
     
     return render(request, 'company/company_department_form.html', {
         'form': form, 
@@ -201,7 +262,7 @@ def department_edit(request, pk):
 @permission_required('company.delete_companydepartment', raise_exception=True)
 def department_delete(request, pk):
     department = get_object_or_404(CompanyDepartment, pk=pk)
-    company = Company.objects.first()
+    company = get_current_company(request, obj=department)
     if request.method == 'POST':
         log_model_action(request.user, 'delete', department)
         department.delete()
@@ -217,32 +278,10 @@ def department_delete(request, pk):
 @permission_required('company.view_company', raise_exception=True)
 def change_history_list(request):
     """会社、部署、担当者の変更履歴一覧"""
-    company = Company.objects.first()
-    if not company:
-        messages.error(request, '会社情報が見つかりません。')
-        return redirect('company:company_detail')
-
-    # 会社、部署、担当者の変更履歴を統合して取得
-    company_logs = AppLog.objects.filter(
-        model_name='Company',
-        object_id=str(company.pk),
-        action__in=['create', 'update']
-    )
-    department_logs = AppLog.objects.filter(
-        model_name='CompanyDepartment',
-        action__in=['create', 'update', 'delete']
-    )
-    
-    company_users = CompanyUser.objects.filter(corporate_number=company.corporate_number)
-    company_user_ids = [str(user.pk) for user in company_users]
-    company_user_logs = AppLog.objects.filter(
-        model_name='CompanyUser',
-        object_id__in=company_user_ids,
-        action__in=['create', 'update', 'delete']
-    )
+    company = get_current_company(request)
 
     # 全てのログを統合してタイムスタンプ順にソート
-    all_logs = (company_logs | department_logs | company_user_logs).order_by('-timestamp')
+    all_logs, _ = get_company_change_logs(company)
 
     # ページネーション
     paginator = Paginator(all_logs, 20) # 1ページあたり20件
@@ -264,15 +303,13 @@ def change_history_list(request):
 @login_required
 @permission_required('company.add_companyuser', raise_exception=True)
 def company_user_create(request):
-    company = Company.objects.first()
-    if not company:
-        messages.error(request, '会社情報が見つかりません。')
-        return redirect('company:company_detail')
+    company = get_current_company(request)
 
     if request.method == 'POST':
         form = CompanyUserForm(request.POST, corporate_number=company.corporate_number)
         if form.is_valid():
             company_user = form.save(commit=False)
+            company_user.tenant_id = company.tenant_id
             company_user.corporate_number = company.corporate_number
             company_user.save()
             log_model_action(request.user, 'create', company_user)
@@ -282,7 +319,7 @@ def company_user_create(request):
         form = CompanyUserForm(corporate_number=company.corporate_number)
 
     # 担当者一覧を取得し、バッジ情報と部署情報を追加
-    company_users = CompanyUser.objects.filter(corporate_number=company.corporate_number)
+    company_users = CompanyUser.objects.filter(tenant_id=company.tenant_id)
     
     # 本日以降有効なクライアント契約を取得
     from django.utils import timezone
@@ -290,7 +327,7 @@ def company_user_create(request):
     today = timezone.localdate()
     
     # 全部署を取得し、コードをキーにした辞書を作成
-    all_departments = CompanyDepartment.objects.filter(corporate_number=company.corporate_number)
+    all_departments = CompanyDepartment.objects.filter(tenant_id=company.tenant_id)
     department_map = {d.department_code: d.name for d in all_departments}
     
     # 各担当者に部署名とバッジ情報を追加
@@ -324,7 +361,7 @@ def company_user_create(request):
 @permission_required('company.change_companyuser', raise_exception=True)
 def company_user_edit(request, pk):
     company_user = get_object_or_404(CompanyUser, pk=pk)
-    company = Company.objects.filter(corporate_number=company_user.corporate_number).first()
+    company = get_current_company(request, obj=company_user)
 
     if request.method == 'POST':
         form = CompanyUserForm(request.POST, instance=company_user, corporate_number=company.corporate_number)
@@ -337,7 +374,7 @@ def company_user_edit(request, pk):
         form = CompanyUserForm(instance=company_user, corporate_number=company.corporate_number)
 
     # 担当者一覧を取得し、バッジ情報と部署情報を追加
-    company_users = CompanyUser.objects.filter(corporate_number=company.corporate_number)
+    company_users = CompanyUser.objects.filter(tenant_id=company.tenant_id)
     
     # 本日以降有効なクライアント契約を取得
     from django.utils import timezone
@@ -345,7 +382,7 @@ def company_user_edit(request, pk):
     today = timezone.localdate()
     
     # 全部署を取得し、コードをキーにした辞書を作成
-    all_departments = CompanyDepartment.objects.filter(corporate_number=company.corporate_number)
+    all_departments = CompanyDepartment.objects.filter(tenant_id=company.tenant_id)
     department_map = {d.department_code: d.name for d in all_departments}
     
     # 各担当者に部署名とバッジ情報を追加
@@ -380,16 +417,15 @@ def company_user_edit(request, pk):
 @permission_required('company.delete_companyuser', raise_exception=True)
 def company_user_delete(request, pk):
     company_user = get_object_or_404(CompanyUser, pk=pk)
+    company = get_current_company(request, obj=company_user)
     if request.method == 'POST':
         log_model_action(request.user, 'delete', company_user)
         company_user.delete()
         messages.success(request, '担当者を削除しました。')
         return redirect('company:company_detail')
 
-    company = Company.objects.filter(corporate_number=company_user.corporate_number).first()
-    
     # 担当者一覧を取得し、バッジ情報と部署情報を追加
-    company_users = CompanyUser.objects.filter(corporate_number=company_user.corporate_number)
+    company_users = CompanyUser.objects.filter(tenant_id=company.tenant_id)
     
     # 本日以降有効なクライアント契約を取得
     from django.utils import timezone
@@ -397,7 +433,7 @@ def company_user_delete(request, pk):
     today = timezone.localdate()
     
     # 全部署を取得し、コードをキーにした辞書を作成
-    all_departments = CompanyDepartment.objects.filter(corporate_number=company.corporate_number)
+    all_departments = CompanyDepartment.objects.filter(tenant_id=company.tenant_id)
     department_map = {d.department_code: d.name for d in all_departments}
     
     # 各担当者に部署名とバッジ情報を追加
@@ -432,17 +468,17 @@ def company_user_delete(request, pk):
 @permission_required('company.view_companyuser', raise_exception=True)
 def company_user_detail(request, pk):
     from django.utils import timezone
-    from apps.contract.models import ClientContract, ClientContractHaken
+    from apps.contract.models import ClientContract
     User = get_user_model()
     
     company_user = get_object_or_404(CompanyUser, pk=pk)
     log_view_detail(request.user, company_user)
-    company = Company.objects.filter(corporate_number=company_user.corporate_number).first()
-    company_users = CompanyUser.objects.filter(corporate_number=company_user.corporate_number)
+    company = get_current_company(request, obj=company_user)
+    company_users = CompanyUser.objects.filter(tenant_id=company.tenant_id)
 
     # 担当者のうち、ログインアカウントが存在するメールアドレスのセットを取得
     user_emails = [user.email for user in company_users if user.email]
-    users_with_account = set(get_user_model().objects.filter(email__in=user_emails).values_list('email', flat=True))
+    users_with_account = set(User.objects.filter(email__in=user_emails).values_list('email', flat=True))
 
     # ログインアカウントの存在確認
     user_account = None
@@ -488,7 +524,7 @@ def company_user_detail(request, pk):
         return redirect('company:company_user_detail', pk=pk)
 
     # 全部署を取得し、コードをキーにした辞書を作成
-    all_departments = CompanyDepartment.objects.filter(corporate_number=company.corporate_number)
+    all_departments = CompanyDepartment.objects.filter(tenant_id=company.tenant_id)
     department_map = {d.department_code: d.name for d in all_departments}
 
     # 本日以降有効なクライアント契約を取得
@@ -519,7 +555,7 @@ def company_user_detail(request, pk):
     if company_user.department_code:
         try:
             department = CompanyDepartment.objects.get(
-                corporate_number=company_user.corporate_number,
+                tenant_id=company.tenant_id,
                 department_code=company_user.department_code
             )
         except CompanyDepartment.DoesNotExist:
@@ -555,10 +591,7 @@ def company_user_detail(request, pk):
 @permission_required('company.change_company', raise_exception=True)
 def company_seal_upload(request):
     """会社印（丸印・角印）のアップロード処理"""
-    company = Company.objects.first()
-    if not company:
-        messages.error(request, '会社情報が見つかりません。')
-        return redirect('company:company_detail')
+    company = get_current_company(request)
 
     if request.method == 'POST':
         form = CompanySealUploadForm(request.POST, request.FILES)
@@ -618,10 +651,7 @@ def company_seal_upload(request):
 @permission_required('company.change_company', raise_exception=True)
 def company_seal_delete(request):
     """会社印（丸印・角印）の削除処理"""
-    company = Company.objects.first()
-    if not company:
-        messages.error(request, '会社情報が見つかりません。')
-        return redirect('company:company_detail')
+    company = get_current_company(request)
 
     if request.method == 'POST':
         seal_type = request.POST.get('seal_type')
@@ -642,9 +672,7 @@ def company_seal_delete(request):
 @permission_required('company.view_company', raise_exception=True)
 def serve_company_seal(request, seal_type):
     """会社印（丸印・角印）を安全に配信するビュー"""
-    company = Company.objects.first()
-    if not company:
-        raise Http404("会社情報が見つかりません。")
+    company = get_current_company(request)
 
     image_field = None
     if seal_type == 'round':

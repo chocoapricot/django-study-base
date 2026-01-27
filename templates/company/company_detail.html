@@ -51,6 +51,33 @@
 
 {% block content %}
 
+{% if companies %}
+<!-- 管理者用会社一覧 -->
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-buildings me-2"></i>会社一覧（管理者用）</span>
+        <a href="{% url 'company:company_create' %}" class="btn btn-sm btn-primary">新規作成</a>
+    </div>
+    <div class="card-body p-0">
+        <div class="list-group list-group-flush" style="max-height: 200px; overflow-y: auto;">
+            {% for c in companies %}
+            <a href="?company_id={{ c.pk }}" class="list-group-item list-group-item-action {% if c.pk == company.pk %}active{% endif %} py-2">
+                <div class="d-flex w-100 justify-content-between align-items-center">
+                    <h6 class="mb-0">{{ c.name }}</h6>
+                    <small {% if c.pk == company.pk %}class="text-white"{% else %}class="text-muted"{% endif %}>
+                        ID: {{ c.pk }} / Tenant: {{ c.tenant_id }}
+                    </small>
+                </div>
+                {% if c.corporate_number %}
+                <small class="d-block {% if c.pk == company.pk %}text-white-50{% else %}text-muted{% endif %}">法人番号: {{ c.corporate_number }}</small>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">会社基本情報</div>
     <div class="card-body">
@@ -172,7 +199,7 @@
                         <div class="text-center">
                             <div class="seal-container mb-1" {% if company.round_seal %}onclick="viewSeal('round')" style="cursor: pointer;"{% endif %}>
                                 {% if company.round_seal %}
-                                <img src="{% url 'company:serve_company_seal' 'round' %}?v={% now "U" %}" style="max-width: 100%; max-height: 100%;">
+                                <img src="{% url 'company:serve_company_seal' 'round' %}{% if request.user.is_superuser %}?company_id={{ company.pk }}&{% else %}?{% endif %}v={% now "U" %}" style="max-width: 100%; max-height: 100%;">
                                 {% else %}
                                 <div class="text-muted d-flex align-items-center justify-content-center small" style="height: 100%;">未登録</div>
                                 {% endif %}
@@ -188,7 +215,7 @@
                         <div class="text-center">
                             <div class="seal-container mb-1" {% if company.square_seal %}onclick="viewSeal('square')" style="cursor: pointer;"{% endif %}>
                                 {% if company.square_seal %}
-                                <img src="{% url 'company:serve_company_seal' 'square' %}?v={% now "U" %}" style="max-width: 100%; max-height: 100%;">
+                                <img src="{% url 'company:serve_company_seal' 'square' %}{% if request.user.is_superuser %}?company_id={{ company.pk }}&{% else %}?{% endif %}v={% now "U" %}" style="max-width: 100%; max-height: 100%;">
                                 {% else %}
                                 <div class="text-muted d-flex align-items-center justify-content-center small" style="height: 100%;">未登録</div>
                                 {% endif %}
@@ -208,7 +235,7 @@
         </div>
 
         <div class="d-flex justify-content-start mt-3">
-            <a href="{% url 'company:company_edit' %}" class="btn btn-sm btn-primary me-2">編集</a>
+            <a href="{% url 'company:company_edit_with_pk' pk=company.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
         </div>
     </div>
 </div>
@@ -220,7 +247,7 @@
         <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
             <div class="card-header d-flex justify-content-between align-items-center">
                 部署一覧
-                <a href="{% url 'company:department_create' %}" class="btn btn-sm btn-primary">部署追加</a>
+                <a href="{% url 'company:department_create' %}{% if request.user.is_superuser %}?company_id={{ company.pk }}{% endif %}" class="btn btn-sm btn-primary">部署追加</a>
             </div>
             <div class="card-body mb-0" style="margin-bottom: 2rem;">
                 <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
@@ -235,12 +262,12 @@
                         {% for department in departments %}
                         <tr{% if current_department and department.pk == current_department.pk %} class="table-warning"{% endif %}{% if not department.is_valid_on_date %} style="opacity: 0.6;"{% endif %}>
                             <td>{{ department.department_code }}</td>
-                            <td><a href="{% url 'company:department_detail' department.pk %}">{{ department.name }}</a></td>
+                            <td><a href="{% url 'company:department_detail' department.pk %}{% if request.user.is_superuser %}?company_id={{ company.pk }}{% endif %}">{{ department.name }}</a></td>
                             <td>
-                                <a href="{% url 'company:department_edit' department.pk %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="編集">
+                                <a href="{% url 'company:department_edit' department.pk %}{% if request.user.is_superuser %}?company_id={{ company.pk }}{% endif %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="編集">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <a href="{% url 'company:department_delete' department.pk %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="削除">
+                                <a href="{% url 'company:department_delete' department.pk %}{% if request.user.is_superuser %}?company_id={{ company.pk }}{% endif %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="削除">
                                     <i class="bi bi-x"></i>
                                 </a>
                             </td>
@@ -261,6 +288,13 @@
 </div>
 
 <!-- 変更履歴（共通テンプレート使用） -->
+{% url 'company:change_history_list' as company_history_url_base %}
+{% if request.user.is_superuser %}
+    {% with company_history_url=company_history_url_base|add:"?company_id="|add:company.pk|stringformat:"s" %}
+        {% url 'company:change_history_list' as ignored %} {# reset? no #}
+    {% endwith %}
+    {# Template tag 'add' doesn't work well for this. I'll just use a simple approach in the include #}
+{% endif %}
 {% url 'company:change_history_list' as company_history_url %}
 {% with change_logs=change_logs change_logs_count=change_logs_count history_url=company_history_url show_full_content=False %}
     {% include 'common/_change_history_list.html' %}
@@ -276,7 +310,7 @@
                 <h5 class="modal-title" id="uploadSealModalLabel">会社印の登録/変更</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{% url 'company:company_seal_upload' %}" method="post" enctype="multipart/form-data">
+            <form action="{% url 'company:company_seal_upload' %}{% if request.user.is_superuser %}?company_id={{ company.pk }}{% endif %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="modal-body">
                     <input type="hidden" name="seal_type" id="id_seal_type">
@@ -304,7 +338,7 @@
 </div>
 
 <!-- Seal Delete Form (hidden) -->
-<form id="deleteSealForm" action="{% url 'company:company_seal_delete' %}" method="post" style="display: none;">
+<form id="deleteSealForm" action="{% url 'company:company_seal_delete' %}{% if request.user.is_superuser %}?company_id={{ company.pk }}{% endif %}" method="post" style="display: none;">
     {% csrf_token %}
     <input type="hidden" name="seal_type" id="id_delete_seal_type">
 </form>
@@ -319,7 +353,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center p-0 overflow-hidden">
-                <img src="{% url 'company:serve_company_seal' 'round' %}?v={% now "U" %}" class="img-fluid w-100">
+                <img src="{% url 'company:serve_company_seal' 'round' %}{% if request.user.is_superuser %}?company_id={{ company.pk }}&{% else %}?{% endif %}v={% now "U" %}" class="img-fluid w-100">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
@@ -339,7 +373,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center p-0 overflow-hidden">
-                <img src="{% url 'company:serve_company_seal' 'square' %}?v={% now "U" %}" class="img-fluid w-100">
+                <img src="{% url 'company:serve_company_seal' 'square' %}{% if request.user.is_superuser %}?company_id={{ company.pk }}&{% else %}?{% endif %}v={% now "U" %}" class="img-fluid w-100">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
