@@ -13,7 +13,8 @@
             "contract_terms": "本契約は期間の定めのない雇用契約とし、{{staff_name}}（以下「甲」という）は、 {{company_name}}（以下「乙」という）に 正社員として勤務するものとする。 ただし、試用期間は入社日から３か月間とする。",
             "display_position": 1,
             "memo": null,
-            "display_order": 10
+            "display_order": 10,
+            "tenant_id": 1
         }
     },
     {
@@ -30,7 +31,8 @@
             "contract_terms": "業務上の必要により乙が指定する他の事業所または顧客先に勤務を命ずることがある。",
             "display_position": 2,
             "memo": null,
-            "display_order": 20
+            "display_order": 20,
+            "tenant_id": 1
         }
     },
     {
@@ -47,7 +49,8 @@
             "contract_terms": "本契約は、{{company_name}}（以下「乙」という）が、 {{staff_name}}（以下「甲」という）を 契約社員として雇用し、 定められた期間において 勤務させることを目的とする。",
             "display_position": 1,
             "memo": null,
-            "display_order": 10
+            "display_order": 10,
+            "tenant_id": 1
         }
     },
     {
@@ -64,7 +67,8 @@
             "contract_terms": "業務の状況、勤務成績、会社の経営状況等を勘案し、双方の合意により更新する場合がある。",
             "display_position": 2,
             "memo": null,
-            "display_order": 20
+            "display_order": 20,
+            "tenant_id": 1
         }
     },
     {
@@ -81,7 +85,8 @@
             "contract_terms": "本契約は、{{company_name}}（以下「乙」という）が、 {{staff_name}}（以下「甲」という）として雇用するものであり、 乙は甲に対し、 労働者派遣法に基づき、 労働者を派遣する。",
             "display_position": 1,
             "memo": null,
-            "display_order": 10
+            "display_order": 10,
+            "tenant_id": 1
         }
     },
     {
@@ -98,7 +103,8 @@
             "contract_terms": "甲は乙に対し、紹介予定派遣として労働者を派遣する。",
             "display_position": 2,
             "memo": null,
-            "display_order": 10
+            "display_order": 10,
+            "tenant_id": 1
         }
     },
     {
@@ -115,7 +121,8 @@
             "contract_terms": "本契約は、甲が乙に対し、別紙仕様書に定める業務（以下「本業務」という）を委託し、乙がこれを請け負うことを目的とする。但し、本契約に定めのない事項については、乙の合理的裁量に委ねられるものとする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 10
+            "display_order": 10,
+            "tenant_id": 1
         }
     },
     {
@@ -132,7 +139,8 @@
             "contract_terms": "本業務の範囲、内容及び成果物の仕様は、別紙仕様書に定めるものとする。甲が仕様変更を求める場合、乙と協議の上、報酬額・納期を別途合意する。",
             "display_position": 2,
             "memo": null,
-            "display_order": 20
+            "display_order": 20,
+            "tenant_id": 1
         }
     },
     {
@@ -149,7 +157,8 @@
             "contract_terms": "本契約は、甲が乙に対し、別紙業務内容に定める作業（以下「本業務」という）の遂行を委任し、乙がこれを受託することを目的とする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 10
+            "display_order": 10,
+            "tenant_id": 1
         }
     },
     {
@@ -166,7 +175,8 @@
             "contract_terms": "本業務は、乙が有する知識・経験・能力をもって善良なる管理者の注意義務を尽くし遂行するものであり、成果物の完成を保証するものではない。",
             "display_position": 2,
             "memo": null,
-            "display_order": 20
+            "display_order": 20,
+            "tenant_id": 1
         }
     },
     {
@@ -183,7 +193,8 @@
             "contract_terms": "乙は、本業務の成果物を甲に納入する。甲は納入後30日以内に検収を行い、当該期間内に不具合の指摘がない場合、成果物は検収合格とみなす。",
             "display_position": 2,
             "memo": null,
-            "display_order": 30
+            "display_order": 30,
+            "tenant_id": 1
         }
     },
     {
@@ -200,7 +211,8 @@
             "contract_terms": "甲は乙に対し、本業務の対価を支払う。支払期日は検収合格日から30日以内とし、支払遅延が生じた場合は年14.6％の遅延損害金を付す。",
             "display_position": 2,
             "memo": null,
-            "display_order": 40
+            "display_order": 40,
+            "tenant_id": 1
         }
     },
     {
@@ -217,7 +229,8 @@
             "contract_terms": "本契約の有効期間は、契約締結日から契約終了日までとする。但し、やむを得ない事由により乙が納期の延長を求めた場合、甲は合理的な範囲でこれを認める。",
             "display_position": 2,
             "memo": null,
-            "display_order": 50
+            "display_order": 50,
+            "tenant_id": 1
         }
     },
     {
@@ -234,7 +247,8 @@
             "contract_terms": "乙は、甲の秘密情報を善良なる管理者の注意をもって取り扱う。但し、乙が独自に保有する情報、公開されている情報、または第三者から適法に取得した情報は秘密保持義務の対象外とする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 60
+            "display_order": 60,
+            "tenant_id": 1
         }
     },
     {
@@ -251,7 +265,8 @@
             "contract_terms": "本業務により作成された成果物の著作権等の知的財産権は原則乙に帰属する。但し、甲が本成果物を利用するために必要な範囲での使用権を甲に許諾する。",
             "display_position": 2,
             "memo": null,
-            "display_order": 70
+            "display_order": 70,
+            "tenant_id": 1
         }
     },
     {
@@ -268,7 +283,8 @@
             "contract_terms": "乙は、本業務の遂行に必要な範囲で第三者に再委託できるものとする。但し、乙は当該第三者の行為について責任を負う。",
             "display_position": 2,
             "memo": null,
-            "display_order": 80
+            "display_order": 80,
+            "tenant_id": 1
         }
     },
     {
@@ -285,7 +301,8 @@
             "contract_terms": "乙は、故意または重大な過失による場合を除き、甲に対する損害賠償責任を負わない。損害賠償額は本契約に基づく報酬総額を上限とする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 90
+            "display_order": 90,
+            "tenant_id": 1
         }
     },
     {
@@ -302,7 +319,8 @@
             "contract_terms": "甲または乙が本契約に違反し、相手方からの催告後30日以内に是正しない場合、相手方は本契約を解除できる。但し、乙による軽微な違反については解除事由とならない。",
             "display_position": 2,
             "memo": null,
-            "display_order": 100
+            "display_order": 100,
+            "tenant_id": 1
         }
     },
     {
@@ -319,7 +337,8 @@
             "contract_terms": "天災地変、法令の制定改廃、公的規制その他乙の合理的支配を超える不可抗力事由により履行が困難となった場合、乙は責任を負わない。この場合、納期は当該期間分延長される。",
             "display_position": 2,
             "memo": null,
-            "display_order": 110
+            "display_order": 110,
+            "tenant_id": 1
         }
     },
     {
@@ -336,7 +355,8 @@
             "contract_terms": "本契約は日本法に準拠する。本契約に関して紛争が生じた場合、乙の本店所在地を管轄する地方裁判所を第一審の専属的合意管轄裁判所とする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 120
+            "display_order": 120,
+            "tenant_id": 1
         }
     },
     {
@@ -353,7 +373,8 @@
             "contract_terms": "甲は乙に対し、本業務遂行の対価を支払う。  \r\n支払期日は翌月末日とする。  \r\n本業務遂行の有無・成果物の完成に関わらず、乙が業務を遂行した期間に応じて報酬が発生する。",
             "display_position": 2,
             "memo": null,
-            "display_order": 30
+            "display_order": 30,
+            "tenant_id": 1
         }
     },
     {
@@ -370,7 +391,8 @@
             "contract_terms": "本契約の有効期間は、契約締結日から契約終了日までとする。但し、双方の合意により更新できる。",
             "display_position": 2,
             "memo": null,
-            "display_order": 40
+            "display_order": 40,
+            "tenant_id": 1
         }
     },
     {
@@ -387,7 +409,8 @@
             "contract_terms": "乙は、本業務遂行のために必要な範囲で第三者に再委託できる。但し、乙は当該第三者の行為について責任を負う。",
             "display_position": 2,
             "memo": null,
-            "display_order": 50
+            "display_order": 50,
+            "tenant_id": 1
         }
     },
     {
@@ -404,7 +427,8 @@
             "contract_terms": "乙は、甲から開示された秘密情報を本業務遂行の目的以外に使用または第三者に漏洩してはならない。但し、乙が既に保有していた情報、公知の情報、または正当に第三者から取得した情報は秘密情報に含まれない。",
             "display_position": 2,
             "memo": null,
-            "display_order": 60
+            "display_order": 60,
+            "tenant_id": 1
         }
     },
     {
@@ -421,7 +445,8 @@
             "contract_terms": "本業務遂行の過程で乙が独自に作成したノウハウ・プログラム・資料等の知的財産権は乙に帰属する。但し、甲が業務遂行の目的で利用する範囲においては使用を許諾する。",
             "display_position": 2,
             "memo": null,
-            "display_order": 70
+            "display_order": 70,
+            "tenant_id": 1
         }
     },
     {
@@ -438,7 +463,8 @@
             "contract_terms": "乙は、故意または重大な過失によって甲に損害を与えた場合に限り、その賠償責任を負う。賠償額は本契約に基づく直近3か月分の報酬額を上限とする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 80
+            "display_order": 80,
+            "tenant_id": 1
         }
     },
     {
@@ -455,7 +481,8 @@
             "contract_terms": "甲または乙は、相手方が本契約に違反し、相当期間を定めて是正を催告したにもかかわらず是正されない場合、本契約を解除できる。  \r\nなお、甲が任意に契約を解除する場合、解除日までの業務遂行に応じた報酬を乙に支払うものとする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 90
+            "display_order": 90,
+            "tenant_id": 1
         }
     },
     {
@@ -472,7 +499,8 @@
             "contract_terms": "天災地変、法令の改正、通信障害その他不可抗力により業務遂行が困難となった場合、乙はその責任を負わない。",
             "display_position": 2,
             "memo": null,
-            "display_order": 100
+            "display_order": 100,
+            "tenant_id": 1
         }
     },
     {
@@ -489,7 +517,8 @@
             "contract_terms": "本契約は日本法に準拠する。本契約に関して紛争が生じた場合、乙の本店所在地を管轄する地方裁判所を第一審の専属的合意管轄裁判所とする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 110
+            "display_order": 110,
+            "tenant_id": 1
         }
     },
     {
@@ -506,7 +535,8 @@
             "contract_terms": "本契約は、乙が雇用する労働者（以下「派遣労働者」という）を、労働者派遣法に基づき甲に派遣し、甲の指揮命令の下で就業させることを目的とする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 10
+            "display_order": 10,
+            "tenant_id": 1
         }
     },
     {
@@ -523,7 +553,8 @@
             "contract_terms": "派遣労働者の人数は1名とする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 30
+            "display_order": 30,
+            "tenant_id": 1
         }
     },
     {
@@ -540,7 +571,8 @@
             "contract_terms": "契約の更新は、労働者派遣法の定める上限を超えない範囲で、甲乙協議のうえ行う。",
             "display_position": 2,
             "memo": null,
-            "display_order": 40
+            "display_order": 40,
+            "tenant_id": 1
         }
     },
     {
@@ -557,7 +589,8 @@
             "contract_terms": "1.就業日は月曜日から金曜日までとし、休日は土日祝日および年末年始とする。\r\n2.就業時間は9時00分から18時00分まで、休憩時間は12時00分から13時00分までとする。\r\n3.時間外労働、休日労働、深夜労働については、労働基準法等に基づき、甲の要請および乙の同意の上で行う。",
             "display_position": 2,
             "memo": null,
-            "display_order": 50
+            "display_order": 50,
+            "tenant_id": 1
         }
     },
     {
@@ -574,7 +607,8 @@
             "contract_terms": "1.派遣料金は、派遣労働者の出勤簿に基づき算定し、乙の請求書により翌月末日までに乙指定口座に振込支払いとする。\r\n2.甲が支払を遅延した場合、年14.6％の割合による遅延損害金を付す。",
             "display_position": 2,
             "memo": null,
-            "display_order": 60
+            "display_order": 60,
+            "tenant_id": 1
         }
     },
     {
@@ -591,7 +625,8 @@
             "contract_terms": "1.甲は、派遣労働者に対し、安全衛生管理上必要な措置を講ずるものとする。\r\n2.乙は、雇用主として労働条件の明示、給与の支払、社会保険の適用等を行う。\r\n3.安全衛生に関する具体的な指導・教育は、甲が責任をもって実施する。",
             "display_position": 2,
             "memo": null,
-            "display_order": 70
+            "display_order": 70,
+            "tenant_id": 1
         }
     },
     {
@@ -608,7 +643,8 @@
             "contract_terms": "派遣労働者に関する苦情が発生した場合、原則として乙が窓口となり対応する。但し、甲の業務環境や指揮命令に起因する苦情については甲の責任で対応する。",
             "display_position": 2,
             "memo": null,
-            "display_order": 80
+            "display_order": 80,
+            "tenant_id": 1
         }
     },
     {
@@ -625,7 +661,8 @@
             "contract_terms": "派遣労働者および乙は、就業中に知り得た甲の秘密情報を第三者に漏洩しない。ただし、公知の情報、乙が独自に有する情報、正当に第三者から取得した情報は除く。",
             "display_position": 2,
             "memo": null,
-            "display_order": 90
+            "display_order": 90,
+            "tenant_id": 1
         }
     },
     {
@@ -642,7 +679,8 @@
             "contract_terms": "1.派遣労働者の故意または重大な過失により甲に損害が生じた場合、乙は雇用主として相応の責任を負う。\r\n2.損害賠償額は、直近1か月分の派遣料金を上限とする。\r\n3.通常の業務遂行に伴う損耗・ミス等については、乙は責任を負わない。",
             "display_position": 2,
             "memo": null,
-            "display_order": 100
+            "display_order": 100,
+            "tenant_id": 1
         }
     },
     {
@@ -659,7 +697,8 @@
             "contract_terms": "1.甲または乙が本契約に違反し、相当期間を定めて是正を催告したにもかかわらず是正されない場合、本契約を解除できる。\r\n2.甲が業務量減少その他の理由により契約を中途解除する場合、解除日までの派遣料金を乙に支払うものとする。\r\n3.甲が予告なく解除した場合、30日分の派遣料金相当額を違約金として乙に支払うものとする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 110
+            "display_order": 110,
+            "tenant_id": 1
         }
     },
     {
@@ -676,7 +715,8 @@
             "contract_terms": "天災地変、法令の改廃、通信障害その他不可抗力により業務遂行が困難となった場合、乙はその責任を負わない。",
             "display_position": 2,
             "memo": null,
-            "display_order": 120
+            "display_order": 120,
+            "tenant_id": 1
         }
     },
     {
@@ -693,7 +733,8 @@
             "contract_terms": "本契約は日本法に準拠する。\r\n本契約に関する紛争は、乙の本店所在地を管轄する地方裁判所を第一審の専属的合意管轄裁判所とする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 130
+            "display_order": 130,
+            "tenant_id": 1
         }
     },
     {
@@ -710,7 +751,8 @@
             "contract_terms": "{{ client_name }}（以下「甲」という。）と、{{ company_name }}（以下「乙」という。）は、\r\n甲乙間で締結済みの基本契約（業務委託基本契約）に基づき、本個別契約を次のとおり締結する。",
             "display_position": 1,
             "memo": null,
-            "display_order": 0
+            "display_order": 0,
+            "tenant_id": 1
         }
     },
     {
@@ -727,7 +769,8 @@
             "contract_terms": "本契約の成立を証するため、本書を２通作成し、甲乙各自署名又は記名押印のうえ、各１通を保有する。",
             "display_position": 3,
             "memo": null,
-            "display_order": 999
+            "display_order": 999,
+            "tenant_id": 1
         }
     },
     {
@@ -744,7 +787,8 @@
             "contract_terms": "{{ client_name }}（以下「甲」という。）と、{{ company_name }}（以下「乙」という。）は、\r\n甲乙間で締結済みの基本契約（業務委託基本契約）に基づき、本個別契約を次のとおり締結する。",
             "display_position": 1,
             "memo": null,
-            "display_order": 0
+            "display_order": 0,
+            "tenant_id": 1
         }
     },
     {
@@ -761,7 +805,8 @@
             "contract_terms": "本契約の成立を証するため、本書を２通作成し、甲乙各自署名又は記名押印のうえ、各１通を保有する。",
             "display_position": 3,
             "memo": null,
-            "display_order": 999
+            "display_order": 999,
+            "tenant_id": 1
         }
     },
     {
@@ -778,7 +823,8 @@
             "contract_terms": "{{ client_name }}（以下「甲」という。）と、{{ company_name }}（以下「乙」という。）は、\r\n甲乙間で締結済みの基本契約（労働者派遣基本契約）に基づき、本個別契約を次のとおり締結する。",
             "display_position": 1,
             "memo": null,
-            "display_order": 0
+            "display_order": 0,
+            "tenant_id": 1
         }
     },
     {
@@ -795,7 +841,8 @@
             "contract_terms": "本契約の成立を証するため、本書を２通作成し、甲乙各自署名又は記名押印のうえ、各１通を保有する。",
             "display_position": 3,
             "memo": null,
-            "display_order": 999
+            "display_order": 999,
+            "tenant_id": 1
         }
     },
     {
@@ -812,7 +859,8 @@
             "contract_terms": "{{ client_name }}（以下「甲」という。）と、{{ company_name }}（以下「乙」という。）は、\r\n甲乙間で締結済みの基本契約（労働者派遣基本契約）に基づき、本個別契約を次のとおり締結する。本契約は、労働者派遣法第40条の6に基づく紹介予定派遣契約である。",
             "display_position": 2,
             "memo": null,
-            "display_order": 0
+            "display_order": 0,
+            "tenant_id": 1
         }
     },
     {
@@ -829,7 +877,8 @@
             "contract_terms": "本契約は、労働者派遣法第40条の6に基づき、派遣労働者を派遣先に紹介予定派遣として派遣し、派遣期間終了後に派遣先での直接雇用を予定することを目的とする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 10
+            "display_order": 10,
+            "tenant_id": 1
         }
     },
     {
@@ -846,7 +895,8 @@
             "contract_terms": "派遣労働者の人数は1名とする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 30
+            "display_order": 30,
+            "tenant_id": 1
         }
     },
     {
@@ -863,7 +913,8 @@
             "contract_terms": "紹介予定派遣契約のため、派遣期間の更新は行わない。",
             "display_position": 2,
             "memo": null,
-            "display_order": 40
+            "display_order": 40,
+            "tenant_id": 1
         }
     },
     {
@@ -880,7 +931,8 @@
             "contract_terms": "1.就業日は月曜日から金曜日までとし、休日は土日祝日および年末年始とする。\r\n2.就業時間は9時00分から18時00分まで、休憩時間は12時00分から13時00分までとする。\r\n3.時間外労働、休日労働、深夜労働については、労働基準法等に基づき、甲の要請および乙の同意の上で行う。",
             "display_position": 2,
             "memo": null,
-            "display_order": 50
+            "display_order": 50,
+            "tenant_id": 1
         }
     },
     {
@@ -897,7 +949,8 @@
             "contract_terms": "1.派遣料金は、派遣労働者の出勤簿に基づき算定し、乙の請求書により翌月末日までに乙指定口座に振込支払いとする。\r\n2.甲が支払を遅延した場合、年14.6％の割合による遅延損害金を付す。",
             "display_position": 2,
             "memo": null,
-            "display_order": 60
+            "display_order": 60,
+            "tenant_id": 1
         }
     },
     {
@@ -914,7 +967,8 @@
             "contract_terms": "1.甲は、派遣労働者に対し、安全衛生管理上必要な措置を講ずるものとする。\r\n2.乙は、雇用主として労働条件の明示、給与の支払、社会保険の適用等を行う。\r\n3.安全衛生に関する具体的な指導・教育は、甲が責任をもって実施する。",
             "display_position": 2,
             "memo": null,
-            "display_order": 70
+            "display_order": 70,
+            "tenant_id": 1
         }
     },
     {
@@ -931,7 +985,8 @@
             "contract_terms": "派遣労働者に関する苦情が発生した場合、原則として乙が窓口となり対応する。但し、甲の業務環境や指揮命令に起因する苦情については甲の責任で対応する。",
             "display_position": 2,
             "memo": null,
-            "display_order": 80
+            "display_order": 80,
+            "tenant_id": 1
         }
     },
     {
@@ -948,7 +1003,8 @@
             "contract_terms": "派遣労働者および乙は、就業中に知り得た甲の秘密情報を第三者に漏洩しない。ただし、公知の情報、乙が独自に有する情報、正当に第三者から取得した情報は除く。",
             "display_position": 2,
             "memo": null,
-            "display_order": 90
+            "display_order": 90,
+            "tenant_id": 1
         }
     },
     {
@@ -965,7 +1021,8 @@
             "contract_terms": "1.派遣労働者の故意または重大な過失により甲に損害が生じた場合、乙は雇用主として相応の責任を負う。\r\n2.損害賠償額は、直近1か月分の派遣料金を上限とする。\r\n3.通常の業務遂行に伴う損耗・ミス等については、乙は責任を負わない。",
             "display_position": 2,
             "memo": null,
-            "display_order": 100
+            "display_order": 100,
+            "tenant_id": 1
         }
     },
     {
@@ -982,7 +1039,8 @@
             "contract_terms": "1.甲または乙が本契約に違反し、相当期間を定めて是正を催告したにもかかわらず是正されない場合、本契約を解除できる。\r\n2.甲が業務量減少その他の理由により契約を中途解除する場合、解除日までの派遣料金を乙に支払うものとする。\r\n3.甲が予告なく解除した場合、30日分の派遣料金相当額を違約金として乙に支払うものとする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 110
+            "display_order": 110,
+            "tenant_id": 1
         }
     },
     {
@@ -999,7 +1057,8 @@
             "contract_terms": "天災地変、法令の改廃、通信障害その他不可抗力により業務遂行が困難となった場合、乙はその責任を負わない。",
             "display_position": 2,
             "memo": null,
-            "display_order": 120
+            "display_order": 120,
+            "tenant_id": 1
         }
     },
     {
@@ -1016,7 +1075,8 @@
             "contract_terms": "本契約は日本法に準拠する。\r\n本契約に関する紛争は、乙の本店所在地を管轄する地方裁判所を第一審の専属的合意管轄裁判所とする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 130
+            "display_order": 130,
+            "tenant_id": 1
         }
     },
     {
@@ -1033,7 +1093,8 @@
             "contract_terms": "本契約の成立を証するため、本書を２通作成し、甲乙各自署名又は記名押印のうえ、各１通を保有する。",
             "display_position": 2,
             "memo": null,
-            "display_order": 999
+            "display_order": 999,
+            "tenant_id": 1
         }
     },
     {
@@ -1050,7 +1111,8 @@
             "contract_terms": "始業時刻：午前9時00分　終業時刻：午後6時00分\r\n休憩時間：午後12時00分から午後1時00分\r\n休日：土曜日、日曜日、国民の祝日、年末年始（12月29日～1月3日）\r\n年次有給休暇は労働基準法に基づき付与する。",
             "display_position": 2,
             "memo": null,
-            "display_order": 30
+            "display_order": 30,
+            "tenant_id": 1
         }
     },
     {
@@ -1067,7 +1129,8 @@
             "contract_terms": "諸手当：通勤手当（実費支給、上限30,000円）、時間外勤務手当、役職手当（該当者のみ）\r\n賃金の支払日：毎月25日（当月締め・当月払い）\r\n支払方法：指定口座への振込による。",
             "display_position": 2,
             "memo": null,
-            "display_order": 40
+            "display_order": 40,
+            "tenant_id": 1
         }
     },
     {
@@ -1084,7 +1147,8 @@
             "contract_terms": "昇給は会社の業績および本人の勤務成績等を勘案して年1回行う。\r\n賞与は年2回（6月・12月）支給する。ただし、業績等により支給しない場合がある。",
             "display_position": 2,
             "memo": null,
-            "display_order": 50
+            "display_order": 50,
+            "tenant_id": 1
         }
     },
     {
@@ -1101,7 +1165,8 @@
             "contract_terms": "健康保険、厚生年金保険、雇用保険、労災保険の適用を受ける。\r\nその他、会社規程に基づき福利厚生制度を利用できる。",
             "display_position": 2,
             "memo": null,
-            "display_order": 60
+            "display_order": 60,
+            "tenant_id": 1
         }
     },
     {
@@ -1118,7 +1183,8 @@
             "contract_terms": "甲は会社の就業規則その他の諸規程を遵守し、職務に誠実に従事しなければならない。",
             "display_position": 2,
             "memo": null,
-            "display_order": 70
+            "display_order": 70,
+            "tenant_id": 1
         }
     },
     {
@@ -1135,7 +1201,8 @@
             "contract_terms": "甲は、在職中および退職後を問わず、業務上知り得た会社および取引先の秘密を漏らしてはならない。",
             "display_position": 2,
             "memo": null,
-            "display_order": 80
+            "display_order": 80,
+            "tenant_id": 1
         }
     },
     {
@@ -1152,7 +1219,8 @@
             "contract_terms": "甲は、在職中に乙の承諾なく、乙と競合する事業に従事してはならない。",
             "display_position": 2,
             "memo": null,
-            "display_order": 90
+            "display_order": 90,
+            "tenant_id": 1
         }
     },
     {
@@ -1169,7 +1237,8 @@
             "contract_terms": "1. 甲が退職を希望する場合は、少なくとも30日前までに書面により届け出るものとする。\r\n2. 乙は、就業規則に定める懲戒事由に該当する場合、甲を懲戒解雇することができる。",
             "display_position": 2,
             "memo": null,
-            "display_order": 100
+            "display_order": 100,
+            "tenant_id": 1
         }
     },
     {
@@ -1186,7 +1255,8 @@
             "contract_terms": "本契約に定めのない事項または本契約の解釈に疑義が生じた場合は、労働基準法その他関係法令および就業規則に従う。",
             "display_position": 2,
             "memo": null,
-            "display_order": 110
+            "display_order": 110,
+            "tenant_id": 1
         }
     },
     {
@@ -1203,7 +1273,8 @@
             "contract_terms": "1. 契約の更新の有無：更新する場合がある。\r\n2. 更新判断の基準：業務量・勤務成績・態度・健康状態・会社の経営状況等を総合的に勘案して判断する。\r\n3. 更新上限の有無：有、通算契約期間 ２年まで。",
             "display_position": 2,
             "memo": null,
-            "display_order": 30
+            "display_order": 30,
+            "tenant_id": 1
         }
     },
     {
@@ -1220,7 +1291,8 @@
             "contract_terms": "甲の試用期間は入社日から3か月間とし、試用期間中も本契約の定めに従う。\r\n乙は、試用期間中に勤務態度等が不適当と認められる場合には、本契約を解除できる。",
             "display_position": 2,
             "memo": null,
-            "display_order": 40
+            "display_order": 40,
+            "tenant_id": 1
         }
     },
     {
@@ -1237,7 +1309,8 @@
             "contract_terms": "始業時刻：午前9時00分　終業時刻：午後6時00分\r\n休憩時間：午後12時00分～午後1時00分\r\n休日：土曜日、日曜日、国民の祝日、年末年始（12月29日～1月3日）\r\n年次有給休暇は労働基準法に基づき付与する。",
             "display_position": 2,
             "memo": null,
-            "display_order": 60
+            "display_order": 60,
+            "tenant_id": 1
         }
     },
     {
@@ -1254,7 +1327,8 @@
             "contract_terms": "勤務場所は乙の本社（東京都千代田区○○町○丁目○番地）または乙が指定する顧客先とする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 50
+            "display_order": 50,
+            "tenant_id": 1
         }
     },
     {
@@ -1271,7 +1345,8 @@
             "contract_terms": "通勤手当：実費支給（上限30,000円）\r\n賃金の支払日：毎月25日（当月締め・当月払い）\r\n支払方法：指定口座への振込による。",
             "display_position": 2,
             "memo": null,
-            "display_order": 70
+            "display_order": 70,
+            "tenant_id": 1
         }
     },
     {
@@ -1288,7 +1363,8 @@
             "contract_terms": "昇給および賞与の支給は、会社の業績および勤務成績等により、会社が必要と認めた場合に行う。",
             "display_position": 2,
             "memo": null,
-            "display_order": 80
+            "display_order": 80,
+            "tenant_id": 1
         }
     },
     {
@@ -1305,7 +1381,8 @@
             "contract_terms": "甲には、健康保険・厚生年金保険・雇用保険・労災保険を適用する。\r\nその他、会社規程に基づき福利厚生制度を利用できる。",
             "display_position": 2,
             "memo": null,
-            "display_order": 90
+            "display_order": 90,
+            "tenant_id": 1
         }
     },
     {
@@ -1322,7 +1399,8 @@
             "contract_terms": "1. 本契約は契約期間の満了をもって終了する。\r\n2. 甲または乙がやむを得ない事由により契約期間途中で契約を解除する場合、原則として30日前までに書面で申し出るものとする。\r\n3. 乙は、就業規則に定める懲戒事由に該当する場合、即時に本契約を解除できる。",
             "display_position": 2,
             "memo": null,
-            "display_order": 100
+            "display_order": 100,
+            "tenant_id": 1
         }
     },
     {
@@ -1339,7 +1417,8 @@
             "contract_terms": "甲は、乙の就業規則および諸規程を遵守し、職務に専念しなければならない。\r\n在職中および退職後を問わず、業務上知り得た機密情報を第三者に漏らしてはならない。",
             "display_position": 2,
             "memo": null,
-            "display_order": 110
+            "display_order": 110,
+            "tenant_id": 1
         }
     },
     {
@@ -1356,7 +1435,8 @@
             "contract_terms": "本契約に定めのない事項および本契約に関して疑義が生じた場合は、労働基準法その他の法令および乙の就業規則に従う。",
             "display_position": 2,
             "memo": null,
-            "display_order": 120
+            "display_order": 120,
+            "tenant_id": 1
         }
     },
     {
@@ -1373,7 +1453,8 @@
             "contract_terms": "契約の更新については、派遣契約の継続状況、業務量、勤務成績、健康状態等を総合的に勘案し、双方の合意により行うことがある。\r\n更新上限の有無：有、通算契約期間 ２年まで。",
             "display_position": 2,
             "memo": null,
-            "display_order": 20
+            "display_order": 20,
+            "tenant_id": 1
         }
     },
     {
@@ -1390,7 +1471,8 @@
             "contract_terms": "始業時刻：午前9時00分　終業時刻：午後6時00分\r\n休憩時間：午後12時00分～午後1時00分\r\n休日：土曜日・日曜日・国民の祝日・年末年始（12月29日～1月3日）\r\nなお、派遣先の就業時間等に準ずるものとし、変更がある場合は乙を通じて甲に通知する。",
             "display_position": 2,
             "memo": null,
-            "display_order": 50
+            "display_order": 50,
+            "tenant_id": 1
         }
     },
     {
@@ -1407,7 +1489,8 @@
             "contract_terms": "通勤手当：実費支給（上限30,000円）\r\n賃金の締切日：毎月末日\r\n賃金の支払日：翌月25日\r\n支払方法：指定口座への振込による",
             "display_position": 2,
             "memo": null,
-            "display_order": 60
+            "display_order": 60,
+            "tenant_id": 1
         }
     },
     {
@@ -1424,7 +1507,8 @@
             "contract_terms": "甲には、健康保険、厚生年金保険、雇用保険および労災保険を適用する。",
             "display_position": 2,
             "memo": null,
-            "display_order": 70
+            "display_order": 70,
+            "tenant_id": 1
         }
     },
     {
@@ -1441,7 +1525,8 @@
             "contract_terms": "甲には、労働基準法に基づき年次有給休暇を付与する。\r\nなお、派遣先での就業日における休暇取得については、乙および派遣先双方の調整により行う。",
             "display_position": 2,
             "memo": null,
-            "display_order": 80
+            "display_order": 80,
+            "tenant_id": 1
         }
     },
     {
@@ -1458,7 +1543,8 @@
             "contract_terms": "甲は、乙の就業規則および派遣先の職場規律に従い、誠実に職務を遂行しなければならない。\r\n派遣先で指揮命令を行う者の指示に従うこと。",
             "display_position": 2,
             "memo": null,
-            "display_order": 90
+            "display_order": 90,
+            "tenant_id": 1
         }
     },
     {
@@ -1475,7 +1561,8 @@
             "contract_terms": "甲は、派遣先業務に関連して知り得た営業上または技術上の機密を、在職中および退職後を問わず第三者に漏らしてはならない。",
             "display_position": 2,
             "memo": null,
-            "display_order": 100
+            "display_order": 100,
+            "tenant_id": 1
         }
     },
     {
@@ -1492,7 +1579,8 @@
             "contract_terms": "1. 契約期間の満了により本契約は終了する。\r\n2. 甲または乙がやむを得ない事由により契約期間中に契約を解除する場合は、原則として30日前までに書面により通知する。\r\n3. 派遣先との派遣契約が中途で終了した場合、乙は甲に速やかにその旨を通知する。乙は可能な限り別の派遣先での就業機会を提供するよう努める。",
             "display_position": 2,
             "memo": null,
-            "display_order": 110
+            "display_order": 110,
+            "tenant_id": 1
         }
     },
     {
@@ -1509,7 +1597,8 @@
             "contract_terms": "甲は、派遣先の安全衛生管理体制に従い、必要な安全措置を遵守するものとする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 120
+            "display_order": 120,
+            "tenant_id": 1
         }
     },
     {
@@ -1526,7 +1615,8 @@
             "contract_terms": "本契約に定めのない事項または疑義が生じた場合は、労働基準法、労働者派遣法、労働契約法および乙の就業規則による。",
             "display_position": 2,
             "memo": null,
-            "display_order": 130
+            "display_order": 130,
+            "tenant_id": 1
         }
     },
     {
@@ -1543,7 +1633,8 @@
             "contract_terms": "本契約は、{{company_name}}（以下「乙」という）が、 {{staff_name}} 以下「甲」という）を 紹介予定派遣社員として雇用し、 派遣先企業において 一定期間派遣就業させた後、 派遣先への直接雇用を前提とするものである。",
             "display_position": 2,
             "memo": null,
-            "display_order": 10
+            "display_order": 10,
+            "tenant_id": 1
         }
     },
     {
@@ -1560,7 +1651,8 @@
             "contract_terms": "本契約の期間満了をもって終了するものとするが、派遣先企業との合意により、直接雇用に移行することを前提とする。\r\n更新上限の有無：無。",
             "display_position": 2,
             "memo": null,
-            "display_order": 20
+            "display_order": 20,
+            "tenant_id": 1
         }
     },
     {
@@ -1577,7 +1669,8 @@
             "contract_terms": "始業時刻：午前9時00分　終業時刻：午後6時00分\r\n休憩時間：午後12時00分～午後1時00分\r\n休日：土曜日・日曜日・国民の祝日・年末年始（12月29日～1月3日）\r\nなお、派遣先の就業時間等に準ずるものとし、変更がある場合は乙を通じて甲に通知する。",
             "display_position": 2,
             "memo": null,
-            "display_order": 50
+            "display_order": 50,
+            "tenant_id": 1
         }
     },
     {
@@ -1594,7 +1687,8 @@
             "contract_terms": "通勤手当：実費支給（上限30,000円）\r\n賃金の締切日：毎月末日\r\n賃金の支払日：翌月25日\r\n支払方法：指定口座への振込による",
             "display_position": 2,
             "memo": null,
-            "display_order": 60
+            "display_order": 60,
+            "tenant_id": 1
         }
     },
     {
@@ -1611,7 +1705,8 @@
             "contract_terms": "甲には、健康保険、厚生年金保険、雇用保険および労災保険を適用する。",
             "display_position": 2,
             "memo": null,
-            "display_order": 70
+            "display_order": 70,
+            "tenant_id": 1
         }
     },
     {
@@ -1628,7 +1723,8 @@
             "contract_terms": "甲には、労働基準法に基づき年次有給休暇を付与する。\r\nなお、派遣先での就業日における休暇取得については、乙および派遣先双方の調整により行う。",
             "display_position": 2,
             "memo": null,
-            "display_order": 80
+            "display_order": 80,
+            "tenant_id": 1
         }
     },
     {
@@ -1645,7 +1741,8 @@
             "contract_terms": "甲は、乙の就業規則および派遣先の職場規律に従い、誠実に職務を遂行しなければならない。\r\n派遣先で指揮命令を行う者の指示に従うこと。",
             "display_position": 2,
             "memo": null,
-            "display_order": 90
+            "display_order": 90,
+            "tenant_id": 1
         }
     },
     {
@@ -1662,7 +1759,8 @@
             "contract_terms": "甲は、派遣先業務に関連して知り得た営業上または技術上の機密を、在職中および退職後を問わず第三者に漏らしてはならない。",
             "display_position": 2,
             "memo": null,
-            "display_order": 100
+            "display_order": 100,
+            "tenant_id": 1
         }
     },
     {
@@ -1679,7 +1777,8 @@
             "contract_terms": "1. 甲または乙がやむを得ない事由により契約期間中に契約を解除する場合は、原則として30日前までに書面により申し出る。\r\n2. 派遣先との派遣契約が中途で終了した場合、乙は可能な限り他の就業機会を提供するよう努める。",
             "display_position": 2,
             "memo": null,
-            "display_order": 110
+            "display_order": 110,
+            "tenant_id": 1
         }
     },
     {
@@ -1696,7 +1795,8 @@
             "contract_terms": "甲は、派遣先の安全衛生管理体制に従い、必要な安全措置を遵守するものとする。",
             "display_position": 2,
             "memo": null,
-            "display_order": 120
+            "display_order": 120,
+            "tenant_id": 1
         }
     },
     {
@@ -1713,7 +1813,8 @@
             "contract_terms": "本契約に定めのない事項または疑義が生じた場合は、労働基準法、労働者派遣法、労働契約法および乙の就業規則による。",
             "display_position": 2,
             "memo": null,
-            "display_order": 130
+            "display_order": 130,
+            "tenant_id": 1
         }
     },
     {
@@ -1730,7 +1831,8 @@
             "contract_terms": "本契約は、派遣先における就業を通じて、甲・派遣先双方が直接雇用契約の締結可否を判断するためのものである。\r\n派遣期間終了後、派遣先が甲を直接雇用する場合、別途派遣先企業と甲との間で雇用契約を締結する。",
             "display_position": 2,
             "memo": null,
-            "display_order": 30
+            "display_order": 30,
+            "tenant_id": 1
         }
     },
     {
@@ -1747,7 +1849,8 @@
             "contract_terms": "紹介予定派遣期間終了後、派遣先企業が甲を直接雇用する場合は、派遣先企業と甲との間で直接雇用契約を締結する。\r\n直接雇用が成立しない場合、本契約は期間満了により終了するものとし、乙は可能な限り甲の新たな就業機会を提供するよう努める。",
             "display_position": 2,
             "memo": null,
-            "display_order": 40
+            "display_order": 40,
+            "tenant_id": 1
         }
     }
 ]

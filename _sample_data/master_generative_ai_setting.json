@@ -12,7 +12,8 @@
             "format": "choice",
             "value": "gemini",
             "choices": "gemini:Gemini,openai:OpenAI",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -27,7 +28,8 @@
             "target_item": "API Key",
             "format": "text",
             "value": "",
-            "display_order": 900
+            "display_order": 900,
+            "tenant_id": 1
         }
     },
     {
@@ -42,7 +44,8 @@
             "target_item": "AI Model",
             "format": "text",
             "value": "gemini-2.5-flash",
-            "display_order": 901
+            "display_order": 901,
+            "tenant_id": 1
         }
     },
     {
@@ -57,7 +60,8 @@
             "target_item": "スタッフ契約書確認用プロンプト",
             "format": "textarea",
             "value": "あなたは日本の労働法に詳しい社労士です。以下の雇用契約書兼労働条件通知書の内容を確認し、法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\\n\\n【契約内容】\\n{{contract_text}}",
-            "display_order": 902
+            "display_order": 902,
+            "tenant_id": 1
         }
     },
     {
@@ -72,7 +76,8 @@
             "target_item": "アサイン契約書確認用プロンプト",
             "format": "textarea",
             "value": "あなたは日本の労働法に詳しい社労士です。以下の就業条件明示書の内容を確認し、労働者派遣法等の法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\\n\\n【契約内容】\\n{{contract_text}}",
-            "display_order": 903
+            "display_order": 903,
+            "tenant_id": 1
         }
     },
     {
@@ -87,7 +92,8 @@
             "target_item": "クライアント契約書確認用プロンプト",
             "format": "textarea",
             "value": "あなたは日本の労働法に詳しい社労士です。以下の労働者派遣個別契約書の内容を確認し、労働者派遣法等の法的な観点や記載漏れのリスク、矛盾点があれば指摘してください。問題がなければその旨を伝えてください。\n\n【契約内容】\n{{contract_text}}",
-            "display_order": 904
+            "display_order": 904,
+            "tenant_id": 1
         }
     },
     {
@@ -102,7 +108,8 @@
             "target_item": "スタッフ評価要約用プロンプト",
             "format": "textarea",
             "value": "あなたは人事評価の専門家です。以下のスタッフの評価内容を要約し、ポジティブな点、ネガティブな点、そして総合的な所感をまとめてください。\n\n【評価内容】\n{{contract_text}}",
-            "display_order": 905
+            "display_order": 905,
+            "tenant_id": 1
         }
     }
 ]

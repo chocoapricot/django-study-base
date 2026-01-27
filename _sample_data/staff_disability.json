@@ -11,7 +11,8 @@
             "staff": 34,
             "disability_type": 1,
             "disability_grade": "3級",
-            "disability_severity": "中度"
+            "disability_severity": "中度",
+            "tenant_id": 1
         }
     }
 ]

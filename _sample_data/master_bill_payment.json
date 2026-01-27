@@ -1,82 +1,87 @@
 [
-  {
-    "model": "master.billpayment",
-    "pk": 1,
-    "fields": {
-      "name": "月末締め翌月末払い",
-      "closing_day": 31,
-      "invoice_months_after": 1,
-      "invoice_day": 25,
-      "payment_months_after": 1,
-      "payment_day": 31,
-      "is_active": true,
-      "display_order": 1,
-      "created_at": "2024-01-01T00:00:00Z",
-      "updated_at": "2024-01-01T00:00:00Z"
+    {
+        "model": "master.billpayment",
+        "pk": 1,
+        "fields": {
+            "name": "月末締め翌月末払い",
+            "closing_day": 31,
+            "invoice_months_after": 1,
+            "invoice_day": 25,
+            "payment_months_after": 1,
+            "payment_day": 31,
+            "is_active": true,
+            "display_order": 1,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.billpayment",
+        "pk": 2,
+        "fields": {
+            "name": "20日締め翌月10日払い",
+            "closing_day": 20,
+            "invoice_months_after": 0,
+            "invoice_day": 25,
+            "payment_months_after": 1,
+            "payment_day": 10,
+            "is_active": true,
+            "display_order": 2,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.billpayment",
+        "pk": 3,
+        "fields": {
+            "name": "15日締め当月末払い",
+            "closing_day": 15,
+            "invoice_months_after": 0,
+            "invoice_day": 20,
+            "payment_months_after": 0,
+            "payment_day": 31,
+            "is_active": true,
+            "display_order": 3,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.billpayment",
+        "pk": 4,
+        "fields": {
+            "name": "月末締め翌々月15日払い",
+            "closing_day": 31,
+            "invoice_months_after": 1,
+            "invoice_day": 10,
+            "payment_months_after": 2,
+            "payment_day": 15,
+            "is_active": true,
+            "display_order": 4,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.billpayment",
+        "pk": 5,
+        "fields": {
+            "name": "10日締め当月25日払い",
+            "closing_day": 10,
+            "invoice_months_after": 0,
+            "invoice_day": 15,
+            "payment_months_after": 0,
+            "payment_day": 25,
+            "is_active": true,
+            "display_order": 5,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "tenant_id": 1
+        }
     }
-  },
-  {
-    "model": "master.billpayment",
-    "pk": 2,
-    "fields": {
-      "name": "20日締め翌月10日払い",
-      "closing_day": 20,
-      "invoice_months_after": 0,
-      "invoice_day": 25,
-      "payment_months_after": 1,
-      "payment_day": 10,
-      "is_active": true,
-      "display_order": 2,
-      "created_at": "2024-01-01T00:00:00Z",
-      "updated_at": "2024-01-01T00:00:00Z"
-    }
-  },
-  {
-    "model": "master.billpayment",
-    "pk": 3,
-    "fields": {
-      "name": "15日締め当月末払い",
-      "closing_day": 15,
-      "invoice_months_after": 0,
-      "invoice_day": 20,
-      "payment_months_after": 0,
-      "payment_day": 31,
-      "is_active": true,
-      "display_order": 3,
-      "created_at": "2024-01-01T00:00:00Z",
-      "updated_at": "2024-01-01T00:00:00Z"
-    }
-  },
-  {
-    "model": "master.billpayment",
-    "pk": 4,
-    "fields": {
-      "name": "月末締め翌々月15日払い",
-      "closing_day": 31,
-      "invoice_months_after": 1,
-      "invoice_day": 10,
-      "payment_months_after": 2,
-      "payment_day": 15,
-      "is_active": true,
-      "display_order": 4,
-      "created_at": "2024-01-01T00:00:00Z",
-      "updated_at": "2024-01-01T00:00:00Z"
-    }
-  },
-  {
-    "model": "master.billpayment",
-    "pk": 5,
-    "fields": {
-      "name": "10日締め当月25日払い",
-      "closing_day": 10,
-      "invoice_months_after": 0,
-      "invoice_day": 15,
-      "payment_months_after": 0,
-      "payment_day": 25,
-      "is_active": true,
-      "display_order": 5,
-      "created_at": "2024-01-01T00:00:00Z",
-      "updated_at": "2024-01-01T00:00:00Z"
-    }
-  }
 ]

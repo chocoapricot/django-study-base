@@ -10,7 +10,8 @@
             "user": 2,
             "corporate_number": "1234567890122",
             "last_message_by": "company",
-            "subject": "勤怠入力の締め切りについて"
+            "subject": "勤怠入力の締め切りについて",
+            "tenant_id": 1
         }
     },
     {
@@ -24,7 +25,8 @@
             "user": 3,
             "corporate_number": "1234567890122",
             "last_message_by": "company",
-            "subject": "有給休暇の申請方法"
+            "subject": "有給休暇の申請方法",
+            "tenant_id": 1
         }
     },
     {
@@ -38,7 +40,8 @@
             "user": 4,
             "corporate_number": "1234567890122",
             "last_message_by": "company",
-            "subject": "年末調整の書類について"
+            "subject": "年末調整の書類について",
+            "tenant_id": 1
         }
     },
     {
@@ -52,7 +55,8 @@
             "user": 2,
             "corporate_number": "1234567890122",
             "last_message_by": "company",
-            "subject": "交通費精算のルール"
+            "subject": "交通費精算のルール",
+            "tenant_id": 1
         }
     },
     {
@@ -66,7 +70,8 @@
             "user": 3,
             "corporate_number": "1234567890122",
             "last_message_by": "company",
-            "subject": "健康診断の日程について"
+            "subject": "健康診断の日程について",
+            "tenant_id": 1
         }
     },
     {
@@ -80,7 +85,8 @@
             "user": 4,
             "corporate_number": "1234567890122",
             "last_message_by": "company",
-            "subject": "社会保険の加入状況確認"
+            "subject": "社会保険の加入状況確認",
+            "tenant_id": 1
         }
     },
     {
@@ -94,7 +100,8 @@
             "user": 2,
             "corporate_number": "1234567890122",
             "last_message_by": "company",
-            "subject": "給与明細の再発行依頼"
+            "subject": "給与明細の再発行依頼",
+            "tenant_id": 1
         }
     },
     {
@@ -108,7 +115,8 @@
             "user": 3,
             "corporate_number": "1234567890122",
             "last_message_by": "company",
-            "subject": "住所変更の届け出について"
+            "subject": "住所変更の届け出について",
+            "tenant_id": 1
         }
     },
     {
@@ -122,7 +130,8 @@
             "user": 4,
             "corporate_number": "1234567890122",
             "last_message_by": "company",
-            "subject": "スキルアップ研修の補助"
+            "subject": "スキルアップ研修の補助",
+            "tenant_id": 1
         }
     },
     {
@@ -136,7 +145,8 @@
             "user": 2,
             "corporate_number": "1234567890122",
             "last_message_by": "company",
-            "subject": "退職金制度について"
+            "subject": "退職金制度について",
+            "tenant_id": 1
         }
     }
 ]

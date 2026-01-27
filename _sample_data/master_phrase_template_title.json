@@ -1,189 +1,200 @@
 [
-{
-    "model": "master.phrasetemplatetitle",
-    "pk": 1,
-    "fields": {
-        "version": 1762377173124328,
-        "created_at": "2025-10-25T09:21:34.945Z",
-        "created_by": 1,
-        "updated_at": "2025-10-25T14:33:59.714Z",
-        "updated_by": 1,
-        "key": "STAFF_NO_HEALTH_INSURANCE",
-        "name": "健康保険非加入理由",
-        "description": "スタッフ給与関連で参照されます。派遣先通知書に表示されます。",
-        "format_type": "text",
-        "is_active": true,
-        "display_order": 100
+    {
+        "model": "master.phrasetemplatetitle",
+        "pk": 1,
+        "fields": {
+            "version": 1762377173124328,
+            "created_at": "2025-10-25T09:21:34.945Z",
+            "created_by": 1,
+            "updated_at": "2025-10-25T14:33:59.714Z",
+            "updated_by": 1,
+            "key": "STAFF_NO_HEALTH_INSURANCE",
+            "name": "健康保険非加入理由",
+            "description": "スタッフ給与関連で参照されます。派遣先通知書に表示されます。",
+            "format_type": "text",
+            "is_active": true,
+            "display_order": 100,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.phrasetemplatetitle",
+        "pk": 2,
+        "fields": {
+            "version": 1762377173134899,
+            "created_at": "2025-10-25T09:22:19.331Z",
+            "created_by": 1,
+            "updated_at": "2025-10-25T14:34:08.161Z",
+            "updated_by": 1,
+            "key": "STAFF_NO_PENSION_INSURANCE",
+            "name": "厚生年金非加入理由",
+            "description": "スタッフ給与関連で参照されます。派遣先通知書に表示されます。",
+            "format_type": "text",
+            "is_active": true,
+            "display_order": 101,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.phrasetemplatetitle",
+        "pk": 3,
+        "fields": {
+            "version": 1762377173136908,
+            "created_at": "2025-10-25T09:55:20.887Z",
+            "created_by": 1,
+            "updated_at": "2025-10-25T14:34:13.978Z",
+            "updated_by": 1,
+            "key": "STAFF_NO_EMPLOYMENT_INSURANCE",
+            "name": "雇用保険非加入理由",
+            "description": "スタッフ給与関連で参照されます。派遣先通知書に表示されます。",
+            "format_type": "text",
+            "is_active": true,
+            "display_order": 102,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.phrasetemplatetitle",
+        "pk": 4,
+        "fields": {
+            "version": 1762377173142101,
+            "created_at": "2025-10-25T15:02:28.989Z",
+            "created_by": 1,
+            "updated_at": "2025-10-25T15:07:49.370Z",
+            "updated_by": 1,
+            "key": "HAKEN_RESPONSIBILITY_DEGREE",
+            "name": "派遣・責任の程度",
+            "description": "クライアント契約（派遣）で必要。派遣個別契約書に出力。",
+            "format_type": "text",
+            "is_active": true,
+            "display_order": 200,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.phrasetemplatetitle",
+        "pk": 5,
+        "fields": {
+            "version": 1762377173144446,
+            "created_at": "2025-10-25T15:07:08.395Z",
+            "created_by": 1,
+            "updated_at": "2025-10-25T15:07:26.523Z",
+            "updated_by": 1,
+            "key": "HAKEN_TEISHOKUBI_EXEMPT",
+            "name": "派遣抵触日制限外",
+            "description": "クライアント契約（派遣）で必要。派遣個別契約書に出力。",
+            "format_type": "textarea",
+            "is_active": true,
+            "display_order": 201,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.phrasetemplatetitle",
+        "pk": 6,
+        "fields": {
+            "version": 1762377173146373,
+            "created_at": "2025-10-25T15:35:51.873Z",
+            "created_by": 1,
+            "updated_at": "2025-10-25T15:35:51.873Z",
+            "updated_by": 1,
+            "key": "CONTRACT_BUSINESS_CONTENT",
+            "name": "業務内容",
+            "description": "クライアント契約、スタッフ契約に利用",
+            "format_type": "textarea",
+            "is_active": true,
+            "display_order": 202,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.phrasetemplatetitle",
+        "pk": 7,
+        "fields": {
+            "version": 1762377173148130,
+            "created_at": "2025-10-30T13:23:47.274Z",
+            "created_by": 1,
+            "updated_at": "2025-10-30T13:30:57.762Z",
+            "updated_by": 1,
+            "key": "ANTEI_EMPLOYMENT_REQUEST",
+            "name": "雇用安定措置：派遣先への直接雇用の依頼",
+            "description": "派遣契約が対象。派遣元管理台帳への記載が必要（労働者派遣法第37条・施行規則第23条）、派遣事業報告書で集計。",
+            "format_type": "textarea",
+            "is_active": true,
+            "display_order": 301,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.phrasetemplatetitle",
+        "pk": 8,
+        "fields": {
+            "version": 1762377173149851,
+            "created_at": "2025-10-30T13:25:02.211Z",
+            "created_by": 1,
+            "updated_at": "2025-10-30T13:31:01.881Z",
+            "updated_by": 1,
+            "key": "ANTEI_NEW_HAKEN_OFFER",
+            "name": "雇用安定措置：新たな派遣先の提供",
+            "description": "派遣契約が対象。派遣元管理台帳への記載が必要（労働者派遣法第37条・施行規則第23条）、派遣事業報告書で集計。",
+            "format_type": "textarea",
+            "is_active": true,
+            "display_order": 302,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.phrasetemplatetitle",
+        "pk": 9,
+        "fields": {
+            "version": 1762377173151583,
+            "created_at": "2025-10-30T13:26:05.644Z",
+            "created_by": 1,
+            "updated_at": "2025-10-30T13:31:05.240Z",
+            "updated_by": 1,
+            "key": "ANTEI_MUKI_EMPLOYMENT",
+            "name": "雇用安定措置：派遣元での無期雇用化",
+            "description": "派遣契約が対象。派遣元管理台帳への記載が必要（労働者派遣法第37条・施行規則第23条）、派遣事業報告書で集計。",
+            "format_type": "textarea",
+            "is_active": true,
+            "display_order": 302,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.phrasetemplatetitle",
+        "pk": 10,
+        "fields": {
+            "version": 1762377173153312,
+            "created_at": "2025-10-30T13:26:48.525Z",
+            "created_by": 1,
+            "updated_at": "2025-10-30T13:31:08.784Z",
+            "updated_by": 1,
+            "key": "ANTEI_OTHERS",
+            "name": "雇用安定措置：その他の雇用安定措置",
+            "description": "派遣契約が対象。派遣元管理台帳への記載が必要（労働者派遣法第37条・施行規則第23条）、派遣事業報告書で集計。",
+            "format_type": "textarea",
+            "is_active": true,
+            "display_order": 304,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.phrasetemplatetitle",
+        "pk": 11,
+        "fields": {
+            "version": 1762536677276677,
+            "created_at": "2025-11-07T17:46:47.618Z",
+            "created_by": 1,
+            "updated_at": "2025-11-07T17:47:03.929Z",
+            "updated_by": 1,
+            "key": "WORKTIME_NAME",
+            "name": "就業時間区分",
+            "description": "",
+            "format_type": "text",
+            "is_active": true,
+            "display_order": 400,
+            "tenant_id": 1
+        }
     }
-},
-{
-    "model": "master.phrasetemplatetitle",
-    "pk": 2,
-    "fields": {
-        "version": 1762377173134899,
-        "created_at": "2025-10-25T09:22:19.331Z",
-        "created_by": 1,
-        "updated_at": "2025-10-25T14:34:08.161Z",
-        "updated_by": 1,
-        "key": "STAFF_NO_PENSION_INSURANCE",
-        "name": "厚生年金非加入理由",
-        "description": "スタッフ給与関連で参照されます。派遣先通知書に表示されます。",
-        "format_type": "text",
-        "is_active": true,
-        "display_order": 101
-    }
-},
-{
-    "model": "master.phrasetemplatetitle",
-    "pk": 3,
-    "fields": {
-        "version": 1762377173136908,
-        "created_at": "2025-10-25T09:55:20.887Z",
-        "created_by": 1,
-        "updated_at": "2025-10-25T14:34:13.978Z",
-        "updated_by": 1,
-        "key": "STAFF_NO_EMPLOYMENT_INSURANCE",
-        "name": "雇用保険非加入理由",
-        "description": "スタッフ給与関連で参照されます。派遣先通知書に表示されます。",
-        "format_type": "text",
-        "is_active": true,
-        "display_order": 102
-    }
-},
-{
-    "model": "master.phrasetemplatetitle",
-    "pk": 4,
-    "fields": {
-        "version": 1762377173142101,
-        "created_at": "2025-10-25T15:02:28.989Z",
-        "created_by": 1,
-        "updated_at": "2025-10-25T15:07:49.370Z",
-        "updated_by": 1,
-        "key": "HAKEN_RESPONSIBILITY_DEGREE",
-        "name": "派遣・責任の程度",
-        "description": "クライアント契約（派遣）で必要。派遣個別契約書に出力。",
-        "format_type": "text",
-        "is_active": true,
-        "display_order": 200
-    }
-},
-{
-    "model": "master.phrasetemplatetitle",
-    "pk": 5,
-    "fields": {
-        "version": 1762377173144446,
-        "created_at": "2025-10-25T15:07:08.395Z",
-        "created_by": 1,
-        "updated_at": "2025-10-25T15:07:26.523Z",
-        "updated_by": 1,
-        "key": "HAKEN_TEISHOKUBI_EXEMPT",
-        "name": "派遣抵触日制限外",
-        "description": "クライアント契約（派遣）で必要。派遣個別契約書に出力。",
-        "format_type": "textarea",
-        "is_active": true,
-        "display_order": 201
-    }
-},
-{
-    "model": "master.phrasetemplatetitle",
-    "pk": 6,
-    "fields": {
-        "version": 1762377173146373,
-        "created_at": "2025-10-25T15:35:51.873Z",
-        "created_by": 1,
-        "updated_at": "2025-10-25T15:35:51.873Z",
-        "updated_by": 1,
-        "key": "CONTRACT_BUSINESS_CONTENT",
-        "name": "業務内容",
-        "description": "クライアント契約、スタッフ契約に利用",
-        "format_type": "textarea",
-        "is_active": true,
-        "display_order": 202
-    }
-},
-{
-    "model": "master.phrasetemplatetitle",
-    "pk": 7,
-    "fields": {
-        "version": 1762377173148130,
-        "created_at": "2025-10-30T13:23:47.274Z",
-        "created_by": 1,
-        "updated_at": "2025-10-30T13:30:57.762Z",
-        "updated_by": 1,
-        "key": "ANTEI_EMPLOYMENT_REQUEST",
-        "name": "雇用安定措置：派遣先への直接雇用の依頼",
-        "description": "派遣契約が対象。派遣元管理台帳への記載が必要（労働者派遣法第37条・施行規則第23条）、派遣事業報告書で集計。",
-        "format_type": "textarea",
-        "is_active": true,
-        "display_order": 301
-    }
-},
-{
-    "model": "master.phrasetemplatetitle",
-    "pk": 8,
-    "fields": {
-        "version": 1762377173149851,
-        "created_at": "2025-10-30T13:25:02.211Z",
-        "created_by": 1,
-        "updated_at": "2025-10-30T13:31:01.881Z",
-        "updated_by": 1,
-        "key": "ANTEI_NEW_HAKEN_OFFER",
-        "name": "雇用安定措置：新たな派遣先の提供",
-        "description": "派遣契約が対象。派遣元管理台帳への記載が必要（労働者派遣法第37条・施行規則第23条）、派遣事業報告書で集計。",
-        "format_type": "textarea",
-        "is_active": true,
-        "display_order": 302
-    }
-},
-{
-    "model": "master.phrasetemplatetitle",
-    "pk": 9,
-    "fields": {
-        "version": 1762377173151583,
-        "created_at": "2025-10-30T13:26:05.644Z",
-        "created_by": 1,
-        "updated_at": "2025-10-30T13:31:05.240Z",
-        "updated_by": 1,
-        "key": "ANTEI_MUKI_EMPLOYMENT",
-        "name": "雇用安定措置：派遣元での無期雇用化",
-        "description": "派遣契約が対象。派遣元管理台帳への記載が必要（労働者派遣法第37条・施行規則第23条）、派遣事業報告書で集計。",
-        "format_type": "textarea",
-        "is_active": true,
-        "display_order": 302
-    }
-},
-{
-    "model": "master.phrasetemplatetitle",
-    "pk": 10,
-    "fields": {
-        "version": 1762377173153312,
-        "created_at": "2025-10-30T13:26:48.525Z",
-        "created_by": 1,
-        "updated_at": "2025-10-30T13:31:08.784Z",
-        "updated_by": 1,
-        "key": "ANTEI_OTHERS",
-        "name": "雇用安定措置：その他の雇用安定措置",
-        "description": "派遣契約が対象。派遣元管理台帳への記載が必要（労働者派遣法第37条・施行規則第23条）、派遣事業報告書で集計。",
-        "format_type": "textarea",
-        "is_active": true,
-        "display_order": 304
-    }
-},
-{
-    "model": "master.phrasetemplatetitle",
-    "pk": 11,
-    "fields": {
-        "version": 1762536677276677,
-        "created_at": "2025-11-07T17:46:47.618Z",
-        "created_by": 1,
-        "updated_at": "2025-11-07T17:47:03.929Z",
-        "updated_by": 1,
-        "key": "WORKTIME_NAME",
-        "name": "就業時間区分",
-        "description": "",
-        "format_type": "text",
-        "is_active": true,
-        "display_order": 400
-    }
-}
 ]

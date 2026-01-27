@@ -1,108 +1,1698 @@
 [
-  { "model": "master.minimumpay", "pk": 1, "fields": { "pref": "01", "start_date": "2023-10-01", "hourly_wage": 960, "is_active": true, "display_order": 1, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 2, "fields": { "pref": "01", "start_date": "2024-10-01", "hourly_wage": 1010, "is_active": true, "display_order": 1, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 3, "fields": { "pref": "01", "start_date": "2025-10-04", "hourly_wage": 1075, "is_active": true, "display_order": 1, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 4, "fields": { "pref": "02", "start_date": "2023-10-07", "hourly_wage": 898, "is_active": true, "display_order": 2, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 5, "fields": { "pref": "02", "start_date": "2024-10-05", "hourly_wage": 953, "is_active": true, "display_order": 2, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 6, "fields": { "pref": "03", "start_date": "2023-10-04", "hourly_wage": 893, "is_active": true, "display_order": 3, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 7, "fields": { "pref": "03", "start_date": "2024-10-27", "hourly_wage": 952, "is_active": true, "display_order": 3, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 8, "fields": { "pref": "04", "start_date": "2023-10-01", "hourly_wage": 923, "is_active": true, "display_order": 4, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 9, "fields": { "pref": "04", "start_date": "2024-10-01", "hourly_wage": 973, "is_active": true, "display_order": 4, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 10, "fields": { "pref": "04", "start_date": "2025-10-04", "hourly_wage": 1038, "is_active": true, "display_order": 4, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 11, "fields": { "pref": "05", "start_date": "2023-10-01", "hourly_wage": 897, "is_active": true, "display_order": 5, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 12, "fields": { "pref": "05", "start_date": "2024-10-01", "hourly_wage": 951, "is_active": true, "display_order": 5, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 13, "fields": { "pref": "06", "start_date": "2023-10-14", "hourly_wage": 900, "is_active": true, "display_order": 6, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 14, "fields": { "pref": "06", "start_date": "2024-10-19", "hourly_wage": 955, "is_active": true, "display_order": 6, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 15, "fields": { "pref": "07", "start_date": "2023-10-01", "hourly_wage": 900, "is_active": true, "display_order": 7, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 16, "fields": { "pref": "07", "start_date": "2024-10-05", "hourly_wage": 955, "is_active": true, "display_order": 7, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 17, "fields": { "pref": "08", "start_date": "2023-10-01", "hourly_wage": 953, "is_active": true, "display_order": 8, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 18, "fields": { "pref": "08", "start_date": "2024-10-01", "hourly_wage": 1005, "is_active": true, "display_order": 8, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 19, "fields": { "pref": "09", "start_date": "2023-10-01", "hourly_wage": 954, "is_active": true, "display_order": 9, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 20, "fields": { "pref": "09", "start_date": "2024-10-01", "hourly_wage": 1004, "is_active": true, "display_order": 9, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 21, "fields": { "pref": "09", "start_date": "2025-10-01", "hourly_wage": 1068, "is_active": true, "display_order": 9, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 22, "fields": { "pref": "10", "start_date": "2023-10-05", "hourly_wage": 935, "is_active": true, "display_order": 10, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 23, "fields": { "pref": "10", "start_date": "2024-10-04", "hourly_wage": 985, "is_active": true, "display_order": 10, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 24, "fields": { "pref": "11", "start_date": "2023-10-01", "hourly_wage": 1028, "is_active": true, "display_order": 11, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 25, "fields": { "pref": "11", "start_date": "2024-10-01", "hourly_wage": 1078, "is_active": true, "display_order": 11, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 26, "fields": { "pref": "11", "start_date": "2025-11-01", "hourly_wage": 1141, "is_active": true, "display_order": 11, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 27, "fields": { "pref": "12", "start_date": "2023-10-01", "hourly_wage": 1026, "is_active": true, "display_order": 12, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 28, "fields": { "pref": "12", "start_date": "2024-10-01", "hourly_wage": 1076, "is_active": true, "display_order": 12, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 29, "fields": { "pref": "12", "start_date": "2025-10-03", "hourly_wage": 1140, "is_active": true, "display_order": 12, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 30, "fields": { "pref": "13", "start_date": "2023-10-01", "hourly_wage": 1113, "is_active": true, "display_order": 13, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 31, "fields": { "pref": "13", "start_date": "2024-10-01", "hourly_wage": 1163, "is_active": true, "display_order": 13, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 32, "fields": { "pref": "13", "start_date": "2025-10-03", "hourly_wage": 1226, "is_active": true, "display_order": 13, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 33, "fields": { "pref": "14", "start_date": "2023-10-01", "hourly_wage": 1112, "is_active": true, "display_order": 14, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 34, "fields": { "pref": "14", "start_date": "2024-10-01", "hourly_wage": 1162, "is_active": true, "display_order": 14, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 35, "fields": { "pref": "14", "start_date": "2025-10-04", "hourly_wage": 1225, "is_active": true, "display_order": 14, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 36, "fields": { "pref": "15", "start_date": "2023-10-01", "hourly_wage": 931, "is_active": true, "display_order": 15, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 37, "fields": { "pref": "15", "start_date": "2024-10-01", "hourly_wage": 985, "is_active": true, "display_order": 15, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 38, "fields": { "pref": "15", "start_date": "2025-10-02", "hourly_wage": 1050, "is_active": true, "display_order": 15, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 39, "fields": { "pref": "16", "start_date": "2023-10-01", "hourly_wage": 948, "is_active": true, "display_order": 16, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 40, "fields": { "pref": "16", "start_date": "2024-10-01", "hourly_wage": 998, "is_active": true, "display_order": 16, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 41, "fields": { "pref": "17", "start_date": "2023-10-08", "hourly_wage": 933, "is_active": true, "display_order": 17, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 42, "fields": { "pref": "17", "start_date": "2024-10-05", "hourly_wage": 984, "is_active": true, "display_order": 17, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 43, "fields": { "pref": "18", "start_date": "2023-10-01", "hourly_wage": 931, "is_active": true, "display_order": 18, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 44, "fields": { "pref": "18", "start_date": "2024-10-05", "hourly_wage": 984, "is_active": true, "display_order": 18, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 45, "fields": { "pref": "19", "start_date": "2023-10-01", "hourly_wage": 938, "is_active": true, "display_order": 19, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 46, "fields": { "pref": "19", "start_date": "2024-10-01", "hourly_wage": 988, "is_active": true, "display_order": 19, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 47, "fields": { "pref": "20", "start_date": "2023-10-01", "hourly_wage": 948, "is_active": true, "display_order": 20, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 48, "fields": { "pref": "20", "start_date": "2024-10-01", "hourly_wage": 998, "is_active": true, "display_order": 20, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 49, "fields": { "pref": "20", "start_date": "2025-10-03", "hourly_wage": 1061, "is_active": true, "display_order": 20, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 50, "fields": { "pref": "21", "start_date": "2023-10-01", "hourly_wage": 950, "is_active": true, "display_order": 21, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 51, "fields": { "pref": "21", "start_date": "2024-10-01", "hourly_wage": 1001, "is_active": true, "display_order": 21, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 52, "fields": { "pref": "22", "start_date": "2023-10-01", "hourly_wage": 984, "is_active": true, "display_order": 22, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 53, "fields": { "pref": "22", "start_date": "2024-10-01", "hourly_wage": 1034, "is_active": true, "display_order": 22, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 54, "fields": { "pref": "23", "start_date": "2023-10-01", "hourly_wage": 1027, "is_active": true, "display_order": 23, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 55, "fields": { "pref": "23", "start_date": "2024-10-01", "hourly_wage": 1077, "is_active": true, "display_order": 23, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 56, "fields": { "pref": "24", "start_date": "2023-10-01", "hourly_wage": 973, "is_active": true, "display_order": 24, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 57, "fields": { "pref": "24", "start_date": "2024-10-01", "hourly_wage": 1023, "is_active": true, "display_order": 24, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 58, "fields": { "pref": "25", "start_date": "2023-10-01", "hourly_wage": 967, "is_active": true, "display_order": 25, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 59, "fields": { "pref": "25", "start_date": "2024-10-01", "hourly_wage": 1017, "is_active": true, "display_order": 25, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 60, "fields": { "pref": "26", "start_date": "2023-10-06", "hourly_wage": 1008, "is_active": true, "display_order": 26, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 61, "fields": { "pref": "26", "start_date": "2024-10-01", "hourly_wage": 1058, "is_active": true, "display_order": 26, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 62, "fields": { "pref": "27", "start_date": "2023-10-01", "hourly_wage": 1064, "is_active": true, "display_order": 27, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 63, "fields": { "pref": "27", "start_date": "2024-10-01", "hourly_wage": 1114, "is_active": true, "display_order": 27, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 64, "fields": { "pref": "28", "start_date": "2023-10-01", "hourly_wage": 1001, "is_active": true, "display_order": 28, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 65, "fields": { "pref": "28", "start_date": "2024-10-01", "hourly_wage": 1052, "is_active": true, "display_order": 28, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 66, "fields": { "pref": "28", "start_date": "2025-10-04", "hourly_wage": 1116, "is_active": true, "display_order": 28, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 67, "fields": { "pref": "29", "start_date": "2023-10-01", "hourly_wage": 936, "is_active": true, "display_order": 29, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 68, "fields": { "pref": "29", "start_date": "2024-10-01", "hourly_wage": 986, "is_active": true, "display_order": 29, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 69, "fields": { "pref": "29", "start_date": "2025-11-16", "hourly_wage": 1051, "is_active": true, "display_order": 29, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 70, "fields": { "pref": "30", "start_date": "2023-10-01", "hourly_wage": 929, "is_active": true, "display_order": 30, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 71, "fields": { "pref": "30", "start_date": "2024-10-01", "hourly_wage": 980, "is_active": true, "display_order": 30, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 72, "fields": { "pref": "31", "start_date": "2023-10-05", "hourly_wage": 900, "is_active": true, "display_order": 31, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 73, "fields": { "pref": "31", "start_date": "2024-10-05", "hourly_wage": 957, "is_active": true, "display_order": 31, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 74, "fields": { "pref": "31", "start_date": "2025-10-04", "hourly_wage": 1030, "is_active": true, "display_order": 31, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 75, "fields": { "pref": "32", "start_date": "2023-10-06", "hourly_wage": 904, "is_active": true, "display_order": 32, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 76, "fields": { "pref": "32", "start_date": "2024-10-12", "hourly_wage": 962, "is_active": true, "display_order": 32, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 77, "fields": { "pref": "33", "start_date": "2023-10-01", "hourly_wage": 932, "is_active": true, "display_order": 33, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 78, "fields": { "pref": "33", "start_date": "2024-10-02", "hourly_wage": 982, "is_active": true, "display_order": 33, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 79, "fields": { "pref": "34", "start_date": "2023-10-01", "hourly_wage": 970, "is_active": true, "display_order": 34, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 80, "fields": { "pref": "34", "start_date": "2024-10-01", "hourly_wage": 1020, "is_active": true, "display_order": 34, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 81, "fields": { "pref": "35", "start_date": "2023-10-01", "hourly_wage": 928, "is_active": true, "display_order": 35, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 82, "fields": { "pref": "35", "start_date": "2024-10-01", "hourly_wage": 979, "is_active": true, "display_order": 35, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 83, "fields": { "pref": "36", "start_date": "2023-10-01", "hourly_wage": 896, "is_active": true, "display_order": 36, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 84, "fields": { "pref": "36", "start_date": "2024-11-01", "hourly_wage": 980, "is_active": true, "display_order": 36, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 85, "fields": { "pref": "37", "start_date": "2023-10-01", "hourly_wage": 918, "is_active": true, "display_order": 37, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 86, "fields": { "pref": "37", "start_date": "2024-10-02", "hourly_wage": 970, "is_active": true, "display_order": 37, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 87, "fields": { "pref": "38", "start_date": "2023-10-06", "hourly_wage": 897, "is_active": true, "display_order": 38, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 88, "fields": { "pref": "38", "start_date": "2024-10-13", "hourly_wage": 956, "is_active": true, "display_order": 38, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 89, "fields": { "pref": "39", "start_date": "2023-10-08", "hourly_wage": 897, "is_active": true, "display_order": 39, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 90, "fields": { "pref": "39", "start_date": "2024-10-09", "hourly_wage": 952, "is_active": true, "display_order": 39, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 91, "fields": { "pref": "40", "start_date": "2023-10-06", "hourly_wage": 941, "is_active": true, "display_order": 40, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 92, "fields": { "pref": "40", "start_date": "2024-10-05", "hourly_wage": 992, "is_active": true, "display_order": 40, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 93, "fields": { "pref": "41", "start_date": "2023-10-14", "hourly_wage": 900, "is_active": true, "display_order": 41, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 94, "fields": { "pref": "41", "start_date": "2024-10-17", "hourly_wage": 956, "is_active": true, "display_order": 41, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 95, "fields": { "pref": "42", "start_date": "2023-10-13", "hourly_wage": 898, "is_active": true, "display_order": 42, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 96, "fields": { "pref": "42", "start_date": "2024-10-12", "hourly_wage": 953, "is_active": true, "display_order": 42, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 97, "fields": { "pref": "43", "start_date": "2023-10-08", "hourly_wage": 898, "is_active": true, "display_order": 43, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 98, "fields": { "pref": "43", "start_date": "2024-10-05", "hourly_wage": 952, "is_active": true, "display_order": 43, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 99, "fields": { "pref": "44", "start_date": "2023-10-06", "hourly_wage": 899, "is_active": true, "display_order": 44, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 100, "fields": { "pref": "44", "start_date": "2024-10-05", "hourly_wage": 954, "is_active": true, "display_order": 44, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 101, "fields": { "pref": "45", "start_date": "2023-10-06", "hourly_wage": 897, "is_active": true, "display_order": 45, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 102, "fields": { "pref": "45", "start_date": "2024-10-05", "hourly_wage": 952, "is_active": true, "display_order": 45, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 103, "fields": { "pref": "46", "start_date": "2023-10-06", "hourly_wage": 897, "is_active": true, "display_order": 46, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 104, "fields": { "pref": "46", "start_date": "2024-10-05", "hourly_wage": 953, "is_active": true, "display_order": 46, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 105, "fields": { "pref": "47", "start_date": "2023-10-08", "hourly_wage": 896, "is_active": true, "display_order": 47, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }},
-  { "model": "master.minimumpay", "pk": 106, "fields": { "pref": "47", "start_date": "2024-10-09", "hourly_wage": 952, "is_active": true, "display_order": 47, "created_at": "2025-10-01T11:00:00Z", "created_by": 1, "updated_at": "2025-10-01T11:00:00Z", "updated_by": 1 }}
+    {
+        "model": "master.minimumpay",
+        "pk": 1,
+        "fields": {
+            "pref": "01",
+            "start_date": "2023-10-01",
+            "hourly_wage": 960,
+            "is_active": true,
+            "display_order": 1,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 2,
+        "fields": {
+            "pref": "01",
+            "start_date": "2024-10-01",
+            "hourly_wage": 1010,
+            "is_active": true,
+            "display_order": 1,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 3,
+        "fields": {
+            "pref": "01",
+            "start_date": "2025-10-04",
+            "hourly_wage": 1075,
+            "is_active": true,
+            "display_order": 1,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 4,
+        "fields": {
+            "pref": "02",
+            "start_date": "2023-10-07",
+            "hourly_wage": 898,
+            "is_active": true,
+            "display_order": 2,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 5,
+        "fields": {
+            "pref": "02",
+            "start_date": "2024-10-05",
+            "hourly_wage": 953,
+            "is_active": true,
+            "display_order": 2,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 6,
+        "fields": {
+            "pref": "03",
+            "start_date": "2023-10-04",
+            "hourly_wage": 893,
+            "is_active": true,
+            "display_order": 3,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 7,
+        "fields": {
+            "pref": "03",
+            "start_date": "2024-10-27",
+            "hourly_wage": 952,
+            "is_active": true,
+            "display_order": 3,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 8,
+        "fields": {
+            "pref": "04",
+            "start_date": "2023-10-01",
+            "hourly_wage": 923,
+            "is_active": true,
+            "display_order": 4,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 9,
+        "fields": {
+            "pref": "04",
+            "start_date": "2024-10-01",
+            "hourly_wage": 973,
+            "is_active": true,
+            "display_order": 4,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 10,
+        "fields": {
+            "pref": "04",
+            "start_date": "2025-10-04",
+            "hourly_wage": 1038,
+            "is_active": true,
+            "display_order": 4,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 11,
+        "fields": {
+            "pref": "05",
+            "start_date": "2023-10-01",
+            "hourly_wage": 897,
+            "is_active": true,
+            "display_order": 5,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 12,
+        "fields": {
+            "pref": "05",
+            "start_date": "2024-10-01",
+            "hourly_wage": 951,
+            "is_active": true,
+            "display_order": 5,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 13,
+        "fields": {
+            "pref": "06",
+            "start_date": "2023-10-14",
+            "hourly_wage": 900,
+            "is_active": true,
+            "display_order": 6,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 14,
+        "fields": {
+            "pref": "06",
+            "start_date": "2024-10-19",
+            "hourly_wage": 955,
+            "is_active": true,
+            "display_order": 6,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 15,
+        "fields": {
+            "pref": "07",
+            "start_date": "2023-10-01",
+            "hourly_wage": 900,
+            "is_active": true,
+            "display_order": 7,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 16,
+        "fields": {
+            "pref": "07",
+            "start_date": "2024-10-05",
+            "hourly_wage": 955,
+            "is_active": true,
+            "display_order": 7,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 17,
+        "fields": {
+            "pref": "08",
+            "start_date": "2023-10-01",
+            "hourly_wage": 953,
+            "is_active": true,
+            "display_order": 8,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 18,
+        "fields": {
+            "pref": "08",
+            "start_date": "2024-10-01",
+            "hourly_wage": 1005,
+            "is_active": true,
+            "display_order": 8,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 19,
+        "fields": {
+            "pref": "09",
+            "start_date": "2023-10-01",
+            "hourly_wage": 954,
+            "is_active": true,
+            "display_order": 9,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 20,
+        "fields": {
+            "pref": "09",
+            "start_date": "2024-10-01",
+            "hourly_wage": 1004,
+            "is_active": true,
+            "display_order": 9,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 21,
+        "fields": {
+            "pref": "09",
+            "start_date": "2025-10-01",
+            "hourly_wage": 1068,
+            "is_active": true,
+            "display_order": 9,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 22,
+        "fields": {
+            "pref": "10",
+            "start_date": "2023-10-05",
+            "hourly_wage": 935,
+            "is_active": true,
+            "display_order": 10,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 23,
+        "fields": {
+            "pref": "10",
+            "start_date": "2024-10-04",
+            "hourly_wage": 985,
+            "is_active": true,
+            "display_order": 10,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 24,
+        "fields": {
+            "pref": "11",
+            "start_date": "2023-10-01",
+            "hourly_wage": 1028,
+            "is_active": true,
+            "display_order": 11,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 25,
+        "fields": {
+            "pref": "11",
+            "start_date": "2024-10-01",
+            "hourly_wage": 1078,
+            "is_active": true,
+            "display_order": 11,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 26,
+        "fields": {
+            "pref": "11",
+            "start_date": "2025-11-01",
+            "hourly_wage": 1141,
+            "is_active": true,
+            "display_order": 11,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 27,
+        "fields": {
+            "pref": "12",
+            "start_date": "2023-10-01",
+            "hourly_wage": 1026,
+            "is_active": true,
+            "display_order": 12,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 28,
+        "fields": {
+            "pref": "12",
+            "start_date": "2024-10-01",
+            "hourly_wage": 1076,
+            "is_active": true,
+            "display_order": 12,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 29,
+        "fields": {
+            "pref": "12",
+            "start_date": "2025-10-03",
+            "hourly_wage": 1140,
+            "is_active": true,
+            "display_order": 12,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 30,
+        "fields": {
+            "pref": "13",
+            "start_date": "2023-10-01",
+            "hourly_wage": 1113,
+            "is_active": true,
+            "display_order": 13,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 31,
+        "fields": {
+            "pref": "13",
+            "start_date": "2024-10-01",
+            "hourly_wage": 1163,
+            "is_active": true,
+            "display_order": 13,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 32,
+        "fields": {
+            "pref": "13",
+            "start_date": "2025-10-03",
+            "hourly_wage": 1226,
+            "is_active": true,
+            "display_order": 13,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 33,
+        "fields": {
+            "pref": "14",
+            "start_date": "2023-10-01",
+            "hourly_wage": 1112,
+            "is_active": true,
+            "display_order": 14,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 34,
+        "fields": {
+            "pref": "14",
+            "start_date": "2024-10-01",
+            "hourly_wage": 1162,
+            "is_active": true,
+            "display_order": 14,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 35,
+        "fields": {
+            "pref": "14",
+            "start_date": "2025-10-04",
+            "hourly_wage": 1225,
+            "is_active": true,
+            "display_order": 14,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 36,
+        "fields": {
+            "pref": "15",
+            "start_date": "2023-10-01",
+            "hourly_wage": 931,
+            "is_active": true,
+            "display_order": 15,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 37,
+        "fields": {
+            "pref": "15",
+            "start_date": "2024-10-01",
+            "hourly_wage": 985,
+            "is_active": true,
+            "display_order": 15,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 38,
+        "fields": {
+            "pref": "15",
+            "start_date": "2025-10-02",
+            "hourly_wage": 1050,
+            "is_active": true,
+            "display_order": 15,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 39,
+        "fields": {
+            "pref": "16",
+            "start_date": "2023-10-01",
+            "hourly_wage": 948,
+            "is_active": true,
+            "display_order": 16,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 40,
+        "fields": {
+            "pref": "16",
+            "start_date": "2024-10-01",
+            "hourly_wage": 998,
+            "is_active": true,
+            "display_order": 16,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 41,
+        "fields": {
+            "pref": "17",
+            "start_date": "2023-10-08",
+            "hourly_wage": 933,
+            "is_active": true,
+            "display_order": 17,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 42,
+        "fields": {
+            "pref": "17",
+            "start_date": "2024-10-05",
+            "hourly_wage": 984,
+            "is_active": true,
+            "display_order": 17,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 43,
+        "fields": {
+            "pref": "18",
+            "start_date": "2023-10-01",
+            "hourly_wage": 931,
+            "is_active": true,
+            "display_order": 18,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 44,
+        "fields": {
+            "pref": "18",
+            "start_date": "2024-10-05",
+            "hourly_wage": 984,
+            "is_active": true,
+            "display_order": 18,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 45,
+        "fields": {
+            "pref": "19",
+            "start_date": "2023-10-01",
+            "hourly_wage": 938,
+            "is_active": true,
+            "display_order": 19,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 46,
+        "fields": {
+            "pref": "19",
+            "start_date": "2024-10-01",
+            "hourly_wage": 988,
+            "is_active": true,
+            "display_order": 19,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 47,
+        "fields": {
+            "pref": "20",
+            "start_date": "2023-10-01",
+            "hourly_wage": 948,
+            "is_active": true,
+            "display_order": 20,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 48,
+        "fields": {
+            "pref": "20",
+            "start_date": "2024-10-01",
+            "hourly_wage": 998,
+            "is_active": true,
+            "display_order": 20,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 49,
+        "fields": {
+            "pref": "20",
+            "start_date": "2025-10-03",
+            "hourly_wage": 1061,
+            "is_active": true,
+            "display_order": 20,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 50,
+        "fields": {
+            "pref": "21",
+            "start_date": "2023-10-01",
+            "hourly_wage": 950,
+            "is_active": true,
+            "display_order": 21,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 51,
+        "fields": {
+            "pref": "21",
+            "start_date": "2024-10-01",
+            "hourly_wage": 1001,
+            "is_active": true,
+            "display_order": 21,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 52,
+        "fields": {
+            "pref": "22",
+            "start_date": "2023-10-01",
+            "hourly_wage": 984,
+            "is_active": true,
+            "display_order": 22,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 53,
+        "fields": {
+            "pref": "22",
+            "start_date": "2024-10-01",
+            "hourly_wage": 1034,
+            "is_active": true,
+            "display_order": 22,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 54,
+        "fields": {
+            "pref": "23",
+            "start_date": "2023-10-01",
+            "hourly_wage": 1027,
+            "is_active": true,
+            "display_order": 23,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 55,
+        "fields": {
+            "pref": "23",
+            "start_date": "2024-10-01",
+            "hourly_wage": 1077,
+            "is_active": true,
+            "display_order": 23,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 56,
+        "fields": {
+            "pref": "24",
+            "start_date": "2023-10-01",
+            "hourly_wage": 973,
+            "is_active": true,
+            "display_order": 24,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 57,
+        "fields": {
+            "pref": "24",
+            "start_date": "2024-10-01",
+            "hourly_wage": 1023,
+            "is_active": true,
+            "display_order": 24,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 58,
+        "fields": {
+            "pref": "25",
+            "start_date": "2023-10-01",
+            "hourly_wage": 967,
+            "is_active": true,
+            "display_order": 25,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 59,
+        "fields": {
+            "pref": "25",
+            "start_date": "2024-10-01",
+            "hourly_wage": 1017,
+            "is_active": true,
+            "display_order": 25,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 60,
+        "fields": {
+            "pref": "26",
+            "start_date": "2023-10-06",
+            "hourly_wage": 1008,
+            "is_active": true,
+            "display_order": 26,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 61,
+        "fields": {
+            "pref": "26",
+            "start_date": "2024-10-01",
+            "hourly_wage": 1058,
+            "is_active": true,
+            "display_order": 26,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 62,
+        "fields": {
+            "pref": "27",
+            "start_date": "2023-10-01",
+            "hourly_wage": 1064,
+            "is_active": true,
+            "display_order": 27,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 63,
+        "fields": {
+            "pref": "27",
+            "start_date": "2024-10-01",
+            "hourly_wage": 1114,
+            "is_active": true,
+            "display_order": 27,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 64,
+        "fields": {
+            "pref": "28",
+            "start_date": "2023-10-01",
+            "hourly_wage": 1001,
+            "is_active": true,
+            "display_order": 28,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 65,
+        "fields": {
+            "pref": "28",
+            "start_date": "2024-10-01",
+            "hourly_wage": 1052,
+            "is_active": true,
+            "display_order": 28,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 66,
+        "fields": {
+            "pref": "28",
+            "start_date": "2025-10-04",
+            "hourly_wage": 1116,
+            "is_active": true,
+            "display_order": 28,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 67,
+        "fields": {
+            "pref": "29",
+            "start_date": "2023-10-01",
+            "hourly_wage": 936,
+            "is_active": true,
+            "display_order": 29,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 68,
+        "fields": {
+            "pref": "29",
+            "start_date": "2024-10-01",
+            "hourly_wage": 986,
+            "is_active": true,
+            "display_order": 29,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 69,
+        "fields": {
+            "pref": "29",
+            "start_date": "2025-11-16",
+            "hourly_wage": 1051,
+            "is_active": true,
+            "display_order": 29,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 70,
+        "fields": {
+            "pref": "30",
+            "start_date": "2023-10-01",
+            "hourly_wage": 929,
+            "is_active": true,
+            "display_order": 30,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 71,
+        "fields": {
+            "pref": "30",
+            "start_date": "2024-10-01",
+            "hourly_wage": 980,
+            "is_active": true,
+            "display_order": 30,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 72,
+        "fields": {
+            "pref": "31",
+            "start_date": "2023-10-05",
+            "hourly_wage": 900,
+            "is_active": true,
+            "display_order": 31,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 73,
+        "fields": {
+            "pref": "31",
+            "start_date": "2024-10-05",
+            "hourly_wage": 957,
+            "is_active": true,
+            "display_order": 31,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 74,
+        "fields": {
+            "pref": "31",
+            "start_date": "2025-10-04",
+            "hourly_wage": 1030,
+            "is_active": true,
+            "display_order": 31,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 75,
+        "fields": {
+            "pref": "32",
+            "start_date": "2023-10-06",
+            "hourly_wage": 904,
+            "is_active": true,
+            "display_order": 32,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 76,
+        "fields": {
+            "pref": "32",
+            "start_date": "2024-10-12",
+            "hourly_wage": 962,
+            "is_active": true,
+            "display_order": 32,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 77,
+        "fields": {
+            "pref": "33",
+            "start_date": "2023-10-01",
+            "hourly_wage": 932,
+            "is_active": true,
+            "display_order": 33,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 78,
+        "fields": {
+            "pref": "33",
+            "start_date": "2024-10-02",
+            "hourly_wage": 982,
+            "is_active": true,
+            "display_order": 33,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 79,
+        "fields": {
+            "pref": "34",
+            "start_date": "2023-10-01",
+            "hourly_wage": 970,
+            "is_active": true,
+            "display_order": 34,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 80,
+        "fields": {
+            "pref": "34",
+            "start_date": "2024-10-01",
+            "hourly_wage": 1020,
+            "is_active": true,
+            "display_order": 34,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 81,
+        "fields": {
+            "pref": "35",
+            "start_date": "2023-10-01",
+            "hourly_wage": 928,
+            "is_active": true,
+            "display_order": 35,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 82,
+        "fields": {
+            "pref": "35",
+            "start_date": "2024-10-01",
+            "hourly_wage": 979,
+            "is_active": true,
+            "display_order": 35,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 83,
+        "fields": {
+            "pref": "36",
+            "start_date": "2023-10-01",
+            "hourly_wage": 896,
+            "is_active": true,
+            "display_order": 36,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 84,
+        "fields": {
+            "pref": "36",
+            "start_date": "2024-11-01",
+            "hourly_wage": 980,
+            "is_active": true,
+            "display_order": 36,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 85,
+        "fields": {
+            "pref": "37",
+            "start_date": "2023-10-01",
+            "hourly_wage": 918,
+            "is_active": true,
+            "display_order": 37,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 86,
+        "fields": {
+            "pref": "37",
+            "start_date": "2024-10-02",
+            "hourly_wage": 970,
+            "is_active": true,
+            "display_order": 37,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 87,
+        "fields": {
+            "pref": "38",
+            "start_date": "2023-10-06",
+            "hourly_wage": 897,
+            "is_active": true,
+            "display_order": 38,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 88,
+        "fields": {
+            "pref": "38",
+            "start_date": "2024-10-13",
+            "hourly_wage": 956,
+            "is_active": true,
+            "display_order": 38,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 89,
+        "fields": {
+            "pref": "39",
+            "start_date": "2023-10-08",
+            "hourly_wage": 897,
+            "is_active": true,
+            "display_order": 39,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 90,
+        "fields": {
+            "pref": "39",
+            "start_date": "2024-10-09",
+            "hourly_wage": 952,
+            "is_active": true,
+            "display_order": 39,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 91,
+        "fields": {
+            "pref": "40",
+            "start_date": "2023-10-06",
+            "hourly_wage": 941,
+            "is_active": true,
+            "display_order": 40,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 92,
+        "fields": {
+            "pref": "40",
+            "start_date": "2024-10-05",
+            "hourly_wage": 992,
+            "is_active": true,
+            "display_order": 40,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 93,
+        "fields": {
+            "pref": "41",
+            "start_date": "2023-10-14",
+            "hourly_wage": 900,
+            "is_active": true,
+            "display_order": 41,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 94,
+        "fields": {
+            "pref": "41",
+            "start_date": "2024-10-17",
+            "hourly_wage": 956,
+            "is_active": true,
+            "display_order": 41,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 95,
+        "fields": {
+            "pref": "42",
+            "start_date": "2023-10-13",
+            "hourly_wage": 898,
+            "is_active": true,
+            "display_order": 42,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 96,
+        "fields": {
+            "pref": "42",
+            "start_date": "2024-10-12",
+            "hourly_wage": 953,
+            "is_active": true,
+            "display_order": 42,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 97,
+        "fields": {
+            "pref": "43",
+            "start_date": "2023-10-08",
+            "hourly_wage": 898,
+            "is_active": true,
+            "display_order": 43,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 98,
+        "fields": {
+            "pref": "43",
+            "start_date": "2024-10-05",
+            "hourly_wage": 952,
+            "is_active": true,
+            "display_order": 43,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 99,
+        "fields": {
+            "pref": "44",
+            "start_date": "2023-10-06",
+            "hourly_wage": 899,
+            "is_active": true,
+            "display_order": 44,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 100,
+        "fields": {
+            "pref": "44",
+            "start_date": "2024-10-05",
+            "hourly_wage": 954,
+            "is_active": true,
+            "display_order": 44,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 101,
+        "fields": {
+            "pref": "45",
+            "start_date": "2023-10-06",
+            "hourly_wage": 897,
+            "is_active": true,
+            "display_order": 45,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 102,
+        "fields": {
+            "pref": "45",
+            "start_date": "2024-10-05",
+            "hourly_wage": 952,
+            "is_active": true,
+            "display_order": 45,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 103,
+        "fields": {
+            "pref": "46",
+            "start_date": "2023-10-06",
+            "hourly_wage": 897,
+            "is_active": true,
+            "display_order": 46,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 104,
+        "fields": {
+            "pref": "46",
+            "start_date": "2024-10-05",
+            "hourly_wage": 953,
+            "is_active": true,
+            "display_order": 46,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 105,
+        "fields": {
+            "pref": "47",
+            "start_date": "2023-10-08",
+            "hourly_wage": 896,
+            "is_active": true,
+            "display_order": 47,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.minimumpay",
+        "pk": 106,
+        "fields": {
+            "pref": "47",
+            "start_date": "2024-10-09",
+            "hourly_wage": 952,
+            "is_active": true,
+            "display_order": 47,
+            "created_at": "2025-10-01T11:00:00Z",
+            "created_by": 1,
+            "updated_at": "2025-10-01T11:00:00Z",
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    }
 ]
