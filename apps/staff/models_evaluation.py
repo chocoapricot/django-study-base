@@ -1,9 +1,9 @@
 from django.db import models
 from django.conf import settings
 from .models_staff import Staff
-from ..common.models import MyModel
+from ..common.models import MyTenantModel
 
-class StaffEvaluation(MyModel):
+class StaffEvaluation(MyTenantModel):
     """
     スタッフの評価を管理するモデル。
     """

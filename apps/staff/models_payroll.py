@@ -1,8 +1,8 @@
 from django.db import models
-from ..common.models import MyModel
+from ..common.models import MyTenantModel
 from .models_staff import Staff
 
-class StaffPayroll(MyModel):
+class StaffPayroll(MyTenantModel):
     """
     スタッフの給与関連情報を管理するモデル。
     """
