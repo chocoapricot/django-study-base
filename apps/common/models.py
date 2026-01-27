@@ -17,6 +17,15 @@ class MyModel(models.Model):
     class Meta:
         abstract = True
 
+class MyTenantModel(MyModel):
+    """
+    テナントIDを持つ抽象ベースモデル。
+    """
+    tenant_id = models.PositiveIntegerField('テナントID', blank=True, null=True, db_index=True)
+
+    class Meta:
+        abstract = True
+
 # 旧AppLogモデルは削除されました
 # 新しいログシステムは apps.system.logs.models.AppLog を使用してください
 
