@@ -143,447 +143,72 @@
             <div class="row g-3">
 
                 {% if has_staff_perm %}
-                <div class="col-md-6 col-lg-3">
                     {% with total=staff_schedules_yesterday|add:staff_schedules_today %}
-                    {% if total > 0 %}
-                    <a href="{% url 'home:contact_schedule_summary' %}" class="text-decoration-none">
-                        <div class="stats-card has-count bg-success-light">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <div class="icon-wrapper me-3">
-                                    <i class="bi bi-person-fill stats-icon" style="color:#ff5722;"></i>
-                                    <i class="bi bi-alarm icon-badge" style="color:#ff5722;"></i>
-                                </div>
-                                <div class="flex-grow-1 stats-content-with-alarm">
-                                    <p class="stats-number text-dark">{{ total|intcomma }}<span class="stats-unit">件</span></p>
-                                    <p class="stats-label">スタッフ連絡予定</p>
-                                    <p class="stats-description">昨日と今日の連絡予定件数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <div class="icon-wrapper me-3">
-                                <i class="bi bi-person-fill stats-icon text-muted-light"></i>
-                                <i class="bi bi-alarm icon-badge text-muted-light"></i>
-                            </div>
-                            <div class="flex-grow-1 stats-content-with-alarm">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">スタッフ連絡予定</p>
-                                <p class="stats-description">昨日と今日の連絡予定件数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
+                        {% url 'home:contact_schedule_summary' as schedule_url %}
+                        {% include 'home/_stats_card.html' with count=total url=schedule_url label='スタッフ連絡予定' description='昨日と今日の連絡予定件数です。' bg_class='bg-success-light' icon='bi-person-fill' badge_icon='bi-alarm' icon_color='#ff5722' %}
                     {% endwith %}
-                </div>
                 {% endif %}
 
-                <div class="col-md-6 col-lg-3">
-                    {% if pending_connect_staff_count > 0 %}
-                        {% if perms.staff.view_staff %}
-                        <a href="{% url 'connect:staff_list' %}" class="text-decoration-none">
-                            <div class="stats-card has-count bg-success-light">
-                                <div class="stats-card-body d-flex align-items-center">
-                                    <div class="icon-wrapper me-3">
-                                        <i class="bi bi-person-fill stats-icon" style="color:#ff5722;"></i>
-                                        <i class="bi bi-link icon-badge" style="color:#ff5722;"></i>
-                                    </div>
-                                    <div class="flex-grow-1 stats-content-with-alarm">
-                                        <p class="stats-number text-dark">{{ pending_connect_staff_count|intcomma }}<span class="stats-unit">名</span></p>
-                                        <p class="stats-label">スタッフ申請未承認</p>
-                                        <p class="stats-description">承認待ちの新規接続申請があるスタッフです。</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                        {% else %}
-                        <div class="stats-card has-count bg-success-light">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <div class="icon-wrapper me-3">
-                                    <i class="bi bi-person-fill stats-icon" style="color:#ff5722;"></i>
-                                    <i class="bi bi-link icon-badge" style="color:#ff5722;"></i>
-                                </div>
-                                <div class="flex-grow-1 stats-content-with-alarm">
-                                    <p class="stats-number text-dark">{{ pending_connect_staff_count|intcomma }}<span class="stats-unit">名</span></p>
-                                    <p class="stats-label">スタッフ申請未承認</p>
-                                    <p class="stats-description">承認待ちの新規接続申請があるスタッフの数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <div class="icon-wrapper me-3">
-                                <i class="bi bi-person-fill stats-icon text-muted-light"></i>
-                                <i class="bi bi-link icon-badge text-muted-light"></i>
-                            </div>
-                            <div class="flex-grow-1 stats-content-with-alarm">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">スタッフ申請未承認</p>
-                                <p class="stats-description">承認待ちの新規接続申請があるスタッフの数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
+                {% if perms.staff.view_staff %}{% url 'connect:staff_list' as connect_staff_url %}{% endif %}
+                {% include 'home/_stats_card.html' with count=pending_connect_staff_count url=connect_staff_url label='スタッフ申請未承認' description='承認待ちの新規接続申請があるスタッフの数です。' bg_class='bg-success-light' icon='bi-person-fill' badge_icon='bi-link' icon_color='#ff5722' unit='名' %}
 
-                <div class="col-md-6 col-lg-3">
-                    {% if staff_request_count > 0 %}
-                        {% if perms.staff.view_staff %}
-                        <a href="{% url 'staff:staff_list' %}?has_request=true" class="text-decoration-none">
-                            <div class="stats-card has-count bg-success-light">
-                                <div class="stats-card-body d-flex align-items-center">
-                                    <div class="icon-wrapper me-3">
-                                        <i class="bi bi-person-circle stats-icon" style="color:#ff5722;"></i>
-                                        <i class="bi bi-arrow-down-circle icon-badge" style="color:#ff5722;"></i>
-                                    </div>
-                                    <div class="flex-grow-1 stats-content-with-alarm">
-                                        <p class="stats-number text-dark">{{ staff_request_count|intcomma }}<span class="stats-unit">名</span></p>
-                                        <p class="stats-label">スタッフプロフィール申請未承認</p>
-                                        <p class="stats-description">承認待ちの変更申請があるスタッフです。</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                        {% else %}
-                        <div class="stats-card has-count bg-success-light">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <div class="icon-wrapper me-3">
-                                    <i class="bi bi-person-circle stats-icon" style="color:#ff5722;"></i>
-                                    <i class="bi bi-arrow-down-circle icon-badge" style="color:#ff5722;"></i>
-                                </div>
-                                <div class="flex-grow-1 stats-content-with-alarm">
-                                    <p class="stats-number text-dark">{{ staff_request_count|intcomma }}<span class="stats-unit">名</span></p>
-                                    <p class="stats-label">スタッフプロフィール申請未承認</p>
-                                    <p class="stats-description">承認待ちの変更申請があるスタッフの数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <div class="icon-wrapper me-3">
-                                <i class="bi bi-person-circle stats-icon text-muted-light"></i>
-                                <i class="bi bi-arrow-down-circle icon-badge text-muted-light"></i>
-                            </div>
-                            <div class="flex-grow-1 stats-content-with-alarm">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">スタッフプロフィール申請未承認</p>
-                                <p class="stats-description">承認待ちの変更申請があるスタッフの数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
+                {% if perms.staff.view_staff %}{% url 'staff:staff_list' as staff_request_base_url %}{% with staff_request_url=staff_request_base_url|add:"?has_request=true" %}
+                    {% include 'home/_stats_card.html' with count=staff_request_count url=staff_request_url label='スタッフプロフィール申請未承認' description='承認待ちの変更申請があるスタッフの数です。' bg_class='bg-success-light' icon='bi-person-circle' badge_icon='bi-arrow-down-circle' icon_color='#ff5722' unit='名' %}
+                {% endwith %}{% else %}
+                    {% include 'home/_stats_card.html' with count=staff_request_count label='スタッフプロフィール申請未承認' description='承認待ちの変更申請があるスタッフの数です。' bg_class='bg-success-light' icon='bi-person-circle' badge_icon='bi-arrow-down-circle' icon_color='#ff5722' unit='名' %}
+                {% endif %}
 
-                                {% if has_inquiry_perm %}
-                <div class="col-md-6 col-lg-3">
-                    {% if unanswered_inquiry_count > 0 %}
-                    <a href="{% url 'staff:staff_inquiry_list' %}?status=unanswered" class="text-decoration-none">
-                        <div class="stats-card has-count bg-warning-light">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <div class="icon-wrapper me-3">
-                                    <i class="bi bi-person-fill stats-icon" style="color:#ffc107;"></i>
-                                    <i class="bi bi-chat-left-text icon-badge" style="color:#ffc107;"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <p class="stats-number text-dark">{{ unanswered_inquiry_count|intcomma }}<span class="stats-unit">件</span></p>
-                                    <p class="stats-label">スタッフ問い合わせ未回答</p>
-                                    <p class="stats-description">スタッフからの問い合わせ・ご連絡に未回答の件数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <div class="icon-wrapper me-3">
-                                <i class="bi bi-person-fill stats-icon text-muted-light"></i>
-                                <i class="bi bi-chat-left-text icon-badge text-muted-light"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">スタッフ問い合わせ未回答</p>
-                                <p class="stats-description">スタッフからの問い合わせ・ご連絡に未回答の件数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
+                {% if has_inquiry_perm %}
+                    {% url 'staff:staff_inquiry_list' as inquiry_base_url %}{% with inquiry_url=inquiry_base_url|add:"?status=unanswered" %}
+                        {% include 'home/_stats_card.html' with count=unanswered_inquiry_count url=inquiry_url label='スタッフ問い合わせ未回答' description='スタッフからの問い合わせ・ご連絡に未回答の件数です。' bg_class='bg-warning-light' icon='bi-person-fill' badge_icon='bi-chat-left-text' icon_color='#ffc107' %}
+                    {% endwith %}
                 {% endif %}
 
                 {% if perms.staff.view_staffinternational %}
-                <div class="col-md-6 col-lg-3">
-                    {% if expiring_staff_international_count > 0 %}
-                    <a href="{% url 'staff:staff_list' %}?has_international=true" class="text-decoration-none">
-                        <div class="stats-card has-count bg-warning-light">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <div class="icon-wrapper me-3">
-                                    <i class="bi bi-person-fill stats-icon" style="color:#ffc107;"></i>
-                                    <i class="bi bi-send icon-badge" style="color:#ffc107;"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <p class="stats-number text-dark">{{ expiring_staff_international_count|intcomma }}<span class="stats-unit">名</span></p>
-                                    <p class="stats-label">外国籍スタッフ在留資格期限</p>
-                                    <p class="stats-description">在留資格の有効期間が今日から{% user_parameter 'RESIDENCE_PERIOD_WARNING_DAYS' '30' %}日以内、または過ぎているスタッフです。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <div class="icon-wrapper me-3">
-                                <i class="bi bi-person-fill stats-icon text-muted-light"></i>
-                                <i class="bi bi-send icon-badge text-muted-light"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">外国籍スタッフ在留資格期限</p>
-                                <p class="stats-description">在留資格の有効期間が今日から{% user_parameter 'RESIDENCE_PERIOD_WARNING_DAYS' '30' %}日以内、または過ぎているスタッフです。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
+                    {% url 'staff:staff_list' as international_base_url %}{% with international_url=international_base_url|add:"?has_international=true" %}
+                        {% user_parameter 'RESIDENCE_PERIOD_WARNING_DAYS' '30' as days %}
+                        {% with desc="在留資格の有効期間が今日から"|add:days|add:"日以内、または過ぎているスタッフです。" %}
+                            {% include 'home/_stats_card.html' with count=expiring_staff_international_count url=international_url label='外国籍スタッフ在留資格期限' description=desc bg_class='bg-warning-light' icon='bi-person-fill' badge_icon='bi-send' icon_color='#ffc107' unit='名' %}
+                        {% endwith %}
+                    {% endwith %}
                 {% endif %}
+
                 {% if has_contract_assignment_perm %}
-                <div class="col-md-6 col-lg-3">
-                    {% if unconfirmed_staff_contract_extension_count > 0 %}
-                    <a href="{% url 'contract:staff_contract_expire_list' %}" class="text-decoration-none">
-                        <div class="stats-card has-count bg-info-light">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <div class="icon-wrapper me-3">
-                                    <i class="bi bi-file-earmark-person-fill stats-icon" style="color:#17a2b8;"></i>
-                                    <i class="bi bi-question-circle icon-badge" style="color:#17a2b8;"></i>
-                                </div>
-                                <div class="flex-grow-1 stats-content-with-alarm">
-                                    <p class="stats-number text-dark">{{ unconfirmed_staff_contract_extension_count|intcomma }}<span class="stats-unit">件</span></p>
-                                    <p class="stats-label">スタッフ契約延長未確認</p>
-                                    <p class="stats-description">延長または終了が未確認のスタッフ契約の件数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <div class="icon-wrapper me-3">
-                                <i class="bi bi-file-earmark-person-fill stats-icon text-muted-light"></i>
-                                <i class="bi bi-question-circle icon-badge text-muted-light"></i>
-                            </div>
-                            <div class="flex-grow-1 stats-content-with-alarm">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">スタッフ契約延長未確認</p>
-                                <p class="stats-description">延長または終了が未確認のスタッフ契約の件数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
+                    {% url 'contract:staff_contract_expire_list' as expire_url %}
+                    {% include 'home/_stats_card.html' with count=unconfirmed_staff_contract_extension_count url=expire_url label='スタッフ契約延長未確認' description='延長または終了が未確認のスタッフ契約の件数です。' bg_class='bg-info-light' icon='bi-file-earmark-person-fill' badge_icon='bi-question-circle' icon_color='#17a2b8' %}
                 {% endif %}
 
                 {% if perms.staff.view_staff %}
-                    {% if staff_payroll_info_unregistered_count > 0 %}
-                    <div class="col-md-6 col-lg-3">
-                        <a href="{% url 'staff:staff_list' %}?registration_status=true" class="text-decoration-none">
-                            <div class="stats-card has-count bg-success-light">
-                                <div class="stats-card-body d-flex align-items-center">
-                                    <div class="icon-wrapper me-3">
-                                        <i class="bi bi-person-fill stats-icon" style="color:#ff5722;"></i>
-                                        <i class="bi bi-cash-stack icon-badge" style="color:#ff5722;"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <p class="stats-number text-dark">{{ staff_payroll_info_unregistered_count|intcomma }}<span class="stats-unit">名</span></p>
-                                        <p class="stats-label">スタッフ給与情報未登録</p>
-                                        <p class="stats-description">マイナンバー・銀行情報・給与情報 のいずれかが未登録のスタッフ</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    {% else %}
-                    <div class="col-md-6 col-lg-3">
-                        <div class="stats-card">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <div class="icon-wrapper me-3">
-                                    <i class="bi bi-person-fill stats-icon text-muted-light"></i>
-                                    <i class="bi bi-cash-stack icon-badge text-muted-light"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <p class="stats-number text-muted-light">-</p>
-                                    <p class="stats-label">スタッフ給与情報未登録</p>
-                                    <p class="stats-description">マイナンバー・銀行情報・給与情報 のいずれかが未登録のスタッフ</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
+                    {% url 'staff:staff_list' as payroll_base_url %}{% with payroll_url=payroll_base_url|add:"?registration_status=true" %}
+                        {% include 'home/_stats_card.html' with count=staff_payroll_info_unregistered_count url=payroll_url label='スタッフ給与情報未登録' description='マイナンバー・銀行情報・給与情報 のいずれかが未登録のスタッフ' bg_class='bg-success-light' icon='bi-person-fill' badge_icon='bi-cash-stack' icon_color='#ff5722' unit='名' %}
+                    {% endwith %}
                 {% endif %}
 
                 {% if has_view_client_contract_perm %}
-                <div class="col-md-6 col-lg-3">
-                    {% if personal_teishokubi_deadline_count > 0 %}
-                    <a href="{% url 'contract:staff_contract_teishokubi_list' %}" class="text-decoration-none">
-                        <div class="stats-card has-count bg-warning-light">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <div class="icon-wrapper me-3">
-                                    <i class="bi bi-person-fill stats-icon" style="color:#ffc107;"></i>
-                                    <i class="bi bi-calendar-x icon-badge" style="color:#ffc107;"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <p class="stats-number text-dark">{{ personal_teishokubi_deadline_count|intcomma }}<span class="stats-unit">件</span></p>
-                                    <p class="stats-label">個人抵触日期限</p>
-                                    <p class="stats-description">個人抵触日が{% user_parameter 'PERSONAL_TEISHOKUBI_WARNING_DAYS' '60' %}日以内の派遣契約数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <div class="icon-wrapper me-3">
-                                <i class="bi bi-person-fill stats-icon text-muted-light"></i>
-                                <i class="bi bi-calendar-x icon-badge text-muted-light"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">個人抵触日期限</p>
-                                <p class="stats-description">個人抵触日が{% user_parameter 'PERSONAL_TEISHOKUBI_WARNING_DAYS' '60' %}日以内の派遣契約数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
+                    {% user_parameter 'PERSONAL_TEISHOKUBI_WARNING_DAYS' '60' as days %}
+                    {% with desc="個人抵触日が"|add:days|add:"日以内の派遣契約数です。" %}
+                        {% url 'contract:staff_contract_teishokubi_list' as personal_teishokubi_url %}
+                        {% include 'home/_stats_card.html' with count=personal_teishokubi_deadline_count url=personal_teishokubi_url label='個人抵触日期限' description=desc bg_class='bg-warning-light' icon='bi-person-fill' badge_icon='bi-calendar-x' icon_color='#ffc107' %}
+                    {% endwith %}
                 {% endif %}
 
                 {% if has_view_client_contract_perm %}
-                <div class="col-md-6 col-lg-3">
-                    {% if teishokubi_deadline_count > 0 %}
-                    <a href="{% url 'contract:client_teishokubi_list' %}" class="text-decoration-none">
-                        <div class="stats-card has-count bg-warning-light">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <div class="icon-wrapper me-3">
-                                    <i class="bi bi-building-fill stats-icon" style="color:#ffc107;"></i>
-                                    <i class="bi bi-calendar-x icon-badge" style="color:#ffc107;"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <p class="stats-number text-dark">{{ teishokubi_deadline_count|intcomma }}<span class="stats-unit">件</span></p>
-                                    <p class="stats-label">事業所抵触日期限</p>
-                                    <p class="stats-description">事業所抵触日が{% user_parameter 'OFFICE_TEISHOKUBI_WARNING_DAYS' '60' %}日以内の派遣契約数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <div class="icon-wrapper me-3">
-                                <i class="bi bi-building-fill stats-icon text-muted-light"></i>
-                                <i class="bi bi-calendar-x icon-badge text-muted-light"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">事業所抵触日期限</p>
-                                <p class="stats-description">事業所抵触日が{% user_parameter 'OFFICE_TEISHOKUBI_WARNING_DAYS' '60' %}日以内の派遣契約数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
+                    {% user_parameter 'OFFICE_TEISHOKUBI_WARNING_DAYS' '60' as days %}
+                    {% with desc="事業所抵触日が"|add:days|add:"日以内の派遣契約数です。" %}
+                        {% url 'contract:client_teishokubi_list' as office_teishokubi_url %}
+                        {% include 'home/_stats_card.html' with count=teishokubi_deadline_count url=office_teishokubi_url label='事業所抵触日期限' description=desc bg_class='bg-warning-light' icon='bi-building-fill' badge_icon='bi-calendar-x' icon_color='#ffc107' %}
+                    {% endwith %}
                 {% endif %}
                 
                 {% if has_client_perm %}
-                <div class="col-md-6 col-lg-3">
                     {% with total=client_schedules_yesterday|add:client_schedules_today %}
-                    {% if total > 0 %}
-                    <a href="{% url 'home:contact_schedule_summary' %}" class="text-decoration-none">
-                        <div class="stats-card has-count bg-primary-light">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <div class="icon-wrapper me-3">
-                                    <i class="bi bi-building-fill stats-icon" style="color:#28a745;"></i>
-                                    <i class="bi bi-alarm icon-badge" style="color:#28a745;"></i>
-                                </div>
-                                <div class="flex-grow-1 stats-content-with-alarm">
-                                    <p class="stats-number text-dark">{{ total|intcomma }}<span class="stats-unit">件</span></p>
-                                    <p class="stats-label">クライアント連絡予定</p>
-                                    <p class="stats-description">昨日と今日の連絡予定件数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <div class="icon-wrapper me-3">
-                                <i class="bi bi-building-fill stats-icon text-muted-light"></i>
-                                <i class="bi bi-alarm icon-badge text-muted-light"></i>
-                            </div>
-                            <div class="flex-grow-1 stats-content-with-alarm">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">クライアント連絡予定</p>
-                                <p class="stats-description">昨日と今日の連絡予定件数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
+                        {% url 'home:contact_schedule_summary' as client_schedule_url %}
+                        {% include 'home/_stats_card.html' with count=total url=client_schedule_url label='クライアント連絡予定' description='昨日と今日の連絡予定件数です。' bg_class='bg-primary-light' icon='bi-building-fill' badge_icon='bi-alarm' icon_color='#28a745' %}
                     {% endwith %}
-                </div>
                 {% endif %}
 
-                <div class="col-md-6 col-lg-3">
-                    {% if pending_connect_client_count > 0 %}
-                        {% if perms.client.view_client %}
-                        <a href="{% url 'connect:client_list' %}" class="text-decoration-none">
-                            <div class="stats-card has-count bg-primary-light">
-                                <div class="stats-card-body d-flex align-items-center">
-                                    <div class="icon-wrapper me-3">
-                                        <i class="bi bi-building-fill stats-icon" style="color:#28a745;"></i>
-                                        <i class="bi bi-link icon-badge" style="color:#28a745;"></i>
-                                    </div>
-                                    <div class="flex-grow-1 stats-content-with-alarm">
-                                        <p class="stats-number text-dark">{{ pending_connect_client_count|intcomma }}<span class="stats-unit">社</span></p>
-                                        <p class="stats-label">クライアント申請未承認</p>
-                                        <p class="stats-description">承認待ちの新規接続申請があるクライアントです。</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                        {% else %}
-                        <div class="stats-card has-count bg-primary-light">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <div class="icon-wrapper me-3">
-                                    <i class="bi bi-building-fill stats-icon" style="color:#28a745;"></i>
-                                    <i class="bi bi-link icon-badge" style="color:#28a745;"></i>
-                                </div>
-                                <div class="flex-grow-1 stats-content-with-alarm">
-                                    <p class="stats-number text-dark">{{ pending_connect_client_count|intcomma }}<span class="stats-unit">社</span></p>
-                                    <p class="stats-label">クライアント申請未承認</p>
-                                    <p class="stats-description">承認待ちの新規接続申請があるクライアントの数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <div class="icon-wrapper me-3">
-                                <i class="bi bi-building-fill stats-icon text-muted-light"></i>
-                                <i class="bi bi-link icon-badge text-muted-light"></i>
-                            </div>
-                            <div class="flex-grow-1 stats-content-with-alarm">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">クライアント申請未承認</p>
-                                <p class="stats-description">承認待ちの新規接続申請があるクライアントの数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
+                {% if perms.client.view_client %}{% url 'connect:client_list' as connect_client_url %}{% endif %}
+                {% include 'home/_stats_card.html' with count=pending_connect_client_count url=connect_client_url label='クライアント申請未承認' description='承認待ちの新規接続申請があるクライアントの数です。' bg_class='bg-primary-light' icon='bi-building-fill' badge_icon='bi-link' icon_color='#28a745' unit='社' %}
             </div>
         </div>
     </div>
@@ -593,168 +218,21 @@
         <div class="card-header">登録状況</div>
         <div class="card-body">
             <div class="row g-3">
-                <div class="col-md-6 col-lg-4">
-                    {% if staff_count > 0 %}
-                    <a href="{% url 'staff:staff_list' %}" class="text-decoration-none">
-                        <div class="stats-card has-count">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <i class="bi bi-people-fill stats-icon me-3" style="color:#ff5722;"></i>
-                                <div class="flex-grow-1">
-                                    <p class="stats-number text-dark">{{ staff_count|intcomma }}<span class="stats-unit">名</span></p>
-                                    <p class="stats-label">スタッフ登録数</p>
-                                    <p class="stats-description">システムに登録されているスタッフの総数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <i class="bi bi-people-fill stats-icon text-muted-light me-3"></i>
-                            <div class="flex-grow-1">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">スタッフ登録数</p>
-                                <p class="stats-description">システムに登録されているスタッフの総数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    {% if approved_staff_count > 0 %}
-                    <a href="{% url 'staff:staff_list' %}" class="text-decoration-none">
-                        <div class="stats-card has-count">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <i class="bi bi-person-check-fill stats-icon me-3" style="color:#ff5722;"></i>
-                                <div class="flex-grow-1">
-                                    <p class="stats-number text-dark">{{ approved_staff_count|intcomma }}<span class="stats-unit">名</span></p>
-                                    <p class="stats-label">スタッフ接続承認済み</p>
-                                    <p class="stats-description">接続申請が承認されたスタッフの数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <i class="bi bi-person-check-fill stats-icon text-muted-light me-3"></i>
-                            <div class="flex-grow-1">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">スタッフ接続承認済み</p>
-                                <p class="stats-description">接続申請が承認されたスタッフの数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    {% if staff_contract_count > 0 %}
-                    <a href="{% url 'contract:staff_contract_list' %}" class="text-decoration-none">
-                        <div class="stats-card has-count">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <i class="bi bi-file-earmark-person-fill stats-icon me-3" style="color:#ff5722;"></i>
-                                <div class="flex-grow-1">
-                                    <p class="stats-number text-dark">{{ staff_contract_count|intcomma }}<span class="stats-unit">件</span></p>
-                                    <p class="stats-label">スタッフ契約登録数</p>
-                                    <p class="stats-description">本日以降に有効な契約の総数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <i class="bi bi-file-earmark-person-fill stats-icon text-muted-light me-3"></i>
-                            <div class="flex-grow-1">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">スタッフ契約登録数</p>
-                                <p class="stats-description">本日以降に有効な契約の総数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    {% if client_count > 0 %}
-                    <a href="{% url 'client:client_list' %}" class="text-decoration-none">
-                        <div class="stats-card has-count">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <i class="bi bi-building-fill stats-icon me-3" style="color:#28a745;"></i>
-                                <div class="flex-grow-1">
-                                    <p class="stats-number text-dark">{{ client_count|intcomma }}<span class="stats-unit">社</span></p>
-                                    <p class="stats-label">クライアント登録数</p>
-                                    <p class="stats-description">システムに登録されているクライアントの総数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <i class="bi bi-building-fill stats-icon text-muted-light me-3"></i>
-                            <div class="flex-grow-1">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">クライアント登録数</p>
-                                <p class="stats-description">システムに登録されているクライアントの総数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    {% if approved_client_count > 0 %}
-                    <a href="{% url 'client:client_list' %}" class="text-decoration-none">
-                        <div class="stats-card has-count">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <i class="bi bi-building-fill-check stats-icon me-3" style="color:#28a745;"></i>
-                                <div class="flex-grow-1">
-                                    <p class="stats-number text-dark">{{ approved_client_count|intcomma }}<span class="stats-unit">名</span></p>
-                                    <p class="stats-label">クライアント接続承認済み</p>
-                                    <p class="stats-description">接続申請が承認されたクライアント担当者の数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <i class="bi bi-building-check stats-icon text-muted-light me-3"></i>
-                            <div class="flex-grow-1">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">クライアント接続承認済み</p>
-                                <p class="stats-description">接続申請が承認されたクライアント担当者の数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    {% if client_contract_count > 0 %}
-                    <a href="{% url 'contract:client_contract_list' %}" class="text-decoration-none">
-                        <div class="stats-card has-count">
-                            <div class="stats-card-body d-flex align-items-center">
-                                <i class="bi bi-file-earmark-text-fill stats-icon me-3" style="color:#28a745;"></i>
-                                <div class="flex-grow-1">
-                                    <p class="stats-number text-dark">{{ client_contract_count|intcomma }}<span class="stats-unit">件</span></p>
-                                    <p class="stats-label">クライアント契約登録数</p>
-                                    <p class="stats-description">本日以降に有効な契約の総数です。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% else %}
-                    <div class="stats-card">
-                        <div class="stats-card-body d-flex align-items-center">
-                            <i class="bi bi-file-earmark-text-fill stats-icon text-muted-light me-3"></i>
-                            <div class="flex-grow-1">
-                                <p class="stats-number text-muted-light">-</p>
-                                <p class="stats-label">クライアント契約登録数</p>
-                                <p class="stats-description">本日以降に有効な契約の総数です。</p>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
+                {% url 'staff:staff_list' as staff_list_url %}
+                {% include 'home/_stats_card.html' with count=staff_count url=staff_list_url label='スタッフ登録数' description='システムに登録されているスタッフの総数です。' icon='bi-people-fill' icon_color='#ff5722' col_class='col-md-6 col-lg-4' unit='名' %}
+
+                {% include 'home/_stats_card.html' with count=approved_staff_count url=staff_list_url label='スタッフ接続承認済み' description='接続申請が承認されたスタッフの数です。' icon='bi-person-check-fill' icon_color='#ff5722' col_class='col-md-6 col-lg-4' unit='名' %}
+
+                {% url 'contract:staff_contract_list' as staff_contract_list_url %}
+                {% include 'home/_stats_card.html' with count=staff_contract_count url=staff_contract_list_url label='スタッフ契約登録数' description='本日以降に有効な契約の総数です。' icon='bi-file-earmark-person-fill' icon_color='#ff5722' col_class='col-md-6 col-lg-4' %}
+
+                {% url 'client:client_list' as client_list_url %}
+                {% include 'home/_stats_card.html' with count=client_count url=client_list_url label='クライアント登録数' description='システムに登録されているクライアントの総数です。' icon='bi-building-fill' icon_color='#28a745' col_class='col-md-6 col-lg-4' unit='社' %}
+
+                {% include 'home/_stats_card.html' with count=approved_client_count url=client_list_url label='クライアント接続承認済み' description='接続申請が承認されたクライアント担当者の数です。' icon='bi-building-fill-check' icon_color='#28a745' col_class='col-md-6 col-lg-4' unit='名' %}
+
+                {% url 'contract:client_contract_list' as client_contract_list_url %}
+                {% include 'home/_stats_card.html' with count=client_contract_count url=client_contract_list_url label='クライアント契約登録数' description='本日以降に有効な契約の総数です。' icon='bi-file-earmark-text-fill' icon_color='#28a745' col_class='col-md-6 col-lg-4' %}
             </div>
         </div>
     </div>
