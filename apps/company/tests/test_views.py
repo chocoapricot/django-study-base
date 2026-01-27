@@ -86,6 +86,31 @@ class CompanyViewTest(TestCase):
         response = self.client.get(reverse('company:company_detail'))
         self.assertEqual(response.status_code, 403)
 
+    def test_company_detail_view_as_superuser(self):
+        """管理者（スーパーユーザー）による会社詳細ビュー（会社一覧テーブルの確認）"""
+        # スーパーユーザー作成
+        admin_user = User.objects.create_superuser(
+            username='admin_user',
+            email='admin@example.com',
+            password='adminpassword'
+        )
+        self.client.login(username='admin_user', password='adminpassword')
+
+        # 別の会社も作成
+        Company.objects.create(name="第二テスト会社", corporate_number="3000000000001")
+
+        response = self.client.get(reverse('company:company_detail'))
+        self.assertEqual(response.status_code, 200)
+
+        # テーブル構造の確認
+        self.assertContains(response, "会社一覧（管理者用）")
+        self.assertContains(response, "<table")
+        self.assertContains(response, "テスト会社")
+        self.assertContains(response, "第二テスト会社")
+        # 選択中の会社（テスト会社）が強調されているか
+        self.assertContains(response, "table-primary")
+        self.assertContains(response, "<strong>テスト会社</strong>")
+
     def test_company_edit_view_with_permission(self):
         """会社編集ビュー（権限あり）"""
         self.client.login(username='perm_user', password='testpass123')
