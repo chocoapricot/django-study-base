@@ -1,21 +1,20 @@
 [
-  {
-    "model": "staff.staffpayroll",
-    "pk": 1,
-    "fields": {
-      "created_at": "2024-10-30T12:00:00.000Z",
-      "created_by": 1,
-      "updated_at": "2024-10-30T12:00:00.000Z",
-      "updated_by": 1,
-      "staff": 30,
-      "health_insurance_join_date": "2025-10-01",
-      "health_insurance_non_enrollment_reason": "",
-      "welfare_pension_join_date": "2025-10-01",
-      "pension_insurance_non_enrollment_reason": "",
-      "employment_insurance_join_date": "2025-10-01",
-      "employment_insurance_non_enrollment_reason": ""
+    {
+        "model": "staff.staffpayroll",
+        "pk": 1,
+        "fields": {
+            "created_at": "2024-10-30T12:00:00.000Z",
+            "created_by": 1,
+            "updated_at": "2024-10-30T12:00:00.000Z",
+            "updated_by": 1,
+            "staff": 30,
+            "health_insurance_join_date": "2025-10-01",
+            "health_insurance_non_enrollment_reason": "",
+            "welfare_pension_join_date": "2025-10-01",
+            "pension_insurance_non_enrollment_reason": "",
+            "employment_insurance_join_date": "2025-10-01",
+            "employment_insurance_non_enrollment_reason": "",
+            "tenant_id": 1
+        }
     }
-  }
 ]
-
-

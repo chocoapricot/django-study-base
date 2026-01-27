@@ -1,121 +1,128 @@
 [
-{
-    "model": "master.worktimepatternbreak",
-    "pk": 1,
-    "fields": {
-        "version": 1762550652590964,
-        "created_at": "2024-01-01T00:00:00Z",
-        "created_by": null,
-        "updated_at": "2024-01-01T00:00:00Z",
-        "updated_by": null,
-        "work_time": 1,
-        "start_time": "12:00:00",
-        "start_time_next_day": false,
-        "end_time": "13:00:00",
-        "end_time_next_day": false,
-        "display_order": 10
+    {
+        "model": "master.worktimepatternbreak",
+        "pk": 1,
+        "fields": {
+            "version": 1762550652590964,
+            "created_at": "2024-01-01T00:00:00Z",
+            "created_by": null,
+            "updated_at": "2024-01-01T00:00:00Z",
+            "updated_by": null,
+            "work_time": 1,
+            "start_time": "12:00:00",
+            "start_time_next_day": false,
+            "end_time": "13:00:00",
+            "end_time_next_day": false,
+            "display_order": 10,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.worktimepatternbreak",
+        "pk": 2,
+        "fields": {
+            "version": 1762550652597230,
+            "created_at": "2024-01-01T00:00:00Z",
+            "created_by": null,
+            "updated_at": "2024-01-01T00:00:00Z",
+            "updated_by": null,
+            "work_time": 2,
+            "start_time": "12:00:00",
+            "start_time_next_day": false,
+            "end_time": "12:45:00",
+            "end_time_next_day": false,
+            "display_order": 10,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.worktimepatternbreak",
+        "pk": 3,
+        "fields": {
+            "version": 1762550652602143,
+            "created_at": "2024-01-01T00:00:00Z",
+            "created_by": null,
+            "updated_at": "2024-01-01T00:00:00Z",
+            "updated_by": null,
+            "work_time": 3,
+            "start_time": "12:00:00",
+            "start_time_next_day": false,
+            "end_time": "13:00:00",
+            "end_time_next_day": false,
+            "display_order": 10,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.worktimepatternbreak",
+        "pk": 4,
+        "fields": {
+            "version": 1762550652606517,
+            "created_at": "2024-01-01T00:00:00Z",
+            "created_by": null,
+            "updated_at": "2024-01-01T00:00:00Z",
+            "updated_by": null,
+            "work_time": 3,
+            "start_time": "18:00:00",
+            "start_time_next_day": false,
+            "end_time": "18:30:00",
+            "end_time_next_day": false,
+            "display_order": 20,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.worktimepatternbreak",
+        "pk": 5,
+        "fields": {
+            "version": 1762550652609340,
+            "created_at": "2024-01-01T00:00:00Z",
+            "created_by": null,
+            "updated_at": "2024-01-01T00:00:00Z",
+            "updated_by": null,
+            "work_time": 4,
+            "start_time": "12:00:00",
+            "start_time_next_day": false,
+            "end_time": "13:00:00",
+            "end_time_next_day": false,
+            "display_order": 10,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.worktimepatternbreak",
+        "pk": 6,
+        "fields": {
+            "version": 1762550652612559,
+            "created_at": "2024-01-01T00:00:00Z",
+            "created_by": null,
+            "updated_at": "2024-01-01T00:00:00Z",
+            "updated_by": null,
+            "work_time": 5,
+            "start_time": "20:00:00",
+            "start_time_next_day": false,
+            "end_time": "21:00:00",
+            "end_time_next_day": false,
+            "display_order": 10,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.worktimepatternbreak",
+        "pk": 7,
+        "fields": {
+            "version": 1762552142100238,
+            "created_at": "2024-01-01T00:00:00Z",
+            "created_by": null,
+            "updated_at": "2025-11-07T22:04:48.752Z",
+            "updated_by": null,
+            "work_time": 6,
+            "start_time": "06:00:00",
+            "start_time_next_day": true,
+            "end_time": "06:30:00",
+            "end_time_next_day": true,
+            "display_order": 10,
+            "tenant_id": 1
+        }
     }
-},
-{
-    "model": "master.worktimepatternbreak",
-    "pk": 2,
-    "fields": {
-        "version": 1762550652597230,
-        "created_at": "2024-01-01T00:00:00Z",
-        "created_by": null,
-        "updated_at": "2024-01-01T00:00:00Z",
-        "updated_by": null,
-        "work_time": 2,
-        "start_time": "12:00:00",
-        "start_time_next_day": false,
-        "end_time": "12:45:00",
-        "end_time_next_day": false,
-        "display_order": 10
-    }
-},
-{
-    "model": "master.worktimepatternbreak",
-    "pk": 3,
-    "fields": {
-        "version": 1762550652602143,
-        "created_at": "2024-01-01T00:00:00Z",
-        "created_by": null,
-        "updated_at": "2024-01-01T00:00:00Z",
-        "updated_by": null,
-        "work_time": 3,
-        "start_time": "12:00:00",
-        "start_time_next_day": false,
-        "end_time": "13:00:00",
-        "end_time_next_day": false,
-        "display_order": 10
-    }
-},
-{
-    "model": "master.worktimepatternbreak",
-    "pk": 4,
-    "fields": {
-        "version": 1762550652606517,
-        "created_at": "2024-01-01T00:00:00Z",
-        "created_by": null,
-        "updated_at": "2024-01-01T00:00:00Z",
-        "updated_by": null,
-        "work_time": 3,
-        "start_time": "18:00:00",
-        "start_time_next_day": false,
-        "end_time": "18:30:00",
-        "end_time_next_day": false,
-        "display_order": 20
-    }
-},
-{
-    "model": "master.worktimepatternbreak",
-    "pk": 5,
-    "fields": {
-        "version": 1762550652609340,
-        "created_at": "2024-01-01T00:00:00Z",
-        "created_by": null,
-        "updated_at": "2024-01-01T00:00:00Z",
-        "updated_by": null,
-        "work_time": 4,
-        "start_time": "12:00:00",
-        "start_time_next_day": false,
-        "end_time": "13:00:00",
-        "end_time_next_day": false,
-        "display_order": 10
-    }
-},
-{
-    "model": "master.worktimepatternbreak",
-    "pk": 6,
-    "fields": {
-        "version": 1762550652612559,
-        "created_at": "2024-01-01T00:00:00Z",
-        "created_by": null,
-        "updated_at": "2024-01-01T00:00:00Z",
-        "updated_by": null,
-        "work_time": 5,
-        "start_time": "20:00:00",
-        "start_time_next_day": false,
-        "end_time": "21:00:00",
-        "end_time_next_day": false,
-        "display_order": 10
-    }
-},
-{
-    "model": "master.worktimepatternbreak",
-    "pk": 7,
-    "fields": {
-        "version": 1762552142100238,
-        "created_at": "2024-01-01T00:00:00Z",
-        "created_by": null,
-        "updated_at": "2025-11-07T22:04:48.752Z",
-        "updated_by": null,
-        "work_time": 6,
-        "start_time": "06:00:00",
-        "start_time_next_day": true,
-        "end_time": "06:30:00",
-        "end_time_next_day": true,
-        "display_order": 10
-    }
-}
 ]

@@ -17,7 +17,8 @@
             "phone_number": "088-822-1865",
             "email": "ryoma.sakamoto@toyota.co.jp",
             "memo": "幕末の土佐藩郷士。亀山社中、後の海援隊の隊長。薩長同盟の斡旋、大政奉還の成立に尽力した。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -38,7 +39,8 @@
             "phone_number": "099-247-1100",
             "email": "takamori.saigo@toyota.co.jp",
             "memo": "薩摩藩の指導者で、明治維新の三傑の一人。江戸城無血開城や西南戦争で知られる。",
-            "display_order": 2
+            "display_order": 2,
+            "tenant_id": 1
         }
     },
     {
@@ -59,7 +61,8 @@
             "phone_number": "083-922-1868",
             "email": "kogoro.katsura@toyota.co.jp",
             "memo": "長州藩の指導者で、維新の三傑の一人。後の木戸孝允。五箇条の御誓文の起草にも関わった。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -80,7 +83,8 @@
             "phone_number": "03-3581-2345",
             "email": "toshimichi.okubo@astellas.com",
             "memo": "薩摩藩出身の政治家で、維新の三傑の一人。明治政府の中心人物として近代化政策を推進した。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -101,7 +105,8 @@
             "phone_number": "042-522-1863",
             "email": "toshizo.hijikata@astellas.com",
             "memo": "新選組の副長。「鬼の副長」として恐れられ、戊辰戦争では最後まで新政府軍と戦った。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -122,7 +127,8 @@
             "phone_number": "042-482-1864",
             "email": "isami.kondo@soumu.go.jp",
             "memo": "新選組の局長。天然理心流の四代目宗家。戊辰戦争で捕らえられ、処刑された。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -143,7 +149,8 @@
             "phone_number": "03-3408-1868",
             "email": "soji.okita@soumu.go.jp",
             "memo": "新選組の一番隊組長で、天才的な剣士として知られる。池田屋事件などで活躍したが、病により早世した。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -164,7 +171,8 @@
             "phone_number": "03-3821-4171",
             "email": "yoshinobu.tokugawa@nintendo.co.jp",
             "memo": "江戸幕府最後の将軍。大政奉還を行い、江戸幕府を終焉させた。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -185,7 +193,8 @@
             "phone_number": "03-3441-5151",
             "email": "hirobumi.ito@amazon.co.jp",
             "memo": "長州藩出身の政治家。初代内閣総理大臣となり、大日本帝国憲法の起草に中心的な役割を果たした。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -206,7 +215,8 @@
             "phone_number": "03-3402-1838",
             "email": "aritomo.yamagata@amazon.co.jp",
             "memo": "長州藩出身の軍人、政治家。日本陸軍の基礎を築き、「国軍の父」と呼ばれる。総理大臣も務めた。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -227,7 +237,8 @@
             "phone_number": "0838-22-4606",
             "email": "shoin.yoshida@panasonic.com",
             "memo": "幕末の思想家、教育者。松下村塾を開き、高杉晋作や伊藤博文など多くの逸材を育てた。安政の大獄で処刑された。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -248,7 +259,8 @@
             "phone_number": "083-245-1867",
             "email": "shinsaku.takasugi@nissan.co.jp",
             "memo": "長州藩士。奇兵隊など諸隊を創設し、倒幕運動を推進した。功山寺挙兵で藩の主導権を握った。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -269,7 +281,8 @@
             "phone_number": "0749-22-2742",
             "email": "naosuke.ii@fujitsu.com",
             "memo": "彦根藩主で、江戸幕府の大老。日米修好通商条約に調印し、反対派を弾圧する安政の大獄を行った。桜田門外の変で暗殺された。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -290,7 +303,8 @@
             "phone_number": "03-3729-2200",
             "email": "kaishu.katsu@sony.com",
             "memo": "幕臣。咸臨丸で渡米し、神戸海軍操練所を設立。江戸城無血開城を西郷隆盛と交渉した。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -311,7 +325,8 @@
             "phone_number": "0138-51-2468",
             "email": "takeaki.enomoto@lifecorp.co.jp",
             "memo": "旧幕府海軍の指導者。戊辰戦争では五稜郭に立てこもり、蝦夷共和国を樹立したが降伏。後に明治政府で要職を歴任した。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -332,7 +347,8 @@
             "phone_number": "03-3272-4111",
             "email": "eiichi.shibusawa@toyota.co.jp",
             "memo": "「日本資本主義の父」と呼ばれる実業家。第一国立銀行をはじめ、多種多様な企業の設立・経営に関わった。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -353,7 +369,8 @@
             "phone_number": "03-3211-1212",
             "email": "yataro.iwasaki@astellas.com",
             "memo": "土佐藩出身の実業家。三菱財閥の創業者であり、日本の海運業の近代化に大きく貢献した。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -374,7 +391,8 @@
             "phone_number": "06-6205-3131",
             "email": "tomoatsu.godai@nintendo.co.jp",
             "memo": "薩摩藩出身の武士、実業家。大阪を拠点に多くの企業を設立し、大阪経済の発展に尽力した。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -395,7 +413,8 @@
             "phone_number": "03-5276-2311",
             "email": "masujiro.omura@aws.jp",
             "memo": "長州藩出身の医師、西洋軍学者。日本近代陸軍の創設者。靖国神社の創建を献策した。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -416,7 +435,8 @@
             "phone_number": "075-211-1211",
             "email": "sanetomi.sanjo@nerima.city.jp",
             "memo": "幕末から明治にかけての公卿、政治家。尊王攘夷派の公家として活躍し、明治政府では太政大臣を務めた。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -437,7 +457,8 @@
             "phone_number": "075-211-1212",
             "email": "tomomi.iwakura@katsushika.city.jp",
             "memo": "幕末から明治にかけての公卿、政治家。公武合体派であったが、後に倒幕派に転じ、岩倉使節団を率いて欧米を歴訪した。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -458,7 +479,8 @@
             "phone_number": "099-222-1111",
             "email": "nariakira.shimazu@tokyo.metro.jp",
             "memo": "薩摩藩第11代藩主。西洋技術の導入に積極的で、集成館事業などを推進した名君。西郷隆盛らを見出した。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -479,7 +501,8 @@
             "phone_number": "0895-22-2622",
             "email": "munenari.date@sej.co.jp",
             "memo": "宇和島藩第8代藩主。幕末の四賢侯の一人。藩政改革を行い、幕政にも積極的に関与した。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -500,7 +523,8 @@
             "phone_number": "0242-27-4005",
             "email": "katamori.matsudaira@lawson.co.jp",
             "memo": "会津藩主。京都守護職として、新選組を預かり京都の治安維持に努めた。戊辰戦争では新政府軍と戦った。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -521,7 +545,8 @@
             "phone_number": "03-3261-0001",
             "email": "iemochi.tokugawa@mhlw.go.jp",
             "memo": "江戸幕府第14代将軍。公武合体政策のため皇女和宮と結婚したが、長州征伐の途上で病死した。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -542,7 +567,8 @@
             "phone_number": "096-352-5111",
             "email": "gensai.kawakami@kanagawa.pref.jp",
             "memo": "幕末の四大人斬りの一人。肥後藩出身。佐久間象山を暗殺したことで知られる。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -563,7 +589,8 @@
             "phone_number": "03-3453-4511",
             "email": "yukichi.fukuzawa@nishimatsuya.com",
             "memo": "明治時代の思想家、教育家、翻訳家。慶應義塾の創設者。『学問のすゝめ』の著者として有名。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -584,7 +611,8 @@
             "phone_number": "075-251-3120",
             "email": "yae.niijima@biccamera.com",
             "memo": "会津戦争ではスペンサー銃を手に戦い、後に同志社大学の創設者である新島襄と結婚。日本の女性教育の発展に貢献した。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -605,7 +633,8 @@
             "phone_number": "03-3403-2193",
             "email": "heihachiro.togo@yodobashi.com",
             "memo": "薩摩藩出身の海軍軍人。日露戦争の日本海海戦でバルチック艦隊を破り、「東洋のネルソン」と称された。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -626,7 +655,8 @@
             "phone_number": "03-3478-3001",
             "email": "maresuke.nogi@fujita-kanko.co.jp",
             "memo": "長州藩出身の陸軍軍人。日露戦争の旅順攻囲戦を指揮した。明治天皇に殉死したことで知られる。",
-            "display_order": 1
+            "display_order": 1,
+            "tenant_id": 1
         }
     }
 ]

@@ -16,7 +16,8 @@
             "memo": "自動車事業および金融その他の事業",
             "regist_status": 4,
             "basic_contract_date": "2024-01-15",
-            "basic_contract_date_haken": "2024-01-15"
+            "basic_contract_date_haken": "2024-01-15",
+            "tenant_id": 1
         }
     },
     {
@@ -36,7 +37,8 @@
             "memo": "医薬品の製造・販売および輸出入",
             "regist_status": 4,
             "basic_contract_date": "2024-02-01",
-            "basic_contract_date_haken": "2024-02-01"
+            "basic_contract_date_haken": "2024-02-01",
+            "tenant_id": 1
         }
     },
     {
@@ -56,7 +58,8 @@
             "memo": "",
             "regist_status": 4,
             "basic_contract_date": "2024-03-01",
-            "basic_contract_date_haken": "2024-03-01"
+            "basic_contract_date_haken": "2024-03-01",
+            "tenant_id": 1
         }
     },
     {
@@ -76,7 +79,8 @@
             "memo": "家庭用レジャー機器の製造・販売",
             "regist_status": 4,
             "basic_contract_date": "2024-04-01",
-            "basic_contract_date_haken": "2024-04-01"
+            "basic_contract_date_haken": "2024-04-01",
+            "tenant_id": 1
         }
     },
     {
@@ -96,7 +100,8 @@
             "memo": "",
             "regist_status": 2,
             "basic_contract_date": "2024-05-01",
-            "basic_contract_date_haken": "2024-05-01"
+            "basic_contract_date_haken": "2024-05-01",
+            "tenant_id": 1
         }
     },
     {
@@ -116,7 +121,8 @@
             "memo": "",
             "regist_status": 1,
             "basic_contract_date": "2024-06-01",
-            "basic_contract_date_haken": "2024-06-01"
+            "basic_contract_date_haken": "2024-06-01",
+            "tenant_id": 1
         }
     },
     {
@@ -136,7 +142,8 @@
             "memo": "",
             "regist_status": 3,
             "basic_contract_date": "2024-07-01",
-            "basic_contract_date_haken": "2024-07-01"
+            "basic_contract_date_haken": "2024-07-01",
+            "tenant_id": 1
         }
     },
     {
@@ -156,7 +163,8 @@
             "memo": "",
             "regist_status": 1,
             "basic_contract_date": "2024-08-01",
-            "basic_contract_date_haken": "2024-08-01"
+            "basic_contract_date_haken": "2024-08-01",
+            "tenant_id": 1
         }
     },
     {
@@ -176,7 +184,8 @@
             "memo": "",
             "regist_status": 4,
             "basic_contract_date": "2024-09-01",
-            "basic_contract_date_haken": "2024-09-01"
+            "basic_contract_date_haken": "2024-09-01",
+            "tenant_id": 1
         }
     },
     {
@@ -196,7 +205,8 @@
             "memo": "輸送用機器製造",
             "regist_status": 1,
             "basic_contract_date": "2024-10-01",
-            "basic_contract_date_haken": "2024-10-01"
+            "basic_contract_date_haken": "2024-10-01",
+            "tenant_id": 1
         }
     },
     {
@@ -216,7 +226,8 @@
             "memo": "コンビニエンスストアのフランチャイズチェーン本部",
             "regist_status": 1,
             "basic_contract_date": "2024-11-01",
-            "basic_contract_date_haken": "2024-11-01"
+            "basic_contract_date_haken": "2024-11-01",
+            "tenant_id": 1
         }
     },
     {
@@ -236,7 +247,8 @@
             "memo": "コンビニエンスストア「ローソン」のフランチャイズチェーン展開",
             "regist_status": 1,
             "basic_contract_date": "2024-12-01",
-            "basic_contract_date_haken": "2024-12-01"
+            "basic_contract_date_haken": "2024-12-01",
+            "tenant_id": 1
         }
     },
     {
@@ -256,7 +268,8 @@
             "memo": "",
             "regist_status": 1,
             "basic_contract_date": "2023-01-15",
-            "basic_contract_date_haken": "2023-01-15"
+            "basic_contract_date_haken": "2023-01-15",
+            "tenant_id": 1
         }
     },
     {
@@ -276,7 +289,8 @@
             "memo": "",
             "regist_status": 1,
             "basic_contract_date": "2023-02-15",
-            "basic_contract_date_haken": "2023-02-15"
+            "basic_contract_date_haken": "2023-02-15",
+            "tenant_id": 1
         }
     },
     {
@@ -296,7 +310,8 @@
             "memo": "",
             "regist_status": 1,
             "basic_contract_date": "2023-03-15",
-            "basic_contract_date_haken": "2023-03-15"
+            "basic_contract_date_haken": "2023-03-15",
+            "tenant_id": 1
         }
     },
     {
@@ -316,7 +331,8 @@
             "memo": "通信システム、情報処理システムおよび電子デバイスの製造・販売ならびにこれらに関するサービスの提供",
             "regist_status": 1,
             "basic_contract_date": "2023-04-15",
-            "basic_contract_date_haken": "2023-04-15"
+            "basic_contract_date_haken": "2023-04-15",
+            "tenant_id": 1
         }
     },
     {
@@ -336,7 +352,8 @@
             "memo": "ベビー・子ども用品の専門店チェーン",
             "regist_status": 1,
             "basic_contract_date": "2023-05-15",
-            "basic_contract_date_haken": "2023-05-15"
+            "basic_contract_date_haken": "2023-05-15",
+            "tenant_id": 1
         }
     },
     {
@@ -356,7 +373,8 @@
             "memo": "",
             "regist_status": 1,
             "basic_contract_date": "2023-06-15",
-            "basic_contract_date_haken": "2023-06-15"
+            "basic_contract_date_haken": "2023-06-15",
+            "tenant_id": 1
         }
     },
     {
@@ -376,7 +394,8 @@
             "memo": "スーパーマーケット",
             "regist_status": 3,
             "basic_contract_date": "2023-07-15",
-            "basic_contract_date_haken": "2023-07-15"
+            "basic_contract_date_haken": "2023-07-15",
+            "tenant_id": 1
         }
     },
     {
@@ -396,7 +415,8 @@
             "memo": "",
             "regist_status": 3,
             "basic_contract_date": "2023-08-15",
-            "basic_contract_date_haken": "2023-08-15"
+            "basic_contract_date_haken": "2023-08-15",
+            "tenant_id": 1
         }
     },
     {
@@ -416,7 +436,8 @@
             "memo": "",
             "regist_status": 1,
             "basic_contract_date": "2023-09-15",
-            "basic_contract_date_haken": "2023-09-15"
+            "basic_contract_date_haken": "2023-09-15",
+            "tenant_id": 1
         }
     },
     {
@@ -436,7 +457,8 @@
             "memo": "ホテル・旅館・飲食店業他",
             "regist_status": 1,
             "basic_contract_date": "2023-10-15",
-            "basic_contract_date_haken": "2023-10-15"
+            "basic_contract_date_haken": "2023-10-15",
+            "tenant_id": 1
         }
     }
 ]

@@ -28,7 +28,8 @@
             "resignation_date": null,
             "department_code": "SOMU",
             "employment_type": 1,
-            "memo": "楽市楽座による経済活性化、および長篠の戦いでの戦術的勝利。"
+            "memo": "楽市楽座による経済活性化、および長篠の戦いでの戦術的勝利。",
+            "tenant_id": 1
         }
     },
     {
@@ -60,7 +61,8 @@
             "resignation_date": null,
             "department_code": "EIGYO",
             "employment_type": 2,
-            "memo": "人懐っこく交渉上手。派手好きで、モチベーション維持に報酬が効果的。"
+            "memo": "人懐っこく交渉上手。派手好きで、モチベーション維持に報酬が効果的。",
+            "tenant_id": 1
         }
     },
     {
@@ -92,7 +94,8 @@
             "resignation_date": "2024-03-31",
             "department_code": "DEV",
             "employment_type": 4,
-            "memo": "忍耐強く、慎重な性格。長期的な視点での計画を得意とする。"
+            "memo": "忍耐強く、慎重な性格。長期的な視点での計画を得意とする。",
+            "tenant_id": 1
         }
     },
     {
@@ -124,7 +127,8 @@
             "resignation_date": null,
             "department_code": null,
             "employment_type": null,
-            "memo": "戦略的思考に長け、風林火山の旗印で知られる。組織の規律を重んじる。"
+            "memo": "戦略的思考に長け、風林火山の旗印で知られる。組織の規律を重んじる。",
+            "tenant_id": 1
         }
     },
     {
@@ -156,7 +160,8 @@
             "resignation_date": null,
             "department_code": null,
             "employment_type": null,
-            "memo": "義理堅く、正義感が強い。ライバルとの競争で燃えるタイプ。"
+            "memo": "義理堅く、正義感が強い。ライバルとの競争で燃えるタイプ。",
+            "tenant_id": 1
         }
     },
     {
@@ -188,7 +193,8 @@
             "resignation_date": null,
             "department_code": "DEV",
             "employment_type": 1,
-            "memo": "奥州地域での勢力拡大と、仙台藩の礎を築いた。外交手腕も評価が高い。"
+            "memo": "奥州地域での勢力拡大と、仙台藩の礎を築いた。外交手腕も評価が高い。",
+            "tenant_id": 1
         }
     },
     {
@@ -220,7 +226,8 @@
             "resignation_date": null,
             "department_code": "SOMU",
             "employment_type": 2,
-            "memo": "三本の矢の教えで知られる。チームワークと情報収集を重視する慎重派。"
+            "memo": "三本の矢の教えで知られる。チームワークと情報収集を重視する慎重派。",
+            "tenant_id": 1
         }
     },
     {
@@ -252,7 +259,8 @@
             "resignation_date": null,
             "department_code": null,
             "employment_type": null,
-            "memo": "一度決めたことは最後までやり遂げる粘り強さを持つ。四国統一の実績あり。"
+            "memo": "一度決めたことは最後までやり遂げる粘り強さを持つ。四国統一の実績あり。",
+            "tenant_id": 1
         }
     },
     {
@@ -284,7 +292,8 @@
             "resignation_date": null,
             "department_code": null,
             "employment_type": null,
-            "memo": "退却戦での采配は見事。困難な状況でも活路を見出す突破力がある。"
+            "memo": "退却戦での采配は見事。困難な状況でも活路を見出す突破力がある。",
+            "tenant_id": 1
         }
     },
     {
@@ -316,7 +325,8 @@
             "resignation_date": null,
             "department_code": "SOMU",
             "employment_type": 4,
-            "memo": "領民思いの民政家。リスク管理に長け、安定した組織運営を行う。"
+            "memo": "領民思いの民政家。リスク管理に長け、安定した組織運営を行う。",
+            "tenant_id": 1
         }
     },
     {
@@ -348,7 +358,8 @@
             "resignation_date": "2023-12-31",
             "department_code": "EIGYO",
             "employment_type": 1,
-            "memo": "一乗谷文化の発展に貢献。領内の安定統治に努めた。"
+            "memo": "一乗谷文化の発展に貢献。領内の安定統治に努めた。",
+            "tenant_id": 1
         }
     },
     {
@@ -380,7 +391,8 @@
             "resignation_date": null,
             "department_code": "DEV",
             "employment_type": 2,
-            "memo": "先進的な思考を持ち、一時は天下人とも称された。体調管理に注意が必要。"
+            "memo": "先進的な思考を持ち、一時は天下人とも称された。体調管理に注意が必要。",
+            "tenant_id": 1
         }
     },
     {
@@ -412,7 +424,8 @@
             "resignation_date": null,
             "department_code": "SOMU",
             "employment_type": 4,
-            "memo": "名門出身でプライドが高い。他者との連携を模索するが、しばしば対立する。"
+            "memo": "名門出身でプライドが高い。他者との連携を模索するが、しばしば対立する。",
+            "tenant_id": 1
         }
     },
     {
@@ -444,7 +457,8 @@
             "resignation_date": null,
             "department_code": "EIGYO",
             "employment_type": 1,
-            "memo": "高天神城の攻略など、武田家の最大版図を築いた実績を持つ。"
+            "memo": "高天神城の攻略など、武田家の最大版図を築いた実績を持つ。",
+            "tenant_id": 1
         }
     },
     {
@@ -475,7 +489,8 @@
             "hire_date": "2018-10-01",
             "resignation_date": "2023-06-30",
             "department_code": "DEV",
-            "memo": "知的で教養が高いが、ミステリアスな一面も。信頼関係の構築に時間を要する。登録不可。"
+            "memo": "知的で教養が高いが、ミステリアスな一面も。信頼関係の構築に時間を要する。登録不可。",
+            "tenant_id": 1
         }
     },
     {
@@ -507,7 +522,8 @@
             "resignation_date": null,
             "department_code": "SOMU",
             "employment_type": 2,
-            "memo": "「鬼柴田」と恐れられる猛将。猪突猛進タイプだが、義理人情に厚い。"
+            "memo": "「鬼柴田」と恐れられる猛将。猪突猛進タイプだが、義理人情に厚い。",
+            "tenant_id": 1
         }
     },
     {
@@ -539,7 +555,8 @@
             "resignation_date": null,
             "department_code": null,
             "employment_type": null,
-            "memo": "誠実で義理堅い性格。人間関係の板挟みに悩みやすい。"
+            "memo": "誠実で義理堅い性格。人間関係の板挟みに悩みやすい。",
+            "tenant_id": 1
         }
     },
     {
@@ -570,7 +587,8 @@
             "hire_date": "2019-09-01",
             "resignation_date": "2024-01-31",
             "department_code": "DEV",
-            "memo": "目的のためには手段を選ばない大胆さを持つ。美術品に対する造詣が深い。登録不可。"
+            "memo": "目的のためには手段を選ばない大胆さを持つ。美術品に対する造詣が深い。登録不可。",
+            "tenant_id": 1
         }
     },
     {
@@ -602,7 +620,8 @@
             "resignation_date": null,
             "department_code": null,
             "employment_type": null,
-            "memo": "天才軍師と名高い。冷静沈着で、時に非情な判断も下す。"
+            "memo": "天才軍師と名高い。冷静沈着で、時に非情な判断も下す。",
+            "tenant_id": 1
         }
     },
     {
@@ -634,7 +653,8 @@
             "resignation_date": null,
             "department_code": "EIGYO",
             "employment_type": 4,
-            "memo": "実務能力に長けた秀才。正義感が強く、融通が利かない面がある。"
+            "memo": "実務能力に長けた秀才。正義感が強く、融通が利かない面がある。",
+            "tenant_id": 1
         }
     },
     {
@@ -666,7 +686,8 @@
             "resignation_date": null,
             "department_code": "DEV",
             "employment_type": 1,
-            "memo": "関ヶ原の戦いで先鋒を務め、徳川軍の勝利に大きく貢献。彦根藩の初代藩主。"
+            "memo": "関ヶ原の戦いで先鋒を務め、徳川軍の勝利に大きく貢献。彦根藩の初代藩主。",
+            "tenant_id": 1
         }
     },
     {
@@ -698,7 +719,8 @@
             "resignation_date": null,
             "department_code": null,
             "employment_type": null,
-            "memo": "「愛」の兜で有名。義を重んじ、主君への忠誠心が非常に高い。"
+            "memo": "「愛」の兜で有名。義を重んじ、主君への忠誠心が非常に高い。",
+            "tenant_id": 1
         }
     },
     {
@@ -730,7 +752,8 @@
             "resignation_date": null,
             "department_code": null,
             "employment_type": null,
-            "memo": "「鬼義重」と呼ばれるほどの武勇を誇る。現実的な判断力も併せ持つ。"
+            "memo": "「鬼義重」と呼ばれるほどの武勇を誇る。現実的な判断力も併せ持つ。",
+            "tenant_id": 1
         }
     },
     {
@@ -762,7 +785,8 @@
             "resignation_date": null,
             "department_code": "DEV",
             "employment_type": 2,
-            "memo": "「我に七難八苦を与えたまえ」と願った不屈の精神の持ち主。逆境に強い。"
+            "memo": "「我に七難八苦を与えたまえ」と願った不屈の精神の持ち主。逆境に強い。",
+            "tenant_id": 1
         }
     },
     {
@@ -794,7 +818,8 @@
             "resignation_date": null,
             "department_code": "SOMU",
             "employment_type": 4,
-            "memo": "主君を支える補佐役として有能。実直な仕事ぶりで信頼が厚い。"
+            "memo": "主君を支える補佐役として有能。実直な仕事ぶりで信頼が厚い。",
+            "tenant_id": 1
         }
     },
     {
@@ -826,7 +851,8 @@
             "resignation_date": null,
             "department_code": "EIGYO",
             "employment_type": 1,
-            "memo": "ラテン語に堪能で、西洋文化の知識が豊富。多様な価値観の橋渡し役を担う。"
+            "memo": "ラテン語に堪能で、西洋文化の知識が豊富。多様な価値観の橋渡し役を担う。",
+            "tenant_id": 1
         }
     },
     {
@@ -858,7 +884,8 @@
             "resignation_date": null,
             "department_code": "DEV",
             "employment_type": 2,
-            "memo": "面倒見が良く、多くの人々から慕われる姉御肌。組織の潤滑油的存在。"
+            "memo": "面倒見が良く、多くの人々から慕われる姉御肌。組織の潤滑油的存在。",
+            "tenant_id": 1
         }
     },
     {
@@ -890,7 +917,8 @@
             "resignation_date": null,
             "department_code": null,
             "employment_type": null,
-            "memo": "プライドが高く、感情的な一面がある。周囲とのコミュニケーションに配慮が必要。"
+            "memo": "プライドが高く、感情的な一面がある。周囲とのコミュニケーションに配慮が必要。",
+            "tenant_id": 1
         }
     },
     {
@@ -922,7 +950,8 @@
             "resignation_date": null,
             "department_code": null,
             "employment_type": null,
-            "memo": "「蝮」の娘。冷静で知的だが、本心を見せないミステリアスな女性。"
+            "memo": "「蝮」の娘。冷静で知的だが、本心を見せないミステリアスな女性。",
+            "tenant_id": 1
         }
     },
     {
@@ -954,7 +983,8 @@
             "resignation_date": null,
             "department_code": "DEV",
             "employment_type": 4,
-            "memo": "絶世の美女と名高い。運命に翻弄されることが多いが、芯は強い。"
+            "memo": "絶世の美女と名高い。運命に翻弄されることが多いが、芯は強い。",
+            "tenant_id": 1
         }
     },
     {
@@ -986,7 +1016,8 @@
             "resignation_date": null,
             "department_code": null,
             "employment_type": null,
-            "memo": "情熱的な伝道師。新しい価値観を広めることに情熱を燃やす。異文化コミュニケーションが得意。"
+            "memo": "情熱的な伝道師。新しい価値観を広めることに情熱を燃やす。異文化コミュニケーションが得意。",
+            "tenant_id": 1
         }
     },
     {
@@ -1018,7 +1049,8 @@
             "hire_date": "2020-08-01",
             "resignation_date": null,
             "department_code": null,
-            "memo": "優れた観察眼を持つ記録者。客観的な分析と報告が得意。"
+            "memo": "優れた観察眼を持つ記録者。客観的な分析と報告が得意。",
+            "tenant_id": 1
         }
     },
     {
@@ -1050,7 +1082,8 @@
             "resignation_date": null,
             "department_code": "DEV",
             "employment_type": 1,
-            "memo": "外交顧問として幕府に仕え、航海術や造船技術を伝えた。日英間の架け橋となった。"
+            "memo": "外交顧問として幕府に仕え、航海術や造船技術を伝えた。日英間の架け橋となった。",
+            "tenant_id": 1
         }
     },
     {
@@ -1082,7 +1115,8 @@
             "resignation_date": null,
             "department_code": "EIGYO",
             "employment_type": 2,
-            "memo": "「白頭巾」で知られる智将。病気を患いながらも義理を重んじ、最後まで石田三成を支えた忠義の人。"
+            "memo": "「白頭巾」で知られる智将。病気を患いながらも義理を重んじ、最後まで石田三成を支えた忠義の人。",
+            "tenant_id": 1
         }
     }
 ]

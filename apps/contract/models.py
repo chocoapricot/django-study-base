@@ -1,5 +1,5 @@
 from django.db import models
-from apps.common.models import MyModel
+from apps.common.models import MyTenantModel
 from apps.common.constants import Constants
 from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.staff.models import Staff
@@ -10,7 +10,7 @@ import os
 
 User = get_user_model()
 
-class ClientContract(MyModel):
+class ClientContract(MyTenantModel):
     """
     クライアント（取引先企業）との契約情報を管理するモデル。
     契約期間、金額、契約種別などを記録する。
@@ -320,7 +320,7 @@ class ClientContract(MyModel):
         return None
 
 
-class ClientContractPrint(MyModel):
+class ClientContractPrint(MyTenantModel):
     """
     クライアント契約書の発行履歴を管理するモデル。
     """
@@ -393,7 +393,7 @@ class ClientContractPrint(MyModel):
         super().save(*args, **kwargs)
 
 
-class StaffContract(MyModel):
+class StaffContract(MyTenantModel):
     """
     スタッフ（従業員・フリーランス等）との契約情報を管理するモデル。
     雇用形態、契約期間、金額などを記録する。
@@ -645,7 +645,7 @@ class StaffContract(MyModel):
                     )
 
 
-class StaffContractPrint(MyModel):
+class StaffContractPrint(MyTenantModel):
     """
     スタッフ契約書の発行履歴を管理するモデル。
     """
@@ -703,7 +703,7 @@ class StaffContractPrint(MyModel):
         super().save(*args, **kwargs)
 
 
-class ClientContractNumber(MyModel):
+class ClientContractNumber(MyTenantModel):
     """
     クライアント契約番号を管理するためのモデル。
     クライアントコードと年月をキーに、最新の連番を保持する。
@@ -723,7 +723,7 @@ class ClientContractNumber(MyModel):
         return f"{self.client_code}-{self.year_month}-{self.last_number}"
 
 
-class StaffContractNumber(MyModel):
+class StaffContractNumber(MyTenantModel):
     """
     スタッフ契約番号を管理するためのモデル。
     社員番号と年月をキーに、最新の連番を保持する。
@@ -743,7 +743,7 @@ class StaffContractNumber(MyModel):
         return f"{self.employee_no}-{self.year_month}-{self.last_number}"
 
 
-class ClientContractHaken(MyModel):
+class ClientContractHaken(MyTenantModel):
     """
     クライアント契約派遣情報
     """
@@ -835,7 +835,7 @@ class ClientContractHaken(MyModel):
         return f"{self.client_contract}"
 
 
-class ClientContractTtp(MyModel):
+class ClientContractTtp(MyTenantModel):
     """
     クライアント契約紹介予定派遣情報
     """
@@ -868,7 +868,7 @@ class ClientContractTtp(MyModel):
         return f"{self.haken.client_contract}"
 
 
-class ClientContractHakenExempt(MyModel):
+class ClientContractHakenExempt(MyTenantModel):
     """
     クライアント契約派遣抵触日制限外情報
     """
@@ -889,7 +889,7 @@ class ClientContractHakenExempt(MyModel):
         return f"{self.haken.client_contract}"
 
 
-class ContractAssignment(MyModel):
+class ContractAssignment(MyTenantModel):
     """
     クライアント契約とスタッフ契約の関連付けを管理するモデル。
     """
@@ -1119,7 +1119,7 @@ class ContractAssignment(MyModel):
                 )
 
 
-class StaffContractTeishokubi(MyModel):
+class StaffContractTeishokubi(MyTenantModel):
     """
     スタッフの個人抵触日を管理するモデル。
     """
@@ -1139,7 +1139,7 @@ class StaffContractTeishokubi(MyModel):
         return f"{self.staff_email} - {self.organization_name}"
 
 
-class StaffContractTeishokubiDetail(MyModel):
+class StaffContractTeishokubiDetail(MyTenantModel):
     """
     スタッフの個人抵触日の算出詳細を管理するモデル。
     """
@@ -1164,7 +1164,7 @@ class StaffContractTeishokubiDetail(MyModel):
         return f"{self.teishokubi} - {self.assignment_start_date}"
 
 
-class ContractAssignmentConfirm(MyModel):
+class ContractAssignmentConfirm(MyTenantModel):
     """
     契約割り当て確認情報を管理するモデル。
     延長予定か終了かの確認と、終了の場合の理由を記録する。
@@ -1212,7 +1212,7 @@ class ContractAssignmentConfirm(MyModel):
             raise ValidationError('終了予定の場合は終了理由を入力してください。')
 
 
-class ContractAssignmentHakenPrint(MyModel):
+class ContractAssignmentHakenPrint(MyTenantModel):
     """
     契約アサイン派遣関連書類の印刷履歴を管理するモデル。
     """
@@ -1279,7 +1279,7 @@ class ContractAssignmentHakenPrint(MyModel):
         super().save(*args, **kwargs)
 
 
-class ContractAssignmentHaken(MyModel):
+class ContractAssignmentHaken(MyTenantModel):
     """
     契約割り当て派遣雇用安定措置情報を管理するモデル。
     派遣契約の場合の雇用安定措置に関する情報を記録する。

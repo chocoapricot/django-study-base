@@ -10,7 +10,8 @@
             "inquiry": 1,
             "user": 2,
             "content": "今月の勤怠入力の締め切りは何日まででしょうか？ (Inquiry 1 - Msg 1)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -24,7 +25,8 @@
             "inquiry": 1,
             "user": 1,
             "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 1 - Msg 2)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -38,7 +40,8 @@
             "inquiry": 1,
             "user": 2,
             "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 1 - Msg 3)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -52,7 +55,8 @@
             "inquiry": 1,
             "user": 1,
             "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 1 - Msg 4)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -66,7 +70,8 @@
             "inquiry": 1,
             "user": 2,
             "content": "確認しました！ありがとうございます。 (Inquiry 1 - Msg 5)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -80,7 +85,8 @@
             "inquiry": 1,
             "user": 1,
             "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 1 - Msg 6)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -94,7 +100,8 @@
             "inquiry": 2,
             "user": 3,
             "content": "有給休暇を申請したいのですが、システム上の操作方法を教えてください。 (Inquiry 2 - Msg 1)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -108,7 +115,8 @@
             "inquiry": 2,
             "user": 1,
             "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 2 - Msg 2)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -122,7 +130,8 @@
             "inquiry": 2,
             "user": 3,
             "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 2 - Msg 3)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -136,7 +145,8 @@
             "inquiry": 2,
             "user": 1,
             "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 2 - Msg 4)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -150,7 +160,8 @@
             "inquiry": 2,
             "user": 3,
             "content": "確認しました！ありがとうございます。 (Inquiry 2 - Msg 5)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -164,7 +175,8 @@
             "inquiry": 2,
             "user": 1,
             "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 2 - Msg 6)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -178,7 +190,8 @@
             "inquiry": 3,
             "user": 4,
             "content": "年末調整の書類の提出期限はいつまででしょうか？ (Inquiry 3 - Msg 1)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -192,7 +205,8 @@
             "inquiry": 3,
             "user": 1,
             "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 3 - Msg 2)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -206,7 +220,8 @@
             "inquiry": 3,
             "user": 4,
             "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 3 - Msg 3)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -220,7 +235,8 @@
             "inquiry": 3,
             "user": 1,
             "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 3 - Msg 4)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -234,7 +250,8 @@
             "inquiry": 3,
             "user": 4,
             "content": "確認しました！ありがとうございます。 (Inquiry 3 - Msg 5)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -248,7 +265,8 @@
             "inquiry": 3,
             "user": 1,
             "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 3 - Msg 6)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -262,7 +280,8 @@
             "inquiry": 4,
             "user": 2,
             "content": "バスを利用した場合の領収書は必要ですか？ (Inquiry 4 - Msg 1)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -276,7 +295,8 @@
             "inquiry": 4,
             "user": 1,
             "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 4 - Msg 2)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -290,7 +310,8 @@
             "inquiry": 4,
             "user": 2,
             "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 4 - Msg 3)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -304,7 +325,8 @@
             "inquiry": 4,
             "user": 1,
             "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 4 - Msg 4)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -318,7 +340,8 @@
             "inquiry": 4,
             "user": 2,
             "content": "確認しました！ありがとうございます。 (Inquiry 4 - Msg 5)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -332,7 +355,8 @@
             "inquiry": 4,
             "user": 1,
             "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 4 - Msg 6)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -346,7 +370,8 @@
             "inquiry": 5,
             "user": 3,
             "content": "来月の健康診断の日程を変更したいのですが、可能でしょうか？ (Inquiry 5 - Msg 1)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -360,7 +385,8 @@
             "inquiry": 5,
             "user": 1,
             "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 5 - Msg 2)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -374,7 +400,8 @@
             "inquiry": 5,
             "user": 3,
             "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 5 - Msg 3)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -388,7 +415,8 @@
             "inquiry": 5,
             "user": 1,
             "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 5 - Msg 4)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -402,7 +430,8 @@
             "inquiry": 5,
             "user": 3,
             "content": "確認しました！ありがとうございます。 (Inquiry 5 - Msg 5)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -416,7 +445,8 @@
             "inquiry": 5,
             "user": 1,
             "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 5 - Msg 6)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -430,7 +460,8 @@
             "inquiry": 6,
             "user": 4,
             "content": "現在の社会保険の加入状況を確認したいです。 (Inquiry 6 - Msg 1)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -444,7 +475,8 @@
             "inquiry": 6,
             "user": 1,
             "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 6 - Msg 2)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -458,7 +490,8 @@
             "inquiry": 6,
             "user": 4,
             "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 6 - Msg 3)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -472,7 +505,8 @@
             "inquiry": 6,
             "user": 1,
             "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 6 - Msg 4)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -486,7 +520,8 @@
             "inquiry": 6,
             "user": 4,
             "content": "確認しました！ありがとうございます。 (Inquiry 6 - Msg 5)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -500,7 +535,8 @@
             "inquiry": 6,
             "user": 1,
             "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 6 - Msg 6)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -514,7 +550,8 @@
             "inquiry": 7,
             "user": 2,
             "content": "先月分の給与明細を紛失してしまいました。再発行をお願いできますか？ (Inquiry 7 - Msg 1)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -528,7 +565,8 @@
             "inquiry": 7,
             "user": 1,
             "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 7 - Msg 2)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -542,7 +580,8 @@
             "inquiry": 7,
             "user": 2,
             "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 7 - Msg 3)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -556,7 +595,8 @@
             "inquiry": 7,
             "user": 1,
             "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 7 - Msg 4)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -570,7 +610,8 @@
             "inquiry": 7,
             "user": 2,
             "content": "確認しました！ありがとうございます。 (Inquiry 7 - Msg 5)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -584,7 +625,8 @@
             "inquiry": 7,
             "user": 1,
             "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 7 - Msg 6)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -598,7 +640,8 @@
             "inquiry": 8,
             "user": 3,
             "content": "引っ越しをしたので住所変更の手続きをしたいです。 (Inquiry 8 - Msg 1)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -612,7 +655,8 @@
             "inquiry": 8,
             "user": 1,
             "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 8 - Msg 2)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -626,7 +670,8 @@
             "inquiry": 8,
             "user": 3,
             "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 8 - Msg 3)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -640,7 +685,8 @@
             "inquiry": 8,
             "user": 1,
             "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 8 - Msg 4)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -654,7 +700,8 @@
             "inquiry": 8,
             "user": 3,
             "content": "確認しました！ありがとうございます。 (Inquiry 8 - Msg 5)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -668,7 +715,8 @@
             "inquiry": 8,
             "user": 1,
             "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 8 - Msg 6)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -682,7 +730,8 @@
             "inquiry": 9,
             "user": 4,
             "content": "外部の研修に参加したいのですが、費用補助の制度はありますか？ (Inquiry 9 - Msg 1)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -696,7 +745,8 @@
             "inquiry": 9,
             "user": 1,
             "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 9 - Msg 2)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -710,7 +760,8 @@
             "inquiry": 9,
             "user": 4,
             "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 9 - Msg 3)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -724,7 +775,8 @@
             "inquiry": 9,
             "user": 1,
             "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 9 - Msg 4)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -738,7 +790,8 @@
             "inquiry": 9,
             "user": 4,
             "content": "確認しました！ありがとうございます。 (Inquiry 9 - Msg 5)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -752,7 +805,8 @@
             "inquiry": 9,
             "user": 1,
             "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 9 - Msg 6)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -766,7 +820,8 @@
             "inquiry": 10,
             "user": 2,
             "content": "弊社の退職金制度の概要を知りたいです。 (Inquiry 10 - Msg 1)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -780,7 +835,8 @@
             "inquiry": 10,
             "user": 1,
             "content": "お問い合わせありがとうございます。担当の者です。 (Inquiry 10 - Msg 2)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -794,7 +850,8 @@
             "inquiry": 10,
             "user": 2,
             "content": "よろしくお願いします。追加で確認したいのですが... (Inquiry 10 - Msg 3)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -808,7 +865,8 @@
             "inquiry": 10,
             "user": 1,
             "content": "承知いたしました。詳細はマニュアルのP10をご確認ください。 (Inquiry 10 - Msg 4)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -822,7 +880,8 @@
             "inquiry": 10,
             "user": 2,
             "content": "確認しました！ありがとうございます。 (Inquiry 10 - Msg 5)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     },
     {
@@ -836,7 +895,8 @@
             "inquiry": 10,
             "user": 1,
             "content": "解決したようで良かったです。他にご不明点はありますか？ (Inquiry 10 - Msg 6)",
-            "is_hidden": false
+            "is_hidden": false,
+            "tenant_id": 1
         }
     }
 ]

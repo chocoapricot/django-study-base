@@ -1,87 +1,92 @@
 [
-{
-    "model": "master.employmenttype",
-    "pk": 1,
-    "fields": {
-        "version": 1762959796242030,
-        "created_at": "2025-10-13T15:24:09.558Z",
-        "created_by": 1,
-        "updated_at": "2025-11-12T15:19:02.894Z",
-        "updated_by": 1,
-        "name": "正社員",
-        "display_order": 15,
-        "is_fixed_term": false,
-        "worktime_pattern": 1,
-        "overtime_pattern": 1,
-        "is_active": true
+    {
+        "model": "master.employmenttype",
+        "pk": 1,
+        "fields": {
+            "version": 1762959796242030,
+            "created_at": "2025-10-13T15:24:09.558Z",
+            "created_by": 1,
+            "updated_at": "2025-11-12T15:19:02.894Z",
+            "updated_by": 1,
+            "name": "正社員",
+            "display_order": 15,
+            "is_fixed_term": false,
+            "worktime_pattern": 1,
+            "overtime_pattern": 1,
+            "is_active": true,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.employmenttype",
+        "pk": 2,
+        "fields": {
+            "version": 1762959838261470,
+            "created_at": "2025-10-13T15:24:30.056Z",
+            "created_by": 1,
+            "updated_at": "2025-11-12T15:19:44.913Z",
+            "updated_by": 1,
+            "name": "契約社員(有期)",
+            "display_order": 30,
+            "is_fixed_term": true,
+            "worktime_pattern": null,
+            "overtime_pattern": 1,
+            "is_active": true,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.employmenttype",
+        "pk": 3,
+        "fields": {
+            "version": 1762792292746092,
+            "created_at": "2025-10-13T15:25:05.407Z",
+            "created_by": 1,
+            "updated_at": "2025-10-17T14:29:04.116Z",
+            "updated_by": 1,
+            "name": "契約社員(無期)",
+            "display_order": 35,
+            "is_fixed_term": false,
+            "worktime_pattern": null,
+            "overtime_pattern": null,
+            "is_active": false,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.employmenttype",
+        "pk": 4,
+        "fields": {
+            "version": 1762959846688123,
+            "created_at": "2025-10-13T15:25:31.991Z",
+            "created_by": 1,
+            "updated_at": "2025-11-12T15:19:53.340Z",
+            "updated_by": 1,
+            "name": "派遣社員(有期)",
+            "display_order": 20,
+            "is_fixed_term": true,
+            "worktime_pattern": null,
+            "overtime_pattern": 1,
+            "is_active": true,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.employmenttype",
+        "pk": 5,
+        "fields": {
+            "version": 1762792292749630,
+            "created_at": "2025-10-13T15:25:53.130Z",
+            "created_by": 1,
+            "updated_at": "2025-10-17T14:29:33.208Z",
+            "updated_by": 1,
+            "name": "派遣社員(無期)",
+            "display_order": 25,
+            "is_fixed_term": false,
+            "worktime_pattern": null,
+            "overtime_pattern": null,
+            "is_active": false,
+            "tenant_id": 1
+        }
     }
-},
-{
-    "model": "master.employmenttype",
-    "pk": 2,
-    "fields": {
-        "version": 1762959838261470,
-        "created_at": "2025-10-13T15:24:30.056Z",
-        "created_by": 1,
-        "updated_at": "2025-11-12T15:19:44.913Z",
-        "updated_by": 1,
-        "name": "契約社員(有期)",
-        "display_order": 30,
-        "is_fixed_term": true,
-        "worktime_pattern": null,
-        "overtime_pattern": 1,
-        "is_active": true
-    }
-},
-{
-    "model": "master.employmenttype",
-    "pk": 3,
-    "fields": {
-        "version": 1762792292746092,
-        "created_at": "2025-10-13T15:25:05.407Z",
-        "created_by": 1,
-        "updated_at": "2025-10-17T14:29:04.116Z",
-        "updated_by": 1,
-        "name": "契約社員(無期)",
-        "display_order": 35,
-        "is_fixed_term": false,
-        "worktime_pattern": null,
-        "overtime_pattern": null,
-        "is_active": false
-    }
-},
-{
-    "model": "master.employmenttype",
-    "pk": 4,
-    "fields": {
-        "version": 1762959846688123,
-        "created_at": "2025-10-13T15:25:31.991Z",
-        "created_by": 1,
-        "updated_at": "2025-11-12T15:19:53.340Z",
-        "updated_by": 1,
-        "name": "派遣社員(有期)",
-        "display_order": 20,
-        "is_fixed_term": true,
-        "worktime_pattern": null,
-        "overtime_pattern": 1,
-        "is_active": true
-    }
-},
-{
-    "model": "master.employmenttype",
-    "pk": 5,
-    "fields": {
-        "version": 1762792292749630,
-        "created_at": "2025-10-13T15:25:53.130Z",
-        "created_by": 1,
-        "updated_at": "2025-10-17T14:29:33.208Z",
-        "updated_by": 1,
-        "name": "派遣社員(無期)",
-        "display_order": 25,
-        "is_fixed_term": false,
-        "worktime_pattern": null,
-        "overtime_pattern": null,
-        "is_active": false
-    }
-}
 ]

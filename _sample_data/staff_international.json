@@ -12,7 +12,8 @@
             "residence_card_number": "SP1506040701",
             "residence_status": "宣教師",
             "residence_period_from": "2025-08-15",
-            "residence_period_to": "2025-11-20"
+            "residence_period_to": "2025-11-20",
+            "tenant_id": 1
         }
     },
     {
@@ -28,7 +29,8 @@
             "residence_card_number": "PT1532060401",
             "residence_status": "宣教師・記録者",
             "residence_period_from": "2020-07-01",
-            "residence_period_to": "2026-03-31"
+            "residence_period_to": "2026-03-31",
+            "tenant_id": 1
         }
     },
     {
@@ -44,7 +46,8 @@
             "residence_card_number": "EN1564092401",
             "residence_status": "外交顧問・船大工",
             "residence_period_from": "2024-04-19",
-            "residence_period_to": "2024-05-16"
+            "residence_period_to": "2024-05-16",
+            "tenant_id": 1
         }
     }
 ]

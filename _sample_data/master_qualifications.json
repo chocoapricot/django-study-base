@@ -1,215 +1,228 @@
 [
-{
-    "model": "master.qualification",
-    "pk": 1,
-    "fields": {
-        "name": "IT・情報処理",
-        "level": 1,
-        "parent": null,
-        "description": "IT・情報処理関連の資格カテゴリ",
-        "is_active": true,
-        "display_order": 1,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z",
-        "created_by": 1,
-        "updated_by": 1
-    }
-},
-{
-    "model": "master.qualification",
-    "pk": 2,
-    "fields": {
-        "name": "基本情報技術者試験",
-        "level": 2,
-        "parent": 1,
-        "description": "情報処理技術者としての基本的な知識・技能を問う国家試験",
-        "is_active": true,
-        "display_order": 1,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z",
-        "created_by": 1,
-        "updated_by": 1
-    }
-},
-{
-    "model": "master.qualification",
-    "pk": 3,
-    "fields": {
-        "name": "応用情報技術者試験",
-        "level": 2,
-        "parent": 1,
-        "description": "高度IT人材となるために必要な応用的知識・技能を問う国家試験",
-        "is_active": true,
-        "display_order": 2,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z",
-        "created_by": 1,
-        "updated_by": 1
-    }
-},
-{
-    "model": "master.qualification",
-    "pk": 4,
-    "fields": {
-        "name": "情報セキュリティマネジメント試験",
-        "level": 2,
-        "parent": 1,
-        "description": "情報セキュリティマネジメントの計画・運用・評価・改善を行う知識・技能を問う国家試験",
-        "is_active": true,
-        "display_order": 3,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z",
-        "created_by": 1,
-        "updated_by": 1
-    }
-},
-{
-    "model": "master.qualification",
-    "pk": 5,
-    "fields": {
-        "name": "語学・国際",
-        "level": 1,
-        "parent": null,
-        "description": "語学・国際関連の資格カテゴリ",
-        "is_active": true,
-        "display_order": 2,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z",
-        "created_by": 1,
-        "updated_by": 1
-    }
-},
-{
-    "model": "master.qualification",
-    "pk": 6,
-    "fields": {
-        "name": "TOEIC",
-        "level": 2,
-        "parent": 5,
-        "description": "英語によるコミュニケーション能力を測定するテスト",
-        "is_active": true,
-        "display_order": 1,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z",
-        "created_by": 1,
-        "updated_by": 1
-    }
-},
-{
-    "model": "master.qualification",
-    "pk": 7,
-    "fields": {
-        "name": "英検",
-        "level": 2,
-        "parent": 5,
-        "description": "実用英語技能検定",
-        "is_active": true,
-        "display_order": 2,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z",
-        "created_by": 1,
-        "updated_by": 1
-    }
-},
-{
-    "model": "master.qualification",
-    "pk": 8,
-    "fields": {
-        "name": "ビジネス・経営",
-        "level": 1,
-        "parent": null,
-        "description": "ビジネス・経営関連の資格カテゴリ",
-        "is_active": true,
-        "display_order": 3,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z",
-        "created_by": 1,
-        "updated_by": 1
-    }
-},
-{
-    "model": "master.qualification",
-    "pk": 9,
-    "fields": {
-        "name": "中小企業診断士",
-        "level": 2,
-        "parent": 8,
-        "description": "中小企業の経営課題に対応するための診断・助言を行う国家資格",
-        "is_active": true,
-        "display_order": 1,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z",
-        "created_by": 1,
-        "updated_by": 1
-    }
-},
-{
-    "model": "master.qualification",
-    "pk": 10,
-    "fields": {
-        "name": "簿記検定",
-        "level": 2,
-        "parent": 8,
-        "description": "簿記に関する技能を測定する検定試験",
-        "is_active": true,
-        "display_order": 2,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z",
-        "created_by": 1,
-        "updated_by": 1
-    }
-},
-{
-    "model": "master.qualification",
-    "pk": 11,
-    "fields": {
-        "name": "プロジェクトマネジメント",
-        "level": 1,
-        "parent": null,
-        "description": "プロジェクトマネジメント関連の資格カテゴリ",
-        "is_active": true,
-        "display_order": 4,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z",
-        "created_by": 1,
-        "updated_by": 1
-    }
-},
-{
-    "model": "master.qualification",
-    "pk": 12,
-    "fields": {
-        "name": "PMP",
-        "level": 2,
-        "parent": 11,
-        "description": "Project Management Professional - プロジェクトマネジメントの国際資格",
-        "is_active": true,
-        "display_order": 1,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z",
-        "created_by": 1,
-        "updated_by": 1
-    }
-},
-{
-    "model": "master.qualification",
-    "pk": 13,
-    "fields": {
-        "name": "プロジェクトマネージャ試験",
-        "level": 2,
-        "parent": 11,
-        "description": "プロジェクトマネジメントに関する高度な知識・技能を問う国家試験",
-        "is_active": true,
-        "display_order": 2,
-        "created_at": "2024-01-01T00:00:00Z",
-        "updated_at": "2024-01-01T00:00:00Z",
-        "created_by": 1,
-        "updated_by": 1
-    }
-},
-{
-    "model": "master.qualification",
-    "pk": 14,
+    {
+        "model": "master.qualification",
+        "pk": 1,
+        "fields": {
+            "name": "IT・情報処理",
+            "level": 1,
+            "parent": null,
+            "description": "IT・情報処理関連の資格カテゴリ",
+            "is_active": true,
+            "display_order": 1,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "created_by": 1,
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 2,
+        "fields": {
+            "name": "基本情報技術者試験",
+            "level": 2,
+            "parent": 1,
+            "description": "情報処理技術者としての基本的な知識・技能を問う国家試験",
+            "is_active": true,
+            "display_order": 1,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "created_by": 1,
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 3,
+        "fields": {
+            "name": "応用情報技術者試験",
+            "level": 2,
+            "parent": 1,
+            "description": "高度IT人材となるために必要な応用的知識・技能を問う国家試験",
+            "is_active": true,
+            "display_order": 2,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "created_by": 1,
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 4,
+        "fields": {
+            "name": "情報セキュリティマネジメント試験",
+            "level": 2,
+            "parent": 1,
+            "description": "情報セキュリティマネジメントの計画・運用・評価・改善を行う知識・技能を問う国家試験",
+            "is_active": true,
+            "display_order": 3,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "created_by": 1,
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 5,
+        "fields": {
+            "name": "語学・国際",
+            "level": 1,
+            "parent": null,
+            "description": "語学・国際関連の資格カテゴリ",
+            "is_active": true,
+            "display_order": 2,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "created_by": 1,
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 6,
+        "fields": {
+            "name": "TOEIC",
+            "level": 2,
+            "parent": 5,
+            "description": "英語によるコミュニケーション能力を測定するテスト",
+            "is_active": true,
+            "display_order": 1,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "created_by": 1,
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 7,
+        "fields": {
+            "name": "英検",
+            "level": 2,
+            "parent": 5,
+            "description": "実用英語技能検定",
+            "is_active": true,
+            "display_order": 2,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "created_by": 1,
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 8,
+        "fields": {
+            "name": "ビジネス・経営",
+            "level": 1,
+            "parent": null,
+            "description": "ビジネス・経営関連の資格カテゴリ",
+            "is_active": true,
+            "display_order": 3,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "created_by": 1,
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 9,
+        "fields": {
+            "name": "中小企業診断士",
+            "level": 2,
+            "parent": 8,
+            "description": "中小企業の経営課題に対応するための診断・助言を行う国家資格",
+            "is_active": true,
+            "display_order": 1,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "created_by": 1,
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 10,
+        "fields": {
+            "name": "簿記検定",
+            "level": 2,
+            "parent": 8,
+            "description": "簿記に関する技能を測定する検定試験",
+            "is_active": true,
+            "display_order": 2,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "created_by": 1,
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 11,
+        "fields": {
+            "name": "プロジェクトマネジメント",
+            "level": 1,
+            "parent": null,
+            "description": "プロジェクトマネジメント関連の資格カテゴリ",
+            "is_active": true,
+            "display_order": 4,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "created_by": 1,
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 12,
+        "fields": {
+            "name": "PMP",
+            "level": 2,
+            "parent": 11,
+            "description": "Project Management Professional - プロジェクトマネジメントの国際資格",
+            "is_active": true,
+            "display_order": 1,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "created_by": 1,
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 13,
+        "fields": {
+            "name": "プロジェクトマネージャ試験",
+            "level": 2,
+            "parent": 11,
+            "description": "プロジェクトマネジメントに関する高度な知識・技能を問う国家試験",
+            "is_active": true,
+            "display_order": 2,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z",
+            "created_by": 1,
+            "updated_by": 1,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.qualification",
+        "pk": 14,
         "fields": {
             "name": "運転免許",
             "level": 1,
@@ -220,7 +233,8 @@
             "created_at": "2024-01-01T00:00:00Z",
             "updated_at": "2024-01-01T00:00:00Z",
             "created_by": 1,
-            "updated_by": 1
+            "updated_by": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -236,7 +250,8 @@
             "created_at": "2024-01-01T00:00:00Z",
             "updated_at": "2024-01-01T00:00:00Z",
             "created_by": 1,
-            "updated_by": 1
+            "updated_by": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -252,7 +267,8 @@
             "created_at": "2024-01-01T00:00:00Z",
             "updated_at": "2024-01-01T00:00:00Z",
             "created_by": 1,
-            "updated_by": 1
+            "updated_by": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -268,7 +284,8 @@
             "created_at": "2024-01-01T00:00:00Z",
             "updated_at": "2024-01-01T00:00:00Z",
             "created_by": 1,
-            "updated_by": 1
+            "updated_by": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -284,7 +301,8 @@
             "created_at": "2024-01-01T00:00:00Z",
             "updated_at": "2024-01-01T00:00:00Z",
             "created_by": 1,
-            "updated_by": 1
+            "updated_by": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -300,7 +318,8 @@
             "created_at": "2024-01-01T00:00:00Z",
             "updated_at": "2024-01-01T00:00:00Z",
             "created_by": 1,
-            "updated_by": 1
+            "updated_by": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -316,7 +335,8 @@
             "created_at": "2024-01-01T00:00:00Z",
             "updated_at": "2024-01-01T00:00:00Z",
             "created_by": 1,
-            "updated_by": 1
+            "updated_by": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -332,7 +352,8 @@
             "created_at": "2024-01-01T00:00:00Z",
             "updated_at": "2024-01-01T00:00:00Z",
             "created_by": 1,
-            "updated_by": 1
+            "updated_by": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -348,7 +369,8 @@
             "created_at": "2024-01-01T00:00:00Z",
             "updated_at": "2024-01-01T00:00:00Z",
             "created_by": 1,
-            "updated_by": 1
+            "updated_by": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -364,7 +386,8 @@
             "created_at": "2024-01-01T00:00:00Z",
             "updated_at": "2024-01-01T00:00:00Z",
             "created_by": 1,
-            "updated_by": 1
+            "updated_by": 1,
+            "tenant_id": 1
         }
     },
     {
@@ -380,7 +403,8 @@
             "created_at": "2024-01-01T00:00:00Z",
             "updated_at": "2024-01-01T00:00:00Z",
             "created_by": 1,
-            "updated_by": 1
+            "updated_by": 1,
+            "tenant_id": 1
         }
     }
 ]

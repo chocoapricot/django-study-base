@@ -1,8 +1,8 @@
 from django.db import models
-from ..common.models import MyModel
+from ..common.models import MyTenantModel
 
 
-class PhraseTemplateTitle(MyModel):
+class PhraseTemplateTitle(MyTenantModel):
     """
     汎用文言タイトルを管理するモデル。
     admin画面からのみ操作可能。
@@ -75,7 +75,7 @@ class PhraseTemplateTitle(MyModel):
             return None
 
 
-class PhraseTemplate(MyModel):
+class PhraseTemplate(MyTenantModel):
     """
     汎用文言テンプレートを管理するモデル。
     各種非加入理由などの定型文を管理する。

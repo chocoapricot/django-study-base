@@ -13,7 +13,8 @@
             "contact_date": "2026-02-10",
             "content": "定期訪問",
             "detail": "現在の稼働状況と新規案件のヒアリング",
-            "contact_type": 20
+            "contact_type": 20,
+            "tenant_id": 1
         }
     },
     {
@@ -30,7 +31,8 @@
             "contact_date": "2026-02-11",
             "content": "見積書の提出",
             "detail": "新規プロジェクトの見積書をメールで送付",
-            "contact_type": 50
+            "contact_type": 50,
+            "tenant_id": 1
         }
     },
     {
@@ -47,7 +49,8 @@
             "contact_date": "2026-02-12",
             "content": "契約締結の打ち合わせ",
             "detail": "基本契約書の修正案について協議",
-            "contact_type": 20
+            "contact_type": 20,
+            "tenant_id": 1
         }
     },
     {
@@ -64,7 +67,8 @@
             "contact_date": "2026-03-01",
             "content": "請求金額の確認",
             "detail": "今月の請求内容に相違がないか確認",
-            "contact_type": 10
+            "contact_type": 10,
+            "tenant_id": 1
         }
     },
     {
@@ -81,7 +85,8 @@
             "contact_date": "2026-03-14",
             "content": "人員補充の提案",
             "detail": "欠員が出たポジションへのスタッフ提案",
-            "contact_type": 20
+            "contact_type": 20,
+            "tenant_id": 1
         }
     }
 ]

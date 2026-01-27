@@ -1,8 +1,8 @@
 from django.db import models
-from apps.common.models import MyModel
+from apps.common.models import MyTenantModel
 
 
-class Qualification(MyModel):
+class Qualification(MyTenantModel):
     """
     資格情報を管理するマスターデータモデル。
     カテゴリと資格の2階層構造を持つ。
@@ -115,7 +115,7 @@ class Qualification(MyModel):
             return self.staffqualification_set.count()
 
 
-class Skill(MyModel):
+class Skill(MyTenantModel):
     """
     技能（スキル）情報を管理するマスターデータモデル。
     カテゴリと技能の2階層構造を持つ。
@@ -228,7 +228,7 @@ class Skill(MyModel):
             return self.staffskill_set.count()
 
 
-class StaffAgreement(MyModel):
+class StaffAgreement(MyTenantModel):
     """
     スタッフ同意文言マスター
     """
@@ -265,7 +265,7 @@ class StaffAgreement(MyModel):
         super().save(*args, **kwargs)
 
 
-class StaffRegistStatus(MyModel):
+class StaffRegistStatus(MyTenantModel):
     """
     スタッフ登録状況マスタ
     """

@@ -1,72 +1,77 @@
 [
-{
-    "model": "master.clientregiststatus",
-    "pk": 1,
-    "fields": {
-        "version": 1760457433067343,
-        "created_at": "2025-10-14T16:12:59.719Z",
-        "created_by": 1,
-        "updated_at": "2025-10-14T16:12:59.719Z",
-        "updated_by": 1,
-        "name": "登録中",
-        "display_order": 1,
-        "is_active": true
+    {
+        "model": "master.clientregiststatus",
+        "pk": 1,
+        "fields": {
+            "version": 1760457433067343,
+            "created_at": "2025-10-14T16:12:59.719Z",
+            "created_by": 1,
+            "updated_at": "2025-10-14T16:12:59.719Z",
+            "updated_by": 1,
+            "name": "登録中",
+            "display_order": 1,
+            "is_active": true,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.clientregiststatus",
+        "pk": 2,
+        "fields": {
+            "version": 1760457442360696,
+            "created_at": "2025-10-14T16:13:09.013Z",
+            "created_by": 1,
+            "updated_at": "2025-10-14T16:13:09.013Z",
+            "updated_by": 1,
+            "name": "審査中",
+            "display_order": 2,
+            "is_active": true,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.clientregiststatus",
+        "pk": 3,
+        "fields": {
+            "version": 1760457452153372,
+            "created_at": "2025-10-14T16:13:18.805Z",
+            "created_by": 1,
+            "updated_at": "2025-10-14T16:13:18.805Z",
+            "updated_by": 1,
+            "name": "仮登録",
+            "display_order": 10,
+            "is_active": true,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.clientregiststatus",
+        "pk": 4,
+        "fields": {
+            "version": 1760457463360551,
+            "created_at": "2025-10-14T16:13:30.012Z",
+            "created_by": 1,
+            "updated_at": "2025-10-14T16:13:30.013Z",
+            "updated_by": 1,
+            "name": "登録済",
+            "display_order": 20,
+            "is_active": true,
+            "tenant_id": 1
+        }
+    },
+    {
+        "model": "master.clientregiststatus",
+        "pk": 5,
+        "fields": {
+            "version": 1760457472614040,
+            "created_at": "2025-10-14T16:13:39.266Z",
+            "created_by": 1,
+            "updated_at": "2025-10-14T16:13:39.266Z",
+            "updated_by": 1,
+            "name": "登録不可",
+            "display_order": 90,
+            "is_active": true,
+            "tenant_id": 1
+        }
     }
-},
-{
-    "model": "master.clientregiststatus",
-    "pk": 2,
-    "fields": {
-        "version": 1760457442360696,
-        "created_at": "2025-10-14T16:13:09.013Z",
-        "created_by": 1,
-        "updated_at": "2025-10-14T16:13:09.013Z",
-        "updated_by": 1,
-        "name": "審査中",
-        "display_order": 2,
-        "is_active": true
-    }
-},
-{
-    "model": "master.clientregiststatus",
-    "pk": 3,
-    "fields": {
-        "version": 1760457452153372,
-        "created_at": "2025-10-14T16:13:18.805Z",
-        "created_by": 1,
-        "updated_at": "2025-10-14T16:13:18.805Z",
-        "updated_by": 1,
-        "name": "仮登録",
-        "display_order": 10,
-        "is_active": true
-    }
-},
-{
-    "model": "master.clientregiststatus",
-    "pk": 4,
-    "fields": {
-        "version": 1760457463360551,
-        "created_at": "2025-10-14T16:13:30.012Z",
-        "created_by": 1,
-        "updated_at": "2025-10-14T16:13:30.013Z",
-        "updated_by": 1,
-        "name": "登録済",
-        "display_order": 20,
-        "is_active": true
-    }
-},
-{
-    "model": "master.clientregiststatus",
-    "pk": 5,
-    "fields": {
-        "version": 1760457472614040,
-        "created_at": "2025-10-14T16:13:39.266Z",
-        "created_by": 1,
-        "updated_at": "2025-10-14T16:13:39.266Z",
-        "updated_by": 1,
-        "name": "登録不可",
-        "display_order": 90,
-        "is_active": true
-    }
-}
 ]
