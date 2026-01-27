@@ -6,7 +6,9 @@ app_name = 'company'
 urlpatterns = [
     # 会社情報
     path('', views.company_detail, name='company_detail'),
+    path('create/', views.company_create, name='company_create'),
     path('edit/', views.company_edit, name='company_edit'),
+    path('edit/<int:pk>/', views.company_edit, name='company_edit_with_pk'),
     path('seal/upload/', views.company_seal_upload, name='company_seal_upload'),
     path('seal/delete/', views.company_seal_delete, name='company_seal_delete'),
     path('seal/<str:seal_type>/', views.serve_company_seal, name='serve_company_seal'),

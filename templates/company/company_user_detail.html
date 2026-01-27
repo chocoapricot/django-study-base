@@ -53,9 +53,9 @@
                 </div>
 
                 <div class="d-flex justify-content-start">
-                    <a href="{% url 'company:company_user_edit' object.pk %}" class="btn btn-sm btn-primary me-2">編集</a>
-                    <a href="{% url 'company:company_user_delete' object.pk %}" class="btn btn-sm btn-dark me-2">削除</a>
-                    <a href="{% url 'company:company_detail' %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+                    <a href="{% url 'company:company_user_edit' object.pk %}{% if request.user.is_superuser %}?company_id={{ company.pk }}{% endif %}" class="btn btn-sm btn-primary me-2">編集</a>
+                    <a href="{% url 'company:company_user_delete' object.pk %}{% if request.user.is_superuser %}?company_id={{ company.pk }}{% endif %}" class="btn btn-sm btn-dark me-2">削除</a>
+                    <a href="{% url 'company:company_detail' %}{% if request.user.is_superuser %}?company_id={{ company.pk }}{% endif %}" class="btn btn-sm btn-secondary me-2">戻る</a>
                 </div>
             </div>
         </div>
