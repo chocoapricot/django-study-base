@@ -2,8 +2,7 @@ from django.db import models
 import uuid
 import os
 
-from ..common.models import MyModel
-from concurrency.fields import IntegerVersionField
+from ..common.models import MyTenantModel
 
 def client_file_upload_path(instance, filename):
     """クライアントファイルのアップロードパスを生成"""
@@ -14,7 +13,7 @@ def client_file_upload_path(instance, filename):
     # client_files/client_id/filename の形式で保存
     return f'client_files/{instance.client.pk}/{filename}'
 
-class Client(MyModel):
+class Client(MyTenantModel):
     """取引先企業（クライアント）の基本情報を管理するモデル。"""
     corporate_number=models.CharField('法人番号',max_length=13, unique=True, blank=True, null=True)
     name = models.TextField('会社名')
@@ -77,7 +76,7 @@ class Client(MyModel):
         return ""
 
 
-class ClientDepartment(MyModel):
+class ClientDepartment(MyTenantModel):
     """クライアント企業内の組織（部署）情報を管理するモデル。"""
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='departments', verbose_name='クライアント')
     name = models.CharField('組織名', max_length=100)
@@ -163,7 +162,7 @@ class ClientDepartment(MyModel):
         return f"{self.client.name} - {self.name}{period_str}"
 
 
-class ClientUser(MyModel):
+class ClientUser(MyTenantModel):
     """クライアント企業の担当者情報を管理するモデル。"""
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='users', verbose_name='クライアント')
     department = models.ForeignKey(ClientDepartment, on_delete=models.SET_NULL, blank=True, null=True, related_name='users', verbose_name='所属組織')
@@ -202,7 +201,7 @@ class ClientUser(MyModel):
         return ' - '.join(parts)
 
 
-class ClientContacted(MyModel):
+class ClientContacted(MyTenantModel):
     """クライアント企業への連絡履歴を管理するモデル。"""
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='contacted_histories', verbose_name='クライアント')
     department = models.ForeignKey(ClientDepartment, on_delete=models.SET_NULL, blank=True, null=True, related_name='contacted_histories', verbose_name='組織')
@@ -222,7 +221,7 @@ class ClientContacted(MyModel):
         return f"{self.client} {self.contacted_at:%Y-%m-%d %H:%M} {self.content[:20]}"
 
 
-class ClientContactSchedule(MyModel):
+class ClientContactSchedule(MyTenantModel):
     """
     クライアント企業への連絡予定を管理するモデル。
     """
@@ -244,7 +243,7 @@ class ClientContactSchedule(MyModel):
         return f"{self.client} {self.contact_date:%Y-%m-%d} {self.content[:20]}"
 
 
-class ClientFile(MyModel):
+class ClientFile(MyTenantModel):
     """クライアントに関連する添付ファイルを管理するモデル。"""
     client = models.ForeignKey(
         Client, 
