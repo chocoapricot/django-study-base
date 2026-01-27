@@ -2,7 +2,7 @@ from django.db import models
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 
-from ..common.models import MyModel
+from ..common.models import MyTenantModel
 from django_currentuser.db.models import CurrentUserField
 from .models_staff import Staff
 
@@ -23,7 +23,7 @@ def validate_mynumber(value):
     except Exception:
         raise ValidationError('正しいマイナンバーを入力してください。')
 
-class StaffMynumber(MyModel):
+class StaffMynumber(MyTenantModel):
     """
     スタッフのマイナンバー情報を管理するモデル。
     Staffモデルと1対1で連携し、暗号化して保存することを想定（要追加実装）。
@@ -57,7 +57,7 @@ class StaffMynumber(MyModel):
         return f"{self.staff} - マイナンバー"
 
 
-class StaffContact(MyModel):
+class StaffContact(MyTenantModel):
     """
     スタッフの連絡先情報を管理するモデル。
     """
@@ -86,7 +86,7 @@ class StaffContact(MyModel):
         return f"{self.staff} - 連絡先情報"
 
 
-class StaffBank(MyModel):
+class StaffBank(MyTenantModel):
     """
     スタッフの銀行情報を管理するモデル。
     Staffモデルと1対1で連携し、振込先銀行情報を保存する。
@@ -187,7 +187,7 @@ class StaffBank(MyModel):
             return ' '.join(parts)
         return '銀行情報なし'
 
-class StaffInternational(MyModel):
+class StaffInternational(MyTenantModel):
     """
     スタッフの外国籍情報を管理するモデル。
     Staffモデルと1対1で連携し、在留カード情報を保存する。
@@ -244,7 +244,7 @@ class StaffInternational(MyModel):
         return self.residence_period_to <= timezone.localdate() + timedelta(days=days)
 
 
-class StaffDisability(MyModel):
+class StaffDisability(MyTenantModel):
     """
     スタッフの障害者情報を管理するモデル。
     """
