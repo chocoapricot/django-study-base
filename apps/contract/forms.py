@@ -351,7 +351,7 @@ class ClientContractHakenForm(forms.ModelForm):
     
     class Meta:
         model = ClientContractHaken
-        exclude = ['client_contract', 'version', 'created_at', 'created_by', 'updated_at', 'updated_by']
+        exclude = ['client_contract', 'tenant_id', 'version', 'created_at', 'created_by', 'updated_at', 'updated_by']
         widgets = {
             'work_location': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'responsibility_degree': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
@@ -742,7 +742,7 @@ class ClientContractTtpForm(forms.ModelForm):
 
     class Meta:
         model = ClientContractTtp
-        exclude = ['haken', 'version', 'created_at', 'created_by', 'updated_at', 'updated_by']
+        exclude = ['haken', 'tenant_id', 'version', 'created_at', 'created_by', 'updated_at', 'updated_by']
         widgets = {
             'contract_period': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
             'probation_period': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 2}),
@@ -769,7 +769,7 @@ class ClientContractHakenExemptForm(forms.ModelForm):
 
     class Meta:
         model = ClientContractHakenExempt
-        exclude = ['haken', 'version', 'created_at', 'created_by', 'updated_at', 'updated_by']
+        exclude = ['haken', 'tenant_id', 'version', 'created_at', 'created_by', 'updated_at', 'updated_by']
         widgets = {
             'period_exempt_detail': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
