@@ -1,9 +1,9 @@
 from django.db import models
-from apps.common.models import MyModel
+from apps.common.models import MyTenantModel
 from .models_phrase import PhraseTemplate
 
 
-class WorkTimePattern(MyModel):
+class WorkTimePattern(MyTenantModel):
     """
     就業時間パターンマスタ
     """
@@ -26,7 +26,7 @@ class WorkTimePattern(MyModel):
         return self.name
 
 
-class WorkTimePatternWork(MyModel):
+class WorkTimePatternWork(MyTenantModel):
     """
     就業時間パターン勤務時間
     """
@@ -74,7 +74,7 @@ class WorkTimePatternWork(MyModel):
         return f"{name} {self.get_time_display()}"
 
 
-class WorkTimePatternBreak(MyModel):
+class WorkTimePatternBreak(MyTenantModel):
     """
     就業時間パターン休憩時間
     """

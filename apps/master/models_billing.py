@@ -1,9 +1,9 @@
 from django.db import models
-from apps.common.models import MyModel
+from apps.common.models import MyTenantModel
 from apps.system.settings.models import Dropdowns
 
 
-class BillPayment(MyModel):
+class BillPayment(MyTenantModel):
     """
     支払条件（締め日・支払日など）を管理するマスターデータモデル。
     """
@@ -101,7 +101,7 @@ class BillPayment(MyModel):
         return cls.objects.filter(is_active=True).order_by('display_order', 'name')
 
 
-class MinimumPay(MyModel):
+class MinimumPay(MyTenantModel):
     """
     最低賃金マスタ
     """
@@ -135,7 +135,7 @@ class MinimumPay(MyModel):
         return self.pref
 
 
-class BillBank(MyModel):
+class BillBank(MyTenantModel):
     """
     自社の銀行口座情報を管理するマスターデータモデル。
     """
@@ -245,7 +245,7 @@ class BillBank(MyModel):
         return cls.objects.filter(is_active=True).order_by('display_order')
 
 
-class Bank(MyModel):
+class Bank(MyTenantModel):
     """
     銀行情報を管理するマスターデータモデル。
     """
@@ -302,7 +302,7 @@ class Bank(MyModel):
         return 0
 
 
-class BankBranch(MyModel):
+class BankBranch(MyTenantModel):
     """
     銀行の支店情報を管理するマスターデータモデル。
     Bankモデルと連携する。
