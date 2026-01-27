@@ -1,15 +1,14 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from apps.common.models import MyModel
+from apps.common.models import MyModel, MyTenantModel
 from apps.common.constants import Constants, get_dispatch_treatment_method_choices
 
-class CompanyDepartment(MyModel):
+class CompanyDepartment(MyTenantModel):
     """
     自社の部署情報を管理するモデル。
     部署コードと有効期間に基づいた重複チェック機能を持つ。
     """
-    tenant_id = models.PositiveIntegerField('テナントID', blank=True, null=True, db_index=True)
     name = models.CharField('部署名', max_length=100)
     corporate_number = models.CharField('法人番号', max_length=13, blank=True, null=True, db_index=True)
     department_code = models.CharField('部署コード', max_length=20)
@@ -142,13 +141,12 @@ def company_seal_upload_path(instance, filename):
     upload_type = getattr(instance, '_upload_type', 'seal')
     return f'company_seals/{instance.pk}_{upload_type}.{ext}'
 
-class Company(MyModel):
+class Company(MyTenantModel):
     """
     自社の会社情報を管理するモデル。
     このシステムは単一の会社で運用されることを想定しているため、
     通常、このテーブルには1つのレコードのみが存在する。
     """
-    tenant_id = models.PositiveIntegerField('テナントID', blank=True, null=True, db_index=True)
     name = models.CharField('会社名', max_length=255, unique=True)
     # 会社情報として必要そうなフィールドを追加（例）
     corporate_number = models.CharField('法人番号', max_length=13, blank=True, null=True, unique=True)
@@ -201,9 +199,8 @@ class Company(MyModel):
             super().save(update_fields=['tenant_id'])
 
 
-class CompanyUser(MyModel):
+class CompanyUser(MyTenantModel):
     """自社の担当者情報を管理するモデル。"""
-    tenant_id = models.PositiveIntegerField('テナントID', blank=True, null=True, db_index=True)
     corporate_number = models.CharField('法人番号', max_length=13, blank=True, null=True, db_index=True)
     department_code = models.CharField('部署コード', max_length=20, blank=True, null=True, db_index=True)
     name_last = models.CharField('姓', max_length=50)
