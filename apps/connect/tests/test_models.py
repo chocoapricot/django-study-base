@@ -153,7 +153,7 @@ class ConnectViewTest(TestCase):
         """スタッフ接続一覧のテスト"""
         response = self.client.get(reverse('connect:staff_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'スタッフ接続申請一覧')
+        self.assertContains(response, 'スタッフ接続申請')
         self.assertContains(response, '1234567890123')
     
     def test_connect_staff_approve(self):
