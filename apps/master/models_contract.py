@@ -1,9 +1,9 @@
 from django.db import models
-from apps.common.models import MyModel
+from apps.common.models import MyTenantModel
 from apps.system.settings.models import Dropdowns
 
 
-class ContractPattern(MyModel):
+class ContractPattern(MyTenantModel):
     """
     契約書パターンマスタ
     """
@@ -40,7 +40,7 @@ class ContractPattern(MyModel):
         return self.name
 
 
-class ContractTerms(MyModel):
+class ContractTerms(MyTenantModel):
     """
     契約文言マスタ
     """
@@ -79,7 +79,7 @@ class ContractTerms(MyModel):
         return f"{self.contract_pattern.name} - {self.id}"
 
 
-class JobCategory(MyModel):
+class JobCategory(MyTenantModel):
     """
     職種マスタ
     """
@@ -135,7 +135,7 @@ class JobCategory(MyModel):
 
 
 
-class EmploymentType(MyModel):
+class EmploymentType(MyTenantModel):
     """
     雇用形態マスタ
     """
