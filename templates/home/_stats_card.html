@@ -1,0 +1,46 @@
+{% load humanize %}
+<div class="{{ col_class|default:'col-md-6 col-lg-3' }}">
+    {% if count > 0 %}
+        {% if url %}
+            <a href="{{ url }}" class="text-decoration-none">
+        {% endif %}
+        <div class="stats-card has-count {{ bg_class }}">
+            <div class="stats-card-body d-flex align-items-center">
+                {% if badge_icon %}
+                <div class="icon-wrapper me-3">
+                    <i class="bi {{ icon }} stats-icon" style="color:{{ icon_color }};"></i>
+                    <i class="bi {{ badge_icon }} icon-badge" style="color:{{ icon_color }};"></i>
+                </div>
+                {% else %}
+                <i class="bi {{ icon }} stats-icon me-3" style="color:{{ icon_color }};"></i>
+                {% endif %}
+                <div class="flex-grow-1 {% if badge_icon %}stats-content-with-alarm{% endif %}">
+                    <p class="stats-number text-dark">{{ count|intcomma }}<span class="stats-unit">{{ unit|default:'件' }}</span></p>
+                    <p class="stats-label">{{ label }}</p>
+                    <p class="stats-description">{{ description }}</p>
+                </div>
+            </div>
+        </div>
+        {% if url %}
+            </a>
+        {% endif %}
+    {% else %}
+        <div class="stats-card">
+            <div class="stats-card-body d-flex align-items-center">
+                {% if badge_icon %}
+                <div class="icon-wrapper me-3">
+                    <i class="bi {{ icon }} stats-icon text-muted-light"></i>
+                    <i class="bi {{ badge_icon }} icon-badge text-muted-light"></i>
+                </div>
+                {% else %}
+                <i class="bi {{ icon }} stats-icon text-muted-light me-3"></i>
+                {% endif %}
+                <div class="flex-grow-1 {% if badge_icon %}stats-content-with-alarm{% endif %}">
+                    <p class="stats-number text-muted-light">-</p>
+                    <p class="stats-label">{{ label }}</p>
+                    <p class="stats-description">{{ description }}</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
