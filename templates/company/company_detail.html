@@ -58,24 +58,25 @@
         <span><i class="bi bi-buildings me-2"></i>会社一覧（管理者用）</span>
         <a href="{% url 'company:company_create' %}" class="btn btn-sm btn-primary">新規作成</a>
     </div>
-    <div class="card-body p-0">
-        <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
-            <table class="table table-sm table-hover mb-0">
-                <thead class="sticky-top bg-white">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover table-sm mb-0" width="100%" cellspacing="0">
+                <thead>
                     <tr>
-                        <th class="ps-3">会社名</th>
+                        <th>会社名</th>
                         <th>法人番号</th>
                         <th>ID / Tenant ID</th>
+                        <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for c in companies %}
-                    <tr class="{% if c.pk == company.pk %}table-primary{% endif %}" style="cursor: pointer;" onclick="window.location.href='?company_id={{ c.pk }}'">
-                        <td class="ps-3">
+                    <tr class="{% if c.pk == company.pk %}table-primary{% endif %}">
+                        <td>
                             {% if c.pk == company.pk %}
                                 <strong>{{ c.name }}</strong>
                             {% else %}
-                                <a href="?company_id={{ c.pk }}" class="text-decoration-none">{{ c.name }}</a>
+                                {{ c.name }}
                             {% endif %}
                         </td>
                         <td>{{ c.corporate_number|default:"-" }}</td>
@@ -83,6 +84,13 @@
                             <small class="text-muted">
                                 ID: {{ c.pk }} / Tenant: {{ c.tenant_id }}
                             </small>
+                        </td>
+                        <td>
+                            {% if c.pk == company.pk %}
+                                <button class="btn btn-sm btn-outline-primary" disabled>選択中</button>
+                            {% else %}
+                                <a href="?company_id={{ c.pk }}" class="btn btn-sm btn-primary">選択</a>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
