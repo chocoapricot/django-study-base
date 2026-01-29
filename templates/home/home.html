@@ -164,6 +164,12 @@
                     {% endwith %}
                 {% endif %}
 
+                {% if perms.staff.view_staff %}
+                    {% url 'staff:staff_list' as payroll_base_url %}{% with payroll_url=payroll_base_url|add:"?registration_status=true" %}
+                        {% include 'home/_stats_card.html' with count=staff_payroll_info_unregistered_count url=payroll_url label='スタッフ給与情報未登録' description='マイナンバー・銀行情報・給与情報 のいずれかが未登録のスタッフ' bg_class='bg-success-light' icon='bi-person-fill' badge_icon='bi-cash-stack' icon_color='#ff5722' unit='名' %}
+                    {% endwith %}
+                {% endif %}
+
                 {% if perms.staff.view_staffinternational %}
                     {% url 'staff:staff_list' as international_base_url %}{% with international_url=international_base_url|add:"?has_international=true" %}
                         {% user_parameter 'RESIDENCE_PERIOD_WARNING_DAYS' '30' as days %}
@@ -176,12 +182,6 @@
                 {% if has_contract_assignment_perm %}
                     {% url 'contract:staff_contract_expire_list' as expire_url %}
                     {% include 'home/_stats_card.html' with count=unconfirmed_staff_contract_extension_count url=expire_url label='スタッフ契約延長未確認' description='延長または終了が未確認のスタッフ契約の件数です。' bg_class='bg-info-light' icon='bi-file-earmark-person-fill' badge_icon='bi-question-circle' icon_color='#17a2b8' %}
-                {% endif %}
-
-                {% if perms.staff.view_staff %}
-                    {% url 'staff:staff_list' as payroll_base_url %}{% with payroll_url=payroll_base_url|add:"?registration_status=true" %}
-                        {% include 'home/_stats_card.html' with count=staff_payroll_info_unregistered_count url=payroll_url label='スタッフ給与情報未登録' description='マイナンバー・銀行情報・給与情報 のいずれかが未登録のスタッフ' bg_class='bg-success-light' icon='bi-person-fill' badge_icon='bi-cash-stack' icon_color='#ff5722' unit='名' %}
-                    {% endwith %}
                 {% endif %}
 
                 {% if has_view_client_contract_perm %}
