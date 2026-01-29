@@ -944,6 +944,10 @@ def staff_contact_type_update(request, pk):
 def staff_contact_type_delete(request, pk):
     """スタッフ連絡種別削除"""
     item = get_object_or_404(StaffContactType, pk=pk)
+    if item.display_order == 50:
+        messages.error(request, "表示順50のデータは削除できません。")
+        return redirect("master:staff_contact_type_list")
+
     if request.method == "POST":
         item_name = item.name
         item.delete()

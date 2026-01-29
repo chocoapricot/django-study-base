@@ -163,6 +163,18 @@ class StaffContactTypeForm(forms.ModelForm):
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.display_order == 50:
+            self.fields['display_order'].disabled = True
+
+    def clean_display_order(self):
+        display_order = self.cleaned_data.get('display_order')
+        if display_order == 50:
+            if not self.instance or self.instance.display_order != 50:
+                raise ValidationError('表示順を50に設定することはできません。')
+        return display_order
+
 
 class ClientContactTypeForm(forms.ModelForm):
     """クライアント連絡種別フォーム"""
@@ -174,6 +186,18 @@ class ClientContactTypeForm(forms.ModelForm):
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.display_order == 50:
+            self.fields['display_order'].disabled = True
+
+    def clean_display_order(self):
+        display_order = self.cleaned_data.get('display_order')
+        if display_order == 50:
+            if not self.instance or self.instance.display_order != 50:
+                raise ValidationError('表示順を50に設定することはできません。')
+        return display_order
 
 
 class MinimumPayForm(forms.ModelForm):

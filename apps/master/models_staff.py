@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from apps.common.models import MyTenantModel
 
 
@@ -315,6 +316,34 @@ class StaffContactType(MyTenantModel):
     name = models.CharField('名称', max_length=100)
     display_order = models.IntegerField('表示順', default=0)
     is_active = models.BooleanField('有効', default=True)
+
+    def clean(self):
+        super().clean()
+        original = None
+        if self.pk:
+            try:
+                original = StaffContactType.objects.get(pk=self.pk)
+            except StaffContactType.DoesNotExist:
+                pass
+
+        if original:
+            if original.display_order == 50 and self.display_order != 50:
+                raise ValidationError('表示順が50のデータは変更できません。')
+            if original.display_order != 50 and self.display_order == 50:
+                raise ValidationError('表示順を50に設定することはできません。')
+        # We allow creation (no original) with display_order=50 at the model level
+        # to support initial data loading from fixtures. The restriction for users
+        # adding order 50 is enforced at the Form level.
+
+    def delete(self, *args, **kwargs):
+        if self.display_order == 50:
+            raise ValidationError('表示順が50のデータは削除できません。')
+        super().delete(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        if not kwargs.pop('skip_validation', False):
+            self.clean()
+        super().save(*args, **kwargs)
 
     class Meta:
         db_table = 'apps_master_staff_contact_type'
