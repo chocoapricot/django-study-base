@@ -1,7 +1,7 @@
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         担当者一覧
-        <a href="{% url 'company:company_user_create' %}{% if request.user.is_superuser %}?company_id={{ company.pk }}{% endif %}" class="btn btn-sm btn-primary">担当者追加</a>
+        <a href="{% url 'company:company_user_create' %}" class="btn btn-sm btn-primary">担当者追加</a>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -17,7 +17,7 @@
                     {% for company_user in company_users %}
                     <tr{% if current_company_user and company_user.pk == current_company_user.pk %} class="table-warning"{% endif %}>
                         <td>
-                            <a href="{% url 'company:company_user_detail' company_user.pk %}{% if request.user.is_superuser %}?company_id={{ company.pk }}{% endif %}">{{ company_user.name }}</a>
+                            <a href="{% url 'company:company_user_detail' company_user.pk %}">{{ company_user.name }}</a>
                             {% if company_user.is_responsible %}
                                 <span class="badge bg-primary ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="派遣元責任者">責任</span>
                             {% endif %}

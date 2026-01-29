@@ -12,11 +12,21 @@ class CompanyViewTest(TestCase):
 
     def setUp(self):
         self.client = Client()
+        self.company = Company.objects.create(
+            name="テスト会社",
+            corporate_number="2000012010019",
+            dispatch_treatment_method='agreement',
+            postal_code="1000001",
+            address="東京都千代田区千代田1-1",
+            phone_number="03-1234-5678"
+        )
+
         # 権限を持つユーザー
         self.perm_user = User.objects.create_user(
             username='perm_user',
             email='perm@example.com',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=self.company.tenant_id
         )
         self.perm_user.user_permissions.add(
             Permission.objects.get(codename='view_company'),
@@ -26,7 +36,8 @@ class CompanyViewTest(TestCase):
         self.no_perm_user = User.objects.create_user(
             username='no_perm_user',
             email='no_perm@example.com',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=self.company.tenant_id
         )
 
         # テスト用の画像を作成
@@ -36,14 +47,6 @@ class CompanyViewTest(TestCase):
             content_type='image/png'
         )
 
-        self.company = Company.objects.create(
-            name="テスト会社",
-            corporate_number="2000012010019",
-            dispatch_treatment_method='agreement',
-            postal_code="1000001",
-            address="東京都千代田区千代田1-1",
-            phone_number="03-1234-5678"
-        )
         self.company.round_seal.save('test.png', self.seal_image)
 
     def test_serve_company_seal_with_permission(self):
@@ -157,9 +160,15 @@ class DepartmentViewTest(TestCase):
     
     def setUp(self):
         self.client = Client()
+        self.company = Company.objects.create(
+            name="テスト会社",
+            corporate_number="8011101011499"
+        )
+
         # 権限を持つユーザー
         self.perm_user = User.objects.create_user(
-            username='perm_user', password='testpassword'
+            username='perm_user', password='testpassword',
+            tenant_id=self.company.tenant_id
         )
         self.perm_user.user_permissions.add(
             Permission.objects.get(codename='view_companydepartment'),
@@ -169,11 +178,8 @@ class DepartmentViewTest(TestCase):
         )
         # 権限を持たないユーザー（閲覧のみ可能）
         self.no_perm_user = User.objects.create_user(
-            username='no_perm_user', password='testpassword'
-        )
-        self.no_perm_user.user_permissions.add(
-            Permission.objects.get(codename='view_companyuser'),
-            Permission.objects.get(codename='view_company')
+            username='no_perm_user', password='testpassword',
+            tenant_id=self.company.tenant_id
         )
         self.no_perm_user.user_permissions.add(
             Permission.objects.get(codename='view_companyuser'),
@@ -184,7 +190,8 @@ class DepartmentViewTest(TestCase):
             name="開発部",
             corporate_number="8011101011499",
             department_code="DEV001",
-            display_order=1
+            display_order=1,
+            tenant_id=self.company.tenant_id
         )
 
     def test_department_detail_view_with_permission(self):
@@ -300,9 +307,12 @@ class CompanyUserViewTest(TestCase):
         from django.contrib.auth.models import Group
         Company.objects.all().delete()
         self.client = Client()
+        self.company = Company.objects.create(name="テスト株式会社", corporate_number="1112223334445", dispatch_treatment_method='agreement')
+
         # 権限を持つユーザー
         self.perm_user = User.objects.create_user(
-            username='perm_user', password='testpassword'
+            username='perm_user', password='testpassword',
+            tenant_id=self.company.tenant_id
         )
         self.perm_user.user_permissions.add(
             Permission.objects.get(codename='view_companyuser'),
@@ -313,11 +323,13 @@ class CompanyUserViewTest(TestCase):
         )
         # 権限を持たないユーザー
         self.no_perm_user = User.objects.create_user(
-            username='no_perm_user', password='testpassword'
+            username='no_perm_user', password='testpassword',
+            tenant_id=self.company.tenant_id
         )
         # 閲覧のみ権限を持つユーザー
         self.view_only_user = User.objects.create_user(
-            username='view_only_user', password='testpassword'
+            username='view_only_user', password='testpassword',
+            tenant_id=self.company.tenant_id
         )
         self.view_only_user.user_permissions.add(
             Permission.objects.get(codename='view_companyuser')
@@ -325,18 +337,19 @@ class CompanyUserViewTest(TestCase):
         # companyグループ作成
         self.company_group = Group.objects.create(name='company')
 
-        self.company = Company.objects.create(name="テスト株式会社", corporate_number="1112223334445", dispatch_treatment_method='agreement')
         self.department = CompanyDepartment.objects.create(
             name="テスト部署",
             corporate_number="1112223334445",
-            department_code="TEST_DEPT"
+            department_code="TEST_DEPT",
+            tenant_id=self.company.tenant_id
         )
         self.company_user = CompanyUser.objects.create(
             corporate_number="1112223334445",
             department_code="TEST_DEPT",
             name_last="山田",
             name_first="太郎",
-            email="taro.yamada@example.com"
+            email="taro.yamada@example.com",
+            tenant_id=self.company.tenant_id
         )
         self.create_url = reverse('company:company_user_create')
         self.edit_url = reverse('company:company_user_edit', kwargs={'pk': self.company_user.pk})

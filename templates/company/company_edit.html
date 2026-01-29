@@ -132,7 +132,7 @@
 
             <div class="mt-4">
                 <button type="submit" class="btn btn-sm btn-primary me-1">保存</button>
-                <a href="{% url 'company:company_detail' %}{% if request.user.is_superuser and form.instance.pk %}?company_id={{ form.instance.pk }}{% endif %}" class="btn btn-sm btn-secondary">戻る</a>
+                <a href="{% url 'company:company_detail' %}" class="btn btn-sm btn-secondary">戻る</a>
             </div>
         </form>
     </div>

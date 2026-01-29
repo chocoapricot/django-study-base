@@ -19,35 +19,74 @@ from .forms import CompanyForm, CompanyDepartmentForm, CompanyUserForm, CompanyS
 def get_current_company(request, pk=None, obj=None):
     """
     現在のコンテキストにおける会社オブジェクトを取得するヘルパー関数。
-    管理者かつpk/company_idが指定されている場合はその会社を、
-    そうでなければセッションから取得、それもなければ最初の会社を返す。
+    1. 管理者（スーパーユーザー）の場合：
+       - pk または GET.company_id があればそれを優先しセッションを更新。
+       - オブジェクト(obj)が渡されていればそのテナントを優先。
+       - セッションに保存されているテナントがあればそれを返す。
+       - いずれもなければ自身の tenant_id、それもなければ最初の会社。
+    2. 一般ユーザーの場合：
+       - 自身の tenant_id に固定。なければ 404。
     """
-    company_id = pk or request.GET.get('company_id')
-
+    # 管理者（スーパーユーザー）の場合
     if request.user.is_superuser:
-        if obj and hasattr(obj, 'tenant_id'):
-            # オブジェクトが指定されている場合はそのテナントを優先
-            return get_object_or_404(Company, tenant_id=obj.tenant_id)
-
-        if company_id:
-            # パラメータで指定された場合はセッションを更新
-            request.session['admin_company_id'] = company_id
-        else:
-            # 指定がない場合はセッションから取得
-            company_id = request.session.get('admin_company_id')
-
-        if company_id:
+        # 1. パラメータ(pk)やGETパラメータからの指定を優先
+        target_id = pk or request.GET.get('company_id')
+        if target_id:
             try:
-                return Company.objects.get(pk=company_id)
+                # Company.pk を取得
+                company = Company.objects.get(pk=target_id)
+                request.session['current_tenant_id'] = company.tenant_id
+                return company
+            except (Company.DoesNotExist, ValueError):
+                pass
+
+        # 2. オブジェクトが渡されている場合はそのテナント
+        if obj and hasattr(obj, 'tenant_id'):
+            try:
+                company = Company.objects.get(tenant_id=obj.tenant_id)
+                request.session['current_tenant_id'] = company.tenant_id
+                return company
             except Company.DoesNotExist:
                 pass
 
-    company = Company.objects.first()
-    if not company:
-        # レコードが存在しない場合は新規作成（後方互換性のため）
-        company = Company.objects.create(name="新規会社")
-        log_model_action(request.user, 'create', company)
-    return company
+        # 3. セッションから取得
+        session_tenant_id = request.session.get('current_tenant_id')
+        if session_tenant_id:
+            try:
+                return Company.objects.get(tenant_id=session_tenant_id)
+            except Company.DoesNotExist:
+                pass
+
+        # 4. 自身のアカウントに紐づくテナントがあればそれを初期値にする
+        if request.user.tenant_id:
+            try:
+                company = Company.objects.get(tenant_id=request.user.tenant_id)
+                request.session['current_tenant_id'] = company.tenant_id
+                return company
+            except Company.DoesNotExist:
+                pass
+
+        # 5. それでもなければ最初の会社
+        company = Company.objects.first()
+        if not company:
+            company = Company.objects.create(name="新規会社")
+            log_model_action(request.user, 'create', company)
+        
+        request.session['current_tenant_id'] = company.tenant_id
+        return company
+
+    # 一般ユーザー（非スーパーユーザー）の場合
+    if request.user.tenant_id:
+        try:
+            company = Company.objects.get(tenant_id=request.user.tenant_id)
+            # セッションを同期（他で利用するため）
+            request.session['current_tenant_id'] = company.tenant_id
+            return company
+        except Company.DoesNotExist:
+            raise Http404("所属する会社情報が見つかりません。")
+
+    # 管理者でなく、tenant_idもない場合はアクセス拒否
+    raise Http404("所属する会社が設定されていないため、情報を表示できません。")
 
 def get_company_change_logs(company, limit=None):
     """会社に関連する変更ログを取得するヘルパー関数"""

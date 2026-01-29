@@ -1,7 +1,7 @@
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         部署一覧
-        <a href="{% url 'company:department_create' %}{% if request.user.is_superuser %}?company_id={{ company.pk }}{% endif %}" class="btn btn-sm btn-primary">部署追加</a>
+        <a href="{% url 'company:department_create' %}" class="btn btn-sm btn-primary">部署追加</a>
     </div>
     <div class="card-body mb-0" style="margin-bottom: 2rem;">
         <table class="table table-hover me-2 mt-2 mb-0" style="border-top: 1px solid #ddd;">
@@ -19,7 +19,7 @@
                 {% for department in departments %}
                 <tr{% if current_department and department.pk == current_department.pk %} class="table-warning"{% endif %}{% if not department.is_valid_on_date %} style="opacity: 0.6;"{% endif %}>
                     <td>{{ department.department_code }}</td>
-                    <td><a href="{% url 'company:department_detail' department.pk %}{% if request.user.is_superuser %}?company_id={{ company.pk }}{% endif %}">{{ department.name }}</a></td>
+                    <td><a href="{% url 'company:department_detail' department.pk %}">{{ department.name }}</a></td>
                     <td>{{ department.accounting_code|default:"" }}</td>
                     <td>
                         {% if department.valid_from or department.valid_to %}
@@ -33,10 +33,10 @@
                     </td>
                     <td>{{ department.display_order }}</td>
                     <td>
-                        <a href="{% url 'company:department_edit' department.pk %}{% if request.user.is_superuser %}?company_id={{ company.pk }}{% endif %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="編集">
+                        <a href="{% url 'company:department_edit' department.pk %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="編集">
                             <i class="bi bi-pencil"></i>
                         </a>
-                        <a href="{% url 'company:department_delete' department.pk %}{% if request.user.is_superuser %}?company_id={{ company.pk }}{% endif %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="削除">
+                        <a href="{% url 'company:department_delete' department.pk %}" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="削除">
                             <i class="bi bi-x"></i>
                         </a>
                     </td>
