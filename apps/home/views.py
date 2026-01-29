@@ -10,7 +10,10 @@ from apps.connect.models import (
     ConnectStaff, ConnectClient, MynumberRequest, ProfileRequest,
     BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
 )
-from apps.master.models import Information, UserParameter
+from apps.master.models import (
+    Information, UserParameter, StaffContactType, ClientContactType,
+    StaffTag, ClientTag
+)
 from apps.staff.models_inquiry import StaffInquiry
 from apps.staff.models_payroll import StaffPayroll
 from apps.profile.models import StaffProfileMynumber, StaffProfileBank
@@ -643,6 +646,12 @@ def delete_application_data(request):
             ClientContractNumber.objects.all().delete()
             StaffContractNumber.objects.all().delete()
             StaffContractTeishokubi.objects.all().delete()
+
+            # 10.5 サンプル用マスタデータの削除
+            StaffTag.objects.all().delete()
+            ClientTag.objects.all().delete()
+            StaffContactType.objects.exclude(display_order=50).delete()
+            ClientContactType.objects.exclude(display_order=50).delete()
 
             # 11. 管理者以外のアカウント
             MyUser.objects.filter(is_superuser=False).delete()
