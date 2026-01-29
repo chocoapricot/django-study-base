@@ -28,7 +28,7 @@ else:
 if os.path.exists('/data'):
     db_path = '/data/db.sqlite3'
 else:
-    db_path = os.path.join(BASE_DIR, 'db.sqlite3')
+    db_path = os.path.join(str(BASE_DIR), 'db.sqlite3')
 
 DATABASES = {
     'default': {
@@ -38,8 +38,17 @@ DATABASES = {
 }
 
 # Static files (CSS, JavaScript, Images)
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = os.path.join(str(BASE_DIR), 'static')
+
+# Django 4.2+ compatible STORAGES setting
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # HTTPS settings for Render
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
