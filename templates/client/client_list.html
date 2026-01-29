@@ -31,6 +31,16 @@
                     {% endfor %}
                 </select>
             </div>
+            <div class="input-group me-2 mb-2" style="width: 12em;">
+                <select name="tag" class="form-select form-select-sm">
+                    <option value="">タグ（全て）</option>
+                    {% for option in client_tag_options %}
+                        <option value="{{ option.pk }}" {% if option.is_selected %}selected{% endif %}>
+                            {{ option.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
             <div class="btn-group me-2 mb-2" role="group">
                 <button class="btn btn-primary btn-sm" type="submit">検索</button>
                 <button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
@@ -67,6 +77,12 @@
                     params.append('regist_status', registFormSelect.value);
                 }
                 
+                // タグ
+                const tagSelect = document.querySelector('select[name="tag"]');
+                if (tagSelect && tagSelect.value) {
+                    params.append('tag', tagSelect.value);
+                }
+
                 // 出力形式を追加
                 params.append('format', format);
                 
@@ -81,21 +97,21 @@
             <thead>
                 <tr>
                     <th>
-                        <a href="?sort={% if request.GET.sort == 'corporate_number' %}-corporate_number{% else %}corporate_number{% endif %}&q={{ query }}&regist_status={{ regist_status_filter }}"
+                        <a href="?sort={% if request.GET.sort == 'corporate_number' %}-corporate_number{% else %}corporate_number{% endif %}&q={{ query }}&regist_status={{ regist_status_filter }}&tag={{ tag_filter }}"
                            class="no-link-style">
                             法人番号
                             {% if request.GET.sort == 'corporate_number' %}↓{% elif request.GET.sort == '-corporate_number' %}↑{% endif %}
                         </a>
                     </th>
                     <th>
-                        <a href="?sort={% if request.GET.sort == 'name' %}-name{% else %}name{% endif %}&q={{ query }}&regist_status={{ regist_status_filter }}"
+                        <a href="?sort={% if request.GET.sort == 'name' %}-name{% else %}name{% endif %}&q={{ query }}&regist_status={{ regist_status_filter }}&tag={{ tag_filter }}"
                            class="no-link-style">
                             会社名
                             {% if request.GET.sort == 'name' %}↓{% elif request.GET.sort == '-name' %}↑{% endif %}
                         </a>
                     </th>
                     <th>
-                        <a href="?sort={% if request.GET.sort == 'address' %}-address{% else %}address{% endif %}&q={{ query }}&regist_status={{ regist_status_filter }}"
+                        <a href="?sort={% if request.GET.sort == 'address' %}-address{% else %}address{% endif %}&q={{ query }}&regist_status={{ regist_status_filter }}&tag={{ tag_filter }}"
                            class="no-link-style">
                             住所
                             {% if request.GET.sort == 'address' %}↓{% elif request.GET.sort == '-address' %}↑{% endif %}

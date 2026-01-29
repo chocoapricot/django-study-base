@@ -35,6 +35,7 @@ def client_list(request):
     sort = request.GET.get('sort', 'corporate_number')
     query = request.GET.get('q', '').strip()
     client_regist_status = request.GET.get('regist_status', '').strip()
+    tag_filter = request.GET.get('tag', '').strip()
     
     clients = Client.objects.all()
     
@@ -60,6 +61,10 @@ def client_list(request):
     if client_regist_status:
         clients = clients.filter(regist_status_id=client_regist_status)
     
+    # タグでの絞り込み
+    if tag_filter:
+        clients = clients.filter(tags=tag_filter)
+
     # ソート可能なフィールドを追加
     sortable_fields = [
         'corporate_number', '-corporate_number',
@@ -73,6 +78,12 @@ def client_list(request):
     from apps.master.models import ClientRegistStatus
     regist_status_options = ClientRegistStatus.objects.filter(is_active=True).order_by('display_order')
     
+    # タグのドロップダウンデータを取得
+    from apps.master.models import ClientTag
+    client_tag_options = ClientTag.objects.filter(is_active=True).order_by('display_order', 'name')
+    for option in client_tag_options:
+        option.is_selected = (tag_filter == str(option.pk))
+
     paginator = Paginator(clients, 10)
     page_number = request.GET.get('page')
     clients_pages = paginator.get_page(page_number)
@@ -110,7 +121,9 @@ def client_list(request):
         'clients': clients_pages, 
         'query': query,
         'regist_status_filter': client_regist_status,
-        'regist_status_options': regist_status_options
+        'regist_status_options': regist_status_options,
+        'tag_filter': tag_filter,
+        'client_tag_options': client_tag_options,
     })
 
 
@@ -125,6 +138,7 @@ def client_export(request):
     # 検索条件を取得（client_listと同じロジック）
     query = request.GET.get('q', '').strip()
     client_regist_status = request.GET.get('regist_status', '').strip()
+    tag_filter = request.GET.get('tag', '').strip()
     format_type = request.GET.get('format', 'csv')
     
     clients = Client.objects.all()
@@ -145,6 +159,10 @@ def client_export(request):
             clients = clients.filter(regist_status_id=client_regist_status_int)
         except ValueError:
             pass  # 無効な値の場合はフィルタリングしない
+
+    # タグでの絞り込み
+    if tag_filter:
+        clients = clients.filter(tags=tag_filter)
     
     # ソート
     clients = clients.order_by('corporate_number')

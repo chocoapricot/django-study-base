@@ -36,6 +36,7 @@ def staff_export(request):
     staff_regist_status_filter = request.GET.get('regist_status', '').strip()
     department_filter = request.GET.get('department', '').strip()
     employment_type_filter = request.GET.get('employment_type', '').strip()
+    tag_filter = request.GET.get('tag', '').strip()
     has_request_filter = request.GET.get('has_request', '')
     has_international_filter = request.GET.get('has_international', '')
     has_disability_filter = request.GET.get('has_disability', '')
@@ -82,6 +83,8 @@ def staff_export(request):
         staffs = staffs.filter(department_code=department_filter)
     if employment_type_filter:
         staffs = staffs.filter(employment_type=employment_type_filter)
+    if tag_filter:
+        staffs = staffs.filter(tags=tag_filter)
     if has_international_filter:
         staffs = staffs.filter(international__isnull=False)
     if has_disability_filter:
@@ -210,6 +213,7 @@ def staff_list(request):
     staff_regist_status_filter = request.GET.get('regist_status', '').strip()  # 登録区分フィルター
     department_filter = request.GET.get('department', '').strip()  # 所属部署フィルター
     employment_type_filter = request.GET.get('employment_type', '').strip()  # 雇用形態フィルター
+    tag_filter = request.GET.get('tag', '').strip()  # タグフィルター
     has_request_filter = request.GET.get('has_request', '')
     has_international_filter = request.GET.get('has_international', '')
     has_disability_filter = request.GET.get('has_disability', '')
@@ -298,6 +302,10 @@ def staff_list(request):
     if employment_type_filter:
         staffs = staffs.filter(employment_type=employment_type_filter)
 
+    # タグでの絞り込み
+    if tag_filter:
+        staffs = staffs.filter(tags=tag_filter)
+
     # 外国籍での絞り込み
     if has_international_filter:
         staffs = staffs.filter(international__isnull=False)
@@ -334,6 +342,12 @@ def staff_list(request):
     employment_type_options = EmploymentType.objects.filter(is_active=True).order_by('display_order', 'name')
     for option in employment_type_options:
         option.is_selected = (employment_type_filter == str(option.pk))
+
+    # タグの選択肢を取得
+    from apps.master.models import StaffTag
+    staff_tag_options = StaffTag.objects.filter(is_active=True).order_by('display_order', 'name')
+    for option in staff_tag_options:
+        option.is_selected = (tag_filter == str(option.pk))
 
     # 所属部署の選択肢を取得（現在有効な部署のみ）
     from apps.company.models import CompanyDepartment
@@ -418,6 +432,8 @@ def staff_list(request):
         'department_options': department_options,
         'employment_type_filter': employment_type_filter,
         'employment_type_options': employment_type_options,
+        'tag_filter': tag_filter,
+        'staff_tag_options': staff_tag_options,
         'has_request_filter': has_request_filter,
         'has_international_filter': has_international_filter,
         'has_disability_filter': has_disability_filter,
