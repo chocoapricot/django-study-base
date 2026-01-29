@@ -62,7 +62,10 @@ class StaffFacePhotoStyleTest(TestCase):
             response = self.client.get(reverse('staff:staff_detail', args=[self.staff.pk]))
             # 写真がないので rounded-circle が使われるはず
             self.assertContains(response, 'face-photo-container rounded-circle')
-            self.assertContains(response, 'img-fluid rounded-circle')
+            # img-fluid ではなく、div のプレースホルダーが表示される
+            self.assertContains(response, 'rounded-circle')
+            self.assertContains(response, self.staff.initials)
+            self.assertNotContains(response, 'img-fluid')
 
         # 2. 写真がある場合
         photo_path = os.path.join(settings.MEDIA_ROOT, 'staff_files', f'{self.staff.pk}.jpg')
@@ -94,7 +97,9 @@ class StaffFacePhotoStyleTest(TestCase):
         self.param.save()
         response = self.client.get(reverse('staff:staff_list'))
         # 写真がないので rounded-circle
-        self.assertContains(response, 'img-fluid rounded-circle')
+        self.assertContains(response, 'rounded-circle')
+        self.assertContains(response, self.staff.initials)
+        self.assertNotContains(response, 'img-fluid')
 
         # 2. 写真がある場合
         photo_path = os.path.join(settings.MEDIA_ROOT, 'staff_files', f'{self.staff.pk}.jpg')
