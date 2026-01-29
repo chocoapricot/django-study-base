@@ -110,6 +110,7 @@ MIDDLEWARE = [
     'django_currentuser.middleware.ThreadLocalUserMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'apps.common.middleware.TenantMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

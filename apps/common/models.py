@@ -17,6 +17,24 @@ class MyModel(models.Model):
     class Meta:
         abstract = True
 
+class TenantManager(models.Manager):
+    """
+    テナントIDでフィルタリングを行うカスタムマネージャー。
+    """
+    def get_queryset(self):
+        from apps.common.middleware import get_current_tenant_id, is_in_request
+
+        # リクエスト外（テスト、シェル、コマンド等）ではフィルタリングしない
+        if not is_in_request():
+            return super().get_queryset()
+
+        tenant_id = get_current_tenant_id()
+        if tenant_id is None:
+            # リクエスト中でテナントIDが設定されていない場合は空のクエリセットを返す
+            # （ユーザーの要求：セッションにテナントがなければデータなしと同じ扱い）
+            return super().get_queryset().none()
+        return super().get_queryset().filter(tenant_id=tenant_id)
+
 class MyTenantModel(MyModel):
     """
     テナントIDを持つ抽象ベースモデル。
