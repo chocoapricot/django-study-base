@@ -167,30 +167,6 @@ MASTER_CONFIGS = [
         "url_name": "master:mail_template_list",
         "permission": "master.view_mailtemplate",
     },
-    {
-        "category": "その他",
-        "name": "初期値マスタ",
-        "description": "システムの各項目における初期値を管理します",
-        "model": "master.DefaultValue",
-        "url_name": "master:default_value_list",
-        "permission": "master.view_defaultvalue",
-    },
-    {
-        "category": "その他",
-        "name": "設定値マスタ",
-        "description": "ユーザーごとの設定値を管理します",
-        "model": "master.UserParameter",
-        "url_name": "master:user_parameter_list",
-        "permission": "master.view_userparameter",
-    },
-    {
-        "category": "その他",
-        "name": "汎用文言テンプレート",
-        "description": "画面に入力する定型文を管理します",
-        "model": "master.PhraseTemplate",
-        "url_name": "master:phrase_template_list",
-        "permission": "master.view_phrasetemplate",
-    },
 ]
 
 
