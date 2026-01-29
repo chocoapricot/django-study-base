@@ -1,0 +1,17 @@
+[
+{
+    "model": "master.stafftag",
+    "pk": 1,
+    "fields": {
+        "version": 1769688375596112,
+        "created_at": "2026-01-29T12:22:02.248Z",
+        "created_by": 1,
+        "updated_at": "2026-01-29T12:22:02.248Z",
+        "updated_by": 1,
+        "tenant_id": null,
+        "name": "要注意",
+        "display_order": 40,
+        "is_active": true
+    }
+}
+]

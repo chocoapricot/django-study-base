@@ -1,0 +1,17 @@
+[
+{
+    "model": "master.clienttag",
+    "pk": 1,
+    "fields": {
+        "version": 1769690968919829,
+        "created_at": "2026-01-29T13:05:15.572Z",
+        "created_by": 1,
+        "updated_at": "2026-01-29T13:05:15.572Z",
+        "updated_by": 1,
+        "tenant_id": null,
+        "name": "要注意",
+        "display_order": 40,
+        "is_active": true
+    }
+}
+]
