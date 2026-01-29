@@ -13,10 +13,12 @@ from .models import (
     StaffAgreement,
     EmploymentType,
     StaffRegistStatus,
+    StaffContactType,
 )
 from .forms import (
     EmploymentTypeForm,
     StaffRegistStatusForm,
+    StaffContactTypeForm,
     QualificationForm,
     QualificationCategoryForm,
     SkillForm,
@@ -874,5 +876,96 @@ def staff_regist_status_change_history_list(request):
             "page_title": "スタッフ登録状況変更履歴",
             "back_url_name": "master:staff_regist_status_list",
             "model_name": "StaffRegistStatus",
+        },
+    )
+
+# スタッフ連絡種別管理ビュー
+@login_required
+@permission_required("master.view_staffcontacttype", raise_exception=True)
+def staff_contact_type_list(request):
+    """スタッフ連絡種別一覧"""
+    search_query = request.GET.get("search", "")
+    items = StaffContactType.objects.all()
+    if search_query:
+        items = items.filter(name__icontains=search_query)
+    items = items.order_by("display_order")
+    paginator = Paginator(items, 20)
+    page = request.GET.get("page")
+    items_page = paginator.get_page(page)
+    change_logs = AppLog.objects.filter(model_name="StaffContactType", action__in=["create", "update", "delete"]).order_by("-timestamp")[:5]
+    change_logs_count = AppLog.objects.filter(model_name="StaffContactType", action__in=["create", "update", "delete"]).count()
+    context = {
+        "items": items_page,
+        "search_query": search_query,
+        "change_logs": change_logs,
+        "change_logs_count": change_logs_count,
+        "history_url_name": "master:staff_contact_type_change_history_list",
+    }
+    return render(request, "master/staff_contact_type_list.html", context)
+
+
+@login_required
+@permission_required("master.add_staffcontacttype", raise_exception=True)
+def staff_contact_type_create(request):
+    """スタッフ連絡種別作成"""
+    if request.method == "POST":
+        form = StaffContactTypeForm(request.POST)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"スタッフ連絡種別「{item.name}」を作成しました。")
+            return redirect("master:staff_contact_type_list")
+    else:
+        form = StaffContactTypeForm()
+    context = {"form": form, "title": "スタッフ連絡種別作成"}
+    return render(request, "master/staff_contact_type_form.html", context)
+
+
+@login_required
+@permission_required("master.change_staffcontacttype", raise_exception=True)
+def staff_contact_type_update(request, pk):
+    """スタッフ連絡種別編集"""
+    item = get_object_or_404(StaffContactType, pk=pk)
+    if request.method == "POST":
+        form = StaffContactTypeForm(request.POST, instance=item)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"スタッフ連絡種別「{item.name}」を更新しました。")
+            return redirect("master:staff_contact_type_list")
+    else:
+        form = StaffContactTypeForm(instance=item)
+    context = {"form": form, "item": item, "title": "スタッフ連絡種別編集"}
+    return render(request, "master/staff_contact_type_form.html", context)
+
+
+@login_required
+@permission_required("master.delete_staffcontacttype", raise_exception=True)
+def staff_contact_type_delete(request, pk):
+    """スタッフ連絡種別削除"""
+    item = get_object_or_404(StaffContactType, pk=pk)
+    if request.method == "POST":
+        item_name = item.name
+        item.delete()
+        messages.success(request, f"スタッフ連絡種別「{item_name}」を削除しました。")
+        return redirect("master:staff_contact_type_list")
+    context = {"item": item, "title": "スタッフ連絡種別削除"}
+    return render(request, "master/staff_contact_type_delete.html", context)
+
+
+@login_required
+@permission_required("master.view_staffcontacttype", raise_exception=True)
+def staff_contact_type_change_history_list(request):
+    """スタッフ連絡種別変更履歴一覧"""
+    logs = AppLog.objects.filter(model_name="StaffContactType", action__in=["create", "update", "delete"]).order_by("-timestamp")
+    paginator = Paginator(logs, 20)
+    page = request.GET.get("page")
+    logs_page = paginator.get_page(page)
+    return render(
+        request,
+        "common/common_change_history_list.html",
+        {
+            "change_logs": logs_page,
+            "page_title": "スタッフ連絡種別変更履歴",
+            "back_url_name": "master:staff_contact_type_list",
+            "model_name": "StaffContactType",
         },
     )

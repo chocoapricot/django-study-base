@@ -61,12 +61,28 @@ MASTER_CONFIGS = [
         "permission": "master.view_staffregiststatus",
     },
     {
+        "category": "スタッフ",
+        "name": "スタッフ連絡種別管理",
+        "description": "スタッフとの連絡種別を管理",
+        "model": "master.StaffContactType",
+        "url_name": "master:staff_contact_type_list",
+        "permission": "master.view_staffcontacttype",
+    },
+    {
         "category": "クライアント",
         "name": "クライアント登録状況管理",
         "description": "クライアントの登録状況を管理",
         "model": "master.ClientRegistStatus",
         "url_name": "master:client_regist_status_list",
         "permission": "master.view_clientregiststatus",
+    },
+    {
+        "category": "クライアント",
+        "name": "クライアント連絡種別管理",
+        "description": "クライアントとの連絡種別を管理",
+        "model": "master.ClientContactType",
+        "url_name": "master:client_contact_type_list",
+        "permission": "master.view_clientcontacttype",
     },
     {
         "category": "契約",
