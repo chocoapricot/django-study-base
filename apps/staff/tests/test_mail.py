@@ -56,8 +56,9 @@ class StaffMailTest(TestCase):
             updated_by=self.user
         )
         
-        # 連絡種別のドロップダウンを作成（StaffMailForm内部で使用）
-        Dropdowns.objects.get_or_create(category='contact_type', value='50', defaults={'name': 'メール', 'active': True, 'disp_seq': 1})
+        # 連絡種別のマスタを作成（StaffMailForm内部で使用）
+        from apps.master.models import StaffContactType
+        StaffContactType.objects.get_or_create(display_order=50, defaults={'name': 'メール', 'is_active': True})
 
         self.staff_email = 'tanaka@example.com'
         self.staff = Staff.objects.create(

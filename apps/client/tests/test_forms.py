@@ -179,13 +179,11 @@ class ClientUserMailFormTest(TestCase):
             name_first='太郎',
             email='receiver@example.com'
         )
-        # 連絡種別 'メール' のためのDropdownを作成
-        Dropdowns.objects.create(
-            category='contact_type',
-            name='メール',
-            value='1',
-            disp_seq=1,
-            active=True
+        # 連絡種別 'メール' のためのマスタを作成
+        from apps.master.models import ClientContactType
+        ClientContactType.objects.get_or_create(
+            display_order=50,
+            defaults={'name': 'メール', 'is_active': True}
         )
 
     @patch('apps.client.forms_mail.send_mail')

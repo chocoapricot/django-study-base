@@ -338,7 +338,7 @@
                 <tr {% if c.is_schedule %}class="table-warning" title="連絡予定"{% endif %}>
                     <td>
                         {% if c.contact_type %}
-                            <span class="badge {{ c.contact_type|badge_class }}">{% my_name 'contact_type' c.contact_type %}</span>
+                            <span class="badge {{ c.contact_type.display_order|badge_class }}">{{ c.contact_type.name }}</span>
                         {% endif %}
                     </td>
                     <td>

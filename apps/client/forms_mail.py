@@ -3,6 +3,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from apps.system.logs.models import MailLog
 from apps.client.models import ClientContacted, ClientUser
+from apps.master.models import ClientContactType
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from apps.system.notifications.models import Notification
@@ -107,7 +108,7 @@ class ClientUserMailForm(forms.Form):
                     contacted_at=timezone.now(),
                     content=f"メール送信: {subject}",
                     detail=body,
-                    contact_type=self._get_contact_type_value('email'),
+                    contact_type=self._get_contact_type_value(),
                     created_by=self.user,
                     updated_by=self.user
                 )
@@ -137,22 +138,9 @@ class ClientUserMailForm(forms.Form):
             
             return False, f"メール送信に失敗しました: {str(e)}"
     
-    def _get_contact_type_value(self, contact_type_key):
-        """連絡種別のキーから値を取得"""
-        # システム設定のDropdownsから連絡種別の値を取得
-        from apps.system.settings.models import Dropdowns
-        try:
-            dropdown = Dropdowns.objects.filter(
-                category='contact_type',
-                name__icontains='メール'
-            ).first()
-            if dropdown:
-                return int(dropdown.value)
-        except (ValueError, AttributeError):
-            pass
-        
-        # デフォルト値を返す
-        return 1
+    def _get_contact_type_value(self):
+        """連絡種別を取得（メール配信用: display_order=50）"""
+        return ClientContactType.objects.filter(display_order=50).first()
 
 
 class ClientMailForm(forms.Form):
@@ -282,16 +270,5 @@ class ClientMailForm(forms.Form):
             return False, f"メール送信に失敗しました: {str(e)}"
     
     def _get_contact_type_value(self):
-        """連絡種別のキーから値を取得"""
-        from apps.system.settings.models import Dropdowns
-        try:
-            dropdown = Dropdowns.objects.filter(
-                category='contact_type',
-                name__icontains='メール'
-            ).first()
-            if dropdown:
-                return int(dropdown.value)
-        except (ValueError, AttributeError):
-            pass
-        
-        return 1
+        """連絡種別を取得（メール配信用: display_order=50）"""
+        return ClientContactType.objects.filter(display_order=50).first()

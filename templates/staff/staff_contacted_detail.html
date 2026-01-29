@@ -13,7 +13,7 @@
             <div class="col-sm-2 text-start text-sm-end"><strong>連絡種別</strong></div>
             <div class="col-sm-10">
                 {% if contacted.contact_type %}
-                    <span class="badge {{ contacted.contact_type|badge_class }}">{% my_name 'contact_type' contacted.contact_type %}</span>
+                    <span class="badge {{ contacted.contact_type.display_order|badge_class }}">{{ contacted.contact_type.name }}</span>
                 {% endif %}
             </div>
         </div>

@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from apps.company.models import Company
-from apps.master.models import MailTemplate
+from apps.master.models import MailTemplate, StaffContactType
 from apps.system.notifications.models import Notification
 from apps.connect.models import ConnectStaff
 
@@ -131,7 +131,7 @@ class StaffMailForm(forms.Form):
                     contacted_at=timezone.now(),
                     content=f"メール送信: {subject}",
                     detail=body,
-                    contact_type=self._get_contact_type_value('email'),
+                    contact_type=self._get_contact_type_value(),
                     created_by=self.user,
                     updated_by=self.user
                 )
@@ -161,22 +161,9 @@ class StaffMailForm(forms.Form):
             
             return False, f"メール送信に失敗しました: {str(e)}"
     
-    def _get_contact_type_value(self, contact_type_key):
-        """連絡種別のキーから値を取得"""
-        # システム設定のDropdownsから連絡種別の値を取得
-        from apps.system.settings.models import Dropdowns
-        try:
-            dropdown = Dropdowns.objects.filter(
-                category='contact_type',
-                name__icontains='メール'
-            ).first()
-            if dropdown:
-                return int(dropdown.value)
-        except (ValueError, AttributeError):
-            pass
-        
-        # デフォルト値を返す
-        return 1
+    def _get_contact_type_value(self):
+        """連絡種別を取得（メール配信用: display_order=50）"""
+        return StaffContactType.objects.filter(display_order=50).first()
 
 
 class ConnectionRequestMailForm:
@@ -248,12 +235,13 @@ class ConnectionRequestMailForm:
             mail_log.save()
 
             # 連絡履歴に保存
+            contact_type = StaffContactType.objects.filter(display_order=50).first()
             StaffContacted.objects.create(
                 staff=self.staff,
                 contacted_at=timezone.now(),
                 content=subject,
                 detail=body,
-                contact_type=50, # メール配信
+                contact_type=contact_type,
                 created_by=self.user,
                 updated_by=self.user
             )
@@ -326,12 +314,13 @@ class DisconnectionMailForm:
             mail_log.save()
 
             # 連絡履歴に保存
+            contact_type = StaffContactType.objects.filter(display_order=50).first()
             StaffContacted.objects.create(
                 staff=self.staff,
                 contacted_at=timezone.now(),
                 content=subject,
                 detail=body,
-                contact_type=50, # メール配信
+                contact_type=contact_type,
                 created_by=self.user,
                 updated_by=self.user
             )

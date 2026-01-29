@@ -16,7 +16,7 @@
             </tr>
             <tr>
                 <th class="table-light">種別</th>
-                <td>{% if schedule.contact_type %}{% my_name 'contact_type' schedule.contact_type %}{% else %}-{% endif %}</td>
+                <td>{% if schedule.contact_type %}{{ schedule.contact_type.name }}{% else %}-{% endif %}</td>
             </tr>
             <tr>
                 <th class="table-light">組織/担当者</th>

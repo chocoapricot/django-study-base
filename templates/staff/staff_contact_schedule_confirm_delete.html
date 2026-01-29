@@ -15,7 +15,7 @@
             <div class="col-sm-2 text-start text-sm-end"><strong>連絡種別</strong></div>
             <div class="col-sm-10">
                 {% if schedule.contact_type %}
-                    <span class="badge {{ schedule.contact_type|badge_class }}">{% my_name 'contact_type' schedule.contact_type %}</span>
+                    <span class="badge {{ schedule.contact_type.display_order|badge_class }}">{{ schedule.contact_type.name }}</span>
                 {% endif %}
             </div>
         </div>
