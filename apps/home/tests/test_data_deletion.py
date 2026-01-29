@@ -11,7 +11,7 @@ class DataDeletionTest(TestCase):
         # 1. テストデータのセットアップ
         # 管理者ユーザー
         self.admin_user = MyUser.objects.create_superuser(
-            'admin', 'admin@test.com', 'password'
+            'admin', 'admin@example.com', 'password'
         )
         # 一般ユーザー
         self.normal_user = MyUser.objects.create_user(

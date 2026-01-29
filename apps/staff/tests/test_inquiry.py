@@ -24,7 +24,7 @@ class StaffInquiryTest(TestCase):
         )
         self.user.user_permissions.set(permissions)
 
-        self.admin_user = User.objects.create_superuser(username='adminuser', email='admin@test.com', password='password')
+        self.admin_user = User.objects.create_superuser(username='adminuser', email='admin@example.com', password='password')
         self.client_user = Client()
         self.client_user.login(username='teststaff', password='password')
         
@@ -134,7 +134,7 @@ class StaffInquiryTest(TestCase):
         self.assertTrue(StaffInquiryMessage.objects.filter(pk=msg_old.pk).exists())
 
     def test_staff_inquiry_create_for_staff_view(self):
-        self.client.login(email='admin@test.com', password='password')
+        self.client.login(email='admin@example.com', password='password')
         url = reverse('staff:staff_inquiry_create_for_staff', kwargs={'staff_pk': self.staff.pk})
         data = {
             'subject': 'Test Subject from Company',

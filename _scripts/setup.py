@@ -64,8 +64,8 @@ def create_superuser():
     superuser_env = {'DJANGO_SUPERUSER_PASSWORD': 'passwordforstudybase!'}
 
     # スーパーユーザー作成コマンドを実行
-    command = "python manage.py createsuperuser --noinput --username admin --email admin@test.com"
-    if not run_command(command, "スーパーユーザー (admin / admin@test.com) の作成", env=superuser_env):
+    command = "python manage.py createsuperuser --noinput --username admin --email admin@example.com"
+    if not run_command(command, "スーパーユーザー (admin / admin@example.com) の作成", env=superuser_env):
         return False
 
     print("✅ [2/4] スーパーユーザーの作成が完了しました。")
