@@ -285,3 +285,24 @@ class StaffRegistStatus(MyTenantModel):
 
     def __str__(self):
         return self.name
+
+class StaffContactType(MyTenantModel):
+    """
+    スタッフ連絡種別マスタ
+    """
+    name = models.CharField('名称', max_length=100)
+    display_order = models.IntegerField('表示順', default=0)
+    is_active = models.BooleanField('有効', default=True)
+
+    class Meta:
+        db_table = 'apps_master_staff_contact_type'
+        verbose_name = 'スタッフ連絡種別'
+        verbose_name_plural = 'スタッフ連絡種別'
+        ordering = ['display_order', 'name']
+        indexes = [
+            models.Index(fields=['is_active']),
+            models.Index(fields=['display_order']),
+        ]
+
+    def __str__(self):
+        return self.name

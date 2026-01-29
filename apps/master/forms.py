@@ -24,6 +24,8 @@ from .models import (
     EmploymentType,
     StaffRegistStatus,
     ClientRegistStatus,
+    StaffContactType,
+    ClientContactType,
     TimePunch,
 )
 from apps.system.settings.models import Dropdowns
@@ -119,6 +121,30 @@ class JobCategoryForm(forms.ModelForm):
             'is_manufacturing_dispatch': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'is_agriculture_fishery_dispatch': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'is_specified_skilled_worker': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+
+class StaffContactTypeForm(forms.ModelForm):
+    """スタッフ連絡種別フォーム"""
+    class Meta:
+        model = StaffContactType
+        fields = ['name', 'display_order', 'is_active']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+
+class ClientContactTypeForm(forms.ModelForm):
+    """クライアント連絡種別フォーム"""
+    class Meta:
+        model = ClientContactType
+        fields = ['name', 'display_order', 'is_active']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
             'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }

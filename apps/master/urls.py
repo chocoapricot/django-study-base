@@ -138,12 +138,26 @@ urlpatterns = [
     path('staff-regist-status/<int:pk>/delete/', views.staff_regist_status_delete, name='staff_regist_status_delete'),
     path('staff-regist-status/history/', views.staff_regist_status_change_history_list, name='staff_regist_status_change_history_list'),
 
+    # スタッフ連絡種別管理
+    path('staff-contact-type/', views.staff_contact_type_list, name='staff_contact_type_list'),
+    path('staff-contact-type/create/', views.staff_contact_type_create, name='staff_contact_type_create'),
+    path('staff-contact-type/<int:pk>/update/', views.staff_contact_type_update, name='staff_contact_type_update'),
+    path('staff-contact-type/<int:pk>/delete/', views.staff_contact_type_delete, name='staff_contact_type_delete'),
+    path('staff-contact-type/history/', views.staff_contact_type_change_history_list, name='staff_contact_type_change_history_list'),
+
     # クライアント登録状況管理
     path('client-regist-status/', views.client_regist_status_list, name='client_regist_status_list'),
     path('client-regist-status/create/', views.client_regist_status_create, name='client_regist_status_create'),
     path('client-regist-status/<int:pk>/update/', views.client_regist_status_update, name='client_regist_status_update'),
     path('client-regist-status/<int:pk>/delete/', views.client_regist_status_delete, name='client_regist_status_delete'),
     path('client-regist-status/history/', views.client_regist_status_change_history_list, name='client_regist_status_change_history_list'),
+
+    # クライアント連絡種別管理
+    path('client-contact-type/', views.client_contact_type_list, name='client_contact_type_list'),
+    path('client-contact-type/create/', views.client_contact_type_create, name='client_contact_type_create'),
+    path('client-contact-type/<int:pk>/update/', views.client_contact_type_update, name='client_contact_type_update'),
+    path('client-contact-type/<int:pk>/delete/', views.client_contact_type_delete, name='client_contact_type_delete'),
+    path('client-contact-type/history/', views.client_contact_type_change_history_list, name='client_contact_type_change_history_list'),
 
     # 汎用文言テンプレート管理
     path('phrase-template/', views.phrase_template_list, name='phrase_template_list'),
