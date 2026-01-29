@@ -126,8 +126,18 @@
                             <span class="badge bg-primary">生成AI設定</span>
                         {% elif log.model_name == 'StaffInquiry' %}
                             <span class="badge bg-info">スタッフ問い合わせ</span>
+                        {% elif log.model_name == 'StaffTag' %}
+                            <span class="badge bg-primary">スタッフタグ</span>
+                        {% elif log.model_name == 'StaffContactType' %}
+                            <span class="badge bg-primary">スタッフ連絡種別</span>
+                        {% elif log.model_name == 'ClientTag' %}
+                            <span class="badge bg-primary">クライアントタグ</span>
+                        {% elif log.model_name == 'ClientContactType' %}
+                            <span class="badge bg-primary">クライアント連絡種別</span>
+                        {% elif log.model_name == 'PhraseTemplateTitle' %}
+                            <span class="badge bg-primary">汎用文言タイトル</span>
                         {% elif log.model_name %}
-                            <span class="badge bg-primary">{{ log.model_name }}</span>
+                            <span class="badge bg-primary">{{ log.model_verbose_name }}</span>
                         {% else %}
                             -
                         {% endif %}

@@ -132,17 +132,31 @@ class AppLog(models.Model):
         """モデルの日本語名（verbose_name）を取得する"""
         from django.apps import apps
         try:
-            # 'master' app is assumed for now, which covers the current scope.
-            # A more robust solution might store the app_label in the log.
-            app_label = 'master'
-            if '.' in self.model_name:
-                 # If the model name is already in 'app_label.ModelName' format
-                app_label, model_name_str = self.model_name.split('.')
+            if "." in self.model_name:
+                # If the model name is already in 'app_label.ModelName' format
+                app_label, model_name_str = self.model_name.split(".")
+                model_class = apps.get_model(app_label=app_label, model_name=model_name_str)
             else:
                 model_name_str = self.model_name
+                # Try 'master' app first for performance as most master records are there
+                try:
+                    model_class = apps.get_model(app_label="master", model_name=model_name_str)
+                except LookupError:
+                    # If not in master, search all apps
+                    model_class = None
+                    for app_config in apps.get_app_configs():
+                        try:
+                            # Use internal _get_model_map or get_model
+                            # get_model(model_name) is better if it exists on app_config
+                            model_class = app_config.get_model(model_name_str)
+                            if model_class:
+                                break
+                        except LookupError:
+                            continue
 
-            model_class = apps.get_model(app_label=app_label, model_name=model_name_str)
-            return model_class._meta.verbose_name
+            if model_class:
+                return model_class._meta.verbose_name
+            return self.model_name
         except (LookupError, AttributeError):
             return self.model_name # Fallback to the raw model name
 
