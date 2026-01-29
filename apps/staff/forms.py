@@ -7,21 +7,16 @@ from django.core.exceptions import ValidationError
 from apps.common.forms import MyRadioSelect
 
 # スタッフ連絡履歴フォーム
+from apps.master.models import StaffContactType
+
 class StaffContactedForm(forms.ModelForm):
-    contact_type = forms.ChoiceField(
-        choices=[],
+    contact_type = forms.ModelChoiceField(
+        queryset=StaffContactType.objects.filter(is_active=True).order_by('display_order'),
         label='連絡種別',
         widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
         required=False,
+        empty_label='選択してください'
     )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        from apps.system.settings.models import Dropdowns
-        self.fields['contact_type'].choices = [
-            (opt.value, opt.name)
-            for opt in Dropdowns.objects.filter(active=True, category='contact_type').order_by('disp_seq')
-        ]
 
     class Meta:
         model = StaffContacted
@@ -35,20 +30,13 @@ class StaffContactedForm(forms.ModelForm):
 
 # スタッフ連絡予定フォーム
 class StaffContactScheduleForm(forms.ModelForm):
-    contact_type = forms.ChoiceField(
-        choices=[],
+    contact_type = forms.ModelChoiceField(
+        queryset=StaffContactType.objects.filter(is_active=True).order_by('display_order'),
         label='連絡種別',
         widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
         required=False,
+        empty_label='選択してください'
     )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        from apps.system.settings.models import Dropdowns
-        self.fields['contact_type'].choices = [
-            (opt.value, opt.name)
-            for opt in Dropdowns.objects.filter(active=True, category='contact_type').order_by('disp_seq')
-        ]
 
     class Meta:
         model = StaffContactSchedule

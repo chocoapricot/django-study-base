@@ -31,7 +31,7 @@
                         <td>{{ schedule.contact_date|date:'Y/m/d' }}</td>
                         <td>
                             {% if schedule.contact_type %}
-                            <span class="badge {{ schedule.contact_type|badge_class }}">{% my_name 'contact_type' schedule.contact_type %}</span>
+                            <span class="badge {{ schedule.contact_type.display_order|badge_class }}">{{ schedule.contact_type.name }}</span>
                             {% endif %}
                         </td>
                         <td>

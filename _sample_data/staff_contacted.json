@@ -11,7 +11,7 @@
             "contacted_at": "2025-07-01T10:00:00Z",
             "content": "初回面談のご案内を実施",
             "detail": "電話で面談日程を調整し、7/5に決定。",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     },
@@ -27,7 +27,7 @@
             "contacted_at": "2025-07-02T11:00:00Z",
             "content": "面談実施済み",
             "detail": "本人希望条件をヒアリング。次回は書類提出予定。",
-            "contact_type": 20,
+            "contact_type": 2,
             "tenant_id": 1
         }
     },
@@ -43,7 +43,7 @@
             "contacted_at": "2025-07-03T09:30:00Z",
             "content": "書類不備の連絡",
             "detail": "履歴書の記載漏れをメールで案内。",
-            "contact_type": 50,
+            "contact_type": 4,
             "tenant_id": 1
         }
     },
@@ -59,7 +59,7 @@
             "contacted_at": "2025-07-04T14:00:00Z",
             "content": "クレーム対応",
             "detail": "勤務先からの指摘事項について本人へ説明。",
-            "contact_type": 40,
+            "contact_type": 3,
             "tenant_id": 1
         }
     },
@@ -75,7 +75,7 @@
             "contacted_at": "2025-07-05T15:00:00Z",
             "content": "問い合わせ対応",
             "detail": "交通費精算方法について電話で案内。",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     },
@@ -91,7 +91,7 @@
             "contacted_at": "2025-07-06T10:00:00Z",
             "content": "打ち合わせ日程調整",
             "detail": "7/10に現場担当者と打ち合わせ予定。",
-            "contact_type": 20,
+            "contact_type": 2,
             "tenant_id": 1
         }
     },
@@ -107,7 +107,7 @@
             "contacted_at": "2025-07-07T13:00:00Z",
             "content": "メール配信済み",
             "detail": "就業規則改定のお知らせを一斉送信。",
-            "contact_type": 50,
+            "contact_type": 4,
             "tenant_id": 1
         }
     },
@@ -123,7 +123,7 @@
             "contacted_at": "2025-07-08T09:00:00Z",
             "content": "問い合わせ対応",
             "detail": "給与明細の再発行依頼を受付。",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     },
@@ -139,7 +139,7 @@
             "contacted_at": "2025-07-09T11:00:00Z",
             "content": "クレーム対応",
             "detail": "勤務シフトの調整依頼に対応。",
-            "contact_type": 40,
+            "contact_type": 3,
             "tenant_id": 1
         }
     },
@@ -155,7 +155,7 @@
             "contacted_at": "2025-07-10T16:00:00Z",
             "content": "打ち合わせ実施",
             "detail": "現場責任者と今後の業務内容を確認。",
-            "contact_type": 20,
+            "contact_type": 2,
             "tenant_id": 1
         }
     },
@@ -171,7 +171,7 @@
             "contacted_at": "2025-07-11T10:00:00Z",
             "content": "初回面談のご案内を実施",
             "detail": "電話で面談日程を調整し、7/15に決定。",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     },
@@ -187,7 +187,7 @@
             "contacted_at": "2025-07-12T11:00:00Z",
             "content": "面談実施済み",
             "detail": "本人希望条件をヒアリング。次回は書類提出予定。",
-            "contact_type": 20,
+            "contact_type": 2,
             "tenant_id": 1
         }
     },
@@ -203,7 +203,7 @@
             "contacted_at": "2025-07-13T09:30:00Z",
             "content": "書類不備の連絡",
             "detail": "履歴書の記載漏れをメールで案内。",
-            "contact_type": 50,
+            "contact_type": 4,
             "tenant_id": 1
         }
     },
@@ -219,7 +219,7 @@
             "contacted_at": "2025-07-14T14:00:00Z",
             "content": "クレーム対応",
             "detail": "勤務先からの指摘事項について本人へ説明。",
-            "contact_type": 40,
+            "contact_type": 3,
             "tenant_id": 1
         }
     },
@@ -235,7 +235,7 @@
             "contacted_at": "2025-07-15T15:00:00Z",
             "content": "問い合わせ対応",
             "detail": "交通費精算方法について電話で案内。",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     },
@@ -251,7 +251,7 @@
             "contacted_at": "2025-07-16T10:00:00Z",
             "content": "打ち合わせ日程調整",
             "detail": "7/20に現場担当者と打ち合わせ予定。",
-            "contact_type": 20,
+            "contact_type": 2,
             "tenant_id": 1
         }
     },
@@ -267,7 +267,7 @@
             "contacted_at": "2025-07-17T13:00:00Z",
             "content": "メール配信済み",
             "detail": "就業規則改定のお知らせを一斉送信。",
-            "contact_type": 50,
+            "contact_type": 4,
             "tenant_id": 1
         }
     },
@@ -283,7 +283,7 @@
             "contacted_at": "2025-07-18T09:00:00Z",
             "content": "問い合わせ対応",
             "detail": "給与明細の再発行依頼を受付。",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     },
@@ -299,7 +299,7 @@
             "contacted_at": "2025-07-19T11:00:00Z",
             "content": "クレーム対応",
             "detail": "勤務シフトの調整依頼に対応。",
-            "contact_type": 40,
+            "contact_type": 3,
             "tenant_id": 1
         }
     },
@@ -315,7 +315,7 @@
             "contacted_at": "2025-07-20T16:00:00Z",
             "content": "打ち合わせ実施",
             "detail": "現場責任者と今後の業務内容を確認。",
-            "contact_type": 20,
+            "contact_type": 2,
             "tenant_id": 1
         }
     }

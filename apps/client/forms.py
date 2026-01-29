@@ -91,23 +91,20 @@ class ClientForm(forms.ModelForm):
 
 # クライアント組織フォーム
 from .models import ClientContacted, ClientDepartment, ClientUser, ClientContactSchedule
+from apps.master.models import ClientContactType
 
 class ClientContactScheduleForm(forms.ModelForm):
-    contact_type = forms.ChoiceField(
-        choices=[],
+    contact_type = forms.ModelChoiceField(
+        queryset=ClientContactType.objects.filter(is_active=True).order_by('display_order'),
         label='連絡種別',
         widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
         required=False,
+        empty_label='選択してください'
     )
 
     def __init__(self, *args, **kwargs):
         client = kwargs.pop('client', None)
         super().__init__(*args, **kwargs)
-        from apps.system.settings.models import Dropdowns
-        self.fields['contact_type'].choices = [
-            (opt.value, opt.name)
-            for opt in Dropdowns.objects.filter(active=True, category='contact_type').order_by('disp_seq')
-        ]
         
         # クライアントが指定されている場合、組織と担当者の選択肢を絞り込む
         if client:
@@ -274,21 +271,17 @@ class ClientUserForm(forms.ModelForm):
 
 # クライアント連絡履歴フォーム
 class ClientContactedForm(forms.ModelForm):
-    contact_type = forms.ChoiceField(
-        choices=[],
+    contact_type = forms.ModelChoiceField(
+        queryset=ClientContactType.objects.filter(is_active=True).order_by('display_order'),
         label='連絡種別',
         widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
         required=False,
+        empty_label='選択してください'
     )
 
     def __init__(self, *args, **kwargs):
         client = kwargs.pop('client', None)
         super().__init__(*args, **kwargs)
-        from apps.system.settings.models import Dropdowns
-        self.fields['contact_type'].choices = [
-            (opt.value, opt.name)
-            for opt in Dropdowns.objects.filter(active=True, category='contact_type').order_by('disp_seq')
-        ]
         
         # クライアントが指定されている場合、組織と担当者の選択肢を絞り込む
         if client:

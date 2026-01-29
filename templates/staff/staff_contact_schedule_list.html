@@ -24,7 +24,7 @@
                 <tr>
                     <td>
                         {% if s.contact_type %}
-                            <span class="badge {{ s.contact_type|badge_class }}">{% my_name 'contact_type' s.contact_type %}</span>
+                            <span class="badge {{ s.contact_type.display_order|badge_class }}">{{ s.contact_type.name }}</span>
                         {% endif %}
                     </td>
                     <td><a href="{% url 'staff:staff_contact_schedule_detail' s.pk %}">{{ s.content|truncatechars:20 }}</a></td>

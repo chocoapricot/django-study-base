@@ -215,7 +215,13 @@ class ClientContacted(MyTenantModel):
     contacted_at = models.DateTimeField('連絡日時')
     content = models.CharField('対応内容', max_length=255, blank=False, null=False)
     detail = models.TextField('対応詳細', blank=True, null=True)
-    contact_type = models.IntegerField('連絡種別', blank=True, null=True)
+    contact_type = models.ForeignKey(
+        'master.ClientContactType',
+        on_delete=models.SET_NULL,
+        verbose_name='連絡種別',
+        blank=True,
+        null=True
+    )
 
     class Meta:
         db_table = 'apps_client_contacted'
@@ -237,7 +243,13 @@ class ClientContactSchedule(MyTenantModel):
     contact_date = models.DateField('連絡日')
     content = models.CharField('対応内容', max_length=255, blank=False, null=False)
     detail = models.TextField('対応詳細', blank=True, null=True)
-    contact_type = models.IntegerField('連絡種別', blank=True, null=True)
+    contact_type = models.ForeignKey(
+        'master.ClientContactType',
+        on_delete=models.SET_NULL,
+        verbose_name='連絡種別',
+        blank=True,
+        null=True
+    )
 
     class Meta:
         db_table = 'apps_client_contact_schedule'

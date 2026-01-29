@@ -13,8 +13,9 @@ class ClientMailTest(TestCase):
         self.user = User.objects.create_superuser(username='admin', password='password', email='admin@example.com')
         self.client.login(username='admin', password='password')
 
-        # 連絡種別のドロップダウンを作成（ClientUserMailForm内部で使用）
-        Dropdowns.objects.create(category='contact_type', value='50', name='メール', active=True, disp_seq=1)
+        # 連絡種別のマスタを作成（ClientUserMailForm内部で使用）
+        from apps.master.models import ClientContactType
+        ClientContactType.objects.get_or_create(display_order=50, defaults={'name': 'メール', 'is_active': True})
 
         # テスト用クライアント
         self.client_obj = Client.objects.create(name='テストクライアント')
