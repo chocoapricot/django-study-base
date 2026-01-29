@@ -35,19 +35,23 @@ def reset_database():
     """データベースをリセットし、マイグレーションを適用"""
     print("🔄 [1/4] データベースをリセットします...")
 
-    # 1. データベースファイルを削除
-    if os.path.exists('db.sqlite3'):
+    # データベースファイルのパスを特定
+    db_path = 'db.sqlite3'
+    if os.path.exists('/data'):
+        db_path = '/data/db.sqlite3'
+    
+    if os.path.exists(db_path):
         try:
-            os.remove('db.sqlite3')
-            print("✅ db.sqlite3を削除しました")
+            os.remove(db_path)
+            print(f"✅ {db_path}を削除しました")
         except PermissionError:
-            print("❌ db.sqlite3が使用中です。開発サーバーやDBブラウザを終了してから再実行してください。")
+            print(f"❌ {db_path}が使用中です。開発サーバーやDBブラウザを終了してから再実行してください。")
             return False
         except Exception as e:
-            print(f"❌ db.sqlite3の削除でエラーが発生しました: {e}")
+            print(f"❌ {db_path}の削除でエラーが発生しました: {e}")
             return False
     else:
-        print("ℹ️ db.sqlite3は存在しません")
+        print(f"ℹ️ {db_path}は存在しません")
 
     # 2. マイグレーションを適用
     if not run_command("python manage.py migrate", "データベースマイグレーションの適用"):
