@@ -13,7 +13,7 @@ from .forms_mail import ConnectionRequestMailForm, DisconnectionMailForm
 
 from .models import Staff, StaffContacted, StaffContactSchedule, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact
 from .forms import StaffForm, StaffContactedForm, StaffContactScheduleForm, StaffFileForm, StaffFaceUploadForm
-from .utils import get_staff_face_photo_style, delete_staff_placeholder
+from .utils import get_staff_face_photo_style, delete_staff_placeholder, get_tenant_id, get_staff_queryset, get_filtered_queryset
 from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
 from apps.common.utils import fill_excel_from_template
@@ -42,7 +42,7 @@ def staff_export(request):
     has_disability_filter = request.GET.get('has_disability', '')
     format_type = request.GET.get('format', 'csv')
 
-    staffs = Staff.objects.all()
+    staffs = get_staff_queryset(request)
 
     if has_request_filter == 'true':
         from apps.connect.models import (
@@ -114,7 +114,7 @@ def staff_export(request):
 @login_required
 @permission_required('staff.view_staff', raise_exception=True)
 def staff_change_history_list(request, pk):
-    staff = get_object_or_404(Staff, pk=pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=pk)
     # スタッフ、資格、技能、ファイルの変更履歴を含む
     from django.db import models as django_models
 
@@ -186,7 +186,7 @@ def staff_change_history_list(request, pk):
 @login_required
 @permission_required('staff.view_staffcontacted', raise_exception=True)
 def staff_contacted_detail(request, pk):
-    contacted = get_object_or_404(StaffContacted, pk=pk)
+    contacted = get_object_or_404(get_filtered_queryset(request, StaffContacted), pk=pk)
     staff = contacted.staff
     # AppLogに詳細画面アクセスを記録
     from apps.system.logs.utils import log_view_detail
@@ -197,7 +197,7 @@ def staff_contacted_detail(request, pk):
 @login_required
 @permission_required('staff.delete_staffcontacted', raise_exception=True)
 def staff_contacted_delete(request, pk):
-    contacted = get_object_or_404(StaffContacted, pk=pk)
+    contacted = get_object_or_404(get_filtered_queryset(request, StaffContacted), pk=pk)
     staff = contacted.staff
     if request.method == 'POST':
         contacted.delete()
@@ -221,12 +221,12 @@ def staff_list(request):
 
     # 基本のクエリセット
     from django.db.models import OuterRef, Subquery
-    next_schedule = StaffContactSchedule.objects.filter(
+    next_schedule = get_filtered_queryset(request, StaffContactSchedule).filter(
         staff=OuterRef('pk'),
         contact_date__gte=timezone.localdate()
     ).order_by('contact_date')
 
-    staffs = Staff.objects.annotate(
+    staffs = get_staff_queryset(request).annotate(
         next_contact_date=Subquery(next_schedule.values('contact_date')[:1]),
         next_contact_content=Subquery(next_schedule.values('content')[:1])
     )
@@ -262,9 +262,9 @@ def staff_list(request):
         # Filter the staffs
         staffs = staffs.filter(email__in=pending_emails)
 
-    # 会社の法人番号を取得（最初の会社を仮定）
+    # 会社の法人番号を取得
     from apps.company.models import Company
-    company = Company.objects.first()
+    company = get_filtered_queryset(request, Company).first()
     corporate_number = company.corporate_number if company else None
 
     # キーワード検索
@@ -332,20 +332,20 @@ def staff_list(request):
 
     # 登録区分の選択肢を取得
     from apps.master.models import StaffRegistStatus
-    staff_regist_status_options = StaffRegistStatus.objects.filter(is_active=True).order_by('display_order')
+    staff_regist_status_options = get_filtered_queryset(request, StaffRegistStatus).filter(is_active=True).order_by('display_order')
     # 各オプションに選択状態を追加
     for option in staff_regist_status_options:
         option.is_selected = (staff_regist_status_filter == str(option.pk))
 
     # 雇用形態の選択肢を取得
     from apps.master.models import EmploymentType
-    employment_type_options = EmploymentType.objects.filter(is_active=True).order_by('display_order', 'name')
+    employment_type_options = get_filtered_queryset(request, EmploymentType).filter(is_active=True).order_by('display_order', 'name')
     for option in employment_type_options:
         option.is_selected = (employment_type_filter == str(option.pk))
 
     # タグの選択肢を取得
     from apps.master.models import StaffTag
-    staff_tag_options = StaffTag.objects.filter(is_active=True).order_by('display_order', 'name')
+    staff_tag_options = get_filtered_queryset(request, StaffTag).filter(is_active=True).order_by('display_order', 'name')
     for option in staff_tag_options:
         option.is_selected = (tag_filter == str(option.pk))
 
@@ -353,7 +353,7 @@ def staff_list(request):
     from apps.company.models import CompanyDepartment
 
     current_date = timezone.localdate()
-    department_options = CompanyDepartment.get_valid_departments(current_date)
+    department_options = get_filtered_queryset(request, CompanyDepartment.get_valid_departments(current_date))
 
     # 各部署オプションに選択状態を追加
     for dept in department_options:
@@ -445,20 +445,23 @@ def staff_list(request):
 @permission_required('staff.add_staff', raise_exception=True)
 def staff_create(request):
     if request.method == 'POST':
-        form = StaffForm(request.POST)
+        form = StaffForm(request.POST, tenant_id=get_tenant_id(request))
         if form.is_valid():
-            staff = form.save()
+            staff = form.save(commit=False)
+            staff.tenant_id = get_tenant_id(request)
+            staff.save()
+            form.save_m2m() # tagsなどのm2mフィールドがある場合は必要
             messages.success(request, f'スタッフ「{staff.name}」を作成しました。')
             return redirect('staff:staff_detail', pk=staff.pk)
     else:
-        form = StaffForm()
+        form = StaffForm(tenant_id=get_tenant_id(request))
     return render(request, 'staff/staff_form.html', {'form': form})
 
 @login_required
 @permission_required('staff.view_staff', raise_exception=True)
 def staff_detail(request, pk):
     staff_face_photo_style = get_staff_face_photo_style()
-    staff = get_object_or_404(Staff, pk=pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=pk)
 
     # 接続依頼の切り替え処理
     if request.method == 'POST' and 'toggle_connect_request' in request.POST:
@@ -564,8 +567,8 @@ def staff_detail(request, pk):
 
     # スタッフ契約（最新5件）
     from apps.contract.models import StaffContract
-    staff_contracts = StaffContract.objects.filter(staff=staff).order_by('-start_date')[:5]
-    staff_contracts_count = StaffContract.objects.filter(staff=staff).count()
+    staff_contracts = StaffContract.objects.filter(tenant_id=staff.tenant_id, staff=staff).order_by('-start_date')[:5]
+    staff_contracts_count = StaffContract.objects.filter(tenant_id=staff.tenant_id, staff=staff).count()
     # 資格情報（最新5件）
     qualifications = staff.qualifications.select_related('qualification').order_by('-acquired_date')[:5]
     # 技能情報（最新5件）
@@ -682,7 +685,7 @@ def staff_detail(request, pk):
 
         try:
             # 現在のユーザーの会社の法人番号を取得
-            company = Company.objects.first()  # 仮の実装、実際は適切な会社を取得
+            company = Company.objects.filter(tenant_id=staff.tenant_id).first()
             if company and company.corporate_number:
                 connect_request = ConnectStaff.objects.filter(
                     corporate_number=company.corporate_number,
@@ -754,24 +757,25 @@ def staff_detail(request, pk):
 @permission_required('staff.add_staffcontacted', raise_exception=True)
 def staff_contacted_create(request, staff_pk):
 
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     if request.method == 'POST':
-        form = StaffContactedForm(request.POST)
+        form = StaffContactedForm(request.POST, tenant_id=staff.tenant_id)
         if form.is_valid():
             contacted = form.save(commit=False)
             contacted.staff = staff
+            contacted.tenant_id = staff.tenant_id
             contacted.save()
             return redirect('staff:staff_detail', pk=staff.pk)
     else:
         # デフォルトで現在時刻を設定
-        form = StaffContactedForm(initial={'contacted_at': timezone.now()})
+        form = StaffContactedForm(initial={'contacted_at': timezone.now()}, tenant_id=staff.tenant_id)
     return render(request, 'staff/staff_contacted_form.html', {'form': form, 'staff': staff})
 
 # 連絡履歴 一覧
 @login_required
 @permission_required('staff.view_staffcontacted', raise_exception=True)
 def staff_contacted_list(request, staff_pk):
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     contacted_qs = staff.contacted_histories.all().order_by('-contacted_at')
     paginator = Paginator(contacted_qs, 20)
     page = request.GET.get('page')
@@ -782,16 +786,16 @@ def staff_contacted_list(request, staff_pk):
 @login_required
 @permission_required('staff.change_staffcontacted', raise_exception=True)
 def staff_contacted_update(request, pk):
-    contacted = get_object_or_404(StaffContacted, pk=pk)
+    contacted = get_object_or_404(get_filtered_queryset(request, StaffContacted), pk=pk)
     staff = contacted.staff
     if request.method == 'POST':
-        form = StaffContactedForm(request.POST, instance=contacted)
+        form = StaffContactedForm(request.POST, instance=contacted, tenant_id=staff.tenant_id)
         if form.is_valid():
             form.save()
             messages.success(request, '連絡履歴を更新しました。')
             return redirect('staff:staff_detail', pk=staff.pk)
     else:
-        form = StaffContactedForm(instance=contacted)
+        form = StaffContactedForm(instance=contacted, tenant_id=staff.tenant_id)
     return render(request, 'staff/staff_contacted_form.html', {'form': form, 'staff': staff, 'contacted': contacted})
 
 
@@ -800,23 +804,24 @@ def staff_contacted_update(request, pk):
 @permission_required('staff.add_staffcontactschedule', raise_exception=True)
 def staff_contact_schedule_create(request, staff_pk):
 
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     if request.method == 'POST':
-        form = StaffContactScheduleForm(request.POST)
+        form = StaffContactScheduleForm(request.POST, tenant_id=staff.tenant_id)
         if form.is_valid():
             contact_schedule = form.save(commit=False)
             contact_schedule.staff = staff
+            contact_schedule.tenant_id = staff.tenant_id
             contact_schedule.save()
             return redirect('staff:staff_detail', pk=staff.pk)
     else:
-        form = StaffContactScheduleForm(initial={'contact_date': timezone.now()})
+        form = StaffContactScheduleForm(initial={'contact_date': timezone.now()}, tenant_id=staff.tenant_id)
     return render(request, 'staff/staff_contact_schedule_form.html', {'form': form, 'staff': staff})
 
 # 連絡予定 一覧
 @login_required
 @permission_required('staff.view_staffcontactschedule', raise_exception=True)
 def staff_contact_schedule_list(request, staff_pk):
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     contact_schedule_qs = staff.contact_schedules.all().order_by('-contact_date')
     paginator = Paginator(contact_schedule_qs, 20)
     page = request.GET.get('page')
@@ -827,7 +832,7 @@ def staff_contact_schedule_list(request, staff_pk):
 @login_required
 @permission_required('staff.view_staffcontactschedule', raise_exception=True)
 def staff_contact_schedule_detail(request, pk):
-    schedule = get_object_or_404(StaffContactSchedule, pk=pk)
+    schedule = get_object_or_404(get_filtered_queryset(request, StaffContactSchedule), pk=pk)
     staff = schedule.staff
 
     # 自社情報を取得
@@ -842,10 +847,11 @@ def staff_contact_schedule_detail(request, pk):
 
     if request.method == 'POST':
         if 'register_history' in request.POST:
-            form = StaffContactedForm(request.POST)
+            form = StaffContactedForm(request.POST, tenant_id=staff.tenant_id)
             if form.is_valid():
                 contacted = form.save(commit=False)
                 contacted.staff = staff
+                contacted.tenant_id = staff.tenant_id
                 contacted.save()
                 # 予定を削除
                 schedule.delete()
@@ -883,7 +889,7 @@ def staff_contact_schedule_detail(request, pk):
             'detail': schedule.detail,
             'contacted_at': timezone.now()
         }
-        form = StaffContactedForm(initial=initial_data)
+        form = StaffContactedForm(initial=initial_data, tenant_id=staff.tenant_id)
 
         # メール初期値
         initial_mail_data = {
@@ -906,23 +912,23 @@ def staff_contact_schedule_detail(request, pk):
 @login_required
 @permission_required('staff.change_staffcontactschedule', raise_exception=True)
 def staff_contact_schedule_update(request, pk):
-    schedule = get_object_or_404(StaffContactSchedule, pk=pk)
+    schedule = get_object_or_404(get_filtered_queryset(request, StaffContactSchedule), pk=pk)
     staff = schedule.staff
     if request.method == 'POST':
-        form = StaffContactScheduleForm(request.POST, instance=schedule)
+        form = StaffContactScheduleForm(request.POST, instance=schedule, tenant_id=staff.tenant_id)
         if form.is_valid():
             form.save()
             messages.success(request, '連絡予定を更新しました。')
             return redirect('staff:staff_detail', pk=staff.pk)
     else:
-        form = StaffContactScheduleForm(instance=schedule)
+        form = StaffContactScheduleForm(instance=schedule, tenant_id=staff.tenant_id)
     return render(request, 'staff/staff_contact_schedule_form.html', {'form': form, 'staff': staff, 'schedule': schedule})
 
 # 連絡予定 削除
 @login_required
 @permission_required('staff.delete_staffcontactschedule', raise_exception=True)
 def staff_contact_schedule_delete(request, pk):
-    schedule = get_object_or_404(StaffContactSchedule, pk=pk)
+    schedule = get_object_or_404(get_filtered_queryset(request, StaffContactSchedule), pk=pk)
     staff = schedule.staff
     if request.method == 'POST':
         schedule.delete()
@@ -933,9 +939,9 @@ def staff_contact_schedule_delete(request, pk):
 @login_required
 @permission_required('staff.change_staff', raise_exception=True)
 def staff_update(request, pk):
-    staff = get_object_or_404(Staff, pk=pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=pk)
     if request.method == 'POST':
-        form = StaffForm(request.POST, instance=staff)
+        form = StaffForm(request.POST, instance=staff, tenant_id=staff.tenant_id)
         if form.is_valid():
             # 変更があったかどうかをチェック
             if form.has_changed():
@@ -946,13 +952,13 @@ def staff_update(request, pk):
                 messages.info(request, '変更はありませんでした。')
             return redirect('staff:staff_detail', pk=staff.pk)
     else:
-        form = StaffForm(instance=staff)
+        form = StaffForm(instance=staff, tenant_id=staff.tenant_id)
     return render(request, 'staff/staff_form.html', {'form': form})
 
 @login_required
 @permission_required('staff.delete_staff', raise_exception=True)
 def staff_delete(request, pk):
-    staff = get_object_or_404(Staff, pk=pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=pk)
     if request.method == 'POST':
         staff_name = staff.name
         staff.delete()
@@ -963,7 +969,7 @@ def staff_delete(request, pk):
 @login_required
 @permission_required('staff.view_staff', raise_exception=True)
 def staff_face(request, pk):
-    staff = get_object_or_404(Staff, pk=pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=pk)
     
     # 1. アップロードされた画像があるか確認
     image_path = os.path.join(settings.MEDIA_ROOT, 'staff_files', str(staff.pk) + ".jpg")
@@ -1022,7 +1028,7 @@ def staff_face(request, pk):
 @login_required
 @permission_required('staff.view_staff', raise_exception=True)
 def staff_rirekisho(request, pk):
-    staff = get_object_or_404(Staff, pk=pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=pk)
     sex_dropdown = Dropdowns.objects.filter(category='sex', value=staff.sex, active=True).first()
 
     named_fields = {
@@ -1046,7 +1052,7 @@ def staff_rirekisho(request, pk):
 @login_required
 @permission_required('staff.view_staff', raise_exception=True)
 def staff_kyushoku(request, pk):
-    staff = get_object_or_404(Staff, pk=pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=pk)
     sex_dropdown = Dropdowns.objects.filter(category='sex', value=staff.sex, active=True).first()
 
     named_fields = {
@@ -1089,18 +1095,19 @@ def staff_kyushoku(request, pk):
 @login_required
 @permission_required('staff.add_staffqualification', raise_exception=True)
 def staff_qualification_create(request, staff_pk):
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     if request.method == 'POST':
         from .forms import StaffQualificationForm
-        form = StaffQualificationForm(request.POST, staff=staff)
+        form = StaffQualificationForm(request.POST, staff=staff, tenant_id=staff.tenant_id)
         if form.is_valid():
             qualification = form.save(commit=False)
             qualification.staff = staff
+            qualification.tenant_id = staff.tenant_id
             qualification.save()
             return redirect('staff:staff_detail', pk=staff.pk)
     else:
         from .forms import StaffQualificationForm
-        form = StaffQualificationForm(staff=staff)
+        form = StaffQualificationForm(staff=staff, tenant_id=staff.tenant_id)
 
     return render(request, 'staff/staff_qualification_form.html', {
         'form': form,
@@ -1111,17 +1118,17 @@ def staff_qualification_create(request, staff_pk):
 @login_required
 @permission_required('staff.change_staffqualification', raise_exception=True)
 def staff_qualification_update(request, pk):
-    qualification = get_object_or_404(StaffQualification, pk=pk)
+    qualification = get_object_or_404(get_filtered_queryset(request, StaffQualification), pk=pk)
     staff = qualification.staff
     if request.method == 'POST':
         from .forms import StaffQualificationForm
-        form = StaffQualificationForm(request.POST, instance=qualification, staff=staff)
+        form = StaffQualificationForm(request.POST, instance=qualification, staff=staff, tenant_id=staff.tenant_id)
         if form.is_valid():
             form.save()
             return redirect('staff:staff_qualification_list', staff_pk=staff.pk)
     else:
         from .forms import StaffQualificationForm
-        form = StaffQualificationForm(instance=qualification, staff=staff)
+        form = StaffQualificationForm(instance=qualification, staff=staff, tenant_id=staff.tenant_id)
 
     return render(request, 'staff/staff_qualification_form.html', {
         'form': form,
@@ -1133,7 +1140,7 @@ def staff_qualification_update(request, pk):
 @login_required
 @permission_required('staff.delete_staffqualification', raise_exception=True)
 def staff_qualification_delete(request, pk):
-    qualification = get_object_or_404(StaffQualification, pk=pk)
+    qualification = get_object_or_404(get_filtered_queryset(request, StaffQualification), pk=pk)
     staff = qualification.staff
     if request.method == 'POST':
         qualification.delete()
@@ -1148,18 +1155,19 @@ def staff_qualification_delete(request, pk):
 @login_required
 @permission_required('staff.add_staffskill', raise_exception=True)
 def staff_skill_create(request, staff_pk):
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     if request.method == 'POST':
         from .forms import StaffSkillForm
-        form = StaffSkillForm(request.POST, staff=staff)
+        form = StaffSkillForm(request.POST, staff=staff, tenant_id=staff.tenant_id)
         if form.is_valid():
             skill = form.save(commit=False)
             skill.staff = staff
+            skill.tenant_id = staff.tenant_id
             skill.save()
             return redirect('staff:staff_detail', pk=staff.pk)
     else:
         from .forms import StaffSkillForm
-        form = StaffSkillForm(staff=staff)
+        form = StaffSkillForm(staff=staff, tenant_id=staff.tenant_id)
 
     return render(request, 'staff/staff_skill_form.html', {
         'form': form,
@@ -1170,17 +1178,17 @@ def staff_skill_create(request, staff_pk):
 @login_required
 @permission_required('staff.change_staffskill', raise_exception=True)
 def staff_skill_update(request, pk):
-    skill = get_object_or_404(StaffSkill, pk=pk)
+    skill = get_object_or_404(get_filtered_queryset(request, StaffSkill), pk=pk)
     staff = skill.staff
     if request.method == 'POST':
         from .forms import StaffSkillForm
-        form = StaffSkillForm(request.POST, instance=skill, staff=staff)
+        form = StaffSkillForm(request.POST, instance=skill, staff=staff, tenant_id=staff.tenant_id)
         if form.is_valid():
             form.save()
             return redirect('staff:staff_skill_list', staff_pk=staff.pk)
     else:
         from .forms import StaffSkillForm
-        form = StaffSkillForm(instance=skill, staff=staff)
+        form = StaffSkillForm(instance=skill, staff=staff, tenant_id=staff.tenant_id)
 
     return render(request, 'staff/staff_skill_form.html', {
         'form': form,
@@ -1192,7 +1200,7 @@ def staff_skill_update(request, pk):
 @login_required
 @permission_required('staff.delete_staffskill', raise_exception=True)
 def staff_skill_delete(request, pk):
-    skill = get_object_or_404(StaffSkill, pk=pk)
+    skill = get_object_or_404(get_filtered_queryset(request, StaffSkill), pk=pk)
     staff = skill.staff
     if request.method == 'POST':
         skill.delete()
@@ -1207,7 +1215,7 @@ def staff_skill_delete(request, pk):
 @login_required
 @permission_required('staff.view_staffqualification', raise_exception=True)
 def staff_qualification_list(request, staff_pk):
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     qualifications = staff.qualifications.select_related('qualification').order_by('-acquired_date')
 
     return render(request, 'staff/staff_qualification_list.html', {
@@ -1219,7 +1227,7 @@ def staff_qualification_list(request, staff_pk):
 @login_required
 @permission_required('staff.view_staffskill', raise_exception=True)
 def staff_skill_list(request, staff_pk):
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     skills = staff.skills.select_related('skill').order_by('-acquired_date')
 
     return render(request, 'staff/staff_skill_list.html', {
@@ -1233,7 +1241,7 @@ def staff_skill_list(request, staff_pk):
 @login_required
 @permission_required('staff.view_stafffile', raise_exception=True)
 def staff_file_list(request, staff_pk):
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     files = staff.files.order_by('-uploaded_at')
 
     paginator = Paginator(files, 20)
@@ -1249,12 +1257,13 @@ def staff_file_list(request, staff_pk):
 @login_required
 @permission_required('staff.add_stafffile', raise_exception=True)
 def staff_file_create(request, staff_pk):
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     if request.method == 'POST':
         form = StaffFileForm(request.POST, request.FILES)
         if form.is_valid():
             staff_file = form.save(commit=False)
             staff_file.staff = staff
+            staff_file.tenant_id = staff.tenant_id
             staff_file.save()
             messages.success(request, 'ファイルをアップロードしました。')
             return redirect('staff:staff_detail', pk=staff.pk)
@@ -1272,7 +1281,7 @@ def staff_file_create(request, staff_pk):
 @login_required
 @permission_required('staff.delete_stafffile', raise_exception=True)
 def staff_file_delete(request, pk):
-    staff_file = get_object_or_404(StaffFile, pk=pk)
+    staff_file = get_object_or_404(get_filtered_queryset(request, StaffFile), pk=pk)
     staff = staff_file.staff
 
     if request.method == 'POST':
@@ -1292,7 +1301,7 @@ def staff_file_delete(request, pk):
 @login_required
 @permission_required('staff.view_stafffile', raise_exception=True)
 def staff_file_download(request, pk):
-    staff_file = get_object_or_404(StaffFile, pk=pk)
+    staff_file = get_object_or_404(get_filtered_queryset(request, StaffFile), pk=pk)
 
     try:
         # ファイルの存在確認
@@ -1327,7 +1336,7 @@ from apps.company.models import Company, CompanyUser
 @permission_required('staff.view_staff', raise_exception=True)
 def staff_mail_send(request, pk):
     """スタッフメール送信"""
-    staff = get_object_or_404(Staff, pk=pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=pk)
 
     # メールアドレスが設定されていない場合はエラー
     if not staff.email:
@@ -1367,7 +1376,7 @@ def staff_mail_send(request, pk):
 @login_required
 @permission_required('staff.change_staff', raise_exception=True)
 def staff_face_upload(request, pk):
-    staff = get_object_or_404(Staff, pk=pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=pk)
     if request.method == 'POST':
         from .forms import StaffFaceUploadForm
         form = StaffFaceUploadForm(request.POST, request.FILES)
@@ -1435,7 +1444,7 @@ def staff_face_upload(request, pk):
 @login_required
 @permission_required('staff.change_staff', raise_exception=True)
 def staff_face_delete(request, pk):
-    staff = get_object_or_404(Staff, pk=pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=pk)
     if request.method == 'POST':
         image_path = os.path.join(settings.MEDIA_ROOT, 'staff_files', f'{staff.pk}.jpg')
         if os.path.exists(image_path):
@@ -1461,7 +1470,7 @@ def staff_face_delete(request, pk):
 @permission_required('staff.change_staff', raise_exception=True)
 def staff_tag_edit(request, pk):
     """スタッフタグの編集"""
-    staff = get_object_or_404(Staff, pk=pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=pk)
     from apps.master.models_staff import StaffTag
     
     if request.method == 'POST':
@@ -1490,7 +1499,7 @@ def staff_tag_edit(request, pk):
         messages.success(request, f'スタッフ「{staff.name}」のタグを更新しました。')
         return redirect('staff:staff_detail', pk=staff.pk)
     
-    all_tags = StaffTag.objects.filter(is_active=True).order_by('display_order', 'name')
+    all_tags = StaffTag.objects.filter(tenant_id=staff.tenant_id, is_active=True).order_by('display_order', 'name')
     current_tag_ids = list(staff.tags.values_list('pk', flat=True))
     
     context = {

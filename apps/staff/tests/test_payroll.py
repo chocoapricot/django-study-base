@@ -11,7 +11,7 @@ User = get_user_model()
 class StaffPayrollViewsTest(TestCase):
     def setUp(self):
         self.client = TestClient()
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.user = User.objects.create_user(username='testuser', password='testpassword', tenant_id=1)
         self.client.login(username='testuser', password='testpassword')
 
         content_type = ContentType.objects.get_for_model(StaffPayroll)
@@ -32,6 +32,7 @@ class StaffPayrollViewsTest(TestCase):
             name_kana_first='タロウ',
             birth_date=date(1990, 1, 1),
             sex=1,
+            tenant_id=1,
         )
 
     def test_staff_payroll_create_view_get(self):
@@ -50,20 +51,20 @@ class StaffPayrollViewsTest(TestCase):
         self.assertTrue(StaffPayroll.objects.filter(staff=self.staff).exists())
 
     def test_staff_payroll_detail_view(self):
-        payroll = StaffPayroll.objects.create(staff=self.staff)
+        payroll = StaffPayroll.objects.create(staff=self.staff, tenant_id=1)
         response = self.client.get(reverse('staff:staff_payroll_detail', args=[self.staff.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_payroll_detail.html')
         self.assertContains(response, reverse('staff:staff_payroll_edit', args=[self.staff.pk]))
 
     def test_staff_payroll_edit_view_get(self):
-        payroll = StaffPayroll.objects.create(staff=self.staff)
+        payroll = StaffPayroll.objects.create(staff=self.staff, tenant_id=1)
         response = self.client.get(reverse('staff:staff_payroll_edit', args=[self.staff.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_payroll_form.html')
 
     def test_staff_payroll_edit_view_post(self):
-        payroll = StaffPayroll.objects.create(staff=self.staff)
+        payroll = StaffPayroll.objects.create(staff=self.staff, tenant_id=1)
         data = {
             'health_insurance_join_date': '2023-01-01',
             'pension_insurance_non_enrollment_reason': '年金制度対象外',
@@ -75,13 +76,13 @@ class StaffPayrollViewsTest(TestCase):
         self.assertEqual(payroll.health_insurance_join_date, date(2023, 1, 1))
 
     def test_staff_payroll_delete_view_get(self):
-        payroll = StaffPayroll.objects.create(staff=self.staff)
+        payroll = StaffPayroll.objects.create(staff=self.staff, tenant_id=1)
         response = self.client.get(reverse('staff:staff_payroll_delete', args=[self.staff.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_payroll_confirm_delete.html')
 
     def test_staff_payroll_delete_view_post(self):
-        payroll = StaffPayroll.objects.create(staff=self.staff)
+        payroll = StaffPayroll.objects.create(staff=self.staff, tenant_id=1)
         response = self.client.post(reverse('staff:staff_payroll_delete', args=[self.staff.pk]))
         self.assertEqual(response.status_code, 302)
         self.assertFalse(StaffPayroll.objects.filter(staff=self.staff).exists())

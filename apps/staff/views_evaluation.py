@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from .models import Staff
 from .models_evaluation import StaffEvaluation
 from .forms import StaffEvaluationForm
+from .utils import get_tenant_id, get_staff_queryset, get_filtered_queryset
 from apps.system.logs.utils import log_view_detail
 from .text_utils import generate_staff_evaluations_full_text
 from apps.common.ai_utils import run_ai_check
@@ -14,7 +15,7 @@ from apps.common.ai_utils import run_ai_check
 @login_required
 @permission_required('staff.view_staffevaluation', raise_exception=True)
 def staff_evaluation_list(request, staff_pk):
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     evaluations_qs = staff.evaluations.all().order_by('-evaluation_date')
     paginator = Paginator(evaluations_qs, 20)
     page = request.GET.get('page')
@@ -43,13 +44,14 @@ def staff_evaluation_list(request, staff_pk):
 @login_required
 @permission_required('staff.add_staffevaluation', raise_exception=True)
 def staff_evaluation_create(request, staff_pk):
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     if request.method == 'POST':
         form = StaffEvaluationForm(request.POST)
         if form.is_valid():
             evaluation = form.save(commit=False)
             evaluation.staff = staff
             evaluation.evaluator = request.user
+            evaluation.tenant_id = staff.tenant_id
             evaluation.save()
             messages.success(request, '評価を登録しました。')
             return redirect('staff:staff_detail', pk=staff.pk)
@@ -62,7 +64,7 @@ def staff_evaluation_create(request, staff_pk):
 @login_required
 @permission_required('staff.change_staffevaluation', raise_exception=True)
 def staff_evaluation_update(request, pk):
-    evaluation = get_object_or_404(StaffEvaluation, pk=pk)
+    evaluation = get_object_or_404(get_filtered_queryset(request, StaffEvaluation), pk=pk)
     staff = evaluation.staff
     if request.method == 'POST':
         form = StaffEvaluationForm(request.POST, instance=evaluation)
@@ -81,7 +83,7 @@ def staff_evaluation_update(request, pk):
 @login_required
 @permission_required('staff.delete_staffevaluation', raise_exception=True)
 def staff_evaluation_delete(request, pk):
-    evaluation = get_object_or_404(StaffEvaluation, pk=pk)
+    evaluation = get_object_or_404(get_filtered_queryset(request, StaffEvaluation), pk=pk)
     staff = evaluation.staff
     if request.method == 'POST':
         evaluation.delete()

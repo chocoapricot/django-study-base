@@ -13,6 +13,7 @@ from .forms_mail import ConnectionRequestMailForm, DisconnectionMailForm
 
 from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact
 from .forms import StaffMynumberForm, StaffBankForm, StaffInternationalForm, StaffDisabilityForm, StaffContactForm
+from .utils import get_tenant_id, get_staff_queryset, get_filtered_queryset
 from apps.system.settings.utils import my_parameter
 from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
@@ -31,7 +32,7 @@ logger = logging.getLogger('staff')
 def staff_profile_request_detail(request, staff_pk, pk):
     """プロフィール申請の詳細、承認・却下"""
     from apps.connect.models import ProfileRequest
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     profile_request = get_object_or_404(ProfileRequest, pk=pk, connect_staff__email=staff.email)
 
     if request.method == 'POST':
@@ -69,9 +70,9 @@ def staff_profile_request_detail(request, staff_pk, pk):
 @permission_required('staff.view_staffmynumber', raise_exception=True)
 def staff_mynumber_detail(request, staff_id):
     """スタッフのマイナンバー詳細表示"""
-    staff = get_object_or_404(Staff, pk=staff_id)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_id)
     try:
-        mynumber = StaffMynumber.objects.get(staff=staff)
+        mynumber = StaffMynumber.objects.get(tenant_id=staff.tenant_id, staff=staff)
     except StaffMynumber.DoesNotExist:
         # 未登録の場合は登録画面へリダイレクト
         return redirect('staff:staff_mynumber_create', staff_id=staff.pk)
@@ -87,21 +88,22 @@ def staff_mynumber_detail(request, staff_id):
 @permission_required('staff.add_staffmynumber', raise_exception=True)
 def staff_mynumber_create(request, staff_id):
     """スタッフのマイナンバー登録"""
-    staff = get_object_or_404(Staff, pk=staff_id)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_id)
     # 既に登録済みの場合は編集画面へリダイレクト
     if hasattr(staff, 'mynumber'):
         return redirect('staff:staff_mynumber_edit', staff_id=staff.pk)
 
     if request.method == 'POST':
-        form = StaffMynumberForm(request.POST)
+        form = StaffMynumberForm(request.POST, tenant_id=staff.tenant_id)
         if form.is_valid():
             mynumber = form.save(commit=False)
             mynumber.staff = staff
+            mynumber.tenant_id = staff.tenant_id
             mynumber.save()
             messages.success(request, 'マイナンバーを登録しました。')
             return redirect('staff:staff_mynumber_detail', staff_id=staff.pk)
     else:
-        form = StaffMynumberForm()
+        form = StaffMynumberForm(tenant_id=staff.tenant_id)
 
     context = {
         'form': form,
@@ -115,17 +117,17 @@ def staff_mynumber_create(request, staff_id):
 @permission_required('staff.change_staffmynumber', raise_exception=True)
 def staff_mynumber_edit(request, staff_id):
     """スタッフのマイナンバー編集"""
-    staff = get_object_or_404(Staff, pk=staff_id)
-    mynumber = get_object_or_404(StaffMynumber, staff=staff)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_id)
+    mynumber = get_object_or_404(get_filtered_queryset(request, StaffMynumber), staff=staff)
 
     if request.method == 'POST':
-        form = StaffMynumberForm(request.POST, instance=mynumber)
+        form = StaffMynumberForm(request.POST, instance=mynumber, tenant_id=staff.tenant_id)
         if form.is_valid():
             form.save()
             messages.success(request, 'マイナンバーを更新しました。')
             return redirect('staff:staff_mynumber_detail', staff_id=staff.pk)
     else:
-        form = StaffMynumberForm(instance=mynumber)
+        form = StaffMynumberForm(instance=mynumber, tenant_id=staff.tenant_id)
 
     context = {
         'form': form,
@@ -140,8 +142,8 @@ def staff_mynumber_edit(request, staff_id):
 @permission_required('staff.delete_staffmynumber', raise_exception=True)
 def staff_mynumber_delete(request, staff_id):
     """スタッフのマイナンバー削除確認"""
-    staff = get_object_or_404(Staff, pk=staff_id)
-    mynumber = get_object_or_404(StaffMynumber, staff=staff)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_id)
+    mynumber = get_object_or_404(get_filtered_queryset(request, StaffMynumber), staff=staff)
 
     if request.method == 'POST':
         mynumber.delete()
@@ -161,9 +163,9 @@ def staff_mynumber_delete(request, staff_id):
 @permission_required('staff.view_staffcontact', raise_exception=True)
 def staff_contact_detail(request, staff_id):
     """スタッフの連絡先情報詳細表示"""
-    staff = get_object_or_404(Staff, pk=staff_id)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_id)
     try:
-        contact = StaffContact.objects.get(staff=staff)
+        contact = StaffContact.objects.get(tenant_id=staff.tenant_id, staff=staff)
     except StaffContact.DoesNotExist:
         # 未登録の場合は登録画面へリダイレクト
         return redirect('staff:staff_contact_create', staff_id=staff.pk)
@@ -179,21 +181,22 @@ def staff_contact_detail(request, staff_id):
 @permission_required('staff.add_staffcontact', raise_exception=True)
 def staff_contact_create(request, staff_id):
     """スタッフの連絡先情報登録"""
-    staff = get_object_or_404(Staff, pk=staff_id)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_id)
     # 既に登録済みの場合は編集画面へリダイレクト
     if hasattr(staff, 'contact'):
         return redirect('staff:staff_contact_edit', staff_id=staff.pk)
 
     if request.method == 'POST':
-        form = StaffContactForm(request.POST)
+        form = StaffContactForm(request.POST, tenant_id=staff.tenant_id)
         if form.is_valid():
             contact = form.save(commit=False)
             contact.staff = staff
+            contact.tenant_id = staff.tenant_id
             contact.save()
             messages.success(request, '連絡先情報を登録しました。')
             return redirect('staff:staff_contact_detail', staff_id=staff.pk)
     else:
-        form = StaffContactForm()
+        form = StaffContactForm(tenant_id=staff.tenant_id)
 
     context = {
         'form': form,
@@ -207,17 +210,17 @@ def staff_contact_create(request, staff_id):
 @permission_required('staff.change_staffcontact', raise_exception=True)
 def staff_contact_edit(request, staff_id):
     """スタッフの連絡先情報編集"""
-    staff = get_object_or_404(Staff, pk=staff_id)
-    contact = get_object_or_404(StaffContact, staff=staff)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_id)
+    contact = get_object_or_404(get_filtered_queryset(request, StaffContact), staff=staff)
 
     if request.method == 'POST':
-        form = StaffContactForm(request.POST, instance=contact)
+        form = StaffContactForm(request.POST, instance=contact, tenant_id=staff.tenant_id)
         if form.is_valid():
             form.save()
             messages.success(request, '連絡先情報を更新しました。')
             return redirect('staff:staff_contact_detail', staff_id=staff.pk)
     else:
-        form = StaffContactForm(instance=contact)
+        form = StaffContactForm(instance=contact, tenant_id=staff.tenant_id)
 
     context = {
         'form': form,
@@ -232,8 +235,8 @@ def staff_contact_edit(request, staff_id):
 @permission_required('staff.delete_staffcontact', raise_exception=True)
 def staff_contact_delete(request, staff_id):
     """スタッフの連絡先情報削除確認"""
-    staff = get_object_or_404(Staff, pk=staff_id)
-    contact = get_object_or_404(StaffContact, staff=staff)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_id)
+    contact = get_object_or_404(get_filtered_queryset(request, StaffContact), staff=staff)
 
     if request.method == 'POST':
         contact.delete()
@@ -253,9 +256,9 @@ def staff_contact_delete(request, staff_id):
 @permission_required('staff.view_staffdisability', raise_exception=True)
 def staff_disability_detail(request, staff_pk):
     """スタッフの障害者情報詳細表示"""
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     try:
-        disability = StaffDisability.objects.get(staff=staff)
+        disability = StaffDisability.objects.get(tenant_id=staff.tenant_id, staff=staff)
     except StaffDisability.DoesNotExist:
         # 未登録の場合は登録画面へリダイレクト
         return redirect('staff:staff_disability_create', staff_pk=staff.pk)
@@ -271,21 +274,22 @@ def staff_disability_detail(request, staff_pk):
 @permission_required('staff.add_staffdisability', raise_exception=True)
 def staff_disability_create(request, staff_pk):
     """スタッフの障害者情報登録"""
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     # 既に登録済みの場合は編集画面へリダイレクト
     if hasattr(staff, 'disability'):
         return redirect('staff:staff_disability_edit', staff_pk=staff.pk)
 
     if request.method == 'POST':
-        form = StaffDisabilityForm(request.POST)
+        form = StaffDisabilityForm(request.POST, tenant_id=staff.tenant_id)
         if form.is_valid():
             disability = form.save(commit=False)
             disability.staff = staff
+            disability.tenant_id = staff.tenant_id
             disability.save()
             messages.success(request, '障害者情報を登録しました。')
             return redirect('staff:staff_disability_detail', staff_pk=staff.pk)
     else:
-        form = StaffDisabilityForm()
+        form = StaffDisabilityForm(tenant_id=staff.tenant_id)
 
     context = {
         'form': form,
@@ -299,17 +303,17 @@ def staff_disability_create(request, staff_pk):
 @permission_required('staff.change_staffdisability', raise_exception=True)
 def staff_disability_edit(request, staff_pk):
     """スタッフの障害者情報編集"""
-    staff = get_object_or_404(Staff, pk=staff_pk)
-    disability = get_object_or_404(StaffDisability, staff=staff)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
+    disability = get_object_or_404(get_filtered_queryset(request, StaffDisability), staff=staff)
 
     if request.method == 'POST':
-        form = StaffDisabilityForm(request.POST, instance=disability)
+        form = StaffDisabilityForm(request.POST, instance=disability, tenant_id=staff.tenant_id)
         if form.is_valid():
             form.save()
             messages.success(request, '障害者情報を更新しました。')
             return redirect('staff:staff_disability_detail', staff_pk=staff.pk)
     else:
-        form = StaffDisabilityForm(instance=disability)
+        form = StaffDisabilityForm(instance=disability, tenant_id=staff.tenant_id)
 
     context = {
         'form': form,
@@ -324,8 +328,8 @@ def staff_disability_edit(request, staff_pk):
 @permission_required('staff.delete_staffdisability', raise_exception=True)
 def staff_disability_delete(request, staff_pk):
     """スタッフの障害者情報削除確認"""
-    staff = get_object_or_404(Staff, pk=staff_pk)
-    disability = get_object_or_404(StaffDisability, staff=staff)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
+    disability = get_object_or_404(get_filtered_queryset(request, StaffDisability), staff=staff)
 
     if request.method == 'POST':
         disability.delete()
@@ -344,7 +348,7 @@ def staff_disability_delete(request, staff_pk):
 def staff_disability_request_detail(request, staff_pk, pk):
     """障害者情報申請の詳細、承認・却下"""
     from apps.connect.models import DisabilityRequest
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     disability_request = get_object_or_404(DisabilityRequest, pk=pk, connect_staff__email=staff.email)
 
     if request.method == 'POST':
@@ -357,6 +361,7 @@ def staff_disability_request_detail(request, staff_pk, pk):
 
                 # スタッフの障害者情報を更新または作成
                 staff_disability, created = StaffDisability.objects.update_or_create(
+                    tenant_id=staff.tenant_id,
                     staff=staff,
                     defaults={
                         'disability_type': profile_disability.disability_type,
@@ -393,7 +398,7 @@ def staff_disability_request_detail(request, staff_pk, pk):
 def staff_contact_request_detail(request, staff_pk, pk):
     """連絡先情報申請の詳細、承認・却下"""
     from apps.connect.models import ContactRequest
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     contact_request = get_object_or_404(ContactRequest, pk=pk, connect_staff__email=staff.email)
 
     if request.method == 'POST':
@@ -406,6 +411,7 @@ def staff_contact_request_detail(request, staff_pk, pk):
 
                 # スタッフの連絡先情報を更新または作成
                 staff_contact, created = StaffContact.objects.update_or_create(
+                    tenant_id=staff.tenant_id,
                     staff=staff,
                     defaults={
                         'emergency_contact': profile_contact.emergency_contact,
@@ -446,7 +452,7 @@ def staff_contact_request_detail(request, staff_pk, pk):
 def staff_mynumber_request_detail(request, staff_pk, pk):
     """マイナンバー申請の詳細、承認・却下"""
     from apps.connect.models import MynumberRequest
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     mynumber_request = get_object_or_404(MynumberRequest, pk=pk, connect_staff__email=staff.email)
 
     if request.method == 'POST':
@@ -459,6 +465,7 @@ def staff_mynumber_request_detail(request, staff_pk, pk):
 
                 # スタッフのマイナンバーを更新または作成
                 staff_mynumber, created = StaffMynumber.objects.update_or_create(
+                    tenant_id=staff.tenant_id,
                     staff=staff,
                     defaults={'mynumber': profile_mynumber.mynumber}
                 )
@@ -491,9 +498,9 @@ def staff_mynumber_request_detail(request, staff_pk, pk):
 @permission_required('staff.view_staffbank', raise_exception=True)
 def staff_bank_detail(request, staff_id):
     """スタッフの銀行情報詳細表示"""
-    staff = get_object_or_404(Staff, pk=staff_id)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_id)
     try:
-        bank = staff.bank
+        bank = StaffBank.objects.get(tenant_id=staff.tenant_id, staff=staff)
     except StaffBank.DoesNotExist:
         # 未登録の場合は登録画面へリダイレクト
         return redirect('staff:staff_bank_create', staff_id=staff.pk)
@@ -509,16 +516,17 @@ def staff_bank_detail(request, staff_id):
 @permission_required('staff.add_staffbank', raise_exception=True)
 def staff_bank_create(request, staff_id):
     """スタッフの銀行情報登録"""
-    staff = get_object_or_404(Staff, pk=staff_id)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_id)
     # 既に登録済みの場合は編集画面へリダイレクト
     if hasattr(staff, 'bank'):
         return redirect('staff:staff_bank_edit', staff_id=staff.pk)
 
     if request.method == 'POST':
-        form = StaffBankForm(request.POST)
+        form = StaffBankForm(request.POST, tenant_id=staff.tenant_id)
         if form.is_valid():
             bank = form.save(commit=False)
             bank.staff = staff
+            bank.tenant_id = staff.tenant_id
             bank.save()
             messages.success(request, '銀行情報を登録しました。')
             return redirect('staff:staff_bank_detail', staff_id=staff.pk)
@@ -526,7 +534,7 @@ def staff_bank_create(request, staff_id):
         initial_data = {
             'account_holder': f'{staff.name_kana_last} {staff.name_kana_first}'.strip()
         }
-        form = StaffBankForm(initial=initial_data)
+        form = StaffBankForm(initial=initial_data, tenant_id=staff.tenant_id)
 
     context = {
         'staff': staff,
@@ -540,11 +548,11 @@ def staff_bank_create(request, staff_id):
 @permission_required('staff.change_staffbank', raise_exception=True)
 def staff_bank_edit(request, staff_id):
     """スタッフの銀行情報編集"""
-    staff = get_object_or_404(Staff, pk=staff_id)
-    bank = get_object_or_404(StaffBank, staff=staff)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_id)
+    bank = get_object_or_404(get_filtered_queryset(request, StaffBank), staff=staff)
 
     if request.method == 'POST':
-        form = StaffBankForm(request.POST, instance=bank)
+        form = StaffBankForm(request.POST, instance=bank, tenant_id=staff.tenant_id)
         if form.is_valid():
             form.save()
             messages.success(request, '銀行情報を更新しました。')
@@ -554,7 +562,7 @@ def staff_bank_edit(request, staff_id):
             'bank_name': bank.bank_name,
             'branch_name': bank.branch_name,
         }
-        form = StaffBankForm(instance=bank, initial=initial_data)
+        form = StaffBankForm(instance=bank, initial=initial_data, tenant_id=staff.tenant_id)
 
     context = {
         'staff': staff,
@@ -569,8 +577,8 @@ def staff_bank_edit(request, staff_id):
 @permission_required('staff.delete_staffbank', raise_exception=True)
 def staff_bank_delete(request, staff_id):
     """スタッフの銀行情報削除確認"""
-    staff = get_object_or_404(Staff, pk=staff_id)
-    bank = get_object_or_404(StaffBank, staff=staff)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_id)
+    bank = get_object_or_404(get_filtered_queryset(request, StaffBank), staff=staff)
 
     if request.method == 'POST':
         bank.delete()
@@ -589,7 +597,7 @@ def staff_bank_delete(request, staff_id):
 def staff_bank_request_detail(request, staff_pk, pk):
     """銀行情報申請の詳細、承認・却下"""
     from apps.connect.models import BankRequest
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     bank_request = get_object_or_404(BankRequest, pk=pk, connect_staff__email=staff.email)
 
     if request.method == 'POST':
@@ -602,6 +610,7 @@ def staff_bank_request_detail(request, staff_pk, pk):
 
                 # スタッフの銀行情報を更新または作成
                 staff_bank, created = StaffBank.objects.update_or_create(
+                    tenant_id=staff.tenant_id,
                     staff=staff,
                     defaults={
                         'bank_code': bank_profile.bank_code,
@@ -644,9 +653,9 @@ def staff_bank_request_detail(request, staff_pk, pk):
 @permission_required('staff.view_staffinternational', raise_exception=True)
 def staff_international_detail(request, staff_id):
     """スタッフの外国籍情報詳細表示"""
-    staff = get_object_or_404(Staff, pk=staff_id)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_id)
     try:
-        international = StaffInternational.objects.get(staff=staff)
+        international = StaffInternational.objects.get(tenant_id=staff.tenant_id, staff=staff)
     except StaffInternational.DoesNotExist:
         # 未登録の場合は登録画面へリダイレクト
         return redirect('staff:staff_international_create', staff_id=staff.pk)
@@ -662,21 +671,22 @@ def staff_international_detail(request, staff_id):
 @permission_required('staff.add_staffinternational', raise_exception=True)
 def staff_international_create(request, staff_id):
     """スタッフの外国籍情報登録"""
-    staff = get_object_or_404(Staff, pk=staff_id)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_id)
     # 既に登録済みの場合は編集画面へリダイレクト
     if hasattr(staff, 'international'):
         return redirect('staff:staff_international_edit', staff_id=staff.pk)
 
     if request.method == 'POST':
-        form = StaffInternationalForm(request.POST)
+        form = StaffInternationalForm(request.POST, tenant_id=staff.tenant_id)
         if form.is_valid():
             international = form.save(commit=False)
             international.staff = staff
+            international.tenant_id = staff.tenant_id
             international.save()
             messages.success(request, '外国籍情報を登録しました。')
             return redirect('staff:staff_international_detail', staff_id=staff.pk)
     else:
-        form = StaffInternationalForm()
+        form = StaffInternationalForm(tenant_id=staff.tenant_id)
 
     context = {
         'form': form,
@@ -690,17 +700,17 @@ def staff_international_create(request, staff_id):
 @permission_required('staff.change_staffinternational', raise_exception=True)
 def staff_international_edit(request, staff_id):
     """スタッフの外国籍情報編集"""
-    staff = get_object_or_404(Staff, pk=staff_id)
-    international = get_object_or_404(StaffInternational, staff=staff)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_id)
+    international = get_object_or_404(get_filtered_queryset(request, StaffInternational), staff=staff)
 
     if request.method == 'POST':
-        form = StaffInternationalForm(request.POST, instance=international)
+        form = StaffInternationalForm(request.POST, instance=international, tenant_id=staff.tenant_id)
         if form.is_valid():
             form.save()
             messages.success(request, '外国籍情報を更新しました。')
             return redirect('staff:staff_international_detail', staff_id=staff.pk)
     else:
-        form = StaffInternationalForm(instance=international)
+        form = StaffInternationalForm(instance=international, tenant_id=staff.tenant_id)
 
     context = {
         'form': form,
@@ -715,8 +725,8 @@ def staff_international_edit(request, staff_id):
 @permission_required('staff.delete_staffinternational', raise_exception=True)
 def staff_international_delete(request, staff_id):
     """スタッフの外国籍情報削除確認"""
-    staff = get_object_or_404(Staff, pk=staff_id)
-    international = get_object_or_404(StaffInternational, staff=staff)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_id)
+    international = get_object_or_404(get_filtered_queryset(request, StaffInternational), staff=staff)
 
     if request.method == 'POST':
         international.delete()
@@ -737,14 +747,14 @@ def staff_international_request_detail(request, staff_pk, pk):
     from apps.connect.models import ConnectInternationalRequest
     from apps.profile.models import StaffProfile, StaffProfileInternational
 
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     international_request = get_object_or_404(ConnectInternationalRequest, pk=pk)
 
     # 現在のスタッフの外国籍情報を取得（StaffInternationalモデルから）
     current_international = None
     try:
         from apps.staff.models import StaffInternational
-        current_international = StaffInternational.objects.get(staff=staff)
+        current_international = StaffInternational.objects.get(tenant_id=staff.tenant_id, staff=staff)
     except StaffInternational.DoesNotExist:
         # 現在の外国籍情報が存在しない場合はNoneのまま
         pass
@@ -761,6 +771,7 @@ def staff_international_request_detail(request, staff_pk, pk):
                 # スタッフの外国籍情報を更新または作成
                 from apps.staff.models import StaffInternational
                 staff_international, created = StaffInternational.objects.update_or_create(
+                    tenant_id=staff.tenant_id,
                     staff=staff,
                     defaults={
                         'residence_card_number': profile_international.residence_card_number,

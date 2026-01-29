@@ -9,15 +9,16 @@ User = get_user_model()
 
 class StaffContactScheduleViewTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='password')
-        self.staff = Staff.objects.create(name_last='山田', name_first='太郎')
+        self.user = User.objects.create_user(username='testuser', password='password', tenant_id=1)
+        self.staff = Staff.objects.create(name_last='山田', name_first='太郎', tenant_id=1)
         self.schedule = StaffContactSchedule.objects.create(
             staff=self.staff,
             contact_date='2025-01-01',
-            content='テスト連絡予定'
+            content='テスト連絡予定',
+            tenant_id=1
         )
         from apps.master.models import StaffContactType
-        self.contact_type = StaffContactType.objects.create(name='テスト', display_order=10, is_active=True)
+        self.contact_type = StaffContactType.objects.create(name='テスト', display_order=10, is_active=True, tenant_id=1)
         self.client.login(username='testuser', password='password')
 
     def test_contact_schedule_create_view(self):

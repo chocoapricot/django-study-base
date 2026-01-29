@@ -17,7 +17,7 @@ User = get_user_model()
 class StaffViewsTest(TestCase):
     def setUp(self):
         self.client = TestClient()
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.user = User.objects.create_user(username='testuser', password='testpassword', tenant_id=1)
         self.client.login(username='testuser', password='testpassword')
 
         # StaffモデルのContentTypeを取得
@@ -74,18 +74,18 @@ class StaffViewsTest(TestCase):
         Dropdowns.objects.create(category='sex', value='2', name='女性', active=True, disp_seq=2)
         
         # スタッフ登録区分マスタを作成
-        self.regist_status_1 = StaffRegistStatus.objects.create(name='正社員', display_order=1, is_active=True)
-        self.regist_status_2 = StaffRegistStatus.objects.create(name='契約社員', display_order=2, is_active=True)
-        self.regist_status_10 = StaffRegistStatus.objects.create(name='派遣社員', display_order=3, is_active=True)
+        self.regist_status_1 = StaffRegistStatus.objects.create(name='正社員', display_order=1, is_active=True, tenant_id=1)
+        self.regist_status_2 = StaffRegistStatus.objects.create(name='契約社員', display_order=2, is_active=True, tenant_id=1)
+        self.regist_status_10 = StaffRegistStatus.objects.create(name='派遣社員', display_order=3, is_active=True, tenant_id=1)
         
         # 雇用形態マスタを作成
         from apps.master.models import EmploymentType
-        EmploymentType.objects.create(name='正社員', display_order=1, is_fixed_term=False, is_active=True)
-        EmploymentType.objects.create(name='契約社員', display_order=2, is_fixed_term=True, is_active=True)
+        EmploymentType.objects.create(name='正社員', display_order=1, is_fixed_term=False, is_active=True, tenant_id=1)
+        EmploymentType.objects.create(name='契約社員', display_order=2, is_fixed_term=True, is_active=True, tenant_id=1)
         # Create necessary StaffContactType for StaffContactedForm
         from apps.master.models import StaffContactType
-        self.staff_contact_type_1 = StaffContactType.objects.create(name='電話', display_order=10, is_active=True)
-        self.staff_contact_type_2 = StaffContactType.objects.create(name='メール', display_order=20, is_active=True)
+        self.staff_contact_type_1 = StaffContactType.objects.create(name='電話', display_order=10, is_active=True, tenant_id=1)
+        self.staff_contact_type_2 = StaffContactType.objects.create(name='メール', display_order=20, is_active=True, tenant_id=1)
 
         # テスト用スタッフデータを作成
         self.staff1 = Staff.objects.create(
@@ -97,7 +97,8 @@ class StaffViewsTest(TestCase):
             sex=1,
             regist_status=self.regist_status_1,  # 正社員
             employee_no='EMP001',
-            hire_date=date(2020, 4, 1)  # 入社日を追加
+            hire_date=date(2020, 4, 1),  # 入社日を追加
+            tenant_id=1
         )
         
         self.staff2 = Staff.objects.create(
@@ -109,7 +110,8 @@ class StaffViewsTest(TestCase):
             sex=2,
             regist_status=self.regist_status_2,  # 契約社員
             employee_no='EMP002',
-            hire_date=date(2021, 4, 1)  # 入社日を追加
+            hire_date=date(2021, 4, 1),  # 入社日を追加
+            tenant_id=1
         )
         
         self.staff3 = Staff.objects.create(
@@ -121,7 +123,8 @@ class StaffViewsTest(TestCase):
             sex=1,
             regist_status=self.regist_status_10,  # 派遣社員
             employee_no='EMP003',
-            hire_date=date(2022, 4, 1)  # 入社日を追加
+            hire_date=date(2022, 4, 1),  # 入社日を追加
+            tenant_id=1
         )
 
         self.staff_obj = Staff.objects.create(
@@ -138,7 +141,8 @@ class StaffViewsTest(TestCase):
             address1='東京都',
             address2='千代田区',
             address3='1-1-1',
-            age=10 # ageを10に変更
+            age=10, # ageを10に変更
+            tenant_id=1
         )
         # ソートテスト用のスタッフデータを作成 (12件)
         for i in range(4, 16):
@@ -154,7 +158,8 @@ class StaffViewsTest(TestCase):
                 hire_date=date(2020, 4, i),  # 入社日を追加（日付を変える）
                 email=f'staff{i:02d}@example.com',
                 address1=f'住所{i:02d}',
-                age=20 + i
+                age=20 + i,
+                tenant_id=1
             )
 
     def test_staff_list_view(self):
@@ -357,15 +362,16 @@ class StaffViewsTest(TestCase):
             'content': 'テスト連絡',
             'detail': 'これはテスト連絡の詳細です。',
             'contact_type': self.staff_contact_type_1.pk,
-            'contacted_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')  # 現在の日時を設定
+            'contacted_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S'),  # 現在の日時を設定
+            'tenant_id': 1
         }
         response = self.client.post(reverse('staff:staff_contacted_create', args=[self.staff_obj.pk]), data)
         self.assertEqual(response.status_code, 302)  # Redirects to staff_detail
         self.assertTrue(StaffContacted.objects.filter(staff=self.staff_obj, content='テスト連絡').exists())
 
     def test_staff_contacted_list_view(self):
-        StaffContacted.objects.create(staff=self.staff_obj, content='連絡1',contacted_at=timezone.now())
-        StaffContacted.objects.create(staff=self.staff_obj, content='連絡2',contacted_at=timezone.now())
+        StaffContacted.objects.create(staff=self.staff_obj, content='連絡1',contacted_at=timezone.now(), tenant_id=1)
+        StaffContacted.objects.create(staff=self.staff_obj, content='連絡2',contacted_at=timezone.now(), tenant_id=1)
         response = self.client.get(reverse('staff:staff_contacted_list', args=[self.staff_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_contacted_list.html')
@@ -373,26 +379,27 @@ class StaffViewsTest(TestCase):
         self.assertContains(response, '連絡2')
 
     def test_staff_contacted_detail_view(self):
-        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='詳細テスト連絡', detail='詳細',contacted_at=timezone.now())
+        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='詳細テスト連絡', detail='詳細',contacted_at=timezone.now(), tenant_id=1)
         response = self.client.get(reverse('staff:staff_contacted_detail', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_contacted_detail.html')
         self.assertContains(response, '詳細')
 
     def test_staff_contacted_update_view_get(self):
-        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='元の連絡',contacted_at=timezone.now())
+        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='元の連絡',contacted_at=timezone.now(), tenant_id=1)
         response = self.client.get(reverse('staff:staff_contacted_update', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_contacted_form.html')
         self.assertContains(response, '元の連絡')
 
     def test_staff_contacted_update_view_post(self):
-        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='元の連絡',contacted_at=timezone.now())
+        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='元の連絡',contacted_at=timezone.now(), tenant_id=1)
         data = {
             'content': '更新された連絡',
             'detail': '更新された連絡の詳細です。',
             'contact_type': self.staff_contact_type_2.pk,
-            'contacted_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')  # 現在の日時を設定
+            'contacted_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S'),  # 現在の日時を設定
+            'tenant_id': 1
         }
         response = self.client.post(reverse('staff:staff_contacted_update', args=[contacted_obj.pk]), data)
         self.assertEqual(response.status_code, 302)  # Redirects to staff_detail
@@ -400,14 +407,14 @@ class StaffViewsTest(TestCase):
         self.assertEqual(contacted_obj.content, '更新された連絡')
 
     def test_staff_contacted_delete_view_get(self):
-        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='削除テスト連絡',contacted_at=timezone.now())
+        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='削除テスト連絡',contacted_at=timezone.now(), tenant_id=1)
         response = self.client.get(reverse('staff:staff_contacted_delete', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'staff/staff_contacted_confirm_delete.html')
         self.assertContains(response, '削除テスト連絡')
 
     def test_staff_contacted_delete_view_post(self):
-        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='削除テスト連絡',contacted_at=timezone.now())
+        contacted_obj = StaffContacted.objects.create(staff=self.staff_obj, content='削除テスト連絡',contacted_at=timezone.now(), tenant_id=1)
         response = self.client.post(reverse('staff:staff_contacted_delete', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 302)  # Redirects to staff_detail
         self.assertFalse(StaffContacted.objects.filter(pk=contacted_obj.pk).exists())
@@ -434,7 +441,7 @@ class StaffViewsTest(TestCase):
             name_last='With',
             name_first='Request'
         )
-        staff_with_request = Staff.objects.create(email='with_request@example.com', name_last='With', name_first='Request')
+        staff_with_request = Staff.objects.create(email='with_request@example.com', name_last='With', name_first='Request', tenant_id=1)
         connect_staff_with_request = ConnectStaff.objects.create(
             corporate_number='1234567890123',
             email=staff_with_request.email,
@@ -447,7 +454,7 @@ class StaffViewsTest(TestCase):
         )
 
         # Create a staff without a pending request
-        staff_without_request = Staff.objects.create(email='without_request@example.com', name_last='Without', name_first='Request')
+        staff_without_request = Staff.objects.create(email='without_request@example.com', name_last='Without', name_first='Request', tenant_id=1)
 
         # Test with filter
         response = self.client.get(reverse('staff:staff_list') + '?has_request=true')

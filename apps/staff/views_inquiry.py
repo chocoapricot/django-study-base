@@ -10,6 +10,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
 from django.views.decorators.http import require_POST
 from .models import Staff, StaffInquiry, StaffInquiryMessage
+from .utils import get_tenant_id, get_staff_queryset, get_filtered_queryset
 from apps.company.models import CompanyUser, Company
 from apps.connect.models import ConnectStaff
 from .forms_inquiry import StaffInquiryForm, StaffInquiryMessageForm, StaffInquiryFromAdminForm, StaffInquiryFilterForm
@@ -24,12 +25,12 @@ def staff_inquiry_list(request):
     
     # 自分の問い合わせ or 自分が担当者の問い合わせ or 管理者
     if request.user.is_superuser:
-        inquiries_qs = StaffInquiry.objects.all().select_related('user').order_by('-created_at')
+        inquiries_qs = get_filtered_queryset(request, StaffInquiry).select_related('user').order_by('-created_at')
     else:
         # CompanyUserとしての権限
-        my_companies = CompanyUser.objects.filter(email=request.user.email).values_list('corporate_number', flat=True)
+        my_companies = get_filtered_queryset(request, CompanyUser).filter(email=request.user.email).values_list('corporate_number', flat=True)
         # 自分が作成者 or 自分のCompanyあての問い合わせ
-        inquiries_qs = StaffInquiry.objects.filter(
+        inquiries_qs = get_filtered_queryset(request, StaffInquiry).filter(
             models.Q(user=request.user) | models.Q(corporate_number__in=my_companies)
         ).select_related('user').distinct().order_by('-created_at')
     
@@ -93,6 +94,7 @@ def staff_inquiry_create(request):
             inquiry.user = request.user
             inquiry.inquiry_from = 'staff'
             inquiry.last_message_by = 'staff'
+            inquiry.tenant_id = get_tenant_id(request)
             inquiry.save()
 
             # フォームから content を取得して最初のメッセージとして保存
@@ -102,6 +104,7 @@ def staff_inquiry_create(request):
                     inquiry=inquiry,
                     user=request.user,
                     content=content,
+                    tenant_id=inquiry.tenant_id
                     # attachmentはフォームに含まれないので、別途処理が必要な場合は追加
                 )
             
@@ -127,12 +130,12 @@ def staff_inquiry_detail(request, pk):
     
     # 権限確認
     if request.user.is_superuser:
-        inquiry = get_object_or_404(StaffInquiry, pk=pk)
+        inquiry = get_object_or_404(get_filtered_queryset(request, StaffInquiry), pk=pk)
     else:
-        my_companies = CompanyUser.objects.filter(email=request.user.email).values_list('corporate_number', flat=True)
+        my_companies = get_filtered_queryset(request, CompanyUser).filter(email=request.user.email).values_list('corporate_number', flat=True)
         # 自分が作成者 or 自分のCompanyあての問い合わせ
         inquiry = get_object_or_404(
-            StaffInquiry,
+            get_filtered_queryset(request, StaffInquiry),
             models.Q(pk=pk) & (models.Q(user=request.user) | models.Q(corporate_number__in=my_companies))
         )
     
@@ -158,6 +161,7 @@ def staff_inquiry_detail(request, pk):
             message = form.save(commit=False)
             message.inquiry = inquiry
             message.user = request.user
+            message.tenant_id = inquiry.tenant_id
             
             # スタッフの場合は非表示を強制的に解除
             if not is_company_or_admin:
@@ -209,7 +213,7 @@ def staff_inquiry_detail(request, pk):
 @permission_required('staff.delete_staffinquirymessage', raise_exception=True)
 def staff_inquiry_message_delete(request, pk):
     """メッセージ削除 (5分以内)"""
-    message_obj = get_object_or_404(StaffInquiryMessage, pk=pk)
+    message_obj = get_object_or_404(get_filtered_queryset(request, StaffInquiryMessage), pk=pk)
     
     # 権限チェック: 自分の投稿 & 5分以内
     now = timezone.now()
@@ -233,11 +237,11 @@ def staff_inquiry_message_delete(request, pk):
 @check_staff_agreement
 def staff_inquiry_create_for_staff(request, staff_pk):
     """会社からスタッフへのメッセージ連絡"""
-    staff = get_object_or_404(Staff, pk=staff_pk)
+    staff = get_object_or_404(get_staff_queryset(request), pk=staff_pk)
     User = get_user_model()
     
-    # 会社の法人番号を取得（最初の会社を仮定）
-    company = Company.objects.first()
+    # 会社の法人番号を取得
+    company = Company.objects.filter(tenant_id=staff.tenant_id).first()
     corporate_number = company.corporate_number if company else None
     
     if not staff.email:
@@ -274,6 +278,7 @@ def staff_inquiry_create_for_staff(request, staff_pk):
             inquiry.inquiry_from = 'company'
             inquiry.last_message_by = 'company'
             inquiry.attachment = None  # StaffInquiry自体のattachmentは使わない
+            inquiry.tenant_id = staff.tenant_id
             inquiry.save()
             
             # フォームから content と attachment を取得して最初のメッセージとして保存
@@ -285,6 +290,7 @@ def staff_inquiry_create_for_staff(request, staff_pk):
                     user=request.user,  # 投稿者は管理者
                     content=content,
                     attachment=attachment,
+                    tenant_id=inquiry.tenant_id,
                     is_hidden=False # 必要に応じて
                 )
             
@@ -309,11 +315,11 @@ def staff_inquiry_toggle_status(request, pk):
     """問い合わせのステータスを切り替える"""
     # 権限確認
     if request.user.is_superuser:
-        inquiry = get_object_or_404(StaffInquiry, pk=pk)
+        inquiry = get_object_or_404(get_filtered_queryset(request, StaffInquiry), pk=pk)
     else:
-        my_companies = CompanyUser.objects.filter(email=request.user.email).values_list('corporate_number', flat=True)
+        my_companies = get_filtered_queryset(request, CompanyUser).filter(email=request.user.email).values_list('corporate_number', flat=True)
         inquiry = get_object_or_404(
-            StaffInquiry,
+            get_filtered_queryset(request, StaffInquiry),
             models.Q(pk=pk) & (models.Q(user=request.user) | models.Q(corporate_number__in=my_companies))
         )
 

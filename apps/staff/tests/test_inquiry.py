@@ -13,7 +13,7 @@ User = get_user_model()
 
 class StaffInquiryTest(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username='teststaff', email='staff@example.com', password='password')
+        self.user = User.objects.create_user(username='teststaff', email='staff@example.com', password='password', tenant_id=1)
 
         # Grant permissions for inquiry tests
         permissions = Permission.objects.filter(
@@ -24,17 +24,18 @@ class StaffInquiryTest(TestCase):
         )
         self.user.user_permissions.set(permissions)
 
-        self.admin_user = User.objects.create_superuser(username='adminuser', email='admin@example.com', password='password')
+        self.admin_user = User.objects.create_superuser(username='adminuser', email='admin@example.com', password='password', tenant_id=1)
         self.client_user = Client()
         self.client_user.login(username='teststaff', password='password')
         
         # スタッフ作成
-        self.staff = Staff.objects.create(email=self.user.email, name_last='Staff', name_first='Test')
+        self.staff = Staff.objects.create(email=self.user.email, name_last='Staff', name_first='Test', tenant_id=1)
 
         # 会社作成
         self.company_model = CompanyModel.objects.create(
             name='Test Company',
-            corporate_number='1234567890123'
+            corporate_number='1234567890123',
+            tenant_id=1
         )
         
         # 接続承認作成
@@ -74,11 +75,13 @@ class StaffInquiryTest(TestCase):
             user=self.user,
             corporate_number='1234567890123',
             subject='Initial Subject',
+            tenant_id=1
         )
         StaffInquiryMessage.objects.create(
             inquiry=inquiry,
             user=self.user,
-            content='Initial Content'
+            content='Initial Content',
+            tenant_id=1
         )
         url = reverse('staff:staff_inquiry_list')
         response = self.client_user.get(url)
@@ -101,13 +104,15 @@ class StaffInquiryTest(TestCase):
             user=self.user,
             corporate_number='1234567890123',
             subject='Delete Test',
+            tenant_id=1
         )
         
         # 1. 5分以内のメッセージ作成
         msg = StaffInquiryMessage.objects.create(
             inquiry=inquiry,
             user=self.user,
-            content='Deletable message'
+            content='Deletable message',
+            tenant_id=1
         )
         
         delete_url = reverse('staff:staff_inquiry_message_delete', kwargs={'pk': msg.pk})
@@ -120,7 +125,8 @@ class StaffInquiryTest(TestCase):
         msg_old = StaffInquiryMessage.objects.create(
             inquiry=inquiry,
             user=self.user,
-            content='Expired message'
+            content='Expired message',
+            tenant_id=1
         )
         # created_atを手動で過去にずらす
         msg_old.created_at = timezone.now() - timedelta(minutes=6)
@@ -153,8 +159,8 @@ class StaffInquiryTest(TestCase):
 
 class StaffInquiryStatusTest(TestCase):
     def setUp(self):
-        self.staff_user = User.objects.create_user(username='teststaff', email='staff@example.com', password='password')
-        self.company_user = User.objects.create_user(username='companyuser', email='company@example.com', password='password')
+        self.staff_user = User.objects.create_user(username='teststaff', email='staff@example.com', password='password', tenant_id=1)
+        self.company_user = User.objects.create_user(username='companyuser', email='company@example.com', password='password', tenant_id=1)
         self.company_user.is_staff = True
         self.company_user.save()
 
@@ -167,18 +173,20 @@ class StaffInquiryStatusTest(TestCase):
         self.staff_user.user_permissions.set(permissions)
         self.company_user.user_permissions.set(permissions)
 
-        self.company = CompanyModel.objects.create(name='Test Company', corporate_number='1234567890123')
+        self.company = CompanyModel.objects.create(name='Test Company', corporate_number='1234567890123', tenant_id=1)
         ConnectStaff.objects.create(corporate_number=self.company.corporate_number, email=self.staff_user.email, status='approved')
 
         self.inquiry = StaffInquiry.objects.create(
             user=self.staff_user,
             corporate_number=self.company.corporate_number,
             subject='Status Test',
+            tenant_id=1
         )
         StaffInquiryMessage.objects.create(
             inquiry=self.inquiry,
             user=self.staff_user,
-            content='Test Content'
+            content='Test Content',
+            tenant_id=1
         )
 
         self.client_staff = Client()
@@ -207,7 +215,7 @@ class StaffInquiryStatusTest(TestCase):
 
     def test_company_can_post_on_completed_inquiry(self):
         from apps.company.models import CompanyUser
-        CompanyUser.objects.create(email=self.company_user.email, corporate_number=self.company.corporate_number)
+        CompanyUser.objects.create(email=self.company_user.email, corporate_number=self.company.corporate_number, tenant_id=1)
 
         self.inquiry.status = 'completed'
         self.inquiry.save()
@@ -228,7 +236,7 @@ class StaffInquiryStatusTest(TestCase):
 
     def test_flags_on_reply(self):
         from apps.company.models import CompanyUser
-        CompanyUser.objects.create(email=self.company_user.email, corporate_number=self.company.corporate_number)
+        CompanyUser.objects.create(email=self.company_user.email, corporate_number=self.company.corporate_number, tenant_id=1)
 
         # Create inquiry by staff
         inquiry = StaffInquiry.objects.create(
@@ -236,12 +244,14 @@ class StaffInquiryStatusTest(TestCase):
             corporate_number=self.company.corporate_number,
             subject='Initial',
             inquiry_from='staff',
-            last_message_by='staff'
+            last_message_by='staff',
+            tenant_id=1
         )
         StaffInquiryMessage.objects.create(
             inquiry=inquiry,
             user=self.staff_user,
-            content='Initial'
+            content='Initial',
+            tenant_id=1
         )
         url = reverse('staff:staff_inquiry_detail', kwargs={'pk': inquiry.pk})
 

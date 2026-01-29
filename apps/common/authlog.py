@@ -28,6 +28,19 @@ def log_user_login(sender, request, user, **kwargs):
         version=None
     )
 
+    # セッションにテナントIDをセット
+    if user.is_superuser:
+        if user.tenant_id:
+            request.session['current_tenant_id'] = user.tenant_id
+        else:
+            from apps.company.models import Company
+            company = Company.objects.first()
+            if company:
+                request.session['current_tenant_id'] = company.tenant_id
+    else:
+        if user.tenant_id:
+            request.session['current_tenant_id'] = user.tenant_id
+
 
 @receiver(user_logged_out)
 def log_user_logout(sender, request, user, **kwargs):

@@ -1,5 +1,32 @@
 # apps/staff/utils.py
 from apps.master.models import UserParameter
+from .models import Staff
+
+def get_tenant_id(request):
+    """セッションから現在のテナントIDを取得する"""
+    return request.session.get('current_tenant_id')
+
+def get_staff_queryset(request):
+    """現在のテナントに属するスタッフのクエリセットを返す"""
+    tenant_id = get_tenant_id(request)
+    if tenant_id is None:
+        return Staff.objects.none()
+    return Staff.objects.filter(tenant_id=tenant_id)
+
+def get_filtered_queryset(request, model_or_queryset):
+    """指定されたモデルまたはクエリセットの現在のテナントに属するクエリセットを返す"""
+    tenant_id = get_tenant_id(request)
+
+    if hasattr(model_or_queryset, 'model'):
+        # これはクエリセット
+        if tenant_id is None:
+            return model_or_queryset.none()
+        return model_or_queryset.filter(tenant_id=tenant_id)
+    else:
+        # これはモデルクラス
+        if tenant_id is None:
+            return model_or_queryset.objects.none()
+        return model_or_queryset.objects.filter(tenant_id=tenant_id)
 
 def get_staff_face_photo_style():
     """

@@ -10,7 +10,7 @@ User = get_user_model()
 class StaffEvaluationViewTest(TestCase):
     def setUp(self):
         self.client = Client()
-        self.user = User.objects.create_user(username='testuser', password='password')
+        self.user = User.objects.create_user(username='testuser', password='password', tenant_id=1)
         # Add permission to view staff evaluation
         from django.contrib.auth.models import Permission
         permission = Permission.objects.get(codename='view_staffevaluation')
@@ -21,6 +21,7 @@ class StaffEvaluationViewTest(TestCase):
             name_first='Staff',
             hire_date='2023-01-01',
             created_by=self.user,
+            tenant_id=1
         )
 
     def test_staff_evaluation_list_ajax_post(self):

@@ -11,12 +11,20 @@ from apps.master.models import StaffContactType
 
 class StaffContactedForm(forms.ModelForm):
     contact_type = forms.ModelChoiceField(
-        queryset=StaffContactType.objects.filter(is_active=True).order_by('display_order'),
+        queryset=StaffContactType.objects.none(),
         label='連絡種別',
         widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
         required=False,
         empty_label='選択してください'
     )
+
+    def __init__(self, *args, **kwargs):
+        self.tenant_id = kwargs.pop('tenant_id', None)
+        super().__init__(*args, **kwargs)
+        if self.tenant_id:
+            self.fields['contact_type'].queryset = StaffContactType.objects.filter(tenant_id=self.tenant_id, is_active=True).order_by('display_order')
+        else:
+            self.fields['contact_type'].queryset = StaffContactType.objects.filter(is_active=True).order_by('display_order')
 
     class Meta:
         model = StaffContacted
@@ -31,12 +39,20 @@ class StaffContactedForm(forms.ModelForm):
 # スタッフ連絡予定フォーム
 class StaffContactScheduleForm(forms.ModelForm):
     contact_type = forms.ModelChoiceField(
-        queryset=StaffContactType.objects.filter(is_active=True).order_by('display_order'),
+        queryset=StaffContactType.objects.none(),
         label='連絡種別',
         widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
         required=False,
         empty_label='選択してください'
     )
+
+    def __init__(self, *args, **kwargs):
+        self.tenant_id = kwargs.pop('tenant_id', None)
+        super().__init__(*args, **kwargs)
+        if self.tenant_id:
+            self.fields['contact_type'].queryset = StaffContactType.objects.filter(tenant_id=self.tenant_id, is_active=True).order_by('display_order')
+        else:
+            self.fields['contact_type'].queryset = StaffContactType.objects.filter(is_active=True).order_by('display_order')
 
     class Meta:
         model = StaffContactSchedule
@@ -90,8 +106,8 @@ class StaffForm(forms.ModelForm):
             if not re.fullmatch(r'^[A-Za-z0-9]{1,10}', value):
                 raise forms.ValidationError('社員番号は半角英数字10文字以内で入力してください。')
 
-            # 編集時に自分自身を除外して重複チェック
-            qs = Staff.objects.filter(employee_no=value)
+            # 編集時に自分自身を除外して重複チェック（同一テナント内）
+            qs = Staff.objects.filter(employee_no=value, tenant_id=self.tenant_id)
             if self.instance.pk:
                 qs = qs.exclude(pk=self.instance.pk)
             if qs.exists():
@@ -101,8 +117,8 @@ class StaffForm(forms.ModelForm):
     def clean_email(self):
         value = self.cleaned_data.get('email', '')
         if value:
-            # 編集時に自分自身を除外して重複チェック
-            qs = Staff.objects.filter(email=value)
+            # 編集時に自分自身を除外して重複チェック（同一テナント内）
+            qs = Staff.objects.filter(email=value, tenant_id=self.tenant_id)
             if self.instance.pk:
                 qs = qs.exclude(pk=self.instance.pk)
             if qs.exists():
@@ -180,6 +196,7 @@ class StaffForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
+        self.tenant_id = kwargs.pop('tenant_id', None)
         super().__init__(*args, **kwargs)
         # ここでのみDropdownsをimport.そうしないとmigrateでエラーになる
         from apps.system.settings.models import Dropdowns
@@ -192,14 +209,21 @@ class StaffForm(forms.ModelForm):
             for opt in Dropdowns.objects.filter(active=True, category='sex').order_by('disp_seq')
         ]
         from apps.master.models import StaffRegistStatus
-        self.fields['regist_status'].queryset = StaffRegistStatus.objects.filter(is_active=True).order_by('display_order')
-
         from apps.master.models import EmploymentType
-        self.fields['employment_type'].queryset = EmploymentType.objects.filter(is_active=True).order_by('display_order', 'name')
+
+        if self.tenant_id:
+            self.fields['regist_status'].queryset = StaffRegistStatus.objects.filter(tenant_id=self.tenant_id, is_active=True).order_by('display_order')
+            self.fields['employment_type'].queryset = EmploymentType.objects.filter(tenant_id=self.tenant_id, is_active=True).order_by('display_order', 'name')
+        else:
+            self.fields['regist_status'].queryset = StaffRegistStatus.objects.filter(is_active=True).order_by('display_order')
+            self.fields['employment_type'].queryset = EmploymentType.objects.filter(is_active=True).order_by('display_order', 'name')
         
         # 現在有効な部署の選択肢を設定
         current_date = timezone.localdate()
         valid_departments = CompanyDepartment.get_valid_departments(current_date)
+        if self.tenant_id:
+            valid_departments = valid_departments.filter(tenant_id=self.tenant_id)
+
         self.fields['department_code'].choices = [('', '選択してください')] + [
             (dept.department_code, f"{dept.name} ({dept.department_code})")
             for dept in valid_departments
@@ -288,10 +312,15 @@ class StaffQualificationForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         self.staff = kwargs.pop('staff', None)  # スタッフインスタンスを受け取る
+        self.tenant_id = kwargs.pop('tenant_id', None)
         super().__init__(*args, **kwargs)
         # 資格のみ（レベル2）を選択肢として設定
         from apps.master.models import Qualification
-        qualifications = Qualification.objects.filter(level=2, is_active=True).select_related('parent').order_by('parent__display_order', 'parent__name', 'display_order', 'name')
+        qualifications = Qualification.objects.filter(level=2, is_active=True).select_related('parent')
+        if self.tenant_id:
+            qualifications = qualifications.filter(tenant_id=self.tenant_id)
+
+        qualifications = qualifications.order_by('parent__display_order', 'parent__name', 'display_order', 'name')
         self.fields['qualification'].choices = [('', '選択してください')] + [
             (q.pk, f"{q.parent.name} > {q.name}" if q.parent else q.name)
             for q in qualifications
@@ -333,10 +362,15 @@ class StaffSkillForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         self.staff = kwargs.pop('staff', None)  # スタッフインスタンスを受け取る
+        self.tenant_id = kwargs.pop('tenant_id', None)
         super().__init__(*args, **kwargs)
         # 技能のみ（レベル2）を選択肢として設定
         from apps.master.models import Skill
-        skills = Skill.objects.filter(level=2, is_active=True).select_related('parent').order_by('parent__display_order', 'parent__name', 'display_order', 'name')
+        skills = Skill.objects.filter(level=2, is_active=True).select_related('parent')
+        if self.tenant_id:
+            skills = skills.filter(tenant_id=self.tenant_id)
+
+        skills = skills.order_by('parent__display_order', 'parent__name', 'display_order', 'name')
         self.fields['skill'].choices = [('', '選択してください')] + [
             (s.pk, f"{s.parent.name} > {s.name}" if s.parent else s.name)
             for s in skills
@@ -405,6 +439,12 @@ class StaffFileForm(forms.ModelForm):
 class StaffMynumberForm(forms.ModelForm):
     """スタッフマイナンバーフォーム"""
 
+    def __init__(self, *args, **kwargs):
+        self.tenant_id = kwargs.pop('tenant_id', None)
+        super().__init__(*args, **kwargs)
+        # 必須フィールドの設定
+        self.fields['mynumber'].required = True
+
     class Meta:
         model = StaffMynumber
         fields = ['mynumber']
@@ -418,11 +458,6 @@ class StaffMynumberForm(forms.ModelForm):
                 'autocomplete': 'off'
             }),
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # 必須フィールドの設定
-        self.fields['mynumber'].required = True
 
     def clean_mynumber(self):
         """マイナンバーのバリデーション"""
@@ -448,6 +483,10 @@ class StaffMynumberForm(forms.ModelForm):
 
 class StaffContactForm(forms.ModelForm):
     """スタッフ連絡先情報フォーム"""
+
+    def __init__(self, *args, **kwargs):
+        self.tenant_id = kwargs.pop('tenant_id', None)
+        super().__init__(*args, **kwargs)
 
     class Meta:
         model = StaffContact
@@ -522,6 +561,7 @@ class StaffBankForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        self.tenant_id = kwargs.pop('tenant_id', None)
         super().__init__(*args, **kwargs)
         # 口座種別の選択肢を設定
         from apps.system.settings.models import Dropdowns
@@ -571,6 +611,13 @@ class StaffBankForm(forms.ModelForm):
 class StaffInternationalForm(forms.ModelForm):
     """スタッフ外国籍情報フォーム"""
 
+    def __init__(self, *args, **kwargs):
+        self.tenant_id = kwargs.pop('tenant_id', None)
+        super().__init__(*args, **kwargs)
+        # 必須フィールドの設定
+        for field in self.fields:
+            self.fields[field].required = True
+
     class Meta:
         model = StaffInternational
         fields = ['residence_card_number', 'residence_status', 'residence_period_from', 'residence_period_to']
@@ -592,12 +639,6 @@ class StaffInternationalForm(forms.ModelForm):
                 'type': 'date'
             }),
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # 必須フィールドの設定
-        for field in self.fields:
-            self.fields[field].required = True
 
     def clean(self):
         """在留期間の妥当性チェック"""
@@ -630,6 +671,7 @@ class StaffDisabilityForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        self.tenant_id = kwargs.pop('tenant_id', None)
         super().__init__(*args, **kwargs)
         from apps.system.settings.models import Dropdowns
         self.fields['disability_type'].choices = [
