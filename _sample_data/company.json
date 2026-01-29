@@ -3,7 +3,7 @@
     "model": "company.company",
     "pk": 1,
     "fields": {
-        "version": 1768066022332382,
+        "version": 1769595745272266,
         "created_at": "2025-01-01T00:00:00Z",
         "created_by": 1,
         "updated_at": "2026-01-10T17:42:48.984Z",
@@ -21,6 +21,30 @@
         "dispatch_treatment_method": "agreement",
         "round_seal": "company_seals/1_round_seal.png",
         "square_seal": "company_seals/1_square_seal.png"
+    }
+},
+{
+    "model": "company.company",
+    "pk": 2,
+    "fields": {
+        "version": 1769656538683056,
+        "created_at": "2026-01-29T03:29:25.890Z",
+        "created_by": 1,
+        "updated_at": "2026-01-29T03:31:25.335Z",
+        "updated_by": 1,
+        "tenant_id": 2,
+        "name": "テスト株式会社",
+        "corporate_number": "9876543210980",
+        "representative": "代表取締役　テスト太郎",
+        "postal_code": "1000002",
+        "address": "東京都千代田区皇居外苑2-2-2",
+        "phone_number": null,
+        "haken_permit_number": null,
+        "shokai_permit_number": null,
+        "foreign_regist_number": null,
+        "dispatch_treatment_method": "agreement",
+        "round_seal": "",
+        "square_seal": ""
     }
 }
 ]
