@@ -97,6 +97,9 @@ python manage.py dumpdata master.worktimepatternbreak      --format=json --inden
 python manage.py dumpdata master.overtimepattern           --format=json --indent=4 > _sample_data/master_overtime_pattern.json
 python manage.py dumpdata master.timepunch                 --format=json --indent=4 > _sample_data/master_time_punch.json
 
+python manage.py dumpdata master.staffcontacttype         --format=json --indent=4 > _sample_data/master_staff_contact_type.json
+python manage.py dumpdata master.clientcontacttype        --format=json --indent=4 > _sample_data/master_client_contact_type.json
+
 #   UTF16からUTF8に変更してから取り込む必要あり
 
 # データベースアクセス
