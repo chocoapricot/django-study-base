@@ -509,7 +509,8 @@ def company_user_detail(request, pk):
                 username=company_user.email,
                 email=company_user.email,
                 last_name=company_user.name_last,
-                first_name=company_user.name_first
+                first_name=company_user.name_first,
+                tenant_id=company.tenant_id
             )
             # companyグループに追加
             try:

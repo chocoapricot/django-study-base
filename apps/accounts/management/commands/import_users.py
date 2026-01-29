@@ -38,13 +38,14 @@ class Command(BaseCommand):
                         if all(not cell.strip() for cell in row):
                             continue
                         
-                        # 後方互換性のため、5列または6列に対応
+                        # 後方互換性のため、5列、6列、または7列に対応
                         username = row[0]
                         password = row[1]
                         email = row[2]
                         last_name = row[3]
                         first_name = row[4]
                         user_type = row[5].strip().lower() if len(row) > 5 else ''
+                        tenant_id = row[6].strip() if len(row) > 6 else None
 
                         if User.objects.filter(username=username).exists():
                             self.stdout.write(self.style.WARNING(f'User "{username}" already exists. Skipping.'))
@@ -60,7 +61,8 @@ class Command(BaseCommand):
                             password=password,
                             email=email,
                             last_name=last_name,
-                            first_name=first_name
+                            first_name=first_name,
+                            tenant_id=tenant_id
                         )
 
                         # Create EmailAddress for allauth

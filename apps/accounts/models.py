@@ -7,6 +7,7 @@ class MyUser(AbstractUser):
 	標準のUserモデルを拡張したカスタムユーザーモデル。
 	StaffProfileとの連携で、姓・名の同期機能を持つ。
 	"""
+	tenant_id = models.IntegerField('テナントID', blank=True, null=True, db_index=True)
 
 	def save(self, *args, **kwargs):
 		super().save(*args, **kwargs)

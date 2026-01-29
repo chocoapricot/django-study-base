@@ -12,7 +12,8 @@ class Command(BaseCommand):
             user = User.objects.get(username='admin')
             user.first_name = '太郎'
             user.last_name = '管理者'
-            user.save(update_fields=['first_name', 'last_name'])
+            user.tenant_id = 1
+            user.save(update_fields=['first_name', 'last_name', 'tenant_id'])
 
             # Create EmailAddress for allauth
             if not EmailAddress.objects.filter(user=user, email='admin@example.com').exists():
