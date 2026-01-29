@@ -10,6 +10,9 @@
     - タグの変更履歴は `AppLog` に自動的に記録されます。
 - 初期セットアップ時に利用可能なスタッフタグのサンプルデータ（優良スタッフ、経験豊富、ブランクあり）を追加しました。
 
+### Fixed
+- 汎用の削除確認用テンプレート `common/common_delete.html` が存在しなかったため、マスタデータの削除時に `TemplateDoesNotExist` エラーが発生する問題を修正しました。
+
 ### Changed
 - `Staff` モデルに `tags` (ManyToManyField) を追加しました。
 
