@@ -1,0 +1,62 @@
+[
+{
+    "model": "master.clientcontacttype",
+    "pk": 1,
+    "fields": {
+        "version": 1769681507012776,
+        "created_at": "2026-01-29T10:27:33.665Z",
+        "created_by": 1,
+        "updated_at": "2026-01-29T10:27:33.665Z",
+        "updated_by": 1,
+        "tenant_id": null,
+        "name": "問い合わせ",
+        "display_order": 10,
+        "is_active": true
+    }
+},
+{
+    "model": "master.clientcontacttype",
+    "pk": 2,
+    "fields": {
+        "version": 1769681516840661,
+        "created_at": "2026-01-29T10:27:43.493Z",
+        "created_by": 1,
+        "updated_at": "2026-01-29T10:27:43.493Z",
+        "updated_by": 1,
+        "tenant_id": null,
+        "name": "打ち合わせ",
+        "display_order": 20,
+        "is_active": true
+    }
+},
+{
+    "model": "master.clientcontacttype",
+    "pk": 3,
+    "fields": {
+        "version": 1769681527384869,
+        "created_at": "2026-01-29T10:27:54.037Z",
+        "created_by": 1,
+        "updated_at": "2026-01-29T10:27:54.037Z",
+        "updated_by": 1,
+        "tenant_id": null,
+        "name": "クレーム",
+        "display_order": 40,
+        "is_active": true
+    }
+},
+{
+    "model": "master.clientcontacttype",
+    "pk": 4,
+    "fields": {
+        "version": 1769681536938862,
+        "created_at": "2026-01-29T10:28:03.591Z",
+        "created_by": 1,
+        "updated_at": "2026-01-29T10:28:03.591Z",
+        "updated_by": 1,
+        "tenant_id": null,
+        "name": "メール配信",
+        "display_order": 50,
+        "is_active": true
+    }
+}
+]
