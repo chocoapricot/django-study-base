@@ -783,6 +783,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <!-- Face View Modal -->
+{% if staff.has_face_photo %}
 <div class="modal fade" id="viewFaceModal" tabindex="-1" aria-labelledby="viewFaceModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -799,6 +800,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </div>
+{% endif %}
 
 <style>
 .face-photo-container {
