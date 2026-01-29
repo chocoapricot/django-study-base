@@ -22,7 +22,7 @@ RenderでDjangoアプリを公開するために必要な設定を行いまし�
 
 ### 1. Web Service の設定
 *   **Runtime**: `Python`
-*   **Build Command**: `./build.sh`
+*   **Build Command**: `./_scripts/build_render.sh`
 *   **Start Command**: `gunicorn config.wsgi:application`
 
 ### 2. 環境変数 (Environment Variables)

@@ -2,7 +2,7 @@ services:
   - type: web
     name: django-study-base
     runtime: python
-    buildCommand: ./build.sh
+    buildCommand: ./_scripts/build_render.sh
     startCommand: gunicorn config.wsgi:application
     envVars:
       - key: DJANGO_SETTINGS_MODULE
