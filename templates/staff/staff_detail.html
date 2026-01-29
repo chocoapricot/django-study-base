@@ -56,6 +56,10 @@
                                 <i class="bi bi-cash-stack"></i>　給与関連
                             </a>
                             {% endif %}
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'staff:staff_tag_edit' staff.pk %}" class="dropdown-item">
+                                <i class="bi bi-tags"></i>　タグ編集
+                            </a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -154,6 +158,13 @@
                                 </a>
                                 {% endif %}
                             </h4>
+                            <div class="mt-1 mb-2">
+                                {% for tag in staff.tags.all %}
+                                    <span class="badge rounded-pill {{ tag.display_order|badge_class }} me-1">
+                                        <i class="bi bi-tag-fill me-1"></i>{{ tag.name }}
+                                    </span>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
 

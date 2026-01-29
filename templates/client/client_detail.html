@@ -7,25 +7,42 @@
 {% block content %}
 
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
-    <div class="card-header">クライアント基本情報</div>
+    <div class="card-header d-flex justify-content-between align-items-center">
+        クライアント基本情報
+        <ul class="nav nav-pills">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle py-1" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">その他情報</a>
+                <div class="dropdown-menu">
+                    <a href="{% url 'client:client_tag_edit' client.pk %}" class="dropdown-item">
+                        <i class="bi bi-tags"></i>　タグ編集
+                    </a>
+                </div>
+            </li>
+        </ul>
+    </div>
     <div class="card-body">
             {% csrf_token %}
             <div class="row mb-3 align-items-center">
-                <div class="col-sm-6">
-                    <h4>
+                <div class="col-sm-12">
+                    <h4 class="d-flex align-items-center flex-wrap">
                         <ruby>
                             {{ client.name }}<rt>{{ client.name_furigana }}</rt>
                         </ruby>
+                        {% if client.regist_status %}
+                            <span class="badge {{ client.regist_status.display_order|badge_class }} ms-3" style="font-size:15px">{{ client.regist_status.name }}</span>
+                        {% endif %}
                         {% if client.client_code %}
                         <span class="ms-3" style="font-size: 1rem; color: #6c757d;">
                             (クライアントコード {% my_help_icon "システムで法人番号から自動設定されるコードです。契約番号に使われます" %}： {{ client.client_code }} )
                         </span>
                         {% endif %}
                     </h4>
-                    <div class="col-sm-2">
-                        {% if client.regist_status %}
-                    <span class="badge bg-primary" style="font-size:15px">{{ client.regist_status.name }}</span>
-                {% endif %}
+                    <div class="mt-2">
+                        {% for tag in client.tags.all %}
+                            <span class="badge rounded-pill {{ tag.display_order|badge_class }} me-1">
+                                <i class="bi bi-tag-fill me-1"></i>{{ tag.name }}
+                            </span>
+                        {% endfor %}
                     </div>
                 </div>
             </div>

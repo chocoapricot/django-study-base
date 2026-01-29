@@ -23,6 +23,7 @@ from .views import (
     staff_disability_request_detail,
     staff_payroll_detail, staff_payroll_create, staff_payroll_edit, staff_payroll_delete,
     staff_evaluation_list, staff_evaluation_create, staff_evaluation_update, staff_evaluation_delete,
+    staff_tag_edit,
 )
 from .views_inquiry import (
     staff_inquiry_list, staff_inquiry_create, staff_inquiry_detail, staff_inquiry_message_delete,
@@ -40,6 +41,7 @@ urlpatterns = [
     path('staff/face/<int:pk>/upload/', staff_face_upload, name='staff_face_upload'),
     path('staff/face/<int:pk>/delete/', staff_face_delete, name='staff_face_delete'),
     path('staff/update/<int:pk>/', staff_update, name='staff_update'),
+    path('staff/tag/edit/<int:pk>/', staff_tag_edit, name='staff_tag_edit'),
     path('staff/delete/<int:pk>/', staff_delete, name='staff_delete'),
     path('staff/rirekisho/<int:pk>/', staff_rirekisho, name='staff_rirekisho'),
     path('staff/kyushoku/<int:pk>/', staff_kyushoku, name='staff_kyushoku'),

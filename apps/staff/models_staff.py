@@ -47,6 +47,7 @@ class Staff(MyTenantModel):
     resignation_date = models.DateField('退職日', blank=True, null=True)
     department_code = models.CharField('所属部署コード', max_length=20, blank=True, null=True, help_text='会社部署の部署コードを参照')
     memo = models.TextField('メモ', blank=True, null=True)
+    tags = models.ManyToManyField('master.StaffTag', blank=True, related_name='staffs', verbose_name='タグ')
 
     class Meta:
         db_table = 'apps_staff'  # 既存のテーブル名を指定

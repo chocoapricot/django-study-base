@@ -1423,3 +1423,47 @@ def staff_face_delete(request, pk):
         else:
             messages.warning(request, '削除対象の顔写真が見つかりませんでした。')
     return redirect('staff:staff_detail', pk=staff.pk)
+
+
+@login_required
+@permission_required('staff.change_staff', raise_exception=True)
+def staff_tag_edit(request, pk):
+    """スタッフタグの編集"""
+    staff = get_object_or_404(Staff, pk=pk)
+    from apps.master.models_staff import StaffTag
+    
+    if request.method == 'POST':
+        tag_ids = request.POST.getlist('tags')
+        # 数値に変換
+        tag_ids = [int(tid) for tid in tag_ids if tid.isdigit()]
+        
+        # 以前のタグを取得（ログ用）
+        old_tag_names = ", ".join([t.name for t in staff.tags.all()])
+        
+        # 新しいタグを設定
+        staff.tags.set(tag_ids)
+        
+        new_tag_names = ", ".join([t.name for t in staff.tags.all()])
+        
+        # AppLogに記録
+        log_model_action(request.user, 'update', staff)
+        AppLog.objects.create(
+            user=request.user,
+            action='update',
+            model_name='Staff',
+            object_id=str(staff.pk),
+            object_repr=f"タグ変更: {old_tag_names} -> {new_tag_names}"
+        )
+        
+        messages.success(request, f'スタッフ「{staff.name}」のタグを更新しました。')
+        return redirect('staff:staff_detail', pk=staff.pk)
+    
+    all_tags = StaffTag.objects.filter(is_active=True).order_by('display_order', 'name')
+    current_tag_ids = list(staff.tags.values_list('pk', flat=True))
+    
+    context = {
+        'staff': staff,
+        'all_tags': all_tags,
+        'current_tag_ids': current_tag_ids,
+    }
+    return render(request, 'staff/staff_tag_edit.html', context)

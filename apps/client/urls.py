@@ -7,7 +7,8 @@ from .views import (
     client_department_create, client_department_list, client_department_update, client_department_delete, client_department_detail, client_department_change_history_list, issue_teishokubi_notification_from_department,
     client_user_create, client_user_list, client_user_detail, client_user_update, client_user_delete, client_user_mail_send,
     client_file_list, client_file_create, 
-    client_file_delete, client_file_download
+    client_file_delete, client_file_download,
+    client_tag_edit
 )
 
 app_name = 'client'
@@ -19,6 +20,7 @@ urlpatterns = [
     path('client/detail/<int:pk>/', client_detail, name='client_detail'),
     path('client/update/<int:pk>/', client_update, name='client_update'),
     path('client/delete/<int:pk>/', client_delete, name='client_delete'),
+    path('client/tag/edit/<int:pk>/', client_tag_edit, name='client_tag_edit'),
     # クライアント連絡履歴
     path('client/<int:client_pk>/contacted/create/', client_contacted_create, name='client_contacted_create'),
     path('client/<int:client_pk>/contacted/list/', client_contacted_list, name='client_contacted_list'),

@@ -41,6 +41,12 @@ class Client(MyTenantModel):
         null=True,
         verbose_name='支払いサイト'
     )
+    tags = models.ManyToManyField(
+        'master.ClientTag',
+        blank=True,
+        related_name='clients',
+        verbose_name='タグ'
+    )
 
     class Meta:
         db_table = 'apps_client'  # 既存のテーブル名を指定
