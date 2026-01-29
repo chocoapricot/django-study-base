@@ -28,6 +28,15 @@ def log_user_login(sender, request, user, **kwargs):
         version=None
     )
 
+    # ログイン時にテナント情報をセッションに初期化
+    from apps.company.views import get_current_company
+    try:
+        # get_current_company は内部で request.session['current_tenant_id'] を設定する
+        get_current_company(request)
+    except Exception:
+        # 会社情報が見つからない場合などは無視する
+        pass
+
 
 @receiver(user_logged_out)
 def log_user_logout(sender, request, user, **kwargs):

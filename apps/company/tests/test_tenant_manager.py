@@ -2,6 +2,7 @@ from django.test import TestCase, RequestFactory
 from django.contrib.sessions.middleware import SessionMiddleware
 from apps.company.models import Company, CompanyDepartment, CompanyUser
 from apps.common.middleware import TenantMiddleware
+from django.contrib.auth.models import AnonymousUser
 
 class TenantManagerTest(TestCase):
     """TenantManagerのフィルタリング機能のテスト"""
@@ -27,7 +28,7 @@ class TenantManagerTest(TestCase):
             name_last="佐藤", name_first="花子", tenant_id=200
         )
 
-    def _get_request_with_session(self, tenant_id=None):
+    def _get_request_with_session(self, tenant_id=None, user=None):
         request = self.factory.get('/')
         # SessionMiddlewareをシミュレート
         middleware = SessionMiddleware(lambda r: None)
@@ -35,6 +36,10 @@ class TenantManagerTest(TestCase):
         if tenant_id:
             request.session['current_tenant_id'] = tenant_id
         request.session.save()
+
+        # ユーザーを設定
+        request.user = user or AnonymousUser()
+
         return request
 
     def test_filter_by_session_tenant_id(self):
