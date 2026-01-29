@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth.models import Permission
 from apps.client.models import Client, ClientContacted, ClientUser
 from apps.system.settings.models import Menu
-from apps.master.models import ClientRegistStatus
+from apps.master.models import ClientRegistStatus, ClientContactType
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from datetime import date, datetime 
@@ -80,9 +80,9 @@ class ClientViewsTest(TestCase):
         # Create necessary ClientRegistStatus for ClientForm
         from apps.master.models import ClientRegistStatus
         ClientRegistStatus.objects.create(name='Test Regist Form', display_order=1, is_active=True)
-        # Create necessary Dropdowns for ClientContactedForm
-        Dropdowns.objects.create(category='contact_type', value='1', name='Test Contact Type 1', active=True, disp_seq=1)
-        Dropdowns.objects.create(category='contact_type', value='2', name='Test Contact Type 2', active=True, disp_seq=2)
+        # Create necessary ClientContactType for ClientContactedForm
+        self.contact_type_1 = ClientContactType.objects.create(name='Test Contact Type 1', display_order=1, is_active=True)
+        self.contact_type_2 = ClientContactType.objects.create(name='Test Contact Type 2', display_order=2, is_active=True)
 
         Menu.objects.create(name='クライアント', url='/client/', active=True, disp_seq=1)
 
@@ -414,7 +414,7 @@ class ClientViewsTest(TestCase):
         data = {
             'content': 'Test Contact',
             'detail': 'This is a test contact detail.',
-            'contact_type': 1,
+            'contact_type': self.contact_type_1.pk,
             'contacted_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')  # 現在の日時を設定
         }
         response = self.client.post(reverse('client:client_contacted_create', args=[self.client_obj.pk]), data)
@@ -449,7 +449,7 @@ class ClientViewsTest(TestCase):
         data = {
             'content': 'Updated Contact',
             'detail': 'Updated detail.',
-            'contact_type': 2,
+            'contact_type': self.contact_type_2.pk,
             'contacted_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')  # 現在の日時を設定
         }
         response = self.client.post(reverse('client:client_contacted_update', args=[contacted_obj.pk]), data)

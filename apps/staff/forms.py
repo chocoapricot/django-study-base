@@ -8,26 +8,17 @@ from apps.common.forms import MyRadioSelect
 
 # スタッフ連絡履歴フォーム
 class StaffContactedForm(forms.ModelForm):
-    contact_type = forms.ChoiceField(
-        choices=[],
-        label='連絡種別',
-        widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
-        required=False,
-    )
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        from apps.system.settings.models import Dropdowns
-        self.fields['contact_type'].choices = [
-            (opt.value, opt.name)
-            for opt in Dropdowns.objects.filter(active=True, category='contact_type').order_by('disp_seq')
-        ]
+        from apps.master.models import StaffContactType
+        self.fields['contact_type'].queryset = StaffContactType.objects.filter(is_active=True).order_by('display_order')
 
     class Meta:
         model = StaffContacted
         fields = ['contacted_at', 'contact_type', 'content', 'detail']
         widgets = {
             'contacted_at': forms.DateTimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'datetime-local'}),
+            'contact_type': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'content': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'detail': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
@@ -35,26 +26,17 @@ class StaffContactedForm(forms.ModelForm):
 
 # スタッフ連絡予定フォーム
 class StaffContactScheduleForm(forms.ModelForm):
-    contact_type = forms.ChoiceField(
-        choices=[],
-        label='連絡種別',
-        widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
-        required=False,
-    )
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        from apps.system.settings.models import Dropdowns
-        self.fields['contact_type'].choices = [
-            (opt.value, opt.name)
-            for opt in Dropdowns.objects.filter(active=True, category='contact_type').order_by('disp_seq')
-        ]
+        from apps.master.models import StaffContactType
+        self.fields['contact_type'].queryset = StaffContactType.objects.filter(is_active=True).order_by('display_order')
 
     class Meta:
         model = StaffContactSchedule
         fields = ['contact_date', 'contact_type', 'content', 'detail']
         widgets = {
             'contact_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
+            'contact_type': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'content': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'detail': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }

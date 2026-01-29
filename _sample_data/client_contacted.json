@@ -11,7 +11,7 @@
             "contacted_at": "2025-07-01T10:00:00Z",
             "content": "新規案件のご相談",
             "detail": "自動車部品製造ラインでの人材派遣について電話でご相談。",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     },
@@ -27,7 +27,7 @@
             "contacted_at": "2025-07-02T11:00:00Z",
             "content": "打ち合わせ実施",
             "detail": "人材要件と勤務条件について詳細打ち合わせ。次回は提案書提出予定。",
-            "contact_type": 20,
+            "contact_type": 2,
             "tenant_id": 1
         }
     },
@@ -43,7 +43,7 @@
             "contacted_at": "2025-07-03T09:30:00Z",
             "content": "提案書送付",
             "detail": "人材派遣提案書をメールで送付。回答期限は7/10まで。",
-            "contact_type": 50,
+            "contact_type": 4,
             "tenant_id": 1
         }
     },
@@ -59,7 +59,7 @@
             "contacted_at": "2025-07-04T14:00:00Z",
             "content": "契約更新の相談",
             "detail": "現在の派遣契約の更新について電話でご相談。",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     },
@@ -75,7 +75,7 @@
             "contacted_at": "2025-07-05T15:00:00Z",
             "content": "クレーム対応",
             "detail": "派遣スタッフの勤務態度についてご指摘をいただき対応。",
-            "contact_type": 40,
+            "contact_type": 3,
             "tenant_id": 1
         }
     },
@@ -91,7 +91,7 @@
             "contacted_at": "2025-07-06T10:00:00Z",
             "content": "打ち合わせ日程調整",
             "detail": "7/12に契約更新の詳細打ち合わせ予定。",
-            "contact_type": 20,
+            "contact_type": 2,
             "tenant_id": 1
         }
     },
@@ -107,7 +107,7 @@
             "contacted_at": "2025-07-07T13:00:00Z",
             "content": "メール配信済み",
             "detail": "新サービスのご案内を一斉送信。",
-            "contact_type": 50,
+            "contact_type": 4,
             "tenant_id": 1
         }
     },
@@ -123,7 +123,7 @@
             "contacted_at": "2025-07-08T09:00:00Z",
             "content": "問い合わせ対応",
             "detail": "ゲーム開発部門での技術者派遣についてお問い合わせ。",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     },
@@ -139,7 +139,7 @@
             "contacted_at": "2025-07-09T11:00:00Z",
             "content": "打ち合わせ実施",
             "detail": "技術者の要件定義と勤務条件について詳細打ち合わせ。",
-            "contact_type": 20,
+            "contact_type": 2,
             "tenant_id": 1
         }
     },
@@ -155,7 +155,7 @@
             "contacted_at": "2025-07-10T16:00:00Z",
             "content": "新規案件のご相談",
             "detail": "物流センターでの作業員派遣についてご相談。",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     },
@@ -171,7 +171,7 @@
             "contacted_at": "2025-07-11T10:00:00Z",
             "content": "技術者派遣の相談",
             "detail": "クラウドエンジニアの派遣についてお問い合わせ。",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     },
@@ -187,7 +187,7 @@
             "contacted_at": "2025-07-12T11:00:00Z",
             "content": "打ち合わせ実施",
             "detail": "区役所での事務職派遣について詳細打ち合わせ。",
-            "contact_type": 20,
+            "contact_type": 2,
             "tenant_id": 1
         }
     },
@@ -203,7 +203,7 @@
             "contacted_at": "2025-07-13T09:30:00Z",
             "content": "契約書送付",
             "detail": "人材派遣契約書をメールで送付。確認後ご返送をお願い。",
-            "contact_type": 50,
+            "contact_type": 4,
             "tenant_id": 1
         }
     },
@@ -219,7 +219,7 @@
             "contacted_at": "2025-07-14T14:00:00Z",
             "content": "問い合わせ対応",
             "detail": "都庁での専門職派遣についてお問い合わせ。",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     },
@@ -235,7 +235,7 @@
             "contacted_at": "2025-07-15T15:00:00Z",
             "content": "クレーム対応",
             "detail": "派遣スタッフの交代要請について対応。",
-            "contact_type": 40,
+            "contact_type": 3,
             "tenant_id": 1
         }
     },
@@ -251,7 +251,7 @@
             "contacted_at": "2025-07-16T10:00:00Z",
             "content": "打ち合わせ日程調整",
             "detail": "7/20に店舗運営スタッフ派遣の打ち合わせ予定。",
-            "contact_type": 20,
+            "contact_type": 2,
             "tenant_id": 1
         }
     },
@@ -267,7 +267,7 @@
             "contacted_at": "2025-07-17T13:00:00Z",
             "content": "メール配信済み",
             "detail": "夏季休業のお知らせを送付。",
-            "contact_type": 50,
+            "contact_type": 4,
             "tenant_id": 1
         }
     },
@@ -283,7 +283,7 @@
             "contacted_at": "2025-07-18T09:00:00Z",
             "content": "新規案件のご相談",
             "detail": "厚労省での調査業務スタッフ派遣についてご相談。",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     },
@@ -299,7 +299,7 @@
             "contacted_at": "2025-07-19T11:00:00Z",
             "content": "打ち合わせ実施",
             "detail": "県庁での事務職派遣について詳細打ち合わせ。",
-            "contact_type": 20,
+            "contact_type": 2,
             "tenant_id": 1
         }
     },
@@ -315,7 +315,7 @@
             "contacted_at": "2025-07-20T16:00:00Z",
             "content": "契約締結",
             "detail": "家電製品の品質管理スタッフ派遣契約を締結。",
-            "contact_type": 20,
+            "contact_type": 2,
             "tenant_id": 1
         }
     },
@@ -331,7 +331,7 @@
             "contacted_at": "2025-07-21T10:00:00Z",
             "content": "問い合わせ対応",
             "detail": "ITエンジニア派遣の料金体系についてお問い合わせ。",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     },
@@ -347,7 +347,7 @@
             "contacted_at": "2025-07-22T11:00:00Z",
             "content": "打ち合わせ実施",
             "detail": "子ども用品販売スタッフ派遣について詳細打ち合わせ。",
-            "contact_type": 20,
+            "contact_type": 2,
             "tenant_id": 1
         }
     },
@@ -363,7 +363,7 @@
             "contacted_at": "2025-07-23T09:30:00Z",
             "content": "メール配信済み",
             "detail": "新サービス「技術者専門派遣」のご案内を送付。",
-            "contact_type": 50,
+            "contact_type": 4,
             "tenant_id": 1
         }
     },
@@ -379,7 +379,7 @@
             "contacted_at": "2025-07-24T14:00:00Z",
             "content": "クレーム対応",
             "detail": "店舗スタッフの接客対応についてご指摘をいただき改善対応。",
-            "contact_type": 40,
+            "contact_type": 3,
             "tenant_id": 1
         }
     },
@@ -395,7 +395,7 @@
             "contacted_at": "2025-07-25T15:00:00Z",
             "content": "新規案件のご相談",
             "detail": "家電量販店での販売スタッフ派遣についてご相談。",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     },
@@ -411,7 +411,7 @@
             "contacted_at": "2025-07-26T10:00:00Z",
             "content": "打ち合わせ日程調整",
             "detail": "7/30に家電販売スタッフ派遣の打ち合わせ予定。",
-            "contact_type": 20,
+            "contact_type": 2,
             "tenant_id": 1
         }
     },
@@ -427,7 +427,7 @@
             "contacted_at": "2025-07-27T13:00:00Z",
             "content": "問い合わせ対応",
             "detail": "ホテル業界での接客スタッフ派遣についてお問い合わせ。",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     },
@@ -443,7 +443,7 @@
             "contacted_at": "2025-07-28T09:00:00Z",
             "content": "契約更新手続き",
             "detail": "自動車部品製造ラインでの派遣契約更新手続きを実施。",
-            "contact_type": 20,
+            "contact_type": 2,
             "tenant_id": 1
         }
     },
@@ -459,7 +459,7 @@
             "contacted_at": "2025-07-29T11:00:00Z",
             "content": "メール配信済み",
             "detail": "派遣スタッフの健康診断実施のお知らせを送付。",
-            "contact_type": 50,
+            "contact_type": 4,
             "tenant_id": 1
         }
     },
@@ -475,7 +475,7 @@
             "contacted_at": "2025-07-30T16:00:00Z",
             "content": "打ち合わせ実施",
             "detail": "ゲーム開発プロジェクトでの追加人材派遣について打ち合わせ。",
-            "contact_type": 20,
+            "contact_type": 2,
             "tenant_id": 1
         }
     }

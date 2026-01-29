@@ -2,8 +2,8 @@ from django.test import TestCase, Client as TestClient
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from apps.client.models import Client, ClientUser
+from apps.master.models import ClientContactType
 from apps.system.notifications.models import Notification
-from apps.system.settings.models import Dropdowns
 
 User = get_user_model()
 
@@ -13,8 +13,8 @@ class ClientMailTest(TestCase):
         self.user = User.objects.create_superuser(username='admin', password='password', email='admin@example.com')
         self.client.login(username='admin', password='password')
 
-        # 連絡種別のドロップダウンを作成（ClientUserMailForm内部で使用）
-        Dropdowns.objects.create(category='contact_type', value='50', name='メール', active=True, disp_seq=1)
+        # 連絡種別のマスタを作成（ClientUserMailForm内部で使用）
+        ClientContactType.objects.create(display_order=50, name='メール配信', is_active=True)
 
         # テスト用クライアント
         self.client_obj = Client.objects.create(name='テストクライアント')

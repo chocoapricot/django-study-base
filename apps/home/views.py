@@ -10,7 +10,7 @@ from apps.connect.models import (
     ConnectStaff, ConnectClient, MynumberRequest, ProfileRequest,
     BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
 )
-from apps.master.models import Information, UserParameter
+from apps.master.models import Information, UserParameter, StaffContactType, ClientContactType
 from apps.staff.models_inquiry import StaffInquiry
 from apps.staff.models_payroll import StaffPayroll
 from apps.profile.models import StaffProfileMynumber, StaffProfileBank
@@ -644,10 +644,14 @@ def delete_application_data(request):
             StaffContractNumber.objects.all().delete()
             StaffContractTeishokubi.objects.all().delete()
 
-            # 11. 管理者以外のアカウント
+            # 11. サンプルマスタデータの削除（システム予約データ以外）
+            StaffContactType.objects.exclude(display_order=50).delete()
+            ClientContactType.objects.exclude(display_order=50).delete()
+
+            # 12. 管理者以外のアカウント
             MyUser.objects.filter(is_superuser=False).delete()
 
-            # 12. 顔写真ファイルの削除
+            # 13. 顔写真ファイルの削除
             import shutil
             from django.conf import settings
             staff_photos_dir = os.path.join(settings.MEDIA_ROOT, 'staff_files')
@@ -662,7 +666,7 @@ def delete_application_data(request):
                     except Exception as e:
                         print(f'Failed to delete {file_path}. Reason: {e}')
 
-            # 13. 会社印ファイルの削除
+            # 14. 会社印ファイルの削除
             company_seals_dir = os.path.join(settings.MEDIA_ROOT, 'company_seals')
             if os.path.exists(company_seals_dir):
                 for filename in os.listdir(company_seals_dir):
@@ -675,7 +679,7 @@ def delete_application_data(request):
                     except Exception as e:
                         print(f'Failed to delete {file_path}. Reason: {e}')
 
-            # 14. その他のアップロードファイルの削除
+            # 15. その他のアップロードファイルの削除
             # mediaルート内の全ファイルを削除（ただし、.gitkeepなどの隠しファイルは残す）
             if os.path.exists(settings.MEDIA_ROOT):
                 for root, dirs, files in os.walk(settings.MEDIA_ROOT):

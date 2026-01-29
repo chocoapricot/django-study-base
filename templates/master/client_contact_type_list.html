@@ -61,9 +61,11 @@
                             <a href="{% url 'master:client_contact_type_update' item.pk %}" class="btn btn-dark btn-sm" title="編集">
                                 <i class="bi bi-pencil"></i>
                             </a>
+                            {% if item.display_order != 50 %}
                             <a href="{% url 'master:client_contact_type_delete' item.pk %}" class="btn btn-dark btn-sm" title="削除">
                                 <i class="bi bi-x"></i>
                             </a>
+                            {% endif %}
                         </td>
                     </tr>
                     {% empty %}

@@ -11,7 +11,7 @@
             "contact_date": "2026-01-10",
             "content": "定期フォロー連絡",
             "detail": "最近の稼働状況についてヒアリングを行う",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     },
@@ -27,7 +27,7 @@
             "contact_date": "2026-02-11",
             "content": "契約更新の確認",
             "detail": "次回の契約更新意思について確認する",
-            "contact_type": 20,
+            "contact_type": 2,
             "tenant_id": 1
         }
     },
@@ -43,7 +43,7 @@
             "contact_date": "2026-02-12",
             "content": "書類回収の督促",
             "detail": "未提出の健康診断結果について連絡",
-            "contact_type": 50,
+            "contact_type": 4,
             "tenant_id": 1
         }
     },
@@ -59,7 +59,7 @@
             "contact_date": "2026-02-13",
             "content": "就業希望のヒアリング",
             "detail": "新しい案件の提案に向けて希望を伺う",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     },
@@ -75,7 +75,7 @@
             "contact_date": "2026-02-14",
             "content": "勤怠不備の修正依頼",
             "detail": "前月の勤怠入力に誤りがあるため連絡",
-            "contact_type": 10,
+            "contact_type": 1,
             "tenant_id": 1
         }
     }

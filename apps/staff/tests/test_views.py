@@ -5,7 +5,7 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from apps.staff.models import Staff, StaffContacted, StaffBank, StaffInternational
 from apps.system.settings.models import Dropdowns, Parameter
-from apps.master.models import StaffRegistStatus
+from apps.master.models import StaffRegistStatus, StaffContactType
 from datetime import date, datetime 
 from django.utils import timezone
 from apps.connect.models import ConnectStaff, ProfileRequest
@@ -82,9 +82,9 @@ class StaffViewsTest(TestCase):
         from apps.master.models import EmploymentType
         EmploymentType.objects.create(name='正社員', display_order=1, is_fixed_term=False, is_active=True)
         EmploymentType.objects.create(name='契約社員', display_order=2, is_fixed_term=True, is_active=True)
-        # Create necessary Dropdowns for StaffContactedForm
-        Dropdowns.objects.create(category='contact_type', value='1', name='電話', active=True, disp_seq=1)
-        Dropdowns.objects.create(category='contact_type', value='2', name='メール', active=True, disp_seq=2)
+        # Create necessary StaffContactType for StaffContactedForm
+        self.contact_type_1 = StaffContactType.objects.create(name='電話', display_order=1, is_active=True)
+        self.contact_type_2 = StaffContactType.objects.create(name='メール', display_order=2, is_active=True)
 
         # テスト用スタッフデータを作成
         self.staff1 = Staff.objects.create(
@@ -355,7 +355,7 @@ class StaffViewsTest(TestCase):
         data = {
             'content': 'テスト連絡',
             'detail': 'これはテスト連絡の詳細です。',
-            'contact_type': 1,
+            'contact_type': self.contact_type_1.pk,
             'contacted_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')  # 現在の日時を設定
         }
         response = self.client.post(reverse('staff:staff_contacted_create', args=[self.staff_obj.pk]), data)
@@ -390,7 +390,7 @@ class StaffViewsTest(TestCase):
         data = {
             'content': '更新された連絡',
             'detail': '更新された連絡の詳細です。',
-            'contact_type': 2,
+            'contact_type': self.contact_type_2.pk,
             'contacted_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')  # 現在の日時を設定
         }
         response = self.client.post(reverse('staff:staff_contacted_update', args=[contacted_obj.pk]), data)

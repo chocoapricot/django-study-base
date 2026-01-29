@@ -93,21 +93,11 @@ class ClientForm(forms.ModelForm):
 from .models import ClientContacted, ClientDepartment, ClientUser, ClientContactSchedule
 
 class ClientContactScheduleForm(forms.ModelForm):
-    contact_type = forms.ChoiceField(
-        choices=[],
-        label='連絡種別',
-        widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
-        required=False,
-    )
-
     def __init__(self, *args, **kwargs):
         client = kwargs.pop('client', None)
         super().__init__(*args, **kwargs)
-        from apps.system.settings.models import Dropdowns
-        self.fields['contact_type'].choices = [
-            (opt.value, opt.name)
-            for opt in Dropdowns.objects.filter(active=True, category='contact_type').order_by('disp_seq')
-        ]
+        from apps.master.models import ClientContactType
+        self.fields['contact_type'].queryset = ClientContactType.objects.filter(is_active=True).order_by('display_order')
         
         # クライアントが指定されている場合、組織と担当者の選択肢を絞り込む
         if client:
@@ -136,6 +126,7 @@ class ClientContactScheduleForm(forms.ModelForm):
             'contact_date': forms.DateInput(attrs={'class': 'form-control form-control-sm', 'type': 'date'}),
             'department': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'user': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'contact_type': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'content': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'detail': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
@@ -274,21 +265,11 @@ class ClientUserForm(forms.ModelForm):
 
 # クライアント連絡履歴フォーム
 class ClientContactedForm(forms.ModelForm):
-    contact_type = forms.ChoiceField(
-        choices=[],
-        label='連絡種別',
-        widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
-        required=False,
-    )
-
     def __init__(self, *args, **kwargs):
         client = kwargs.pop('client', None)
         super().__init__(*args, **kwargs)
-        from apps.system.settings.models import Dropdowns
-        self.fields['contact_type'].choices = [
-            (opt.value, opt.name)
-            for opt in Dropdowns.objects.filter(active=True, category='contact_type').order_by('disp_seq')
-        ]
+        from apps.master.models import ClientContactType
+        self.fields['contact_type'].queryset = ClientContactType.objects.filter(is_active=True).order_by('display_order')
         
         # クライアントが指定されている場合、組織と担当者の選択肢を絞り込む
         if client:
@@ -317,6 +298,7 @@ class ClientContactedForm(forms.ModelForm):
             'contacted_at': forms.DateTimeInput(attrs={'class': 'form-control form-control-sm', 'type': 'datetime-local'}),
             'department': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'user': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'contact_type': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'content': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
             'detail': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }

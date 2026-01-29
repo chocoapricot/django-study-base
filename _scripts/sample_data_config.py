@@ -29,6 +29,8 @@ SAMPLE_DATA_FILES = [
     ("_sample_data/master_default_value.json", "初期値マスタデータ"),
     ("_sample_data/master_client_regist_status.json", "クライアント登録ステータスマスタデータ"),
     ("_sample_data/master_staff_regist_status.json", "スタッフ登録ステータスマスタデータ"),
+    ("_sample_data/master_staff_contact_type.json", "スタッフ連絡種別マスタデータ"),
+    ("_sample_data/master_client_contact_type.json", "クライアント連絡種別マスタデータ"),
     ("_sample_data/master_worktime_pattern.json", "就業時間パターンマスタデータ"),
     ("_sample_data/master_worktime_pattern_work.json", "就業時間パターン勤務時間マスタデータ"),
     ("_sample_data/master_worktime_pattern_break.json", "就業時間パターン休憩時間マスタデータ"),

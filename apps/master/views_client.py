@@ -168,6 +168,12 @@ def client_contact_type_update(request, pk):
 def client_contact_type_delete(request, pk):
     """クライアント連絡種別削除"""
     item = get_object_or_404(ClientContactType, pk=pk)
+
+    # 表示順50はシステム予約済みのため削除不可
+    if item.display_order == 50:
+        messages.error(request, "システム予約済みの連絡種別は削除できません。")
+        return redirect("master:client_contact_type_list")
+
     if request.method == "POST":
         item_name = item.name
         item.delete()

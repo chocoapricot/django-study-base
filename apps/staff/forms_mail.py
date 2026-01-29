@@ -163,20 +163,9 @@ class StaffMailForm(forms.Form):
     
     def _get_contact_type_value(self, contact_type_key):
         """連絡種別のキーから値を取得"""
-        # システム設定のDropdownsから連絡種別の値を取得
-        from apps.system.settings.models import Dropdowns
-        try:
-            dropdown = Dropdowns.objects.filter(
-                category='contact_type',
-                name__icontains='メール'
-            ).first()
-            if dropdown:
-                return int(dropdown.value)
-        except (ValueError, AttributeError):
-            pass
-        
-        # デフォルト値を返す
-        return 1
+        # 表示順50のスタッフ連絡種別を取得
+        from apps.master.models import StaffContactType
+        return StaffContactType.objects.filter(display_order=50).first()
 
 
 class ConnectionRequestMailForm:
@@ -248,12 +237,14 @@ class ConnectionRequestMailForm:
             mail_log.save()
 
             # 連絡履歴に保存
+            from apps.master.models import StaffContactType
+            contact_type = StaffContactType.objects.filter(display_order=50).first()
             StaffContacted.objects.create(
                 staff=self.staff,
                 contacted_at=timezone.now(),
                 content=subject,
                 detail=body,
-                contact_type=50, # メール配信
+                contact_type=contact_type,
                 created_by=self.user,
                 updated_by=self.user
             )
@@ -326,12 +317,14 @@ class DisconnectionMailForm:
             mail_log.save()
 
             # 連絡履歴に保存
+            from apps.master.models import StaffContactType
+            contact_type = StaffContactType.objects.filter(display_order=50).first()
             StaffContacted.objects.create(
                 staff=self.staff,
                 contacted_at=timezone.now(),
                 content=subject,
                 detail=body,
-                contact_type=50, # メール配信
+                contact_type=contact_type,
                 created_by=self.user,
                 updated_by=self.user
             )

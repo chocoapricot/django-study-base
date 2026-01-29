@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from apps.client.models import Client, ClientContactSchedule
-from apps.system.settings.models import Dropdowns
+from apps.master.models import ClientContactType
 
 User = get_user_model()
 
@@ -16,7 +16,7 @@ class ClientContactScheduleViewTests(TestCase):
             contact_date='2025-01-01',
             content='テスト連絡予定'
         )
-        Dropdowns.objects.create(category='contact_type', value='1', name='テスト', disp_seq=1)
+        self.contact_type = ClientContactType.objects.create(name='テスト', display_order=1, is_active=True)
         self.client.login(username='testuser', password='password')
 
     def test_contact_schedule_list_view(self):
@@ -47,7 +47,7 @@ class ClientContactScheduleViewTests(TestCase):
         response = self.client.post(url, {
             'contact_date': '2025-01-02',
             'content': '新しい連絡予定',
-            'contact_type': 1,
+            'contact_type': self.contact_type.pk,
         })
         self.assertEqual(response.status_code, 302)
         self.assertTrue(ClientContactSchedule.objects.filter(content='新しい連絡予定').exists())
@@ -67,7 +67,7 @@ class ClientContactScheduleViewTests(TestCase):
         response = self.client.post(url, {
             'contact_date': '2025-01-01',
             'content': '更新された連絡予定',
-            'contact_type': 1,
+            'contact_type': self.contact_type.pk,
         })
         self.assertEqual(response.status_code, 302)
         self.schedule.refresh_from_db()

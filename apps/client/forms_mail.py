@@ -139,20 +139,9 @@ class ClientUserMailForm(forms.Form):
     
     def _get_contact_type_value(self, contact_type_key):
         """連絡種別のキーから値を取得"""
-        # システム設定のDropdownsから連絡種別の値を取得
-        from apps.system.settings.models import Dropdowns
-        try:
-            dropdown = Dropdowns.objects.filter(
-                category='contact_type',
-                name__icontains='メール'
-            ).first()
-            if dropdown:
-                return int(dropdown.value)
-        except (ValueError, AttributeError):
-            pass
-        
-        # デフォルト値を返す
-        return 1
+        # 表示順50のクライアント連絡種別を取得
+        from apps.master.models import ClientContactType
+        return ClientContactType.objects.filter(display_order=50).first()
 
 
 class ClientMailForm(forms.Form):
@@ -283,15 +272,6 @@ class ClientMailForm(forms.Form):
     
     def _get_contact_type_value(self):
         """連絡種別のキーから値を取得"""
-        from apps.system.settings.models import Dropdowns
-        try:
-            dropdown = Dropdowns.objects.filter(
-                category='contact_type',
-                name__icontains='メール'
-            ).first()
-            if dropdown:
-                return int(dropdown.value)
-        except (ValueError, AttributeError):
-            pass
-        
-        return 1
+        # 表示順50のクライアント連絡種別を取得
+        from apps.master.models import ClientContactType
+        return ClientContactType.objects.filter(display_order=50).first()

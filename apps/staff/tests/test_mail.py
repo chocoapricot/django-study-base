@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core import mail
 from ..models import Staff, StaffContacted
-from ...master.models import StaffRegistStatus, EmploymentType
+from ...master.models import StaffRegistStatus, EmploymentType, StaffContactType
 from ...system.logs.models import MailLog
 from ..forms_mail import StaffMailForm
 from ...system.notifications.models import Notification
@@ -56,8 +56,8 @@ class StaffMailTest(TestCase):
             updated_by=self.user
         )
         
-        # 連絡種別のドロップダウンを作成（StaffMailForm内部で使用）
-        Dropdowns.objects.get_or_create(category='contact_type', value='50', defaults={'name': 'メール', 'active': True, 'disp_seq': 1})
+        # 連絡種別のマスタを作成（StaffMailForm内部で使用）
+        StaffContactType.objects.get_or_create(display_order=50, defaults={'name': 'メール配信', 'is_active': True})
 
         self.staff_email = 'tanaka@example.com'
         self.staff = Staff.objects.create(

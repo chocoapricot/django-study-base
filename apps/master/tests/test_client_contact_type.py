@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
+from django.contrib import messages
 from apps.master.models import ClientContactType
 
 User = get_user_model()
@@ -84,3 +85,66 @@ class ClientContactTypeViewTest(TestCase):
         response = self.client.post(reverse('master:client_contact_type_delete', kwargs={'pk': self.client_contact_type.pk}))
         self.assertEqual(response.status_code, 302)
         self.assertFalse(ClientContactType.objects.filter(pk=self.client_contact_type.pk).exists())
+
+    def test_create_forbidden_for_display_order_50(self):
+        """表示順50での作成が禁止されていることをテスト"""
+        self.client.login(username='testuser', password='testpassword')
+        form_data = {
+            'name': 'システム予約',
+            'display_order': 50,
+            'is_active': True,
+        }
+        response = self.client.post(reverse('master:client_contact_type_create'), data=form_data)
+        self.assertEqual(response.status_code, 200) # Form error, returns to same page
+        self.assertFormError(response.context['form'], 'display_order', '表示順50はシステム予約済みのため使用できません。')
+        self.assertFalse(ClientContactType.objects.filter(display_order=50).exists())
+
+    def test_delete_forbidden_for_display_order_50(self):
+        """表示順50のデータの削除が禁止されていることをテスト"""
+        # 初期データとして50を作成
+        reserved_type = ClientContactType.objects.create(name='メール', display_order=50)
+
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.post(reverse('master:client_contact_type_delete', kwargs={'pk': reserved_type.pk}))
+        self.assertEqual(response.status_code, 302)
+        # 削除されずに残っていることを確認
+        self.assertTrue(ClientContactType.objects.filter(pk=reserved_type.pk).exists())
+
+        # エラーメッセージの確認
+        messages_list = list(messages.get_messages(response.wsgi_request))
+        self.assertEqual(str(messages_list[0]), 'システム予約済みの連絡種別は削除できません。')
+
+    def test_update_display_order_50_forbidden(self):
+        """表示順50からの変更、および他からの50への変更が禁止されていることをテスト"""
+        # 1. 他のデータから50への変更をテスト
+        self.client.login(username='testuser', password='testpassword')
+        form_data = {
+            'name': '変更テスト',
+            'display_order': 50,
+            'is_active': True,
+        }
+        response = self.client.post(reverse('master:client_contact_type_update', kwargs={'pk': self.client_contact_type.pk}), data=form_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response.context['form'], 'display_order', '表示順50はシステム予約済みのため使用できません。')
+
+        # 2. 50のデータから他の表示順への変更をテスト
+        reserved_type = ClientContactType.objects.create(name='メール', display_order=50)
+        form_data = {
+            'name': '名前変更',
+            'display_order': 60,
+            'is_active': True,
+        }
+        response = self.client.post(reverse('master:client_contact_type_update', kwargs={'pk': reserved_type.pk}), data=form_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response.context['form'], 'display_order', 'システム予約済みの表示順（50）は変更できません。')
+
+        # 3. 50のデータで名前だけ変更は可能
+        form_data = {
+            'name': '名前変更OK',
+            'display_order': 50,
+            'is_active': True,
+        }
+        response = self.client.post(reverse('master:client_contact_type_update', kwargs={'pk': reserved_type.pk}), data=form_data)
+        self.assertEqual(response.status_code, 302)
+        reserved_type.refresh_from_db()
+        self.assertEqual(reserved_type.name, '名前変更OK')
