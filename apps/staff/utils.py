@@ -10,3 +10,17 @@ def get_staff_face_photo_style():
         return UserParameter.objects.get(pk="STAFF_FACE_PHOTO_STYLE").value
     except UserParameter.DoesNotExist:
         return "round"
+
+def delete_staff_placeholder(staff_pk):
+    """
+    スタッフのキャッシュされたプレースホルダー画像を削除する。
+    名前や性別が変更された場合、または写真がアップロードされた場合に呼び出す。
+    """
+    import os
+    from django.conf import settings
+    placeholder_path = os.path.join(settings.MEDIA_ROOT, 'staff_files', 'placeholders', f"{staff_pk}.jpg")
+    if os.path.exists(placeholder_path):
+        try:
+            os.remove(placeholder_path)
+        except Exception:
+            pass

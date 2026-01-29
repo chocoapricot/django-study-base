@@ -13,7 +13,7 @@ from .forms_mail import ConnectionRequestMailForm, DisconnectionMailForm
 
 from .models import Staff, StaffContacted, StaffContactSchedule, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact
 from .forms import StaffForm, StaffContactedForm, StaffContactScheduleForm, StaffFileForm, StaffFaceUploadForm
-from .utils import get_staff_face_photo_style
+from .utils import get_staff_face_photo_style, delete_staff_placeholder
 from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
 from apps.common.utils import fill_excel_from_template
@@ -940,6 +940,7 @@ def staff_update(request, pk):
             # 変更があったかどうかをチェック
             if form.has_changed():
                 form.save()
+                delete_staff_placeholder(staff.pk)
                 messages.success(request, f'スタッフ「{staff.name}」を更新しました。')
             else:
                 messages.info(request, '変更はありませんでした。')
@@ -963,45 +964,58 @@ def staff_delete(request, pk):
 @permission_required('staff.view_staff', raise_exception=True)
 def staff_face(request, pk):
     staff = get_object_or_404(Staff, pk=pk)
+    
+    # 1. アップロードされた画像があるか確認
     image_path = os.path.join(settings.MEDIA_ROOT, 'staff_files', str(staff.pk) + ".jpg")
-    logger.error(image_path)
-
-    # 画像ファイルが存在する場合はそのファイルを返す
-    if image_path and os.path.exists(image_path):
+    if os.path.exists(image_path):
         return FileResponse(open(image_path, 'rb'), content_type='image/jpeg')
 
-    # 画像が存在しない場合、名前を使って画像を生成
-    response = HttpResponse(content_type="image/jpeg")
+    # 2. キャッシュされたプレースホルダーがあるか確認
+    placeholder_dir = os.path.join(settings.MEDIA_ROOT, 'staff_files', 'placeholders')
+    placeholder_path = os.path.join(placeholder_dir, str(staff.pk) + ".jpg")
+    
+    if os.path.exists(placeholder_path):
+        return FileResponse(open(placeholder_path, 'rb'), content_type='image/jpeg')
+
+    # 3. 画像が存在しない場合、名前を使って画像を生成
     image = Image.new("RGB", (200, 200), (200, 200, 200))  # 背景色の指定
     if staff.sex == int(Constants.SEX.MALE):
-        image = Image.new("RGB", (200, 200), (140, 140, 240))  # 背景色の指定
+        image = Image.new("RGB", (200, 200), (140, 140, 240))  # 淡い青
     elif staff.sex == int(Constants.SEX.FEMALE):
-        image = Image.new("RGB", (200, 200), (240, 140, 140))  # 背景色の指定
-
+        image = Image.new("RGB", (200, 200), (240, 140, 140))  # 淡い赤
 
     draw = ImageDraw.Draw(image)
 
     # 日本語フォントの設定
     font_path = os.path.join(settings.BASE_DIR, 'statics/fonts/ipagp.ttf')
     try:
-        font = ImageFont.truetype(font_path,80)#font-size
+        font = ImageFont.truetype(font_path, 80)
     except IOError:
-        logger.error(font_path)
+        logger.error(f"Font not found: {font_path}")
+        # フォントがない場合は標準フォントを使用
+        font = ImageFont.load_default()
 
     # 名前を中央に描画
-    # 名・姓が両方とも存在する場合のみイニシャルを生成
     if staff.name_last and staff.name_first:
         initials = f"{staff.name_last[0]}{staff.name_first[0]}"
     else:
-        initials = ""  # 片方がない場合は空欄を返すなど
-    # `textbbox` を使ってテキストのバウンディングボックスを取得
+        initials = staff.initials  # モデルのプロパティを使用
+
     bbox = draw.textbbox((0, 0), initials, font=font)
     text_width = bbox[2] - bbox[0]
     text_height = bbox[3] - bbox[1]
-    position = ((200 - text_width) // 2, (200 - text_height-20) // 2)
+    position = ((200 - text_width) // 2, (200 - text_height - 20) // 2)
     draw.text(position, initials, fill="white", font=font)
 
+    # プレースホルダーをキャッシュに保存
+    try:
+        os.makedirs(placeholder_dir, exist_ok=True)
+        image.save(placeholder_path, "JPEG")
+    except Exception as e:
+        logger.error(f"Failed to save placeholder: {e}")
+
     # 画像をHTTPレスポンスとして返す
+    response = HttpResponse(content_type="image/jpeg")
     image.save(response, "JPEG")
     return response
 
@@ -1398,6 +1412,7 @@ def staff_face_upload(request, pk):
                     
                     # 保存
                     img.save(image_path, 'JPEG', quality=95)
+                    delete_staff_placeholder(staff.pk)
                 AppLog.objects.create(
                     user=request.user,
                     model_name='Staff',
@@ -1426,6 +1441,7 @@ def staff_face_delete(request, pk):
         if os.path.exists(image_path):
             try:
                 os.remove(image_path)
+                delete_staff_placeholder(staff.pk)
                 AppLog.objects.create(
                     user=request.user,
                     model_name='Staff',

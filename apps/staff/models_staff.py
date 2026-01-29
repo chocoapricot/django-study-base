@@ -184,6 +184,27 @@ class Staff(MyTenantModel):
         image_path = os.path.join(settings.MEDIA_ROOT, 'staff_files', f'{self.pk}.jpg')
         return os.path.exists(image_path)
 
+    @property
+    def initials(self):
+        """名前のイニシャルを取得"""
+        if self.name_last and self.name_first:
+            return f"{self.name_last[0]}{self.name_first[0]}"
+        elif self.name_last:
+            return self.name_last[:2]
+        elif self.name_first:
+            return self.name_first[:2]
+        return ""
+
+    @property
+    def avatar_color(self):
+        """性別に応じたアバターの背景色を取得"""
+        from apps.common.constants import Constants
+        if self.sex == int(Constants.SEX.MALE):
+            return "#8C8CF0"  # 淡い青
+        elif self.sex == int(Constants.SEX.FEMALE):
+            return "#F08C8C"  # 淡い赤
+        return "#C8C8C8"      # グレー
+
 def staff_file_upload_path(instance, filename):
     """スタッフファイルのアップロードパスを生成"""
     # ファイル拡張子を取得

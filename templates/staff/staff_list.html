@@ -220,7 +220,14 @@
                     <td>
                         <div class="d-flex align-items-center">
                             {% with photo_class=staff_face_photo_style|default:'round' %}
-                                <img src="{% url 'staff:staff_face' staff.pk %}" class="img-fluid {% if staff.has_face_photo %}{% if photo_class == 'round' %}rounded-circle{% elif photo_class == 'rounded-square' %}rounded{% elif photo_class == 'square' %}rounded-0{% endif %}{% else %}rounded-circle{% endif %}" width="40" height="40" style="object-fit: cover;width:40px;height:40px">
+                                {% if staff.has_face_photo %}
+                                    <img src="{% url 'staff:staff_face' staff.pk %}" class="img-fluid {% if photo_class == 'round' %}rounded-circle{% elif photo_class == 'rounded-square' %}rounded{% elif photo_class == 'square' %}rounded-0{% endif %}" width="40" height="40" style="object-fit: cover;width:40px;height:40px">
+                                {% else %}
+                                    <div class="d-flex align-items-center justify-content-center text-white rounded-circle" 
+                                         style="width:40px;height:40px;background-color:{{ staff.avatar_color }};font-size:14px;">
+                                        {{ staff.initials }}
+                                    </div>
+                                {% endif %}
                             {% endwith %}
                         </div>
                     </td>
