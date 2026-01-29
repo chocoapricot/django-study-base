@@ -16,5 +16,3 @@ requests==2.32.5
 markdown
 gunicorn==24.1.1
 whitenoise==6.11.0
-dj-database-url==2.1.0
-psycopg2-binary==2.9.9

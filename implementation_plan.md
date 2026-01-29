@@ -5,12 +5,13 @@ RenderでDjangoアプリを公開するために必要な設定を行いまし�
 ## 実施した変更
 
 1.  **`requirements.txt` の更新**
-    *   `dj-database-url`: `DATABASE_URL` 環境変数をDjangoのデータベース設定に変換するために使用。
-    *   `psycopg2-binary`: PostgreSQLに接続するためのライブラリ。
+    *   `gunicorn`: WSGIサーバ。
+    *   `whitenoise`: 静的ファイル配信ライブラリ。
+    *   (PostgreSQL関連の `dj-database-url` や `psycopg2-binary` はSQLite運用の目的で削除済み)
 2.  **`config/settings/product.py` の修正**
     *   環境変数から `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS` を読み込むように設定。
     *   `WhiteNoise` ミドルウェアを追加し、静的ファイルを配信できるように設定。
-    *   Renderの Disk 機能を使用して SQLite データベース (`/data/db.sqlite3`) を永続化する設定を追加。
+    *   Renderの Disk 機能を使用して SQLite データベース (`/data/db.sqlite3`) を永続化する設定に限定。
     *   HTTPSリダイレクトやクッキーのセキュア設定を追加。
 3.  **`build.sh` の作成**
     *   Renderのビルド時に実行されるスクリプトです。依存関係のインストール、静的ファイルの収集、マイグレーションを行います。

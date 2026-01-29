@@ -1,5 +1,4 @@
 import os
-import dj_database_url
 from .settings import *
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -15,39 +14,30 @@ if not ALLOWED_HOSTS or ALLOWED_HOSTS == ['']:
     if RENDER_EXTERNAL_HOSTNAME:
         ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
     else:
-        ALLOWED_HOSTS = ['*'] # フォールバック（本来は制限すべき）
+        ALLOWED_HOSTS = ['*'] # フォールバック
 
 # WhiteNoise settings for static files
-# MiddlewareのSecurityMiddlewareの後ろに挿入
 if 'django.middleware.security.SecurityMiddleware' in MIDDLEWARE:
     index = MIDDLEWARE.index('django.middleware.security.SecurityMiddleware')
     MIDDLEWARE.insert(index + 1, 'whitenoise.middleware.WhiteNoiseMiddleware')
 else:
     MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
 
-# Database configuration for Render (PostgreSQL or SQLite)
-if os.environ.get('DATABASE_URL'):
-    DATABASES['default'] = dj_database_url.config(
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
+# Database configuration (SQLite with Render Disk persistence)
+# RenderのDiskを使用する場合は /data/db.sqlite3 を使用
+if os.path.exists('/data'):
+    db_path = '/data/db.sqlite3'
 else:
-    # デフォルトでSQLiteを使用（お試し用）
-    # RenderのDiskを使用する場合は /data/db.sqlite3 を使用
-    if os.path.exists('/data'):
-        db_path = '/data/db.sqlite3'
-    else:
-        db_path = os.path.join(BASE_DIR, 'db.sqlite3')
-        
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': db_path,
-        }
+    db_path = os.path.join(BASE_DIR, 'db.sqlite3')
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': db_path,
     }
+}
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
