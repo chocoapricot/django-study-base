@@ -14,11 +14,13 @@ from .models import (
     EmploymentType,
     StaffRegistStatus,
     StaffContactType,
+    StaffTag,
 )
 from .forms import (
     EmploymentTypeForm,
     StaffRegistStatusForm,
     StaffContactTypeForm,
+    StaffTagForm,
     QualificationForm,
     QualificationCategoryForm,
     SkillForm,
@@ -967,5 +969,96 @@ def staff_contact_type_change_history_list(request):
             "page_title": "スタッフ連絡種別変更履歴",
             "back_url_name": "master:staff_contact_type_list",
             "model_name": "StaffContactType",
+        },
+    )
+
+# スタッフタグ管理ビュー
+@login_required
+@permission_required("master.view_stafftag", raise_exception=True)
+def staff_tag_list(request):
+    """スタッフタグ一覧"""
+    search_query = request.GET.get("search", "")
+    items = StaffTag.objects.all()
+    if search_query:
+        items = items.filter(name__icontains=search_query)
+    items = items.order_by("display_order")
+    paginator = Paginator(items, 20)
+    page = request.GET.get("page")
+    items_page = paginator.get_page(page)
+    change_logs = AppLog.objects.filter(model_name="StaffTag", action__in=["create", "update", "delete"]).order_by("-timestamp")[:5]
+    change_logs_count = AppLog.objects.filter(model_name="StaffTag", action__in=["create", "update", "delete"]).count()
+    context = {
+        "items": items_page,
+        "search_query": search_query,
+        "change_logs": change_logs,
+        "change_logs_count": change_logs_count,
+        "history_url_name": "master:staff_tag_change_history_list",
+    }
+    return render(request, "master/staff_tag_list.html", context)
+
+
+@login_required
+@permission_required("master.add_stafftag", raise_exception=True)
+def staff_tag_create(request):
+    """スタッフタグ作成"""
+    if request.method == "POST":
+        form = StaffTagForm(request.POST)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"スタッフタグ「{item.name}」を作成しました。")
+            return redirect("master:staff_tag_list")
+    else:
+        form = StaffTagForm()
+    context = {"form": form, "title": "スタッフタグ作成"}
+    return render(request, "master/staff_tag_form.html", context)
+
+
+@login_required
+@permission_required("master.change_stafftag", raise_exception=True)
+def staff_tag_update(request, pk):
+    """スタッフタグ編集"""
+    item = get_object_or_404(StaffTag, pk=pk)
+    if request.method == "POST":
+        form = StaffTagForm(request.POST, instance=item)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"スタッフタグ「{item.name}」を更新しました。")
+            return redirect("master:staff_tag_list")
+    else:
+        form = StaffTagForm(instance=item)
+    context = {"form": form, "item": item, "title": "スタッフタグ編集"}
+    return render(request, "master/staff_tag_form.html", context)
+
+
+@login_required
+@permission_required("master.delete_stafftag", raise_exception=True)
+def staff_tag_delete(request, pk):
+    """スタッフタグ削除"""
+    item = get_object_or_404(StaffTag, pk=pk)
+    if request.method == "POST":
+        item_name = item.name
+        item.delete()
+        messages.success(request, f"スタッフタグ「{item_name}」を削除しました。")
+        return redirect("master:staff_tag_list")
+    context = {"item": item, "title": "スタッフタグ削除"}
+    return render(request, "master/staff_tag_delete.html", context)
+
+
+@login_required
+@permission_required("master.view_stafftag", raise_exception=True)
+def staff_tag_change_history_list(request):
+    """スタッフタグ変更履歴一覧"""
+    logs = AppLog.objects.filter(model_name="StaffTag", action__in=["create", "update", "delete"]).order_by("-timestamp")
+    paginator = Paginator(logs, 20)
+    page = request.GET.get("page")
+    logs_page = paginator.get_page(page)
+    return render(
+        request,
+        "common/common_change_history_list.html",
+        {
+            "change_logs": logs_page,
+            "page_title": "スタッフタグ変更履歴",
+            "back_url_name": "master:staff_tag_list",
+            "model_name": "StaffTag",
         },
     )

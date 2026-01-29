@@ -69,6 +69,14 @@ MASTER_CONFIGS = [
         "permission": "master.view_staffcontacttype",
     },
     {
+        "category": "スタッフ",
+        "name": "スタッフタグ管理",
+        "description": "スタッフに付与するタグを管理",
+        "model": "master.StaffTag",
+        "url_name": "master:staff_tag_list",
+        "permission": "master.view_stafftag",
+    },
+    {
         "category": "クライアント",
         "name": "クライアント登録状況管理",
         "description": "クライアントの登録状況を管理",
@@ -83,6 +91,14 @@ MASTER_CONFIGS = [
         "model": "master.ClientContactType",
         "url_name": "master:client_contact_type_list",
         "permission": "master.view_clientcontacttype",
+    },
+    {
+        "category": "クライアント",
+        "name": "クライアントタグ管理",
+        "description": "クライアントに付与するタグを管理",
+        "model": "master.ClientTag",
+        "url_name": "master:client_tag_list",
+        "permission": "master.view_clienttag",
     },
     {
         "category": "契約",

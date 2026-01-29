@@ -145,6 +145,13 @@ urlpatterns = [
     path('staff-contact-type/<int:pk>/delete/', views.staff_contact_type_delete, name='staff_contact_type_delete'),
     path('staff-contact-type/history/', views.staff_contact_type_change_history_list, name='staff_contact_type_change_history_list'),
 
+    # スタッフタグ管理
+    path('staff-tag/', views.staff_tag_list, name='staff_tag_list'),
+    path('staff-tag/create/', views.staff_tag_create, name='staff_tag_create'),
+    path('staff-tag/<int:pk>/update/', views.staff_tag_update, name='staff_tag_update'),
+    path('staff-tag/<int:pk>/delete/', views.staff_tag_delete, name='staff_tag_delete'),
+    path('staff-tag/history/', views.staff_tag_change_history_list, name='staff_tag_change_history_list'),
+
     # クライアント登録状況管理
     path('client-regist-status/', views.client_regist_status_list, name='client_regist_status_list'),
     path('client-regist-status/create/', views.client_regist_status_create, name='client_regist_status_create'),
@@ -158,6 +165,13 @@ urlpatterns = [
     path('client-contact-type/<int:pk>/update/', views.client_contact_type_update, name='client_contact_type_update'),
     path('client-contact-type/<int:pk>/delete/', views.client_contact_type_delete, name='client_contact_type_delete'),
     path('client-contact-type/history/', views.client_contact_type_change_history_list, name='client_contact_type_change_history_list'),
+
+    # クライアントタグ管理
+    path('client-tag/', views.client_tag_list, name='client_tag_list'),
+    path('client-tag/create/', views.client_tag_create, name='client_tag_create'),
+    path('client-tag/<int:pk>/update/', views.client_tag_update, name='client_tag_update'),
+    path('client-tag/<int:pk>/delete/', views.client_tag_delete, name='client_tag_delete'),
+    path('client-tag/history/', views.client_tag_change_history_list, name='client_tag_change_history_list'),
 
     # 汎用文言テンプレート管理
     path('phrase-template/', views.phrase_template_list, name='phrase_template_list'),
