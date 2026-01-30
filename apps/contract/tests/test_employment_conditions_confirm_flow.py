@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from apps.common.middleware import set_current_tenant_id
 from apps.staff.models import Staff
 from apps.client.models import Client
 from apps.company.models import Company
@@ -25,12 +26,14 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
     
     def setUp(self):
         """テストデータのセットアップ"""
+        self.company = self._create_company()
+        set_current_tenant_id(self.company.id)
+
         # Dropdownsデータを作成
         self._create_dropdowns()
         
         # 基本データを作成
         self.user = self._create_user()
-        self.company = self._create_company()
         self.staff = self._create_staff()
         self.client_company = self._create_client()
         self.connect_staff = self._create_connect_staff()
@@ -74,6 +77,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
         """テストユーザーを作成"""
         from django.contrib.auth.models import Permission
         user = User.objects.create_user(
+            tenant_id=self.company.id,
             username='teststaff@example.com',
             email='teststaff@example.com',
             password='password',
@@ -102,6 +106,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
     def _create_staff(self):
         """スタッフを作成"""
         return Staff.objects.create(
+            tenant_id=self.company.id,
             email='teststaff@example.com',
             name_last='テスト',
             name_first='太郎',
@@ -110,6 +115,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
     def _create_client(self):
         """クライアントを作成"""
         return Client.objects.create(
+            tenant_id=self.company.id,
             name='クライアント株式会社',
             corporate_number='9876543210987',
         )
@@ -125,6 +131,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
     def _create_staff_agreement(self):
         """スタッフ同意文言を作成"""
         return StaffAgreement.objects.create(
+            tenant_id=self.company.id,
             name='テスト同意文言',
             agreement_text='これはテスト用の同意文言です。',
             corporation_number=self.company.corporate_number,
@@ -135,6 +142,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
         domain = Constants.DOMAIN.STAFF if domain_type == 'staff' else Constants.DOMAIN.CLIENT
         name = 'スタッフ向け雇用契約' if domain_type == 'staff' else 'クライアント向け派遣契約'
         return ContractPattern.objects.create(
+            tenant_id=self.company.id,
             name=name,
             domain=domain,
             is_active=True
@@ -143,6 +151,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
     def _create_job_category(self):
         """職種を作成"""
         return JobCategory.objects.create(
+            tenant_id=self.company.id,
             name='システム開発',
             is_active=True
         )
@@ -150,6 +159,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
     def _create_staff_contract(self):
         """スタッフ契約を作成"""
         return StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             corporate_number=self.company.corporate_number,
             contract_name='テストスタッフ契約',
@@ -165,6 +175,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
     def _create_client_contract(self):
         """クライアント契約を作成"""
         contract = ClientContract.objects.create(
+            tenant_id=self.company.id,
             client=self.client_company,
             contract_name='テストクライアント契約',
             client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
@@ -179,6 +190,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
         
         # 派遣情報を作成
         ClientContractHaken.objects.create(
+            tenant_id=self.company.id,
             client_contract=contract,
             created_by=self.user,
             updated_by=self.user,
@@ -189,6 +201,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
     def _create_contract_assignment(self):
         """契約アサインを作成"""
         return ContractAssignment.objects.create(
+            tenant_id=self.company.id,
             client_contract=self.client_contract,
             staff_contract=self.staff_contract,
             created_by=self.user,
@@ -198,6 +211,9 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
     def test_staff_contract_issue_flow(self):
         """スタッフ契約書発行フローのテスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # テスト用に契約ステータスを承認済みに設定
         self.staff_contract.contract_status = Constants.CONTRACT_STATUS.APPROVED
@@ -235,6 +251,9 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
     def test_employment_conditions_issue_flow(self):
         """就業条件明示書発行フローのテスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 1. スタッフ契約を発行済み状態にする
         self.staff_contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
@@ -271,6 +290,9 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
     def test_staff_contract_confirm_list_integration(self):
         """スタッフ契約確認一覧の統合テスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 1. スタッフ契約を発行済み状態にする
         self.staff_contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
@@ -311,6 +333,9 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
     def test_staff_contract_confirm_action(self):
         """スタッフ契約書確認アクションのテスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 1. スタッフ契約を発行済み状態にする
         self.staff_contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
@@ -343,6 +368,9 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
     def test_employment_conditions_confirm_action(self):
         """就業条件明示書確認アクションのテスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 1. 就業条件明示書の発行履歴を作成
         haken_print = ContractAssignmentHakenPrint.objects.create(
@@ -369,6 +397,9 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
     def test_staff_contract_approval_revoke_flow(self):
         """スタッフ契約承認解除フローのテスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 1. スタッフ契約を発行済み状態にし、関連データを設定
         self.staff_contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
@@ -410,6 +441,9 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
     def test_employment_conditions_reissue_flow(self):
         """就業条件明示書再発行フローのテスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 1. スタッフ契約を発行済み状態にする
         self.staff_contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
@@ -447,6 +481,9 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
     def test_corporate_number_filtering(self):
         """法人番号による絞り込みのテスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 1. 別の会社のスタッフ契約を作成
         other_company = Company.objects.create(
@@ -455,6 +492,7 @@ class EmploymentConditionsConfirmFlowTest(TestCase):
         )
         
         other_staff_contract = StaffContract.objects.create(
+            tenant_id=self.company.id,  # 同じテナントだが別の法人番号をテスト
             staff=self.staff,
             corporate_number=other_company.corporate_number,  # 別の法人番号
             contract_name='別会社のスタッフ契約',
