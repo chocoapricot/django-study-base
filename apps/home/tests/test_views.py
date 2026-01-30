@@ -5,6 +5,7 @@ from apps.accounts.models import MyUser
 from apps.staff.models import Staff, StaffContactSchedule
 from apps.connect.models import ConnectStaff, MynumberRequest
 from apps.profile.models import StaffProfile, StaffProfileMynumber
+from apps.company.models import Company
 from apps.common.constants import Constants
 from django.utils import timezone
 from datetime import timedelta
@@ -211,30 +212,36 @@ class HomeViewTest(TestCase):
 class HomeScheduleSummaryTest(TestCase):
     def setUp(self):
         self.client_http = Client()
+        # Create company for tenant context
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
         self.user = MyUser.objects.create_user(
             username='testuser@example.com',
             email='testuser@example.com',
-            password='password'
+            password='password',
+            tenant_id=self.company.tenant_id
         )
         self.client_http.login(email='testuser@example.com', password='password')
+        session = self.client_http.session
+        session['current_tenant_id'] = self.company.tenant_id
+        session.save()
         self.home_url = reverse('home:home')
 
         # Create test data
         today = timezone.localdate()
         yesterday = today - timedelta(days=1)
 
-        staff = Staff.objects.create(name_last='Staff', name_first='Test')
-        client_obj = ClientModel.objects.create(name='Client Test')
+        staff = Staff.objects.create(name_last='Staff', name_first='Test', tenant_id=self.company.tenant_id)
+        client_obj = ClientModel.objects.create(name='Client Test', tenant_id=self.company.tenant_id)
 
         # Create schedules
-        StaffContactSchedule.objects.create(staff=staff, contact_date=today, content='today staff')
-        StaffContactSchedule.objects.create(staff=staff, contact_date=yesterday, content='yesterday staff 1')
-        StaffContactSchedule.objects.create(staff=staff, contact_date=yesterday, content='yesterday staff 2')
+        StaffContactSchedule.objects.create(staff=staff, contact_date=today, content='today staff', tenant_id=self.company.tenant_id)
+        StaffContactSchedule.objects.create(staff=staff, contact_date=yesterday, content='yesterday staff 1', tenant_id=self.company.tenant_id)
+        StaffContactSchedule.objects.create(staff=staff, contact_date=yesterday, content='yesterday staff 2', tenant_id=self.company.tenant_id)
 
-        ClientContactSchedule.objects.create(client=client_obj, contact_date=today, content='today client 1')
-        ClientContactSchedule.objects.create(client=client_obj, contact_date=today, content='today client 2')
-        ClientContactSchedule.objects.create(client=client_obj, contact_date=today, content='today client 3')
-        ClientContactSchedule.objects.create(client=client_obj, contact_date=yesterday, content='yesterday client')
+        ClientContactSchedule.objects.create(client=client_obj, contact_date=today, content='today client 1', tenant_id=self.company.tenant_id)
+        ClientContactSchedule.objects.create(client=client_obj, contact_date=today, content='today client 2', tenant_id=self.company.tenant_id)
+        ClientContactSchedule.objects.create(client=client_obj, contact_date=today, content='today client 3', tenant_id=self.company.tenant_id)
+        ClientContactSchedule.objects.create(client=client_obj, contact_date=yesterday, content='yesterday client', tenant_id=self.company.tenant_id)
 
     def test_schedule_summary_no_permission(self):
         """
