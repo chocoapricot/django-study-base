@@ -748,6 +748,43 @@ function loadClientModalContent(event, page, clearSearch = false, modalType = 's
 }
 
 // モーダル内のイベント処理は共通JSで管理
+document.addEventListener('DOMContentLoaded', function() {
+    const selectModal = document.getElementById('selectModal');
+    if (selectModal) {
+        const modalBody = selectModal.querySelector('.modal-body');
+        if (modalBody) {
+            modalBody.addEventListener('click', function(e) {
+                const target = e.target.closest('.page-link');
+                if (target && target.href && target.href !== '#') {
+                    e.preventDefault();
+                    const url = new URL(target.href, window.location.origin);
+                    const page = url.searchParams.get('page');
+                    if (page) {
+                        loadClientModalContent(null, page, false, 'selectModal');
+                    }
+                }
+            });
+        }
+    }
+
+    const masterModal = document.getElementById('masterModal');
+    if (masterModal) {
+        const modalBody = masterModal.querySelector('.modal-body');
+        if (modalBody) {
+            modalBody.addEventListener('click', function(e) {
+                const target = e.target.closest('.page-link');
+                if (target && target.href && target.href !== '#') {
+                    e.preventDefault();
+                    const url = new URL(target.href, window.location.origin);
+                    const page = url.searchParams.get('page');
+                    if (page) {
+                        loadMasterModalContent(null, page, false);
+                    }
+                }
+            });
+        }
+    }
+});
 
 function clearClient() {
     document.getElementById('{{ form.client.id_for_label }}').value = '';
