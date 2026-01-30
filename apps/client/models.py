@@ -53,6 +53,12 @@ class Client(MyTenantModel):
         db_table = 'apps_client'  # 既存のテーブル名を指定
         verbose_name = 'クライアント'
 
+    def save(self, *args, **kwargs):
+        if not self.tenant_id:
+            from apps.common.middleware import get_current_tenant_id
+            self.tenant_id = get_current_tenant_id()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
@@ -161,6 +167,12 @@ class ClientDepartment(MyTenantModel):
         
         return True
 
+    def save(self, *args, **kwargs):
+        if not self.tenant_id:
+            from apps.common.middleware import get_current_tenant_id
+            self.tenant_id = get_current_tenant_id()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         period_str = ""
         if self.valid_from or self.valid_to:
@@ -196,6 +208,9 @@ class ClientUser(MyTenantModel):
         return f"{self.name_last} {self.name_first}"
 
     def save(self, *args, **kwargs):
+        if not self.tenant_id:
+            from apps.common.middleware import get_current_tenant_id
+            self.tenant_id = get_current_tenant_id()
         if self.email:
             self.email = self.email.lower()
         super().save(*args, **kwargs)
@@ -233,6 +248,12 @@ class ClientContacted(MyTenantModel):
         verbose_name_plural = 'クライアント連絡履歴'
         ordering = ['-contacted_at']
 
+    def save(self, *args, **kwargs):
+        if not self.tenant_id:
+            from apps.common.middleware import get_current_tenant_id
+            self.tenant_id = get_current_tenant_id()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.client} {self.contacted_at:%Y-%m-%d %H:%M} {self.content[:20]}"
 
@@ -261,6 +282,12 @@ class ClientContactSchedule(MyTenantModel):
         verbose_name = 'クライアント連絡予定'
         verbose_name_plural = 'クライアント連絡予定'
         ordering = ['-contact_date']
+
+    def save(self, *args, **kwargs):
+        if not self.tenant_id:
+            from apps.common.middleware import get_current_tenant_id
+            self.tenant_id = get_current_tenant_id()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.client} {self.contact_date:%Y-%m-%d} {self.content[:20]}"
@@ -312,6 +339,9 @@ class ClientFile(MyTenantModel):
         ]
     
     def save(self, *args, **kwargs):
+        if not self.tenant_id:
+            from apps.common.middleware import get_current_tenant_id
+            self.tenant_id = get_current_tenant_id()
         # 元ファイル名とファイルサイズを自動設定
         if self.file:
             self.original_filename = self.file.name

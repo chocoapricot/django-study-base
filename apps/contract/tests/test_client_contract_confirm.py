@@ -31,20 +31,22 @@ class ClientContractConfirmTest(TestCase):
         )
         
         self.user_model = get_user_model()
-        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123', tenant_id=1)
 
         # クライアントユーザーの作成
         self.user = self.user_model.objects.create_user(
             username='clientuser',
             email='clientuser@example.com',
-            password='password'
+            password='password',
+            tenant_id=1
         )
-        self.client_model_instance = Client.objects.create(name='Test Client', corporate_number='9876543210987')
+        self.client_model_instance = Client.objects.create(name='Test Client', corporate_number='9876543210987', tenant_id=1)
         self.client_user = ClientUser.objects.create(
             client=self.client_model_instance,
             name_last='user',
             name_first='client',
-            email=self.user.email
+            email=self.user.email,
+            tenant_id=1
         )
         ConnectClient.objects.create(
             corporate_number=self.company.corporate_number,
@@ -101,6 +103,10 @@ class ClientContractConfirmTest(TestCase):
         )
 
         self.client = TestClient()
+        # セッションにテナントIDを設定
+        session = self.client.session
+        session['current_tenant_id'] = 1
+        session.save()
 
     def test_client_contract_confirm_list_view(self):
         self.client.login(username='clientuser', password='password')

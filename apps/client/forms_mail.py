@@ -103,7 +103,6 @@ class ClientUserMailForm(forms.Form):
             if self.client_user and self.client_user.client:
                 ClientContacted.objects.create(
                     client=self.client_user.client,
-                    tenant_id=self.client_user.client.tenant_id,
                     department=self.client_user.department,
                     user=self.client_user,
                     contacted_at=timezone.now(),
@@ -236,7 +235,6 @@ class ClientMailForm(forms.Form):
             # 連絡履歴に保存
             ClientContacted.objects.create(
                 client=self.client,
-                tenant_id=self.client.tenant_id,
                 department=to_user.department,
                 user=to_user,
                 contacted_at=timezone.now(),

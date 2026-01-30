@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from apps.staff.models import Staff
 from apps.client.models import Client as TestClient
+from apps.company.models import Company
 from ..models import StaffContractTeishokubi
 import datetime
 
@@ -16,10 +17,12 @@ class StaffContractTeishokubiListViewTest(TestCase):
         from django.contrib.auth.models import Permission
         from django.contrib.contenttypes.models import ContentType
 
+        self.company = Company.objects.create(name='Test Company', tenant_id=1)
         self.user = User.objects.create_user(
             username='testuser',
             email='test@example.com',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=1
         )
 
         # The view only requires login, no special permissions needed.
@@ -29,11 +32,13 @@ class StaffContractTeishokubiListViewTest(TestCase):
             name_last='山田',
             name_first='太郎',
             email='taro.yamada@example.com',
+            tenant_id=1
         )
         self.client1 = TestClient.objects.create(
             name='株式会社テスト',
             corporate_number='1234567890123',
             name_furigana='カブシキガイシャテスト',
+            tenant_id=1
         )
         self.teishokubi1 = StaffContractTeishokubi.objects.create(
             staff_email=self.staff1.email,
@@ -41,17 +46,20 @@ class StaffContractTeishokubiListViewTest(TestCase):
             organization_name='本社',
             dispatch_start_date=datetime.date(2024, 1, 1),
             conflict_date=datetime.date(2027, 1, 1),
+            tenant_id=1
         )
 
         self.staff2 = Staff.objects.create(
             name_last='鈴木',
             name_first='花子',
             email='hanako.suzuki@example.com',
+            tenant_id=1
         )
         self.client2 = TestClient.objects.create(
             name='鈴木商事株式会社',
             corporate_number='9876543210987',
             name_furigana='スズキショウジカブシキガイシャ',
+            tenant_id=1
         )
         self.teishokubi2 = StaffContractTeishokubi.objects.create(
             staff_email=self.staff2.email,
@@ -59,10 +67,16 @@ class StaffContractTeishokubiListViewTest(TestCase):
             organization_name='支社',
             dispatch_start_date=datetime.date(2023, 10, 1),
             conflict_date=datetime.date(2026, 10, 1),
+            tenant_id=1
         )
 
         self.client = Client()
         self.client.login(username='testuser', password='testpass123')
+
+        # セッションにテナントIDを設定
+        session = self.client.session
+        session['current_tenant_id'] = 1
+        session.save()
 
     def test_teishokubi_list_view_displays_names_and_links(self):
         """一覧にスタッフ名とクライアント名が表示され、詳細リンクが正しいかテスト"""

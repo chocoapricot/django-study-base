@@ -532,20 +532,22 @@ class ClientContractConfirmListViewTest(TestCase):
         from ..models import ClientContractPrint
 
         # 会社を作成
-        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123', tenant_id=1)
 
         # クライアントとクライアントユーザーを作成
-        self.test_client = TestClient.objects.create(name='Test Client Corp', corporate_number='9876543210987')
+        self.test_client = TestClient.objects.create(name='Test Client Corp', corporate_number='9876543210987', tenant_id=1)
         self.client_user = User.objects.create_user(
             username='clientuser',
             email='client@example.com',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=1
         )
         self.client_user_profile = ClientUser.objects.create(
             client=self.test_client,
             email=self.client_user.email,
             name_last='Client',
-            name_first='User'
+            name_first='User',
+            tenant_id=1
         )
 
         # 会社とクライアントユーザーを接続
@@ -609,6 +611,11 @@ class ClientContractConfirmListViewTest(TestCase):
         """承認済・発行済契約が表示され、ボタンの可視性が正しいことをテスト"""
         # クライアントユーザーとしてログイン
         self.client.login(username='clientuser', password='testpass123')
+
+        # セッションにテナントIDを設定
+        session = self.client.session
+        session['current_tenant_id'] = 1
+        session.save()
 
         # 契約確認一覧ページにアクセス
         url = reverse('contract:client_contract_confirm_list')
