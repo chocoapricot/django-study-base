@@ -229,7 +229,7 @@ def staff_list(request):
     staffs = Staff.objects.annotate(
         next_contact_date=Subquery(next_schedule.values('contact_date')[:1]),
         next_contact_content=Subquery(next_schedule.values('content')[:1])
-    )
+    ).prefetch_related('tags')
 
     # 社員登録状況一覧の場合
     if is_registration_status_view:

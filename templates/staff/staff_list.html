@@ -256,6 +256,13 @@
                         {% if staff.has_disability_info %}
                             <i class="bi bi-heart" style="color:#17a2b8;" title="障害者"></i>
                         {% endif %}
+                        <div class="mt-1">
+                            {% for tag in staff.tags.all %}
+                                <span class="badge rounded-pill {{ tag.display_order|badge_class }}" style="font-size: 10px;">
+                                    <i class="bi bi-tag-fill"></i> {{ tag.name }}
+                                </span>
+                            {% endfor %}
+                        </div>
                     </td>
                     {% if is_registration_status_view %}
                     <td>
