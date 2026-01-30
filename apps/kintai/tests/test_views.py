@@ -5,6 +5,7 @@ from datetime import date
 from apps.kintai.models import StaffTimesheet, StaffTimecard
 from apps.contract.models import StaffContract
 from apps.staff.models import Staff
+from apps.company.models import Company
 from apps.master.models import EmploymentType, ContractPattern, OvertimePattern
 from apps.common.constants import Constants
 
@@ -32,8 +33,22 @@ class TimesheetViewTest(TestCase):
         )
         self.user.user_permissions.set(permissions)
 
+        # テナント設定
+        self.company = Company.objects.create(name='テスト会社')
+        self.user.tenant_id = self.company.tenant_id
+        self.user.save()
+
         self.client = Client()
         self.client.login(username='testuser', password='testpass123')
+
+        # セッションにテナントIDを設定
+        session = self.client.session
+        session['current_tenant_id'] = self.company.tenant_id
+        session.save()
+
+        # スレッドローカルにテナントIDをセット（オブジェクト作成用）
+        from apps.common.middleware import set_current_tenant_id
+        set_current_tenant_id(self.company.tenant_id)
 
         # スタッフ作成
         self.staff = Staff.objects.create(
@@ -82,6 +97,10 @@ class TimesheetViewTest(TestCase):
             staff=self.staff,
             target_month=date(2024, 11, 1)
         )
+
+    def tearDown(self):
+        from apps.common.middleware import set_current_tenant_id
+        set_current_tenant_id(None)
 
     def test_timesheet_list_view(self):
         """月次勤怠一覧ビューのテスト"""
@@ -143,8 +162,22 @@ class TimecardViewTest(TestCase):
         )
         self.user.user_permissions.set(permissions)
 
+        # テナント設定
+        self.company = Company.objects.create(name='テスト会社')
+        self.user.tenant_id = self.company.tenant_id
+        self.user.save()
+
         self.client = Client()
         self.client.login(username='testuser', password='testpass123')
+
+        # セッションにテナントIDを設定
+        session = self.client.session
+        session['current_tenant_id'] = self.company.tenant_id
+        session.save()
+
+        # スレッドローカルにテナントIDをセット（オブジェクト作成用）
+        from apps.common.middleware import set_current_tenant_id
+        set_current_tenant_id(self.company.tenant_id)
 
         # スタッフ作成
         self.staff = Staff.objects.create(
@@ -205,6 +238,10 @@ class TimecardViewTest(TestCase):
             end_time=time(18, 0),
             break_minutes=60
         )
+
+    def tearDown(self):
+        from apps.common.middleware import set_current_tenant_id
+        set_current_tenant_id(None)
 
     def test_timecard_delete_view_get(self):
         """日次勤怠削除確認画面のテスト"""

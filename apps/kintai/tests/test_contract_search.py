@@ -5,6 +5,7 @@ from datetime import date, time
 from apps.kintai.models import StaffTimesheet, StaffTimecard
 from apps.contract.models import StaffContract
 from apps.staff.models import Staff
+from apps.company.models import Company
 from apps.master.models import EmploymentType, ContractPattern
 from apps.common.constants import Constants
 
@@ -30,8 +31,22 @@ class ContractSearchViewTest(TestCase):
         )
         self.user.user_permissions.set(permissions)
         
+        # テナント設定
+        self.company = Company.objects.create(name='テスト会社')
+        self.user.tenant_id = self.company.tenant_id
+        self.user.save()
+
         self.client = Client()
         self.client.login(username='testuser', password='testpass123')
+
+        # セッションにテナントIDを設定
+        session = self.client.session
+        session['current_tenant_id'] = self.company.tenant_id
+        session.save()
+
+        # スレッドローカルにテナントIDをセット（オブジェクト作成用）
+        from apps.common.middleware import set_current_tenant_id
+        set_current_tenant_id(self.company.tenant_id)
 
         # スタッフ作成
         self.staff = Staff.objects.create(
@@ -66,6 +81,10 @@ class ContractSearchViewTest(TestCase):
             end_date=date(2025, 3, 31),
             contract_status=Constants.CONTRACT_STATUS.CONFIRMED
         )
+
+    def tearDown(self):
+        from apps.common.middleware import set_current_tenant_id
+        set_current_tenant_id(None)
 
     def test_contract_search_view(self):
         """契約検索画面の表示テスト"""

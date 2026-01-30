@@ -5,6 +5,8 @@ from datetime import date
 from apps.staff.models_staff import Staff
 from apps.contract.models import StaffContract
 from apps.kintai.models import StaffTimesheet
+from apps.company.models import Company
+from apps.common.middleware import set_current_tenant_id
 from apps.kintai.forms import StaffTimecardForm
 from apps.master.models_contract import ContractPattern
 from apps.common.constants import Constants
@@ -24,6 +26,14 @@ class ContractPeriodTests(TestCase):
         )
         self.user.user_permissions.set(permissions)
 
+        # テナント設定
+        self.company = Company.objects.create(name='テスト会社')
+        self.user.tenant_id = self.company.tenant_id
+        self.user.save()
+
+        # スレッドローカルにテナントIDをセット
+        set_current_tenant_id(self.company.tenant_id)
+
         # Create a staff
         self.staff = Staff.objects.create(
             name_last='Yamada',
@@ -31,6 +41,9 @@ class ContractPeriodTests(TestCase):
             name_kana_last='ヤマダ',
             name_kana_first='タロウ',
         )
+
+    def tearDown(self):
+        set_current_tenant_id(None)
 
     def test_timesheet_month_outside_contract_raises(self):
         # Contract covers Mar-Jun 2025
@@ -97,6 +110,11 @@ class ContractPeriodTests(TestCase):
         client = Client()
         logged = client.login(username='tester', password='pass')
         self.assertTrue(logged)
+
+        # セッションにテナントIDを設定
+        session = client.session
+        session['current_tenant_id'] = self.company.tenant_id
+        session.save()
 
         url = reverse('kintai:timecard_calendar', args=[ts.pk])
         resp = client.get(url)

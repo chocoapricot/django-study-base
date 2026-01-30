@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from apps.common.models import MyModel
+from apps.common.models import MyModel, MyTenantModel, TenantManager
 from apps.contract.models import StaffContract
 from apps.staff.models import Staff
 from django.contrib.auth import get_user_model
@@ -12,11 +12,12 @@ from apps.api.helpers import fetch_gsi_address
 User = get_user_model()
 
 
-class StaffTimesheet(MyModel):
+class StaffTimesheet(MyTenantModel):
     """
     月次勤怠情報を管理するモデル。
     スタッフ契約に対して毎月作成される。
     """
+    objects = TenantManager()
     staff_contract = models.ForeignKey(
         StaffContract,
         on_delete=models.CASCADE,
@@ -375,11 +376,12 @@ class StaffTimesheet(MyModel):
         return "-"
 
 
-class StaffTimecard(MyModel):
+class StaffTimecard(MyTenantModel):
     """
     日次勤怠情報を管理するモデル。
     月次勤怠（StaffTimesheet）に紐づく。
     """
+    objects = TenantManager()
     timesheet = models.ForeignKey(
         StaffTimesheet,
         on_delete=models.CASCADE,
