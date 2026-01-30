@@ -216,6 +216,7 @@ def time_punch_select_modal(request):
         data['time_punches'].append({
             'id': pattern.id,
             'name': pattern.name,
+            'punch_method_display': pattern.get_punch_method_display(),
             'rounding_summary': pattern.get_rounding_summary(),
             'description': pattern.description or '',
         })
