@@ -1,5 +1,6 @@
 import os
 import re
+from django.apps import apps
 from django.conf import settings
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -11,6 +12,10 @@ def get_table_info_from_readme():
     readme_path = os.path.join(settings.BASE_DIR, 'README.md')
     tables_info = []
     in_table_section = False
+
+    # モデルのマップを作成（テーブル名からモデルクラスを引けるようにする）
+    model_map = {model._meta.db_table: model for model in apps.get_models()}
+
     try:
         with open(readme_path, 'r', encoding='utf-8') as f:
             for line in f:
@@ -27,10 +32,19 @@ def get_table_info_from_readme():
                         table_name = re.sub(r'`', '', parts[0])
                         model_name = re.sub(r'`', '', parts[1])
                         description = parts[2]
+
+                        inheritance = ""
+                        model_cls = model_map.get(table_name)
+                        if model_cls:
+                            # 直接の親クラスを取得（Model以外）
+                            bases = [b.__name__ for b in model_cls.__bases__ if b.__name__ != 'Model']
+                            inheritance = ", ".join(bases)
+
                         tables_info.append({
                             'name': table_name,
                             'model': model_name,
                             'description': description,
+                            'inheritance': inheritance,
                         })
                 elif in_table_section and not line.strip().startswith('|'):
                     if tables_info:
