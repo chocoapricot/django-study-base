@@ -3,6 +3,8 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from datetime import date
 from apps.staff.models import Staff, StaffSkill
+from apps.company.models import Company
+from apps.common.middleware import set_current_tenant_id
 from apps.master.models import Skill, StaffRegistStatus, EmploymentType
 from apps.staff.forms_qualification import StaffSkillForm
 
@@ -11,9 +13,12 @@ User = get_user_model()
 
 class StaffSkillModelTest(TestCase):
     def setUp(self):
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
         self.user = User.objects.create_user(
             username='testuser',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=self.company.tenant_id
         )
         # テスト用登録区分作成
         self.regist_status = StaffRegistStatus.objects.create(
@@ -97,9 +102,12 @@ class StaffSkillModelTest(TestCase):
 
 class StaffSkillFormTest(TestCase):
     def setUp(self):
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
         self.user = User.objects.create_user(
             username='testuser',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=self.company.tenant_id
         )
         # テスト用登録区分作成
         self.regist_status = StaffRegistStatus.objects.create(
@@ -213,9 +221,12 @@ class StaffSkillFormTest(TestCase):
 
 class StaffSkillViewTest(TestCase):
     def setUp(self):
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
         self.user = User.objects.create_user(
             username='testuser',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=self.company.tenant_id
         )
         # 必要な権限を付与
         from django.contrib.auth.models import Permission

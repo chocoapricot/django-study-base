@@ -1,12 +1,13 @@
 from django.db import models
 from django.conf import settings
 from .models_staff import Staff
-from ..common.models import MyTenantModel
+from ..common.models import MyTenantModel, TenantManager
 
 class StaffEvaluation(MyTenantModel):
     """
     スタッフの評価を管理するモデル。
     """
+    objects = TenantManager()
     staff = models.ForeignKey(
         Staff, 
         on_delete=models.CASCADE, 

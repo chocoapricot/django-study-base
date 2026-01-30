@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from ..common.models import MyTenantModel
+from ..common.models import MyTenantModel, TenantManager
 
 User = get_user_model()
 
@@ -8,6 +8,7 @@ class StaffInquiry(MyTenantModel):
     """
     スタッフからの問い合わせを管理するモデル。
     """
+    objects = TenantManager()
     STATUS_CHOICES = [
         ('open', '受付中'),
         ('completed', '完了'),
@@ -69,6 +70,7 @@ class StaffInquiryMessage(MyTenantModel):
     """
     スタッフ問い合わせに対する個別のメッセージ（チャット形式）
     """
+    objects = TenantManager()
     inquiry = models.ForeignKey(
         StaffInquiry,
         on_delete=models.CASCADE,

@@ -6,6 +6,7 @@ from apps.contract.models import StaffContract
 from apps.company.models import Company
 from apps.connect.models import ConnectStaff, ConnectStaffAgree
 from apps.master.models import StaffAgreement, ContractPattern, OvertimePattern
+from apps.common.middleware import set_current_tenant_id
 from datetime import date
 
 User = get_user_model()
@@ -14,10 +15,19 @@ class KintaiAgreementRedirectTest(TestCase):
     """勤怠画面での同意チェックリダイレクトのテスト"""
 
     def setUp(self):
+        # 会社情報
+        self.corporate_number = '1234567890123'
+        self.company = Company.objects.create(
+            corporate_number=self.corporate_number,
+            name='Test Company',
+        )
+        set_current_tenant_id(self.company.id)
+
         self.client = Client()
         self.email = 'staff@example.com'
         self.password = 'TestPass123!'
         self.user = User.objects.create_user(
+            tenant_id=self.company.id,
             username='staff',
             email=self.email,
             password=self.password,
@@ -26,29 +36,26 @@ class KintaiAgreementRedirectTest(TestCase):
         
         # スタッフ情報
         self.staff = Staff.objects.create(
+            tenant_id=self.company.id,
             name_last='Test',
             name_first='Staff',
             email=self.email,
         )
         
-        # 会社情報
-        self.corporate_number = '1234567890123'
-        self.company = Company.objects.create(
-            corporate_number=self.corporate_number,
-            name='Test Company',
-        )
-        
         # 必要マスタ
         self.pattern = ContractPattern.objects.create(
+            tenant_id=self.company.id,
             name='Test Pattern',
             domain='1', # スタッフ
         )
         self.overtime = OvertimePattern.objects.create(
+            tenant_id=self.company.id,
             name='Test Overtime',
         )
         
         # 契約情報
         self.contract = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             corporate_number=self.corporate_number,
             start_date=date(2025, 1, 1),
@@ -59,6 +66,7 @@ class KintaiAgreementRedirectTest(TestCase):
         
         # 規約
         self.agreement = StaffAgreement.objects.create(
+            tenant_id=self.company.id,
             name='Test Agreement',
             agreement_text='Please agree.',
             corporation_number=self.corporate_number,
@@ -84,6 +92,7 @@ class KintaiAgreementRedirectTest(TestCase):
         
         # 承認済み（未確認）の契約を追加
         unconfirmed_contract = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             corporate_number=self.corporate_number,
             start_date=date(2025, 1, 1),
@@ -98,6 +107,9 @@ class KintaiAgreementRedirectTest(TestCase):
         self.contract.save()
         
         self.client.login(email=self.email, password=self.password)
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         url = reverse('kintai:staff_timecard_register')
         response = self.client.get(url)
@@ -117,6 +129,7 @@ class KintaiAgreementRedirectTest(TestCase):
         )
 
         unconfirmed_contract = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             corporate_number=self.corporate_number,
             start_date=date(2025, 1, 1),
@@ -127,6 +140,9 @@ class KintaiAgreementRedirectTest(TestCase):
         )
         
         self.client.login(email=self.email, password=self.password)
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         url = reverse('kintai:staff_timecard_register_detail', kwargs={
             'contract_pk': unconfirmed_contract.pk,
@@ -140,6 +156,9 @@ class KintaiAgreementRedirectTest(TestCase):
     def test_redirect_to_agree_page_from_register_list(self):
         """契約選択画面にアクセスした際に同意画面にリダイレクトされるか"""
         self.client.login(email=self.email, password=self.password)
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         url = reverse('kintai:staff_timecard_register')
         response = self.client.get(url)
@@ -159,6 +178,9 @@ class KintaiAgreementRedirectTest(TestCase):
         )
         
         self.client.login(email=self.email, password=self.password)
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         url = reverse('kintai:staff_timecard_register')
         response = self.client.get(url)
@@ -170,6 +192,7 @@ class KintaiAgreementRedirectTest(TestCase):
         """管理者はリダイレクトされないか"""
         admin_email = 'admin@example.com'
         admin_user = User.objects.create_user(
+            tenant_id=self.company.id,
             username='admin',
             email=admin_email,
             password=self.password,
@@ -183,6 +206,9 @@ class KintaiAgreementRedirectTest(TestCase):
         )
         admin_user.user_permissions.set(permissions)
         self.client.login(email=admin_email, password=self.password)
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 管理者がスタッフ検索画面にアクセス（この画面にはデコレータをつけていないが、念のため）
         url = reverse('kintai:staff_search')

@@ -5,9 +5,10 @@ from django.core.exceptions import ValidationError
 import uuid
 import os
 
-from ..common.models import MyTenantModel
+from ..common.models import MyTenantModel, TenantManager
 
 class Staff(MyTenantModel):
+    objects = TenantManager()
     """
     スタッフ（従業員、契約社員など）の基本情報を管理するモデル。
     個人情報、連絡先、社内情報（社員番号、所属部署など）を保持する。
@@ -219,6 +220,7 @@ class StaffFile(MyTenantModel):
     スタッフに関連する添付ファイルを管理するモデル。
     履歴書や職務経歴書などのドキュメントを想定。
     """
+    objects = TenantManager()
 
     staff = models.ForeignKey(
         Staff,
@@ -299,6 +301,7 @@ class StaffContacted(MyTenantModel):
     スタッフへの連絡履歴を管理するモデル。
     面談や電話、メールなどのやり取りを記録する。
     """
+    objects = TenantManager()
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='contacted_histories', verbose_name='スタッフ')
     contacted_at = models.DateTimeField('連絡日時')
     content = models.CharField('対応内容', max_length=255, blank=False, null=False)
@@ -325,6 +328,7 @@ class StaffContactSchedule(MyTenantModel):
     """
     スタッフへの連絡予定を管理するモデル。
     """
+    objects = TenantManager()
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE, related_name='contact_schedules', verbose_name='スタッフ')
     contact_date = models.DateField('連絡日')
     content = models.CharField('対応内容', max_length=255, blank=False, null=False)
@@ -352,6 +356,7 @@ class StaffQualification(MyTenantModel):
     スタッフが保有する資格情報を管理するモデル。
     StaffモデルとQualificationマスターを紐付ける中間テーブル。
     """
+    objects = TenantManager()
 
     staff = models.ForeignKey(
         Staff,
@@ -413,6 +418,7 @@ class StaffSkill(MyTenantModel):
     スタッフが保有する技能（スキル）情報を管理するモデル。
     StaffモデルとSkillマスターを紐付ける中間テーブル。
     """
+    objects = TenantManager()
 
     staff = models.ForeignKey(
         Staff,

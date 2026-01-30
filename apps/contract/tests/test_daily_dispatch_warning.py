@@ -10,6 +10,8 @@ from apps.master.models import EmploymentType, JobCategory, ContractPattern
 from apps.common.constants import Constants
 from apps.system.settings.models import Dropdowns
 from datetime import date, timedelta
+from apps.common.middleware import set_current_tenant_id
+from apps.company.models import Company
 
 User = get_user_model()
 
@@ -19,11 +21,19 @@ class DailyDispatchWarningTestCase(TestCase):
 
     def setUp(self):
         """テストデータのセットアップ"""
+        # 会社作成
+        self.company = Company.objects.create(
+            name='テスト会社',
+            corporate_number='1234567890123'
+        )
+        set_current_tenant_id(self.company.id)
+
         # テストユーザー作成
         self.user = User.objects.create_user(
             username='testuser',
             email='test@example.com',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=self.company.id
         )
         
         # 必要な権限を追加
@@ -48,6 +58,7 @@ class DailyDispatchWarningTestCase(TestCase):
         
         # 雇用形態作成（有期・無期）
         self.fixed_term_employment = EmploymentType.objects.create(
+            tenant_id=self.company.id,
             name='有期雇用',
             display_order=1,
             is_fixed_term=True,
@@ -55,6 +66,7 @@ class DailyDispatchWarningTestCase(TestCase):
         )
         
         self.indefinite_employment = EmploymentType.objects.create(
+            tenant_id=self.company.id,
             name='無期雇用',
             display_order=2,
             is_fixed_term=False,
@@ -63,6 +75,7 @@ class DailyDispatchWarningTestCase(TestCase):
         
         # 契約パターン作成
         self.client_contract_pattern = ContractPattern.objects.create(
+            tenant_id=self.company.id,
             name='テストクライアント契約パターン',
             domain=Constants.DOMAIN.CLIENT,
             display_order=1,
@@ -70,6 +83,7 @@ class DailyDispatchWarningTestCase(TestCase):
         )
         
         self.staff_contract_pattern = ContractPattern.objects.create(
+            tenant_id=self.company.id,
             name='テストスタッフ契約パターン',
             domain=Constants.DOMAIN.STAFF,
             display_order=1,
@@ -79,6 +93,7 @@ class DailyDispatchWarningTestCase(TestCase):
         
         # クライアント作成
         self.client_obj = ClientModel.objects.create(
+            tenant_id=self.company.id,
             name='テストクライアント',
             corporate_number='1234567890123',
             basic_contract_date=date.today(),
@@ -87,6 +102,7 @@ class DailyDispatchWarningTestCase(TestCase):
         
         # スタッフ作成
         self.staff = Staff.objects.create(
+            tenant_id=self.company.id,
             name_last='テスト',
             name_first='太郎',
             email='test@example.com',
@@ -99,6 +115,7 @@ class DailyDispatchWarningTestCase(TestCase):
         # 就業時間パターン作成
         from apps.master.models import WorkTimePattern
         self.worktime_pattern = WorkTimePattern.objects.create(
+            tenant_id=self.company.id,
             name='標準勤務',
             is_active=True
         )
@@ -106,6 +123,7 @@ class DailyDispatchWarningTestCase(TestCase):
         # 時間外算出パターン作成
         from apps.master.models import OvertimePattern
         self.overtime_pattern = OvertimePattern.objects.create(
+            tenant_id=self.company.id,
             name='標準時間外',
             is_active=True
         )
@@ -113,6 +131,9 @@ class DailyDispatchWarningTestCase(TestCase):
         # テストクライアント（Djangoのテストクライアント）
         self.client = Client()
         self.client.login(username='testuser', password='testpass123')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
 
     def create_client_contract(self, duration_days=25, contract_type=Constants.CLIENT_CONTRACT_TYPE.DISPATCH, limit_indefinite_or_senior=None):
         """クライアント契約を作成するヘルパーメソッド"""
@@ -123,6 +144,7 @@ class DailyDispatchWarningTestCase(TestCase):
         end_date = start_date + timedelta(days=duration_days)
         
         client_contract = ClientContract.objects.create(
+            tenant_id=self.company.id,
             client=self.client_obj,
             contract_name='テスト派遣契約',
             start_date=start_date,
@@ -139,6 +161,7 @@ class DailyDispatchWarningTestCase(TestCase):
         if contract_type == Constants.CLIENT_CONTRACT_TYPE.DISPATCH and limit_indefinite_or_senior is not None:
             # ClientDepartmentを作成（存在しない場合）
             haken_unit, created = ClientDepartment.objects.get_or_create(
+                tenant_id=self.company.id,
                 client=self.client_obj,
                 name='テスト派遣単位',
                 defaults={
@@ -149,6 +172,7 @@ class DailyDispatchWarningTestCase(TestCase):
             )
             
             ClientContractHaken.objects.create(
+                tenant_id=self.company.id,
                 client_contract=client_contract,
                 haken_unit=haken_unit,
                 limit_indefinite_or_senior=limit_indefinite_or_senior,
@@ -166,6 +190,7 @@ class DailyDispatchWarningTestCase(TestCase):
             employment_type = self.fixed_term_employment
             
         return StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=staff,
             contract_name='テストスタッフ契約',
             start_date=date.today(),
@@ -185,6 +210,7 @@ class DailyDispatchWarningTestCase(TestCase):
         """すべての条件が満たされた場合に警告が表示される"""
         # 60歳未満・有期雇用のスタッフを作成
         young_staff = Staff.objects.create(
+            tenant_id=self.company.id,
             name_last='若手',
             name_first='太郎',
             email='young@example.com',
@@ -225,6 +251,7 @@ class DailyDispatchWarningTestCase(TestCase):
         """「限定する」設定の場合は警告が表示されない"""
         # 60歳未満・有期雇用のスタッフを作成
         young_staff = Staff.objects.create(
+            tenant_id=self.company.id,
             name_last='若手',
             name_first='太郎',
             email='young@example.com',
@@ -275,6 +302,7 @@ class DailyDispatchWarningTestCase(TestCase):
         
         # 職種作成（派遣政令業務あり）
         job_category_with_seirei = JobCategory.objects.create(
+            tenant_id=self.company.id,
             name='派遣政令業務職種',
             display_order=1,
             is_active=True,
@@ -283,6 +311,7 @@ class DailyDispatchWarningTestCase(TestCase):
         
         # 60歳未満・有期雇用のスタッフを作成
         young_staff = Staff.objects.create(
+            tenant_id=self.company.id,
             name_last='若手',
             name_first='太郎',
             email='young@example.com',
@@ -323,6 +352,7 @@ class DailyDispatchWarningTestCase(TestCase):
         """60歳以上のスタッフの場合は警告が表示されない"""
         # 60歳以上のスタッフを作成
         senior_staff = Staff.objects.create(
+            tenant_id=self.company.id,
             name_last='ベテラン',
             name_first='花子',
             email='senior@example.com',
@@ -361,6 +391,7 @@ class DailyDispatchWarningTestCase(TestCase):
         """無期雇用のスタッフの場合は警告が表示されない"""
         # 60歳未満のスタッフを作成
         young_staff = Staff.objects.create(
+            tenant_id=self.company.id,
             name_last='若手',
             name_first='太郎',
             email='young@example.com',
@@ -453,6 +484,7 @@ class DailyDispatchWarningTestCase(TestCase):
         """新規作成からの割当確認でも警告が表示される（すべての条件が満たされた場合）"""
         # 60歳未満・有期雇用のスタッフを作成
         young_staff = Staff.objects.create(
+            tenant_id=self.company.id,
             name_last='若手',
             name_first='太郎',
             email='young@example.com',
@@ -501,6 +533,7 @@ class DailyDispatchWarningTestCase(TestCase):
         """生年月日が未設定のスタッフの場合は60歳未満として扱われ警告が表示される"""
         # 生年月日なしのスタッフを作成
         staff_no_birth = Staff.objects.create(
+            tenant_id=self.company.id,
             name_last='生年月日',
             name_first='なし',
             email='nobirth@example.com',
@@ -539,6 +572,7 @@ class DailyDispatchWarningTestCase(TestCase):
         """スタッフ契約からクライアント契約への割当でも警告が表示される"""
         # 60歳未満・有期雇用のスタッフを作成
         young_staff = Staff.objects.create(
+            tenant_id=self.company.id,
             name_last='若手',
             name_first='太郎',
             email='young@example.com',
@@ -578,6 +612,7 @@ class DailyDispatchWarningTestCase(TestCase):
         """スタッフ契約からクライアント契約への割当で条件が満たされない場合は警告が表示されない"""
         # 60歳未満・有期雇用のスタッフを作成
         young_staff = Staff.objects.create(
+            tenant_id=self.company.id,
             name_last='若手',
             name_first='太郎',
             email='young@example.com',

@@ -6,6 +6,7 @@ from apps.staff.models import Staff, StaffContactSchedule
 from apps.connect.models import ConnectStaff, MynumberRequest
 from apps.profile.models import StaffProfile, StaffProfileMynumber
 from apps.company.models import Company
+from apps.common.middleware import set_current_tenant_id
 from apps.common.constants import Constants
 from django.utils import timezone
 from datetime import timedelta
@@ -17,8 +18,12 @@ class HomeViewTest(TestCase):
         """
         テストデータのセットアップ
         """
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.id)
+
         self.client = Client()
         self.user = MyUser.objects.create_user(
+            tenant_id=self.company.id,
             username='testuser@example.com',
             email='testuser@example.com',
             password='password',
@@ -40,6 +45,10 @@ class HomeViewTest(TestCase):
         ログイン済みユーザーでホーム画面が正常に表示されることをテスト
         """
         self.client.login(email='testuser@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.get(self.home_url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'home/home.html')
@@ -49,6 +58,10 @@ class HomeViewTest(TestCase):
         ホーム画面のコンテキストデータが正しく渡されていることをテスト
         """
         self.client.login(email='testuser@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.get(self.home_url)
         self.assertEqual(response.status_code, 200)
 
@@ -66,9 +79,13 @@ class HomeViewTest(TestCase):
         permission = Permission.objects.get(codename='view_staff')
         self.user.user_permissions.add(permission)
         self.client.login(email='testuser@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
 
         # Create staff user
         staff_user = MyUser.objects.create_user(
+            tenant_id=self.company.id,
             username='staffuser@example.com',
             email='staff@example.com',
             password='password',
@@ -80,7 +97,7 @@ class HomeViewTest(TestCase):
         )
 
         # Create Staff data
-        Staff.objects.create(email='staff@example.com')
+        Staff.objects.create(tenant_id=self.company.id, email='staff@example.com')
 
         # Create ConnectStaff data
         connect_staff = ConnectStaff.objects.create(
@@ -97,7 +114,7 @@ class HomeViewTest(TestCase):
         )
 
         # Create another staff without request
-        Staff.objects.create(email='norequest@example.com')
+        Staff.objects.create(tenant_id=self.company.id, email='norequest@example.com')
 
         response = self.client.get(self.home_url)
         self.assertEqual(response.status_code, 200)
@@ -110,9 +127,13 @@ class HomeViewTest(TestCase):
         Test that the link is not present for a user without permission.
         """
         self.client.login(email='testuser@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
 
         # Create staff user
         staff_user = MyUser.objects.create_user(
+            tenant_id=self.company.id,
             username='staffuser@example.com',
             email='staff@example.com',
             password='password',
@@ -124,7 +145,7 @@ class HomeViewTest(TestCase):
         )
 
         # Create Staff data
-        Staff.objects.create(email='staff@example.com')
+        Staff.objects.create(tenant_id=self.company.id, email='staff@example.com')
 
         # Create ConnectStaff data
         connect_staff = ConnectStaff.objects.create(
@@ -141,7 +162,7 @@ class HomeViewTest(TestCase):
         )
 
         # Create another staff without request
-        Staff.objects.create(email='norequest@example.com')
+        Staff.objects.create(tenant_id=self.company.id, email='norequest@example.com')
 
         response = self.client.get(self.home_url)
         self.assertEqual(response.status_code, 200)
@@ -154,6 +175,10 @@ class HomeViewTest(TestCase):
         Test that the link is not present when staff_request_count is 0.
         """
         self.client.login(email='testuser@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.get(self.home_url)
         self.assertEqual(response.status_code, 200)
         self.assertIn('staff_request_count', response.context)
@@ -317,8 +342,12 @@ from apps.common.constants import Constants
 
 class HomeViewWarningDaysTest(TestCase):
     def setUp(self):
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.id)
+
         self.client_http = Client()
         self.user = MyUser.objects.create_user(
+            tenant_id=self.company.id,
             username='testuser2@example.com',
             email='testuser2@example.com',
             password='password'
@@ -332,15 +361,19 @@ class HomeViewWarningDaysTest(TestCase):
         ])
         self.user.user_permissions.add(*permissions)
         self.client_http.login(email='testuser2@example.com', password='password')
+        session = self.client_http.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         self.home_url = reverse('home:home')
         self.today = timezone.localdate()
 
-        self.contract_pattern = ContractPattern.objects.create(name='Test Pattern')
+        self.contract_pattern = ContractPattern.objects.create(tenant_id=self.company.id, name='Test Pattern')
 
         # --- Test Data Setup ---
         # --- Test Data Setup ---
         # 1. Foreign Staff for Residence Status Deadline
-        self.staff1 = Staff.objects.create(email='foreign_staff@example.com', employee_no='S001')
+        self.staff1 = Staff.objects.create(tenant_id=self.company.id, email='foreign_staff@example.com', employee_no='S001')
         self.staff_international = StaffInternational.objects.create(
             staff=self.staff1,
             residence_period_from=self.today,
@@ -348,19 +381,22 @@ class HomeViewWarningDaysTest(TestCase):
         )
 
         # 2. Data for Office Conflict Date
-        self.client_obj = ClientModel.objects.create(name='Test Client', corporate_number='1112223334445')
+        self.client_obj = ClientModel.objects.create(tenant_id=self.company.id, name='Test Client', corporate_number='1112223334445')
         self.haken_office = ClientDepartment.objects.create(
+            tenant_id=self.company.id,
             client=self.client_obj,
             name='Test Office',
             haken_jigyosho_teishokubi=self.today + timedelta(days=40) # Expires in 40 days
         )
         client_contract_office = ClientContract.objects.create(
+            tenant_id=self.company.id,
             client=self.client_obj,
             contract_pattern=self.contract_pattern,
             client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
             start_date=self.today,
         )
         haken_info_for_office = ClientContractHaken.objects.create(
+            tenant_id=self.company.id,
             client_contract=client_contract_office,
             haken_office=self.haken_office
         )
@@ -369,15 +405,17 @@ class HomeViewWarningDaysTest(TestCase):
         self.client_contract = client_contract_office
 
         # 3. Data for Personal Conflict Date
-        self.staff2 = Staff.objects.create(email='personal_conflict_staff@example.com', employee_no='S002')
-        personal_haken_unit = ClientDepartment.objects.create(client=self.client_obj, name='Personal Unit')
+        self.staff2 = Staff.objects.create(tenant_id=self.company.id, email='personal_conflict_staff@example.com', employee_no='S002')
+        personal_haken_unit = ClientDepartment.objects.create(tenant_id=self.company.id, client=self.client_obj, name='Personal Unit')
         client_contract_personal = ClientContract.objects.create(
+            tenant_id=self.company.id,
             client=self.client_obj,
             contract_pattern=self.contract_pattern,
             client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
             start_date=self.today,
         )
         haken_info_for_personal = ClientContractHaken.objects.create(
+            tenant_id=self.company.id,
             client_contract=client_contract_personal,
             haken_unit=personal_haken_unit
         )
@@ -385,12 +423,14 @@ class HomeViewWarningDaysTest(TestCase):
         client_contract_personal.save()
         self.client_contract_for_personal = client_contract_personal
         staff_contract = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff2,
             contract_pattern=self.contract_pattern,
             start_date=self.today,
         )
         # Active assignment to make the teishokubi valid
         self.assignment = ContractAssignment.objects.create(
+            tenant_id=self.company.id,
             staff_email=self.staff2.email,
             staff_contract=staff_contract,
             client_corporate_number=self.client_obj.corporate_number,
@@ -398,6 +438,7 @@ class HomeViewWarningDaysTest(TestCase):
             assignment_end_date=self.today + timedelta(days=100) # Active
         )
         self.personal_teishokubi = StaffContractTeishokubi.objects.create(
+            tenant_id=self.company.id,
             staff_email=self.staff2.email,
             client_corporate_number=self.client_obj.corporate_number,
             organization_name=personal_haken_unit.name,
@@ -406,6 +447,7 @@ class HomeViewWarningDaysTest(TestCase):
         )
         # Inactive assignment teishokubi (should not be counted)
         self.inactive_teishokubi = StaffContractTeishokubi.objects.create(
+            tenant_id=self.company.id,
             staff_email='inactive@example.com',
             client_corporate_number=self.client_obj.corporate_number,
             organization_name='Inactive Org',

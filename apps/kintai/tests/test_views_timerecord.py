@@ -11,6 +11,8 @@ from apps.staff.models import Staff
 from apps.master.models import EmploymentType, ContractPattern, StaffAgreement, TimePunch, OvertimePattern
 from apps.connect.models import ConnectStaff, ConnectStaffAgree
 from apps.common.constants import Constants
+from apps.company.models import Company
+from apps.common.middleware import set_current_tenant_id
 
 User = get_user_model()
 
@@ -19,12 +21,16 @@ class TimerecordPunchViewTest(TestCase):
 
     def setUp(self):
         """テストデータの準備"""
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
+
         # ユーザー作成
         self.user = User.objects.create_user(
             username='staffuser',
             email='staff@example.com',
             password='testpass123',
-            is_staff=True  # スタッフユーザーとして同意チェックをバイパス
+            is_staff=True,  # スタッフユーザーとして同意チェックをバイパス
+            tenant_id=self.company.tenant_id
         )
 
         # Add permission
@@ -43,7 +49,8 @@ class TimerecordPunchViewTest(TestCase):
             name_first='テスト',
             email='staff@example.com',
             employee_no='STF001',
-            hire_date=date(2024, 1, 1)
+            hire_date=date(2024, 1, 1),
+            tenant_id=self.company.tenant_id
         )
 
         # 雇用形態と契約パターン
@@ -411,9 +418,12 @@ class TimerecordCRUDViewTest(TestCase):
 
     def setUp(self):
         """テストデータの準備"""
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
+
         # 権限を持つユーザー
         self.perm_user = User.objects.create_user(
-            username='perm_user', password='password', is_staff=True
+            username='perm_user', password='password', is_staff=True, tenant_id=self.company.tenant_id
         )
         permissions = Permission.objects.filter(
             Q(codename='view_stafftimerecord') |
@@ -429,7 +439,7 @@ class TimerecordCRUDViewTest(TestCase):
         )
 
         # テストデータ
-        self.staff = Staff.objects.create(name_last='テスト', name_first='太郎')
+        self.staff = Staff.objects.create(name_last='テスト', name_first='太郎', tenant_id=self.company.tenant_id)
         now = timezone.localtime().replace(second=0, microsecond=0)
         self.timerecord = StaffTimerecord.objects.create(
             staff=self.staff,

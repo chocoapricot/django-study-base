@@ -608,8 +608,8 @@ def delete_application_data(request):
             ConnectClient.objects.all().delete()
 
             # 5.5 問い合わせデータ (StaffInquiryMessageがStaffInquiryを参照)
-            StaffInquiryMessage.objects.all().delete()
-            StaffInquiry.objects.all().delete()
+            StaffInquiryMessage.objects.unfiltered().delete()
+            StaffInquiry.objects.unfiltered().delete()
 
             # 6. クライアント関連データ (ClientUserなどがClientを参照)
             ClientFile.objects.unfiltered().delete()
@@ -632,10 +632,10 @@ def delete_application_data(request):
             StaffProfileDisability.objects.all().delete()
             StaffProfileContact.objects.all().delete()
             StaffProfile.objects.all().delete()
-            StaffContactSchedule.objects.all().delete()
+            StaffContactSchedule.objects.unfiltered().delete()
 
             # 8. スタッフ本体
-            Staff.objects.all().delete()
+            Staff.objects.unfiltered().delete()
 
             # 9. ログデータ
             MailLog.objects.all().delete()

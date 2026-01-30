@@ -2,6 +2,8 @@ from django.test import TestCase, Client as TestClient
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
+from apps.company.models import Company
+from apps.common.middleware import set_current_tenant_id
 from django.contrib.contenttypes.models import ContentType
 from apps.staff.models import Staff, StaffContacted
 from apps.master.models import StaffRegistStatus, EmploymentType
@@ -14,7 +16,9 @@ class StaffSortingTest(TestCase):
     def setUp(self):
         Staff.objects.all().delete() # 既存のStaffオブジェクトをすべて削除
         self.client = TestClient()
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
+        self.user = User.objects.create_user(username='testuser', password='testpassword', tenant_id=self.company.tenant_id)
         self.client.login(username='testuser', password='testpassword')
 
         # StaffモデルのContentTypeを取得

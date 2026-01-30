@@ -50,6 +50,12 @@ class MyTenantModel(MyModel):
     class Meta:
         abstract = True
 
+    def save(self, *args, **kwargs):
+        if not self.tenant_id:
+            from apps.common.middleware import get_current_tenant_id
+            self.tenant_id = get_current_tenant_id()
+        super().save(*args, **kwargs)
+
 # 旧AppLogモデルは削除されました
 # 新しいログシステムは apps.system.logs.models.AppLog を使用してください
 

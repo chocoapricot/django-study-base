@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from apps.staff.models import Staff, StaffPayroll
+from apps.company.models import Company
+from apps.common.middleware import set_current_tenant_id
 from datetime import date
 
 User = get_user_model()
@@ -11,7 +13,9 @@ User = get_user_model()
 class StaffPayrollViewsTest(TestCase):
     def setUp(self):
         self.client = TestClient()
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
+        self.user = User.objects.create_user(username='testuser', password='testpassword', tenant_id=self.company.tenant_id)
         self.client.login(username='testuser', password='testpassword')
 
         content_type = ContentType.objects.get_for_model(StaffPayroll)
@@ -150,6 +154,8 @@ from apps.staff.forms_payroll import StaffPayrollForm
 
 class StaffPayrollFormTest(TestCase):
     def setUp(self):
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
         self.staff = Staff.objects.create(
             name_last='山田',
             name_first='太郎',

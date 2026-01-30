@@ -7,6 +7,8 @@ from apps.contract.models import StaffContract
 from apps.master.models import EmploymentType, ContractPattern
 from apps.accounts.models import MyUser
 from apps.common.constants import Constants
+from apps.company.models import Company
+from apps.common.middleware import set_current_tenant_id
 from apps.kintai.models import StaffTimecard, StaffTimesheet
 from datetime import date
 import io
@@ -17,13 +19,18 @@ class TimecardImportTestCase(TestCase):
     
     def setUp(self):
         """テストデータのセットアップ"""
+        # テナントを作成
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
+
         # テストユーザーを作成
         self.user = MyUser.objects.create_user(
             username='testuser',
             email='test@example.com',
             password='testpass123',
             last_name='テスト',
-            first_name='太郎'
+            first_name='太郎',
+            tenant_id=self.company.tenant_id
         )
         # 権限を付与
         from django.contrib.auth.models import Permission
@@ -48,7 +55,8 @@ class TimecardImportTestCase(TestCase):
             name_first='太郎',
             name_kana_last='ヤマダ',
             name_kana_first='タロウ',
-            email='yamada@example.com'
+            email='yamada@example.com',
+            tenant_id=self.company.tenant_id
         )
         
         # スタッフ契約を作成
@@ -64,7 +72,8 @@ class TimecardImportTestCase(TestCase):
             contract_number='C2024001',
             start_date=date(2024, 1, 1),
             end_date=date(2024, 12, 31),
-            contract_pattern=self.contract_pattern
+            contract_pattern=self.contract_pattern,
+            tenant_id=self.company.tenant_id
         )
     
     def tearDown(self):

@@ -6,12 +6,18 @@ from apps.staff.models import Staff
 from apps.contract.models import StaffContract
 from apps.kintai.models import StaffTimerecord, StaffTimerecordBreak
 from apps.master.models import ContractPattern
+from apps.company.models import Company
+from apps.common.middleware import set_current_tenant_id
 from datetime import date, datetime, timedelta
 
 User = get_user_model()
 
 class StaffTimerecordModelTests(TestCase):
     def setUp(self):
+        # テナントを作成
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
+
         # 契約パターンを作成
         self.contract_pattern = ContractPattern.objects.create(
             name='テスト契約パターン',
@@ -19,7 +25,7 @@ class StaffTimerecordModelTests(TestCase):
         )
 
         # ユーザーとスタッフ、契約を作成
-        self.user = User.objects.create_user(username='staff_user', email='staff@example.com', password='password')
+        self.user = User.objects.create_user(username='staff_user', email='staff@example.com', password='password', tenant_id=self.company.tenant_id)
         self.staff = Staff.objects.create(
             employee_no='1001',
             name_last='テスト',
@@ -85,13 +91,17 @@ from django.db.models import Q
 
 class StaffTimerecordViewTests(TestCase):
     def setUp(self):
+        # テナントを作成
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
+
         # 契約パターンを作成
         self.contract_pattern = ContractPattern.objects.create(
             name='テスト契約パターン',
             domain='1'  # スタッフ用
         )
 
-        self.user = User.objects.create_user(username='staff_user', email='staff@example.com', password='password')
+        self.user = User.objects.create_user(username='staff_user', email='staff@example.com', password='password', tenant_id=self.company.tenant_id)
 
         # Add permissions
         permissions = Permission.objects.filter(

@@ -10,6 +10,8 @@ from apps.master.models import EmploymentType
 from apps.master.models_worktime import WorkTimePattern
 from apps.master.models import OvertimePattern
 from apps.common.constants import Constants
+from apps.common.middleware import set_current_tenant_id
+from apps.company.models import Company
 from datetime import date, timedelta
 
 User = get_user_model()
@@ -20,11 +22,15 @@ class StaffContractAssignmentTestCase(TestCase):
 
     def setUp(self):
         """テストデータのセットアップ"""
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
+
         # テストユーザー作成
         self.user = User.objects.create_user(
             username='testuser',
             email='test@example.com',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=self.company.tenant_id
         )
         
         # 必要な権限を追加
@@ -88,7 +94,8 @@ class StaffContractAssignmentTestCase(TestCase):
         self.client_obj = Client.objects.create(
             name='テストクライアント',
             corporate_number='1234567890123',
-            basic_contract_date=date.today()
+            basic_contract_date=date.today(),
+            tenant_id=self.company.tenant_id
         )
         
         # スタッフ作成
@@ -98,7 +105,8 @@ class StaffContractAssignmentTestCase(TestCase):
             email='staff@example.com',
             employee_no='EMP001',
             hire_date=date.today(),
-            employment_type=self.employment_type
+            employment_type=self.employment_type,
+            tenant_id=self.company.tenant_id
         )
         
         # クライアント契約作成

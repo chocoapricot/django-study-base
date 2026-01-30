@@ -8,12 +8,22 @@ from apps.staff.models_inquiry import StaffInquiry, StaffInquiryMessage
 from apps.connect.models import ConnectStaff
 from apps.company.models import Company as CompanyModel
 from apps.common.constants import Constants
+from apps.common.middleware import set_current_tenant_id
 
 User = get_user_model()
 
 class StaffInquiryTest(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username='teststaff', email='staff@example.com', password='password', tenant_id=100)
+        self.company_model = CompanyModel.objects.create(
+            name='Test Company',
+            corporate_number='1234567890123'
+        )
+        # Update tenant_id for the company since it might not be auto-populated if thread-local is not set yet
+        self.company_model.tenant_id = self.company_model.id
+        self.company_model.save()
+
+        set_current_tenant_id(self.company_model.id)
+        self.user = User.objects.create_user(username='teststaff', email='staff@example.com', password='password', tenant_id=self.company_model.id)
 
         # Grant permissions for inquiry tests
         permissions = Permission.objects.filter(
@@ -29,14 +39,7 @@ class StaffInquiryTest(TestCase):
         self.client_user.login(username='teststaff', password='password')
         
         # スタッフ作成
-        self.staff = Staff.objects.create(email=self.user.email, name_last='Staff', name_first='Test', tenant_id=100)
-
-        # 会社作成
-        self.company_model = CompanyModel.objects.create(
-            name='Test Company',
-            corporate_number='1234567890123',
-            tenant_id=100
-        )
+        self.staff = Staff.objects.create(email=self.user.email, name_last='Staff', name_first='Test', tenant_id=self.company_model.id)
         
         # 接続承認作成
         ConnectStaff.objects.create(
@@ -154,8 +157,13 @@ class StaffInquiryTest(TestCase):
 
 class StaffInquiryStatusTest(TestCase):
     def setUp(self):
-        self.staff_user = User.objects.create_user(username='teststaff', email='staff@example.com', password='password', tenant_id=100)
-        self.company_user = User.objects.create_user(username='companyuser', email='company@example.com', password='password', tenant_id=100)
+        self.company = CompanyModel.objects.create(name='Test Company', corporate_number='1234567890123')
+        self.company.tenant_id = self.company.id
+        self.company.save()
+
+        set_current_tenant_id(self.company.id)
+        self.staff_user = User.objects.create_user(username='teststaff', email='staff@example.com', password='password', tenant_id=self.company.id)
+        self.company_user = User.objects.create_user(username='companyuser', email='company@example.com', password='password', tenant_id=self.company.id)
         self.company_user.is_staff = True
         self.company_user.save()
 
@@ -167,8 +175,6 @@ class StaffInquiryStatusTest(TestCase):
         )
         self.staff_user.user_permissions.set(permissions)
         self.company_user.user_permissions.set(permissions)
-
-        self.company = CompanyModel.objects.create(name='Test Company', corporate_number='1234567890123', tenant_id=100)
         ConnectStaff.objects.create(corporate_number=self.company.corporate_number, email=self.staff_user.email, status='approved')
 
         self.inquiry = StaffInquiry.objects.create(
@@ -208,7 +214,7 @@ class StaffInquiryStatusTest(TestCase):
 
     def test_company_can_post_on_completed_inquiry(self):
         from apps.company.models import CompanyUser
-        CompanyUser.objects.create(email=self.company_user.email, corporate_number=self.company.corporate_number, tenant_id=100)
+        CompanyUser.objects.create(email=self.company_user.email, corporate_number=self.company.corporate_number, tenant_id=self.company.id)
 
         self.inquiry.status = 'completed'
         self.inquiry.save()
@@ -229,7 +235,7 @@ class StaffInquiryStatusTest(TestCase):
 
     def test_flags_on_reply(self):
         from apps.company.models import CompanyUser
-        CompanyUser.objects.create(email=self.company_user.email, corporate_number=self.company.corporate_number, tenant_id=100)
+        CompanyUser.objects.create(email=self.company_user.email, corporate_number=self.company.corporate_number, tenant_id=self.company.id)
 
         # Create inquiry by staff
         inquiry = StaffInquiry.objects.create(

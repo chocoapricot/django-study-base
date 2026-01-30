@@ -2,6 +2,8 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from apps.staff.models import Staff, StaffEvaluation
+from apps.company.models import Company
+from apps.common.middleware import set_current_tenant_id
 from apps.master.models import StaffRegistStatus, EmploymentType
 import datetime
 from unittest.mock import patch
@@ -11,7 +13,9 @@ User = get_user_model()
 class StaffEvaluationViewTests(TestCase):
     def setUp(self):
         # ユーザー作成 (権限あり)
-        self.user = User.objects.create_user(username='testuser', password='password')
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
+        self.user = User.objects.create_user(username='testuser', password='password', tenant_id=self.company.tenant_id)
         self.client = Client()
         self.client.login(username='testuser', password='password')
         

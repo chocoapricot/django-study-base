@@ -1,4 +1,5 @@
 from django.test import TestCase, Client
+from apps.common.middleware import set_current_tenant_id
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core import mail
@@ -19,6 +20,7 @@ class StaffMailTest(TestCase):
     
     def setUp(self):
         """テストデータの準備"""
+        set_current_tenant_id(100)
         self.user = User.objects.create_user(
             username='testuser',
             email='test@example.com',

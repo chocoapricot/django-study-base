@@ -3,6 +3,8 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from apps.staff.models import Staff, StaffBank, StaffContact, StaffDisability, StaffMynumber, StaffInternational, StaffQualification, StaffSkill, StaffFile
+from apps.company.models import Company
+from apps.common.middleware import set_current_tenant_id
 from apps.master.models import Qualification, Skill, StaffRegistStatus, EmploymentType
 from apps.system.logs.models import AppLog
 from apps.system.settings.models import Dropdowns
@@ -12,11 +14,16 @@ User = get_user_model()
 class StaffLogsTestCase(TestCase):
     def setUp(self):
         """テスト用データの準備"""
+        # テナント作成
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
+
         # テスト用ユーザー作成
         self.user = User.objects.create_user(
             username='testuser',
             email='test@example.com',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=self.company.tenant_id
         )
         
         # 必要な権限を付与

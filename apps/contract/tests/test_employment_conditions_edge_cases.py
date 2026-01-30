@@ -11,6 +11,7 @@ from apps.contract.models import (
     StaffContract, ClientContract, ContractAssignment, 
     ContractAssignmentHakenPrint, ClientContractHaken
 )
+from apps.common.middleware import set_current_tenant_id
 from apps.common.constants import Constants
 from apps.system.settings.models import Dropdowns
 from unittest.mock import patch
@@ -24,9 +25,11 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
     
     def setUp(self):
         """テストデータのセットアップ"""
+        self.company = self._create_company()
+        set_current_tenant_id(self.company.id)
+
         self._create_dropdowns()
         self.user = self._create_user()
-        self.company = self._create_company()
         self.staff = self._create_staff()
         self.client_company = self._create_client()
         self.connect_staff = self._create_connect_staff()
@@ -64,6 +67,7 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
     def _create_user(self):
         from django.contrib.auth.models import Permission
         user = User.objects.create_user(
+            tenant_id=self.company.id,
             username='teststaff@example.com',
             email='teststaff@example.com',
             password='password',
@@ -90,6 +94,7 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
     
     def _create_staff(self):
         return Staff.objects.create(
+            tenant_id=self.company.id,
             email='teststaff@example.com',
             name_last='テスト',
             name_first='太郎',
@@ -97,6 +102,7 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
     
     def _create_client(self):
         return Client.objects.create(
+            tenant_id=self.company.id,
             name='クライアント株式会社',
             corporate_number='9876543210987',
         )
@@ -112,6 +118,7 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
         domain = Constants.DOMAIN.STAFF if domain_type == 'staff' else Constants.DOMAIN.CLIENT
         name = 'スタッフ向け雇用契約' if domain_type == 'staff' else 'クライアント向け派遣契約'
         return ContractPattern.objects.create(
+            tenant_id=self.company.id,
             name=name,
             domain=domain,
             is_active=True
@@ -119,12 +126,14 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
     
     def _create_job_category(self):
         return JobCategory.objects.create(
+            tenant_id=self.company.id,
             name='システム開発',
             is_active=True
         )
     
     def _create_staff_contract(self):
         return StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             corporate_number=self.company.corporate_number,
             contract_name='テストスタッフ契約',
@@ -142,6 +151,7 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
     
     def _create_client_contract(self):
         contract = ClientContract.objects.create(
+            tenant_id=self.company.id,
             client=self.client_company,
             contract_name='テストクライアント契約',
             client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
@@ -155,6 +165,7 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
         )
         
         ClientContractHaken.objects.create(
+            tenant_id=self.company.id,
             client_contract=contract,
             created_by=self.user,
             updated_by=self.user,
@@ -164,6 +175,7 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
     
     def _create_contract_assignment(self):
         assignment = ContractAssignment.objects.create(
+            tenant_id=self.company.id,
             client_contract=self.client_contract,
             staff_contract=self.staff_contract,
             issued_at=timezone.now(),  # 発行済みにする
@@ -183,6 +195,7 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
         """スタッフレコードが存在しない場合のテスト"""
         # 別のメールアドレスでユーザーを作成
         other_user = User.objects.create_user(
+            tenant_id=self.company.id,
             username='nostaff@example.com',
             email='nostaff@example.com',
             password='password',
@@ -191,6 +204,10 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
         )
         
         self.client.login(email='nostaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.get(reverse('contract:staff_contract_confirm_list'))
         
         self.assertEqual(response.status_code, 200)
@@ -202,6 +219,9 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
         Company.objects.all().delete()
         
         self.client.login(email='teststaff@example.com', password='password')
+        # 会社がないのでセッションに tenant_id を設定しても意味がないかもしれないが、
+        # 少なくともエラー回避のために空のセッションなどは必要
+
         response = self.client.get(reverse('contract:staff_contract_confirm_list'))
         
         self.assertEqual(response.status_code, 200)
@@ -214,6 +234,10 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
         self.company.save()
         
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.get(reverse('contract:staff_contract_confirm_list'))
         
         self.assertEqual(response.status_code, 200)
@@ -226,6 +250,10 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
         self.connect_staff.save()
         
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.get(reverse('contract:staff_contract_confirm_list'))
         
         self.assertEqual(response.status_code, 200)
@@ -238,6 +266,10 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
         self.client_contract.save()
         
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.get(reverse('contract:staff_contract_confirm_list'))
         
         self.assertEqual(response.status_code, 200)
@@ -247,6 +279,9 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
     def test_employment_conditions_issue_invalid_status(self):
         """無効なステータスでの就業条件明示書発行テスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # スタッフ契約を作成中状態のままにする
         self.staff_contract.contract_status = Constants.CONTRACT_STATUS.DRAFT
@@ -269,6 +304,9 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
     def test_employment_conditions_issue_non_dispatch(self):
         """派遣契約以外での就業条件明示書発行テスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # クライアント契約を派遣以外に変更
         self.client_contract.client_contract_type_code = '10'  # 派遣以外
@@ -291,6 +329,9 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
     def test_confirm_nonexistent_contract(self):
         """存在しない契約の確認テスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         response = self.client.post(
             reverse('contract:staff_contract_confirm_list'),
@@ -306,6 +347,9 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
     def test_confirm_nonexistent_assignment(self):
         """存在しない契約アサインの確認テスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         response = self.client.post(
             reverse('contract:staff_contract_confirm_list'),
@@ -321,6 +365,9 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
     def test_invalid_action(self):
         """無効なアクションのテスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         response = self.client.post(
             reverse('contract:staff_contract_confirm_list'),
@@ -339,6 +386,9 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
     def test_duplicate_employment_conditions_issue(self):
         """同じ契約番号での就業条件明示書重複発行テスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # スタッフ契約を発行済み状態にする
         self.staff_contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
@@ -347,6 +397,7 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
         
         # 既に同じ契約番号で発行履歴を作成
         ContractAssignmentHakenPrint.objects.create(
+            tenant_id=self.company.id,
             contract_assignment=self.assignment,
             print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS,
             printed_by=self.user,
@@ -376,6 +427,9 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
     def test_pdf_generation_failure(self):
         """PDF生成失敗時のテスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # スタッフ契約を発行済み状態にする
         self.staff_contract.contract_status = Constants.CONTRACT_STATUS.ISSUED
@@ -403,14 +457,19 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
     def test_multiple_assignments_same_staff(self):
         """同一スタッフの複数アサインテスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 別のクライアント契約を作成
         other_client = Client.objects.create(
+            tenant_id=self.company.id,
             name='別のクライアント株式会社',
             corporate_number='1111111111111',
         )
         
         other_client_contract = ClientContract.objects.create(
+            tenant_id=self.company.id,
             client=other_client,
             contract_name='別のクライアント契約',
             client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
@@ -424,6 +483,7 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
         )
         
         ClientContractHaken.objects.create(
+            tenant_id=self.company.id,
             client_contract=other_client_contract,
             created_by=self.user,
             updated_by=self.user,
@@ -431,6 +491,7 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
         
         # 別のアサインを作成
         other_assignment = ContractAssignment.objects.create(
+            tenant_id=self.company.id,
             client_contract=other_client_contract,
             staff_contract=self.staff_contract,
             created_by=self.user,
@@ -444,6 +505,7 @@ class EmploymentConditionsEdgeCasesTest(TestCase):
             assignment.save()
             
             ContractAssignmentHakenPrint.objects.create(
+                tenant_id=self.company.id,
                 contract_assignment=assignment,
                 print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS,
                 printed_by=self.user,

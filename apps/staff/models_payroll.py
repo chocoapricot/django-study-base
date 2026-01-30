@@ -1,11 +1,12 @@
 from django.db import models
-from ..common.models import MyTenantModel
+from ..common.models import MyTenantModel, TenantManager
 from .models_staff import Staff
 
 class StaffPayroll(MyTenantModel):
     """
     スタッフの給与関連情報を管理するモデル。
     """
+    objects = TenantManager()
     staff = models.OneToOneField(
         Staff,
         on_delete=models.CASCADE,
