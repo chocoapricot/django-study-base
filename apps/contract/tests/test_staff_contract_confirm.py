@@ -7,11 +7,18 @@ from apps.company.models import Company
 from apps.connect.models import ConnectStaff, ConnectStaffAgree
 from apps.master.models import StaffAgreement
 from apps.contract.models import StaffContract
+from apps.common.middleware import set_current_tenant_id
 from apps.common.constants import Constants
 from apps.system.settings.models import Dropdowns
 
 class StaffContractConfirmTest(TestCase):
     def setUp(self):
+        self.company = Company.objects.create(
+            name='Test Company',
+            corporate_number='1234567890123',
+        )
+        set_current_tenant_id(self.company.id)
+
         # Dropdownsデータを作成
         statuses = [
             (Constants.CONTRACT_STATUS.DRAFT, '作成中'),
@@ -29,17 +36,15 @@ class StaffContractConfirmTest(TestCase):
             )
         
         self.user = get_user_model().objects.create_user(
+            tenant_id=self.company.id,
             username='testuser@example.com',
             email='testuser@example.com',
             password='password',
             is_staff=True,
             is_active=True,
         )
-        self.company = Company.objects.create(
-            name='Test Company',
-            corporate_number='1234567890123',
-        )
         self.staff = Staff.objects.create(
+            tenant_id=self.company.id,
             email='testuser@example.com',
             name_last='Test',
             name_first='User',
@@ -50,6 +55,7 @@ class StaffContractConfirmTest(TestCase):
             status='approved',
         )
         self.staff_agreement = StaffAgreement.objects.create(
+            tenant_id=self.company.id,
             name='Test Agreement',
             agreement_text='This is a test agreement.',
             corporation_number=self.company.corporate_number,
@@ -58,8 +64,9 @@ class StaffContractConfirmTest(TestCase):
         from apps.contract.models import StaffContractPrint
         from django.utils import timezone
         
-        self.staff_pattern = ContractPattern.objects.create(name='スタッフ向け雇用契約', domain='1', is_active=True)
+        self.staff_pattern = ContractPattern.objects.create(tenant_id=self.company.id, name='スタッフ向け雇用契約', domain='1', is_active=True)
         self.contract = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             corporate_number=self.company.corporate_number,
             contract_name='Test Contract',
@@ -72,6 +79,7 @@ class StaffContractConfirmTest(TestCase):
         
         # 契約書の印刷履歴を作成
         self.print_history = StaffContractPrint.objects.create(
+            tenant_id=self.company.id,
             staff_contract=self.contract,
             printed_by=self.user,
             document_title='Test Contract PDF',
@@ -83,6 +91,10 @@ class StaffContractConfirmTest(TestCase):
         Test GET request to staff_contract_confirm_list view.
         """
         self.client.login(email='testuser@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.get(reverse('contract:staff_contract_confirm_list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'スタッフ契約確認')
@@ -94,6 +106,10 @@ class StaffContractConfirmTest(TestCase):
         Test POST request to staff_contract_confirm_list view to confirm a contract.
         """
         self.client.login(email='testuser@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.post(reverse('contract:staff_contract_confirm_list'), {'contract_id': self.contract.id, 'action': 'confirm_staff_contract'})
         self.assertEqual(response.status_code, 302) # Should redirect
 
@@ -118,6 +134,10 @@ class StaffContractConfirmTest(TestCase):
         self.contract.save()
 
         self.client.login(email='testuser@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.post(reverse('contract:staff_contract_confirm_list'), {'contract_id': self.contract.id, 'action': 'unconfirm_staff_contract'})
         self.assertEqual(response.status_code, 302) # Should redirect
 

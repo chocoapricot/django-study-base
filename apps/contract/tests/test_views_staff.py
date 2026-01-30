@@ -7,6 +7,7 @@ from apps.client.models import Client as TestClient, ClientUser, ClientDepartmen
 from apps.staff.models import Staff
 from apps.master.models import ContractPattern, DefaultValue
 from apps.master.models_worktime import WorkTimePattern
+from apps.common.middleware import set_current_tenant_id
 from apps.common.constants import Constants
 import datetime
 from unittest.mock import patch
@@ -20,6 +21,10 @@ class StaffContractViewTest(TestCase):
 
     def setUp(self):
         """テストデータの準備"""
+        from apps.company.models import Company
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.id)
+
         from django.conf import settings
         settings.DROPDOWN_CLIENT_CONTRACT_TYPE = []
         from django.contrib.auth.models import Permission
@@ -54,6 +59,7 @@ class StaffContractViewTest(TestCase):
         )
 
         self.user = User.objects.create_user(
+            tenant_id=self.company.id,
             username='testuser',
             email='test@example.com',
             password='testpass123'
@@ -76,12 +82,13 @@ class StaffContractViewTest(TestCase):
         self.user.user_permissions.set(all_permissions)
 
         self.staff = Staff.objects.create(
+            tenant_id=self.company.id,
             name_last='Test',
             name_first='Staff',
             employee_no='S001',
             hire_date=datetime.date(2024, 1, 1),
         )
-        self.staff_pattern = ContractPattern.objects.create(name='Staff Pattern', domain='1', is_active=True)
+        self.staff_pattern = ContractPattern.objects.create(tenant_id=self.company.id, name='Staff Pattern', domain='1', is_active=True)
 
         from apps.system.settings.models import Dropdowns
         self.pay_unit_daily = Dropdowns.objects.create(category='pay_unit', value='20', name='日給', active=True)
@@ -89,6 +96,7 @@ class StaffContractViewTest(TestCase):
         
         # 就業時間パターン作成
         self.worktime_pattern = WorkTimePattern.objects.create(
+            tenant_id=self.company.id,
             name='標準勤務',
             is_active=True
         )
@@ -96,11 +104,15 @@ class StaffContractViewTest(TestCase):
         # 時間外算出パターン作成
         from apps.master.models import OvertimePattern
         self.overtime_pattern = OvertimePattern.objects.create(
+            tenant_id=self.company.id,
             name='標準時間外',
             is_active=True
         )
 
         self.client.login(username='testuser', password='testpass123')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
 
     def test_staff_contract_create_post_invalid_retains_staff_display(self):
         """POSTリクエストでフォームが無効な場合に、スタッフの表示が維持されるかテスト"""
@@ -124,6 +136,10 @@ class StaffContractViewTest(TestCase):
 
     def test_staff_contract_list_view(self):
         """スタッフ契約一覧ビューのテスト"""
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.get(reverse('contract:staff_contract_list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'スタッフ契約一覧')
@@ -131,14 +147,19 @@ class StaffContractViewTest(TestCase):
     def test_staff_contract_pdf_view(self):
         """スタッフ契約PDFビューのテスト"""
         from apps.staff.models import Staff
-        staff = Staff.objects.create(name_last='Test', name_first='Staff')
-        staff_pattern = ContractPattern.objects.create(name='Staff Pattern', domain='1')
+        staff = Staff.objects.create(tenant_id=self.company.id, name_last='Test', name_first='Staff')
+        staff_pattern = ContractPattern.objects.create(tenant_id=self.company.id, name='Staff Pattern', domain='1')
         staff_contract = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=staff,
             contract_name='Test Staff Contract',
             start_date=datetime.date.today(),
             contract_pattern=staff_pattern
         )
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.get(reverse('contract:staff_contract_pdf', kwargs={'pk': staff_contract.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/pdf')
@@ -148,15 +169,20 @@ class StaffContractViewTest(TestCase):
         """承認済みのスタッフ契約書を印刷すると発行済になるテスト"""
         from apps.staff.models import Staff
         from ..models import StaffContractPrint
-        staff = Staff.objects.create(name_last='Test', name_first='Staff')
-        staff_pattern = ContractPattern.objects.create(name='Staff Pattern', domain='1')
+        staff = Staff.objects.create(tenant_id=self.company.id, name_last='Test', name_first='Staff')
+        staff_pattern = ContractPattern.objects.create(tenant_id=self.company.id, name='Staff Pattern', domain='1')
         staff_contract = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=staff,
             contract_name='Test Staff Contract',
             start_date=datetime.date.today(),
             contract_status=Constants.CONTRACT_STATUS.APPROVED,
             contract_pattern=staff_pattern
         )
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         self.assertEqual(StaffContractPrint.objects.count(), 0)
         response = self.client.get(reverse('contract:staff_contract_pdf', kwargs={'pk': staff_contract.pk}))
         self.assertEqual(response.status_code, 200)
@@ -174,6 +200,7 @@ class StaffContractViewTest(TestCase):
     def test_staff_contract_list_view_with_pay_unit(self):
         """スタッフ契約一覧画面で支払単位が表示されるかテスト"""
         staff_contract = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             contract_name='Test Staff Contract with Pay Unit',
             start_date=datetime.date.today(),
@@ -181,6 +208,10 @@ class StaffContractViewTest(TestCase):
             contract_amount=20000,
             pay_unit=self.pay_unit_daily.value
         )
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.get(reverse('contract:staff_contract_list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '日給&nbsp;20,000円')
@@ -188,6 +219,7 @@ class StaffContractViewTest(TestCase):
     def test_staff_contract_detail_view_with_pay_unit(self):
         """スタッフ契約詳細画面で支払単位が表示されるかテスト"""
         staff_contract = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             contract_name='Test Staff Contract with Pay Unit',
             start_date=datetime.date.today(),
@@ -195,6 +227,10 @@ class StaffContractViewTest(TestCase):
             contract_amount=20000,
             pay_unit=self.pay_unit_daily.value
         )
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.get(reverse('contract:staff_contract_detail', kwargs={'pk': staff_contract.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '日給&nbsp;20,000円')
@@ -211,6 +247,10 @@ class StaffContractViewTest(TestCase):
 
         # 2. スタッフ契約作成画面にGETリクエスト
         url = reverse('contract:staff_contract_create')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.get(url)
 
         # 3. レスポンスを検証
@@ -233,6 +273,7 @@ class StaffContractViewTest(TestCase):
 
         # 2. コピー元の契約を作成
         original_contract = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             contract_name='Original Name',
             start_date=datetime.date.today(),
@@ -241,6 +282,10 @@ class StaffContractViewTest(TestCase):
 
         # 3. スタッフ契約作成画面にコピー用のGETリクエスト
         url = reverse('contract:staff_contract_create') + f'?copy_from={original_contract.pk}'
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.get(url)
 
         # 4. レスポンスを検証
@@ -267,6 +312,10 @@ class StaffContractViewTest(TestCase):
             'worktime_pattern': self.worktime_pattern.pk,
             'overtime_pattern': self.overtime_pattern.pk,
         }
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.post(url, post_data)
 
         # リダイレクトを確認
@@ -281,6 +330,7 @@ class StaffContractViewTest(TestCase):
         """スタッフ契約更新ビューで新しいフィールドが保存されるかテスト"""
         # テスト用の契約を作成
         staff_contract = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             contract_name='Update View Test Contract',
             start_date=datetime.date(2024, 4, 1),
@@ -304,6 +354,9 @@ class StaffContractViewTest(TestCase):
             'worktime_pattern': self.worktime_pattern.pk,
             'overtime_pattern': self.overtime_pattern.pk,
         }
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
 
         response = self.client.post(url, post_data)
 
@@ -325,7 +378,11 @@ class StaffContractIssueHistoryViewTest(TestCase):
         from apps.company.models import Company
         from ..models import StaffContractPrint
 
+        self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
+        set_current_tenant_id(self.company.id)
+
         self.user = User.objects.create_user(
+            tenant_id=self.company.id,
             username='testuser',
             password='testpass123',
             email='testuser@example.com'
@@ -335,13 +392,16 @@ class StaffContractIssueHistoryViewTest(TestCase):
         self.user.user_permissions.set(permissions)
 
         self.client.login(username='testuser', password='testpass123')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
 
-        self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
-        self.staff = Staff.objects.create(name_last='Test', name_first='Staff')
-        self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='1')
+        self.staff = Staff.objects.create(tenant_id=self.company.id, name_last='Test', name_first='Staff')
+        self.contract_pattern = ContractPattern.objects.create(tenant_id=self.company.id, name='Test Pattern', domain='1')
 
         # 10件以上の発行履歴を持つ契約
         self.contract_many = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             contract_name='Many Prints Contract',
             start_date=datetime.date.today(),
@@ -349,6 +409,7 @@ class StaffContractIssueHistoryViewTest(TestCase):
         )
         for i in range(12):
             StaffContractPrint.objects.create(
+                tenant_id=self.company.id,
                 staff_contract=self.contract_many,
                 printed_by=self.user,
                 document_title=f'Document {i+1}'
@@ -356,6 +417,7 @@ class StaffContractIssueHistoryViewTest(TestCase):
 
         # 10件未満の発行履歴を持つ契約
         self.contract_few = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             contract_name='Few Prints Contract',
             start_date=datetime.date.today(),
@@ -363,6 +425,7 @@ class StaffContractIssueHistoryViewTest(TestCase):
         )
         for i in range(5):
             StaffContractPrint.objects.create(
+                tenant_id=self.company.id,
                 staff_contract=self.contract_few,
                 printed_by=self.user,
                 document_title=f'Doc {i+1}'
@@ -370,6 +433,7 @@ class StaffContractIssueHistoryViewTest(TestCase):
 
         # 発行履歴が0件の契約
         self.contract_zero = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             contract_name='Zero Prints Contract',
             start_date=datetime.date.today(),
@@ -379,6 +443,10 @@ class StaffContractIssueHistoryViewTest(TestCase):
     def test_detail_view_history_limit(self):
         """詳細ページで発行履歴が10件に制限されることをテスト"""
         url = reverse('contract:staff_contract_detail', kwargs={'pk': self.contract_many.pk})
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['issue_history_for_display']), 10)
@@ -388,6 +456,10 @@ class StaffContractIssueHistoryViewTest(TestCase):
     def test_detail_view_history_less_than_limit(self):
         """詳細ページで発行履歴が10件未満の場合のテスト"""
         url = reverse('contract:staff_contract_detail', kwargs={'pk': self.contract_few.pk})
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['issue_history_for_display']), 5)
@@ -397,6 +469,10 @@ class StaffContractIssueHistoryViewTest(TestCase):
     def test_detail_view_no_history_hides_card(self):
         """詳細ページで発行履歴が0件の場合、発行履歴カードが表示されないことをテスト"""
         url = reverse('contract:staff_contract_detail', kwargs={'pk': self.contract_zero.pk})
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['issue_history_count'], 0)
@@ -424,6 +500,10 @@ class StaffContractIssueHistoryViewTest(TestCase):
         url = reverse('contract:staff_contract_issue_history_list', kwargs={'pk': self.contract_many.pk})
 
         # 1ページ目
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['page_obj'].object_list), 20)
@@ -448,8 +528,13 @@ class StaffContractApproveViewTest(TestCase):
         from django.contrib.contenttypes.models import ContentType
         from apps.master.models import MinimumPay
         from apps.system.settings.models import Dropdowns
+        from apps.company.models import Company
+
+        self.company = Company.objects.create(name='Test Company', corporate_number='1112223334445')
+        set_current_tenant_id(self.company.id)
 
         self.user = User.objects.create_user(
+            tenant_id=self.company.id,
             username='testuser',
             password='testpass123',
             email='testuser@example.com'
@@ -459,9 +544,12 @@ class StaffContractApproveViewTest(TestCase):
         self.user.user_permissions.set(permissions)
 
         self.client.login(username='testuser', password='testpass123')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
 
-        self.staff = Staff.objects.create(name_last='Test', name_first='Staff', employee_no='S001', hire_date=datetime.date(2023, 1, 1))
-        self.contract_pattern = ContractPattern.objects.create(name='Test Pattern', domain='1')
+        self.staff = Staff.objects.create(tenant_id=self.company.id, name_last='Test', name_first='Staff', employee_no='S001', hire_date=datetime.date(2023, 1, 1))
+        self.contract_pattern = ContractPattern.objects.create(tenant_id=self.company.id, name='Test Pattern', domain='1')
 
         # 最低賃金と都道府県のマスターデータ
         self.tokyo_pref = Dropdowns.objects.create(category='pref', value='13', name='東京都', active=True)
@@ -470,6 +558,7 @@ class StaffContractApproveViewTest(TestCase):
 
         # 最低賃金以上の契約（申請中）
         self.valid_contract = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             contract_name='Valid Wage Contract',
             start_date=datetime.date(2024, 1, 1),
@@ -482,6 +571,7 @@ class StaffContractApproveViewTest(TestCase):
 
         # 最低賃金未満の契約（申請中）
         self.invalid_contract = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             contract_name='Invalid Wage Contract',
             start_date=datetime.date(2024, 1, 1),
@@ -496,6 +586,10 @@ class StaffContractApproveViewTest(TestCase):
     def test_approve_success_with_valid_wage(self, mock_generate_number):
         """最低賃金以上の契約が正常に承認されるかテスト"""
         url = reverse('contract:staff_contract_approve', kwargs={'pk': self.valid_contract.pk})
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.post(url, {'is_approved': 'true'}, follow=True)
 
         self.assertEqual(response.status_code, 200)
@@ -509,6 +603,10 @@ class StaffContractApproveViewTest(TestCase):
     def test_approve_failure_with_invalid_wage(self):
         """最低賃金未満の契約が承認されないかテスト"""
         url = reverse('contract:staff_contract_approve', kwargs={'pk': self.invalid_contract.pk})
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
         response = self.client.post(url, {'is_approved': 'true'}, follow=True)
 
         self.assertEqual(response.status_code, 200)
