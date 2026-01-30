@@ -15,6 +15,7 @@ from io import BytesIO
 from django.core.files.base import ContentFile
 from django.conf import settings
 from .forms import CompanyForm, CompanyDepartmentForm, CompanyUserForm, CompanySealUploadForm
+from apps.common.middleware import set_current_tenant_id
 
 def get_current_company(request, pk=None, obj=None):
     """
@@ -36,6 +37,7 @@ def get_current_company(request, pk=None, obj=None):
                 # Company.pk を取得
                 company = Company.objects.get(pk=target_id)
                 request.session['current_tenant_id'] = company.tenant_id
+                set_current_tenant_id(company.tenant_id)
                 return company
             except (Company.DoesNotExist, ValueError):
                 pass
@@ -45,6 +47,7 @@ def get_current_company(request, pk=None, obj=None):
             try:
                 company = Company.objects.get(tenant_id=obj.tenant_id)
                 request.session['current_tenant_id'] = company.tenant_id
+                set_current_tenant_id(company.tenant_id)
                 return company
             except Company.DoesNotExist:
                 pass
@@ -53,7 +56,9 @@ def get_current_company(request, pk=None, obj=None):
         session_tenant_id = request.session.get('current_tenant_id')
         if session_tenant_id:
             try:
-                return Company.objects.get(tenant_id=session_tenant_id)
+                company = Company.objects.get(tenant_id=session_tenant_id)
+                set_current_tenant_id(company.tenant_id)
+                return company
             except Company.DoesNotExist:
                 pass
 
@@ -62,6 +67,7 @@ def get_current_company(request, pk=None, obj=None):
             try:
                 company = Company.objects.get(tenant_id=request.user.tenant_id)
                 request.session['current_tenant_id'] = company.tenant_id
+                set_current_tenant_id(company.tenant_id)
                 return company
             except Company.DoesNotExist:
                 pass
@@ -73,6 +79,7 @@ def get_current_company(request, pk=None, obj=None):
             log_model_action(request.user, 'create', company)
         
         request.session['current_tenant_id'] = company.tenant_id
+        set_current_tenant_id(company.tenant_id)
         return company
 
     # 一般ユーザー（非スーパーユーザー）の場合
@@ -81,6 +88,7 @@ def get_current_company(request, pk=None, obj=None):
             company = Company.objects.get(tenant_id=request.user.tenant_id)
             # セッションを同期（他で利用するため）
             request.session['current_tenant_id'] = company.tenant_id
+            set_current_tenant_id(company.tenant_id)
             return company
         except Company.DoesNotExist:
             raise Http404("所属する会社情報が見つかりません。")
@@ -226,9 +234,9 @@ def company_edit(request, pk=None):
 @login_required
 @permission_required('company.view_companydepartment', raise_exception=True)
 def department_detail(request, pk):
+    company = get_current_company(request)
     department = get_object_or_404(CompanyDepartment, pk=pk)
     log_view_detail(request.user, department)
-    company = get_current_company(request, obj=department)
     
     # この会社の全部署一覧を取得
     departments = CompanyDepartment.objects.filter(tenant_id=company.tenant_id).order_by('display_order', 'name')
@@ -269,8 +277,8 @@ def department_create(request):
 @login_required
 @permission_required('company.change_companydepartment', raise_exception=True)
 def department_edit(request, pk):
+    company = get_current_company(request)
     department = get_object_or_404(CompanyDepartment, pk=pk)
-    company = get_current_company(request, obj=department)
     if request.method == 'POST':
         form = CompanyDepartmentForm(request.POST, instance=department)
         if form.is_valid():
@@ -300,8 +308,8 @@ def department_edit(request, pk):
 @login_required
 @permission_required('company.delete_companydepartment', raise_exception=True)
 def department_delete(request, pk):
+    company = get_current_company(request)
     department = get_object_or_404(CompanyDepartment, pk=pk)
-    company = get_current_company(request, obj=department)
     if request.method == 'POST':
         log_model_action(request.user, 'delete', department)
         department.delete()
@@ -399,8 +407,8 @@ def company_user_create(request):
 @login_required
 @permission_required('company.change_companyuser', raise_exception=True)
 def company_user_edit(request, pk):
+    company = get_current_company(request)
     company_user = get_object_or_404(CompanyUser, pk=pk)
-    company = get_current_company(request, obj=company_user)
 
     if request.method == 'POST':
         form = CompanyUserForm(request.POST, instance=company_user, corporate_number=company.corporate_number)
@@ -455,8 +463,8 @@ def company_user_edit(request, pk):
 @login_required
 @permission_required('company.delete_companyuser', raise_exception=True)
 def company_user_delete(request, pk):
+    company = get_current_company(request)
     company_user = get_object_or_404(CompanyUser, pk=pk)
-    company = get_current_company(request, obj=company_user)
     if request.method == 'POST':
         log_model_action(request.user, 'delete', company_user)
         company_user.delete()
@@ -510,9 +518,9 @@ def company_user_detail(request, pk):
     from apps.contract.models import ClientContract
     User = get_user_model()
     
+    company = get_current_company(request)
     company_user = get_object_or_404(CompanyUser, pk=pk)
     log_view_detail(request.user, company_user)
-    company = get_current_company(request, obj=company_user)
     company_users = CompanyUser.objects.filter(tenant_id=company.tenant_id)
 
     # 担当者のうち、ログインアカウントが存在するメールアドレスのセットを取得

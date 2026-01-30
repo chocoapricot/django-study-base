@@ -15,7 +15,7 @@ User = get_user_model()
 class PayrollValidationTest(TestCase):
     def setUp(self):
         self.client_test = TestClient()
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.user = User.objects.create_user(username='testuser', password='testpassword', tenant_id=1)
         self.client_test.login(username='testuser', password='testpassword')
 
         # 権限を付与
@@ -54,11 +54,16 @@ class PayrollValidationTest(TestCase):
             defaults={'name': '時間単価', 'active': True, 'disp_seq': 1}
         )
 
+        # 会社作成
+        from apps.company.models import Company
+        self.company = Company.objects.create(name='テスト会社', tenant_id=1)
+
         # テストデータ作成
         self.client_obj = Client.objects.create(
             name='テストクライアント',
             corporate_number='1234567890123',
-            basic_contract_date_haken=date(2023, 1, 1)
+            basic_contract_date_haken=date(2023, 1, 1),
+            tenant_id=1
         )
 
         self.staff = Staff.objects.create(
@@ -69,32 +74,36 @@ class PayrollValidationTest(TestCase):
             birth_date=date(1990, 1, 1),
             sex=1,
             hire_date=date(2023, 1, 1),
-            employee_no='EMP001'
+            employee_no='EMP001',
+            tenant_id=1
         )
 
         self.employment_type = EmploymentType.objects.create(
             name='正社員',
             is_fixed_term=False,
-            is_active=True
+            is_active=True,
+            tenant_id=1
         )
 
         self.contract_pattern = ContractPattern.objects.create(
             name='テスト契約パターン',
             domain=Constants.DOMAIN.CLIENT,
             contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
-            is_active=True
+            is_active=True,
+            tenant_id=1
         )
 
         self.staff_contract_pattern = ContractPattern.objects.create(
             name='スタッフ契約パターン',
             domain=Constants.DOMAIN.STAFF,
-            is_active=True
+            is_active=True,
+            tenant_id=1
         )
         
         # 就業時間パターン
         from apps.master.models import WorkTimePattern, OvertimePattern
-        self.worktime_pattern = WorkTimePattern.objects.create(name='標準勤務', is_active=True)
-        self.overtime_pattern = OvertimePattern.objects.create(name='標準時間外')
+        self.worktime_pattern = WorkTimePattern.objects.create(name='標準勤務', is_active=True, tenant_id=1)
+        self.overtime_pattern = OvertimePattern.objects.create(name='標準時間外', tenant_id=1)
 
         # クライアント契約作成
         self.client_contract = ClientContract.objects.create(
@@ -108,7 +117,8 @@ class PayrollValidationTest(TestCase):
             worktime_pattern=self.worktime_pattern,
             overtime_pattern=self.overtime_pattern,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=1
         )
 
         # スタッフ契約作成
@@ -122,7 +132,8 @@ class PayrollValidationTest(TestCase):
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             overtime_pattern=self.overtime_pattern,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=1
         )
 
         # 契約アサイン
@@ -130,7 +141,8 @@ class PayrollValidationTest(TestCase):
             client_contract=self.client_contract,
             staff_contract=self.staff_contract,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=1
         )
 
         # 派遣情報を作成（派遣契約の場合に必要）
@@ -144,14 +156,16 @@ class PayrollValidationTest(TestCase):
             name_first='担当者',
             email='company@example.com',
             department_code='001',
-            display_order=1
+            display_order=1,
+            tenant_id=1
         )
         
         # クライアント部署を作成
         self.client_department = ClientDepartment.objects.create(
             client=self.client_obj,
             name='テスト部署',
-            department_code='001'
+            department_code='001',
+            tenant_id=1
         )
         
         # クライアントユーザーを作成
@@ -159,7 +173,8 @@ class PayrollValidationTest(TestCase):
             client=self.client_obj,
             name_last='クライアント',
             name_first='担当者',
-            email='client@example.com'
+            email='client@example.com',
+            tenant_id=1
         )
         
         self.haken_info = ClientContractHaken.objects.create(
@@ -174,7 +189,8 @@ class PayrollValidationTest(TestCase):
             limit_by_agreement=0,
             limit_indefinite_or_senior=0,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=1
         )
 
     def test_client_contract_pending_without_payroll_error(self):
@@ -222,7 +238,8 @@ class PayrollValidationTest(TestCase):
             pension_insurance_non_enrollment_reason='年金制度対象外',
             employment_insurance_join_date=date(2024, 1, 1),
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=1
         )
 
         data = {
@@ -288,7 +305,8 @@ class PayrollValidationTest(TestCase):
             pension_insurance_non_enrollment_reason='年金制度対象外',
             employment_insurance_join_date=date(2024, 1, 1),
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=1
         )
 
         # 契約を申請状態にする
@@ -314,7 +332,8 @@ class PayrollValidationTest(TestCase):
             name='業務委託契約パターン',
             domain=Constants.DOMAIN.CLIENT,
             contract_type_code='10',  # 派遣以外
-            is_active=True
+            is_active=True,
+            tenant_id=1
         )
 
         # 業務委託契約を作成
@@ -329,7 +348,8 @@ class PayrollValidationTest(TestCase):
             worktime_pattern=self.worktime_pattern,
             overtime_pattern=self.overtime_pattern,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=1
         )
 
         data = {

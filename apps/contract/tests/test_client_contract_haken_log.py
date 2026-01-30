@@ -32,19 +32,24 @@ class ClientContractHakenLogTest(TestCase):
             active=True
         )
         
+        # 会社とクライアント
+        cls.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+
         # ユーザーと権限の設定
-        cls.user = User.objects.create_user(username='logtestuser', password='password')
+        cls.user = User.objects.create_user(
+            username='logtestuser', password='password',
+            tenant_id=cls.company.tenant_id
+        )
         content_type = ContentType.objects.get_for_model(ClientContract)
         permissions = Permission.objects.filter(content_type=content_type)
         cls.user.user_permissions.set(permissions)
 
-        # 会社とクライアント
-        cls.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
         cls.client_model = Client.objects.create(
             name='Test Client',
             corporate_number='9876543210987',
             basic_contract_date=datetime.date(2000, 1, 1),
-            basic_contract_date_haken=datetime.date(2000, 1, 1)
+            basic_contract_date_haken=datetime.date(2000, 1, 1),
+            tenant_id=cls.company.tenant_id
         )
 
         # 派遣契約種別をDropdownに作成
@@ -61,10 +66,22 @@ class ClientContractHakenLogTest(TestCase):
         cls.overtime_pattern = OvertimePattern.objects.create(name='標準時間外')
 
         # 派遣先・派遣元の担当者・部署
-        cls.haken_office = ClientDepartment.objects.create(client=cls.client_model, name='Test Office', is_haken_office=True)
-        cls.haken_unit = ClientDepartment.objects.create(client=cls.client_model, name='Test Unit', is_haken_unit=True)
-        cls.client_user = ClientUser.objects.create(client=cls.client_model, name_last='Rep', name_first='Client', email='client@test.com')
-        cls.company_user = CompanyUser.objects.create(name_last='Rep', name_first='Company', email='company@test.com')
+        cls.haken_office = ClientDepartment.objects.create(
+            client=cls.client_model, name='Test Office', is_haken_office=True,
+            tenant_id=cls.company.tenant_id
+        )
+        cls.haken_unit = ClientDepartment.objects.create(
+            client=cls.client_model, name='Test Unit', is_haken_unit=True,
+            tenant_id=cls.company.tenant_id
+        )
+        cls.client_user = ClientUser.objects.create(
+            client=cls.client_model, name_last='Rep', name_first='Client', email='client@test.com',
+            tenant_id=cls.company.tenant_id
+        )
+        cls.company_user = CompanyUser.objects.create(
+            name_last='Rep', name_first='Company', email='company@test.com',
+            tenant_id=cls.company.tenant_id
+        )
 
     def setUp(self):
         """各テストの準備"""
@@ -78,6 +95,7 @@ class ClientContractHakenLogTest(TestCase):
             contract_status=Constants.CONTRACT_STATUS.DRAFT,
             worktime_pattern=self.worktime_pattern,
             overtime_pattern=self.overtime_pattern,
+            tenant_id=self.company.tenant_id,
         )
         self.client.login(username='logtestuser', password='password')
         self.update_url = reverse('contract:client_contract_update', kwargs={'pk': self.contract.pk})
@@ -139,9 +157,13 @@ class ClientContractHakenLogTest(TestCase):
             responsible_person_company=self.company_user,
             limit_by_agreement='0',
             limit_indefinite_or_senior='0',
+            tenant_id=self.company.tenant_id,
         )
         AppLog.objects.all().delete()
-        new_client_user = ClientUser.objects.create(client=self.client_model, name_last='New', name_first='Rep', email='new@test.com')
+        new_client_user = ClientUser.objects.create(
+            client=self.client_model, name_last='New', name_first='Rep', email='new@test.com',
+            tenant_id=self.company.tenant_id
+        )
 
         post_data = {
             'client': self.client_model.pk,

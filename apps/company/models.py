@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from apps.common.models import MyModel, MyTenantModel
+from apps.common.models import MyModel, MyTenantModel, TenantManager
 from apps.common.constants import Constants, get_dispatch_treatment_method_choices
 
 class CompanyDepartment(MyTenantModel):
@@ -21,6 +21,8 @@ class CompanyDepartment(MyTenantModel):
     valid_from = models.DateField('有効期限開始日', blank=True, null=True, help_text='未入力の場合は無期限')
     valid_to = models.DateField('有効期限終了日', blank=True, null=True, help_text='未入力の場合は無期限')
     
+    objects = TenantManager()
+
     class Meta:
         db_table = 'apps_company_department'
         verbose_name = '部署'
@@ -209,6 +211,8 @@ class CompanyUser(MyTenantModel):
     phone_number = models.CharField('電話番号', max_length=20, blank=True, null=True)
     email = models.EmailField('メールアドレス', blank=True, null=True)
     display_order = models.PositiveIntegerField('表示順', default=0)
+
+    objects = TenantManager()
 
     class Meta:
         db_table = 'apps_company_user'

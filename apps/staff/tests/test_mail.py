@@ -22,7 +22,8 @@ class StaffMailTest(TestCase):
         self.user = User.objects.create_user(
             username='testuser',
             email='test@example.com',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=100
         )
         # スタッフ閲覧権限を付与
         from django.contrib.auth.models import Permission
@@ -33,13 +34,15 @@ class StaffMailTest(TestCase):
             corporate_number='1234567890123',
             name='テスト株式会社',
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=100
         )
         CompanyUser.objects.create(
             email=self.user.email,
             corporate_number=self.company.corporate_number,
             created_by=self.user,
-            updated_by=self.user
+            updated_by=self.user,
+            tenant_id=100
         )
 
         # マスターデータを作成
