@@ -10,6 +10,8 @@ from apps.staff.models import Staff
 from apps.master.models import EmploymentType, ContractPattern, StaffAgreement, OvertimePattern, TimePunch
 from apps.connect.models import ConnectStaff, ConnectStaffAgree
 from apps.common.constants import Constants
+from apps.common.middleware import set_current_tenant_id
+from apps.company.models import Company
 
 User = get_user_model()
 
@@ -18,11 +20,19 @@ class StaffAgreementKintaiTest(TestCase):
 
     def setUp(self):
         """テストデータの準備"""
+        # 会社作成
+        self.company = Company.objects.create(
+            name='テスト会社',
+            corporate_number='1234567890123'
+        )
+        set_current_tenant_id(self.company.id)
+
         # ユーザー作成
         self.user = User.objects.create_user(
             username='testuser',
             email='test@example.com',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=self.company.id
         )
         
         # Add permission
@@ -31,6 +41,7 @@ class StaffAgreementKintaiTest(TestCase):
 
         # スタッフ作成
         self.staff = Staff.objects.create(
+            tenant_id=self.company.id,
             email='test@example.com',
             name_last='テスト',
             name_first='太郎',
@@ -40,29 +51,34 @@ class StaffAgreementKintaiTest(TestCase):
         
         # 雇用形態作成
         self.employment_type = EmploymentType.objects.create(
+            tenant_id=self.company.id,
             name='正社員'
         )
         
         # 契約パターン作成
         self.contract_pattern = ContractPattern.objects.create(
+            tenant_id=self.company.id,
             name='標準契約',
             employment_type=self.employment_type
         )
         
         # 時間外算出パターン作成
         self.overtime_pattern = OvertimePattern.objects.create(
+            tenant_id=self.company.id,
             name='テスト用時間外パターン',
             calculate_midnight_premium=True,
         )
 
         # 時間丸め設定を作成
         self.time_punch = TimePunch.objects.create(
+            tenant_id=self.company.id,
             name='テスト用打刻設定',
             punch_method=Constants.PUNCH_METHOD.PUNCH,
         )
 
         # スタッフ契約作成
         self.staff_contract = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             contract_name="テスト契約",
             start_date=timezone.localtime().date(),
@@ -81,6 +97,7 @@ class StaffAgreementKintaiTest(TestCase):
         
         # 同意文言作成
         self.agreement = StaffAgreement.objects.create(
+            tenant_id=self.company.id,
             name='個人情報取得の同意',
             agreement_text='個人情報の取得に同意します。',
             corporation_number='1234567890123',
@@ -94,6 +111,9 @@ class StaffAgreementKintaiTest(TestCase):
     def test_punch_with_unagreed_agreement_redirects_to_agreement(self):
         """未同意文言がある場合、打刻画面が同意画面にリダイレクトされることをテスト"""
         self.client.login(username='testuser', password='testpass123')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 打刻画面にアクセス
         response = self.client.get(self.punch_url)
@@ -115,6 +135,9 @@ class StaffAgreementKintaiTest(TestCase):
         )
         
         self.client.login(username='testuser', password='testpass123')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 打刻画面にアクセス
         response = self.client.get(self.punch_url)
@@ -143,6 +166,9 @@ class StaffAgreementKintaiTest(TestCase):
         self.staff_contract.delete()
         
         self.client.login(username='testuser', password='testpass123')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 打刻画面にアクセス
         response = self.client.get(self.punch_url)
@@ -163,6 +189,9 @@ class StaffAgreementKintaiTest(TestCase):
     def test_timerecord_list_with_unagreed_agreement_redirects(self):
         """未同意文言がある場合、勤怠一覧画面が同意画面にリダイレクトされることをテスト"""
         self.client.login(username='testuser', password='testpass123')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 勤怠一覧画面にアクセス
         response = self.client.get(self.list_url)
@@ -183,6 +212,9 @@ class StaffAgreementKintaiTest(TestCase):
         )
         
         self.client.login(username='testuser', password='testpass123')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 勤怠一覧画面にアクセス
         response = self.client.get(self.list_url)
@@ -196,6 +228,9 @@ class StaffAgreementKintaiTest(TestCase):
         self.connection.delete()
         
         self.client.login(username='testuser', password='testpass123')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 打刻画面にアクセス
         response = self.client.get(self.punch_url)
@@ -210,6 +245,9 @@ class StaffAgreementKintaiTest(TestCase):
         self.user.save()
         
         self.client.login(username='testuser', password='testpass123')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 打刻画面にアクセス
         response = self.client.get(self.punch_url)
@@ -224,6 +262,9 @@ class StaffAgreementKintaiTest(TestCase):
         self.agreement.save()
         
         self.client.login(username='testuser', password='testpass123')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 打刻画面にアクセス
         response = self.client.get(self.punch_url)
