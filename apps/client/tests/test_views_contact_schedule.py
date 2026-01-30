@@ -3,22 +3,30 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from apps.client.models import Client, ClientContactSchedule
+from apps.company.models import Company
 from apps.system.settings.models import Dropdowns
 
 User = get_user_model()
 
 class ClientContactScheduleViewTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='password')
-        self.client_obj = Client.objects.create(corporate_number='1234567890123', name='Test Client', name_furigana='テストクライアント')
+        self.company = Company.objects.create(name='Test Company', tenant_id=1)
+        self.user = User.objects.create_user(username='testuser', password='password', tenant_id=1)
+        self.client_obj = Client.objects.create(corporate_number='1234567890123', name='Test Client', name_furigana='テストクライアント', tenant_id=1)
         self.schedule = ClientContactSchedule.objects.create(
             client=self.client_obj,
             contact_date='2025-01-01',
-            content='テスト連絡予定'
+            content='テスト連絡予定',
+            tenant_id=1
         )
         from apps.master.models import ClientContactType
-        self.contact_type = ClientContactType.objects.create(name='テスト', display_order=10, is_active=True)
+        self.contact_type = ClientContactType.objects.create(name='テスト', display_order=10, is_active=True, tenant_id=1)
         self.client.login(username='testuser', password='password')
+
+        # セッションにテナントIDを設定
+        session = self.client.session
+        session['current_tenant_id'] = 1
+        session.save()
 
     def test_contact_schedule_list_view(self):
         self.client.login(username='testuser', password='password')

@@ -12,6 +12,8 @@ from django.utils import timezone
 from django.core.files.base import ContentFile
 from apps.system.logs.utils import log_model_action
 from apps.contract.utils import generate_teishokubi_notification_pdf
+from apps.common.middleware import get_current_tenant_id
+from apps.company.views import get_current_company
 # クライアント連絡履歴用インポート
 from .models import Client, ClientContacted, ClientDepartment, ClientUser, ClientFile, ClientContactSchedule
 from .forms import ClientForm, ClientContactedForm, ClientDepartmentForm, ClientUserForm, ClientFileForm, ClientContactScheduleForm
@@ -90,9 +92,8 @@ def client_list(request):
 
     # 各クライアントに「接続承認済み担当者がいるか」「未承認の接続申請があるか」「連絡予定があるか」フラグを付与
     from apps.connect.models import ConnectClient
-    from apps.company.models import Company
     from .models import ClientContactSchedule
-    company = Company.objects.first()
+    company = get_current_company(request)
     corporate_number = company.corporate_number if company else None
     today = timezone.localdate()
     
@@ -194,7 +195,10 @@ def client_create(request):
     if request.method == 'POST':
         form = ClientForm(request.POST)
         if form.is_valid():
-            client = form.save()
+            client = form.save(commit=False)
+            client.tenant_id = get_current_tenant_id()
+            client.save()
+            form.save_m2m()
             messages.success(request, f'クライアント「{client.name}」を作成しました。')
             return redirect('client:client_detail', pk=client.pk)
     else:
@@ -252,10 +256,9 @@ def client_detail(request, pk):
     client_users = client.users.all()[:5]
     # 各担当者が接続承認済みか、未承認の接続申請があるかを付与
     from apps.connect.models import ConnectClient
-    from apps.company.models import Company
     from django.db.models import Q
     
-    company = Company.objects.first()
+    company = get_current_company(request)
     corporate_number = company.corporate_number if company else None
     today = timezone.localdate()
     
@@ -392,6 +395,7 @@ def client_contacted_create(request, client_pk):
         if form.is_valid():
             contacted = form.save(commit=False)
             contacted.client = client
+            contacted.tenant_id = get_current_tenant_id()
             contacted.save()
             return redirect('client:client_detail', pk=client.pk)
     else:
@@ -480,6 +484,7 @@ def client_department_create(request, client_pk):
         if form.is_valid():
             department = form.save(commit=False)
             department.client = client
+            department.tenant_id = get_current_tenant_id()
             department.save()
             # 変更履歴を記録
             from apps.system.logs.utils import log_model_action
@@ -632,6 +637,7 @@ def client_user_create(request, client_pk):
         if form.is_valid():
             user = form.save(commit=False)
             user.client = client
+            user.tenant_id = get_current_tenant_id()
             user.save()
             # 変更履歴を記録
             from apps.system.logs.utils import log_model_action
@@ -648,11 +654,10 @@ def client_user_list(request, client_pk):
     client_users = client.users.all()
     # 各担当者が接続承認済みか、未承認の接続申請があるかを付与
     from apps.connect.models import ConnectClient
-    from apps.company.models import Company
     from django.db.models import Q
     from apps.contract.models import ClientContract
     
-    company = Company.objects.first()
+    company = get_current_company(request)
     corporate_number = company.corporate_number if company else None
     today = timezone.localdate()
     
@@ -745,8 +750,7 @@ def client_user_detail(request, pk):
     client_user = get_object_or_404(ClientUser, pk=pk)
     client = client_user.client
     
-    from apps.company.models import Company
-    company = Company.objects.first()
+    company = get_current_company(request)
 
     # 接続申請の状況を確認
     connect_request = None
@@ -908,6 +912,7 @@ def client_file_create(request, client_pk):
         if form.is_valid():
             client_file = form.save(commit=False)
             client_file.client = client
+            client_file.tenant_id = get_current_tenant_id()
             client_file.save()
             from django.contrib import messages
             messages.success(request, 'ファイルをアップロードしました。')
@@ -1016,6 +1021,7 @@ def client_contact_schedule_create(request, client_pk):
         if form.is_valid():
             contact_schedule = form.save(commit=False)
             contact_schedule.client = client
+            contact_schedule.tenant_id = get_current_tenant_id()
             contact_schedule.save()
             return redirect('client:client_detail', pk=client.pk)
     else:
@@ -1051,6 +1057,7 @@ def client_contact_schedule_detail(request, pk):
             if form.is_valid():
                 contacted = form.save(commit=False)
                 contacted.client = client
+                contacted.tenant_id = get_current_tenant_id()
                 contacted.save()
                 # 予定を削除
                 schedule.delete()

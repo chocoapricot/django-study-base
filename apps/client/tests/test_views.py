@@ -2,6 +2,7 @@ from django.test import TestCase, Client as TestClient
 from django.urls import reverse
 from django.contrib.auth.models import Permission
 from apps.client.models import Client, ClientContacted, ClientUser
+from apps.company.models import Company
 from apps.system.settings.models import Menu
 from apps.master.models import ClientRegistStatus
 from django.contrib.contenttypes.models import ContentType
@@ -14,8 +15,14 @@ User = get_user_model()
 class ClientViewsTest(TestCase):
     def setUp(self):
         self.client = TestClient()
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.company = Company.objects.create(name='Test Company', tenant_id=1)
+        self.user = User.objects.create_user(username='testuser', password='testpassword', tenant_id=1)
         self.client.login(username='testuser', password='testpassword')
+
+        # セッションにテナントIDを設定
+        session = self.client.session
+        session['current_tenant_id'] = 1
+        session.save()
 
         # ClientモデルのContentTypeを取得
         content_type = ContentType.objects.get_for_model(Client)
@@ -79,11 +86,11 @@ class ClientViewsTest(TestCase):
         from apps.system.settings.models import Dropdowns
         # Create necessary ClientRegistStatus for ClientForm
         from apps.master.models import ClientRegistStatus
-        ClientRegistStatus.objects.create(name='Test Regist Form', display_order=1, is_active=True)
+        ClientRegistStatus.objects.create(name='Test Regist Form', display_order=1, is_active=True, tenant_id=1)
         # Create necessary ClientContactType for ClientContactedForm
         from apps.master.models import ClientContactType
-        self.contact_type1 = ClientContactType.objects.create(name='Test Contact Type 1', display_order=10, is_active=True)
-        self.contact_type2 = ClientContactType.objects.create(name='Test Contact Type 2', display_order=20, is_active=True)
+        self.contact_type1 = ClientContactType.objects.create(name='Test Contact Type 1', display_order=10, is_active=True, tenant_id=1)
+        self.contact_type2 = ClientContactType.objects.create(name='Test Contact Type 2', display_order=20, is_active=True, tenant_id=1)
 
         Menu.objects.create(name='クライアント', url='/client/', active=True, disp_seq=1)
 
@@ -100,19 +107,22 @@ class ClientViewsTest(TestCase):
                 corporate_number=f'10000000000{i:02d}', # 衝突しないように調整
                 name=f'Client {i:02d}',
                 name_furigana=f'クライアント{i:02d}',
-                regist_status=regist_status_1
+                regist_status=regist_status_1,
+                tenant_id=1
             )
         self.client_obj = Client.objects.create(
             corporate_number='9999999999999', # より大きな値に設定
             name='Z_Test Client', # ソート順で最後にくるように変更
             name_furigana='ゼットテストクライアント',
-            regist_status=regist_status_1
+            regist_status=regist_status_1,
+            tenant_id=1
         )
 
         self.client_user_obj = ClientUser.objects.create(
             client=self.client_obj,
             name_last='Test',
             name_first='User',
+            tenant_id=1
         )
 
     def test_client_list_view(self):
@@ -172,8 +182,8 @@ class ClientViewsTest(TestCase):
         from apps.system.settings.models import Dropdowns
         
         # 追加の登録区分データを作成
-        regist_status_10 = ClientRegistStatus.objects.create(name='登録済', display_order=2, is_active=True)
-        regist_status_20 = ClientRegistStatus.objects.create(name='商談中', display_order=3, is_active=True)
+        regist_status_10 = ClientRegistStatus.objects.create(name='登録済', display_order=2, is_active=True, tenant_id=1)
+        regist_status_20 = ClientRegistStatus.objects.create(name='商談中', display_order=3, is_active=True, tenant_id=1)
         
         # 異なる登録区分のクライアントを作成
         regist_status_1 = ClientRegistStatus.objects.get(name='Test Regist Form')
@@ -181,19 +191,22 @@ class ClientViewsTest(TestCase):
             corporate_number='1111111111111',
             name='登録中クライアント',
             name_furigana='トウロクチュウクライアント',
-            regist_status=regist_status_1
+            regist_status=regist_status_1,
+            tenant_id=1
         )
         client2 = Client.objects.create(
             corporate_number='2222222222222',
             name='登録済クライアント',
             name_furigana='トウロクズミクライアント',
-            regist_status=regist_status_10
+            regist_status=regist_status_10,
+            tenant_id=1
         )
         client3 = Client.objects.create(
             corporate_number='3333333333333',
             name='商談中クライアント',
             name_furigana='ショウダンチュウクライアント',
-            regist_status=regist_status_20
+            regist_status=regist_status_20,
+            tenant_id=1
         )
         
         # 1. 全件表示（フィルタなし）
@@ -329,7 +342,8 @@ class ClientViewsTest(TestCase):
             corporate_number='1123456789012',
             name='Client With Code',
             name_furigana='コードクライアント',
-            regist_status=regist_status_1
+            regist_status=regist_status_1,
+            tenant_id=1
         )
         response = self.client.get(reverse('client:client_detail', args=[client_with_code.pk]))
         self.assertEqual(response.status_code, 200)
@@ -344,7 +358,8 @@ class ClientViewsTest(TestCase):
             corporate_number='12345', # Invalid
             name='Client Invalid Code',
             name_furigana='フセイクライアント',
-            regist_status=regist_status_1
+            regist_status=regist_status_1,
+            tenant_id=1
         )
         response = self.client.get(reverse('client:client_detail', args=[client_invalid_code.pk]))
         self.assertEqual(response.status_code, 200)
@@ -390,7 +405,8 @@ class ClientViewsTest(TestCase):
         department = ClientDepartment.objects.create(
             client=self.client_obj,
             name='Test Department',
-            department_code='DP001'
+            department_code='DP001',
+            tenant_id=1
         )
         # Add a user to the department to test that part of the template
         ClientUser.objects.create(
@@ -398,6 +414,7 @@ class ClientViewsTest(TestCase):
             department=department,
             name_last='Assigned',
             name_first='User',
+            tenant_id=1
         )
         response = self.client.get(reverse('client:client_department_detail', args=[department.pk]))
         self.assertEqual(response.status_code, 200)
@@ -420,11 +437,11 @@ class ClientViewsTest(TestCase):
         }
         response = self.client.post(reverse('client:client_contacted_create', args=[self.client_obj.pk]), data)
         self.assertEqual(response.status_code, 302)  # Redirects to client_detail
-        self.assertTrue(ClientContacted.objects.filter(client=self.client_obj, content='Test Contact').exists())
+        self.assertTrue(ClientContacted.objects.filter(client=self.client_obj, content='Test Contact', tenant_id=1).exists())
 
     def test_client_contacted_list_view(self):
-        ClientContacted.objects.create(client=self.client_obj, content='Contact 1',contacted_at=timezone.now())
-        ClientContacted.objects.create(client=self.client_obj, content='Contact 2',contacted_at=timezone.now())
+        ClientContacted.objects.create(client=self.client_obj, content='Contact 1',contacted_at=timezone.now(), tenant_id=1)
+        ClientContacted.objects.create(client=self.client_obj, content='Contact 2',contacted_at=timezone.now(), tenant_id=1)
         response = self.client.get(reverse('client:client_contacted_list', args=[self.client_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'client/client_contacted_list.html')
@@ -432,21 +449,21 @@ class ClientViewsTest(TestCase):
         self.assertContains(response, 'Contact 2')
 
     def test_client_contacted_detail_view(self):
-        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Detail Test Contact',contacted_at=timezone.now())
+        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Detail Test Contact',contacted_at=timezone.now(), tenant_id=1)
         response = self.client.get(reverse('client:client_contacted_detail', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'client/client_contacted_detail.html')
         self.assertContains(response, 'Detail Test Contact')
 
     def test_client_contacted_update_view_get(self):
-        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Original Contact',contacted_at=timezone.now())
+        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Original Contact',contacted_at=timezone.now(), tenant_id=1)
         response = self.client.get(reverse('client:client_contacted_update', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'client/client_contacted_form.html')
         self.assertContains(response, 'Original Contact')
 
     def test_client_contacted_update_view_post(self):
-        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Original Contact',contacted_at=timezone.now())
+        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Original Contact',contacted_at=timezone.now(), tenant_id=1)
         data = {
             'content': 'Updated Contact',
             'detail': 'Updated detail.',
@@ -459,14 +476,14 @@ class ClientViewsTest(TestCase):
         self.assertEqual(contacted_obj.content, 'Updated Contact')
 
     def test_client_contacted_delete_view_get(self):
-        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Delete Test Contact',contacted_at=timezone.now())
+        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Delete Test Contact',contacted_at=timezone.now(), tenant_id=1)
         response = self.client.get(reverse('client:client_contacted_delete', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'client/client_contacted_confirm_delete.html')
         self.assertContains(response, 'Delete Test Contact')
 
     def test_client_contacted_delete_view_post(self):
-        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Delete Test Contact',contacted_at=timezone.now())
+        contacted_obj = ClientContacted.objects.create(client=self.client_obj, content='Delete Test Contact',contacted_at=timezone.now(), tenant_id=1)
         response = self.client.post(reverse('client:client_contacted_delete', args=[contacted_obj.pk]))
         self.assertEqual(response.status_code, 302)  # Redirects to client_detail
         self.assertFalse(ClientContacted.objects.filter(pk=contacted_obj.pk).exists())
@@ -553,7 +570,8 @@ class ClientViewsTest(TestCase):
         client_file = ClientFile.objects.create(
             client=self.client_obj,
             file=test_file,
-            description="クライアント削除テストファイル"
+            description="クライアント削除テストファイル",
+            tenant_id=1
         )
         
         # 削除確認画面のテスト
@@ -588,7 +606,8 @@ class ClientViewsTest(TestCase):
         client_file = ClientFile.objects.create(
             client=self.client_obj,
             file=test_file,
-            description="クライアントダウンロードテストファイル"
+            description="クライアントダウンロードテストファイル",
+            tenant_id=1
         )
         
         response = self.client.get(reverse('client:client_file_download', kwargs={'pk': client_file.pk}))
@@ -616,7 +635,8 @@ class ClientViewsTest(TestCase):
         ClientFile.objects.create(
             client=self.client_obj,
             file=test_file,
-            description="クライアント詳細テストファイル"
+            description="クライアント詳細テストファイル",
+            tenant_id=1
         )
         
         response = self.client.get(reverse('client:client_detail', args=[self.client_obj.pk]))

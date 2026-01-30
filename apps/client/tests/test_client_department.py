@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from apps.client.models import Client, ClientDepartment
+from apps.company.models import Company
 from apps.client.forms import ClientDepartmentForm
 from apps.master.models import ClientRegistStatus
 
@@ -11,20 +12,24 @@ User = get_user_model()
 
 class ClientDepartmentModelTest(TestCase):
     def setUp(self):
+        self.company = Company.objects.create(name='Test Company', tenant_id=1)
         self.user = User.objects.create_user(
             username='testuser',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=1
         )
         # テスト用登録区分作成
         self.regist_status = ClientRegistStatus.objects.create(
             name='正社員',
             display_order=1,
-            is_active=True
+            is_active=True,
+            tenant_id=1
         )
         self.client_obj = Client.objects.create(
             name='テスト会社',
             name_furigana='テストガイシャ',
-            regist_status=self.regist_status
+            regist_status=self.regist_status,
+            tenant_id=1
         )
 
     def test_client_department_creation(self):
@@ -148,9 +153,11 @@ class ClientDepartmentFormTest(TestCase):
 
 class ClientDepartmentViewTest(TestCase):
     def setUp(self):
+        self.company = Company.objects.create(name='Test Company', tenant_id=1)
         self.user = User.objects.create_user(
             username='testuser',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=1
         )
         # 必要な権限を付与
         from django.contrib.auth.models import Permission
@@ -167,19 +174,26 @@ class ClientDepartmentViewTest(TestCase):
         self.regist_status = ClientRegistStatus.objects.create(
             name='正社員',
             display_order=1,
-            is_active=True
+            is_active=True,
+            tenant_id=1
         )
         self.client_obj = Client.objects.create(
             name='テスト会社',
             name_furigana='テストガイシャ',
-            regist_status=self.regist_status
+            regist_status=self.regist_status,
+            tenant_id=1
         )
         self.department = ClientDepartment.objects.create(
             client=self.client_obj,
             name='営業部',
-            department_code='SALES'
+            department_code='SALES',
+            tenant_id=1
         )
         self.test_client = TestClient()
+        # セッションにテナントIDを設定
+        session = self.test_client.session
+        session['current_tenant_id'] = 1
+        session.save()
 
     def test_client_department_create_view(self):
         """組織作成ビューのテスト"""

@@ -2,6 +2,7 @@ from django.test import TestCase, Client as TestClient
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from apps.client.models import Client, ClientUser
+from apps.company.models import Company
 from apps.system.notifications.models import Notification
 from apps.system.settings.models import Dropdowns
 
@@ -10,15 +11,21 @@ User = get_user_model()
 class ClientMailTest(TestCase):
     def setUp(self):
         self.client = TestClient()
-        self.user = User.objects.create_superuser(username='admin', password='password', email='admin@example.com')
+        self.company = Company.objects.create(name='Test Company', tenant_id=1)
+        self.user = User.objects.create_superuser(username='admin', password='password', email='admin@example.com', tenant_id=1)
         self.client.login(username='admin', password='password')
+
+        # セッションにテナントIDを設定
+        session = self.client.session
+        session['current_tenant_id'] = 1
+        session.save()
 
         # 連絡種別のマスタを作成（ClientUserMailForm内部で使用）
         from apps.master.models import ClientContactType
-        ClientContactType.objects.get_or_create(display_order=50, defaults={'name': 'メール', 'is_active': True})
+        ClientContactType.objects.get_or_create(display_order=50, defaults={'name': 'メール', 'is_active': True, 'tenant_id': 1})
 
         # テスト用クライアント
-        self.client_obj = Client.objects.create(name='テストクライアント')
+        self.client_obj = Client.objects.create(name='テストクライアント', tenant_id=1)
         
         # テスト用クライアント担当者
         self.client_user_email = 'client_user@example.com'
@@ -26,7 +33,8 @@ class ClientMailTest(TestCase):
             client=self.client_obj,
             name_last='佐藤',
             name_first='一朗',
-            email=self.client_user_email
+            email=self.client_user_email,
+            tenant_id=1
         )
 
         # クライアント担当者に対応するユーザーを作成
@@ -89,7 +97,8 @@ class ClientMailTest(TestCase):
             client=self.client_obj,
             name_last='山崎',
             name_first='太郎',
-            email='no_user_client@example.com'
+            email='no_user_client@example.com',
+            tenant_id=1
         )
         
         url = reverse('client:client_user_mail_send', args=[other_user.pk])
