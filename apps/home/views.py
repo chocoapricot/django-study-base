@@ -612,16 +612,16 @@ def delete_application_data(request):
             StaffInquiry.objects.all().delete()
 
             # 6. クライアント関連データ (ClientUserなどがClientを参照)
-            ClientFile.objects.all().delete()
-            ClientContactSchedule.objects.all().delete()
-            ClientContacted.objects.all().delete()
-            ClientUser.objects.all().delete()
-            ClientDepartment.objects.all().delete()
-            Client.objects.all().delete()
+            ClientFile.objects.unfiltered().delete()
+            ClientContactSchedule.objects.unfiltered().delete()
+            ClientContacted.objects.unfiltered().delete()
+            ClientUser.objects.unfiltered().delete()
+            ClientDepartment.objects.unfiltered().delete()
+            Client.objects.unfiltered().delete()
 
             # 6.5. 自社関連データ
-            CompanyUser.objects.all().delete()
-            CompanyDepartment.objects.all().delete()
+            CompanyUser.objects.unfiltered().delete()
+            CompanyDepartment.objects.unfiltered().delete()
 
             # 7. スタッフプロフィール関連 (StaffProfileがUserを参照)
             StaffProfileQualification.objects.all().delete()

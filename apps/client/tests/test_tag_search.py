@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from apps.client.models import Client
+from apps.company.models import Company
 from apps.master.models import ClientTag
 
 User = get_user_model()
@@ -11,8 +12,14 @@ User = get_user_model()
 class ClientTagSearchTest(TestCase):
     def setUp(self):
         self.client = TestClient()
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.company = Company.objects.create(name='Test Company', tenant_id=1)
+        self.user = User.objects.create_user(username='testuser', password='testpassword', tenant_id=1)
         self.client.login(username='testuser', password='testpassword')
+
+        # セッションにテナントIDを設定
+        session = self.client.session
+        session['current_tenant_id'] = 1
+        session.save()
 
         # ClientモデルのContentTypeを取得
         content_type = ContentType.objects.get_for_model(Client)
@@ -20,20 +27,20 @@ class ClientTagSearchTest(TestCase):
         self.user.user_permissions.add(Permission.objects.get(codename='view_client', content_type=content_type))
 
         # タグを作成
-        self.tag1 = ClientTag.objects.create(name='タグ1', display_order=1)
-        self.tag2 = ClientTag.objects.create(name='タグ2', display_order=2)
+        self.tag1 = ClientTag.objects.create(name='タグ1', display_order=1, tenant_id=1)
+        self.tag2 = ClientTag.objects.create(name='タグ2', display_order=2, tenant_id=1)
 
         # クライアントを作成
-        self.client1 = Client.objects.create(name='クライアント1', name_furigana='クライアント1')
+        self.client1 = Client.objects.create(name='クライアント1', name_furigana='クライアント1', tenant_id=1)
         self.client1.tags.add(self.tag1)
 
-        self.client2 = Client.objects.create(name='クライアント2', name_furigana='クライアント2')
+        self.client2 = Client.objects.create(name='クライアント2', name_furigana='クライアント2', tenant_id=1)
         self.client2.tags.add(self.tag2)
 
-        self.client3 = Client.objects.create(name='クライアント3', name_furigana='クライアント3')
+        self.client3 = Client.objects.create(name='クライアント3', name_furigana='クライアント3', tenant_id=1)
         self.client3.tags.add(self.tag1, self.tag2)
 
-        self.client4 = Client.objects.create(name='クライアント4', name_furigana='クライアント4')
+        self.client4 = Client.objects.create(name='クライアント4', name_furigana='クライアント4', tenant_id=1)
         # クライアント4にはタグなし
 
     def test_client_list_filter_by_tag(self):

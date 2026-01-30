@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 from apps.client.models import Client, ClientFile
+from apps.company.models import Company
 
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
@@ -24,11 +25,13 @@ class ClientFileTestCase(TestCase):
 
     def setUp(self):
         """テスト用データの準備"""
+        self.company = Company.objects.create(name='Test Company', tenant_id=1)
         # テスト用ユーザー作成
         self.user = User.objects.create_user(
             username='testuser',
             email='test@example.com',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=1
         )
         
         # 必要な権限を付与
@@ -45,7 +48,8 @@ class ClientFileTestCase(TestCase):
         regist_status = ClientRegistStatus.objects.create(
             name='正社員',
             display_order=1,
-            is_active=True
+            is_active=True,
+            tenant_id=1
         )
         
         # テスト用クライアント作成
@@ -54,11 +58,17 @@ class ClientFileTestCase(TestCase):
             name='テストクライアント',
             name_furigana='テストクライアント',
             regist_status=regist_status,
-            basic_contract_date='2024-01-15'
+            basic_contract_date='2024-01-15',
+            tenant_id=1
         )
         
         self.client = TestClient()
         self.client.login(email='test@example.com', password='testpass123')
+
+        # セッションにテナントIDを設定
+        session = self.client.session
+        session['current_tenant_id'] = 1
+        session.save()
 
         # テスト内で作成したオブジェクトを保存するリスト
         self.created_files = []
@@ -88,7 +98,8 @@ class ClientFileTestCase(TestCase):
         client_file = ClientFile.objects.create(
             client=self.client_obj,
             file=test_file,
-            description="テストファイル"
+            description="テストファイル",
+            tenant_id=1
         )
         self.created_files.append(client_file)
         
@@ -150,7 +161,8 @@ class ClientFileTestCase(TestCase):
         client_file = ClientFile.objects.create(
             client=self.client_obj,
             file=test_file,
-            description="削除テストファイル"
+            description="削除テストファイル",
+            tenant_id=1
         )
         # このテストではファイルがDBから削除されるので、tearDownでの削除は不要
         
@@ -181,7 +193,8 @@ class ClientFileTestCase(TestCase):
         client_file = ClientFile.objects.create(
             client=self.client_obj,
             file=test_file,
-            description="ダウンロードテストファイル"
+            description="ダウンロードテストファイル",
+            tenant_id=1
         )
         self.created_files.append(client_file)
         
@@ -203,7 +216,8 @@ class ClientFileTestCase(TestCase):
         client_file = ClientFile.objects.create(
             client=self.client_obj,
             file=test_file,
-            description="テストファイル"
+            description="テストファイル",
+            tenant_id=1
         )
         self.created_files.append(client_file)
         

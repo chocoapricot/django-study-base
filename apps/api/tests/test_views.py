@@ -2,20 +2,30 @@ from django.test import TestCase, Client as TestClient
 from django.urls import reverse
 from apps.accounts.models import MyUser
 from apps.client.models import Client, ClientUser, ClientDepartment
+from apps.company.models import Company
 
 class ApiViewsTest(TestCase):
     def setUp(self):
         """テストデータのセットアップ"""
-        self.user = MyUser.objects.create_user(username='testuser', email='testuser@example.com', password='password123')
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        self.user = MyUser.objects.create_user(
+            username='testuser',
+            email='testuser@example.com',
+            password='password123',
+            tenant_id=self.company.tenant_id
+        )
         self.client = TestClient()
         self.client.login(email='testuser@example.com', password='password123')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.tenant_id
+        session.save()
 
-        self.test_client1 = Client.objects.create(name='Test Client 1', corporate_number='1111111111111')
-        department = ClientDepartment.objects.create(client=self.test_client1, name='Test Department')
-        self.client_user1 = ClientUser.objects.create(client=self.test_client1, department=department, position='Manager', name_last='User', name_first='1')
-        self.client_user2 = ClientUser.objects.create(client=self.test_client1, name_last='User', name_first='2')
+        self.test_client1 = Client.objects.create(name='Test Client 1', corporate_number='1111111111111', tenant_id=self.company.tenant_id)
+        department = ClientDepartment.objects.create(client=self.test_client1, name='Test Department', tenant_id=self.company.tenant_id)
+        self.client_user1 = ClientUser.objects.create(client=self.test_client1, department=department, position='Manager', name_last='User', name_first='1', tenant_id=self.company.tenant_id)
+        self.client_user2 = ClientUser.objects.create(client=self.test_client1, name_last='User', name_first='2', tenant_id=self.company.tenant_id)
 
-        self.test_client2 = Client.objects.create(name='Test Client 2', corporate_number='2222222222222')
+        self.test_client2 = Client.objects.create(name='Test Client 2', corporate_number='2222222222222', tenant_id=self.company.tenant_id)
 
     def test_get_client_users_success(self):
         """クライアントに紐づくユーザーが正しく返されることを確認"""

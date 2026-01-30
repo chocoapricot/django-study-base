@@ -35,6 +35,12 @@ class TenantManager(models.Manager):
             return super().get_queryset().none()
         return super().get_queryset().filter(tenant_id=tenant_id)
 
+    def unfiltered(self):
+        """
+        テナントによるフィルタリングを行わずにクエリセットを取得する。
+        """
+        return super().get_queryset()
+
 class MyTenantModel(MyModel):
     """
     テナントIDを持つ抽象ベースモデル。

@@ -2,6 +2,7 @@ from django.test import TestCase, Client as TestClient
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from apps.client.models import Client, ClientDepartment, ClientUser
+from apps.company.models import Company
 from apps.client.forms import ClientUserForm
 from apps.master.models import ClientRegistStatus
 
@@ -10,25 +11,30 @@ User = get_user_model()
 
 class ClientUserModelTest(TestCase):
     def setUp(self):
+        self.company = Company.objects.create(name='Test Company', tenant_id=1)
         self.user = User.objects.create_user(
             username='testuser',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=1
         )
         # テスト用登録区分作成
         self.regist_status = ClientRegistStatus.objects.create(
             name='正社員',
             display_order=1,
-            is_active=True
+            is_active=True,
+            tenant_id=1
         )
         self.client_obj = Client.objects.create(
             name='テスト会社',
             name_furigana='テストガイシャ',
-            regist_status=self.regist_status
+            regist_status=self.regist_status,
+            tenant_id=1
         )
         self.department = ClientDepartment.objects.create(
             client=self.client_obj,
             name='営業部',
-            department_code='SALES'
+            department_code='SALES',
+            tenant_id=1
         )
 
     def test_client_user_creation(self):
@@ -60,7 +66,8 @@ class ClientUserModelTest(TestCase):
             client=self.client_obj,
             name_last='佐藤',
             name_first='花子',
-            position='部長'
+            position='部長',
+            tenant_id=1
         )
         
         self.assertEqual(client_user.client, self.client_obj)
@@ -73,13 +80,15 @@ class ClientUserModelTest(TestCase):
             client=self.client_obj,
             name_last='田中',
             name_first='太郎',
-            display_order=2
+            display_order=2,
+            tenant_id=1
         )
         user2 = ClientUser.objects.create(
             client=self.client_obj,
             name_last='佐藤',
             name_first='花子',
-            display_order=1
+            display_order=1,
+            tenant_id=1
         )
         
         users = list(ClientUser.objects.all())
@@ -109,20 +118,24 @@ class ClientUserFormTest(TestCase):
         self.assertIn('phone_number', form.errors)
         self.assertIn('電話番号は半角数字とハイフンのみ入力してください。', form.errors['phone_number'])
     def setUp(self):
+        self.company = Company.objects.create(name='Test Company', tenant_id=1)
         # テスト用登録区分作成
         self.regist_status = ClientRegistStatus.objects.create(
             name='正社員',
             display_order=1,
-            is_active=True
+            is_active=True,
+            tenant_id=1
         )
         self.client_obj = Client.objects.create(
             name='テスト会社',
             name_furigana='テストガイシャ',
-            regist_status=self.regist_status
+            regist_status=self.regist_status,
+            tenant_id=1
         )
         self.department = ClientDepartment.objects.create(
             client=self.client_obj,
-            name='営業部'
+            name='営業部',
+            tenant_id=1
         )
 
     def test_valid_form(self):
@@ -187,11 +200,13 @@ class ClientUserFormTest(TestCase):
         other_client = Client.objects.create(
             name='他の会社',
             name_furigana='ホカノガイシャ',
-            regist_status=self.regist_status
+            regist_status=self.regist_status,
+            tenant_id=1
         )
         other_department = ClientDepartment.objects.create(
             client=other_client,
-            name='他の部署'
+            name='他の部署',
+            tenant_id=1
         )
         
         form = ClientUserForm(client=self.client_obj)
@@ -224,9 +239,11 @@ class ClientUserFormTest(TestCase):
 
 class ClientUserViewTest(TestCase):
     def setUp(self):
+        self.company = Company.objects.create(name='Test Company', tenant_id=1)
         self.user = User.objects.create_user(
             username='testuser',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=1
         )
         # 必要な権限を付与
         from django.contrib.auth.models import Permission
@@ -244,24 +261,32 @@ class ClientUserViewTest(TestCase):
         self.regist_status = ClientRegistStatus.objects.create(
             name='正社員',
             display_order=1,
-            is_active=True
+            is_active=True,
+            tenant_id=1
         )
         self.client_obj = Client.objects.create(
             name='テスト会社',
             name_furigana='テストガイシャ',
-            regist_status=self.regist_status
+            regist_status=self.regist_status,
+            tenant_id=1
         )
         self.department = ClientDepartment.objects.create(
             client=self.client_obj,
-            name='営業部'
+            name='営業部',
+            tenant_id=1
         )
         self.client_user = ClientUser.objects.create(
             client=self.client_obj,
             department=self.department,
             name_last='田中',
-            name_first='太郎'
+            name_first='太郎',
+            tenant_id=1
         )
         self.test_client = TestClient()
+        # セッションにテナントIDを設定
+        session = self.test_client.session
+        session['current_tenant_id'] = 1
+        session.save()
 
     def test_client_user_create_view(self):
         """担当者作成ビューのテスト"""

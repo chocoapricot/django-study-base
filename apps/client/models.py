@@ -2,7 +2,7 @@ from django.db import models
 import uuid
 import os
 
-from ..common.models import MyTenantModel
+from ..common.models import MyTenantModel, TenantManager
 
 def client_file_upload_path(instance, filename):
     """クライアントファイルのアップロードパスを生成"""
@@ -15,6 +15,7 @@ def client_file_upload_path(instance, filename):
 
 class Client(MyTenantModel):
     """取引先企業（クライアント）の基本情報を管理するモデル。"""
+    objects = TenantManager()
     corporate_number=models.CharField('法人番号',max_length=13, unique=True, blank=True, null=True)
     name = models.TextField('会社名')
     name_furigana = models.TextField('会社名カナ')
@@ -52,6 +53,12 @@ class Client(MyTenantModel):
         db_table = 'apps_client'  # 既存のテーブル名を指定
         verbose_name = 'クライアント'
 
+    def save(self, *args, **kwargs):
+        if not self.tenant_id:
+            from apps.common.middleware import get_current_tenant_id
+            self.tenant_id = get_current_tenant_id()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
@@ -84,6 +91,7 @@ class Client(MyTenantModel):
 
 class ClientDepartment(MyTenantModel):
     """クライアント企業内の組織（部署）情報を管理するモデル。"""
+    objects = TenantManager()
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='departments', verbose_name='クライアント')
     name = models.CharField('組織名', max_length=100)
     department_code = models.CharField('組織コード', max_length=20, blank=True, null=True)
@@ -159,6 +167,12 @@ class ClientDepartment(MyTenantModel):
         
         return True
 
+    def save(self, *args, **kwargs):
+        if not self.tenant_id:
+            from apps.common.middleware import get_current_tenant_id
+            self.tenant_id = get_current_tenant_id()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         period_str = ""
         if self.valid_from or self.valid_to:
@@ -170,6 +184,7 @@ class ClientDepartment(MyTenantModel):
 
 class ClientUser(MyTenantModel):
     """クライアント企業の担当者情報を管理するモデル。"""
+    objects = TenantManager()
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='users', verbose_name='クライアント')
     department = models.ForeignKey(ClientDepartment, on_delete=models.SET_NULL, blank=True, null=True, related_name='users', verbose_name='所属組織')
     name_last = models.CharField('姓', max_length=50)
@@ -193,6 +208,9 @@ class ClientUser(MyTenantModel):
         return f"{self.name_last} {self.name_first}"
 
     def save(self, *args, **kwargs):
+        if not self.tenant_id:
+            from apps.common.middleware import get_current_tenant_id
+            self.tenant_id = get_current_tenant_id()
         if self.email:
             self.email = self.email.lower()
         super().save(*args, **kwargs)
@@ -209,6 +227,7 @@ class ClientUser(MyTenantModel):
 
 class ClientContacted(MyTenantModel):
     """クライアント企業への連絡履歴を管理するモデル。"""
+    objects = TenantManager()
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='contacted_histories', verbose_name='クライアント')
     department = models.ForeignKey(ClientDepartment, on_delete=models.SET_NULL, blank=True, null=True, related_name='contacted_histories', verbose_name='組織')
     user = models.ForeignKey(ClientUser, on_delete=models.SET_NULL, blank=True, null=True, related_name='contacted_histories', verbose_name='担当者')
@@ -229,6 +248,12 @@ class ClientContacted(MyTenantModel):
         verbose_name_plural = 'クライアント連絡履歴'
         ordering = ['-contacted_at']
 
+    def save(self, *args, **kwargs):
+        if not self.tenant_id:
+            from apps.common.middleware import get_current_tenant_id
+            self.tenant_id = get_current_tenant_id()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.client} {self.contacted_at:%Y-%m-%d %H:%M} {self.content[:20]}"
 
@@ -237,6 +262,7 @@ class ClientContactSchedule(MyTenantModel):
     """
     クライアント企業への連絡予定を管理するモデル。
     """
+    objects = TenantManager()
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='contact_schedules', verbose_name='クライアント')
     department = models.ForeignKey(ClientDepartment, on_delete=models.SET_NULL, blank=True, null=True, related_name='contact_schedules', verbose_name='組織')
     user = models.ForeignKey(ClientUser, on_delete=models.SET_NULL, blank=True, null=True, related_name='contact_schedules', verbose_name='担当者')
@@ -257,12 +283,19 @@ class ClientContactSchedule(MyTenantModel):
         verbose_name_plural = 'クライアント連絡予定'
         ordering = ['-contact_date']
 
+    def save(self, *args, **kwargs):
+        if not self.tenant_id:
+            from apps.common.middleware import get_current_tenant_id
+            self.tenant_id = get_current_tenant_id()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.client} {self.contact_date:%Y-%m-%d} {self.content[:20]}"
 
 
 class ClientFile(MyTenantModel):
     """クライアントに関連する添付ファイルを管理するモデル。"""
+    objects = TenantManager()
     client = models.ForeignKey(
         Client, 
         on_delete=models.CASCADE, 
@@ -306,6 +339,9 @@ class ClientFile(MyTenantModel):
         ]
     
     def save(self, *args, **kwargs):
+        if not self.tenant_id:
+            from apps.common.middleware import get_current_tenant_id
+            self.tenant_id = get_current_tenant_id()
         # 元ファイル名とファイルサイズを自動設定
         if self.file:
             self.original_filename = self.file.name
