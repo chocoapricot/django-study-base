@@ -3,6 +3,8 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from datetime import date, timedelta
 from apps.staff.models import Staff, StaffQualification
+from apps.company.models import Company
+from apps.common.middleware import set_current_tenant_id
 from apps.master.models import Qualification, StaffRegistStatus, EmploymentType
 from apps.staff.forms_qualification import StaffQualificationForm
 
@@ -11,9 +13,12 @@ User = get_user_model()
 
 class StaffQualificationModelTest(TestCase):
     def setUp(self):
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
         self.user = User.objects.create_user(
             username='testuser',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=self.company.tenant_id
         )
         # マスターデータを作成
         self.regist_status = StaffRegistStatus.objects.create(
@@ -157,9 +162,12 @@ class StaffQualificationModelTest(TestCase):
 
 class StaffQualificationFormTest(TestCase):
     def setUp(self):
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
         self.user = User.objects.create_user(
             username='testuser',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=self.company.tenant_id
         )
         # マスターデータを作成
         self.regist_status = StaffRegistStatus.objects.create(
@@ -282,9 +290,12 @@ class StaffQualificationFormTest(TestCase):
 
 class StaffQualificationViewTest(TestCase):
     def setUp(self):
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
         self.user = User.objects.create_user(
             username='testuser',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=self.company.tenant_id
         )
         # 必要な権限を付与
         from django.contrib.auth.models import Permission

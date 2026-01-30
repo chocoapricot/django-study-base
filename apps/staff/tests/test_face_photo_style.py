@@ -3,6 +3,8 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from apps.staff.models import Staff
+from apps.company.models import Company
+from apps.common.middleware import set_current_tenant_id
 from apps.master.models import UserParameter
 import os
 import shutil
@@ -12,7 +14,9 @@ User = get_user_model()
 class StaffFacePhotoStyleTest(TestCase):
     def setUp(self):
         self.client = Client()
-        self.user = User.objects.create_superuser(username='admin', password='password', email='admin@example.com')
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
+        self.user = User.objects.create_superuser(username='admin', password='password', email='admin@example.com', tenant_id=self.company.tenant_id)
         self.client.login(username='admin', password='password')
         
         self.staff = Staff.objects.create(

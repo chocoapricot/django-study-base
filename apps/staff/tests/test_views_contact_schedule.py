@@ -3,14 +3,18 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from apps.staff.models import Staff, StaffContactSchedule
+from apps.company.models import Company
+from apps.common.middleware import set_current_tenant_id
 from apps.system.settings.models import Dropdowns
 
 User = get_user_model()
 
 class StaffContactScheduleViewTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='password')
-        self.staff = Staff.objects.create(name_last='山田', name_first='太郎')
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
+        self.user = User.objects.create_user(username='testuser', password='password', tenant_id=self.company.tenant_id)
+        self.staff = Staff.objects.create(name_last='山田', name_first='太郎', tenant_id=self.company.tenant_id)
         self.schedule = StaffContactSchedule.objects.create(
             staff=self.staff,
             contact_date='2025-01-01',

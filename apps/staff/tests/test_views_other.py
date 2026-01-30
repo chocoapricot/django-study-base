@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from apps.staff.models import Staff, StaffMynumber, StaffContact, StaffBank, StaffDisability, StaffInternational
+from apps.company.models import Company
+from apps.common.middleware import set_current_tenant_id
 from datetime import date
 from apps.connect.models import ConnectStaff, MynumberRequest, BankRequest, ConnectInternationalRequest, DisabilityRequest, ContactRequest
 from apps.profile.models import StaffProfile, StaffProfileMynumber, StaffProfileBank, StaffProfileInternational
@@ -13,7 +15,9 @@ User = get_user_model()
 class StaffViewsOtherTest(TestCase):
     def setUp(self):
         self.client = TestClient()
-        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
+        self.user = User.objects.create_user(username='testuser', password='testpassword', tenant_id=self.company.tenant_id)
         self.client.login(username='testuser', password='testpassword')
 
         self.staff = Staff.objects.create(

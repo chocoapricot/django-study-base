@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 from apps.staff.models import Staff, StaffFile
+from apps.company.models import Company
+from apps.common.middleware import set_current_tenant_id
 from apps.master.models import StaffRegistStatus, EmploymentType
 from apps.system.settings.models import Dropdowns
 import tempfile
@@ -23,11 +25,16 @@ class StaffFileTestCase(TestCase):
 
     def setUp(self):
         """テスト用データの準備"""
+        # テナント作成
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
+
         # テスト用ユーザー作成
         self.user = User.objects.create_user(
             username='testuser',
             email='test@example.com',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=self.company.tenant_id
         )
         
         # 必要な権限を付与
