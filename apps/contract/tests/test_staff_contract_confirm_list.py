@@ -20,6 +20,7 @@ from apps.master.models_contract import ContractPattern
 from apps.master.models_staff import StaffAgreement
 from apps.master.models import JobCategory, Dropdowns
 from apps.common.constants import Constants
+from apps.common.middleware import set_current_tenant_id
 
 
 class StaffContractConfirmListTest(TestCase):
@@ -27,9 +28,11 @@ class StaffContractConfirmListTest(TestCase):
     
     def setUp(self):
         """テストデータのセットアップ"""
+        self.company = self._create_company()
+        set_current_tenant_id(self.company.id)
+
         self._create_dropdowns()
         self.user = self._create_user()
-        self.company = self._create_company()
         self.staff = self._create_staff()
         self.client_company = self._create_client()
         self.connect_staff = self._create_connect_staff()
@@ -67,6 +70,7 @@ class StaffContractConfirmListTest(TestCase):
     def _create_user(self):
         """テストユーザーを作成"""
         user = User.objects.create_user(
+            tenant_id=self.company.id,
             username='teststaff@example.com',
             email='teststaff@example.com',
             password='password',
@@ -85,6 +89,7 @@ class StaffContractConfirmListTest(TestCase):
     def _create_staff(self):
         """スタッフを作成"""
         return Staff.objects.create(
+            tenant_id=self.company.id,
             email='teststaff@example.com',
             name_last='テスト',
             name_first='太郎',
@@ -93,6 +98,7 @@ class StaffContractConfirmListTest(TestCase):
     def _create_client(self):
         """クライアントを作成"""
         return Client.objects.create(
+            tenant_id=self.company.id,
             name='クライアント株式会社',
             corporate_number='9876543210987',
         )
@@ -108,6 +114,7 @@ class StaffContractConfirmListTest(TestCase):
     def _create_staff_agreement(self):
         """スタッフ同意文言を作成"""
         return StaffAgreement.objects.create(
+            tenant_id=self.company.id,
             name='テスト同意文言',
             agreement_text='これはテスト用の同意文言です。',
             corporation_number=self.company.corporate_number,
@@ -118,6 +125,7 @@ class StaffContractConfirmListTest(TestCase):
         domain = Constants.DOMAIN.STAFF if domain_type == 'staff' else Constants.DOMAIN.CLIENT
         name = 'スタッフ向け雇用契約' if domain_type == 'staff' else 'クライアント向け派遣契約'
         return ContractPattern.objects.create(
+            tenant_id=self.company.id,
             name=name,
             domain=domain,
             is_active=True
@@ -126,6 +134,7 @@ class StaffContractConfirmListTest(TestCase):
     def _create_job_category(self):
         """職種を作成"""
         return JobCategory.objects.create(
+            tenant_id=self.company.id,
             name='システム開発',
             is_active=True
         )
@@ -133,9 +142,13 @@ class StaffContractConfirmListTest(TestCase):
     def test_employment_conditions_display_with_issued_at(self):
         """issued_atがある就業条件明示書が表示されることをテスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # スタッフ契約を作成（発行済み状態）
         staff_contract = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             corporate_number=self.company.corporate_number,
             contract_name='テストスタッフ契約',
@@ -151,6 +164,7 @@ class StaffContractConfirmListTest(TestCase):
         
         # クライアント契約を作成
         client_contract = ClientContract.objects.create(
+            tenant_id=self.company.id,
             client=self.client_company,
             contract_name='テストクライアント契約',
             client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
@@ -165,6 +179,7 @@ class StaffContractConfirmListTest(TestCase):
         
         # 契約アサインを作成（issued_atあり）
         assignment = ContractAssignment.objects.create(
+            tenant_id=self.company.id,
             client_contract=client_contract,
             staff_contract=staff_contract,
             issued_at=timezone.now(),  # 発行済み
@@ -174,6 +189,7 @@ class StaffContractConfirmListTest(TestCase):
         
         # 就業条件明示書の発行履歴を作成
         ContractAssignmentHakenPrint.objects.create(
+            tenant_id=self.company.id,
             contract_assignment=assignment,
             print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS,
             printed_by=self.user,
@@ -202,9 +218,13 @@ class StaffContractConfirmListTest(TestCase):
     def test_employment_conditions_not_display_without_issued_at(self):
         """issued_atがない就業条件明示書が表示されないことをテスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # スタッフ契約を作成（発行済み状態）
         staff_contract = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             corporate_number=self.company.corporate_number,
             contract_name='テストスタッフ契約',
@@ -220,6 +240,7 @@ class StaffContractConfirmListTest(TestCase):
         
         # クライアント契約を作成
         client_contract = ClientContract.objects.create(
+            tenant_id=self.company.id,
             client=self.client_company,
             contract_name='テストクライアント契約',
             client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
@@ -234,6 +255,7 @@ class StaffContractConfirmListTest(TestCase):
         
         # 契約アサインを作成（issued_atなし）
         assignment = ContractAssignment.objects.create(
+            tenant_id=self.company.id,
             client_contract=client_contract,
             staff_contract=staff_contract,
             # issued_at=None（未発行）
@@ -243,6 +265,7 @@ class StaffContractConfirmListTest(TestCase):
         
         # 就業条件明示書の発行履歴を作成（履歴はあるがissued_atがない）
         ContractAssignmentHakenPrint.objects.create(
+            tenant_id=self.company.id,
             contract_assignment=assignment,
             print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS,
             printed_by=self.user,
@@ -267,9 +290,13 @@ class StaffContractConfirmListTest(TestCase):
     def test_staff_contract_display(self):
         """スタッフ契約書が表示されることをテスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # スタッフ契約を作成（発行済み状態）
         staff_contract = StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             corporate_number=self.company.corporate_number,
             contract_name='テストスタッフ契約',
@@ -285,6 +312,7 @@ class StaffContractConfirmListTest(TestCase):
         
         # スタッフ契約書の発行履歴を作成
         staff_print = StaffContractPrint.objects.create(
+            tenant_id=self.company.id,
             staff_contract=staff_contract,
             printed_by=self.user,
             document_title='テストスタッフ契約書',

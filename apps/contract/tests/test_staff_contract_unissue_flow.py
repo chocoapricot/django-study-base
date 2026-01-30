@@ -21,6 +21,7 @@ from apps.master.models_contract import ContractPattern
 from apps.master.models_staff import StaffAgreement
 from apps.master.models import JobCategory, Dropdowns
 from apps.common.constants import Constants
+from apps.common.middleware import set_current_tenant_id
 
 
 class StaffContractUnissueFlowTest(TestCase):
@@ -28,9 +29,11 @@ class StaffContractUnissueFlowTest(TestCase):
     
     def setUp(self):
         """テストデータのセットアップ"""
+        self.company = self._create_company()
+        set_current_tenant_id(self.company.id)
+
         self._create_dropdowns()
         self.user = self._create_user()
-        self.company = self._create_company()
         self.staff = self._create_staff()
         self.client_company = self._create_client()
         self.connect_staff = self._create_connect_staff()
@@ -71,6 +74,7 @@ class StaffContractUnissueFlowTest(TestCase):
     def _create_user(self):
         """テストユーザーを作成"""
         user = User.objects.create_user(
+            tenant_id=self.company.id,
             username='teststaff@example.com',
             email='teststaff@example.com',
             password='password',
@@ -99,6 +103,7 @@ class StaffContractUnissueFlowTest(TestCase):
     def _create_staff(self):
         """スタッフを作成"""
         return Staff.objects.create(
+            tenant_id=self.company.id,
             email='teststaff@example.com',
             name_last='テスト',
             name_first='太郎',
@@ -107,6 +112,7 @@ class StaffContractUnissueFlowTest(TestCase):
     def _create_client(self):
         """クライアントを作成"""
         return Client.objects.create(
+            tenant_id=self.company.id,
             name='クライアント株式会社',
             corporate_number='9876543210987',
         )
@@ -122,6 +128,7 @@ class StaffContractUnissueFlowTest(TestCase):
     def _create_staff_agreement(self):
         """スタッフ同意文言を作成"""
         return StaffAgreement.objects.create(
+            tenant_id=self.company.id,
             name='テスト同意文言',
             agreement_text='これはテスト用の同意文言です。',
             corporation_number=self.company.corporate_number,
@@ -132,6 +139,7 @@ class StaffContractUnissueFlowTest(TestCase):
         domain = Constants.DOMAIN.STAFF if domain_type == 'staff' else Constants.DOMAIN.CLIENT
         name = 'スタッフ向け雇用契約' if domain_type == 'staff' else 'クライアント向け派遣契約'
         return ContractPattern.objects.create(
+            tenant_id=self.company.id,
             name=name,
             domain=domain,
             is_active=True
@@ -140,6 +148,7 @@ class StaffContractUnissueFlowTest(TestCase):
     def _create_job_category(self):
         """職種を作成"""
         return JobCategory.objects.create(
+            tenant_id=self.company.id,
             name='システム開発',
             is_active=True
         )
@@ -147,6 +156,7 @@ class StaffContractUnissueFlowTest(TestCase):
     def _create_staff_contract(self):
         """スタッフ契約を作成（発行済み状態）"""
         return StaffContract.objects.create(
+            tenant_id=self.company.id,
             staff=self.staff,
             corporate_number=self.company.corporate_number,
             contract_name='テストスタッフ契約',
@@ -165,6 +175,7 @@ class StaffContractUnissueFlowTest(TestCase):
     def _create_client_contract(self):
         """クライアント契約を作成"""
         contract = ClientContract.objects.create(
+            tenant_id=self.company.id,
             client=self.client_company,
             contract_name='テストクライアント契約',
             client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
@@ -181,6 +192,7 @@ class StaffContractUnissueFlowTest(TestCase):
     def _create_assignment(self):
         """契約アサインを作成"""
         assignment = ContractAssignment.objects.create(
+            tenant_id=self.company.id,
             client_contract=self.client_contract,
             staff_contract=self.staff_contract,
             created_by=self.user,
@@ -189,6 +201,7 @@ class StaffContractUnissueFlowTest(TestCase):
         
         # 就業条件明示書を発行済みにする
         haken_print = ContractAssignmentHakenPrint.objects.create(
+            tenant_id=self.company.id,
             contract_assignment=assignment,
             print_type=ContractAssignmentHakenPrint.PrintType.EMPLOYMENT_CONDITIONS,
             printed_by=self.user,
@@ -205,6 +218,9 @@ class StaffContractUnissueFlowTest(TestCase):
     def test_staff_contract_unissue_resets_employment_conditions_confirmation(self):
         """スタッフ契約未発行時に就業条件明示書確認状態がリセットされることをテスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 1. 初期状態の確認
         self.assertEqual(self.staff_contract.contract_status, Constants.CONTRACT_STATUS.ISSUED)
@@ -243,6 +259,9 @@ class StaffContractUnissueFlowTest(TestCase):
     def test_staff_contract_reissue_after_unissue(self):
         """スタッフ契約を未発行→再発行した場合のテスト"""
         self.client.login(email='teststaff@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
         
         # 1. スタッフ契約を未発行にする
         response = self.client.post(
