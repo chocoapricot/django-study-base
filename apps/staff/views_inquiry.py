@@ -53,11 +53,21 @@ def staff_inquiry_list(request):
     companies = Company.objects.filter(corporate_number__in=corporate_numbers)
     company_name_map = {c.corporate_number: c.name for c in companies}
     
+    staff_map = {}
+    if is_company_or_admin:
+        emails = inquiries_qs.values_list('user__email', flat=True).distinct()
+        staffs = Staff.objects.filter(email__in=emails).select_related('regist_status', 'employment_type').prefetch_related('tags')
+        staff_map = {s.email: s for s in staffs}
+
     processed_inquiries = []
     for inquiry in inquiries_qs:
         inquiry.client_name = company_name_map.get(inquiry.corporate_number, inquiry.corporate_number)
         # 投稿者名を設定
         inquiry.user_full_name = inquiry.user.get_full_name_japanese()
+
+        # Staff情報を紐付け
+        if is_company_or_admin:
+            inquiry.staff = staff_map.get(inquiry.user.email)
 
         # スタッフ側の未読メッセージ判定
         is_hidden_exclude_cond = models.Q(is_hidden=False) if not is_company_or_admin else models.Q()

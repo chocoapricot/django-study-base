@@ -1,4 +1,5 @@
 {% extends 'common/_base.html' %}
+{% load badge_tags %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
@@ -29,13 +30,14 @@
         </script>
 
         <table class="table table-striped table-hover mt-2">
-        <table class="table table-striped table-hover mt-2">
             <thead>
                 <tr>
                     <th>送信日時</th>
                     <th>件名</th>
                     {% if is_company_or_admin %}
                     <th>スタッフ</th>
+                    <th>登録区分</th>
+                    <th>雇用形態</th>
                     {% endif %}
                     {% if not is_company_or_admin %}
                     <th>あて先企業</th>
@@ -56,7 +58,28 @@
                         </a>
                     </td>
                     {% if is_company_or_admin %}
-                    <td>{{ inquiry.user_full_name }}</td>
+                    <td>
+                        {{ inquiry.user_full_name }}
+                        {% if inquiry.staff %}
+                        <div class="mt-0">
+                            {% for tag in inquiry.staff.tags.all %}
+                                <span class="badge rounded-pill {{ tag.display_order|badge_class }}" style="font-size: 10px;">
+                                    <i class="bi bi-tag-fill"></i> {{ tag.name }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if inquiry.staff and inquiry.staff.regist_status %}
+                            <span class="badge {{ inquiry.staff.regist_status.display_order|badge_class }}" style="font-size:13px">{{ inquiry.staff.regist_status.name }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if inquiry.staff and inquiry.staff.employment_type %}
+                            <span class="badge {{ inquiry.staff.employment_type.display_order|badge_class }}" style="font-size:13px">{{ inquiry.staff.employment_type.name }}</span>
+                        {% endif %}
+                    </td>
                     {% endif %}
                     {% if not is_company_or_admin %}
                     <td>{{ inquiry.client_name }}</td>
@@ -73,7 +96,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="{% if is_company_or_admin %}3{% else %}5{% endif %}" class="text-center">問い合わせ・ご連絡はありません。</td>
+                    <td colspan="{% if is_company_or_admin %}6{% else %}4{% endif %}" class="text-center">問い合わせ・ご連絡はありません。</td>
                 </tr>
                 {% endfor %}
             </tbody>
