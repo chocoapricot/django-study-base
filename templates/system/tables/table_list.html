@@ -12,6 +12,7 @@
                     <tr>
                         <th scope="col" style="cursor: pointer;">テーブル名</th>
                         <th scope="col" style="cursor: pointer;">モデル名</th>
+                        <th scope="col" style="cursor: pointer;">継承</th>
                         <th scope="col" style="cursor: pointer;">説明</th>
                     </tr>
                 </thead>
@@ -20,6 +21,7 @@
                     <tr>
                         <td><a href="{% url 'system_tables:table_data' table_name=table.name %}">{{ table.name }}</a></td>
                         <td>{{ table.model }}</td>
+                        <td>{{ table.inheritance }}</td>
                         <td>{{ table.description }}</td>
                     </tr>
                     {% endfor %}
