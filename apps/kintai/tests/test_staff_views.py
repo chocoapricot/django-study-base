@@ -7,6 +7,8 @@ from apps.contract.models import StaffContract
 from apps.kintai.models import StaffTimesheet, StaffTimecard
 from apps.master.models import EmploymentType, ContractPattern
 from apps.common.constants import Constants
+from apps.company.models import Company
+from apps.common.middleware import set_current_tenant_id
 
 User = get_user_model()
 
@@ -16,11 +18,16 @@ class StaffViewsTest(TestCase):
     
     def setUp(self):
         """テストデータのセットアップ"""
+        # テナントを作成
+        self.company = Company.objects.create(name='Test Company', corporate_number='1234567890123')
+        set_current_tenant_id(self.company.tenant_id)
+
         # ユーザーを作成
         self.user = User.objects.create_user(
             username='test_staff',
             email='test@staff.jp',
-            password='testpass123'
+            password='testpass123',
+            tenant_id=self.company.tenant_id
         )
         
         # スタッフを作成

@@ -5,6 +5,7 @@ from apps.master.models import StaffAgreement
 from apps.master.forms import StaffAgreementForm
 from django.contrib.auth.models import Permission
 from apps.company.models import Company
+from apps.common.middleware import set_current_tenant_id
 from apps.staff.models import Staff
 from apps.connect.models import ConnectStaffAgree
 import time
@@ -16,8 +17,10 @@ class StaffAgreementModelTest(TestCase):
     """スタッフ同意文言モデルのテスト"""
 
     def setUp(self):
+        self.company = Company.objects.create(name="Test Company", corporate_number="1234567890123")
+        set_current_tenant_id(self.company.tenant_id)
         self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpass123"
+            username="testuser", email="test@example.com", password="testpass123", tenant_id=self.company.tenant_id
         )
 
     def test_str_method(self):
@@ -84,11 +87,16 @@ class StaffAgreementViewTest(TestCase):
 
     def setUp(self):
         self.client = Client()
+        self.company = Company.objects.create(
+            name="テスト会社", corporate_number="1234567890123"
+        )
+        set_current_tenant_id(self.company.tenant_id)
         self.user = User.objects.create_user(
             username="testuser",
             email="test@example.com",
             password="testpass123",
             is_staff=True,
+            tenant_id=self.company.tenant_id
         )
         # Grant all permissions for the model
         permissions = Permission.objects.filter(
@@ -96,10 +104,6 @@ class StaffAgreementViewTest(TestCase):
         )
         self.user.user_permissions.set(permissions)
         self.client.login(username="testuser", password="testpass123")
-
-        self.company = Company.objects.create(
-            name="テスト会社", corporate_number="1234567890123"
-        )
 
         self.agreement = StaffAgreement.objects.create(
             name="テスト同意文言",
@@ -178,21 +182,22 @@ class StaffAgreementDetailViewAgreedStaffListTest(TestCase):
 
     def setUp(self):
         self.client = Client()
+        self.company = Company.objects.create(
+            name="テスト会社", corporate_number="1234567890123"
+        )
+        set_current_tenant_id(self.company.tenant_id)
         self.user = User.objects.create_user(
             username="testuser",
             email="test@example.com",
             password="testpass123",
             is_staff=True,
+            tenant_id=self.company.tenant_id
         )
         permissions = Permission.objects.filter(
             content_type__app_label="master", content_type__model="staffagreement"
         )
         self.user.user_permissions.set(permissions)
         self.client.login(username="testuser", password="testpass123")
-
-        self.company = Company.objects.create(
-            name="テスト会社", corporate_number="1234567890123"
-        )
         self.agreement = StaffAgreement.objects.create(
             name="テスト同意", agreement_text="テキスト"
         )
