@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from apps.staff.models_staff import Staff
 from apps.contract.models import StaffContract
 from apps.kintai.models import StaffTimesheet, StaffTimecard
+from apps.company.models import Company
 from apps.master.models_contract import ContractPattern
 from apps.common.constants import Constants
 
@@ -22,8 +23,23 @@ class KintaiViewIntegrationTests(TestCase):
             content_type__model__in=['stafftimesheet', 'stafftimecard']
         )
         self.user.user_permissions.set(permissions)
+
+        # テナント設定
+        self.company = Company.objects.create(name='テスト会社')
+        self.user.tenant_id = self.company.tenant_id
+        self.user.save()
+
         self.client = Client()
         self.client.login(username='tester', password='pass')
+
+        # セッションにテナントIDを設定
+        session = self.client.session
+        session['current_tenant_id'] = self.company.tenant_id
+        session.save()
+
+        # スレッドローカルにテナントIDをセット（オブジェクト作成用）
+        from apps.common.middleware import set_current_tenant_id
+        set_current_tenant_id(self.company.tenant_id)
 
         # Staff
         self.staff = Staff.objects.create(
@@ -111,6 +127,10 @@ class KintaiViewIntegrationTests(TestCase):
         self.assertIsNotNone(form)
         # form should include our contract-period error
         self.assertTrue(any('契約期間外' in str(v) for v in form.errors.values()))
+
+    def tearDown(self):
+        from apps.common.middleware import set_current_tenant_id
+        set_current_tenant_id(None)
 
     def test_timecard_create_post_accepts_inside_date(self):
         cp = ContractPattern.objects.create(name='CP-timecard2', domain='1')

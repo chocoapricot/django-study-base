@@ -218,6 +218,7 @@ class KintaiAgreementRedirectTest(TestCase):
         # 管理者がカレンダー入力画面（デコレータあり）にアクセス
         # タイムシートを作成
         from apps.kintai.models import StaffTimesheet
+        set_current_tenant_id(self.company.id)
         timesheet = StaffTimesheet.objects.create(
             staff=self.staff,
             staff_contract=self.contract,

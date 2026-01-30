@@ -7,6 +7,7 @@ from datetime import date, time
 from apps.accounts.models import MyUser
 from apps.staff.models import Staff
 from apps.contract.models import StaffContract
+from apps.company.models import Company
 from apps.master.models import (
     ContractPattern, EmploymentType, WorkTimePattern, 
     WorkTimePatternWork, WorkTimePatternBreak, PhraseTemplate, PhraseTemplateTitle
@@ -33,8 +34,23 @@ class WorkTimeDropdownTest(TestCase):
             content_type__model__in=['stafftimesheet', 'stafftimecard']
         )
         self.user.user_permissions.set(permissions)
+
+        # テナント設定
+        self.company = Company.objects.create(name='テスト会社')
+        self.user.tenant_id = self.company.tenant_id
+        self.user.save()
+
         self.client = Client()
         self.client.force_login(self.user)
+
+        # セッションにテナントIDを設定
+        session = self.client.session
+        session['current_tenant_id'] = self.company.tenant_id
+        session.save()
+
+        # スレッドローカルにテナントIDをセット（オブジェクト作成用）
+        from apps.common.middleware import set_current_tenant_id
+        set_current_tenant_id(self.company.tenant_id)
 
         # スタッフ作成
         self.staff = Staff.objects.create(
@@ -149,6 +165,10 @@ class WorkTimeDropdownTest(TestCase):
             worktime_pattern=self.worktime_pattern,
             contract_status=Constants.CONTRACT_STATUS.CONFIRMED
         )
+
+    def tearDown(self):
+        from apps.common.middleware import set_current_tenant_id
+        set_current_tenant_id(None)
 
     def test_timecard_calendar_initial_has_work_times_data(self):
         """初回カレンダー入力画面に就業時間データが含まれていることを確認"""

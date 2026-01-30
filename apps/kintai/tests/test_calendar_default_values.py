@@ -6,6 +6,8 @@ from apps.staff.models import Staff
 from apps.contract.models import StaffContract
 from apps.master.models import WorkTimePattern, WorkTimePatternWork, WorkTimePatternBreak, PhraseTemplate, PhraseTemplateTitle, EmploymentType, ContractPattern, OvertimePattern
 from apps.kintai.models import StaffTimesheet
+from apps.company.models import Company
+from apps.common.middleware import set_current_tenant_id
 from apps.common.constants import Constants
 from datetime import date, time, datetime
 
@@ -22,8 +24,22 @@ class TestCalendarDefaultValues(TestCase):
                 content_type__model__in=['stafftimesheet', 'stafftimecard']
             )
             self.user.user_permissions.set(permissions)
+
+            # テナント設定
+            self.company = Company.objects.create(name='テスト会社')
+            self.user.tenant_id = self.company.tenant_id
+            self.user.save()
+
             self.client = Client()
             self.client.force_login(self.user)
+
+            # セッションにテナントIDを設定
+            session = self.client.session
+            session['current_tenant_id'] = self.company.tenant_id
+            session.save()
+
+            # スレッドローカルにテナントIDをセット
+            set_current_tenant_id(self.company.tenant_id)
 
             # スタッフ作成
             self.staff = Staff.objects.create(
@@ -85,6 +101,9 @@ class TestCalendarDefaultValues(TestCase):
         except Exception as e:
             print(f"DEBUG: Error in setUp: {e}")
             raise
+
+    def tearDown(self):
+        set_current_tenant_id(None)
 
     def test_timecard_calendar_initial_context(self):
         """初回作成時のコンテキストにデフォルト値が含まれているか確認"""
