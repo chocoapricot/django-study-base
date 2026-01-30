@@ -140,7 +140,7 @@
                         <a href="{% url 'client:client_detail' client.pk %}">
                             {{ client.name }}
                         </a>
-                        <div class="mt-1">
+                        <div class="mt-0">
                             {% for tag in client.tags.all %}
                                 <span class="badge rounded-pill {{ tag.display_order|badge_class }}" style="font-size: 10px;">
                                     <i class="bi bi-tag-fill"></i> {{ tag.name }}
