@@ -38,7 +38,7 @@ def client_list(request):
     client_regist_status = request.GET.get('regist_status', '').strip()
     tag_filter = request.GET.get('tag', '').strip()
     
-    clients = Client.objects.all()
+    clients = Client.objects.all().prefetch_related('tags')
     
     # キーワード検索
     if query:
