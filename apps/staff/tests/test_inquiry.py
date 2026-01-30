@@ -8,11 +8,13 @@ from apps.staff.models_inquiry import StaffInquiry, StaffInquiryMessage
 from apps.connect.models import ConnectStaff
 from apps.company.models import Company as CompanyModel
 from apps.common.constants import Constants
+from apps.common.middleware import set_current_tenant_id
 
 User = get_user_model()
 
 class StaffInquiryTest(TestCase):
     def setUp(self):
+        set_current_tenant_id(100)
         self.user = User.objects.create_user(username='teststaff', email='staff@example.com', password='password', tenant_id=100)
 
         # Grant permissions for inquiry tests
@@ -154,6 +156,7 @@ class StaffInquiryTest(TestCase):
 
 class StaffInquiryStatusTest(TestCase):
     def setUp(self):
+        set_current_tenant_id(100)
         self.staff_user = User.objects.create_user(username='teststaff', email='staff@example.com', password='password', tenant_id=100)
         self.company_user = User.objects.create_user(username='companyuser', email='company@example.com', password='password', tenant_id=100)
         self.company_user.is_staff = True

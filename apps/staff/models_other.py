@@ -2,7 +2,7 @@ from django.db import models
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 
-from ..common.models import MyTenantModel
+from ..common.models import MyTenantModel, TenantManager
 from django_currentuser.db.models import CurrentUserField
 from .models_staff import Staff
 
@@ -28,6 +28,7 @@ class StaffMynumber(MyTenantModel):
     スタッフのマイナンバー情報を管理するモデル。
     Staffモデルと1対1で連携し、暗号化して保存することを想定（要追加実装）。
     """
+    objects = TenantManager()
 
     staff = models.OneToOneField(
         Staff,
@@ -61,6 +62,7 @@ class StaffContact(MyTenantModel):
     """
     スタッフの連絡先情報を管理するモデル。
     """
+    objects = TenantManager()
     staff = models.OneToOneField(
         Staff,
         on_delete=models.CASCADE,
@@ -91,6 +93,7 @@ class StaffBank(MyTenantModel):
     スタッフの銀行情報を管理するモデル。
     Staffモデルと1対1で連携し、振込先銀行情報を保存する。
     """
+    objects = TenantManager()
 
     staff = models.OneToOneField(
         Staff,
@@ -192,6 +195,7 @@ class StaffInternational(MyTenantModel):
     スタッフの外国籍情報を管理するモデル。
     Staffモデルと1対1で連携し、在留カード情報を保存する。
     """
+    objects = TenantManager()
 
     staff = models.OneToOneField(
         Staff,
@@ -248,6 +252,7 @@ class StaffDisability(MyTenantModel):
     """
     スタッフの障害者情報を管理するモデル。
     """
+    objects = TenantManager()
 
     staff = models.OneToOneField(
         Staff,
