@@ -2,7 +2,7 @@
 import os
 from django import forms
 from django.forms import TextInput
-from .models import Staff, StaffContacted, StaffContactSchedule, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact
+from .models import Staff, StaffContacted, StaffContactSchedule, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact, StaffFlag
 from django.core.exceptions import ValidationError
 from apps.common.forms import MyRadioSelect
 
@@ -108,46 +108,46 @@ class StaffForm(forms.ModelForm):
             if qs.exists():
                 raise forms.ValidationError('このメールアドレスは既に使用されています。')
         return value
-    
+
     def clean(self):
         cleaned_data = super().clean()
         hire_date = cleaned_data.get('hire_date')
         resignation_date = cleaned_data.get('resignation_date')
         employee_no = cleaned_data.get('employee_no')
         employment_type = cleaned_data.get('employment_type')
-        
+
         # 入社日、社員番号、雇用形態のセットバリデーション
         if hire_date and not employee_no:
             raise forms.ValidationError('入社日を入力する場合は、社員番号も入力してください。')
-        
+
         if hire_date and not employment_type:
             raise forms.ValidationError('入社日を入力する場合は、雇用形態も選択してください。')
-        
+
         if employee_no and not hire_date:
             raise forms.ValidationError('社員番号を入力する場合は、入社日も入力してください。')
-        
+
         if employment_type and not hire_date:
             raise forms.ValidationError('雇用形態を選択する場合は、入社日も入力してください。')
-        
+
         # 入社日なしに退職日入力はNG
         if resignation_date and not hire_date:
             raise forms.ValidationError('退職日を入力する場合は、入社日も入力してください。')
-        
+
         # 入社日と退職日の妥当性チェック
         if hire_date and resignation_date and hire_date > resignation_date:
             raise forms.ValidationError('入社日は退職日より前の日付を入力してください。')
-        
+
         # 退職日とスタッフ契約の契約終了日の整合性チェック
         if resignation_date and self.instance and self.instance.pk:
             from apps.contract.models import StaffContract
-            
+
             # このスタッフの契約で、退職日より後に終了する契約があるかチェック
             future_contracts = StaffContract.objects.filter(
                 staff=self.instance,
                 end_date__isnull=False,
                 end_date__gt=resignation_date
             ).order_by('end_date')
-            
+
             if future_contracts.exists():
                 # 最も早い契約終了日を取得
                 earliest_contract = future_contracts.first()
@@ -155,7 +155,7 @@ class StaffForm(forms.ModelForm):
                     f'契約終了日以降に退職日を設定してください。'
                     f'契約「{earliest_contract.contract_name}」の終了日: {earliest_contract.end_date.strftime("%Y/%m/%d")}'
                 )
-        
+
         return cleaned_data
 
     sex = forms.ChoiceField(
@@ -171,7 +171,7 @@ class StaffForm(forms.ModelForm):
         widget=forms.Select(attrs={'class':'form-select form-select-sm'}),
         required=True,
     )
-    
+
     department_code = forms.ChoiceField(
         choices=[],
         label='所属部署',
@@ -186,7 +186,7 @@ class StaffForm(forms.ModelForm):
         from apps.company.models import CompanyDepartment
         from django.utils import timezone
         from django.db import models
-        
+
         self.fields['sex'].choices = [
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='sex').order_by('disp_seq')
@@ -196,7 +196,7 @@ class StaffForm(forms.ModelForm):
 
         from apps.master.models import EmploymentType
         self.fields['employment_type'].queryset = EmploymentType.objects.filter(is_active=True).order_by('display_order', 'name')
-        
+
         # 現在有効な部署の選択肢を設定
         current_date = timezone.localdate()
         valid_departments = CompanyDepartment.get_valid_departments(current_date)
@@ -204,7 +204,7 @@ class StaffForm(forms.ModelForm):
             (dept.department_code, f"{dept.name} ({dept.department_code})")
             for dept in valid_departments
         ]
-        
+
         # 初期値を保存して変更検知に使用
         if self.instance and self.instance.pk:
             self.initial_data = {
@@ -212,20 +212,20 @@ class StaffForm(forms.ModelForm):
             }
         else:
             self.initial_data = {}
-    
+
     def has_changed(self):
         """実際にデータが変更されたかどうかをチェック"""
         if not self.instance or not self.instance.pk:
             return True  # 新規作成の場合は常に変更ありとする
-        
+
         for field_name in self.fields:
             initial_value = self.initial_data.get(field_name)
             current_value = self.cleaned_data.get(field_name)
-            
+
             # 空文字列とNoneを同じものとして扱う
             if (initial_value or '') != (current_value or ''):
                 return True
-        
+
         return False
 
     class Meta:
@@ -273,7 +273,7 @@ class StaffForm(forms.ModelForm):
 
 class StaffQualificationForm(forms.ModelForm):
     """スタッフ資格フォーム"""
-    
+
     class Meta:
         model = StaffQualification
         fields = ['qualification', 'acquired_date', 'expiry_date', 'certificate_number', 'memo', 'score']
@@ -285,7 +285,7 @@ class StaffQualificationForm(forms.ModelForm):
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
             'score': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
         }
-    
+
     def __init__(self, *args, **kwargs):
         self.staff = kwargs.pop('staff', None)  # スタッフインスタンスを受け取る
         super().__init__(*args, **kwargs)
@@ -296,12 +296,12 @@ class StaffQualificationForm(forms.ModelForm):
             (q.pk, f"{q.parent.name} > {q.name}" if q.parent else q.name)
             for q in qualifications
         ]
-    
+
     def clean(self):
         """重複チェック"""
         cleaned_data = super().clean()
         qualification = cleaned_data.get('qualification')
-        
+
         if qualification and self.staff:
             # 編集時は自分自身を除外
             existing_query = StaffQualification.objects.filter(
@@ -310,17 +310,17 @@ class StaffQualificationForm(forms.ModelForm):
             )
             if self.instance.pk:
                 existing_query = existing_query.exclude(pk=self.instance.pk)
-            
+
             if existing_query.exists():
                 # 特定のフィールドにエラーを関連付ける
                 self.add_error('qualification', f'この資格「{qualification.name}」は既に登録されています。')
-        
+
         return cleaned_data
 
 
 class StaffSkillForm(forms.ModelForm):
     """スタッフ技能フォーム"""
-    
+
     class Meta:
         model = StaffSkill
         fields = ['skill', 'acquired_date', 'years_of_experience', 'memo']
@@ -330,7 +330,7 @@ class StaffSkillForm(forms.ModelForm):
             'years_of_experience': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
             'memo': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
-    
+
     def __init__(self, *args, **kwargs):
         self.staff = kwargs.pop('staff', None)  # スタッフインスタンスを受け取る
         super().__init__(*args, **kwargs)
@@ -341,12 +341,12 @@ class StaffSkillForm(forms.ModelForm):
             (s.pk, f"{s.parent.name} > {s.name}" if s.parent else s.name)
             for s in skills
         ]
-    
+
     def clean(self):
         """重複チェック"""
         cleaned_data = super().clean()
         skill = cleaned_data.get('skill')
-        
+
         if skill and self.staff:
             # 編集時は自分自身を除外
             existing_query = StaffSkill.objects.filter(
@@ -355,17 +355,17 @@ class StaffSkillForm(forms.ModelForm):
             )
             if self.instance.pk:
                 existing_query = existing_query.exclude(pk=self.instance.pk)
-            
+
             if existing_query.exists():
                 # 特定のフィールドにエラーを関連付ける
                 self.add_error('skill', f'この技能「{skill.name}」は既に登録されています。')
-        
+
         return cleaned_data
 
 
 class StaffFileForm(forms.ModelForm):
     """スタッフファイル添付フォーム"""
-    
+
     class Meta:
         model = StaffFile
         fields = ['file', 'description']
@@ -380,14 +380,14 @@ class StaffFileForm(forms.ModelForm):
                 'placeholder': 'ファイルの説明（任意）'
             }),
         }
-    
+
     def clean_file(self):
         file = self.cleaned_data.get('file')
         if file:
             # ファイルサイズチェック（10MB制限）
             if file.size > 10 * 1024 * 1024:
                 raise forms.ValidationError('ファイルサイズは10MB以下にしてください。')
-            
+
             # ファイル拡張子チェック
             allowed_extensions = [
                 '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt',
@@ -398,7 +398,7 @@ class StaffFileForm(forms.ModelForm):
                 raise forms.ValidationError(
                     f'許可されていないファイル形式です。許可されている形式: {", ".join(allowed_extensions)}'
                 )
-        
+
         return file
 
 
@@ -529,7 +529,7 @@ class StaffBankForm(forms.ModelForm):
             (opt.value, opt.name)
             for opt in Dropdowns.objects.filter(active=True, category='bank_account_type').order_by('disp_seq')
         ]
-        
+
         # 必須フィールドの設定
         self.fields['bank_code'].required = True
         self.fields['branch_code'].required = True
@@ -675,3 +675,57 @@ class StaffFaceUploadForm(forms.Form):
             if image.size > 2 * 1024 * 1024:
                 raise forms.ValidationError('ファイルサイズは2MB以下にしてください。')
         return image
+
+
+class StaffFlagForm(forms.ModelForm):
+    """スタッフフラッグフォーム"""
+    staff = forms.ModelChoiceField(
+        queryset=None,
+        label='スタッフ',
+        required=True,
+        empty_label='選択してください',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
+    company_department = forms.ModelChoiceField(
+        queryset=None,
+        label='会社組織',
+        required=False,
+        empty_label='選択してください',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
+    company_user = forms.ModelChoiceField(
+        queryset=None,
+        label='会社担当者',
+        required=False,
+        empty_label='選択してください',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
+    flag_status = forms.ModelChoiceField(
+        queryset=None,
+        label='フラッグステータス',
+        required=False,
+        empty_label='選択してください',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
+
+    class Meta:
+        model = StaffFlag
+        fields = ['staff', 'company_department', 'company_user', 'flag_status']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from apps.company.models import CompanyDepartment, CompanyUser
+        from apps.master.models_other import FlagStatus
+        from apps.common.middleware import get_current_tenant_id
+
+        tenant_id = get_current_tenant_id()
+        if tenant_id:
+            self.fields['staff'].queryset = Staff.objects.filter(tenant_id=tenant_id)
+            self.fields['company_department'].queryset = CompanyDepartment.objects.filter(tenant_id=tenant_id)
+            self.fields['company_user'].queryset = CompanyUser.objects.filter(tenant_id=tenant_id)
+            self.fields['flag_status'].queryset = FlagStatus.objects.filter(tenant_id=tenant_id, is_active=True).order_by('display_order')
+        else:
+            self.fields['staff'].queryset = Staff.objects.all()
+            self.fields['company_department'].queryset = CompanyDepartment.objects.all()
+            self.fields['company_user'].queryset = CompanyUser.objects.all()
+            self.fields['flag_status'].queryset = FlagStatus.objects.filter(is_active=True).order_by('display_order')

@@ -60,6 +60,9 @@
                             <a href="{% url 'staff:staff_tag_edit' staff.pk %}" class="dropdown-item">
                                 <i class="bi bi-tags"></i>　タグ編集
                             </a>
+                            <a href="{% url 'staff:staff_flag_list' staff.pk %}" class="dropdown-item">
+                                <i class="bi bi-flag"></i>　フラッグ編集
+                            </a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -79,7 +82,7 @@
                                 {% if staff.has_face_photo %}
                                     <img src="{% url 'staff:staff_face' staff.pk %}?v={% now "U" %}" class="img-fluid {% if staff_face_photo_style == 'round' %}rounded-circle{% elif staff_face_photo_style == 'rounded-square' %}rounded{% elif staff_face_photo_style == 'square' %}rounded-0{% endif %}" width="100" height="100" >
                                 {% else %}
-                                    <div class="d-flex align-items-center justify-content-center text-white rounded-circle" 
+                                    <div class="d-flex align-items-center justify-content-center text-white rounded-circle"
                                          style="width:100px;height:100px;background-color:{{ staff.avatar_color }};font-size:36px;">
                                         {{ staff.initials }}
                                     </div>
@@ -94,7 +97,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="col-sm">
                             <div class="col-sm mb-2 d-flex align-items-center">
                                 {% if staff.regist_status %}
@@ -203,7 +206,7 @@
                         </div>
                         <div class="col-sm">
                             〒 {{ staff.postal_code }}<br/>
-                            {{ staff.address1 }} 
+                            {{ staff.address1 }}
                             {{ staff.address2 }}<br/>
                             {{ staff.address3 }}
                             {% parameter 'GOOGLE_MAPS_URL_BASE' as map_url_base %}
@@ -214,7 +217,7 @@
                             {% endif %}
                         </div>
                     </div>
-            
+
                     <div class="row align-items-center">
                         <div class="col-sm-4 text-start text-sm-end">
                             <strong>電話</strong>
@@ -338,7 +341,7 @@
                     <div class="row mb-3 align-items-center">
                         <div class="col-sm-12">
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="connectRequestSwitch" 
+                                <input class="form-check-input" type="checkbox" id="connectRequestSwitch"
                                        {% if connect_request %}checked{% endif %}
                                        onchange="this.form.submit()">
                                 <input type="hidden" name="toggle_connect_request" value="1">
@@ -353,11 +356,11 @@
                         </div>
                     </div>
                 </form>
-                
+
                 <div class="row mb-3 align-items-center">
                     <div class="col-sm-12">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="connectApprovalSwitch" 
+                            <input class="form-check-input" type="checkbox" id="connectApprovalSwitch"
                                    {% if connect_request and connect_request.is_approved %}checked{% endif %} disabled>
                             <label class="form-check-label" for="connectApprovalSwitch">
                                 {% if mynumber_request or profile_request or international_request %}
@@ -427,7 +430,7 @@
                     </div>
                 </div>
                 {% endif %}
-                
+
                 {% if contact_request %}
                 <div class="row mb-3 align-items-center">
                     <div class="col-sm-1">
@@ -515,7 +518,7 @@
         <!--右上2-->
     </div>
 
-        
+
 </div><!-- row -->
 
 
@@ -527,14 +530,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     // このページにロジック情報があることを通知
     document.body.setAttribute('data-has-logic', 'true');
-    
+
     const logicContent = document.getElementById('logic-info-content');
     if (logicContent) {
         logicContent.innerHTML = `
             <div class="alert alert-info mb-3">
                 <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>スタッフ詳細画面のロジック情報</h6>
             </div>
-            
+
             <!-- 単項目チェック -->
             <div class="card mb-3" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);">
                 <div class="card-header py-2">
@@ -572,7 +575,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
     }
-    
+
     // ロジック情報設定完了を通知
     document.dispatchEvent(new Event('logicInfoSet'));
 });
@@ -836,7 +839,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const imagePreview = document.getElementById('imagePreview');
     const cropperWrapper = document.getElementById('cropperWrapper');
     const uploadSubmitButton = document.getElementById('uploadSubmitButton');
-    
+
     // クロップ座標用
     const cropX = document.getElementById('id_crop_x');
     const cropY = document.getElementById('id_crop_y');
@@ -871,7 +874,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 imagePreview.src = e.target.result;
                 cropperWrapper.style.display = 'block';
-                
+
                 // Cropperの初期化
                 cropper = new Cropper(imagePreview, {
                     aspectRatio: 1, // 正方形固定
@@ -912,7 +915,7 @@ document.addEventListener('DOMContentLoaded', function() {
         imagePreview.src = '#';
         cropperWrapper.style.display = 'none';
         uploadSubmitButton.disabled = true;
-        
+
         cropX.value = '';
         cropY.value = '';
         cropWidth.value = '';
@@ -928,5 +931,3 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 {% endblock %}
 {% endblock %}
-
-

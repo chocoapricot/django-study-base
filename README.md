@@ -92,9 +92,9 @@ django-study-base/
 └── templates/              # HTMLテンプレート
 ```
 
-## データベーステーブル一覧（113テーブル）
+## データベーステーブル一覧（114テーブル）
 
-### 本アプリケーション独自テーブル（96テーブル）
+### 本アプリケーション独自テーブル（97テーブル）
 
 | テーブル名 | モデル名 | 説明 |
 | --- | --- | --- |
@@ -183,6 +183,7 @@ django-study-base/
 | `apps_staff_contact_schedule` | `StaffContactSchedule` | スタッフ連絡予定 |
 | `apps_staff_contacts` | `StaffContact` | スタッフ連絡先 |
 | `apps_staff_disability` | `StaffDisability` | スタッフ障害者情報 |
+| `apps_staff_flag` | `StaffFlag` | スタッフフラッグ |
 | `apps_staff_evaluation` | `StaffEvaluation` | スタッフ評価 |
 | `apps_staff_file` | `StaffFile` | スタッフファイル |
 | `apps_staff_international` | `StaffInternational` | スタッフ外国籍情報 |
@@ -405,7 +406,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
   - `bi-cup`: ロジック情報なし（空のカップ）
   - `bi-cup-hot`: ロジック情報あり（湯気のあるカップ）
 - **モーダル表示**: クリックでページ固有のバリデーションロジックを表示
-- **カテゴリ分類**: 
+- **カテゴリ分類**:
   - **単項目チェック**: 個別フィールドのバリデーション
   - **相関チェック**: 複数フィールド間の関連性チェック
   - **自動処理**: システムによる自動変換・取得処理

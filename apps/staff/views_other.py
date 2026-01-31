@@ -11,7 +11,7 @@ from django.contrib import messages
 from apps.system.logs.utils import log_model_action
 from .forms_mail import ConnectionRequestMailForm, DisconnectionMailForm
 
-from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact
+from .models import Staff, StaffContacted, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact, StaffFlag
 from .forms import StaffMynumberForm, StaffBankForm, StaffInternationalForm, StaffDisabilityForm, StaffContactForm
 from apps.system.settings.utils import my_parameter
 from apps.system.settings.models import Dropdowns
@@ -795,3 +795,109 @@ def staff_international_request_detail(request, staff_pk, pk):
         'current_international': current_international,
     }
     return render(request, 'staff/staff_international_request_detail.html', context)
+
+
+# ===== スタッフフラッグ関連ビュー =====
+
+@login_required
+@permission_required('staff.view_staffflag', raise_exception=True)
+def staff_flag_list(request, staff_pk):
+    """スタッフのフラッグ一覧表示"""
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    flags = staff.flags.all().select_related('company_department', 'company_user', 'flag_status')
+
+    context = {
+        'staff': staff,
+        'flags': flags,
+    }
+    return render(request, 'staff/staff_flag_list.html', context)
+
+
+@login_required
+@permission_required('staff.add_staffflag', raise_exception=True)
+def staff_flag_create(request, staff_pk):
+    """スタッフのフラッグ登録"""
+    staff = get_object_or_404(Staff, pk=staff_pk)
+
+    if request.method == 'POST':
+        from .forms import StaffFlagForm
+        form = StaffFlagForm(request.POST)
+        if form.is_valid():
+            flag = form.save()
+
+            # AppLogに記録
+            log_model_action(request.user, 'create', flag)
+
+            messages.success(request, 'フラッグを登録しました。')
+            return redirect('staff:staff_flag_list', staff_pk=staff.pk)
+    else:
+        from .forms import StaffFlagForm
+        form = StaffFlagForm(initial={'staff': staff})
+
+    context = {
+        'staff': staff,
+        'form': form,
+        'is_new': True,
+    }
+    return render(request, 'staff/staff_flag_form.html', context)
+
+
+@login_required
+@permission_required('staff.change_staffflag', raise_exception=True)
+def staff_flag_update(request, pk):
+    """スタッフのフラッグ編集"""
+    flag = get_object_or_404(StaffFlag, pk=pk)
+    staff = flag.staff
+
+    if request.method == 'POST':
+        from .forms import StaffFlagForm
+        form = StaffFlagForm(request.POST, instance=flag)
+        if form.is_valid():
+            form.save()
+
+            # AppLogに記録
+            log_model_action(request.user, 'update', flag)
+
+            messages.success(request, 'フラッグを更新しました。')
+            return redirect('staff:staff_flag_list', staff_pk=staff.pk)
+    else:
+        from .forms import StaffFlagForm
+        form = StaffFlagForm(instance=flag)
+
+    context = {
+        'staff': staff,
+        'form': form,
+        'flag': flag,
+        'is_new': False,
+    }
+    return render(request, 'staff/staff_flag_form.html', context)
+
+
+@login_required
+@permission_required('staff.delete_staffflag', raise_exception=True)
+def staff_flag_delete(request, pk):
+    """スタッフのフラッグ削除確認"""
+    flag = get_object_or_404(StaffFlag, pk=pk)
+    staff = flag.staff
+
+    if request.method == 'POST':
+        flag_status_name = str(flag.flag_status)
+        flag.delete()
+
+        # AppLogに記録
+        AppLog.objects.create(
+            user=request.user,
+            action='delete',
+            model_name='StaffFlag',
+            object_id=str(pk),
+            object_repr=f"{staff} - フラッグ削除: {flag_status_name}"
+        )
+
+        messages.success(request, 'フラッグを削除しました。')
+        return redirect('staff:staff_flag_list', staff_pk=staff.pk)
+
+    context = {
+        'staff': staff,
+        'flag': flag,
+    }
+    return render(request, 'staff/staff_flag_confirm_delete.html', context)

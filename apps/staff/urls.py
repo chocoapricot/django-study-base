@@ -24,6 +24,7 @@ from .views import (
     staff_payroll_detail, staff_payroll_create, staff_payroll_edit, staff_payroll_delete,
     staff_evaluation_list, staff_evaluation_create, staff_evaluation_update, staff_evaluation_delete,
     staff_tag_edit,
+    staff_flag_list, staff_flag_create, staff_flag_update, staff_flag_delete,
 )
 from .views_inquiry import (
     staff_inquiry_list, staff_inquiry_create, staff_inquiry_detail, staff_inquiry_message_delete,
@@ -60,25 +61,25 @@ urlpatterns = [
     path('staff/contact_schedule/<int:pk>/detail/', staff_contact_schedule_detail, name='staff_contact_schedule_detail'),
     path('staff/contact_schedule/<int:pk>/update/', staff_contact_schedule_update, name='staff_contact_schedule_update'),
     path('staff/contact_schedule/<int:pk>/delete/', staff_contact_schedule_delete, name='staff_contact_schedule_delete'),
-    
+
     # メール送信
     path('staff/<int:pk>/mail/send/', staff_mail_send, name='staff_mail_send'),
 
     # 変更履歴
     path('staff/<int:pk>/change_history/', staff_change_history_list, name='staff_change_history_list'),
-    
+
     # 資格管理
     path('staff/<int:staff_pk>/qualification/', staff_qualification_list, name='staff_qualification_list'),
     path('staff/<int:staff_pk>/qualification/create/', staff_qualification_create, name='staff_qualification_create'),
     path('staff/qualification/<int:pk>/update/', staff_qualification_update, name='staff_qualification_update'),
     path('staff/qualification/<int:pk>/delete/', staff_qualification_delete, name='staff_qualification_delete'),
-    
+
     # 技能管理
     path('staff/<int:staff_pk>/skill/', staff_skill_list, name='staff_skill_list'),
     path('staff/<int:staff_pk>/skill/create/', staff_skill_create, name='staff_skill_create'),
     path('staff/skill/<int:pk>/update/', staff_skill_update, name='staff_skill_update'),
     path('staff/skill/<int:pk>/delete/', staff_skill_delete, name='staff_skill_delete'),
-    
+
     # ファイル管理
     path('staff/<int:staff_pk>/file/', staff_file_list, name='staff_file_list'),
     path('staff/<int:staff_pk>/file/create/', staff_file_create, name='staff_file_create'),
@@ -114,7 +115,7 @@ urlpatterns = [
     path('staff/<int:staff_id>/international/create/', staff_international_create, name='staff_international_create'),
     path('staff/<int:staff_id>/international/edit/', staff_international_edit, name='staff_international_edit'),
     path('staff/<int:staff_id>/international/delete/', staff_international_delete, name='staff_international_delete'),
-    
+
     # 外国籍情報申請
     path('staff/<int:staff_pk>/international/request/<int:pk>/', staff_international_request_detail, name='staff_international_request_detail'),
 
@@ -136,6 +137,12 @@ urlpatterns = [
     path('staff/<int:staff_pk>/evaluation/create/', staff_evaluation_create, name='staff_evaluation_create'),
     path('staff/evaluation/<int:pk>/update/', staff_evaluation_update, name='staff_evaluation_update'),
     path('staff/evaluation/<int:pk>/delete/', staff_evaluation_delete, name='staff_evaluation_delete'),
+
+    # フラッグ管理
+    path('staff/<int:staff_pk>/flag/', staff_flag_list, name='staff_flag_list'),
+    path('staff/<int:staff_pk>/flag/create/', staff_flag_create, name='staff_flag_create'),
+    path('staff/flag/<int:pk>/update/', staff_flag_update, name='staff_flag_update'),
+    path('staff/flag/<int:pk>/delete/', staff_flag_delete, name='staff_flag_delete'),
 
     # 問い合わせ
     path('inquiry/', staff_inquiry_list, name='staff_inquiry_list'),
