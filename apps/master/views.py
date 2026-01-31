@@ -217,6 +217,14 @@ MASTER_CONFIGS = [
     },
     {
         "category": "その他",
+        "name": "フラッグステータス管理",
+        "description": "各種フラッグのステータスを管理します",
+        "model": "master.FlagStatus",
+        "url_name": "master:flag_status_list",
+        "permission": "master.view_flagstatus",
+    },
+    {
+        "category": "その他",
         "name": "汎用文言テンプレート",
         "description": "画面に入力する定型文を管理します",
         "model": "master.PhraseTemplate",

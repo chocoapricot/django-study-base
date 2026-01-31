@@ -306,3 +306,24 @@ class UserParameter(MyTenantModel):
             return self.value
 
         return choice_map.get(self.value, self.value)
+
+class FlagStatus(MyTenantModel):
+    """
+    フラッグステータスを管理するマスターデータ。
+    """
+    name = models.CharField('名称', max_length=100)
+    display_order = models.IntegerField('表示順', default=0)
+    is_active = models.BooleanField('有効', default=True)
+
+    class Meta:
+        db_table = 'apps_master_flag_status'
+        verbose_name = 'フラッグステータス'
+        verbose_name_plural = 'フラッグステータス'
+        ordering = ['display_order', 'name']
+        indexes = [
+            models.Index(fields=['is_active']),
+            models.Index(fields=['display_order']),
+        ]
+
+    def __str__(self):
+        return self.name

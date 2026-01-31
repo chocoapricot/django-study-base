@@ -29,6 +29,7 @@ from .models import (
     StaffTag,
     ClientTag,
     TimePunch,
+    FlagStatus,
 )
 from apps.system.settings.models import Dropdowns
 from apps.common.constants import (
@@ -719,6 +720,18 @@ class StaffRegistStatusForm(forms.ModelForm):
     """スタッフ登録状況フォーム"""
     class Meta:
         model = StaffRegistStatus
+        fields = ['name', 'display_order', 'is_active']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control form-control-sm'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+
+class FlagStatusForm(forms.ModelForm):
+    """フラッグステータスフォーム"""
+    class Meta:
+        model = FlagStatus
         fields = ['name', 'display_order', 'is_active']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-sm'}),

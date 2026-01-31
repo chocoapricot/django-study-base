@@ -11,6 +11,7 @@ from .models import (
     DefaultValue,
     UserParameter,
     GenerativeAiSetting,
+    FlagStatus,
 )
 from .forms import (
     InformationForm,
@@ -18,6 +19,7 @@ from .forms import (
     DefaultValueForm,
     UserParameterAdminForm as UserParameterForm,
     GenerativeAiSettingForm,
+    FlagStatusForm,
 )
 from apps.system.logs.models import AppLog
 from apps.company.models import Company
@@ -491,5 +493,96 @@ def generative_ai_setting_change_history_list(request):
             "page_title": "生成AI設定変更履歴",
             "back_url_name": "master:generative_ai_setting_list",
             "model_name": "GenerativeAiSetting",
+        },
+    )
+
+# フラッグステータス管理ビュー
+@login_required
+@permission_required("master.view_flagstatus", raise_exception=True)
+def flag_status_list(request):
+    """フラッグステータス一覧"""
+    search_query = request.GET.get("search", "")
+    items = FlagStatus.objects.all()
+    if search_query:
+        items = items.filter(name__icontains=search_query)
+    items = items.order_by("display_order")
+    paginator = Paginator(items, 20)
+    page = request.GET.get("page")
+    items_page = paginator.get_page(page)
+    change_logs = AppLog.objects.filter(model_name="FlagStatus", action__in=["create", "update", "delete"]).order_by("-timestamp")[:5]
+    change_logs_count = AppLog.objects.filter(model_name="FlagStatus", action__in=["create", "update", "delete"]).count()
+    context = {
+        "items": items_page,
+        "search_query": search_query,
+        "change_logs": change_logs,
+        "change_logs_count": change_logs_count,
+        "history_url_name": "master:flag_status_change_history_list",
+    }
+    return render(request, "master/flag_status_list.html", context)
+
+
+@login_required
+@permission_required("master.add_flagstatus", raise_exception=True)
+def flag_status_create(request):
+    """フラッグステータス作成"""
+    if request.method == "POST":
+        form = FlagStatusForm(request.POST)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"フラッグステータス「{item.name}」を作成しました。")
+            return redirect("master:flag_status_list")
+    else:
+        form = FlagStatusForm()
+    context = {"form": form, "title": "フラッグステータス作成"}
+    return render(request, "master/flag_status_form.html", context)
+
+
+@login_required
+@permission_required("master.change_flagstatus", raise_exception=True)
+def flag_status_update(request, pk):
+    """フラッグステータス編集"""
+    item = get_object_or_404(FlagStatus, pk=pk)
+    if request.method == "POST":
+        form = FlagStatusForm(request.POST, instance=item)
+        if form.is_valid():
+            item = form.save()
+            messages.success(request, f"フラッグステータス「{item.name}」を更新しました。")
+            return redirect("master:flag_status_list")
+    else:
+        form = FlagStatusForm(instance=item)
+    context = {"form": form, "item": item, "title": "フラッグステータス編集"}
+    return render(request, "master/flag_status_form.html", context)
+
+
+@login_required
+@permission_required("master.delete_flagstatus", raise_exception=True)
+def flag_status_delete(request, pk):
+    """フラッグステータス削除"""
+    item = get_object_or_404(FlagStatus, pk=pk)
+    if request.method == "POST":
+        item_name = item.name
+        item.delete()
+        messages.success(request, f"フラッグステータス「{item_name}」を削除しました。")
+        return redirect("master:flag_status_list")
+    context = {"item": item, "title": "フラッグステータス削除"}
+    return render(request, "master/flag_status_delete.html", context)
+
+
+@login_required
+@permission_required("master.view_flagstatus", raise_exception=True)
+def flag_status_change_history_list(request):
+    """フラッグステータス変更履歴一覧"""
+    logs = AppLog.objects.filter(model_name="FlagStatus", action__in=["create", "update", "delete"]).order_by("-timestamp")
+    paginator = Paginator(logs, 20)
+    page = request.GET.get("page")
+    logs_page = paginator.get_page(page)
+    return render(
+        request,
+        "common/common_change_history_list.html",
+        {
+            "change_logs": logs_page,
+            "page_title": "フラッグステータス変更履歴",
+            "back_url_name": "master:flag_status_list",
+            "model_name": "FlagStatus",
         },
     )

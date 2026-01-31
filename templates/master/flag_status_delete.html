@@ -1,0 +1,5 @@
+{% extends "common/common_delete.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block delete_content %}
+    <p>本当にフラッグステータス「{{ item.name }}」を削除しますか？</p>
+{% endblock %}
