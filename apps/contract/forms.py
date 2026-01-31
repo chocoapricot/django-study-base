@@ -1,7 +1,7 @@
 from django import forms
 from django.db.models import Subquery, OuterRef
 from django.utils import timezone
-from .models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp, ClientContractHakenExempt, StaffContractTeishokubiDetail, ContractAssignmentConfirm, ContractAssignmentHaken, ContractClientFlag
+from .models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp, ClientContractHakenExempt, StaffContractTeishokubiDetail, ContractAssignmentConfirm, ContractAssignmentHaken, ContractClientFlag, ContractStaffFlag
 from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from apps.system.settings.models import Dropdowns
@@ -931,6 +931,57 @@ class ContractClientFlagForm(forms.ModelForm):
             self.fields['flag_status'].queryset = FlagStatus.objects.filter(tenant_id=tenant_id, is_active=True).order_by('display_order')
         else:
             self.fields['client_contract'].queryset = ClientContract.objects.all()
+            self.fields['company_department'].queryset = CompanyDepartment.objects.all()
+            self.fields['company_user'].queryset = CompanyUser.objects.all()
+            self.fields['flag_status'].queryset = FlagStatus.objects.filter(is_active=True).order_by('display_order')
+
+
+class ContractStaffFlagForm(forms.ModelForm):
+    """スタッフ契約フラッグフォーム"""
+    staff_contract = forms.ModelChoiceField(
+        queryset=None,
+        label='スタッフ契約',
+        required=True,
+        widget=forms.HiddenInput()
+    )
+    company_department = forms.ModelChoiceField(
+        queryset=None,
+        label='会社組織',
+        required=False,
+        empty_label='選択してください',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
+    company_user = forms.ModelChoiceField(
+        queryset=None,
+        label='会社担当者',
+        required=False,
+        empty_label='選択してください',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
+    flag_status = forms.ModelChoiceField(
+        queryset=None,
+        label='フラッグステータス',
+        required=False,
+        empty_label='選択してください',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
+
+    class Meta:
+        model = ContractStaffFlag
+        fields = ['staff_contract', 'company_department', 'company_user', 'flag_status']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from apps.common.middleware import get_current_tenant_id
+
+        tenant_id = get_current_tenant_id()
+        if tenant_id:
+            self.fields['staff_contract'].queryset = StaffContract.objects.filter(tenant_id=tenant_id)
+            self.fields['company_department'].queryset = CompanyDepartment.objects.filter(tenant_id=tenant_id)
+            self.fields['company_user'].queryset = CompanyUser.objects.filter(tenant_id=tenant_id)
+            self.fields['flag_status'].queryset = FlagStatus.objects.filter(tenant_id=tenant_id, is_active=True).order_by('display_order')
+        else:
+            self.fields['staff_contract'].queryset = StaffContract.objects.all()
             self.fields['company_department'].queryset = CompanyDepartment.objects.all()
             self.fields['company_user'].queryset = CompanyUser.objects.all()
             self.fields['flag_status'].queryset = FlagStatus.objects.filter(is_active=True).order_by('display_order')

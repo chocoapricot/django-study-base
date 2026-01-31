@@ -15,6 +15,14 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 スタッフ契約詳細
                 <div class="d-flex align-items-center">
+                    <ul class="nav nav-pills mb-0 me-2">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">その他情報</a>
+                            <div class="dropdown-menu">
+                                <a href="{% url 'contract:staff_contract_flag_list' contract.pk %}" class="dropdown-item">フラッグ編集</a>
+                            </div>
+                        </li>
+                    </ul>
                     {% if contract.contract_status == Constants.CONTRACT_STATUS.DRAFT or contract.contract_status == Constants.CONTRACT_STATUS.PENDING %}
                     <ul class="nav nav-pills mb-0 me-2">
                         <li class="nav-item dropdown">

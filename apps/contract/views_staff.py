@@ -11,8 +11,8 @@ from datetime import datetime, date
 from django.core.files.base import ContentFile
 from datetime import date
 from django.forms.models import model_to_dict
-from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken, ClientContractTtp, ClientContractHakenExempt, StaffContractTeishokubi, StaffContractTeishokubiDetail
-from .forms import ClientContractForm, StaffContractForm, ClientContractHakenForm, ClientContractTtpForm, ClientContractHakenExemptForm, StaffContractTeishokubiDetailForm
+from .models import ClientContract, StaffContract, ClientContractPrint, StaffContractPrint, ClientContractHaken, ClientContractTtp, ClientContractHakenExempt, StaffContractTeishokubi, StaffContractTeishokubiDetail, ContractStaffFlag
+from .forms import ClientContractForm, StaffContractForm, ClientContractHakenForm, ClientContractTtpForm, ClientContractHakenExemptForm, StaffContractTeishokubiDetailForm, ContractStaffFlagForm
 from apps.common.constants import Constants
 from django.conf import settings
 from django.utils import timezone
@@ -33,6 +33,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import io
 from .utils import generate_contract_pdf_content, generate_quotation_pdf, generate_client_contract_number, generate_staff_contract_number, generate_teishokubi_notification_pdf, generate_haken_notification_pdf, generate_haken_motokanri_pdf
+from apps.system.logs.utils import log_model_action
 from .resources import ClientContractResource, StaffContractResource
 from .models import ContractAssignment
 from django.urls import reverse
@@ -1565,3 +1566,94 @@ def staff_contract_ai_check(request, pk):
     }
     
     return render(request, 'contract/ai_check_base.html', context)
+
+
+@login_required
+@permission_required('contract.view_staffcontract', raise_exception=True)
+def staff_contract_flag_list(request, contract_pk):
+    """スタッフ契約のフラッグ一覧表示"""
+    contract = get_object_or_404(StaffContract, pk=contract_pk)
+    flags = contract.flags.all().select_related('company_department', 'company_user', 'flag_status')
+
+    context = {
+        'contract': contract,
+        'flags': flags,
+    }
+    return render(request, 'contract/staff_contract_flag_list.html', context)
+
+
+@login_required
+@permission_required('contract.change_staffcontract', raise_exception=True)
+def staff_contract_flag_create(request, contract_pk):
+    """スタッフ契約のフラッグ登録"""
+    contract = get_object_or_404(StaffContract, pk=contract_pk)
+
+    if request.method == 'POST':
+        form = ContractStaffFlagForm(request.POST)
+        if form.is_valid():
+            flag = form.save()
+            log_model_action(request.user, 'create', flag)
+            messages.success(request, 'フラッグを登録しました。')
+            return redirect('contract:staff_contract_flag_list', contract_pk=contract.pk)
+    else:
+        form = ContractStaffFlagForm(initial={'staff_contract': contract})
+
+    context = {
+        'contract': contract,
+        'form': form,
+        'is_new': True,
+    }
+    return render(request, 'contract/staff_contract_flag_form.html', context)
+
+
+@login_required
+@permission_required('contract.change_staffcontract', raise_exception=True)
+def staff_contract_flag_update(request, pk):
+    """スタッフ契約のフラッグ編集"""
+    flag = get_object_or_404(ContractStaffFlag, pk=pk)
+    contract = flag.staff_contract
+
+    if request.method == 'POST':
+        form = ContractStaffFlagForm(request.POST, instance=flag)
+        if form.is_valid():
+            form.save()
+            log_model_action(request.user, 'update', flag)
+            messages.success(request, 'フラッグを更新しました。')
+            return redirect('contract:staff_contract_flag_list', contract_pk=contract.pk)
+    else:
+        form = ContractStaffFlagForm(instance=flag)
+
+    context = {
+        'contract': contract,
+        'form': form,
+        'flag': flag,
+        'is_new': False,
+    }
+    return render(request, 'contract/staff_contract_flag_form.html', context)
+
+
+@login_required
+@permission_required('contract.change_staffcontract', raise_exception=True)
+def staff_contract_flag_delete(request, pk):
+    """スタッフ契約のフラッグ削除確認"""
+    flag = get_object_or_404(ContractStaffFlag, pk=pk)
+    contract = flag.staff_contract
+
+    if request.method == 'POST':
+        flag_status_name = str(flag.flag_status)
+        flag.delete()
+        AppLog.objects.create(
+            user=request.user,
+            action='delete',
+            model_name='ContractStaffFlag',
+            object_id=str(pk),
+            object_repr=f"{contract} - フラッグ削除: {flag_status_name}"
+        )
+        messages.success(request, 'フラッグを削除しました。')
+        return redirect('contract:staff_contract_flag_list', contract_pk=contract.pk)
+
+    context = {
+        'contract': contract,
+        'flag': flag,
+    }
+    return render(request, 'contract/staff_contract_flag_confirm_delete.html', context)
