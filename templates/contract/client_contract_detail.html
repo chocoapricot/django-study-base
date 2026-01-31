@@ -20,8 +20,12 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" style="padding-top: 0.25em; padding-bottom: 0.25em;" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">その他情報</a>
                             <div class="dropdown-menu">
+                                {% if haken_info %}
                                 <a href="{% url 'contract:client_contract_ttp_view' haken_pk=haken_info.pk %}" class="dropdown-item">紹介予定派遣</a>
                                 <a href="{% url 'contract:client_contract_haken_exempt_view' haken_pk=haken_info.pk %}" class="dropdown-item">派遣抵触日制限外</a>
+                                <div class="dropdown-divider"></div>
+                                {% endif %}
+                                <a href="{% url 'contract:client_contract_flag_list' contract.pk %}" class="dropdown-item">フラッグ編集</a>
                             </div>
                         </li>
                     </ul>

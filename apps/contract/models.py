@@ -1,5 +1,5 @@
 from django.db import models
-from apps.common.models import MyTenantModel
+from apps.common.models import MyTenantModel, TenantManager
 from apps.common.constants import Constants
 from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.staff.models import Staff
@@ -1367,3 +1367,46 @@ class ContractAssignmentHaken(MyTenantModel):
         
         if self.other_measures and not self.other_measures_detail:
             raise ValidationError('その他の雇用安定措置をチェックした場合は、詳細を入力してください。')
+
+
+class ContractClientFlag(MyTenantModel):
+    """
+    クライアント契約のフラッグ情報を管理するモデル。
+    """
+    client_contract = models.ForeignKey(
+        ClientContract,
+        on_delete=models.CASCADE,
+        verbose_name='クライアント契約',
+        related_name='flags'
+    )
+    company_department = models.ForeignKey(
+        'company.CompanyDepartment',
+        on_delete=models.SET_NULL,
+        verbose_name='会社組織',
+        blank=True,
+        null=True
+    )
+    company_user = models.ForeignKey(
+        'company.CompanyUser',
+        on_delete=models.SET_NULL,
+        verbose_name='会社担当者',
+        blank=True,
+        null=True
+    )
+    flag_status = models.ForeignKey(
+        'master.FlagStatus',
+        on_delete=models.SET_NULL,
+        verbose_name='フラッグステータス',
+        blank=True,
+        null=True
+    )
+
+    objects = TenantManager()
+
+    class Meta:
+        verbose_name = 'クライアント契約フラッグ'
+        verbose_name_plural = 'クライアント契約フラッグ'
+        db_table = 'apps_contract_client_flag'
+
+    def __str__(self):
+        return f"{self.client_contract} - {self.flag_status}"

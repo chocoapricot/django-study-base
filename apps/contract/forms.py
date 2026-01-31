@@ -1,11 +1,12 @@
 from django import forms
 from django.db.models import Subquery, OuterRef
 from django.utils import timezone
-from .models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp, ClientContractHakenExempt, StaffContractTeishokubiDetail, ContractAssignmentConfirm, ContractAssignmentHaken
+from .models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp, ClientContractHakenExempt, StaffContractTeishokubiDetail, ContractAssignmentConfirm, ContractAssignmentHaken, ContractClientFlag
 from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from apps.system.settings.models import Dropdowns
 from apps.company.models import Company, CompanyUser, CompanyDepartment
+from apps.master.models_other import FlagStatus
 from apps.common.constants import Constants
 from apps.common.forms import MyRadioSelect
 
@@ -882,3 +883,54 @@ class ContractAssignmentHakenForm(forms.ModelForm):
             self.add_error('other_measures_detail', 'その他の雇用安定措置をチェックした場合は、詳細を入力してください。')
         
         return cleaned_data
+
+
+class ContractClientFlagForm(forms.ModelForm):
+    """クライアント契約フラッグフォーム"""
+    client_contract = forms.ModelChoiceField(
+        queryset=None,
+        label='クライアント契約',
+        required=True,
+        widget=forms.HiddenInput()
+    )
+    company_department = forms.ModelChoiceField(
+        queryset=None,
+        label='会社組織',
+        required=False,
+        empty_label='選択してください',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
+    company_user = forms.ModelChoiceField(
+        queryset=None,
+        label='会社担当者',
+        required=False,
+        empty_label='選択してください',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
+    flag_status = forms.ModelChoiceField(
+        queryset=None,
+        label='フラッグステータス',
+        required=False,
+        empty_label='選択してください',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
+
+    class Meta:
+        model = ContractClientFlag
+        fields = ['client_contract', 'company_department', 'company_user', 'flag_status']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from apps.common.middleware import get_current_tenant_id
+
+        tenant_id = get_current_tenant_id()
+        if tenant_id:
+            self.fields['client_contract'].queryset = ClientContract.objects.filter(tenant_id=tenant_id)
+            self.fields['company_department'].queryset = CompanyDepartment.objects.filter(tenant_id=tenant_id)
+            self.fields['company_user'].queryset = CompanyUser.objects.filter(tenant_id=tenant_id)
+            self.fields['flag_status'].queryset = FlagStatus.objects.filter(tenant_id=tenant_id, is_active=True).order_by('display_order')
+        else:
+            self.fields['client_contract'].queryset = ClientContract.objects.all()
+            self.fields['company_department'].queryset = CompanyDepartment.objects.all()
+            self.fields['company_user'].queryset = CompanyUser.objects.all()
+            self.fields['flag_status'].queryset = FlagStatus.objects.filter(is_active=True).order_by('display_order')
