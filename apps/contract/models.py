@@ -1410,3 +1410,46 @@ class ContractClientFlag(MyTenantModel):
 
     def __str__(self):
         return f"{self.client_contract} - {self.flag_status}"
+
+
+class ContractStaffFlag(MyTenantModel):
+    """
+    スタッフ契約のフラッグ情報を管理するモデル。
+    """
+    staff_contract = models.ForeignKey(
+        StaffContract,
+        on_delete=models.CASCADE,
+        verbose_name='スタッフ契約',
+        related_name='flags'
+    )
+    company_department = models.ForeignKey(
+        'company.CompanyDepartment',
+        on_delete=models.SET_NULL,
+        verbose_name='会社組織',
+        blank=True,
+        null=True
+    )
+    company_user = models.ForeignKey(
+        'company.CompanyUser',
+        on_delete=models.SET_NULL,
+        verbose_name='会社担当者',
+        blank=True,
+        null=True
+    )
+    flag_status = models.ForeignKey(
+        'master.FlagStatus',
+        on_delete=models.SET_NULL,
+        verbose_name='フラッグステータス',
+        blank=True,
+        null=True
+    )
+
+    objects = TenantManager()
+
+    class Meta:
+        verbose_name = 'スタッフ契約フラッグ'
+        verbose_name_plural = 'スタッフ契約フラッグ'
+        db_table = 'apps_contract_staff_flag'
+
+    def __str__(self):
+        return f"{self.staff_contract} - {self.flag_status}"

@@ -133,6 +133,7 @@ django-study-base/
 | `apps_contract_staff_print` | `StaffContractPrint` | スタッフ契約書発行履歴 |
 | `apps_contract_staff_teishokubi` | `StaffContractTeishokubi` | スタッフの個人抵触日 |
 | `apps_contract_staff_teishokubi_detail` | `StaffContractTeishokubiDetail` | 個人抵触日算出詳細 |
+| `apps_contract_staff_flag` | `ContractStaffFlag` | スタッフ契約フラッグ |
 | `apps_kintai_staff_timesheet` | `StaffTimesheet` | 月次勤怠 |
 | `apps_kintai_staff_timecard` | `StaffTimecard` | 日次勤怠 |
 | `apps_kintai_staff_timerecord` | `StaffTimerecord` | 勤怠打刻 |

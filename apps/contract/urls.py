@@ -40,6 +40,12 @@ urlpatterns = [
 
     # スタッフ契約
     path('staff/', views.staff_contract_list, name='staff_contract_list'),
+    # スタッフ契約フラッグ管理
+    path('staff/<int:contract_pk>/flag/', views.staff_contract_flag_list, name='staff_contract_flag_list'),
+    path('staff/<int:contract_pk>/flag/create/', views.staff_contract_flag_create, name='staff_contract_flag_create'),
+    path('staff/flag/<int:pk>/update/', views.staff_contract_flag_update, name='staff_contract_flag_update'),
+    path('staff/flag/<int:pk>/delete/', views.staff_contract_flag_delete, name='staff_contract_flag_delete'),
+
     path('staff/create/', views.staff_contract_create, name='staff_contract_create'),
     path('staff/<int:pk>/', views.staff_contract_detail, name='staff_contract_detail'),
     path('staff/<int:pk>/update/', views.staff_contract_update, name='staff_contract_update'),
