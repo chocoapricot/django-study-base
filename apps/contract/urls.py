@@ -32,6 +32,12 @@ urlpatterns = [
     path('client/export/', views.client_contract_export, name='client_contract_export'),
     path('client/<int:pk>/ai_check/', views.client_contract_ai_check, name='client_contract_ai_check'),
 
+    # クライアント契約フラッグ管理
+    path('client/<int:contract_pk>/flag/', views.client_contract_flag_list, name='client_contract_flag_list'),
+    path('client/<int:contract_pk>/flag/create/', views.client_contract_flag_create, name='client_contract_flag_create'),
+    path('client/flag/<int:pk>/update/', views.client_contract_flag_update, name='client_contract_flag_update'),
+    path('client/flag/<int:pk>/delete/', views.client_contract_flag_delete, name='client_contract_flag_delete'),
+
     # スタッフ契約
     path('staff/', views.staff_contract_list, name='staff_contract_list'),
     path('staff/create/', views.staff_contract_create, name='staff_contract_create'),
