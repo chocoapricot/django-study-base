@@ -148,6 +148,7 @@ django-study-base/
 | `apps_master_contract_terms` | `ContractTerms` | 契約文言マスター |
 | `apps_master_default_value` | `DefaultValue` | デフォルト値マスター |
 | `apps_master_employment_type` | `EmploymentType` | 雇用形態マスター |
+| `apps_master_flag_status` | `FlagStatus` | フラッグステータス |
 | `apps_master_generative_ai_setting` | `GenerativeAiSetting` | 生成AI設定マスター |
 | `apps_master_information` | `Information` | お知らせマスター |
 | `apps_master_information_file` | `InformationFile` | お知らせファイル |

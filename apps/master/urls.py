@@ -152,6 +152,13 @@ urlpatterns = [
     path('staff-tag/<int:pk>/delete/', views.staff_tag_delete, name='staff_tag_delete'),
     path('staff-tag/history/', views.staff_tag_change_history_list, name='staff_tag_change_history_list'),
 
+    # フラッグステータス管理
+    path('flag-status/', views.flag_status_list, name='flag_status_list'),
+    path('flag-status/create/', views.flag_status_create, name='flag_status_create'),
+    path('flag-status/<int:pk>/update/', views.flag_status_update, name='flag_status_update'),
+    path('flag-status/<int:pk>/delete/', views.flag_status_delete, name='flag_status_delete'),
+    path('flag-status/history/', views.flag_status_change_history_list, name='flag_status_change_history_list'),
+
     # クライアント登録状況管理
     path('client-regist-status/', views.client_regist_status_list, name='client_regist_status_list'),
     path('client-regist-status/create/', views.client_regist_status_create, name='client_regist_status_create'),
