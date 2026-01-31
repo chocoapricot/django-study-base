@@ -326,5 +326,7 @@ class StaffFlag(MyTenantModel):
         verbose_name_plural = 'スタッフフラッグ'
         db_table = 'apps_staff_flag'
 
+    details = models.TextField('詳細', blank=True, null=True)
+
     def __str__(self):
         return f"{self.staff} - {self.flag_status}"

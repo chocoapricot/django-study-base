@@ -702,14 +702,31 @@ class StaffFlagForm(forms.ModelForm):
     flag_status = forms.ModelChoiceField(
         queryset=None,
         label='フラッグステータス',
-        required=False,
+        required=True,
         empty_label='選択してください',
         widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
     )
 
     class Meta:
         model = StaffFlag
-        fields = ['staff', 'company_department', 'company_user', 'flag_status']
+        fields = ['staff', 'company_department', 'company_user', 'flag_status', 'details']
+        widgets = {
+            'details': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        company_department = cleaned_data.get('company_department')
+        company_user = cleaned_data.get('company_user')
+
+        if company_user and not company_department:
+            self.add_error('company_department', '会社担当者を入力するときは、会社組織を必須にしてください。')
+
+        if company_user and company_department:
+            if company_user.department_code != company_department.department_code:
+                self.add_error('company_user', '会社組織と、会社担当者の所属する組織が違います。')
+
+        return cleaned_data
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
