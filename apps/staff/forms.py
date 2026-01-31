@@ -683,8 +683,7 @@ class StaffFlagForm(forms.ModelForm):
         queryset=None,
         label='スタッフ',
         required=True,
-        empty_label='選択してください',
-        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+        widget=forms.HiddenInput()  # 非表示ウィジェットに変更
     )
     company_department = forms.ModelChoiceField(
         queryset=None,
