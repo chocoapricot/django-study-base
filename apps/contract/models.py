@@ -1408,6 +1408,8 @@ class ContractClientFlag(MyTenantModel):
         verbose_name_plural = 'クライアント契約フラッグ'
         db_table = 'apps_contract_client_flag'
 
+    details = models.TextField('詳細', blank=True, null=True)
+
     def __str__(self):
         return f"{self.client_contract} - {self.flag_status}"
 
@@ -1450,6 +1452,8 @@ class ContractStaffFlag(MyTenantModel):
         verbose_name = 'スタッフ契約フラッグ'
         verbose_name_plural = 'スタッフ契約フラッグ'
         db_table = 'apps_contract_staff_flag'
+
+    details = models.TextField('詳細', blank=True, null=True)
 
     def __str__(self):
         return f"{self.staff_contract} - {self.flag_status}"

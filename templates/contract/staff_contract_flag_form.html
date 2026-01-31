@@ -55,6 +55,18 @@
                 </div>
             </div>
 
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.details.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
+                    {{ form.details.label }}
+                </label>
+                <div class="col-sm-6">
+                    {{ form.details }}
+                    {% if form.details.errors %}
+                        <div class="text-danger small">{{ form.details.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
             <div class="row mt-3">
                 <div class="col text-left">
                     <button type="submit" class="btn btn-sm btn-primary me-2">

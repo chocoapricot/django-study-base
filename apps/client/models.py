@@ -413,5 +413,7 @@ class ClientFlag(MyTenantModel):
         verbose_name = 'クライアントフラッグ'
         verbose_name_plural = 'クライアントフラッグ'
 
+    details = models.TextField('詳細', blank=True, null=True)
+
     def __str__(self):
         return f"{self.client} - {self.flag_status}"

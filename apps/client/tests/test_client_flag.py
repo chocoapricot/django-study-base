@@ -48,6 +48,7 @@ class ClientFlagTest(TestCase):
         self.comp_user = CompanyUser.objects.create(
             name_last='担当',
             name_first='者',
+            department_code='D001',
             tenant_id=self.company.tenant_id
         )
         self.status = FlagStatus.objects.create(
@@ -127,3 +128,44 @@ class ClientFlagTest(TestCase):
         response = self.test_client.post(reverse('client:client_flag_delete', kwargs={'pk': flag.pk}))
         self.assertEqual(response.status_code, 302)
         self.assertFalse(ClientFlag.objects.filter(pk=flag.pk).exists())
+
+    def test_client_flag_validation_required_status(self):
+        """フラッグステータス必須バリデーションのテスト"""
+        data = {
+            'client': self.client_obj.pk,
+            'company_department': self.dept.pk,
+            'company_user': self.comp_user.pk,
+            'flag_status': '',
+        }
+        response = self.test_client.post(reverse('client:client_flag_create', kwargs={'client_pk': self.client_obj.pk}), data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response.context['form'], 'flag_status', 'このフィールドは必須です。')
+
+    def test_client_flag_validation_department_required_for_user(self):
+        """担当者入力時の組織必須バリデーションのテスト"""
+        data = {
+            'client': self.client_obj.pk,
+            'company_department': '',
+            'company_user': self.comp_user.pk,
+            'flag_status': self.status.pk,
+        }
+        response = self.test_client.post(reverse('client:client_flag_create', kwargs={'client_pk': self.client_obj.pk}), data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response.context['form'], 'company_department', '会社担当者を入力するときは、会社組織を必須にしてください。')
+
+    def test_client_flag_validation_department_user_mismatch(self):
+        """組織と担当者の所属組織不一致バリデーションのテスト"""
+        other_dept = CompanyDepartment.objects.create(
+            name='Other Dept',
+            department_code='D002',
+            tenant_id=self.company.tenant_id
+        )
+        data = {
+            'client': self.client_obj.pk,
+            'company_department': other_dept.pk,
+            'company_user': self.comp_user.pk,
+            'flag_status': self.status.pk,
+        }
+        response = self.test_client.post(reverse('client:client_flag_create', kwargs={'client_pk': self.client_obj.pk}), data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response.context['form'], 'company_user', '会社組織と、会社担当者の所属する組織が違います。')

@@ -16,6 +16,7 @@
                     <th>会社組織</th>
                     <th>会社担当者</th>
                     <th>ステータス</th>
+                    <th>詳細</th>
                     <th>操作</th>
                 </tr>
             </thead>
@@ -33,6 +34,7 @@
                             -
                         {% endif %}
                     </td>
+                    <td>{{ flag.details|default:"-"|linebreaksbr }}</td>
                     <td>
                         <a href="{% url 'staff:staff_flag_update' flag.pk %}" class="btn btn-sm btn-dark" title="編集">
                             <i class="bi bi-pencil"></i>
@@ -44,7 +46,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="text-center text-muted">フラッグが登録されていません。</td>
+                    <td colspan="5" class="text-center text-muted">フラッグが登録されていません。</td>
                 </tr>
                 {% endfor %}
             </tbody>

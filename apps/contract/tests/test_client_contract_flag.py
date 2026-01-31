@@ -51,7 +51,12 @@ class ContractClientFlagTest(TestCase):
 
         # マスター等
         self.dept = CompanyDepartment.objects.create(name="テスト部", department_code="D001", tenant_id=self.company.id)
-        self.comp_user = CompanyUser.objects.create(name_last="担当者", name_first="太郎", tenant_id=self.company.id)
+        self.comp_user = CompanyUser.objects.create(
+            name_last="担当者",
+            name_first="太郎",
+            department_code="D001",
+            tenant_id=self.company.id
+        )
         self.status = FlagStatus.objects.create(name="要確認", tenant_id=self.company.id)
 
     def test_flag_crud(self):
@@ -84,3 +89,44 @@ class ContractClientFlagTest(TestCase):
         response = self.client.post(reverse('contract:client_contract_flag_delete', args=[flag.pk]))
         self.assertEqual(response.status_code, 302)
         self.assertFalse(ContractClientFlag.objects.filter(pk=flag.pk).exists())
+
+    def test_flag_validation(self):
+        # ステータス必須
+        response = self.client.post(reverse('contract:client_contract_flag_create', args=[self.contract.pk]), {
+            'client_contract': self.contract.pk,
+            'company_department': self.dept.pk,
+            'company_user': self.comp_user.pk,
+            'flag_status': '',
+        })
+        self.assertFormError(response.context['form'], 'flag_status', 'このフィールドは必須です。')
+
+        # 担当者入力時の組織必須
+        response = self.client.post(reverse('contract:client_contract_flag_create', args=[self.contract.pk]), {
+            'client_contract': self.contract.pk,
+            'company_department': '',
+            'company_user': self.comp_user.pk,
+            'flag_status': self.status.pk,
+        })
+        self.assertFormError(response.context['form'], 'company_department', '会社担当者を入力するときは、会社組織を必須にしてください。')
+
+        # 組織不一致
+        other_dept = CompanyDepartment.objects.create(name="他部署", department_code="D002", tenant_id=self.company.id)
+        response = self.client.post(reverse('contract:client_contract_flag_create', args=[self.contract.pk]), {
+            'client_contract': self.contract.pk,
+            'company_department': other_dept.pk,
+            'company_user': self.comp_user.pk,
+            'flag_status': self.status.pk,
+        })
+        self.assertFormError(response.context['form'], 'company_user', '会社組織と、会社担当者の所属する組織が違います。')
+
+    def test_details_save(self):
+        # 詳細保存
+        response = self.client.post(reverse('contract:client_contract_flag_create', args=[self.contract.pk]), {
+            'client_contract': self.contract.pk,
+            'company_department': self.dept.pk,
+            'company_user': self.comp_user.pk,
+            'flag_status': self.status.pk,
+            'details': 'テスト詳細'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(ContractClientFlag.objects.filter(client_contract=self.contract, details='テスト詳細').exists())
