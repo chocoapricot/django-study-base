@@ -5,7 +5,7 @@ from apps.common.forms.fields import to_fullwidth_katakana, validate_kana
 import os
 from django import forms
 from django.forms import TextInput
-from .models import Client, ClientFile
+from .models import Client, ClientFile, ClientFlag
 from django.core.exceptions import ValidationError
 from stdnum.jp import cn as houjin
 
@@ -352,3 +352,56 @@ class ClientFileForm(forms.ModelForm):
                 )
         
         return file
+
+
+class ClientFlagForm(forms.ModelForm):
+    """クライアントフラッグフォーム"""
+    client = forms.ModelChoiceField(
+        queryset=None,
+        label='クライアント',
+        required=True,
+        widget=forms.HiddenInput()
+    )
+    company_department = forms.ModelChoiceField(
+        queryset=None,
+        label='会社組織',
+        required=False,
+        empty_label='選択してください',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
+    company_user = forms.ModelChoiceField(
+        queryset=None,
+        label='会社担当者',
+        required=False,
+        empty_label='選択してください',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
+    flag_status = forms.ModelChoiceField(
+        queryset=None,
+        label='フラッグステータス',
+        required=False,
+        empty_label='選択してください',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
+
+    class Meta:
+        model = ClientFlag
+        fields = ['client', 'company_department', 'company_user', 'flag_status']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from apps.company.models import CompanyDepartment, CompanyUser
+        from apps.master.models_other import FlagStatus
+        from apps.common.middleware import get_current_tenant_id
+
+        tenant_id = get_current_tenant_id()
+        if tenant_id:
+            self.fields['client'].queryset = Client.objects.filter(tenant_id=tenant_id)
+            self.fields['company_department'].queryset = CompanyDepartment.objects.filter(tenant_id=tenant_id)
+            self.fields['company_user'].queryset = CompanyUser.objects.filter(tenant_id=tenant_id)
+            self.fields['flag_status'].queryset = FlagStatus.objects.filter(tenant_id=tenant_id, is_active=True).order_by('display_order')
+        else:
+            self.fields['client'].queryset = Client.objects.all()
+            self.fields['company_department'].queryset = CompanyDepartment.objects.all()
+            self.fields['company_user'].queryset = CompanyUser.objects.all()
+            self.fields['flag_status'].queryset = FlagStatus.objects.filter(is_active=True).order_by('display_order')

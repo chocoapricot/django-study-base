@@ -16,6 +16,9 @@
                     <a href="{% url 'client:client_tag_edit' client.pk %}" class="dropdown-item">
                         <i class="bi bi-tags"></i>　タグ編集
                     </a>
+                    <a href="{% url 'client:client_flag_list' client.pk %}" class="dropdown-item">
+                        <i class="bi bi-flag"></i>　フラッグ編集
+                    </a>
                 </div>
             </li>
         </ul>
