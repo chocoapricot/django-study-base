@@ -8,7 +8,8 @@ from .views import (
     client_user_create, client_user_list, client_user_detail, client_user_update, client_user_delete, client_user_mail_send,
     client_file_list, client_file_create, 
     client_file_delete, client_file_download,
-    client_tag_edit
+    client_tag_edit,
+    client_flag_list, client_flag_create, client_flag_update, client_flag_delete
 )
 
 app_name = 'client'
@@ -56,5 +57,11 @@ urlpatterns = [
     path('client/<int:client_pk>/file/create/', client_file_create, name='client_file_create'),
     path('client/file/<int:pk>/delete/', client_file_delete, name='client_file_delete'),
     path('client/file/<int:pk>/download/', client_file_download, name='client_file_download'),
+
+    # フラッグ管理
+    path('client/<int:client_pk>/flag/', client_flag_list, name='client_flag_list'),
+    path('client/<int:client_pk>/flag/create/', client_flag_create, name='client_flag_create'),
+    path('client/flag/<int:pk>/update/', client_flag_update, name='client_flag_update'),
+    path('client/flag/<int:pk>/delete/', client_flag_delete, name='client_flag_delete'),
 ]
 

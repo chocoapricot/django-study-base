@@ -14,8 +14,8 @@ from apps.system.logs.utils import log_model_action
 from apps.contract.utils import generate_teishokubi_notification_pdf
 from apps.company.views import get_current_company
 # クライアント連絡履歴用インポート
-from .models import Client, ClientContacted, ClientDepartment, ClientUser, ClientFile, ClientContactSchedule
-from .forms import ClientForm, ClientContactedForm, ClientDepartmentForm, ClientUserForm, ClientFileForm, ClientContactScheduleForm
+from .models import Client, ClientContacted, ClientDepartment, ClientUser, ClientFile, ClientContactSchedule, ClientFlag
+from .forms import ClientForm, ClientContactedForm, ClientDepartmentForm, ClientUserForm, ClientFileForm, ClientContactScheduleForm, ClientFlagForm
 from apps.master.models import ClientTag
 # from apps.api.helpers import fetch_company_info  # API呼び出し関数をインポート
 
@@ -1181,3 +1181,106 @@ def client_tag_edit(request, pk):
         'all_tags': all_tags,
         'current_tag_ids': current_tag_ids,
     })
+
+
+# ===== クライアントフラッグ関連ビュー =====
+
+@login_required
+@permission_required('client.view_clientflag', raise_exception=True)
+def client_flag_list(request, client_pk):
+    """クライアントのフラッグ一覧表示"""
+    client = get_object_or_404(Client, pk=client_pk)
+    flags = client.flags.all().select_related('company_department', 'company_user', 'flag_status')
+
+    context = {
+        'client': client,
+        'flags': flags,
+    }
+    return render(request, 'client/client_flag_list.html', context)
+
+
+@login_required
+@permission_required('client.add_clientflag', raise_exception=True)
+def client_flag_create(request, client_pk):
+    """クライアントのフラッグ登録"""
+    client = get_object_or_404(Client, pk=client_pk)
+
+    if request.method == 'POST':
+        form = ClientFlagForm(request.POST)
+        if form.is_valid():
+            flag = form.save()
+
+            # AppLogに記録
+            log_model_action(request.user, 'create', flag)
+
+            messages.success(request, 'フラッグを登録しました。')
+            return redirect('client:client_flag_list', client_pk=client.pk)
+    else:
+        form = ClientFlagForm(initial={'client': client})
+
+    context = {
+        'client': client,
+        'form': form,
+        'is_new': True,
+    }
+    return render(request, 'client/client_flag_form.html', context)
+
+
+@login_required
+@permission_required('client.change_clientflag', raise_exception=True)
+def client_flag_update(request, pk):
+    """クライアントのフラッグ編集"""
+    flag = get_object_or_404(ClientFlag, pk=pk)
+    client = flag.client
+
+    if request.method == 'POST':
+        form = ClientFlagForm(request.POST, instance=flag)
+        if form.is_valid():
+            form.save()
+
+            # AppLogに記録
+            log_model_action(request.user, 'update', flag)
+
+            messages.success(request, 'フラッグを更新しました。')
+            return redirect('client:client_flag_list', client_pk=client.pk)
+    else:
+        form = ClientFlagForm(instance=flag)
+
+    context = {
+        'client': client,
+        'form': form,
+        'flag': flag,
+        'is_new': False,
+    }
+    return render(request, 'client/client_flag_form.html', context)
+
+
+@login_required
+@permission_required('client.delete_clientflag', raise_exception=True)
+def client_flag_delete(request, pk):
+    """クライアントのフラッグ削除確認"""
+    flag = get_object_or_404(ClientFlag, pk=pk)
+    client = flag.client
+
+    if request.method == 'POST':
+        from apps.system.logs.models import AppLog
+        flag_status_name = str(flag.flag_status)
+        flag.delete()
+
+        # AppLogに記録
+        AppLog.objects.create(
+            user=request.user,
+            action='delete',
+            model_name='ClientFlag',
+            object_id=str(pk),
+            object_repr=f"{client} - フラッグ削除: {flag_status_name}"
+        )
+
+        messages.success(request, 'フラッグを削除しました。')
+        return redirect('client:client_flag_list', client_pk=client.pk)
+
+    context = {
+        'client': client,
+        'flag': flag,
+    }
+    return render(request, 'client/client_flag_confirm_delete.html', context)

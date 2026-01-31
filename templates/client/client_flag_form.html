@@ -1,0 +1,62 @@
+{% extends 'common/_base.html' %}
+
+{% block content %}
+{% include 'client/_client_info_card.html' with client=client %}
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        {% if is_new %}フラッグ登録{% else %}フラッグ編集{% endif %}
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            {# クライアントフィールドは非表示（内部で自動設定） #}
+            {{ form.client }}
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.company_department.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
+                    {{ form.company_department.label }}
+                </label>
+                <div class="col-sm-6">
+                    {{ form.company_department }}
+                    {% if form.company_department.errors %}
+                        <div class="text-danger small">{{ form.company_department.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.company_user.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
+                    {{ form.company_user.label }}
+                </label>
+                <div class="col-sm-6">
+                    {{ form.company_user }}
+                    {% if form.company_user.errors %}
+                        <div class="text-danger small">{{ form.company_user.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.flag_status.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
+                    {{ form.flag_status.label }}
+                </label>
+                <div class="col-sm-6">
+                    {{ form.flag_status }}
+                    {% if form.flag_status.errors %}
+                        <div class="text-danger small">{{ form.flag_status.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-primary me-2">
+                    {% if is_new %}登録{% else %}更新{% endif %}
+                </button>
+                <a href="{% url 'client:client_flag_list' client.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

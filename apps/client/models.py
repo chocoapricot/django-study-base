@@ -372,3 +372,46 @@ class ClientFile(MyTenantModel):
     def file_size_mb(self):
         """ファイルサイズをMB単位で取得"""
         return round(self.file_size / (1024 * 1024), 2)
+
+
+class ClientFlag(MyTenantModel):
+    """
+    クライアントのフラッグ情報を管理するモデル。
+    """
+    client = models.ForeignKey(
+        Client,
+        on_delete=models.CASCADE,
+        verbose_name='クライアント',
+        related_name='flags'
+    )
+    company_department = models.ForeignKey(
+        'company.CompanyDepartment',
+        on_delete=models.SET_NULL,
+        verbose_name='会社組織',
+        blank=True,
+        null=True
+    )
+    company_user = models.ForeignKey(
+        'company.CompanyUser',
+        on_delete=models.SET_NULL,
+        verbose_name='会社担当者',
+        blank=True,
+        null=True
+    )
+    flag_status = models.ForeignKey(
+        'master.FlagStatus',
+        on_delete=models.SET_NULL,
+        verbose_name='フラッグステータス',
+        blank=True,
+        null=True
+    )
+
+    objects = TenantManager()
+
+    class Meta:
+        db_table = 'apps_client_flag'
+        verbose_name = 'クライアントフラッグ'
+        verbose_name_plural = 'クライアントフラッグ'
+
+    def __str__(self):
+        return f"{self.client} - {self.flag_status}"
