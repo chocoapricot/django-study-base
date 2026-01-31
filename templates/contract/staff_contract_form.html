@@ -839,101 +839,25 @@ function loadOvertimePatternModal(page = 1, searchQuery = '') {
 
 // 時間外算出パターン一覧表示
 function renderOvertimePatterns(patterns) {
-    const container = document.getElementById('overtime-pattern-list');
-    
-    if (!patterns || patterns.length === 0) {
-        container.innerHTML = '<p class="text-center text-muted">該当するパターンがありません。</p>';
-        return;
+    if (typeof window.renderCommonOvertimePatterns === 'function') {
+        window.renderCommonOvertimePatterns(patterns, 'overtime-pattern-list', selectOvertimePattern);
+    } else {
+        console.error('renderCommonOvertimePatterns function is not defined.');
+        // Fallback or error handling
     }
-    
-    let html = '<div class="table-responsive"><table class="table table-hover">';
-    html += '<thead><tr>';
-    html += '<th style="width: 20%;">名称</th>';
-    html += '<th style="width: 15%;">計算方式</th>';
-    html += '<th style="width: 40%;">設定内容</th>';
-    html += '<th style="width: 15%;">メモ</th>';
-    html += '<th style="width: 10%;">操作</th>';
-    html += '</tr></thead><tbody>';
-    
-    patterns.forEach((pattern, index) => {
-        html += '<tr>';
-        html += '<td>' + pattern.name + '</td>';
-        html += '<td>';
-        if (pattern.calculation_type === 'premium') {
-            html += '<span class="badge bg-primary">割増</span>';
-        } else if (pattern.calculation_type === 'monthly_range') {
-            html += '<span class="badge bg-warning">時間範囲</span>';
-        } else {
-            html += '<span class="badge bg-info">変形労働</span>';
-        }
-        html += '</td>';
-        html += '<td><span class="small">' + pattern.settings + '</span></td>';
-        html += '<td>' + (pattern.memo ? '<span class="text-muted small">' + pattern.memo + '</span>' : '') + '</td>';
-        html += '<td style="white-space: nowrap;">';
-        html += '<button type="button" class="btn btn-sm btn-primary select-overtime-pattern-btn" data-pattern-index="' + index + '">選択</button>';
-        html += '</td>';
-        html += '</tr>';
-    });
-    
-    html += '</tbody></table></div>';
-    container.innerHTML = html;
-    
-    // 選択ボタンのクリックイベント設定
-    container.querySelectorAll('.select-overtime-pattern-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const patternIndex = parseInt(this.getAttribute('data-pattern-index'));
-            const pattern = patterns[patternIndex];
-            selectOvertimePattern(pattern);
-        });
-    });
 }
 
 // 時間外算出パターンページネーション表示
 function renderOvertimePagination(data) {
-    const container = document.getElementById('overtime-pagination-container');
-    
-    if (data.total_pages <= 1) {
-        container.innerHTML = '';
-        return;
-    }
-    
-    let html = '<nav><ul class="pagination pagination-sm justify-content-center">';
-    
-    // 前へ
-    if (data.has_previous) {
-        html += '<li class="page-item"><a class="page-link overtime-page-link" href="#" data-page="' + (data.current_page - 1) + '">前へ</a></li>';
-    } else {
-        html += '<li class="page-item disabled"><span class="page-link">前へ</span></li>';
-    }
-    
-    // ページ番号
-    for (let i = 1; i <= data.total_pages; i++) {
-        if (i === data.current_page) {
-            html += '<li class="page-item active"><span class="page-link">' + i + '</span></li>';
-        } else {
-            html += '<li class="page-item"><a class="page-link overtime-page-link" href="#" data-page="' + i + '">' + i + '</a></li>';
-        }
-    }
-    
-    // 次へ
-    if (data.has_next) {
-        html += '<li class="page-item"><a class="page-link overtime-page-link" href="#" data-page="' + (data.current_page + 1) + '">次へ</a></li>';
-    } else {
-        html += '<li class="page-item disabled"><span class="page-link">次へ</span></li>';
-    }
-    
-    html += '</ul></nav>';
-    container.innerHTML = html;
-    
-    // ページネーションクリックイベント
-    container.querySelectorAll('a.overtime-page-link').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const page = this.getAttribute('data-page');
+    if (typeof window.renderCommonPagination === 'function') {
+        const loadPageCallback = function(page) {
             const searchQuery = document.querySelector('#overtime-search-form input[name="q"]').value || '';
             loadOvertimePatternModal(page, searchQuery);
-        });
-    });
+        };
+        window.renderCommonPagination(data, 'overtime-pagination-container', loadPageCallback, 'overtime-page-link');
+    } else {
+        console.error('renderCommonPagination function is not defined.');
+    }
 }
 
 // 時間外算出パターンを選択

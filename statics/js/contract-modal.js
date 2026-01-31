@@ -259,3 +259,180 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('Contract modal functions loaded');
+
+// ==========================================
+// 共通レンダリング関数
+// ==========================================
+
+/**
+ * 時間外算出パターン一覧のレンダリング
+ * @param {Array} patterns - パターンデータの配列
+ * @param {string} containerId - 表示コンテナのID
+ * @param {Function} selectCallback - 選択時のコールバック関数
+ */
+window.renderCommonOvertimePatterns = function(patterns, containerId, selectCallback) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    if (!patterns || patterns.length === 0) {
+        container.innerHTML = '<p class="text-center text-muted">該当するパターンがありません。</p>';
+        return;
+    }
+    
+    let html = '<div class="table-responsive"><table class="table table-hover">';
+    html += '<thead><tr>';
+    html += '<th style="width: 20%;">名称</th>';
+    html += '<th style="width: 15%;">計算方式</th>';
+    html += '<th style="width: 40%;">設定内容</th>';
+    html += '<th style="width: 15%;">メモ</th>';
+    html += '<th style="width: 10%;">操作</th>';
+    html += '</tr></thead><tbody>';
+    
+    patterns.forEach((pattern, index) => {
+        html += '<tr>';
+        html += '<td>' + pattern.name + '</td>';
+        html += '<td>';
+        if (pattern.calculation_type === 'premium') {
+            html += '<span class="badge bg-primary">割増</span>';
+        } else if (pattern.calculation_type === 'monthly_range') {
+            html += '<span class="badge bg-warning">時間範囲</span>';
+        } else {
+            html += '<span class="badge bg-info">変形労働</span>';
+        }
+        html += '</td>';
+        html += '<td><span class="small">' + pattern.settings + '</span></td>';
+        html += '<td>' + (pattern.memo ? '<span class="text-muted small">' + pattern.memo + '</span>' : '') + '</td>';
+        html += '<td style="white-space: nowrap;">';
+        // インデックスとパターンIDの両方をデータ属性として保持
+        html += `<button type="button" class="btn btn-sm btn-primary select-overtime-pattern-btn-common" data-pattern-index="${index}">選択</button>`;
+        html += '</td>';
+        html += '</tr>';
+    });
+    
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+    
+    // 選択ボタンのクリックイベント設定
+    container.querySelectorAll('.select-overtime-pattern-btn-common').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const patternIndex = parseInt(this.getAttribute('data-pattern-index'));
+            const pattern = patterns[patternIndex];
+            if (typeof selectCallback === 'function') {
+                selectCallback(pattern);
+            }
+        });
+    });
+};
+
+/**
+ * 勤怠打刻パターン一覧のレンダリング
+ * @param {Array} patterns - パターンデータの配列
+ * @param {string} containerId - 表示コンテナのID
+ * @param {Function} selectCallback - 選択時のコールバック関数
+ */
+window.renderCommonTimePunchPatterns = function(patterns, containerId, selectCallback) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (!patterns || patterns.length === 0) {
+        container.innerHTML = '<p class="text-center text-muted">該当するパターンがありません。</p>';
+        return;
+    }
+
+    let html = '<div class="table-responsive"><table class="table table-hover">';
+    html += '<thead><tr>';
+    html += '<th style="width: 20%;">名称</th>';
+    html += '<th style="width: 15%;">打刻方法</th>';
+    html += '<th style="width: 40%;">設定内容</th>';
+    html += '<th style="width: 15%;">説明</th>';
+    html += '<th style="width: 10%;">操作</th>';
+    html += '</tr></thead><tbody>';
+
+    patterns.forEach((pattern, index) => {
+        html += '<tr>';
+        html += '<td>' + pattern.name + '</td>';
+        html += '<td>' + pattern.punch_method_display + '</td>';
+        html += '<td><span class="small">' + pattern.rounding_summary + '</span></td>';
+        html += '<td>' + (pattern.description ? '<span class="text-muted small">' + pattern.description + '</span>' : '') + '</td>';
+        html += '<td style="white-space: nowrap;">';
+        html += `<button type="button" class="btn btn-sm btn-primary select-time-punch-btn-common" data-pattern-index="${index}">選択</button>`;
+        html += '</td>';
+        html += '</tr>';
+    });
+
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+
+    // 選択ボタンのクリックイベント設定
+    container.querySelectorAll('.select-time-punch-btn-common').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const patternIndex = parseInt(this.getAttribute('data-pattern-index'));
+            const pattern = patterns[patternIndex];
+            if (typeof selectCallback === 'function') {
+                selectCallback(pattern);
+            }
+        });
+    });
+};
+
+/**
+ * 共通ページネーションレンダリング
+ * @param {Object} data - ページネーションデータ (page_number/current_page, num_pages/total_pages, has_previous, has_next 等を含む)
+ * @param {string} containerId - 表示コンテナのID
+ * @param {Function} loadPageCallback - ページ読み込みコールバック関数
+ * @param {string} linkClass - ページリンクの識別用クラス名
+ */
+window.renderCommonPagination = function(data, containerId, loadPageCallback, linkClass) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    // DjangoのPaginatorとDRFのPaginationでキー名が異なる場合があるため正規化
+    const currentPage = data.page_number || data.current_page;
+    const totalPages = data.num_pages || data.total_pages;
+    
+    if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+
+    let html = '<nav><ul class="pagination pagination-sm justify-content-center">';
+
+    // 前へ
+    if (data.has_previous) {
+        const prevPage = data.previous_page_number || (currentPage - 1);
+        html += `<li class="page-item"><a class="page-link ${linkClass}" href="#" data-page="${prevPage}">前へ</a></li>`;
+    } else {
+        html += '<li class="page-item disabled"><span class="page-link">前へ</span></li>';
+    }
+
+    // ページ番号
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === currentPage) {
+            html += `<li class="page-item active"><span class="page-link">${i}</span></li>`;
+        } else {
+            html += `<li class="page-item"><a class="page-link ${linkClass}" href="#" data-page="${i}">${i}</a></li>`;
+        }
+    }
+
+    // 次へ
+    if (data.has_next) {
+        const nextPage = data.next_page_number || (currentPage + 1);
+        html += `<li class="page-item"><a class="page-link ${linkClass}" href="#" data-page="${nextPage}">次へ</a></li>`;
+    } else {
+        html += '<li class="page-item disabled"><span class="page-link">次へ</span></li>';
+    }
+
+    html += '</ul></nav>';
+    container.innerHTML = html;
+
+    // ページネーションクリックイベント
+    container.querySelectorAll(`a.${linkClass}`).forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const page = this.getAttribute('data-page');
+            if (typeof loadPageCallback === 'function') {
+                loadPageCallback(page);
+            }
+        });
+    });
+};
