@@ -1540,7 +1540,7 @@ def contract_assignment_flag_create(request, assignment_pk):
             flag = form.save()
             log_model_action(request.user, 'create', flag)
             messages.success(request, 'フラッグを登録しました。')
-            return redirect('contract:contract_assignment_flag_list', assignment_pk=assignment.pk)
+            return redirect('contract:contract_assignment_detail', pk=assignment.pk)
     else:
         form = ContractAssignmentFlagForm(initial={'contract_assignment': assignment})
 
@@ -1565,7 +1565,7 @@ def contract_assignment_flag_update(request, pk):
             form.save()
             log_model_action(request.user, 'update', flag)
             messages.success(request, 'フラッグを更新しました。')
-            return redirect('contract:contract_assignment_flag_list', assignment_pk=assignment.pk)
+            return redirect('contract:contract_assignment_detail', assignment_pk=assignment.pk)
     else:
         form = ContractAssignmentFlagForm(instance=flag)
 
@@ -1596,7 +1596,7 @@ def contract_assignment_flag_delete(request, pk):
             object_repr=f"{assignment} - フラッグ削除: {flag_status_name}"
         )
         messages.success(request, 'フラッグを削除しました。')
-        return redirect('contract:contract_assignment_flag_list', assignment_pk=assignment.pk)
+        return redirect('contract:contract_assignment_detail', assignment_pk=assignment.pk)
 
     context = {
         'assignment': assignment,

@@ -829,7 +829,7 @@ def staff_flag_create(request, staff_pk):
             log_model_action(request.user, 'create', flag)
 
             messages.success(request, 'フラッグを登録しました。')
-            return redirect('staff:staff_flag_list', staff_pk=staff.pk)
+            return redirect('staff:staff_detail', pk=staff.pk)
     else:
         from .forms import StaffFlagForm
         form = StaffFlagForm(initial={'staff': staff})
@@ -859,7 +859,7 @@ def staff_flag_update(request, pk):
             log_model_action(request.user, 'update', flag)
 
             messages.success(request, 'フラッグを更新しました。')
-            return redirect('staff:staff_flag_list', staff_pk=staff.pk)
+            return redirect('staff:staff_detail', pk=staff.pk)
     else:
         from .forms import StaffFlagForm
         form = StaffFlagForm(instance=flag)
@@ -894,7 +894,7 @@ def staff_flag_delete(request, pk):
         )
 
         messages.success(request, 'フラッグを削除しました。')
-        return redirect('staff:staff_flag_list', staff_pk=staff.pk)
+        return redirect('staff:staff_detail', pk=staff.pk)
 
     context = {
         'staff': staff,

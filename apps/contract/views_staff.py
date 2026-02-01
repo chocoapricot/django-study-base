@@ -1594,7 +1594,7 @@ def staff_contract_flag_create(request, contract_pk):
             flag = form.save()
             log_model_action(request.user, 'create', flag)
             messages.success(request, 'フラッグを登録しました。')
-            return redirect('contract:staff_contract_flag_list', contract_pk=contract.pk)
+            return redirect('contract:staff_contract_detail', pk=contract.pk)
     else:
         form = ContractStaffFlagForm(initial={'staff_contract': contract})
 
@@ -1619,7 +1619,7 @@ def staff_contract_flag_update(request, pk):
             form.save()
             log_model_action(request.user, 'update', flag)
             messages.success(request, 'フラッグを更新しました。')
-            return redirect('contract:staff_contract_flag_list', contract_pk=contract.pk)
+            return redirect('contract:staff_contract_detail', pk=contract.pk)
     else:
         form = ContractStaffFlagForm(instance=flag)
 
@@ -1650,7 +1650,7 @@ def staff_contract_flag_delete(request, pk):
             object_repr=f"{contract} - フラッグ削除: {flag_status_name}"
         )
         messages.success(request, 'フラッグを削除しました。')
-        return redirect('contract:staff_contract_flag_list', contract_pk=contract.pk)
+        return redirect('contract:staff_contract_detail', pk=contract.pk)
 
     context = {
         'contract': contract,

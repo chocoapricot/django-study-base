@@ -1212,7 +1212,7 @@ def client_flag_create(request, client_pk):
             log_model_action(request.user, 'create', flag)
 
             messages.success(request, 'フラッグを登録しました。')
-            return redirect('client:client_flag_list', client_pk=client.pk)
+            return redirect('client:client_detail', pk=client.pk)
     else:
         form = ClientFlagForm(initial={'client': client})
 
@@ -1240,7 +1240,7 @@ def client_flag_update(request, pk):
             log_model_action(request.user, 'update', flag)
 
             messages.success(request, 'フラッグを更新しました。')
-            return redirect('client:client_flag_list', client_pk=client.pk)
+            return redirect('client:client_detail', pk=client.pk)
     else:
         form = ClientFlagForm(instance=flag)
 
@@ -1275,7 +1275,7 @@ def client_flag_delete(request, pk):
         )
 
         messages.success(request, 'フラッグを削除しました。')
-        return redirect('client:client_flag_list', client_pk=client.pk)
+        return redirect('client:client_detail', pk=client.pk)
 
     context = {
         'client': client,
