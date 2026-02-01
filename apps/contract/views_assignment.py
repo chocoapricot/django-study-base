@@ -1521,6 +1521,10 @@ def contract_assignment_flag_list(request, assignment_pk):
     assignment = get_object_or_404(ContractAssignment, pk=assignment_pk)
     flags = assignment.flags.all().select_related('company_department', 'company_user', 'flag_status')
 
+    # フラッグが1件も登録されていない場合は登録画面にリダイレクト
+    if not flags.exists():
+        return redirect('contract:contract_assignment_flag_create', assignment_pk=assignment.pk)
+
     context = {
         'assignment': assignment,
         'flags': flags,
