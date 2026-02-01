@@ -368,6 +368,9 @@ body.no-transition #sidebar {
                 {% endif %}
             </a>
             {% endif %}
+            <a href="{% url 'system_flags:flag_list' %}" title="フラッグ一覧" style="position: relative; text-decoration: none; color: inherit;">
+                <i class="bi bi-flag"></i>
+            </a>
             <a href="{% url 'system_notifications:notification_list' %}" style="position: relative; text-decoration: none; color: inherit;">
                 <i class="bi bi-bell"></i> <!-- 通知アイコン -->
                 <span id="notification-badge" class="position-absolute top-0 start-100 badge rounded-pill bg-primary" style="display: none; font-size: 0.6rem; transform: translate(-90%, 10%);">
