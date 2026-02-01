@@ -86,6 +86,17 @@
                                     </span>
                                 </td>
                             </tr>
+                            {% if contract.flags.all %}
+                            <tr style="border-bottom: none;">
+                                <td colspan="2" style="border-bottom: none;">
+                                    {% for flag in contract.flags.all %}
+                                        <span class="badge rounded-pill {{ flag.flag_status.display_order|badge_class }} me-1">
+                                            <i class="bi bi-flag-fill me-1"></i>{{ flag.flag_status.name }}
+                                        </span>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            {% endif %}
                         </table>
                     </div>
                     <div class="col-md-6">
