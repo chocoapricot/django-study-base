@@ -34,6 +34,7 @@ urlpatterns = [
     path('common/', include('apps.common.urls')),
     path('logs/', include('apps.system.logs.urls')),
     path('system/notifications/', include('apps.system.notifications.urls')),
+    path('system/flags/', include('apps.system.flags.urls')),
     path('system/tables/', include('apps.system.tables.urls')),
     path('company/', include('apps.company.urls')),
     path('master/', include('apps.master.urls')),
