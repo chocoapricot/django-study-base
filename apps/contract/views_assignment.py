@@ -648,11 +648,27 @@ def contract_assignment_detail(request, assignment_pk):
         from_client = '/contract/client/' in referer
         from_staff = '/contract/staff/' in referer
     
-    # 変更履歴を取得（アサイン作成・削除のログ）
-    change_logs = AppLog.objects.filter(
+    # 変更履歴を取得（アサイン作成・削除のログ + フラッグの変更履歴）
+    assignment_logs = AppLog.objects.filter(
         model_name='ContractAssignment',
         object_id=str(assignment.pk)
-    ).select_related('user').order_by('-timestamp')[:10]
+    )
+    
+    # フラッグの変更履歴
+    flag_logs = AppLog.objects.filter(
+        model_name='ContractAssignmentFlag',
+        object_repr__icontains=str(assignment),
+        action__in=['create', 'update', 'delete']
+    )
+    
+    # 両方の履歴を統合
+    from itertools import chain
+    all_change_logs = sorted(
+        chain(assignment_logs, flag_logs),
+        key=lambda log: log.timestamp,
+        reverse=True
+    )
+    change_logs = all_change_logs[:10]
     
     # 期間表示用のデータを計算（クライアント契約をベースに前後5日表示）
     from datetime import timedelta

@@ -314,16 +314,18 @@ def client_detail(request, pk):
     from apps.system.logs.utils import log_view_detail
     from apps.system.logs.models import AppLog
     log_view_detail(request.user, client)
-    # 変更履歴（AppLogから取得、最新5件）- クライアント、組織、担当者、ファイルの変更を含む
+    # 変更履歴（AppLogから取得、最新5件）- クライアント、組織、担当者、ファイル、フラッグの変更を含む
     department_ids = list(client.departments.values_list('pk', flat=True))
     user_ids = list(client.users.values_list('pk', flat=True))
     file_ids = list(client.files.values_list('pk', flat=True))
+    flag_ids = list(client.flags.values_list('pk', flat=True))
 
     change_logs_query = AppLog.objects.filter(
         models.Q(model_name='Client', object_id=str(client.pk)) |
         models.Q(model_name='ClientDepartment', object_id__in=[str(pk) for pk in department_ids]) |
         models.Q(model_name='ClientUser', object_id__in=[str(pk) for pk in user_ids]) |
-        models.Q(model_name='ClientFile', object_id__in=[str(pk) for pk in file_ids]),
+        models.Q(model_name='ClientFile', object_id__in=[str(pk) for pk in file_ids]) |
+        models.Q(model_name='ClientFlag', object_id__in=[str(pk) for pk in flag_ids]),
         action__in=['create', 'update', 'delete']
     )
     

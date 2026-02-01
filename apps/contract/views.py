@@ -260,6 +260,13 @@ def client_contract_detail(request, pk):
         action__in=['create', 'update', 'delete', 'print']
     )
 
+    # フラッグの変更履歴
+    flag_logs = AppLog.objects.filter(
+        model_name='ContractClientFlag',
+        object_repr__icontains=str(contract),
+        action__in=['create', 'update', 'delete']
+    )
+
     haken_logs = AppLog.objects.none()
     ttp_logs = AppLog.objects.none()
     haken_exempt_logs = AppLog.objects.none()
@@ -288,7 +295,7 @@ def client_contract_detail(request, pk):
             )
 
     all_change_logs = sorted(
-        chain(contract_logs, haken_logs, ttp_logs, haken_exempt_logs),
+        chain(contract_logs, flag_logs, haken_logs, ttp_logs, haken_exempt_logs),
         key=lambda log: log.timestamp,
         reverse=True
     )
