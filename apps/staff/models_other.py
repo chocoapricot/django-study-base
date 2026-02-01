@@ -287,7 +287,10 @@ class StaffDisability(MyTenantModel):
     def __str__(self):
         return f"{self.staff} - 障害者情報"
 
-class StaffFlag(MyTenantModel):
+from apps.common.models import MyFlagModel
+
+
+class StaffFlag(MyFlagModel):
     """
     スタッフのフラッグ情報を管理するモデル。
     """
@@ -297,36 +300,11 @@ class StaffFlag(MyTenantModel):
         verbose_name='スタッフ',
         related_name='flags'
     )
-    company_department = models.ForeignKey(
-        'company.CompanyDepartment',
-        on_delete=models.SET_NULL,
-        verbose_name='会社組織',
-        blank=True,
-        null=True
-    )
-    company_user = models.ForeignKey(
-        'company.CompanyUser',
-        on_delete=models.SET_NULL,
-        verbose_name='会社担当者',
-        blank=True,
-        null=True
-    )
-    flag_status = models.ForeignKey(
-        'master.FlagStatus',
-        on_delete=models.SET_NULL,
-        verbose_name='フラッグステータス',
-        blank=True,
-        null=True
-    )
-
-    objects = TenantManager()
-
+    
     class Meta:
         verbose_name = 'スタッフフラッグ'
         verbose_name_plural = 'スタッフフラッグ'
         db_table = 'apps_staff_flag'
-
-    details = models.TextField('詳細', blank=True, null=True)
-
+    
     def __str__(self):
         return f"{self.staff} - {self.flag_status}"

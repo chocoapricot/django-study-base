@@ -374,7 +374,10 @@ class ClientFile(MyTenantModel):
         return round(self.file_size / (1024 * 1024), 2)
 
 
-class ClientFlag(MyTenantModel):
+from apps.common.models import MyFlagModel
+
+
+class ClientFlag(MyFlagModel):
     """
     クライアントのフラッグ情報を管理するモデル。
     """
@@ -384,36 +387,11 @@ class ClientFlag(MyTenantModel):
         verbose_name='クライアント',
         related_name='flags'
     )
-    company_department = models.ForeignKey(
-        'company.CompanyDepartment',
-        on_delete=models.SET_NULL,
-        verbose_name='会社組織',
-        blank=True,
-        null=True
-    )
-    company_user = models.ForeignKey(
-        'company.CompanyUser',
-        on_delete=models.SET_NULL,
-        verbose_name='会社担当者',
-        blank=True,
-        null=True
-    )
-    flag_status = models.ForeignKey(
-        'master.FlagStatus',
-        on_delete=models.SET_NULL,
-        verbose_name='フラッグステータス',
-        blank=True,
-        null=True
-    )
-
-    objects = TenantManager()
-
+    
     class Meta:
-        db_table = 'apps_client_flag'
         verbose_name = 'クライアントフラッグ'
         verbose_name_plural = 'クライアントフラッグ'
-
-    details = models.TextField('詳細', blank=True, null=True)
-
+        db_table = 'apps_client_flag'
+    
     def __str__(self):
         return f"{self.client} - {self.flag_status}"

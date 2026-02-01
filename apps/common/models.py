@@ -56,6 +56,50 @@ class MyTenantModel(MyModel):
             self.tenant_id = get_current_tenant_id()
         super().save(*args, **kwargs)
 
+
+class MyFlagModel(MyTenantModel):
+    """
+    フラッグ情報の抽象基底モデル。
+    
+    StaffFlag, ClientFlag, ContractStaffFlag, ContractClientFlag
+    などのフラッグモデルの共通フィールドと機能を提供する。
+    """
+    company_department = models.ForeignKey(
+        'company.CompanyDepartment',
+        on_delete=models.SET_NULL,
+        verbose_name='会社組織',
+        blank=True,
+        null=True,
+        help_text='フラッグに関連する会社組織'
+    )
+    company_user = models.ForeignKey(
+        'company.CompanyUser',
+        on_delete=models.SET_NULL,
+        verbose_name='会社担当者',
+        blank=True,
+        null=True,
+        help_text='フラッグに関連する会社担当者'
+    )
+    flag_status = models.ForeignKey(
+        'master.FlagStatus',
+        on_delete=models.SET_NULL,
+        verbose_name='フラッグステータス',
+        blank=True,
+        null=True,
+        help_text='フラッグのステータス'
+    )
+    details = models.TextField(
+        '詳細',
+        blank=True,
+        null=True,
+        help_text='フラッグに関する詳細情報'
+    )
+    
+    objects = TenantManager()
+    
+    class Meta:
+        abstract = True
+
 # 旧AppLogモデルは削除されました
 # 新しいログシステムは apps.system.logs.models.AppLog を使用してください
 
