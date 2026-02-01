@@ -43,7 +43,7 @@
                             <span class="badge bg-danger">期限切</span>
                         </th>
                         {% for day in daily_schedules %}
-                        <th class="{% if day.is_today %}table-today{% elif day.is_yesterday %}table-yesterday{% elif day.is_holiday or day.weekday_num == 6 %}bg-holiday{% elif day.weekday_num == 5 %}bg-saturday{% endif %}">
+                        <th class="{% if day.is_holiday or day.weekday_num == 6 %}bg-holiday{% elif day.weekday_num == 5 %}bg-saturday{% elif day.is_today %}table-today{% elif day.is_yesterday %}table-yesterday{% endif %}">
                             <div class="small">{{ day.date|date:'m/d' }}</div>
                             <div class="{% if day.is_holiday or day.weekday_num == 6 %}text-sunday-holiday{% elif day.weekday_num == 5 %}text-saturday{% endif %}">
                                 ({{ day.day_of_week }})
@@ -78,7 +78,7 @@
                             {% endif %}
                         </td>
                         {% for day in daily_schedules %}
-                        <td class="{% if day.is_today %}table-today{% elif day.is_yesterday %}table-yesterday{% elif day.is_holiday or day.weekday_num == 6 %}bg-holiday{% elif day.weekday_num == 5 %}bg-saturday{% endif %}">
+                        <td class="{% if day.is_holiday or day.weekday_num == 6 %}bg-holiday{% elif day.weekday_num == 5 %}bg-saturday{% elif day.is_today %}table-today{% elif day.is_yesterday %}table-yesterday{% endif %}">
                             {% if day.staff_count > 0 %}
                                 <a href="{% url 'staff:staff_list' %}?q=contact_date:{{ day.date|date:'Y-m-d' }}" class="badge rounded-pill bg-primary text-white text-decoration-none schedule-badge">
                                     {{ day.staff_count }}
@@ -111,7 +111,7 @@
                             {% endif %}
                         </td>
                         {% for day in daily_schedules %}
-                        <td class="{% if day.is_today %}table-today{% elif day.is_yesterday %}table-yesterday{% elif day.is_holiday or day.weekday_num == 6 %}bg-holiday{% elif day.weekday_num == 5 %}bg-saturday{% endif %}">
+                        <td class="{% if day.is_holiday or day.weekday_num == 6 %}bg-holiday{% elif day.weekday_num == 5 %}bg-saturday{% elif day.is_today %}table-today{% elif day.is_yesterday %}table-yesterday{% endif %}">
                             {% if day.client_count > 0 %}
                                 <a href="{% url 'client:client_list' %}?q=contact_date:{{ day.date|date:'Y-m-d' }}" class="badge rounded-pill bg-primary text-white text-decoration-none schedule-badge">
                                     {{ day.client_count }}
