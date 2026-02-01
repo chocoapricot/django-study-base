@@ -43,6 +43,11 @@
                                 {% endif %}
                             </li>
                             {% endif %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'contract:contract_assignment_flag_list' assignment_pk=assignment.pk %}{% if from_client %}?from=client{% elif from_staff %}?from=staff{% elif from_expire_list %}?from=expire_list{% endif %}">
+                                    <i class="bi bi-flag me-2"></i>フラッグ編集
+                                </a>
+                            </li>
                         </ul>
                     </div>
                     {% if is_dispatch_contract and staff_contract.contract_status == Constants.CONTRACT_STATUS.DRAFT or staff_contract.contract_status == Constants.CONTRACT_STATUS.PENDING %}

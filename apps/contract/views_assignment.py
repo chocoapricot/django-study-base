@@ -14,8 +14,10 @@ from apps.common.constants import Constants
 from apps.master.models import ContractPattern, EmploymentType, JobCategory
 from apps.staff.models import Staff
 
-from .forms import StaffContractForm, ContractAssignmentConfirmForm, ContractAssignmentHakenForm
-from .models import ClientContract, ContractAssignment, StaffContract, ContractAssignmentConfirm, ContractAssignmentHaken
+from .forms import StaffContractForm, ContractAssignmentConfirmForm, ContractAssignmentHakenForm, ContractAssignmentFlagForm
+from .models import ClientContract, ContractAssignment, StaffContract, ContractAssignmentConfirm, ContractAssignmentHaken, ContractAssignmentFlag
+from apps.system.logs.models import AppLog
+from apps.system.logs.utils import log_model_action
 
 
 def _calculate_profit_margin(client_contract, staff_contract):
@@ -1511,3 +1513,93 @@ def assignment_ai_check(request, assignment_pk):
     }
     
     return render(request, 'contract/ai_check_base.html', context)
+
+@login_required
+@permission_required('contract.view_clientcontract', raise_exception=True)
+def contract_assignment_flag_list(request, assignment_pk):
+    """契約アサインのフラッグ一覧表示"""
+    assignment = get_object_or_404(ContractAssignment, pk=assignment_pk)
+    flags = assignment.flags.all().select_related('company_department', 'company_user', 'flag_status')
+
+    context = {
+        'assignment': assignment,
+        'flags': flags,
+    }
+    return render(request, 'contract/contract_assignment_flag_list.html', context)
+
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def contract_assignment_flag_create(request, assignment_pk):
+    """契約アサインのフラッグ登録"""
+    assignment = get_object_or_404(ContractAssignment, pk=assignment_pk)
+
+    if request.method == 'POST':
+        form = ContractAssignmentFlagForm(request.POST)
+        if form.is_valid():
+            flag = form.save()
+            log_model_action(request.user, 'create', flag)
+            messages.success(request, 'フラッグを登録しました。')
+            return redirect('contract:contract_assignment_flag_list', assignment_pk=assignment.pk)
+    else:
+        form = ContractAssignmentFlagForm(initial={'contract_assignment': assignment})
+
+    context = {
+        'assignment': assignment,
+        'form': form,
+        'is_new': True,
+    }
+    return render(request, 'contract/contract_assignment_flag_form.html', context)
+
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def contract_assignment_flag_update(request, pk):
+    """契約アサインのフラッグ編集"""
+    flag = get_object_or_404(ContractAssignmentFlag, pk=pk)
+    assignment = flag.contract_assignment
+
+    if request.method == 'POST':
+        form = ContractAssignmentFlagForm(request.POST, instance=flag)
+        if form.is_valid():
+            form.save()
+            log_model_action(request.user, 'update', flag)
+            messages.success(request, 'フラッグを更新しました。')
+            return redirect('contract:contract_assignment_flag_list', assignment_pk=assignment.pk)
+    else:
+        form = ContractAssignmentFlagForm(instance=flag)
+
+    context = {
+        'assignment': assignment,
+        'form': form,
+        'flag': flag,
+        'is_new': False,
+    }
+    return render(request, 'contract/contract_assignment_flag_form.html', context)
+
+
+@login_required
+@permission_required('contract.change_clientcontract', raise_exception=True)
+def contract_assignment_flag_delete(request, pk):
+    """契約アサインのフラッグ削除確認"""
+    flag = get_object_or_404(ContractAssignmentFlag, pk=pk)
+    assignment = flag.contract_assignment
+
+    if request.method == 'POST':
+        flag_status_name = str(flag.flag_status)
+        flag.delete()
+        AppLog.objects.create(
+            user=request.user,
+            action='delete',
+            model_name='ContractAssignmentFlag',
+            object_id=str(pk),
+            object_repr=f"{assignment} - フラッグ削除: {flag_status_name}"
+        )
+        messages.success(request, 'フラッグを削除しました。')
+        return redirect('contract:contract_assignment_flag_list', assignment_pk=assignment.pk)
+
+    context = {
+        'assignment': assignment,
+        'flag': flag,
+    }
+    return render(request, 'contract/contract_assignment_flag_confirm_delete.html', context)
