@@ -29,3 +29,23 @@ def contact_schedule_counts(request):
         counts += ClientContactSchedule.objects.filter(contact_date__in=target_dates).count()
         
     return {'contact_schedule_yesterday_today_count': counts}
+
+def flag_counts(request):
+    """
+    ベースヘッダーのフラッグアイコンに表示する、フラッグ総数を取得する
+    """
+    if not request.user.is_authenticated:
+        return {}
+
+    from apps.staff.models_other import StaffFlag
+    from apps.client.models import ClientFlag
+    from apps.contract.models import ContractClientFlag, ContractStaffFlag, ContractAssignmentFlag
+
+    count = (
+        StaffFlag.objects.count() +
+        ClientFlag.objects.count() +
+        ContractClientFlag.objects.count() +
+        ContractStaffFlag.objects.count() +
+        ContractAssignmentFlag.objects.count()
+    )
+    return {'total_flag_count': count}

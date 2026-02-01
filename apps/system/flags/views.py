@@ -4,17 +4,36 @@ from apps.staff.models_other import StaffFlag
 from apps.client.models import ClientFlag
 from apps.contract.models import ContractClientFlag, ContractStaffFlag, ContractAssignmentFlag
 from django.urls import reverse
+from django.core.paginator import Paginator
+from apps.company.models import CompanyDepartment, CompanyUser
 
 @login_required
 def flag_list(request):
     """
     全てのエンティティのフラッグをまとめて表示するビュー
     """
+    department_filter = request.GET.get('department', '').strip()
+    company_user_filter = request.GET.get('company_user', '').strip()
+
     staff_flags = StaffFlag.objects.select_related('staff', 'flag_status', 'company_user', 'company_department')
     client_flags = ClientFlag.objects.select_related('client', 'flag_status', 'company_user', 'company_department')
     contract_client_flags = ContractClientFlag.objects.select_related('client_contract', 'client_contract__client', 'flag_status', 'company_user', 'company_department')
     contract_staff_flags = ContractStaffFlag.objects.select_related('staff_contract', 'staff_contract__staff', 'flag_status', 'company_user', 'company_department')
     contract_assignment_flags = ContractAssignmentFlag.objects.select_related('contract_assignment', 'contract_assignment__client_contract', 'contract_assignment__staff_contract', 'flag_status', 'company_user', 'company_department')
+
+    if department_filter:
+        staff_flags = staff_flags.filter(company_department_id=department_filter)
+        client_flags = client_flags.filter(company_department_id=department_filter)
+        contract_client_flags = contract_client_flags.filter(company_department_id=department_filter)
+        contract_staff_flags = contract_staff_flags.filter(company_department_id=department_filter)
+        contract_assignment_flags = contract_assignment_flags.filter(company_department_id=department_filter)
+
+    if company_user_filter:
+        staff_flags = staff_flags.filter(company_user_id=company_user_filter)
+        client_flags = client_flags.filter(company_user_id=company_user_filter)
+        contract_client_flags = contract_client_flags.filter(company_user_id=company_user_filter)
+        contract_staff_flags = contract_staff_flags.filter(company_user_id=company_user_filter)
+        contract_assignment_flags = contract_assignment_flags.filter(company_user_id=company_user_filter)
 
     results = []
 
@@ -70,8 +89,20 @@ def flag_list(request):
 
     results.sort(key=lambda x: x['updated_at'], reverse=True)
 
+    paginator = Paginator(results, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    department_options = CompanyDepartment.get_valid_departments()
+    company_user_options = CompanyUser.objects.all()
+
     context = {
-        'flags': results,
+        'page_obj': page_obj,
+        'flags': page_obj.object_list,
+        'department_filter': department_filter,
+        'company_user_filter': company_user_filter,
+        'department_options': department_options,
+        'company_user_options': company_user_options,
     }
 
     return render(request, 'system/flags/flag_list.html', context)
