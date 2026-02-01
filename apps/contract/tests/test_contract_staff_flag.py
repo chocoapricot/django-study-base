@@ -77,6 +77,19 @@ class ContractStaffFlagTest(TestCase):
 
     def test_contract_staff_flag_list_view(self):
         """スタッフ契約フラッグ一覧画面のテスト"""
+        # フラッグが存在しない場合は登録画面にリダイレクト
+        response = self.client.get(reverse('contract:staff_contract_flag_list', kwargs={'contract_pk': self.staff_contract.pk}))
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('contract:staff_contract_flag_create', kwargs={'contract_pk': self.staff_contract.pk}))
+        
+        # フラッグを作成してから一覧画面をテスト
+        ContractStaffFlag.objects.create(
+            staff_contract=self.staff_contract,
+            company_department=self.dept,
+            company_user=self.comp_user,
+            flag_status=self.status,
+            tenant_id=self.staff_contract.tenant_id
+        )
         response = self.client.get(reverse('contract:staff_contract_flag_list', kwargs={'contract_pk': self.staff_contract.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'contract/staff_contract_flag_list.html')

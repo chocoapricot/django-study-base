@@ -1,12 +1,12 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from apps.common.models import MyModel
+from apps.common.models import MyTenantModel
 from apps.common.constants import Constants, get_notification_type_choices
 
 User = get_user_model()
 
 
-class Notification(MyModel):
+class Notification(MyTenantModel):
     """
     ユーザーへの通知を管理するモデル。
     システムからユーザーへの各種通知（お知らせ、アラート等）を記録する。

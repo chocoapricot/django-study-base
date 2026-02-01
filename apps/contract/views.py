@@ -1576,6 +1576,27 @@ def client_contract_flag_create(request, contract_pk):
         if form.is_valid():
             flag = form.save()
             log_model_action(request.user, 'create', flag)
+            
+            # 担当者への通知を登録
+            if flag.company_user and flag.company_user.email:
+                from apps.system.notifications.models import Notification
+                from django.contrib.auth import get_user_model
+                from django.urls import reverse
+                
+                User = get_user_model()
+                try:
+                    user = User.objects.get(email=flag.company_user.email, tenant_id=flag.tenant_id)
+                    Notification.objects.create(
+                        user=user,
+                        title=f'クライアント契約フラッグが登録されました',
+                        message=f'クライアント契約「{contract.contract_name}」にフラッグ「{flag.flag_status.name}」が登録されました。',
+                        notification_type='general',
+                        link_url=reverse('contract:client_contract_detail', kwargs={'pk': contract.pk}),
+                        tenant_id=flag.tenant_id
+                    )
+                except User.DoesNotExist:
+                    pass  # ユーザーが存在しない場合は通知をスキップ
+            
             messages.success(request, 'フラッグを登録しました。')
             return redirect('contract:client_contract_detail', pk=contract.pk)
     else:
@@ -1597,10 +1618,47 @@ def client_contract_flag_update(request, pk):
     contract = flag.client_contract
 
     if request.method == 'POST':
+        # 変更前の値を保存
+        original_company_user = flag.company_user
+        original_flag_status = flag.flag_status
+        original_company_department = flag.company_department
+        original_details = flag.details
+        
         form = ContractClientFlagForm(request.POST, instance=flag)
         if form.is_valid():
-            form.save()
-            log_model_action(request.user, 'update', flag)
+            updated_flag = form.save()
+            
+            # 変更があったかチェック
+            has_changes = (
+                original_company_user != updated_flag.company_user or
+                original_flag_status != updated_flag.flag_status or
+                original_company_department != updated_flag.company_department or
+                original_details != updated_flag.details
+            )
+            
+            if has_changes:
+                log_model_action(request.user, 'update', updated_flag)
+                
+                # 担当者への通知を登録（変更があった場合のみ）
+                if updated_flag.company_user and updated_flag.company_user.email:
+                    from apps.system.notifications.models import Notification
+                    from django.contrib.auth import get_user_model
+                    from django.urls import reverse
+                    
+                    User = get_user_model()
+                    try:
+                        user = User.objects.get(email=updated_flag.company_user.email, tenant_id=updated_flag.tenant_id)
+                        Notification.objects.create(
+                            user=user,
+                            title=f'クライアント契約フラッグが更新されました',
+                            message=f'クライアント契約「{contract.contract_name}」のフラッグ「{updated_flag.flag_status.name}」が更新されました。',
+                            notification_type='general',
+                            link_url=reverse('contract:client_contract_detail', kwargs={'pk': contract.pk}),
+                            tenant_id=updated_flag.tenant_id
+                        )
+                    except User.DoesNotExist:
+                        pass  # ユーザーが存在しない場合は通知をスキップ
+            
             messages.success(request, 'フラッグを更新しました。')
             return redirect('contract:client_contract_detail', pk=contract.pk)
     else:

@@ -59,6 +59,19 @@ class ClientFlagTest(TestCase):
 
     def test_client_flag_list_view(self):
         """フラッグ一覧画面のテスト"""
+        # フラッグが存在しない場合は登録画面にリダイレクト
+        response = self.test_client.get(reverse('client:client_flag_list', kwargs={'client_pk': self.client_obj.pk}))
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('client:client_flag_create', kwargs={'client_pk': self.client_obj.pk}))
+        
+        # フラッグを作成してから一覧画面をテスト
+        ClientFlag.objects.create(
+            client=self.client_obj,
+            company_department=self.dept,
+            company_user=self.comp_user,
+            flag_status=self.status,
+            tenant_id=self.client_obj.tenant_id
+        )
         response = self.test_client.get(reverse('client:client_flag_list', kwargs={'client_pk': self.client_obj.pk}))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'client/client_flag_list.html')
