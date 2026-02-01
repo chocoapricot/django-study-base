@@ -12,7 +12,7 @@ from apps.system.logs.utils import log_model_action
 from .forms_mail import ConnectionRequestMailForm, DisconnectionMailForm
 
 from .models import Staff, StaffContacted, StaffContactSchedule, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact
-from .forms import StaffForm, StaffContactedForm, StaffContactScheduleForm, StaffFileForm, StaffFaceUploadForm
+from .forms import StaffForm, StaffContactedForm, StaffContactScheduleForm, StaffFileForm, StaffFaceUploadForm, StaffTagEditForm
 from .utils import get_staff_face_photo_style, delete_staff_placeholder
 from apps.system.settings.models import Dropdowns
 from apps.system.logs.models import AppLog
@@ -1462,40 +1462,34 @@ def staff_face_delete(request, pk):
 def staff_tag_edit(request, pk):
     """スタッフタグの編集"""
     staff = get_object_or_404(Staff, pk=pk)
-    from apps.master.models_staff import StaffTag
     
     if request.method == 'POST':
-        tag_ids = request.POST.getlist('tags')
-        # 数値に変換
-        tag_ids = [int(tid) for tid in tag_ids if tid.isdigit()]
-        
-        # 以前のタグを取得（ログ用）
-        old_tag_names = ", ".join([t.name for t in staff.tags.all()])
-        
-        # 新しいタグを設定
-        staff.tags.set(tag_ids)
-        
-        new_tag_names = ", ".join([t.name for t in staff.tags.all()])
-        
-        # AppLogに記録
-        log_model_action(request.user, 'update', staff)
-        AppLog.objects.create(
-            user=request.user,
-            action='update',
-            model_name='Staff',
-            object_id=str(staff.pk),
-            object_repr=f"タグ変更: {old_tag_names} -> {new_tag_names}"
-        )
-        
-        messages.success(request, f'スタッフ「{staff.name}」のタグを更新しました。')
-        return redirect('staff:staff_detail', pk=staff.pk)
-    
-    all_tags = StaffTag.objects.filter(is_active=True).order_by('display_order', 'name')
-    current_tag_ids = list(staff.tags.values_list('pk', flat=True))
+        form = StaffTagEditForm(request.POST, instance=staff)
+        if form.is_valid():
+            # 以前のタグを取得（ログ用）
+            old_tag_names = ", ".join([t.name for t in staff.tags.all()])
+
+            form.save()
+
+            new_tag_names = ", ".join([t.name for t in staff.tags.all()])
+
+            # AppLogに記録
+            log_model_action(request.user, 'update', staff)
+            AppLog.objects.create(
+                user=request.user,
+                action='update',
+                model_name='Staff',
+                object_id=str(staff.pk),
+                object_repr=f"タグ変更: {old_tag_names} -> {new_tag_names}"
+            )
+
+            messages.success(request, f'スタッフ「{staff.name}」のタグを更新しました。')
+            return redirect('staff:staff_detail', pk=staff.pk)
+    else:
+        form = StaffTagEditForm(instance=staff)
     
     context = {
         'staff': staff,
-        'all_tags': all_tags,
-        'current_tag_ids': current_tag_ids,
+        'form': form,
     }
     return render(request, 'staff/staff_tag_edit.html', context)

@@ -7,7 +7,7 @@ from django import forms
 from django.forms import TextInput
 from .models import Client, ClientFile, ClientFlag
 from django.core.exceptions import ValidationError
-from apps.common.forms import BadgeRadioSelect
+from apps.common.forms import BadgeRadioSelect, BadgeCheckboxSelectMultiple
 from stdnum.jp import cn as houjin
 
 class ClientForm(forms.ModelForm):
@@ -431,3 +431,34 @@ class ClientFlagForm(forms.ModelForm):
             self.fields['flag_status'].widget.badge_class_map = {
                 str(s.pk): badge_class(s.display_order) for s in status_qs
             }
+
+
+class ClientTagEditForm(forms.ModelForm):
+    """クライアントタグ編集フォーム"""
+    tags = forms.ModelMultipleChoiceField(
+        queryset=None,
+        widget=BadgeCheckboxSelectMultiple(),
+        required=False,
+        label='タグ'
+    )
+
+    class Meta:
+        model = Client
+        fields = ['tags']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from apps.master.models_client import ClientTag
+        from apps.common.middleware import get_current_tenant_id
+        from apps.system.settings.templatetags.badge_tags import badge_class
+
+        tenant_id = get_current_tenant_id()
+        if tenant_id:
+            qs = ClientTag.objects.filter(tenant_id=tenant_id, is_active=True).order_by('display_order', 'name')
+        else:
+            qs = ClientTag.objects.filter(is_active=True).order_by('display_order', 'name')
+
+        self.fields['tags'].queryset = qs
+        self.fields['tags'].widget.badge_class_map = {
+            str(t.pk): badge_class(t.display_order) for t in qs
+        }
