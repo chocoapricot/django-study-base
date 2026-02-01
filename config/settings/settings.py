@@ -141,6 +141,7 @@ TEMPLATES = [
                 'apps.system.settings.context_processors.constants',
                 'apps.system.settings.context_processors.ui_settings',
                 'apps.home.context_processors.contact_schedule_counts',
+                'apps.home.context_processors.flag_counts',
             ],
         },
     },

@@ -2,7 +2,36 @@
 {% load badge_tags %}
 
 {% block content %}
-<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="department" class="form-label">部署</label>
+                <select name="department" id="department" class="form-select">
+                    <option value="">すべて</option>
+                    {% for dept in department_options %}
+                    <option value="{{ dept.pk }}" {% if department_filter == dept.pk|stringformat:"s" %}selected{% endif %}>{{ dept.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="company_user" class="form-label">担当者</label>
+                <select name="company_user" id="company_user" class="form-select">
+                    <option value="">すべて</option>
+                    {% for user in company_user_options %}
+                    <option value="{{ user.pk }}" {% if company_user_filter == user.pk|stringformat:"s" %}selected{% endif %}>{{ user.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">検索</button>
+                <a href="{% url 'system_flags:flag_list' %}" class="btn btn-secondary">リセット</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="content-box card bg-light mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         フラッグ一覧
     </div>
@@ -11,9 +40,9 @@
             <thead>
                 <tr>
                     <th style="width: 10%;">種別</th>
-                    <th style="width: 25%;">対象名</th>
+                    <th style="width: 20%;">対象名</th>
                     <th style="width: 15%;">ステータス</th>
-                    <th style="width: 25%;">詳細</th>
+                    <th style="width: 30%;">会社組織</th>
                     <th style="width: 15%;">更新日時</th>
                     <th style="width: 10%;">操作</th>
                 </tr>
@@ -37,7 +66,16 @@
                         {% endif %}
                     </td>
                     <td>
-                        <small class="text-muted">{{ item.flag.details|default_if_none:""|truncatechars:100 }}</small>
+                        {% if item.flag.company_department %}
+                            {{ item.flag.company_department.name }}
+                        {% endif %}
+                        {% if item.flag.company_user %}
+                            {% if item.flag.company_department %}<br>{% endif %}
+                            <small class="text-muted">{{ item.flag.company_user.name }}</small>
+                        {% endif %}
+                        {% if not item.flag.company_department and not item.flag.company_user %}
+                            -
+                        {% endif %}
                     </td>
                     <td>
                         {{ item.updated_at|date:"Y-m-d H:i" }}
@@ -55,6 +93,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% include 'common/_pagination.html' %}
     </div>
 </div>
 {% endblock %}
