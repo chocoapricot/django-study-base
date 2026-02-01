@@ -101,6 +101,7 @@ python manage.py dumpdata master.staffcontacttype         --format=json --indent
 python manage.py dumpdata master.clientcontacttype        --format=json --indent=4 > _sample_data/master_client_contact_type.json
 python manage.py dumpdata master.stafftag                  --format=json --indent=4 > _sample_data/master_staff_tag.json
 python manage.py dumpdata master.clienttag                 --format=json --indent=4 > _sample_data/master_client_tag.json
+python manage.py dumpdata master.flagstatus                 --format=json --indent=4 > _sample_data/master_flag_status.json
 
 #   UTF16からUTF8に変更してから取り込む必要あり
 

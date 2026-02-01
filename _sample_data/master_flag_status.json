@@ -1,0 +1,62 @@
+[
+{
+    "model": "master.flagstatus",
+    "pk": 1,
+    "fields": {
+        "version": 1769927722442946,
+        "created_at": "2026-01-31T15:52:43.479Z",
+        "created_by": 1,
+        "updated_at": "2026-02-01T06:51:09.095Z",
+        "updated_by": 1,
+        "tenant_id": 1,
+        "name": "入社手続き",
+        "display_order": 1,
+        "is_active": true
+    }
+},
+{
+    "model": "master.flagstatus",
+    "pk": 2,
+    "fields": {
+        "version": 1769927732835811,
+        "created_at": "2026-01-31T15:52:52.697Z",
+        "created_by": 1,
+        "updated_at": "2026-02-01T06:51:19.488Z",
+        "updated_by": 1,
+        "tenant_id": 1,
+        "name": "契約手続き",
+        "display_order": 10,
+        "is_active": true
+    }
+},
+{
+    "model": "master.flagstatus",
+    "pk": 3,
+    "fields": {
+        "version": 1769927754470032,
+        "created_at": "2026-02-01T06:51:41.122Z",
+        "created_by": 1,
+        "updated_at": "2026-02-01T06:51:41.122Z",
+        "updated_by": 1,
+        "tenant_id": 1,
+        "name": "退社手続き",
+        "display_order": 40,
+        "is_active": true
+    }
+},
+{
+    "model": "master.flagstatus",
+    "pk": 4,
+    "fields": {
+        "version": 1769927768843469,
+        "created_at": "2026-02-01T06:51:55.495Z",
+        "created_by": 1,
+        "updated_at": "2026-02-01T06:51:55.495Z",
+        "updated_by": 1,
+        "tenant_id": 1,
+        "name": "引継ぎ",
+        "display_order": 30,
+        "is_active": true
+    }
+}
+]
