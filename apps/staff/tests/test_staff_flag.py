@@ -184,3 +184,30 @@ class StaffFlagTest(TestCase):
         self.assertEqual(response.status_code, 302)
         flag = StaffFlag.objects.get(staff=self.staff, flag_status=self.status)
         self.assertEqual(flag.details, 'テスト詳細テキスト')
+
+    def test_flag_status_widget_html(self):
+        """フラッグステータスウィジェットのHTML出力テスト"""
+        from apps.staff.forms import StaffFlagForm
+
+        # 追加のステータスを作成して色分けをチェック
+        FlagStatus.objects.create(name="Danger Status", display_order=40, tenant_id=self.company.tenant_id)
+        FlagStatus.objects.create(name="Success Status", display_order=10, tenant_id=self.company.tenant_id)
+
+        form = StaffFlagForm(initial={'staff': self.staff})
+        # テナントフィルタリングにより、setUpで作成したものと上記2つが含まれるはず
+        html = form['flag_status'].as_widget()
+
+        # ラジオボタンが含まれているか
+        self.assertIn('type="radio"', html)
+        self.assertIn('name="flag_status"', html)
+
+        # バッジと色が正しく設定されているか
+        # display_order=1 -> primary (code < 10)
+        self.assertIn('class="badge bg-primary">Test Status</span>', html)
+        # display_order=10 -> success (10 <= code < 20)
+        self.assertIn('class="badge bg-success">Success Status</span>', html)
+        # display_order=40 -> danger (40 <= code < 50)
+        self.assertIn('class="badge bg-danger">Danger Status</span>', html)
+
+        # 横並びレイアウト用のクラスが含まれているか
+        self.assertIn('form-check form-check-inline', html)

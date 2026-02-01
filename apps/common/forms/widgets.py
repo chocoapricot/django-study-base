@@ -36,6 +36,42 @@ class MyRadioSelect(RadioSelect):
         return ''
 
 
+class BadgeRadioSelect(MyRadioSelect):
+    """
+    ラベルをバッジ形式で表示するラジオボタン
+    badge_class_map: {option_value: css_class} のマッピングを指定可能
+    """
+    def __init__(self, *args, **kwargs):
+        self.badge_class_map = kwargs.pop('badge_class_map', {})
+        super().__init__(*args, **kwargs)
+
+    def render(self, name, value, attrs=None, renderer=None):
+        if self.choices:
+            output = []
+            for option_value, option_label in self.choices:
+                # Noneや空文字（「選択してください」等）はスキップ
+                if not option_value and option_value != 0:
+                    continue
+
+                option_id = f"{attrs.get('id', name)}_{option_value}" if attrs and attrs.get('id') else f"{name}_{option_value}"
+                checked = 'checked' if str(option_value) == str(value) else ''
+
+                badge_class = self.badge_class_map.get(str(option_value), 'bg-secondary')
+
+                radio_html = format_html(
+                    '<div class="form-check form-check-inline">'
+                    '<input type="radio" class="form-check-input" name="{}" value="{}" id="{}" {}>'
+                    '<label class="form-check-label" for="{}">'
+                    '<span class="badge {}">{}</span>'
+                    '</label>'
+                    '</div>',
+                    name, option_value, option_id, checked, option_id, badge_class, option_label
+                )
+                output.append(radio_html)
+            return mark_safe(''.join(output))
+        return ''
+
+
 class ColorInput(forms.TextInput):
     """
     HTML5の <input type="color"> をレンダリングするためのウィジェット。

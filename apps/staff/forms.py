@@ -4,7 +4,7 @@ from django import forms
 from django.forms import TextInput
 from .models import Staff, StaffContacted, StaffContactSchedule, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact, StaffFlag
 from django.core.exceptions import ValidationError
-from apps.common.forms import MyRadioSelect
+from apps.common.forms import MyRadioSelect, BadgeRadioSelect
 
 # スタッフ連絡履歴フォーム
 from apps.master.models import StaffContactType
@@ -703,8 +703,8 @@ class StaffFlagForm(forms.ModelForm):
         queryset=None,
         label='フラッグステータス',
         required=True,
-        empty_label='選択してください',
-        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+        empty_label=None,
+        widget=BadgeRadioSelect()
     )
 
     class Meta:
@@ -745,3 +745,11 @@ class StaffFlagForm(forms.ModelForm):
             self.fields['company_department'].queryset = CompanyDepartment.objects.all()
             self.fields['company_user'].queryset = CompanyUser.objects.all()
             self.fields['flag_status'].queryset = FlagStatus.objects.filter(is_active=True).order_by('display_order')
+
+        # バッジ色のマッピングを設定
+        from apps.system.settings.templatetags.badge_tags import badge_class
+        status_qs = self.fields['flag_status'].queryset
+        if status_qs:
+            self.fields['flag_status'].widget.badge_class_map = {
+                str(s.pk): badge_class(s.display_order) for s in status_qs
+            }
