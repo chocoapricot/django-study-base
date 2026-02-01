@@ -60,9 +60,10 @@ class ContractClientFlagTest(TestCase):
         self.status = FlagStatus.objects.create(name="要確認", tenant_id=self.company.id)
 
     def test_flag_crud(self):
-        # 一覧表示
+        # 一覧表示（フラッグが存在しない場合は登録画面にリダイレクト）
         response = self.client.get(reverse('contract:client_contract_flag_list', args=[self.contract.pk]))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('contract:client_contract_flag_create', args=[self.contract.pk]))
 
         # 作成
         response = self.client.post(reverse('contract:client_contract_flag_create', args=[self.contract.pk]), {
@@ -73,6 +74,10 @@ class ContractClientFlagTest(TestCase):
         })
         self.assertEqual(response.status_code, 302)
         self.assertTrue(ContractClientFlag.objects.filter(client_contract=self.contract).exists())
+
+        # フラッグが作成された後の一覧表示
+        response = self.client.get(reverse('contract:client_contract_flag_list', args=[self.contract.pk]))
+        self.assertEqual(response.status_code, 200)
 
         flag = ContractClientFlag.objects.get(client_contract=self.contract)
 
