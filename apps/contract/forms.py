@@ -917,7 +917,7 @@ class ContractClientFlagForm(forms.ModelForm):
 
     class Meta:
         model = ContractClientFlag
-        fields = ['client_contract', 'company_department', 'company_user', 'flag_status', 'details']
+        fields = ['client_contract', 'flag_status', 'company_department', 'company_user', 'details']
         widgets = {
             'details': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
@@ -993,7 +993,7 @@ class ContractStaffFlagForm(forms.ModelForm):
 
     class Meta:
         model = ContractStaffFlag
-        fields = ['staff_contract', 'company_department', 'company_user', 'flag_status', 'details']
+        fields = ['staff_contract', 'flag_status', 'company_department', 'company_user', 'details']
         widgets = {
             'details': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
@@ -1068,7 +1068,7 @@ class ContractAssignmentFlagForm(forms.ModelForm):
 
     class Meta:
         model = ContractAssignmentFlag
-        fields = ['contract_assignment', 'company_department', 'company_user', 'flag_status', 'details']
+        fields = ['contract_assignment', 'flag_status', 'company_department', 'company_user', 'details']
         widgets = {
             'details': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }

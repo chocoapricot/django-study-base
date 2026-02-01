@@ -20,6 +20,18 @@
             {{ form.staff_contract }}
 
             <div class="row mb-3 align-items-center">
+                <label for="{{ form.flag_status.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
+                    {{ form.flag_status.label }}
+                </label>
+                <div class="col-sm-10">
+                    {{ form.flag_status }}
+                    {% if form.flag_status.errors %}
+                        <div class="text-danger small">{{ form.flag_status.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-1 align-items-center">
                 <label for="{{ form.company_department.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
                     {{ form.company_department.label }}
                 </label>
@@ -39,18 +51,6 @@
                     {{ form.company_user }}
                     {% if form.company_user.errors %}
                         <div class="text-danger small">{{ form.company_user.errors }}</div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="row mb-3 align-items-center">
-                <label for="{{ form.flag_status.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
-                    {{ form.flag_status.label }}
-                </label>
-                <div class="col-sm-6">
-                    {{ form.flag_status }}
-                    {% if form.flag_status.errors %}
-                        <div class="text-danger small">{{ form.flag_status.errors }}</div>
                     {% endif %}
                 </div>
             </div>

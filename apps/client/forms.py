@@ -387,7 +387,7 @@ class ClientFlagForm(forms.ModelForm):
 
     class Meta:
         model = ClientFlag
-        fields = ['client', 'company_department', 'company_user', 'flag_status', 'details']
+        fields = ['client', 'flag_status', 'company_department', 'company_user', 'details']
         widgets = {
             'details': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }

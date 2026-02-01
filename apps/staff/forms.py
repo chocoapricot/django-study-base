@@ -709,7 +709,7 @@ class StaffFlagForm(forms.ModelForm):
 
     class Meta:
         model = StaffFlag
-        fields = ['staff', 'company_department', 'company_user', 'flag_status', 'details']
+        fields = ['staff', 'flag_status', 'company_department', 'company_user', 'details']
         widgets = {
             'details': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
         }
