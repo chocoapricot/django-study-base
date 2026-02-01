@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from apps.staff.models_other import StaffFlag
 from apps.client.models import ClientFlag
 from apps.contract.models import ContractClientFlag, ContractStaffFlag, ContractAssignmentFlag
+from apps.master.models_other import FlagStatus
 from django.urls import reverse
 from django.core.paginator import Paginator
 from apps.company.models import CompanyDepartment, CompanyUser
@@ -89,6 +90,25 @@ def flag_list(request):
 
     results.sort(key=lambda x: x['updated_at'], reverse=True)
 
+    # Summary Table Data
+    summary_data = []
+    flag_statuses = FlagStatus.objects.filter(is_active=True).order_by('display_order', 'name')
+    for status in flag_statuses:
+        staff_count = staff_flags.filter(flag_status=status).count()
+        client_count = client_flags.filter(flag_status=status).count()
+        staff_contract_count = contract_staff_flags.filter(flag_status=status).count()
+        assignment_count = contract_assignment_flags.filter(flag_status=status).count()
+        client_contract_count = contract_client_flags.filter(flag_status=status).count()
+
+        summary_data.append({
+            'status': status,
+            'staff': staff_count or '-',
+            'client': client_count or '-',
+            'staff_contract': staff_contract_count or '-',
+            'assignment': assignment_count or '-',
+            'client_contract': client_contract_count or '-',
+        })
+
     paginator = Paginator(results, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -103,6 +123,7 @@ def flag_list(request):
         'company_user_filter': company_user_filter,
         'department_options': department_options,
         'company_user_options': company_user_options,
+        'summary_data': summary_data,
     }
 
     return render(request, 'system/flags/flag_list.html', context)
