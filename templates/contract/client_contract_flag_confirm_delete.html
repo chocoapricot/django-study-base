@@ -8,46 +8,37 @@
     </div>
 </div>
 
-<div class="container-fluid mt-3 px-0">
-    <div class="card bg-light">
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
         <div class="card-header">
             フラッグ削除確認
         </div>
-        <div class="card-body">
-            <div class="alert alert-warning" role="alert">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-                本当にこのフラッグを削除しますか？ この操作は取り消せません。
-            </div>
-
-            <table class="table table-bordered w-auto">
-                <tr>
-                    <th class="bg-light" style="width: 150px;">会社組織</th>
-                    <td>{{ flag.company_department|default:"-" }}</td>
-                </tr>
-                <tr>
-                    <th class="bg-light">会社担当者</th>
-                    <td>{{ flag.company_user|default:"-" }}</td>
-                </tr>
-                <tr>
-                    <th class="bg-light">ステータス</th>
-                    <td>{{ flag.flag_status|default:"-" }}</td>
-                </tr>
-            </table>
-
-            <form method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-sm btn-dark">削除実行</button>
-                <a href="{% url 'contract:client_contract_flag_list' flag.client_contract.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
-            </form>
-
-            <div class="row mt-3">
-                <div class="col text-left">
-                    <a href="{% url 'contract:client_contract_flag_list' flag.client_contract.pk %}" class="btn btn-sm btn-secondary">
-                        <i class="bi bi-arrow-left"></i> 一覧に戻る
-                    </a>
-                </div>
-            </div>
+    <div class="card-body">
+        <div class="alert alert-warning" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            本当にこのフラッグを削除しますか？ この操作は取り消せません。
         </div>
+
+        <table class="table table-bordered w-auto">
+            <tr>
+                <th class="bg-light" style="width: 150px;">会社組織</th>
+                <td>{{ flag.company_department|default:"-" }}</td>
+            </tr>
+            <tr>
+                <th class="bg-light">会社担当者</th>
+                <td>{{ flag.company_user|default:"-" }}</td>
+            </tr>
+            <tr>
+                <th class="bg-light">ステータス</th>
+                <td>{{ flag.flag_status|default:"-" }}</td>
+            </tr>
+        </table>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-sm btn-dark me-2">削除</button>
+                <a href="{% url 'contract:client_contract_flag_list' flag.client_contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+            </div>
+        </form>
     </div>
-</div>
 {% endblock %}
