@@ -262,6 +262,11 @@
                                     <i class="bi bi-tag-fill"></i> {{ tag.name }}
                                 </span>
                             {% endfor %}
+                            {% for flag in staff.flags.all %}
+                                <span class="badge rounded-pill {{ flag.flag_status.display_order|badge_class }}" style="font-size: 10px;">
+                                    <i class="bi bi-flag-fill"></i> {{ flag.flag_status.name }}
+                                </span>
+                            {% endfor %}
                         </div>
                     </td>
                     {% if is_registration_status_view %}
