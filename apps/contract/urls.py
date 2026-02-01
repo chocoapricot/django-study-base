@@ -118,7 +118,13 @@ urlpatterns = [
     # 契約アサイン派遣雇用安定措置
     path('assignment/<int:assignment_pk>/haken/', views.contract_assignment_haken_view, name='contract_assignment_haken'),
     path('assignment/<int:assignment_pk>/haken/delete/', views.contract_assignment_haken_delete, name='contract_assignment_haken_delete'),
-    
+
+    # 契約アサインフラッグ管理
+    path('assignment/<int:assignment_pk>/flag/', views.contract_assignment_flag_list, name='contract_assignment_flag_list'),
+    path('assignment/<int:assignment_pk>/flag/create/', views.contract_assignment_flag_create, name='contract_assignment_flag_create'),
+    path('assignment/flag/<int:pk>/update/', views.contract_assignment_flag_update, name='contract_assignment_flag_update'),
+    path('assignment/flag/<int:pk>/delete/', views.contract_assignment_flag_delete, name='contract_assignment_flag_delete'),
+
     # 就業条件明示書
     path('assignment/<int:assignment_pk>/employment-conditions/', views.assignment_employment_conditions_pdf, name='assignment_employment_conditions_pdf'),
     path('staff/<int:contract_pk>/assignment/<int:assignment_pk>/employment-conditions-issue/', views.staff_contract_assignment_employment_conditions_issue, name='staff_contract_assignment_employment_conditions_issue'),

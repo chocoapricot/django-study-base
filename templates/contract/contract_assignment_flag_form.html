@@ -1,0 +1,110 @@
+{% extends 'common/_base.html' %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        契約アサイン情報
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="text-muted">クライアント契約</h6>
+                <table class="table table-sm">
+                    <tr>
+                        <th class="w-25 bg-light">クライアント</th>
+                        <td>{{ assignment.client_contract.client.name }}</td>
+                    </tr>
+                    <tr>
+                        <th class="w-25 bg-light">契約名</th>
+                        <td>{{ assignment.client_contract.contract_name }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-muted">スタッフ契約</h6>
+                <table class="table table-sm">
+                    <tr>
+                        <th class="w-25 bg-light">スタッフ</th>
+                        <td>{{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }}</td>
+                    </tr>
+                    <tr>
+                        <th class="w-25 bg-light">契約名</th>
+                        <td>{{ assignment.staff_contract.contract_name }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">
+        {% if is_new %}フラッグ登録{% else %}フラッグ編集{% endif %}
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            {# 契約アサインフィールドは非表示（内部で自動設定） #}
+            {{ form.contract_assignment }}
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.company_department.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
+                    {{ form.company_department.label }}
+                </label>
+                <div class="col-sm-6">
+                    {{ form.company_department }}
+                    {% if form.company_department.errors %}
+                        <div class="text-danger small">{{ form.company_department.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.company_user.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
+                    {{ form.company_user.label }}
+                </label>
+                <div class="col-sm-6">
+                    {{ form.company_user }}
+                    {% if form.company_user.errors %}
+                        <div class="text-danger small">{{ form.company_user.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.flag_status.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
+                    {{ form.flag_status.label }}
+                </label>
+                <div class="col-sm-6">
+                    {{ form.flag_status }}
+                    {% if form.flag_status.errors %}
+                        <div class="text-danger small">{{ form.flag_status.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <label for="{{ form.details.id_for_label }}" class="col-sm-2 col-form-label text-start text-sm-end">
+                    {{ form.details.label }}
+                </label>
+                <div class="col-sm-6">
+                    {{ form.details }}
+                    {% if form.details.errors %}
+                        <div class="text-danger small">{{ form.details.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col text-left">
+                    <button type="submit" class="btn btn-sm btn-primary me-2">
+                        {% if is_new %}登録{% else %}更新{% endif %}
+                    </button>
+                    <a href="{% url 'contract:contract_assignment_flag_list' assignment.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

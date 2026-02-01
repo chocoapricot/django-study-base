@@ -1,7 +1,7 @@
 from django import forms
 from django.db.models import Subquery, OuterRef
 from django.utils import timezone
-from .models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp, ClientContractHakenExempt, StaffContractTeishokubiDetail, ContractAssignmentConfirm, ContractAssignmentHaken, ContractClientFlag, ContractStaffFlag
+from .models import ClientContract, StaffContract, ClientContractHaken, ClientContractTtp, ClientContractHakenExempt, StaffContractTeishokubiDetail, ContractAssignmentConfirm, ContractAssignmentHaken, ContractClientFlag, ContractStaffFlag, ContractAssignment, ContractAssignmentFlag
 from apps.client.models import Client, ClientUser, ClientDepartment
 from apps.staff.models import Staff
 from apps.system.settings.models import Dropdowns
@@ -1016,6 +1016,73 @@ class ContractStaffFlagForm(forms.ModelForm):
             self.fields['flag_status'].queryset = FlagStatus.objects.filter(tenant_id=tenant_id, is_active=True).order_by('display_order')
         else:
             self.fields['staff_contract'].queryset = StaffContract.objects.all()
+            self.fields['company_department'].queryset = CompanyDepartment.objects.all()
+            self.fields['company_user'].queryset = CompanyUser.objects.all()
+            self.fields['flag_status'].queryset = FlagStatus.objects.filter(is_active=True).order_by('display_order')
+
+class ContractAssignmentFlagForm(forms.ModelForm):
+    """契約アサインフラッグフォーム"""
+    contract_assignment = forms.ModelChoiceField(
+        queryset=None,
+        label='契約アサイン',
+        required=True,
+        widget=forms.HiddenInput()
+    )
+    company_department = forms.ModelChoiceField(
+        queryset=None,
+        label='会社組織',
+        required=False,
+        empty_label='選択してください',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
+    company_user = forms.ModelChoiceField(
+        queryset=None,
+        label='会社担当者',
+        required=False,
+        empty_label='選択してください',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
+    flag_status = forms.ModelChoiceField(
+        queryset=None,
+        label='フラッグステータス',
+        required=True,
+        empty_label='選択してください',
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
+    )
+
+    class Meta:
+        model = ContractAssignmentFlag
+        fields = ['contract_assignment', 'company_department', 'company_user', 'flag_status', 'details']
+        widgets = {
+            'details': forms.Textarea(attrs={'class': 'form-control form-control-sm', 'rows': 3}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        company_department = cleaned_data.get('company_department')
+        company_user = cleaned_data.get('company_user')
+
+        if company_user and not company_department:
+            self.add_error('company_department', '会社担当者を入力するときは、会社組織を必須にしてください。')
+
+        if company_user and company_department:
+            if company_user.department_code != company_department.department_code:
+                self.add_error('company_user', '会社組織と、会社担当者の所属する組織が違います。')
+
+        return cleaned_data
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from apps.common.middleware import get_current_tenant_id
+
+        tenant_id = get_current_tenant_id()
+        if tenant_id:
+            self.fields['contract_assignment'].queryset = ContractAssignment.objects.filter(tenant_id=tenant_id)
+            self.fields['company_department'].queryset = CompanyDepartment.objects.filter(tenant_id=tenant_id)
+            self.fields['company_user'].queryset = CompanyUser.objects.filter(tenant_id=tenant_id)
+            self.fields['flag_status'].queryset = FlagStatus.objects.filter(tenant_id=tenant_id, is_active=True).order_by('display_order')
+        else:
+            self.fields['contract_assignment'].queryset = ContractAssignment.objects.all()
             self.fields['company_department'].queryset = CompanyDepartment.objects.all()
             self.fields['company_user'].queryset = CompanyUser.objects.all()
             self.fields['flag_status'].queryset = FlagStatus.objects.filter(is_active=True).order_by('display_order')

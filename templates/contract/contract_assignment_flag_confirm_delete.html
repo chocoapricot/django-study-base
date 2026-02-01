@@ -1,0 +1,70 @@
+{% extends 'common/_base.html' %}
+
+{% block content %}
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        契約アサイン情報
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="text-muted">クライアント契約</h6>
+                <table class="table table-sm">
+                    <tr>
+                        <th class="w-25 bg-light">クライアント</th>
+                        <td>{{ assignment.client_contract.client.name }}</td>
+                    </tr>
+                    <tr>
+                        <th class="w-25 bg-light">契約名</th>
+                        <td>{{ assignment.client_contract.contract_name }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-muted">スタッフ契約</h6>
+                <table class="table table-sm">
+                    <tr>
+                        <th class="w-25 bg-light">スタッフ</th>
+                        <td>{{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }}</td>
+                    </tr>
+                    <tr>
+                        <th class="w-25 bg-light">契約名</th>
+                        <td>{{ assignment.staff_contract.contract_name }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
+    <div class="card-header">フラッグ削除確認</div>
+    <div class="card-body">
+        <p>以下のフラッグを削除しますか？</p>
+        <table class="table table-sm">
+            <tr>
+                <th class="w-25 bg-light">会社組織</th>
+                <td>{{ flag.company_department|default:"-" }}</td>
+            </tr>
+            <tr>
+                <th class="w-25 bg-light">会社担当者</th>
+                <td>{{ flag.company_user|default:"-" }}</td>
+            </tr>
+            <tr>
+                <th class="w-25 bg-light">フラッグステータス</th>
+                <td>{{ flag.flag_status|default:"-" }}</td>
+            </tr>
+            <tr>
+                <th class="w-25 bg-light">詳細</th>
+                <td>{{ flag.details|default:"-"|linebreaksbr }}</td>
+            </tr>
+        </table>
+
+        <form method="post" class="mt-3">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-danger">削除</button>
+            <a href="{% url 'contract:contract_assignment_flag_list' assignment.pk %}" class="btn btn-sm btn-secondary">キャンセル</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
