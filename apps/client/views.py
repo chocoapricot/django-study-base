@@ -15,7 +15,7 @@ from apps.contract.utils import generate_teishokubi_notification_pdf
 from apps.company.views import get_current_company
 # クライアント連絡履歴用インポート
 from .models import Client, ClientContacted, ClientDepartment, ClientUser, ClientFile, ClientContactSchedule, ClientFlag
-from .forms import ClientForm, ClientContactedForm, ClientDepartmentForm, ClientUserForm, ClientFileForm, ClientContactScheduleForm, ClientFlagForm
+from .forms import ClientForm, ClientContactedForm, ClientDepartmentForm, ClientUserForm, ClientFileForm, ClientContactScheduleForm, ClientFlagForm, ClientTagEditForm
 from apps.master.models import ClientTag
 # from apps.api.helpers import fetch_company_info  # API呼び出し関数をインポート
 
@@ -1143,43 +1143,41 @@ def client_contact_schedule_delete(request, pk):
 def client_tag_edit(request, pk):
     """クライアントタグ編集ビュー"""
     client = get_object_or_404(Client, pk=pk)
-    all_tags = ClientTag.objects.filter(is_active=True).order_by('display_order')
     
     if request.method == 'POST':
-        tag_ids = request.POST.getlist('tags')
-        # 現在のタグ名を取得（ログ用）
-        old_tags = ", ".join([t.name for t in client.tags.all()])
-        
-        # タグの更新
-        client.tags.set(tag_ids)
-        
-        # 新しいタグ名を取得（ログ用）
-        new_tags = ", ".join([t.name for t in client.tags.all()])
-        
-        # 変更があった場合のみログを記録
-        if old_tags != new_tags:
-            from apps.system.logs.utils import log_model_action
-            from apps.system.logs.models import AppLog
-            # 基本的な更新ログ
-            log_model_action(request.user, 'update', client)
-            # 詳細な変更ログ
-            AppLog.objects.create(
-                user=request.user,
-                action='update',
-                model_name='Client',
-                object_id=str(client.pk),
-                object_repr=f"タグを変更しました: [{old_tags}] -> [{new_tags}]"
-            )
-            messages.success(request, 'クライアントのタグを更新しました。')
-        
-        return redirect('client:client_detail', pk=client.pk)
-    
-    current_tag_ids = list(client.tags.values_list('pk', flat=True))
+        form = ClientTagEditForm(request.POST, instance=client)
+        if form.is_valid():
+            # 現在のタグ名を取得（ログ用）
+            old_tags = ", ".join([t.name for t in client.tags.all()])
+
+            form.save()
+
+            # 新しいタグ名を取得（ログ用）
+            new_tags = ", ".join([t.name for t in client.tags.all()])
+
+            # 変更があった場合のみログを記録
+            if old_tags != new_tags:
+                from apps.system.logs.utils import log_model_action
+                from apps.system.logs.models import AppLog
+                # 基本的な更新ログ
+                log_model_action(request.user, 'update', client)
+                # 詳細な変更ログ
+                AppLog.objects.create(
+                    user=request.user,
+                    action='update',
+                    model_name='Client',
+                    object_id=str(client.pk),
+                    object_repr=f"タグを変更しました: [{old_tags}] -> [{new_tags}]"
+                )
+                messages.success(request, 'クライアントのタグを更新しました。')
+
+            return redirect('client:client_detail', pk=client.pk)
+    else:
+        form = ClientTagEditForm(instance=client)
     
     return render(request, 'client/client_tag_edit.html', {
         'client': client,
-        'all_tags': all_tags,
-        'current_tag_ids': current_tag_ids,
+        'form': form,
     })
 
 

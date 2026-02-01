@@ -72,6 +72,47 @@ class BadgeRadioSelect(MyRadioSelect):
         return ''
 
 
+class BadgeCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
+    """
+    ラベルをバッジ形式で表示するチェックボックス（複数選択）
+    badge_class_map: {option_value: css_class} のマッピングを指定可能
+    """
+    def __init__(self, *args, **kwargs):
+        self.badge_class_map = kwargs.pop('badge_class_map', {})
+        super().__init__(*args, **kwargs)
+
+    def render(self, name, value, attrs=None, renderer=None):
+        if self.choices:
+            output = []
+            for option_value, option_label in self.choices:
+                if not option_value and option_value != 0:
+                    continue
+
+                option_id = f"{attrs.get('id', name)}_{option_value}" if attrs and attrs.get('id') else f"{name}_{option_value}"
+
+                # 選択状態を判定
+                checked = ''
+                if value:
+                    str_value = [str(v) for v in value]
+                    if str(option_value) in str_value:
+                        checked = 'checked'
+
+                badge_class = self.badge_class_map.get(str(option_value), 'bg-secondary')
+
+                checkbox_html = format_html(
+                    '<div class="form-check form-check-inline">'
+                    '<input type="checkbox" class="form-check-input" name="{}" value="{}" id="{}" {}>'
+                    '<label class="form-check-label" for="{}">'
+                    '<span class="badge {}">{}</span>'
+                    '</label>'
+                    '</div>',
+                    name, option_value, option_id, checked, option_id, badge_class, option_label
+                )
+                output.append(checkbox_html)
+            return mark_safe(''.join(output))
+        return ''
+
+
 class ColorInput(forms.TextInput):
     """
     HTML5の <input type="color"> をレンダリングするためのウィジェット。

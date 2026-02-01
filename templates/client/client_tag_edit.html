@@ -12,34 +12,16 @@
             <div class="row mb-4">
                 <div class="col-12">
                     <p class="text-muted mb-4 small"><i class="bi bi-info-circle me-1"></i>クライアントに付与するタグを選択してください。複数の選択が可能です。</p>
-                    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
-                        {% for tag in all_tags %}
-                        {% with color=tag.display_order|badge_color %}
-                        <div class="col">
-                            <div class="tag-card form-check card h-100 p-3 shadow-sm border-2 border-{{ color }} text-{{ color }}
-                                {% if tag.pk in current_tag_ids %}
-                                    bg-{{ color }}-subtle
-                                {% else %}
-                                    bg-transparent
-                                {% endif %}" 
-                                id="card_tag_{{ tag.pk }}"
-                                data-color="{{ color }}">
-                                <div class="d-flex align-items-center">
-                                    <input class="form-check-input mt-0 me-3" type="checkbox" name="tags" value="{{ tag.pk }}" id="tag_{{ tag.pk }}" {% if tag.pk in current_tag_ids %}checked{% endif %} onchange="toggleTagCard(this, 'card_tag_{{ tag.pk }}')">
-                                    <label class="form-check-label flex-grow-1 mb-0 stretched-link" for="tag_{{ tag.pk }}" style="cursor: pointer;">
-                                        {{ tag.name }}
-                                    </label>
-                                </div>
-                            </div>
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-sm-2 col-form-label text-start text-sm-end">
+                            {{ form.tags.label }}
+                        </label>
+                        <div class="col-sm-10">
+                            {{ form.tags }}
+                            {% if form.tags.errors %}
+                                <div class="text-danger small">{{ form.tags.errors }}</div>
+                            {% endif %}
                         </div>
-                        {% endwith %}
-                        {% empty %}
-                        <div class="col-12">
-                            <div class="alert alert-info">
-                                <i class="bi bi-exclamation-triangle-fill me-2"></i>有効なクライアントタグが登録されていません。マスター管理から登録してください。
-                            </div>
-                        </div>
-                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -55,42 +37,4 @@
         </form>
     </div>
 </div>
-
-<script>
-    function toggleTagCard(checkbox, cardId) {
-        const card = document.getElementById(cardId);
-        const color = card.getAttribute('data-color');
-        
-        if (checkbox.checked) {
-            // チェック時: 薄い背景色 (bg-xxx-subtle)
-            card.classList.add(`bg-${color}-subtle`);
-            card.classList.remove('bg-transparent');
-        } else {
-            // 未チェック時: 背景なし (bg-transparent)
-            card.classList.remove(`bg-${color}-subtle`);
-            card.classList.add('bg-transparent');
-        }
-    }
-</script>
-
-<style>
-    .tag-card {
-        transition: all 0.2s ease-in-out;
-        cursor: pointer;
-        position: relative;
-    }
-    .tag-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
-    }
-    .form-check-input {
-        width: 1.25em;
-        height: 1.25em;
-        cursor: pointer;
-        z-index: 2;
-    }
-    .form-check-label {
-        font-weight: 500;
-    }
-</style>
 {% endblock %}
