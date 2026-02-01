@@ -25,7 +25,7 @@
                                 <a href="{% url 'contract:client_contract_haken_exempt_view' haken_pk=haken_info.pk %}" class="dropdown-item">派遣抵触日制限外</a>
                                 <div class="dropdown-divider"></div>
                                 {% endif %}
-                                <a href="{% url 'contract:client_contract_flag_list' contract.pk %}" class="dropdown-item">フラッグ編集</a>
+                                <a href="{% url 'contract:client_contract_flag_list' contract.pk %}" class="dropdown-item"><i class="bi bi-flag me-2"></i>フラッグ編集</a>
                             </div>
                         </li>
                     </ul>
