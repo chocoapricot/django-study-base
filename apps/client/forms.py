@@ -452,13 +452,22 @@ class ClientTagEditForm(forms.ModelForm):
         from apps.common.middleware import get_current_tenant_id
         from apps.system.settings.templatetags.badge_tags import badge_class
 
+        # テナント情報を取得
         tenant_id = get_current_tenant_id()
+        
+        # テナント条件でクエリセットを設定（必須）
         if tenant_id:
             qs = ClientTag.objects.filter(tenant_id=tenant_id, is_active=True).order_by('display_order', 'name')
         else:
-            qs = ClientTag.objects.filter(is_active=True).order_by('display_order', 'name')
-
+            # テナント情報がない場合は空のクエリセット
+            qs = ClientTag.objects.none()
+        
         self.fields['tags'].queryset = qs
-        self.fields['tags'].widget.badge_class_map = {
-            str(t.pk): badge_class(t.display_order) for t in qs
-        }
+        
+        # ウィジェットのchoicesを明示的に設定（querysetから生成）
+        choices = [(tag.pk, str(tag)) for tag in qs]
+        self.fields['tags'].widget.choices = choices
+        
+        # バッジクラスマップを設定
+        badge_class_map = {str(t.pk): badge_class(t.display_order) for t in qs}
+        self.fields['tags'].widget.badge_class_map = badge_class_map
