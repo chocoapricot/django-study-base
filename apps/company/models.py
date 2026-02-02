@@ -190,6 +190,10 @@ class Company(MyTenantModel):
         db_table = 'apps_company'
         verbose_name = '会社'
         verbose_name_plural = '会社'
+        permissions = [
+            ("view_business_summary", "業務サマリを表示できる"),
+            ("view_registration_status", "登録状況を表示できる"),
+        ]
 
     def __str__(self):
         return self.name

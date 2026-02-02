@@ -188,216 +188,251 @@ def home(request):
             if info.corporation_number in companies:
                 info.company_name = companies[info.corporation_number].name
 
-    staff_count = Staff.objects.count()
-    approved_staff_count = ConnectStaff.objects.filter(status='approved').count()
-
-    client_count = Client.objects.count()
-    approved_client_count = ConnectClient.objects.filter(status='approved').count()
-
-    # Get all ConnectStaff ids that have pending requests
-    pending_mynumber_cs_ids = MynumberRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
-    pending_profile_cs_ids = ProfileRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
-    pending_bank_cs_ids = BankRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
-    pending_contact_cs_ids = ContactRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
-    pending_international_cs_ids = ConnectInternationalRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
-    pending_disability_cs_ids = DisabilityRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
-
-    all_pending_cs_ids = set()
-    all_pending_cs_ids.update(pending_mynumber_cs_ids)
-    all_pending_cs_ids.update(pending_profile_cs_ids)
-    all_pending_cs_ids.update(pending_bank_cs_ids)
-    all_pending_cs_ids.update(pending_contact_cs_ids)
-    all_pending_cs_ids.update(pending_international_cs_ids)
-    all_pending_cs_ids.update(pending_disability_cs_ids)
-
-    # Get the emails of these ConnectStaff objects
-    pending_emails = ConnectStaff.objects.filter(id__in=list(all_pending_cs_ids)).values_list('email', flat=True)
-
-    # Count the number of Staff with these emails
-    staff_request_count = Staff.objects.filter(email__in=pending_emails).distinct().count()
-
-    # 連絡予定件数
-    today = timezone.localdate()
-    yesterday = today - timedelta(days=1)
-
-    has_staff_perm = request.user.has_perm('staff.view_staffcontactschedule')
-    has_client_perm = request.user.has_perm('client.view_clientcontactschedule')
-
-    staff_schedules_today = 0
-    staff_schedules_yesterday = 0
-    client_schedules_today = 0
-    client_schedules_yesterday = 0
-
-    if has_staff_perm:
-        staff_schedules_today = StaffContactSchedule.objects.filter(contact_date=today).count()
-        staff_schedules_yesterday = StaffContactSchedule.objects.filter(contact_date=yesterday).count()
-
-    if has_client_perm:
-        client_schedules_today = ClientContactSchedule.objects.filter(contact_date=today).count()
-        client_schedules_yesterday = ClientContactSchedule.objects.filter(contact_date=yesterday).count()
-
-    client_contract_count = ClientContract.objects.filter(
-        Q(end_date__gte=today) | Q(end_date__isnull=True)
-    ).count()
-    staff_contract_count = StaffContract.objects.filter(
-        Q(end_date__gte=today) | Q(end_date__isnull=True)
-    ).count()
-
-    has_inquiry_perm = request.user.has_perm('staff.view_staffinquiry')
-    unanswered_inquiry_count = 0
-    if has_inquiry_perm:
-        # 会社ユーザーまたは管理者であるかを判定
-        is_company_or_admin = request.user.is_superuser or CompanyUser.objects.filter(email=request.user.email).exists()
-
-        if is_company_or_admin:
-            # 自分が担当者の問い合わせ or 管理者
-            if request.user.is_superuser:
-                inquiries_qs = StaffInquiry.objects.all()
-            else:
-                # CompanyUserとしての権限
-                my_companies = CompanyUser.objects.filter(email=request.user.email).values_list('corporate_number', flat=True)
-                inquiries_qs = StaffInquiry.objects.filter(corporate_number__in=my_companies)
-
-            unanswered_inquiry_count = inquiries_qs.filter(status='open', last_message_by='staff').count()
-
-    # スタッフ契約延長未確認件数
-    unconfirmed_staff_contract_extension_count = 0
-    has_contract_assignment_perm = request.user.has_perm('contract.view_contractassignment')
-    if has_contract_assignment_perm:
-        unconfirmed_staff_contract_extension_count = ContractAssignment.objects.filter(
-            assignment_end_date__gte=today,
-            assignment_confirm__isnull=True
-        ).count()
-
-    # 警告日数の取得
-    try:
-        residence_period_warning_days = UserParameter.objects.get(key='RESIDENCE_PERIOD_WARNING_DAYS').get_number_value()
-        if residence_period_warning_days is None:
-            residence_period_warning_days = 30
-    except UserParameter.DoesNotExist:
-        residence_period_warning_days = 30
-
-    try:
-        personal_teishokubi_warning_days = UserParameter.objects.get(key='PERSONAL_TEISHOKUBI_WARNING_DAYS').get_number_value()
-        if personal_teishokubi_warning_days is None:
-            personal_teishokubi_warning_days = 60
-    except UserParameter.DoesNotExist:
-        personal_teishokubi_warning_days = 60
-    
-    try:
-        office_teishokubi_warning_days = UserParameter.objects.get(key='OFFICE_TEISHOKUBI_WARNING_DAYS').get_number_value()
-        if office_teishokubi_warning_days is None:
-            office_teishokubi_warning_days = 60
-    except UserParameter.DoesNotExist:
-        office_teishokubi_warning_days = 60
-
-    # 外国籍スタッフの在留資格期限切れ件数
-    expiring_staff_international_count = 0
-    if request.user.has_perm('staff.view_staffinternational'):
-        residence_warning_date = today + timedelta(days=residence_period_warning_days)
-        expiring_staff_international_count = StaffInternational.objects.filter(
-            staff__employee_no__isnull=False,
-            residence_period_to__lte=residence_warning_date
-        ).exclude(staff__employee_no='').count()
-
-    # 事業所抵触日期限の件数
-    teishokubi_deadline_count = 0
-    has_view_client_contract_perm = request.user.has_perm('contract.view_clientcontract')
-    if has_view_client_contract_perm:
-        office_teishokubi_warning_date = today + timedelta(days=office_teishokubi_warning_days)
-        teishokubi_deadline_count = ClientContract.objects.filter(
-            Q(end_date__gte=today) | Q(end_date__isnull=True),
-            start_date__lte=today,
-            client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
-            haken_info__haken_office__haken_jigyosho_teishokubi__gte=today,
-            haken_info__haken_office__haken_jigyosho_teishokubi__lte=office_teishokubi_warning_date,
-        ).count()
-
-    # 個人抵触日期限の件数
-    personal_teishokubi_deadline_count = 0
-    if has_view_client_contract_perm:
-        from django.db.models import Exists, OuterRef
-        personal_teishokubi_warning_date = today + timedelta(days=personal_teishokubi_warning_days)
-
-        active_assignments = ContractAssignment.objects.filter(
-            Q(assignment_end_date__gte=today) | Q(assignment_end_date__isnull=True),
-            staff_email=OuterRef('staff_email'),
-            client_corporate_number=OuterRef('client_corporate_number'),
-            client_contract__haken_info__haken_unit__name=OuterRef('organization_name'),
-        )
-
-        personal_teishokubi_deadline_count = StaffContractTeishokubi.objects.filter(
-            conflict_date__gte=today,
-            conflict_date__lte=personal_teishokubi_warning_date
-        ).annotate(has_active_assignment=Exists(active_assignments)).filter(has_active_assignment=True).count()
-
-    # フラッグ総数 (対応残: 有効なステータスのもののみカウント)
-    from apps.master.models_other import FlagStatus
-    active_status_ids = FlagStatus.objects.filter(is_active=True).values_list('id', flat=True)
-
-    total_flag_count = (
-        StaffFlag.objects.filter(flag_status_id__in=active_status_ids).count() +
-        ClientFlag.objects.filter(flag_status_id__in=active_status_ids).count() +
-        ContractClientFlag.objects.filter(flag_status_id__in=active_status_ids).count() +
-        ContractStaffFlag.objects.filter(flag_status_id__in=active_status_ids).count() +
-        ContractAssignmentFlag.objects.filter(flag_status_id__in=active_status_ids).count()
-    )
-
-    # スタッフ給与情報未登録件数
-    staff_payroll_info_unregistered_count = 0
-    if request.user.has_perm('staff.view_staff'):
-        from django.db.models import Subquery, OuterRef, Exists
-        # Staff に対応する User の pk を Subquery で取得
-        user_pk_subquery = User.objects.filter(email=OuterRef('email')).values('pk')[:1]
-
-        # 各種情報が存在するかどうかをチェックする Subquery
-        mynumber_exists = StaffProfileMynumber.objects.filter(user_id=OuterRef('user_id'))
-        bank_exists = StaffProfileBank.objects.filter(user_id=OuterRef('user_id'))
-        payroll_exists = StaffPayroll.objects.filter(staff_id=OuterRef('pk'))
-
-        staff_payroll_info_unregistered_count = Staff.objects.annotate(
-            user_id=Subquery(user_pk_subquery)
-        ).filter(
-            employee_no__isnull=False
-        ).exclude(
-            employee_no=''
-        ).annotate(
-            has_mynumber=Exists(mynumber_exists),
-            has_bank=Exists(bank_exists),
-            has_payroll=Exists(payroll_exists)
-        ).filter(
-            Q(has_mynumber=False) | Q(has_bank=False) | Q(has_payroll=False)
-        ).count()
-
     context = {
-        'staff_payroll_info_unregistered_count': staff_payroll_info_unregistered_count,
-        'expiring_staff_international_count': expiring_staff_international_count,
-        'staff_count': staff_count,
-        'approved_staff_count': approved_staff_count,
-        'client_count': client_count,
-        'approved_client_count': approved_client_count,
-        'client_contract_count': client_contract_count,
-        'staff_contract_count': staff_contract_count,
-        'staff_request_count': staff_request_count,
         'information_list': information_list,
         'information_count': information_count,
-        'has_staff_perm': has_staff_perm,
-        'has_client_perm': has_client_perm,
-        'staff_schedules_today': staff_schedules_today,
-        'staff_schedules_yesterday': staff_schedules_yesterday,
-        'client_schedules_today': client_schedules_today,
-        'client_schedules_yesterday': client_schedules_yesterday,
-        'pending_connect_staff_count': ConnectStaff.objects.filter(status=Constants.CONNECT_STATUS.PENDING).count(),
-        'pending_connect_client_count': ConnectClient.objects.filter(status=Constants.CONNECT_STATUS.PENDING).count(),
-        'has_inquiry_perm': has_inquiry_perm,
-        'unanswered_inquiry_count': unanswered_inquiry_count,
-        'has_contract_assignment_perm': has_contract_assignment_perm,
-        'unconfirmed_staff_contract_extension_count': unconfirmed_staff_contract_extension_count,
-        'has_view_client_contract_perm': has_view_client_contract_perm,
-        'teishokubi_deadline_count': teishokubi_deadline_count,
-        'personal_teishokubi_deadline_count': personal_teishokubi_deadline_count,
-        'total_flag_count': total_flag_count,
+        'staff_count': 0,
+        'approved_staff_count': 0,
+        'client_count': 0,
+        'approved_client_count': 0,
+        'client_contract_count': 0,
+        'staff_contract_count': 0,
+        'staff_payroll_info_unregistered_count': 0,
+        'expiring_staff_international_count': 0,
+        'staff_request_count': 0,
+        'has_staff_perm': False,
+        'has_client_perm': False,
+        'staff_schedules_today': 0,
+        'staff_schedules_yesterday': 0,
+        'client_schedules_today': 0,
+        'client_schedules_yesterday': 0,
+        'pending_connect_staff_count': 0,
+        'pending_connect_client_count': 0,
+        'has_inquiry_perm': False,
+        'unanswered_inquiry_count': 0,
+        'has_contract_assignment_perm': False,
+        'unconfirmed_staff_contract_extension_count': 0,
+        'has_view_client_contract_perm': False,
+        'teishokubi_deadline_count': 0,
+        'personal_teishokubi_deadline_count': 0,
+        'total_flag_count': 0,
     }
+
+    today = timezone.localdate()
+
+    # 登録状況の計算
+    if request.user.has_perm('company.view_registration_status'):
+        staff_count = Staff.objects.count()
+        approved_staff_count = ConnectStaff.objects.filter(status='approved').count()
+        client_count = Client.objects.count()
+        approved_client_count = ConnectClient.objects.filter(status='approved').count()
+
+        client_contract_count = ClientContract.objects.filter(
+            Q(end_date__gte=today) | Q(end_date__isnull=True)
+        ).count()
+        staff_contract_count = StaffContract.objects.filter(
+            Q(end_date__gte=today) | Q(end_date__isnull=True)
+        ).count()
+
+        context.update({
+            'staff_count': staff_count,
+            'approved_staff_count': approved_staff_count,
+            'client_count': client_count,
+            'approved_client_count': approved_client_count,
+            'client_contract_count': client_contract_count,
+            'staff_contract_count': staff_contract_count,
+        })
+
+    # 業務サマリの計算
+    if request.user.has_perm('company.view_business_summary'):
+        # Get all ConnectStaff ids that have pending requests
+        pending_mynumber_cs_ids = MynumberRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+        pending_profile_cs_ids = ProfileRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+        pending_bank_cs_ids = BankRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+        pending_contact_cs_ids = ContactRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+        pending_international_cs_ids = ConnectInternationalRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+        pending_disability_cs_ids = DisabilityRequest.objects.filter(status='pending').values_list('connect_staff_id', flat=True)
+
+        all_pending_cs_ids = set()
+        all_pending_cs_ids.update(pending_mynumber_cs_ids)
+        all_pending_cs_ids.update(pending_profile_cs_ids)
+        all_pending_cs_ids.update(pending_bank_cs_ids)
+        all_pending_cs_ids.update(pending_contact_cs_ids)
+        all_pending_cs_ids.update(pending_international_cs_ids)
+        all_pending_cs_ids.update(pending_disability_cs_ids)
+
+        # Get the emails of these ConnectStaff objects
+        pending_emails = ConnectStaff.objects.filter(id__in=list(all_pending_cs_ids)).values_list('email', flat=True)
+
+        # Count the number of Staff with these emails
+        staff_request_count = Staff.objects.filter(email__in=pending_emails).distinct().count()
+
+        # 連絡予定件数
+        yesterday = today - timedelta(days=1)
+
+        has_staff_perm = request.user.has_perm('staff.view_staffcontactschedule')
+        has_client_perm = request.user.has_perm('client.view_clientcontactschedule')
+
+        staff_schedules_today = 0
+        staff_schedules_yesterday = 0
+        client_schedules_today = 0
+        client_schedules_yesterday = 0
+
+        if has_staff_perm:
+            staff_schedules_today = StaffContactSchedule.objects.filter(contact_date=today).count()
+            staff_schedules_yesterday = StaffContactSchedule.objects.filter(contact_date=yesterday).count()
+
+        if has_client_perm:
+            client_schedules_today = ClientContactSchedule.objects.filter(contact_date=today).count()
+            client_schedules_yesterday = ClientContactSchedule.objects.filter(contact_date=yesterday).count()
+
+        has_inquiry_perm = request.user.has_perm('staff.view_staffinquiry')
+        unanswered_inquiry_count = 0
+        if has_inquiry_perm:
+            # 会社ユーザーまたは管理者であるかを判定
+            is_company_or_admin = request.user.is_superuser or CompanyUser.objects.filter(email=request.user.email).exists()
+
+            if is_company_or_admin:
+                # 自分が担当者の問い合わせ or 管理者
+                if request.user.is_superuser:
+                    inquiries_qs = StaffInquiry.objects.all()
+                else:
+                    # CompanyUserとしての権限
+                    my_companies = CompanyUser.objects.filter(email=request.user.email).values_list('corporate_number', flat=True)
+                    inquiries_qs = StaffInquiry.objects.filter(corporate_number__in=my_companies)
+
+                unanswered_inquiry_count = inquiries_qs.filter(status='open', last_message_by='staff').count()
+
+        # スタッフ契約延長未確認件数
+        unconfirmed_staff_contract_extension_count = 0
+        has_contract_assignment_perm = request.user.has_perm('contract.view_contractassignment')
+        if has_contract_assignment_perm:
+            unconfirmed_staff_contract_extension_count = ContractAssignment.objects.filter(
+                assignment_end_date__gte=today,
+                assignment_confirm__isnull=True
+            ).count()
+
+        # 警告日数の取得
+        try:
+            residence_period_warning_days = UserParameter.objects.get(key='RESIDENCE_PERIOD_WARNING_DAYS').get_number_value()
+            if residence_period_warning_days is None:
+                residence_period_warning_days = 30
+        except UserParameter.DoesNotExist:
+            residence_period_warning_days = 30
+
+        try:
+            personal_teishokubi_warning_days = UserParameter.objects.get(key='PERSONAL_TEISHOKUBI_WARNING_DAYS').get_number_value()
+            if personal_teishokubi_warning_days is None:
+                personal_teishokubi_warning_days = 60
+        except UserParameter.DoesNotExist:
+            personal_teishokubi_warning_days = 60
+
+        try:
+            office_teishokubi_warning_days = UserParameter.objects.get(key='OFFICE_TEISHOKUBI_WARNING_DAYS').get_number_value()
+            if office_teishokubi_warning_days is None:
+                office_teishokubi_warning_days = 60
+        except UserParameter.DoesNotExist:
+            office_teishokubi_warning_days = 60
+
+        # 外国籍スタッフの在留資格期限切れ件数
+        expiring_staff_international_count = 0
+        if request.user.has_perm('staff.view_staffinternational'):
+            residence_warning_date = today + timedelta(days=residence_period_warning_days)
+            expiring_staff_international_count = StaffInternational.objects.filter(
+                staff__employee_no__isnull=False,
+                residence_period_to__lte=residence_warning_date
+            ).exclude(staff__employee_no='').count()
+
+        # 事業所抵触日期限の件数
+        teishokubi_deadline_count = 0
+        has_view_client_contract_perm = request.user.has_perm('contract.view_clientcontract')
+        if has_view_client_contract_perm:
+            office_teishokubi_warning_date = today + timedelta(days=office_teishokubi_warning_days)
+            teishokubi_deadline_count = ClientContract.objects.filter(
+                Q(end_date__gte=today) | Q(end_date__isnull=True),
+                start_date__lte=today,
+                client_contract_type_code=Constants.CLIENT_CONTRACT_TYPE.DISPATCH,
+                haken_info__haken_office__haken_jigyosho_teishokubi__gte=today,
+                haken_info__haken_office__haken_jigyosho_teishokubi__lte=office_teishokubi_warning_date,
+            ).count()
+
+        # 個人抵触日期限の件数
+        personal_teishokubi_deadline_count = 0
+        if has_view_client_contract_perm:
+            from django.db.models import Exists, OuterRef
+            personal_teishokubi_warning_date = today + timedelta(days=personal_teishokubi_warning_days)
+
+            active_assignments = ContractAssignment.objects.filter(
+                Q(assignment_end_date__gte=today) | Q(assignment_end_date__isnull=True),
+                staff_email=OuterRef('staff_email'),
+                client_corporate_number=OuterRef('client_corporate_number'),
+                client_contract__haken_info__haken_unit__name=OuterRef('organization_name'),
+            )
+
+            personal_teishokubi_deadline_count = StaffContractTeishokubi.objects.filter(
+                conflict_date__gte=today,
+                conflict_date__lte=personal_teishokubi_warning_date
+            ).annotate(has_active_assignment=Exists(active_assignments)).filter(has_active_assignment=True).count()
+
+        # フラッグ総数 (対応残: 有効なステータスのもののみカウント)
+        from apps.master.models_other import FlagStatus
+        active_status_ids = FlagStatus.objects.filter(is_active=True).values_list('id', flat=True)
+
+        total_flag_count = (
+            StaffFlag.objects.filter(flag_status_id__in=active_status_ids).count() +
+            ClientFlag.objects.filter(flag_status_id__in=active_status_ids).count() +
+            ContractClientFlag.objects.filter(flag_status_id__in=active_status_ids).count() +
+            ContractStaffFlag.objects.filter(flag_status_id__in=active_status_ids).count() +
+            ContractAssignmentFlag.objects.filter(flag_status_id__in=active_status_ids).count()
+        )
+
+        # スタッフ給与情報未登録件数
+        staff_payroll_info_unregistered_count = 0
+        if request.user.has_perm('staff.view_staff'):
+            from django.db.models import Subquery, OuterRef, Exists
+            # Staff に対応する User の pk を Subquery で取得
+            user_pk_subquery = User.objects.filter(email=OuterRef('email')).values('pk')[:1]
+
+            # 各種情報が存在するかどうかをチェックする Subquery
+            mynumber_exists = StaffProfileMynumber.objects.filter(user_id=OuterRef('user_id'))
+            bank_exists = StaffProfileBank.objects.filter(user_id=OuterRef('user_id'))
+            payroll_exists = StaffPayroll.objects.filter(staff_id=OuterRef('pk'))
+
+            staff_payroll_info_unregistered_count = Staff.objects.annotate(
+                user_id=Subquery(user_pk_subquery)
+            ).filter(
+                employee_no__isnull=False
+            ).exclude(
+                employee_no=''
+            ).annotate(
+                has_mynumber=Exists(mynumber_exists),
+                has_bank=Exists(bank_exists),
+                has_payroll=Exists(payroll_exists)
+            ).filter(
+                Q(has_mynumber=False) | Q(has_bank=False) | Q(has_payroll=False)
+            ).count()
+
+        context.update({
+            'staff_payroll_info_unregistered_count': staff_payroll_info_unregistered_count,
+            'expiring_staff_international_count': expiring_staff_international_count,
+            'staff_request_count': staff_request_count,
+            'has_staff_perm': has_staff_perm,
+            'has_client_perm': has_client_perm,
+            'staff_schedules_today': staff_schedules_today,
+            'staff_schedules_yesterday': staff_schedules_yesterday,
+            'client_schedules_today': client_schedules_today,
+            'client_schedules_yesterday': client_schedules_yesterday,
+            'pending_connect_staff_count': ConnectStaff.objects.filter(status=Constants.CONNECT_STATUS.PENDING).count(),
+            'pending_connect_client_count': ConnectClient.objects.filter(status=Constants.CONNECT_STATUS.PENDING).count(),
+            'has_inquiry_perm': has_inquiry_perm,
+            'unanswered_inquiry_count': unanswered_inquiry_count,
+            'has_contract_assignment_perm': has_contract_assignment_perm,
+            'unconfirmed_staff_contract_extension_count': unconfirmed_staff_contract_extension_count,
+            'has_view_client_contract_perm': has_view_client_contract_perm,
+            'teishokubi_deadline_count': teishokubi_deadline_count,
+            'personal_teishokubi_deadline_count': personal_teishokubi_deadline_count,
+            'total_flag_count': total_flag_count,
+        })
 
     return render(request, 'home/home.html', context)
 

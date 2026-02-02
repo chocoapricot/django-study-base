@@ -33,6 +33,9 @@ class HomeViewTest(TestCase):
             first_name='Test',
             last_name='User',
         )
+        # Add basic home view permissions
+        perms = Permission.objects.filter(codename__in=['view_business_summary', 'view_registration_status'])
+        self.user.user_permissions.add(*perms)
         self.home_url = reverse('home:home')
 
     def test_home_view_redirects_for_anonymous_user(self):
@@ -327,7 +330,8 @@ class HomeScheduleSummaryTest(TestCase):
         Test that the staff schedule summary is visible with staff permission.
         """
         permission = Permission.objects.get(codename='view_staffcontactschedule')
-        self.user.user_permissions.add(permission)
+        summary_perm = Permission.objects.get(codename='view_business_summary')
+        self.user.user_permissions.add(permission, summary_perm)
 
         response = self.client_http.get(self.home_url)
         self.assertEqual(response.status_code, 200)
@@ -345,7 +349,8 @@ class HomeScheduleSummaryTest(TestCase):
         Test that the client schedule summary is visible with client permission.
         """
         permission = Permission.objects.get(codename='view_clientcontactschedule')
-        self.user.user_permissions.add(permission)
+        summary_perm = Permission.objects.get(codename='view_business_summary')
+        self.user.user_permissions.add(permission, summary_perm)
 
         response = self.client_http.get(self.home_url)
         self.assertEqual(response.status_code, 200)
@@ -364,7 +369,8 @@ class HomeScheduleSummaryTest(TestCase):
         """
         staff_perm = Permission.objects.get(codename='view_staffcontactschedule')
         client_perm = Permission.objects.get(codename='view_clientcontactschedule')
-        self.user.user_permissions.add(staff_perm, client_perm)
+        summary_perm = Permission.objects.get(codename='view_business_summary')
+        self.user.user_permissions.add(staff_perm, client_perm, summary_perm)
 
         response = self.client_http.get(self.home_url)
         self.assertEqual(response.status_code, 200)
@@ -401,6 +407,8 @@ class HomeViewWarningDaysTest(TestCase):
             'view_clientcontract',
             'view_contractassignment',
             'view_staffcontactschedule',
+            'view_business_summary',
+            'view_registration_status',
         ])
         self.user.user_permissions.add(*permissions)
         self.client_http.login(email='testuser2@example.com', password='password')
