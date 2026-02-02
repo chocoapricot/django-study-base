@@ -521,6 +521,22 @@ document.addEventListener("DOMContentLoaded", function () {
         return; // 必要な要素がなければ何もしない
     }
 
+    // --- スクロール位置の保存と復元 ---
+    const sidebarScrollKey = 'sidebarScrollPosition';
+
+    // ページ遷移前にサイドバーのスクロール位置をsessionStorageに保存
+    sidebar.querySelectorAll('a.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            sessionStorage.setItem(sidebarScrollKey, sidebar.scrollTop);
+        });
+    });
+
+    // ページロード時にスクロール位置を復元
+    const savedScrollPosition = sessionStorage.getItem(sidebarScrollKey);
+    if (savedScrollPosition !== null && savedScrollPosition !== undefined && !isNaN(parseInt(savedScrollPosition))) {
+        sidebar.scrollTop = parseInt(savedScrollPosition);
+    }
+
     // --- ツールチップの初期化 ---
     let tooltipList = [];
     function initializeTooltips() {
