@@ -59,15 +59,19 @@
                     </td>
                     {% if is_company_or_admin %}
                     <td>
-                        {{ inquiry.user_full_name }}
                         {% if inquiry.staff %}
-                        <div class="mt-0">
-                            {% for tag in inquiry.staff.tags.all %}
-                                <span class="badge rounded-pill {{ tag.display_order|badge_class }}" style="font-size: 10px;">
-                                    <i class="bi bi-tag-fill"></i> {{ tag.name }}
-                                </span>
-                            {% endfor %}
-                        </div>
+                            <a href="{% url 'staff:staff_detail' inquiry.staff.pk %}" class="text-decoration-none">
+                                {{ inquiry.user_full_name }}
+                            </a>
+                            <div class="mt-0">
+                                {% for tag in inquiry.staff.tags.all %}
+                                    <span class="badge rounded-pill {{ tag.display_order|badge_class }}" style="font-size: 10px;">
+                                        <i class="bi bi-tag-fill"></i> {{ tag.name }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ inquiry.user_full_name }}
                         {% endif %}
                     </td>
                     <td>
