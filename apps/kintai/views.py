@@ -938,8 +938,26 @@ def timecard_calendar_initial(request, contract_pk, target_month):
     # スタッフの場合、確認済みの契約のみ登録可能
     if not request.user.is_staff:
         if contract.contract_status != Constants.CONTRACT_STATUS.CONFIRMED:
-            messages.error(request, '確認済みの契約ではないため、このタイムカードは登録できません。')
-            return redirect('kintai:staff_timecard_register')
+            # 既存のtimesheetがあるかチェック
+            try:
+                year, month = map(int, target_month.split('-'))
+                target_date = date(year, month, 1)
+                exists_timesheet = StaffTimesheet.objects.filter(
+                    staff_contract=contract,
+                    target_month=target_date
+                ).first()
+                
+                messages.error(request, '確認済みの契約ではないため、このタイムカードは登録できません。契約の確認が完了してからご利用ください。')
+                
+                if exists_timesheet:
+                    # 既存のtimesheet詳細画面に戻る
+                    return redirect('kintai:timesheet_detail', pk=exists_timesheet.pk)
+                else:
+                    # timesheetがない場合はプレビュー画面に戻る
+                    return redirect('kintai:timesheet_preview', contract_pk=contract_pk, target_month=target_month)
+            except ValueError:
+                messages.error(request, '確認済みの契約ではないため、このタイムカードは登録できません。契約の確認が完了してからご利用ください。')
+                return redirect('/')
     try:
         year, month = map(int, target_month.split('-'))
         target_date = date(year, month, 1)
