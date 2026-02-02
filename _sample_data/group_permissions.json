@@ -31,6 +31,8 @@
         "client.view_clientdepartment",
         "client.view_clientfile",
         "client.view_clientuser",
+        "company.view_business_summary",
+        "company.view_registration_status",
         "company.add_companydepartment",
         "company.add_companyuser",
         "company.change_company",

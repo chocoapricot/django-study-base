@@ -136,7 +136,7 @@
         }
     </style>
 
-    {% if has_staff_perm or has_client_perm or staff_request_count > 0 or pending_connect_staff_count > 0 or total_flag_count > 0 %}
+    {% if perms.company.view_business_summary %}
     <div class="content-box card bg-light mt-2 mb-4">
         <div class="card-header">業務サマリ</div>
         <div class="card-body">
@@ -217,6 +217,7 @@
     </div>
     {% endif %}
 
+    {% if perms.company.view_registration_status %}
     <div class="content-box card bg-light mt-2 mb-4">
         <div class="card-header">登録状況</div>
         <div class="card-body">
@@ -239,6 +240,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
         <div class="card-header">利用技術</div>
