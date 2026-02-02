@@ -60,10 +60,10 @@ class StaffFlagTest(TestCase):
 
     def test_staff_flag_list_view(self):
         """フラッグ一覧画面のテスト"""
-        # フラッグが存在しない場合は登録画面にリダイレクト
+        # フラッグが存在しない場合でも一覧画面を表示（リダイレクトしない）
         response = self.client.get(reverse('staff:staff_flag_list', kwargs={'staff_pk': self.staff.pk}))
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('staff:staff_flag_create', kwargs={'staff_pk': self.staff.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'staff/staff_flag_list.html')
         
         # フラッグを作成してから一覧画面をテスト
         StaffFlag.objects.create(

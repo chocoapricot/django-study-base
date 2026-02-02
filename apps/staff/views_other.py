@@ -806,10 +806,6 @@ def staff_flag_list(request, staff_pk):
     staff = get_object_or_404(Staff, pk=staff_pk)
     flags = staff.flags.all().select_related('company_department', 'company_user', 'flag_status')
 
-    # フラッグが1件も登録されていない場合は登録画面にリダイレクト
-    if not flags.exists():
-        return redirect('staff:staff_flag_create', staff_pk=staff.pk)
-
     context = {
         'staff': staff,
         'flags': flags,

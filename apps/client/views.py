@@ -1192,10 +1192,6 @@ def client_flag_list(request, client_pk):
     client = get_object_or_404(Client, pk=client_pk)
     flags = client.flags.all().select_related('company_department', 'company_user', 'flag_status')
 
-    # フラッグが1件も登録されていない場合は登録画面にリダイレクト
-    if not flags.exists():
-        return redirect('client:client_flag_create', client_pk=client.pk)
-
     context = {
         'client': client,
         'flags': flags,

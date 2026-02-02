@@ -1590,10 +1590,6 @@ def staff_contract_flag_list(request, contract_pk):
     contract = get_object_or_404(StaffContract, pk=contract_pk)
     flags = contract.flags.all().select_related('company_department', 'company_user', 'flag_status')
 
-    # フラッグが1件も登録されていない場合は登録画面にリダイレクト
-    if not flags.exists():
-        return redirect('contract:staff_contract_flag_create', contract_pk=contract.pk)
-
     context = {
         'contract': contract,
         'flags': flags,
