@@ -72,7 +72,7 @@
                     <button type="submit" class="btn btn-sm btn-primary me-2">
                         {% if is_new %}登録{% else %}更新{% endif %}
                     </button>
-                    <a href="{% url 'contract:client_contract_flag_list' contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
+                    <a href="{% url 'contract:client_contract_detail' contract.pk %}" class="btn btn-sm btn-secondary">戻る</a>
                 </div>
             </div>
         </form>

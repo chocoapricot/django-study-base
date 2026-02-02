@@ -66,7 +66,7 @@
                 <button type="submit" class="btn btn-sm btn-primary me-2">
                     {% if is_new %}登録{% else %}更新{% endif %}
                 </button>
-                <a href="{% url 'staff:staff_flag_list' staff.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
+                <a href="{% url 'staff:staff_detail' staff.pk %}" class="btn btn-sm btn-secondary me-2">戻る</a>
             </div>
         </form>
     </div>
