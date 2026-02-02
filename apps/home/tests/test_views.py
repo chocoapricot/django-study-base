@@ -3,6 +3,9 @@ from django.urls import reverse
 from django.contrib.auth.models import Permission
 from apps.accounts.models import MyUser
 from apps.staff.models import Staff, StaffContactSchedule
+from apps.staff.models_other import StaffFlag
+from apps.client.models import Client as ClientModel, ClientContactSchedule, ClientFlag
+from apps.contract.models import ClientContract, StaffContract, StaffContractTeishokubi, ContractAssignment, ClientContractHaken, ContractClientFlag, ContractStaffFlag, ContractAssignmentFlag
 from apps.connect.models import ConnectStaff, MynumberRequest
 from apps.profile.models import StaffProfile, StaffProfileMynumber
 from apps.company.models import Company
@@ -70,6 +73,47 @@ class HomeViewTest(TestCase):
         self.assertIn('approved_staff_count', response.context)
         self.assertIn('client_count', response.context)
         self.assertIn('approved_client_count', response.context)
+        self.assertIn('total_flag_count', response.context)
+
+    def test_home_view_total_flag_count(self):
+        """
+        ホーム画面のフラッグ総数が正しく計算されていることをテスト
+        """
+        self.client.login(email='testuser@example.com', password='password')
+        session = self.client.session
+        session['current_tenant_id'] = self.company.id
+        session.save()
+
+        # Create a status
+        status = FlagStatus.objects.create(tenant_id=self.company.id, name='Test Status')
+
+        # Create some flags
+        staff = Staff.objects.create(tenant_id=self.company.id, email='staff1@example.com', name_last='Staff', name_first='1')
+        StaffFlag.objects.create(tenant_id=self.company.id, staff=staff, flag_status=status)
+
+        client_obj = ClientModel.objects.create(tenant_id=self.company.id, name='Client 1')
+        ClientFlag.objects.create(tenant_id=self.company.id, client=client_obj, flag_status=status)
+
+        pattern = ContractPattern.objects.create(tenant_id=self.company.id, name='Pattern')
+        client_contract = ClientContract.objects.create(tenant_id=self.company.id, client=client_obj, contract_pattern=pattern, start_date=timezone.localdate())
+        ContractClientFlag.objects.create(tenant_id=self.company.id, client_contract=client_contract, flag_status=status)
+
+        staff_contract = StaffContract.objects.create(tenant_id=self.company.id, staff=staff, contract_pattern=pattern, start_date=timezone.localdate())
+        ContractStaffFlag.objects.create(tenant_id=self.company.id, staff_contract=staff_contract, flag_status=status)
+
+        assignment = ContractAssignment.objects.create(
+            tenant_id=self.company.id,
+            staff_email=staff.email,
+            staff_contract=staff_contract,
+            client_corporate_number=client_obj.corporate_number,
+            client_contract=client_contract
+        )
+        ContractAssignmentFlag.objects.create(tenant_id=self.company.id, contract_assignment=assignment, flag_status=status)
+
+        response = self.client.get(self.home_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['total_flag_count'], 5)
+        self.assertContains(response, 'フラッグ対応残')
 
     def test_home_view_staff_request_count_with_permission(self):
         """
@@ -333,9 +377,8 @@ class HomeScheduleSummaryTest(TestCase):
         self.assertEqual(response.context['client_schedules_today'], 3)
         self.assertEqual(response.context['client_schedules_yesterday'], 1)
 
-from apps.master.models import UserParameter, ContractPattern
+from apps.master.models import UserParameter, ContractPattern, FlagStatus
 from apps.staff.models import StaffInternational
-from apps.contract.models import ClientContract, StaffContract, StaffContractTeishokubi, ContractAssignment, ClientContractHaken
 from apps.client.models import ClientDepartment
 from apps.common.constants import Constants
 

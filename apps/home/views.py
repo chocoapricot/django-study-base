@@ -3,9 +3,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
 from apps.staff.models import Staff, StaffInternational
-from apps.client.models import Client
+from apps.staff.models_other import StaffFlag
+from apps.client.models import Client, ClientFlag
 from apps.company.models import Company, CompanyUser
-from apps.contract.models import ClientContract, StaffContract, ContractAssignment, StaffContractTeishokubi
+from apps.contract.models import (
+    ClientContract, StaffContract, ContractAssignment, StaffContractTeishokubi,
+    ContractClientFlag, ContractStaffFlag, ContractAssignmentFlag
+)
 from apps.connect.models import (
     ConnectStaff, ConnectClient, MynumberRequest, ProfileRequest,
     BankRequest, ContactRequest, ConnectInternationalRequest, DisabilityRequest
@@ -327,6 +331,18 @@ def home(request):
             conflict_date__lte=personal_teishokubi_warning_date
         ).annotate(has_active_assignment=Exists(active_assignments)).filter(has_active_assignment=True).count()
 
+    # フラッグ総数 (対応残: 有効なステータスのもののみカウント)
+    from apps.master.models_other import FlagStatus
+    active_status_ids = FlagStatus.objects.filter(is_active=True).values_list('id', flat=True)
+
+    total_flag_count = (
+        StaffFlag.objects.filter(flag_status_id__in=active_status_ids).count() +
+        ClientFlag.objects.filter(flag_status_id__in=active_status_ids).count() +
+        ContractClientFlag.objects.filter(flag_status_id__in=active_status_ids).count() +
+        ContractStaffFlag.objects.filter(flag_status_id__in=active_status_ids).count() +
+        ContractAssignmentFlag.objects.filter(flag_status_id__in=active_status_ids).count()
+    )
+
     # スタッフ給与情報未登録件数
     staff_payroll_info_unregistered_count = 0
     if request.user.has_perm('staff.view_staff'):
@@ -380,6 +396,7 @@ def home(request):
         'has_view_client_contract_perm': has_view_client_contract_perm,
         'teishokubi_deadline_count': teishokubi_deadline_count,
         'personal_teishokubi_deadline_count': personal_teishokubi_deadline_count,
+        'total_flag_count': total_flag_count,
     }
 
     return render(request, 'home/home.html', context)
