@@ -136,7 +136,7 @@
         }
     </style>
 
-    {% if has_staff_perm or has_client_perm or staff_request_count > 0 or pending_connect_staff_count > 0 %}
+    {% if has_staff_perm or has_client_perm or staff_request_count > 0 or pending_connect_staff_count > 0 or total_flag_count > 0 %}
     <div class="content-box card bg-light mt-2 mb-4">
         <div class="card-header">業務サマリ</div>
         <div class="card-body">
@@ -178,6 +178,9 @@
                         {% endwith %}
                     {% endwith %}
                 {% endif %}
+
+                {% url 'system_flags:flag_list' as flag_list_url %}
+                {% include 'home/_stats_card.html' with count=total_flag_count url=flag_list_url label='フラッグ対応残' description='対応が必要なフラッグの総数です。' bg_class='bg-warning-light' icon='bi-flag-fill' icon_color='#ffc107' %}
 
                 {% if has_contract_assignment_perm %}
                     {% url 'contract:staff_contract_expire_list' as expire_url %}

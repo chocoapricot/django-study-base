@@ -40,12 +40,15 @@ def flag_counts(request):
     from apps.staff.models_other import StaffFlag
     from apps.client.models import ClientFlag
     from apps.contract.models import ContractClientFlag, ContractStaffFlag, ContractAssignmentFlag
+    from apps.master.models_other import FlagStatus
+
+    active_status_ids = FlagStatus.objects.filter(is_active=True).values_list('id', flat=True)
 
     count = (
-        StaffFlag.objects.count() +
-        ClientFlag.objects.count() +
-        ContractClientFlag.objects.count() +
-        ContractStaffFlag.objects.count() +
-        ContractAssignmentFlag.objects.count()
+        StaffFlag.objects.filter(flag_status_id__in=active_status_ids).count() +
+        ClientFlag.objects.filter(flag_status_id__in=active_status_ids).count() +
+        ContractClientFlag.objects.filter(flag_status_id__in=active_status_ids).count() +
+        ContractStaffFlag.objects.filter(flag_status_id__in=active_status_ids).count() +
+        ContractAssignmentFlag.objects.filter(flag_status_id__in=active_status_ids).count()
     )
     return {'total_flag_count': count}
