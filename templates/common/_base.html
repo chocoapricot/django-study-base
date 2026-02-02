@@ -36,8 +36,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 0 20px;
-            z-index: 1000;
-            box-shadow: 0 0px 8px rgba(0, 0, 0, 0.1); /* 小さい影を追加 */
+            z-index: 1030; /* サイドバー(1020)より上 */
+            box-shadow: 0 0px 8px rgba(0, 0, 0, 0.1);
             }
 /* ボタン全体のスタイル */
 .header .btn {
@@ -120,47 +120,80 @@
         .header .left-section .btn  {
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
-    .sidebar {
+    
+    #sidebar {
+      width: 280px; /* サイドバーの幅を固定 */
       height: calc(100vh - 70px);
       position: fixed;
-      top: 70px; /* Adjust top value to account for the fixed header */
+      top: 70px;
+      left: 0;
       background-color: #f8f9fa;
       padding-top: 0px;
       overflow-y: auto;
-      /* For Firefox scrollbar styling */
-      scrollbar-width: thin;
-      scrollbar-color: #dcdcdc #f8f9fa;
+      overflow-x: hidden; /* 横方向のはみ出しを隠す */
+      transition: width 0.3s ease-in-out; /* アニメーション */
+      z-index: 1020;
     }
 
-    /* Sidebar scrollbar styling for WebKit browsers */
-    .sidebar::-webkit-scrollbar {
-        width: 8px;
+    #sidebar.collapsed {
+        width: 70px; /* 閉じたときの幅 */
     }
-    .sidebar::-webkit-scrollbar-track {
-        background: #f8f9fa;
+
+    #sidebar.collapsed .nav-item .nav,
+    #sidebar.collapsed #pin-sidebar {
+        display: none;
     }
-    .sidebar::-webkit-scrollbar-thumb {
-        background: #dcdcdc;
-        border-radius: 4px;
+    
+    #sidebar.collapsed .nav-link {
+        padding-left: 23px;  /* アイコンが中央に来るように調整 */
+        padding-right: 23px;
     }
-    .sidebar::-webkit-scrollbar-thumb:hover {
-        background: #c8c8c8;
+    
+    #sidebar.collapsed .nav-link i {
+        margin-right: 0;
     }
+
+    #sidebar.collapsed .menu-name {
+        opacity: 0;
+        width: 0;
+        margin-left: 0;
+    }
+
+    #mainContent {
+        margin-left: 280px; /* サイドバーの幅に合わせる */
+        transition: margin-left 0.3s ease-in-out; /* アニメーション */
+        width: calc(100% - 280px);
+    }
+
+    #mainContent.expanded {
+        margin-left: 70px; /* 閉じたときのサイドバーの幅に合わせる */
+        width: calc(100% - 70px);
+    }
+    
+    .sidebar::-webkit-scrollbar { width: 8px; }
+    .sidebar::-webkit-scrollbar-track { background: #f8f9fa; }
+    .sidebar::-webkit-scrollbar-thumb { background: #dcdcdc; border-radius: 4px; }
+    .sidebar::-webkit-scrollbar-thumb:hover { background: #c8c8c8; }
+
         .sidebar .nav-link {
             padding: 10px 20px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
             font-size: 0.875rem; /* 14px */
             color: #000;
             border-bottom: 1px solid #eee;
+            white-space: nowrap; /* テキストを折り返さない */
+            overflow: hidden; /* はみ出したテキストを隠す */
+            transition: padding 0.3s ease-in-out;
         }
         .sidebar .nav-link i {
             font-size: 1.25rem; /* 20px */
+            margin-right: 10px; /* アイコンとテキストの間隔 */
+            transition: margin-right 0.3s ease-in-out;
         }
         .sidebar .nav-link .menu-name {
             flex-grow: 1;
-            margin-left: 10px;
+            transition: opacity 0.2s ease-in-out, width 0.3s ease-in-out, margin-left 0.3s ease-in-out;
         }
         .sidebar .nav-link .badge {
             margin-left: auto;
@@ -172,7 +205,7 @@
             color: #28a745; /* 選択されたメニューアイコンの色 */
         }
     .offcanvas-body {
-      padding-top: 0px; /* Adjust padding to account for fixed header */
+      padding-top: 0px;
       padding-left: 0px;
       padding-right: 0px;
     }
@@ -204,52 +237,30 @@
     .system-name, .system-icon {
       margin-left: 10px;
     }
-    /* Responsive behavior for system icon and name */
-    .system-name { display: inline-block; }
-    .system-icon { display: inline-block; }
+
     @media (max-width: 992px) { /* Hide system icon and name on smaller screens */
       .system-icon { display: none; }
     }
-    @media (max-width: 768px) { /* Hide system name on even smaller screens */
-      .system-name { display: none; }
-      .header .system-title {
-          display: none;
-      }
+    @media (max-width: 767.98px) {
+        #mainContent, #mainContent.expanded {
+            margin-left: 0;
+            width: 100%;
         }
-        @media (max-width: 576px) {
-            .header .current-menu {
-                display: none;
-            }
-        }    
-    /* Sidebar and content transition for smooth movement */
-
-/* Transition for smooth resizing of main content */
-#sidebar, #mainContent {
-  transition: width 0.3s, margin-left 0.3s;
-}
-
-/* Full-width class for main content when sidebar is closed */
-.content-expanded {
-  margin-left: 0 !important;
-  width: 100% !important;
-}
-
-#sidebar {
-  transition: margin-left 0.3s;
-}
-
-/* Sidebar hidden state */
-.sidebar-closed {
-  margin-left: -350px; /* Adjust based on sidebar width */
-}
-
-/* Smooth transition for both sidebar and main content */
+        .system-name { display: none; }
+        .header .system-title {
+            display: none;
+        }
+    }
+    @media (max-width: 576px) {
+        .header .current-menu {
+            display: none;
+        }
+    }    
 .content-box {
     background-color: white; /* 白塗り */
     border-radius: 15px; /* 丸み */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* 影を追加 */
 }
-
 /* 通常テキストと同じ見た目にする */
 .no-link-style,
 .no-link-style:visited,
@@ -259,27 +270,6 @@
     text-decoration: none;
     cursor: pointer;
 }
-
-.nav-link.has-pin {
-    justify-content: space-between;
-}
-
-#pin-sidebar {
-    background-color: transparent;
-    border: none;
-    color: #6c757d;
-    padding: 0 0 0 10px;
-    font-size: 1.25rem; /* 20px */
-}
-
-#pin-sidebar:hover {
-    color: #000;
-}
-
-body.no-transition #sidebar {
-    transition: none;
-}
-
     /* Copy to clipboard styles */
     /* 既存の .copy-message は非表示にする（JSで動的生成するため） */
     .copy-message {
@@ -404,13 +394,13 @@ body.no-transition #sidebar {
     </div>
 
 <!-- Sidebar for large screens -->
-<div id="sidebar" class="col-md-3 col-lg-2 d-none d-md-block bg-light sidebar">
+<div id="sidebar" class="d-none d-md-block bg-light sidebar">
   <div class="position-sticky">
     <ul class="nav flex-column">
       {% for menu in menus %}
           {% if menu.level == 0 and menu|has_menu_permission:user %}
           <li class="nav-item">
-            <a href="{{ menu.url }}" class="nav-link {% if menu|my_menu_active:request.path %}active{% endif %}">
+            <a href="{{ menu.url }}" class="nav-link {% if menu|my_menu_active:request.path %}active{% endif %}" data-bs-toggle="tooltip" data-bs-placement="right" title="{{ menu.name }}">
                 <i class="bi {{ menu.icon }}" style="font-size: 1.25rem;{{ menu.icon_style }}"></i><span class="menu-name">{{ menu.name }}</span>
             </a>
             {% if menu.has_children %}
@@ -418,7 +408,7 @@ body.no-transition #sidebar {
               {% for child in menu.get_children %}
               {% if child|has_menu_permission:user %}
               <li class="nav-item">
-                <a href="{{ child.url }}" class="nav-link {% if child|my_menu_active:request.path %}active{% endif %}" style="font-size: 0.875rem;">
+                <a href="{{ child.url }}" class="nav-link {% if child|my_menu_active:request.path %}active{% endif %}" style="font-size: 0.875rem;" data-bs-toggle="tooltip" data-bs-placement="right" title="{{ child.name }}">
                     <i class="bi {{ child.icon }}" style="font-size: 1rem;{{ child.icon_style }}"></i><span class="menu-name">{{ child.name }}</span>
                 </a>
               </li>
@@ -470,10 +460,10 @@ body.no-transition #sidebar {
 </div>
 
 <!-- Main Content -->
-<div class="container-fluid mt-1 mb-3" style="padding-top: 80px;">
+<div class="container-fluid mt-1 mb-3">
   <div class="row">
     <!-- Add id to main content area -->
-    <main id="mainContent" class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <main id="mainContent" class="px-md-4" style="padding-top: 80px;">
             <!-- メッセージ表示 -->
         {% if messages %}
             {% for message in messages %}
@@ -522,89 +512,67 @@ document.addEventListener("DOMContentLoaded", function () {
     const sidebar = document.getElementById('sidebar');
     const mainContent = document.getElementById('mainContent');
     const toggleSidebarBtn = document.getElementById('toggleSidebar');
-    let pinSidebarBtn = null;
-    let pinIcon = null;
 
-    // sessionStorageからピンの状態を読み込む。デフォルトはピン留め(true)
-    let isMenuPinned = sessionStorage.getItem('isMenuPinned') !== 'false';
-
-    function closeSidebar() {
-        sidebar.classList.add('sidebar-closed');
-        mainContent.classList.remove('col-md-9', 'col-lg-10');
-        mainContent.classList.add('col-md-12', 'content-expanded');
+    if (!sidebar || !mainContent || !toggleSidebarBtn) {
+        return; // 必要な要素がなければ何もしない
     }
 
-    function openSidebar() {
-        sidebar.classList.remove('sidebar-closed');
-        mainContent.classList.remove('col-md-12', 'content-expanded');
-        mainContent.classList.add('col-md-9', 'col-lg-10');
-    }
-
-    function updateSidebarState() {
-        if (!pinIcon) return;
-
-        if (isMenuPinned) {
-            sidebar.classList.add('pinned');
-            pinIcon.classList.remove('bi-pin-angle');
-            pinIcon.classList.add('bi-pin-angle-fill');
-            pinSidebarBtn.title = 'サイドバーのピン留めを外す';
-            openSidebar();
-        } else {
-            sidebar.classList.remove('pinned');
-            pinIcon.classList.remove('bi-pin-angle-fill');
-            pinIcon.classList.add('bi-pin-angle');
-            pinSidebarBtn.title = 'サイドバーをピン留めする';
-            closeSidebar();
-        }
-        sessionStorage.setItem('isMenuPinned', isMenuPinned);
-    }
-
-    function createAndPlacePinButton() {
-        const firstTopLevelLink = document.querySelector('#sidebar .nav > .nav-item:first-child > .nav-link');
-        
-        if (firstTopLevelLink) {
-            pinSidebarBtn = document.createElement('button');
-            pinSidebarBtn.className = 'btn btn-sm';
-            pinSidebarBtn.id = 'pin-sidebar';
-            
-            pinIcon = document.createElement('i');
-            pinIcon.className = 'bi';
-            pinSidebarBtn.appendChild(pinIcon);
-            
-            firstTopLevelLink.appendChild(pinSidebarBtn);
-            firstTopLevelLink.classList.add('has-pin');
-
-            pinSidebarBtn.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                isMenuPinned = !isMenuPinned;
-                updateSidebarState();
-            });
-            
-            updateSidebarState();
-        }
-    }
-
-    toggleSidebarBtn.addEventListener('click', function() {
-        if (!isMenuPinned) {
-            if (sidebar.classList.contains('sidebar-closed')) {
-                openSidebar();
-            } else {
-                closeSidebar();
+    // --- ツールチップの初期化 ---
+    let tooltipList = [];
+    function initializeTooltips() {
+        // 既存のツールチップを破棄
+        tooltipList.forEach(tooltip => {
+            if (tooltip && typeof tooltip.dispose === 'function') {
+                tooltip.dispose();
             }
-        }
-    });
-    
-    createAndPlacePinButton();
+        });
+        // 新しくツールチップを初期化
+        const tooltipTriggerList = [].slice.call(sidebar.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+    initializeTooltips();
 
-    // 初期状態の反映
-    if (isMenuPinned) {
-        openSidebar();
-    } else {
-        closeSidebar();
+    // --- サイドバーの状態管理 ---
+    let isSidebarCollapsed = sessionStorage.getItem('isSidebarCollapsed') === 'true';
+
+    function updateSidebarView() {
+        // transitionを一時的に無効にするクラスをbodyから削除
+        document.body.classList.remove('no-transition');
+
+        if (isSidebarCollapsed) {
+            sidebar.classList.add('collapsed');
+            mainContent.classList.add('expanded');
+            // 閉じた状態ではツールチップを有効化
+            tooltipList.forEach(tooltip => {
+                if(tooltip && typeof tooltip.enable === 'function') tooltip.enable();
+            });
+        } else {
+            sidebar.classList.remove('collapsed');
+            mainContent.classList.remove('expanded');
+            // 開いた状態ではツールチップを無効化
+            tooltipList.forEach(tooltip => {
+                if(tooltip && typeof tooltip.disable === 'function') tooltip.disable();
+            });
+        }
     }
 
-    
+    // --- イベントリスナー ---
+    toggleSidebarBtn.addEventListener('click', function() {
+        isSidebarCollapsed = !isSidebarCollapsed;
+        sessionStorage.setItem('isSidebarCollapsed', isSidebarCollapsed);
+        updateSidebarView();
+    });
+
+    // --- 初期表示 ---
+    // 初回読み込み時はアニメーションが走らないようにする
+    document.body.classList.add('no-transition');
+    updateSidebarView();
+    // 少し遅れてtransitionを有効に戻す
+    setTimeout(() => {
+        document.body.classList.remove('no-transition');
+    }, 100);
 });
     </script>
 <script>
@@ -660,13 +628,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.addEventListener('logicInfoSet', checkLogicInfo);
     });
 </script>
-<script>
-  //ツールチップを上に出す
-  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-    return new bootstrap.Tooltip(tooltipTriggerEl)
-  })
-</script>
+
 {% load parameters %}
 <script>
     // 通知未読数を更新する関数
