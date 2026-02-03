@@ -51,4 +51,4 @@ def notification_type_badge_class(notification_type):
     elif notification_type == Constants.NOTIFICATION_TYPE.INFO:
         return 'bg-info'
     else:  # GENERAL
-        return 'bg-primary'
+        return 'bg-info'
