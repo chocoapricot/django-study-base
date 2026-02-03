@@ -141,6 +141,9 @@
                             {{ client.name }}
                         </a>
                         <div class="mt-0">
+                            {% if client.is_favorite %}
+                                <i class="bi bi-star-fill text-warning me-1" style="font-size: 0.9rem;"></i>
+                            {% endif %}
                             {% for tag in client.tags.all %}
                                 <span class="badge rounded-pill {{ tag.display_order|badge_class }}" style="font-size: 10px;">
                                     <i class="bi bi-tag-fill"></i> {{ tag.name }}

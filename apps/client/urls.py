@@ -9,7 +9,8 @@ from .views import (
     client_file_list, client_file_create, 
     client_file_delete, client_file_download,
     client_tag_edit,
-    client_flag_list, client_flag_create, client_flag_update, client_flag_delete
+    client_flag_list, client_flag_create, client_flag_update, client_flag_delete,
+    client_favorite_add, client_favorite_remove
 )
 
 app_name = 'client'
@@ -63,5 +64,8 @@ urlpatterns = [
     path('client/<int:client_pk>/flag/create/', client_flag_create, name='client_flag_create'),
     path('client/flag/<int:pk>/update/', client_flag_update, name='client_flag_update'),
     path('client/flag/<int:pk>/delete/', client_flag_delete, name='client_flag_delete'),
+    # お気に入り
+    path('client/<int:client_pk>/favorite/add/', client_favorite_add, name='client_favorite_add'),
+    path('client/<int:client_pk>/favorite/remove/', client_favorite_remove, name='client_favorite_remove'),
 ]
 

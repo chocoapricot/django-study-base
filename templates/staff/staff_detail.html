@@ -175,7 +175,7 @@
                             </h4>
                             <div class="mt-1 mb-2">
                                 {% if is_favorite %}
-                                    <a href="{% url 'staff:staff_favorite_remove' staff.pk %}" class="text-decoration-none" data-bs-toggle="tooltip" data-bs-placement="top" title="お気に入り解除">
+                                    <a href="{% url 'staff:staff_favorite_remove' staff.pk %}" class="text-decoration-none" data-bs-toggle="tooltip" data-bs-placement="top" title="お気に入り解除" onclick="return confirm('お気に入りを解除しますか？');">
                                         <i class="bi bi-star-fill text-warning me-1" style="font-size: 1.2rem; cursor: pointer;"></i>
                                     </a>
                                 {% endif %}
