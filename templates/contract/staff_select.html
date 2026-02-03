@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load help_tags %}
+{% load favorite_tags %}
 
 {% block title %}スタッフ選択{% endblock %}
 
@@ -45,7 +46,10 @@
                 <tbody>
                     {% for staff in page_obj %}
                     <tr>
-                        <td>{{ staff.name_last }} {{ staff.name_first }}</td>
+                        <td>
+                            {{ staff.name_last }} {{ staff.name_first }}
+                            {% favorite_star staff %}
+                        </td>
                         <td>
                             <strong>{{ staff.employee_no }}</strong>
                         </td>

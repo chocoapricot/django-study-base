@@ -1,5 +1,6 @@
 {% load dropdowns %}
 {% load badge_tags %}
+{% load favorite_tags %}
 <!-- スタッフ基本情報カード（インクルード用） -->
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">スタッフ基本情報</div>
@@ -24,6 +25,7 @@
                     <ruby>
                         {{ staff.name_first }}<rt>{{ staff.name_kana_first }}</rt>
                     </ruby>
+                    {% favorite_star staff %}
                     {% if staff.sex == 1 %}
                         <span class="badge bg-info" style="font-size:12px">{% my_name 'sex' staff.sex %}</span>
                     {% else %}

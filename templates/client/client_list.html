@@ -1,6 +1,7 @@
 {% extends 'common/_base.html' %}
 {% load dropdowns %}
 {% load badge_tags %}
+{% load favorite_tags %}
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
@@ -140,10 +141,8 @@
                         <a href="{% url 'client:client_detail' client.pk %}">
                             {{ client.name }}
                         </a>
+                        {% favorite_star client %}
                         <div class="mt-0">
-                            {% if client.is_favorite %}
-                                <i class="bi bi-star-fill text-warning me-1" style="font-size: 0.9rem;"></i>
-                            {% endif %}
                             {% for tag in client.tags.all %}
                                 <span class="badge rounded-pill {{ tag.display_order|badge_class }}" style="font-size: 10px;">
                                     <i class="bi bi-tag-fill"></i> {{ tag.name }}

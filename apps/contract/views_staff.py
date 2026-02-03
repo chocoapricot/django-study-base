@@ -1274,6 +1274,7 @@ def staff_contract_teishokubi_list(request):
 
     # スタッフ情報を外国人・障害者情報と一緒に取得
     staff_queryset = Staff.objects.filter(email__in=staff_emails).select_related('international', 'disability')
+    staff_obj_map = {staff.email: staff for staff in staff_queryset}
     staff_map = {}
     for staff in staff_queryset:
         staff_map[staff.email] = {
@@ -1286,12 +1287,13 @@ def staff_contract_teishokubi_list(request):
     client_map = {client.corporate_number: {'id': client.id, 'name': client.name} for client in Client.objects.filter(corporate_number__in=client_corporate_numbers)}
 
     for item in teishokubi_page:
-        staff_info = staff_map.get(item.staff_email)
-        if staff_info:
-            item.staff_id = staff_info['id']
-            item.staff_name = staff_info['name']
-            item.staff_has_international = staff_info['has_international']
-            item.staff_has_disability = staff_info['has_disability']
+        staff = staff_obj_map.get(item.staff_email)
+        if staff:
+            item.staff = staff
+            item.staff_id = staff.id
+            item.staff_name = staff.name
+            item.staff_has_international = hasattr(staff, 'international')
+            item.staff_has_disability = hasattr(staff, 'disability')
         else:
             item.staff_id = None
             item.staff_name = None

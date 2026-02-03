@@ -1,5 +1,6 @@
 <script>window.parentModalType = window.parentModalType || 'standardTestModal';</script>
 {% load help_tags %}
+{% load favorite_tags %}
 {% load dropdowns %}
 {% load badge_tags %}
 
@@ -42,7 +43,10 @@
                         <td>
                             {{ staff.employee_no }}
                         </td>
-                        <td>{{ staff.name_last }} {{ staff.name_first }}</td>
+                        <td>
+                            {{ staff.name_last }} {{ staff.name_first }}
+                            {% favorite_star staff %}
+                        </td>
                         <td>
                             {% if staff.employment_type %}
                                 <span class="badge {{ staff.employment_type.display_order|badge_class }}" style="font-size:13px">{{ staff.employment_type.name }}</span>

@@ -1,3 +1,4 @@
+{% load favorite_tags %}
 {% extends 'common/_base.html' %}
 {% load static %}
 {% load humanize %}
@@ -40,7 +41,7 @@
                         <tr>
                             <td>
                                 <a href="{% url 'contract:staff_contract_detail' contract.pk %}">
-                                    {{ contract.staff.name_last }} {{ contract.staff.name_first }}
+                                    {{ contract.staff.name_last }} {{ contract.staff.name_first }} {% favorite_star contract.staff %}
                                 </a>
                                 {% if contract.staff.has_international %}
                                     <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
