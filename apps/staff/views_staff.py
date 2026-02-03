@@ -11,7 +11,7 @@ from django.contrib import messages
 from apps.system.logs.utils import log_model_action
 from .forms_mail import ConnectionRequestMailForm, DisconnectionMailForm
 
-from .models import Staff, StaffContacted, StaffContactSchedule, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact
+from .models import Staff, StaffContacted, StaffContactSchedule, StaffQualification, StaffSkill, StaffFile, StaffMynumber, StaffBank, StaffInternational, StaffDisability, StaffContact, StaffFavorite
 from .forms import StaffForm, StaffContactedForm, StaffContactScheduleForm, StaffFileForm, StaffFaceUploadForm, StaffTagEditForm
 from .utils import get_staff_face_photo_style, delete_staff_placeholder
 from apps.system.settings.models import Dropdowns
@@ -220,15 +220,21 @@ def staff_list(request):
     is_registration_status_view = request.GET.get('registration_status', '') == 'true'
 
     # 基本のクエリセット
-    from django.db.models import OuterRef, Subquery
+    from django.db.models import OuterRef, Subquery, Exists
     next_schedule = StaffContactSchedule.objects.filter(
         staff=OuterRef('pk'),
         contact_date__gte=timezone.localdate()
     ).order_by('contact_date')
 
+    favorites = StaffFavorite.objects.filter(
+        staff=OuterRef('pk'),
+        user=request.user
+    )
+
     staffs = Staff.objects.annotate(
         next_contact_date=Subquery(next_schedule.values('contact_date')[:1]),
-        next_contact_content=Subquery(next_schedule.values('content')[:1])
+        next_contact_content=Subquery(next_schedule.values('content')[:1]),
+        is_favorite=Exists(favorites)
     ).prefetch_related('tags')
 
     # 社員登録状況一覧の場合
@@ -727,8 +733,12 @@ def staff_detail(request, pk):
         except Exception:
             pass
 
+    # お気に入り状況の取得
+    is_favorite = StaffFavorite.objects.filter(staff=staff, user=request.user).exists()
+
     return render(request, 'staff/staff_detail.html', {
         'staff': staff,
+        'is_favorite': is_favorite,
         'contacted_combined_list': contacted_combined_list,
         'staff_contracts': staff_contracts,
         'staff_contracts_count': staff_contracts_count,
@@ -1458,6 +1468,24 @@ def staff_face_delete(request, pk):
         else:
             messages.warning(request, '削除対象の顔写真が見つかりませんでした。')
     return redirect('staff:staff_detail', pk=staff.pk)
+
+
+@login_required
+def staff_favorite_add(request, staff_pk):
+    """スタッフをお気に入りに追加"""
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    StaffFavorite.objects.get_or_create(staff=staff, user=request.user)
+    messages.success(request, f'スタッフ「{staff.name}」をお気に入りに追加しました。')
+    return redirect('staff:staff_detail', pk=staff_pk)
+
+
+@login_required
+def staff_favorite_remove(request, staff_pk):
+    """スタッフをお気に入りから解除"""
+    staff = get_object_or_404(Staff, pk=staff_pk)
+    StaffFavorite.objects.filter(staff=staff, user=request.user).delete()
+    messages.success(request, f'スタッフ「{staff.name}」をお気に入りから解除しました。')
+    return redirect('staff:staff_detail', pk=staff_pk)
 
 
 @login_required

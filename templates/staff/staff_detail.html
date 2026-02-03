@@ -63,6 +63,11 @@
                             <a href="{% url 'staff:staff_flag_list' staff.pk %}" class="dropdown-item">
                                 <i class="bi bi-flag"></i>　フラッグ編集
                             </a>
+                            {% if not is_favorite %}
+                            <a href="{% url 'staff:staff_favorite_add' staff.pk %}" class="dropdown-item">
+                                <i class="bi bi-star"></i>　お気に入り追加
+                            </a>
+                            {% endif %}
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -169,6 +174,11 @@
                                 {% endif %}
                             </h4>
                             <div class="mt-1 mb-2">
+                                {% if is_favorite %}
+                                    <a href="{% url 'staff:staff_favorite_remove' staff.pk %}" class="text-decoration-none" data-bs-toggle="tooltip" data-bs-placement="top" title="お気に入り解除">
+                                        <i class="bi bi-star-fill text-warning me-1" style="font-size: 1.2rem; cursor: pointer;"></i>
+                                    </a>
+                                {% endif %}
                                 {% for tag in staff.tags.all %}
                                     <span class="badge rounded-pill {{ tag.display_order|badge_class }} me-1">
                                         <i class="bi bi-tag-fill me-1"></i>{{ tag.name }}

@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
+from django.conf import settings
 
 from ..common.models import MyTenantModel, TenantManager
 from django_currentuser.db.models import CurrentUserField
@@ -308,3 +309,32 @@ class StaffFlag(MyFlagModel):
     
     def __str__(self):
         return f"{self.staff} - {self.flag_status}"
+
+
+class StaffFavorite(MyTenantModel):
+    """
+    スタッフのお気に入り情報を管理するモデル。
+    """
+    objects = TenantManager()
+
+    staff = models.ForeignKey(
+        Staff,
+        on_delete=models.CASCADE,
+        verbose_name='スタッフ',
+        related_name='favorites'
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name='ユーザー',
+        related_name='staff_favorites'
+    )
+
+    class Meta:
+        verbose_name = 'スタッフお気に入り'
+        verbose_name_plural = 'スタッフお気に入り'
+        db_table = 'apps_staff_favorite'
+        unique_together = ('staff', 'user')
+
+    def __str__(self):
+        return f"{self.user} - {self.staff}"
