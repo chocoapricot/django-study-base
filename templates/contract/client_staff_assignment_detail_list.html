@@ -1,3 +1,4 @@
+{% load favorite_tags %}
 {% extends 'common/_base.html' %}
 {% load static %}
 {% load humanize %}
@@ -47,7 +48,7 @@
                         <tr data-staff-index="{{ forloop.counter0 }}" data-staff-name="{{ item.staff_contract.staff.name_last }} {{ item.staff_contract.staff.name_first }}">
                             <td>
                                 <a href="#" class="staff-select-link" data-staff-index="{{ forloop.counter0 }}">
-                                    {{ item.staff_contract.staff.name_last }} {{ item.staff_contract.staff.name_first }}
+                                    {{ item.staff_contract.staff.name_last }} {{ item.staff_contract.staff.name_first }} {% favorite_star item.staff_contract.staff %}
                                 </a>
                                 {% if item.staff_contract.staff.has_international %}
                                     <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>

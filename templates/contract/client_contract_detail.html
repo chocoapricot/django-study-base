@@ -3,6 +3,7 @@
 {% load humanize %}
 {% load dropdowns %}
 {% load badge_tags %}
+{% load favorite_tags %}
 {% load query_tags %}
 {% load help_tags %}
 
@@ -300,6 +301,7 @@
                             <tr>
                                 <td>
                                     {{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }}
+                                    {% favorite_star assignment.staff_contract.staff %}
                                     {% if assignment.staff_contract.staff.has_international %}
                                         <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
                                     {% endif %}

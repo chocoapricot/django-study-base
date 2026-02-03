@@ -2,6 +2,7 @@
 {% load humanize %}
 {% load help_tags %}
 {% load badge_tags %}
+{% load favorite_tags %}
 
 {% block title %}スタッフ契約延長確認{% endblock %}
 
@@ -56,6 +57,7 @@
                                 <tr {% if assignment.has_future_contract %}{% elif assignment.is_expiring_soon %}class="table-warning"{% elif assignment.is_expired %}class="table-danger"{% endif %}>
                                     <td>
                                         {{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }}
+                                        {% favorite_star assignment.staff_contract.staff %}
                                     </td>
                                     <td>
                                         {% if assignment.staff_contract.employment_type %}

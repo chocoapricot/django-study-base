@@ -4,6 +4,7 @@
 {% load humanize %}
 {% load dropdowns %}
 {% load badge_tags %}
+{% load favorite_tags %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -69,7 +70,7 @@
                                 <small class="text-muted">
                                     延長対象: 
                                     {% for staff_contract in extendable_staff_contracts %}
-                                        {{ staff_contract.staff.name_last }} {{ staff_contract.staff.name_first }}{% if not forloop.last %}、{% endif %}
+                                        {{ staff_contract.staff.name_last }} {{ staff_contract.staff.name_first }} {% favorite_star staff_contract.staff %}{% if not forloop.last %}、{% endif %}
                                     {% endfor %}
                                     （{{ extendable_staff_contracts.count }}件）
                                 </small>

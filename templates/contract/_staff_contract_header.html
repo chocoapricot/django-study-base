@@ -1,6 +1,7 @@
 {% load humanize %}
 {% load dropdowns %}
 {% load badge_tags %}
+{% load favorite_tags %}
 
 <div class="row">
     <div class="col-md-6">
@@ -16,6 +17,7 @@
                     <a href="{% url 'staff:staff_detail' contract.staff.pk %}" class="text-decoration-none">
                         {{ contract.staff.name_last }} {{ contract.staff.name_first }}
                     </a>
+                    {% favorite_star contract.staff %}
                 </td>
             </tr>
             <tr>

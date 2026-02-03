@@ -1,5 +1,6 @@
 {% load dropdowns %}
 {% load badge_tags %}
+{% load favorite_tags %}
 {# クライアント基本情報カード（インクルード用） #}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header">クライアント基本情報</div>
@@ -10,6 +11,7 @@
                     <ruby>
                         {{ client.name }}<rt>{{ client.name_furigana }}</rt>
                     </ruby>
+                    {% favorite_star client %}
                     {% if client.regist_status %}
                         <span class="badge {{ client.regist_status.display_order|badge_class }} ms-3" style="font-size:15px">{{ client.regist_status.name }}</span>
                     {% endif %}

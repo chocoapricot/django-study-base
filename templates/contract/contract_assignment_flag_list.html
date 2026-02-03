@@ -1,3 +1,4 @@
+{% load favorite_tags %}
 {% extends 'common/_base.html' %}
 {% load badge_tags %}
 
@@ -26,7 +27,7 @@
                 <table class="table table-sm">
                     <tr>
                         <th class="w-25 bg-light">スタッフ</th>
-                        <td>{{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }}</td>
+                        <td>{{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }} {% favorite_star assignment.staff_contract.staff %}</td>
                     </tr>
                     <tr>
                         <th class="w-25 bg-light">契約名</th>

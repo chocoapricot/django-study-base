@@ -1,3 +1,4 @@
+{% load favorite_tags %}
 {% extends 'common/_base.html' %}
 {% load static %}
 
@@ -27,7 +28,7 @@
                             </tr>
                             <tr>
                                 <th class="w-25 bg-light">スタッフ</th>
-                                <td>{{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }}</td>
+                                <td>{{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }} {% favorite_star assignment.staff_contract.staff %}</td>
                             </tr>
                             <tr>
                                 <th class="w-25 bg-light">割当期間</th>

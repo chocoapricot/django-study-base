@@ -1,5 +1,6 @@
 {% extends 'common/_base.html' %}
 {% load static %}
+{% load favorite_tags %}
 
 {% block title %}契約管理{% endblock %}
 
@@ -92,7 +93,10 @@
                                 <h6 class="mb-1">{{ contract.contract_name }}</h6>
                                 <small>{{ contract.start_date|date:'Y/m/d' }}</small>
                             </div>
-                            <p class="mb-1">{{ contract.staff.name_last }} {{ contract.staff.name_first }}</p>
+                            <p class="mb-1">
+                                {{ contract.staff.name_last }} {{ contract.staff.name_first }}
+                                {% favorite_star contract.staff %}
+                            </p>
                             <small>
                                 {% if contract.status == '有効' %}
                                     <span class="badge bg-success">{{ contract.status }}</span>

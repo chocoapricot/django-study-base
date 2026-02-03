@@ -1,3 +1,4 @@
+{% load favorite_tags %}
 {% extends 'common/_base.html' %}
 {% load static %}
 
@@ -22,7 +23,7 @@
                                 </tr>
                                 <tr>
                                     <th>スタッフ</th>
-                                    <td>{{ contract.staff.name_last }} {{ contract.staff.name_first }}</td>
+                                    <td>{{ contract.staff.name_last }} {{ contract.staff.name_first }} {% favorite_star contract.staff %}</td>
                                 </tr>
                                 <tr>
                                     <th>契約番号</th>

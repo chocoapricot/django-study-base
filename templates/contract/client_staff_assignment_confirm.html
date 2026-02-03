@@ -1,3 +1,4 @@
+{% load favorite_tags %}
 {% extends 'common/_base.html' %}
 {% load static %}
 {% load humanize %}
@@ -60,10 +61,10 @@
                                 <td>
                                     {% if staff_contract.pk %}
                                         <a href="{% url 'contract:staff_contract_detail' staff_contract.pk %}" class="text-decoration-none">
-                                            {{ staff_contract.staff.name_last }} {{ staff_contract.staff.name_first }}
+                                            {{ staff_contract.staff.name_last }} {{ staff_contract.staff.name_first }} {% favorite_star staff_contract.staff %}
                                         </a>
                                     {% else %}
-                                        {{ staff_contract.staff.name_last }} {{ staff_contract.staff.name_first }}
+                                        {{ staff_contract.staff.name_last }} {{ staff_contract.staff.name_first }} {% favorite_star staff_contract.staff %}
                                     {% endif %}
                                     {% if staff_contract.staff.has_international %}
                                         <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>

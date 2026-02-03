@@ -5,7 +5,7 @@
 {# 各Viewで設定されたパスのテンプレートをインクルード #}
 {# company, staff, client_contract オブジェクトは各Viewのcontextで設定されている前提 #}
 {% if info_card_path %}
-    {% include info_card_path %}
+    {% include info_card_path with hide_favorite=True %}
 {% endif %}
 
 {# --- 変更履歴 --- #}

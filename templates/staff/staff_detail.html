@@ -4,6 +4,7 @@
 {% load dropdowns %}
 {% load badge_tags %}
 {% load parameters %}
+{% load favorite_tags %}
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
 <style>
@@ -130,6 +131,7 @@
                                 <ruby>
                                     {{ staff.name_first }}<rt>{{ staff.name_kana_first }}</rt>
                                 </ruby>
+                                {% favorite_star staff size='1.2rem' as_link=True %}
                                 {% if staff.sex == 1 %}
                                     <span class="badge bg-info" style="font-size:12px">{% my_name 'sex' staff.sex%}</span>
                                 {% else %}
@@ -174,11 +176,6 @@
                                 {% endif %}
                             </h4>
                             <div class="mt-1 mb-2">
-                                {% if is_favorite %}
-                                    <a href="{% url 'staff:staff_favorite_remove' staff.pk %}" class="text-decoration-none" data-bs-toggle="tooltip" data-bs-placement="top" title="お気に入り解除" onclick="return confirm('お気に入りを解除しますか？');">
-                                        <i class="bi bi-star-fill text-warning me-1" style="font-size: 1.2rem; cursor: pointer;"></i>
-                                    </a>
-                                {% endif %}
                                 {% for tag in staff.tags.all %}
                                     <span class="badge rounded-pill {{ tag.display_order|badge_class }} me-1">
                                         <i class="bi bi-tag-fill me-1"></i>{{ tag.name }}

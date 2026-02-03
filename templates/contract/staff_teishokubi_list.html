@@ -1,6 +1,7 @@
 {% extends 'common/_base.html' %}
 {% load static %}
 {% load humanize %}
+{% load favorite_tags %}
 
 {% block title %}個人抵触日一覧{% endblock %}
 
@@ -48,6 +49,7 @@
                     <td>
                         {% if item.staff_name %}
                             {{ item.staff_name }}
+                            {% favorite_star item.staff %}
                             {% if item.staff_has_international %}
                                 <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
                             {% endif %}
