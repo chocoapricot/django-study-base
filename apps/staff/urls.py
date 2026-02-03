@@ -25,6 +25,7 @@ from .views import (
     staff_evaluation_list, staff_evaluation_create, staff_evaluation_update, staff_evaluation_delete,
     staff_tag_edit,
     staff_flag_list, staff_flag_create, staff_flag_update, staff_flag_delete,
+    staff_favorite_add, staff_favorite_remove,
 )
 from .views_inquiry import (
     staff_inquiry_list, staff_inquiry_create, staff_inquiry_detail, staff_inquiry_message_delete,
@@ -143,6 +144,10 @@ urlpatterns = [
     path('staff/<int:staff_pk>/flag/create/', staff_flag_create, name='staff_flag_create'),
     path('staff/flag/<int:pk>/update/', staff_flag_update, name='staff_flag_update'),
     path('staff/flag/<int:pk>/delete/', staff_flag_delete, name='staff_flag_delete'),
+
+    # お気に入り
+    path('staff/favorite/add/<int:staff_pk>/', staff_favorite_add, name='staff_favorite_add'),
+    path('staff/favorite/remove/<int:staff_pk>/', staff_favorite_remove, name='staff_favorite_remove'),
 
     # 問い合わせ
     path('inquiry/', staff_inquiry_list, name='staff_inquiry_list'),
