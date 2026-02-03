@@ -398,7 +398,7 @@
     </div>
 
 <!-- Sidebar for large screens -->
-<div id="sidebar" class="d-none d-md-block bg-light sidebar">
+<div id="sidebar" class="d-none d-md-block bg-light sidebar {% if request.session.is_sidebar_collapsed %}collapsed{% endif %}">
   <div class="position-sticky">
     <ul class="nav flex-column">
       {% for menu in menus %}
@@ -467,7 +467,7 @@
 <div class="container-fluid mt-1 mb-3">
   <div class="row">
     <!-- Add id to main content area -->
-    <main id="mainContent" class="px-md-4" style="padding-top: 80px;">
+    <main id="mainContent" class="px-md-4 {% if request.session.is_sidebar_collapsed %}expanded{% endif %}" style="padding-top: 80px;">
             <!-- メッセージ表示 -->
         {% if messages %}
             {% for message in messages %}
@@ -555,19 +555,13 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeTooltips();
 
     // --- サイドバーの状態管理 ---
-    let isSidebarCollapsed = sessionStorage.getItem('isSidebarCollapsed') === 'true';
-
-    function updateSidebarView() {
-        if (isSidebarCollapsed) {
-            sidebar.classList.add('collapsed');
-            mainContent.classList.add('expanded');
+    function updateSidebarTooltips(isCollapsed) {
+        if (isCollapsed) {
             // 閉じた状態ではツールチップを有効化
             tooltipList.forEach(tooltip => {
                 if(tooltip && typeof tooltip.enable === 'function') tooltip.enable();
             });
         } else {
-            sidebar.classList.remove('collapsed');
-            mainContent.classList.remove('expanded');
             // 開いた状態ではツールチップを無効化
             tooltipList.forEach(tooltip => {
                 if(tooltip && typeof tooltip.disable === 'function') tooltip.disable();
@@ -577,19 +571,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // --- イベントリスナー ---
     toggleSidebarBtn.addEventListener('click', function() {
-        isSidebarCollapsed = !isSidebarCollapsed;
-        sessionStorage.setItem('isSidebarCollapsed', isSidebarCollapsed);
-        updateSidebarView();
+        const isCollapsed = sidebar.classList.toggle('collapsed');
+        mainContent.classList.toggle('expanded');
+        
+        // ツールチップの状態を更新
+        updateSidebarTooltips(isCollapsed);
+
+        // サーバーに状態を送信
+        fetch("{% url 'common:set_sidebar_state' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // CSRFトークンが必要な場合はヘッダーに追加
+                // 'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ is_collapsed: isCollapsed })
+        }).catch(error => console.error('Error updating sidebar state:', error));
     });
 
     // --- 初期表示 ---
-    // 初回読み込み時はアニメーションが走らないようにする
-    document.body.classList.add('no-transition');
-    updateSidebarView();
-    // 少し遅れてtransitionを有効に戻す
+    // サーバーサイドでレンダリングされた状態に基づいてツールチップを初期化
+    updateSidebarTooltips(sidebar.classList.contains('collapsed'));
+
+    // bodyからno-transitionクラスを削除してアニメーションを有効化
+    // 少し遅延させることで、初期描画後の不要なアニメーションを防ぐ
     setTimeout(() => {
         document.body.classList.remove('no-transition');
-    }, 100);
+    }, 50);
 });
     </script>
 <script>

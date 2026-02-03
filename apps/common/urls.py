@@ -10,4 +10,7 @@ urlpatterns = [
     
     # マスター選択
     path('master-select/', master_select, name='master_select'),
+    
+    # サイドバーの状態保存
+    path('api/set_sidebar_state/', views.set_sidebar_state, name='set_sidebar_state'),
 ]
