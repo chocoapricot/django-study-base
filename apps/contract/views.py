@@ -86,7 +86,7 @@ def contract_index(request):
     # スタッフ契約の統計
     staff_contract_count = StaffContract.objects.count()
     current_staff_contracts = StaffContract.objects.count()
-    recent_staff_contracts = StaffContract.objects.select_related('staff').order_by('-created_at')[:5]
+    recent_staff_contracts = StaffContract.objects.select_related('staff', 'staff__international', 'staff__disability').order_by('-created_at')[:5]
     
     context = {
         'client_contract_count': client_contract_count,
@@ -234,7 +234,9 @@ def client_contract_detail(request, pk):
         ).prefetch_related(
             Prefetch(
                 'contractassignment_set',
-                queryset=ContractAssignment.objects.select_related('staff_contract__staff'),
+                queryset=ContractAssignment.objects.select_related(
+                    'staff_contract__staff', 'staff_contract__staff__international', 'staff_contract__staff__disability'
+                ),
                 to_attr='assigned_assignments'
             )
         ),
@@ -681,7 +683,7 @@ def client_contract_extend(request, pk):
     extendable_staff_contracts = StaffContract.objects.filter(
         client_contracts=original_contract,
         end_date=original_contract.end_date
-    ).select_related('staff')
+    ).select_related('staff', 'staff__international', 'staff__disability')
     
     context = {
         'original_contract': original_contract,
@@ -1290,6 +1292,8 @@ def staff_contract_expire_list(request):
     ).select_related(
         'client_contract__client',
         'staff_contract__staff',
+        'staff_contract__staff__international',
+        'staff_contract__staff__disability',
         'client_contract__job_category',
         'staff_contract__employment_type',
         'assignment_confirm'
@@ -1355,6 +1359,8 @@ def staff_contract_expire_list(request):
     all_assignments = ContractAssignment.objects.select_related(
         'client_contract__client',
         'staff_contract__staff',
+        'staff_contract__staff__international',
+        'staff_contract__staff__disability',
         'client_contract__job_category',
         'staff_contract__employment_type',
         'assignment_confirm'
@@ -1441,6 +1447,8 @@ def _prepare_contract_timeline_data(all_assignments, today, search_query):
                 'staff_name': staff_key,
                 'staff_id': staff_id,
                 'employment_type': first_assignment.staff_contract.employment_type,
+                'has_international': first_assignment.staff_contract.staff.has_international,
+                'has_disability': first_assignment.staff_contract.staff.has_disability,
                 'months': [{'month': m['display'], 'status': 'none', 'client_name': '', 'assignment_id': None} for m in months]
             }
             

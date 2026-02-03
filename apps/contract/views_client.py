@@ -625,7 +625,7 @@ def client_contract_extend(request, pk):
     extendable_staff_contracts = StaffContract.objects.filter(
         client_contracts=original_contract,
         end_date=original_contract.end_date
-    ).select_related('staff')
+    ).select_related('staff', 'staff__international', 'staff__disability')
 
     context = {
         'original_contract': original_contract,

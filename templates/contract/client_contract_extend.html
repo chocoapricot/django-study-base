@@ -70,7 +70,15 @@
                                 <small class="text-muted">
                                     延長対象: 
                                     {% for staff_contract in extendable_staff_contracts %}
-                                        {{ staff_contract.staff.name_last }} {{ staff_contract.staff.name_first }} {% favorite_star staff_contract.staff %}{% if not forloop.last %}、{% endif %}
+                                        {{ staff_contract.staff.name_last }} {{ staff_contract.staff.name_first }}
+                                        {% favorite_star staff_contract.staff %}
+                                        {% if staff_contract.staff.has_international %}
+                                            <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
+                                        {% endif %}
+                                        {% if staff_contract.staff.has_disability %}
+                                            <i class="bi bi-heart" style="color:#17a2b8;" title="障害者"></i>
+                                        {% endif %}
+                                        {% if not forloop.last %}、{% endif %}
                                     {% endfor %}
                                     （{{ extendable_staff_contracts.count }}件）
                                 </small>

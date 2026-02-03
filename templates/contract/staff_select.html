@@ -49,6 +49,12 @@
                         <td>
                             {{ staff.name_last }} {{ staff.name_first }}
                             {% favorite_star staff %}
+                            {% if staff.has_international %}
+                                <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
+                            {% endif %}
+                            {% if staff.has_disability %}
+                                <i class="bi bi-heart" style="color:#17a2b8;" title="障害者"></i>
+                            {% endif %}
                         </td>
                         <td>
                             <strong>{{ staff.employee_no }}</strong>

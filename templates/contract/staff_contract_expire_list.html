@@ -58,6 +58,12 @@
                                     <td>
                                         {{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }}
                                         {% favorite_star assignment.staff_contract.staff %}
+                                        {% if assignment.staff_contract.staff.has_international %}
+                                            <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
+                                        {% endif %}
+                                        {% if assignment.staff_contract.staff.has_disability %}
+                                            <i class="bi bi-heart" style="color:#17a2b8;" title="障害者"></i>
+                                        {% endif %}
                                     </td>
                                     <td>
                                         {% if assignment.staff_contract.employment_type %}
@@ -175,6 +181,12 @@
                                     <td style="position: sticky; left: 0; background-color: white; z-index: 5; font-weight: 500;">
                                         <div class="d-flex align-items-center">
                                             <span class="me-2">{{ staff.staff_name }}</span>
+                                            {% if staff.has_international %}
+                                                <i class="bi bi-send me-1" style="color:#17a2b8; font-size: 0.8em;" title="外国籍"></i>
+                                            {% endif %}
+                                            {% if staff.has_disability %}
+                                                <i class="bi bi-heart me-1" style="color:#17a2b8; font-size: 0.8em;" title="障害者"></i>
+                                            {% endif %}
                                             {% if staff.employment_type %}
                                                 <span class="badge {{ staff.employment_type.display_order|badge_class }}" style="font-size: 0.7em;">{{ staff.employment_type.name }}</span>
                                             {% endif %}
