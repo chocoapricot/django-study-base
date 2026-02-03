@@ -19,6 +19,11 @@
                     <a href="{% url 'client:client_flag_list' client.pk %}" class="dropdown-item">
                         <i class="bi bi-flag"></i>　フラッグ編集
                     </a>
+                    {% if not is_favorite %}
+                    <a href="{% url 'client:client_favorite_add' client.pk %}" class="dropdown-item">
+                        <i class="bi bi-star"></i>　お気に入り追加
+                    </a>
+                    {% endif %}
                 </div>
             </li>
         </ul>
@@ -41,6 +46,11 @@
                         {% endif %}
                     </h4>
                     <div class="mt-2">
+                        {% if is_favorite %}
+                            <a href="{% url 'client:client_favorite_remove' client.pk %}" class="text-decoration-none" data-bs-toggle="tooltip" data-bs-placement="top" title="お気に入り解除" onclick="return confirm('お気に入りを解除しますか？');">
+                                <i class="bi bi-star-fill text-warning me-1" style="font-size: 1.2rem; cursor: pointer;"></i>
+                            </a>
+                        {% endif %}
                         {% for tag in client.tags.all %}
                             <span class="badge rounded-pill {{ tag.display_order|badge_class }} me-1">
                                 <i class="bi bi-tag-fill me-1"></i>{{ tag.name }}

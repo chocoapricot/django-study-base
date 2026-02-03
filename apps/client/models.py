@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 import uuid
 import os
 
@@ -395,3 +396,32 @@ class ClientFlag(MyFlagModel):
     
     def __str__(self):
         return f"{self.client} - {self.flag_status}"
+
+
+class ClientFavorite(MyTenantModel):
+    """
+    クライアントのお気に入り情報を管理するモデル。
+    """
+    objects = TenantManager()
+
+    client = models.ForeignKey(
+        Client,
+        on_delete=models.CASCADE,
+        verbose_name='クライアント',
+        related_name='favorites'
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name='ユーザー',
+        related_name='client_favorites'
+    )
+
+    class Meta:
+        verbose_name = 'クライアントお気に入り'
+        verbose_name_plural = 'クライアントお気に入り'
+        db_table = 'apps_client_favorite'
+        unique_together = ('client', 'user')
+
+    def __str__(self):
+        return f"{self.user} - {self.client}"

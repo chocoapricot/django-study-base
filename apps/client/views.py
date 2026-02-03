@@ -14,7 +14,7 @@ from apps.system.logs.utils import log_model_action
 from apps.contract.utils import generate_teishokubi_notification_pdf
 from apps.company.views import get_current_company
 # クライアント連絡履歴用インポート
-from .models import Client, ClientContacted, ClientDepartment, ClientUser, ClientFile, ClientContactSchedule, ClientFlag
+from .models import Client, ClientContacted, ClientDepartment, ClientUser, ClientFile, ClientContactSchedule, ClientFlag, ClientFavorite
 from .forms import ClientForm, ClientContactedForm, ClientDepartmentForm, ClientUserForm, ClientFileForm, ClientContactScheduleForm, ClientFlagForm, ClientTagEditForm
 from apps.master.models import ClientTag
 # from apps.api.helpers import fetch_company_info  # API呼び出し関数をインポート
@@ -38,7 +38,15 @@ def client_list(request):
     client_regist_status = request.GET.get('regist_status', '').strip()
     tag_filter = request.GET.get('tag', '').strip()
     
-    clients = Client.objects.all().prefetch_related('tags')
+    from django.db.models import OuterRef, Exists
+    favorites = ClientFavorite.objects.filter(
+        client=OuterRef('pk'),
+        user=request.user
+    )
+
+    clients = Client.objects.annotate(
+        is_favorite=Exists(favorites)
+    ).prefetch_related('tags')
     
     # キーワード検索
     if query:
@@ -332,8 +340,12 @@ def client_detail(request, pk):
     change_logs = change_logs_query.order_by('-timestamp')[:5]
     change_logs_count = change_logs_query.count()
 
+    # お気に入り状況の取得
+    is_favorite = ClientFavorite.objects.filter(client=client, user=request.user).exists()
+
     return render(request, 'client/client_detail.html', {
         'client': client,
+        'is_favorite': is_favorite,
         'form': form,
         'contacted_combined_list': contacted_combined_list,
         'client_contracts': client_contracts,
@@ -1343,3 +1355,21 @@ def client_flag_delete(request, pk):
         'flag': flag,
     }
     return render(request, 'client/client_flag_confirm_delete.html', context)
+
+
+@login_required
+def client_favorite_add(request, client_pk):
+    """クライアントをお気に入りに追加"""
+    client = get_object_or_404(Client, pk=client_pk)
+    ClientFavorite.objects.get_or_create(client=client, user=request.user)
+    messages.success(request, f'クライアント「{client.name}」をお気に入りに追加しました。')
+    return redirect('client:client_detail', pk=client_pk)
+
+
+@login_required
+def client_favorite_remove(request, client_pk):
+    """クライアントをお気に入りから解除"""
+    client = get_object_or_404(Client, pk=client_pk)
+    ClientFavorite.objects.filter(client=client, user=request.user).delete()
+    messages.success(request, f'クライアント「{client.name}」をお気に入りから解除しました。')
+    return redirect('client:client_detail', pk=client_pk)
