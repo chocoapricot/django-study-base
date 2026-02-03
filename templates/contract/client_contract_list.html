@@ -11,7 +11,7 @@
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
     <div class="card-header d-flex justify-content-between align-items-center">
         {% if filtered_client %}
-            {{ filtered_client.name }}{% favorite_star filtered_client size='1rem' as_link=True %} のクライアント契約一覧
+            {{ filtered_client.name }}{% favorite_star filtered_client size='1rem' as_link=False %} のクライアント契約一覧
         {% else %}
             クライアント契約一覧
         {% endif %}
@@ -32,7 +32,7 @@
         <div class="mb-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'client:client_detail' filtered_client.pk %}">{{ filtered_client.name }}</a>{% favorite_star filtered_client size='1rem' as_link=True %}</li>
+                    <li class="breadcrumb-item"><a href="{% url 'client:client_detail' filtered_client.pk %}">{{ filtered_client.name }}</a>{% favorite_star filtered_client size='1rem' as_link=False %}</li>
                     <li class="breadcrumb-item active" aria-current="page">クライアント契約一覧</li>
                 </ol>
             </nav>
@@ -170,7 +170,7 @@
                                     </td>
                                     <td>
                                         {{ contract.client.name }}
-                                        {% favorite_star contract.client size='1rem' as_link=True %}
+                                        {% favorite_star contract.client size='1rem' as_link=False %}
                                     </td>
                                     <td>
                                         <span class="badge {{contract.client_contract_type_code|badge_class}}">

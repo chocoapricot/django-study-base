@@ -46,7 +46,7 @@
                         <tr>
                             <td>
                                 {{ department.client.name }}
-                                {% favorite_star department.client size='1rem' as_link=True %}
+                                {% favorite_star department.client size='1rem' as_link=False %}
                             </td>
                             <td>
                                 <a href="{% url 'client:client_department_detail' department.id %}" class="text-decoration-none">

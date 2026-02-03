@@ -34,7 +34,7 @@
                     <td>{{ item.contract.contract_name }}</td>
                     <td>
                         {{ item.contract.client.name }}
-                        {% favorite_star item.contract.client size='1rem' as_link=True %}
+                        {% favorite_star item.contract.client size='1rem' as_link=False %}
                     </td>
                     <td>
                         <span class="badge {{item.contract.client_contract_type_code|badge_class}}">

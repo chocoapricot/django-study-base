@@ -246,7 +246,7 @@
                             <tr>
                                 <td>
                                     {{ assignment.client_contract.client.name }}
-                                    {% favorite_star assignment.client_contract.client size='1rem' as_link=True %}
+                                    {% favorite_star assignment.client_contract.client size='1rem' as_link=False %}
                                     {% if assignment.client_contract.client_contract_type_code %}
                                         <span class="badge {{ assignment.client_contract.client_contract_type_code|badge_class }} ms-2" style="font-size:11px">{% my_name 'client_contract_type' assignment.client_contract.client_contract_type_code %}</span>
                                     {% endif %}

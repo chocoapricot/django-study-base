@@ -38,7 +38,7 @@
             <tr>
                 <td>
                     {{ client.name }}
-                    {% favorite_star client size='1rem' as_link=True %}
+                    {% favorite_star client size='1rem' as_link=False %}
                 </td>
                 <td>
                     {{ client.corporate_number|default:"-" }}
