@@ -1284,7 +1284,7 @@ def staff_contract_teishokubi_list(request):
             'has_disability': hasattr(staff, 'disability')
         }
 
-    client_map = {client.corporate_number: {'id': client.id, 'name': client.name} for client in Client.objects.filter(corporate_number__in=client_corporate_numbers)}
+    client_map = {client.corporate_number: client for client in Client.objects.filter(corporate_number__in=client_corporate_numbers)}
 
     for item in teishokubi_page:
         staff = staff_obj_map.get(item.staff_email)
@@ -1300,11 +1300,13 @@ def staff_contract_teishokubi_list(request):
             item.staff_has_international = False
             item.staff_has_disability = False
 
-        client_info = client_map.get(item.client_corporate_number)
-        if client_info:
-            item.client_id = client_info['id']
-            item.client_name = client_info['name']
+        client = client_map.get(item.client_corporate_number)
+        if client:
+            item.client = client
+            item.client_id = client.id
+            item.client_name = client.name
         else:
+            item.client = None
             item.client_id = None
             item.client_name = None
 

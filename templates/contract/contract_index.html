@@ -37,7 +37,7 @@
                                 <h6 class="mb-1">{{ contract.contract_name }}</h6>
                                 <small>{{ contract.start_date|date:'Y/m/d' }}</small>
                             </div>
-                            <p class="mb-1">{{ contract.client.name }}</p>
+                            <p class="mb-1">{{ contract.client.name }} {% favorite_star contract.client %}</p>
                             <small>
                                 {% if contract.status == '有効' %}
                                     <span class="badge bg-success">{{ contract.status }}</span>

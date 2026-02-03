@@ -1,6 +1,7 @@
 {% extends 'common/_base.html' %}
 {% load static %}
 {% load help_tags %}
+{% load favorite_tags %}
 
 {% block content %}
 <div class="content-box card bg-light mt-2 mb-4" style="max-width: 100%;">
@@ -45,6 +46,7 @@
                         <tr>
                             <td>
                                 {{ department.client.name }}
+                                {% favorite_star department.client size='1rem' as_link=True %}
                             </td>
                             <td>
                                 <a href="{% url 'client:client_department_detail' department.id %}" class="text-decoration-none">
