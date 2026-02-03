@@ -57,7 +57,9 @@ def staff_contract_list(request):
     else:
         date_filter = request.GET.get('date_filter', 'future')  # 初期値は「本日以降」
 
-    contracts = StaffContract.objects.select_related('staff', 'employment_type').annotate(
+    contracts = StaffContract.objects.select_related(
+        'staff', 'staff__international', 'staff__disability', 'employment_type'
+    ).annotate(
         client_contract_count=Count('client_contracts')
     )
 
@@ -577,7 +579,10 @@ def staff_contract_update(request, pk):
 @permission_required('contract.delete_staffcontract', raise_exception=True)
 def staff_contract_delete(request, pk):
     """スタッフ契約削除"""
-    contract = get_object_or_404(StaffContract, pk=pk)
+    contract = get_object_or_404(
+        StaffContract.objects.select_related('staff__international', 'staff__disability'),
+        pk=pk
+    )
 
     if contract.contract_status not in [Constants.CONTRACT_STATUS.DRAFT, Constants.CONTRACT_STATUS.PENDING]:
         messages.error(request, 'この契約は削除できません。')
@@ -1129,7 +1134,7 @@ def staff_select(request):
     from_modal = request.GET.get('from_modal')
 
     # 社員番号と入社日が入っているスタッフのみを対象とする
-    staff_list = Staff.objects.filter(
+    staff_list = Staff.objects.select_related('international', 'disability').filter(
         employee_no__isnull=False,
         hire_date__isnull=False
     ).exclude(employee_no='')

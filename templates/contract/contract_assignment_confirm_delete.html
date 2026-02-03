@@ -28,7 +28,17 @@
                             </tr>
                             <tr>
                                 <th class="w-25 bg-light">スタッフ契約</th>
-                                <td>{{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }} {% favorite_star assignment.staff_contract.staff %} - {{ assignment.staff_contract.contract_name }}</td>
+                                <td>
+                                    {{ assignment.staff_contract.staff.name_last }} {{ assignment.staff_contract.staff.name_first }}
+                                    {% favorite_star assignment.staff_contract.staff %}
+                                    {% if assignment.staff_contract.staff.has_international %}
+                                        <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
+                                    {% endif %}
+                                    {% if assignment.staff_contract.staff.has_disability %}
+                                        <i class="bi bi-heart" style="color:#17a2b8;" title="障害者"></i>
+                                    {% endif %}
+                                    - {{ assignment.staff_contract.contract_name }}
+                                </td>
                             </tr>
                         </table>
                     </div>

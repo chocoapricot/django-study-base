@@ -96,6 +96,12 @@
                             <p class="mb-1">
                                 {{ contract.staff.name_last }} {{ contract.staff.name_first }}
                                 {% favorite_star contract.staff %}
+                                {% if contract.staff.has_international %}
+                                    <i class="bi bi-send" style="color:#17a2b8;" title="外国籍"></i>
+                                {% endif %}
+                                {% if contract.staff.has_disability %}
+                                    <i class="bi bi-heart" style="color:#17a2b8;" title="障害者"></i>
+                                {% endif %}
                             </p>
                             <small>
                                 {% if contract.status == '有効' %}

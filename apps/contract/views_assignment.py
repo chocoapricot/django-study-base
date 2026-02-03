@@ -96,7 +96,9 @@ def client_contract_assignment_view(request, pk):
     assigned_staff_contract_ids = client_contract.staff_contracts.values_list('id', flat=True)
 
     # 期間が重複し、まだ割り当てられていないスタッフ契約を検索
-    staff_contracts = StaffContract.objects.select_related('staff', 'employment_type').filter(
+    staff_contracts = StaffContract.objects.select_related(
+        'staff', 'staff__international', 'staff__disability', 'employment_type'
+    ).filter(
         Q(end_date__gte=client_contract.start_date) | Q(end_date__isnull=True),
         start_date__lte=client_contract.end_date if client_contract.end_date else date.max
     ).exclude(id__in=assigned_staff_contract_ids)
@@ -187,7 +189,10 @@ def client_assignment_confirm(request):
         # 既存の割当済みスタッフ契約を取得（スタッフ名＞開始日でソート）
         existing_assignments = ContractAssignment.objects.filter(
             client_contract=client_contract
-        ).select_related('staff_contract__staff', 'staff_contract__employment_type').order_by(
+        ).select_related(
+            'staff_contract__staff', 'staff_contract__staff__international',
+            'staff_contract__staff__disability', 'staff_contract__employment_type'
+        ).order_by(
             'staff_contract__staff__name_last', 
             'staff_contract__staff__name_first', 
             'staff_contract__start_date'
@@ -261,7 +266,10 @@ def staff_assignment_confirm(request):
         # 既存の割当済みスタッフ契約を取得（スタッフ名＞開始日でソート）
         existing_assignments = ContractAssignment.objects.filter(
             client_contract=client_contract
-        ).select_related('staff_contract__staff', 'staff_contract__employment_type').order_by(
+        ).select_related(
+            'staff_contract__staff', 'staff_contract__staff__international',
+            'staff_contract__staff__disability', 'staff_contract__employment_type'
+        ).order_by(
             'staff_contract__staff__name_last', 
             'staff_contract__staff__name_first', 
             'staff_contract__start_date'
@@ -389,7 +397,10 @@ def staff_assignment_confirm_from_create(request):
     # 既存の割当済みスタッフ契約を取得（スタッフ名＞開始日でソート）
     existing_assignments = ContractAssignment.objects.filter(
         client_contract=client_contract
-    ).select_related('staff_contract__staff', 'staff_contract__employment_type').order_by(
+    ).select_related(
+        'staff_contract__staff', 'staff_contract__staff__international',
+        'staff_contract__staff__disability', 'staff_contract__employment_type'
+    ).order_by(
         'staff_contract__staff__name_last', 
         'staff_contract__staff__name_first', 
         'staff_contract__start_date'
@@ -626,6 +637,8 @@ def contract_assignment_detail(request, assignment_pk):
         ContractAssignment.objects.select_related(
             'client_contract__client',
             'staff_contract__staff',
+            'staff_contract__staff__international',
+            'staff_contract__staff__disability',
             'staff_contract__employment_type',
             'client_contract__job_category',
             'staff_contract__job_category'
@@ -1534,7 +1547,13 @@ def assignment_ai_check(request, assignment_pk):
 @permission_required('contract.view_clientcontract', raise_exception=True)
 def contract_assignment_flag_list(request, assignment_pk):
     """契約アサインのフラッグ一覧表示"""
-    assignment = get_object_or_404(ContractAssignment, pk=assignment_pk)
+    assignment = get_object_or_404(
+        ContractAssignment.objects.select_related(
+            'staff_contract__staff__international',
+            'staff_contract__staff__disability'
+        ),
+        pk=assignment_pk
+    )
     flags = assignment.flags.all().select_related('company_department', 'company_user', 'flag_status')
 
     # フラッグが1件も登録されていない場合は登録画面にリダイレクト
@@ -1552,7 +1571,13 @@ def contract_assignment_flag_list(request, assignment_pk):
 @permission_required('contract.change_clientcontract', raise_exception=True)
 def contract_assignment_flag_create(request, assignment_pk):
     """契約アサインのフラッグ登録"""
-    assignment = get_object_or_404(ContractAssignment, pk=assignment_pk)
+    assignment = get_object_or_404(
+        ContractAssignment.objects.select_related(
+            'staff_contract__staff__international',
+            'staff_contract__staff__disability'
+        ),
+        pk=assignment_pk
+    )
 
     if request.method == 'POST':
         form = ContractAssignmentFlagForm(request.POST)
@@ -1597,7 +1622,13 @@ def contract_assignment_flag_create(request, assignment_pk):
 @permission_required('contract.change_clientcontract', raise_exception=True)
 def contract_assignment_flag_update(request, pk):
     """契約アサインのフラッグ編集"""
-    flag = get_object_or_404(ContractAssignmentFlag, pk=pk)
+    flag = get_object_or_404(
+        ContractAssignmentFlag.objects.select_related(
+            'contract_assignment__staff_contract__staff__international',
+            'contract_assignment__staff_contract__staff__disability'
+        ),
+        pk=pk
+    )
     assignment = flag.contract_assignment
 
     if request.method == 'POST':
